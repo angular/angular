@@ -7,7 +7,7 @@ use crate::utils::{create_resolver_with_fs, is_compilation_root, is_ts_file, is_
 use crate::{
     AnalysisResult, AnalyzerOptions, CompilationChunk, FileData, FileInvalidation, FileUpdate,
 };
-use futures::channel::mpsc;
+use futures::channel::{mpsc, oneshot};
 use futures::prelude::*;
 use futures::stream::FuturesUnordered;
 use futures::task::{Spawn, SpawnExt};
@@ -559,21 +559,50 @@ impl Analyzer {
         self.push_evicted_paths(evicted, invalidated_paths);
     }
 
-    /// Append the wire path of every file whose cached query was evicted.
+    /// Append the wire path or virtual module ID of every file whose cached query was evicted.
     fn push_evicted_paths(&self, evicted: Vec<QueryKey>, invalidated_paths: &mut Vec<String>) {
         let mut evicted: Vec<String> = evicted
             .into_iter()
             .filter_map(|key| key.file_id())
-            .map(|file_id| crate::fs::path_to_string(self.engine.lookup_path(file_id)))
+            .map(|file_id| match self.engine.lookup_module(file_id) {
+                (id, crate::host::IdKind::Virtual) => id.as_str().to_owned(),
+                (_, crate::host::IdKind::Path) => {
+                    crate::fs::path_to_string(self.engine.lookup_path(file_id))
+                }
+            })
             .collect();
         evicted.sort_unstable();
         evicted.dedup();
         invalidated_paths.extend(evicted);
     }
 
+    pub fn is_synchronous_host(&self) -> bool {
+        self.engine.is_synchronous_host()
+    }
+
+    pub fn ensure_synchronous_host(&self) -> Result<(), String> {
+        if self.is_synchronous_host() {
+            Ok(())
+        } else {
+            Err(crate::host::SYNC_HOST_REQUIRED_MSG.to_string())
+        }
+    }
+
     pub fn get_file_content_core(&self, file_path: String) -> Result<String, String> {
+        self.ensure_synchronous_host()?;
         let path = PathBuf::from(&file_path);
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
+    }
+
+    pub fn get_metadata_for_file_checked(
+        &self,
+        file_path: String,
+    ) -> Result<Option<AnalysisResult>, String> {
+        self.ensure_synchronous_host()?;
+        let Some(file_id) = self.resolve_metadata_target(crate::ModuleRef::Path(file_path)) else {
+            return Ok(None);
+        };
+        Ok(self.engine.get_metadata_for_file_id_blocking(file_id))
     }
 
     /// Resolve `url` the way a component's `templateUrl`/`styleUrls` are resolved from
@@ -581,16 +610,26 @@ impl Analyzer {
     /// after parsing a template (`<link rel="stylesheet">`), which ngtsc also resolves from the
     /// component file rather than from the template.
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L883
+    pub fn read_resource_checked(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Result<Option<crate::ResolvedResource>, String> {
+        self.ensure_synchronous_host()?;
+        Ok(self.engine.read_resource_blocking(
+            &containing_file,
+            &url,
+            crate::host::ResourceKind::Style,
+        ))
+    }
+
     pub fn read_resource_core(
         &self,
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
-        self.engine.read_resource_blocking(
-            &containing_file,
-            &url,
-            crate::host::ResourceKind::Style,
-        )
+        self.read_resource_checked(containing_file, url)
+            .expect(crate::host::SYNC_HOST_REQUIRED_MSG)
     }
 
     pub fn canonical_paths_core(&self, paths: Vec<String>) -> Vec<String> {
@@ -665,6 +704,10 @@ impl Analyzer {
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(path.to_string_lossy().into_owned());
             }
+            if matches!(update.update_type, crate::FileUpdateType::Deleted) {
+                let evicted = self.engine.invalidate_deleted_file(&path);
+                self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
+            }
             self.invalidate_changed_path(&path, &mut ts_paths_to_invalidate);
         }
 
@@ -736,6 +779,16 @@ impl Analyzer {
         Ok(dedup_preserving_order(invalidated_paths))
     }
 
+    /// Flush every cached module resolution and return every module ID whose cached analysis was
+    /// evicted.
+    pub fn clear_resolution_cache_core(&self) -> Result<Vec<String>, String> {
+        self.cancel_current_analysis();
+        let mut invalidated_paths = Vec::new();
+        let evicted = self.engine.clear_resolution_cache();
+        self.push_evicted_paths(evicted, &mut invalidated_paths);
+        Ok(dedup_preserving_order(invalidated_paths))
+    }
+
     /// Install the given compilation roots and the tsconfig's `.d.ts` files (`None` keeps the
     /// current list), evicting every query that read the previous lists when either differs, and
     /// every query that read which root is `r3_symbols.ts` when that changes too.
@@ -758,6 +811,48 @@ impl Analyzer {
             evicted.extend(self.engine.invalidate_r3_symbols_root());
         }
         self.push_evicted_paths(evicted, invalidated_paths);
+    }
+
+    fn resolve_metadata_target(&self, module_ref: crate::host::ModuleRef) -> Option<FileId> {
+        let (id, id_kind) = module_ref.into_parts();
+        if id_kind == crate::host::IdKind::Path {
+            let path = PathBuf::from(&id);
+            // Non-TS files (templates, stylesheets, JSON) and missing files return `None`, like
+            // ngtsc's `TraitCompiler.recordFor`, rather than failing (the language service asks
+            // about every open document, and a panic over N-API aborts the host) or degrading to
+            // an empty `AnalysisResult` indistinguishable from a classless file.
+            if !is_ts_file(&path) {
+                return None;
+            }
+            if self.engine.is_synchronous_host()
+                && !self.fs.metadata(&path).is_ok_and(|m| m.is_file())
+            {
+                return None;
+            }
+        }
+        Some(self.engine.intern_module(&id, id_kind))
+    }
+
+    /// Spawn a wire-metadata query for `module_ref` onto `spawner` and return a oneshot receiver
+    /// for its outcome.
+    pub fn request_metadata_core<S: Spawner>(
+        &self,
+        module_ref: crate::host::ModuleRef,
+        spawner: S,
+    ) -> Result<oneshot::Receiver<Result<Option<AnalysisResult>, String>>, String> {
+        let (tx, rx) = oneshot::channel();
+        let Some(file_id) = self.resolve_metadata_target(module_ref) else {
+            let _ = tx.send(Ok(None));
+            return Ok(rx);
+        };
+        let engine = self.engine.clone();
+        spawner
+            .spawn(async move {
+                let res = engine.get_metadata_for_file_id(file_id).await;
+                let _ = tx.send(Ok(res));
+            })
+            .map_err(|e| e.to_string())?;
+        Ok(rx)
     }
 }
 
@@ -876,6 +971,20 @@ impl Analyzer {
         self.set_entry_points_core(entry_points)
     }
 
+    /// Flush every cached module resolution and return every module ID whose cached analysis was
+    /// evicted.
+    #[cfg(feature = "napi")]
+    #[napi]
+    pub fn clear_resolution_cache(&self) -> napi::Result<Vec<String>> {
+        self.clear_resolution_cache_core()
+            .map_err(napi::Error::from_reason)
+    }
+
+    #[cfg(not(feature = "napi"))]
+    pub fn clear_resolution_cache(&self) -> Result<Vec<String>, String> {
+        self.clear_resolution_cache_core()
+    }
+
     #[cfg(feature = "napi")]
     #[napi]
     pub fn analyze(&self) -> napi::Result<crate::AnalysisIterator> {
@@ -978,29 +1087,8 @@ impl Analyzer {
 
     #[cfg_attr(feature = "napi", napi)]
     pub fn get_metadata_for_file(&self, file_path: String) -> Option<AnalysisResult> {
-        let path = PathBuf::from(&file_path);
-        // Non-TS files (templates, stylesheets, JSON) and missing files return `None`, like ngtsc's
-        // `TraitCompiler.recordFor`, rather than failing (the language service asks about every
-        // open document, and a panic over N-API aborts the host) or degrading to an empty
-        // `AnalysisResult` indistinguishable from a classless file.
-        if !is_ts_file(&path) || !self.fs.metadata(&path).is_ok_and(|m| m.is_file()) {
-            return None;
-        }
-
-        // Synchronously drive `AnalyzeFileWire` to completion.
-        let wire_res = self.engine.analyze_file_wire_blocking(path, true);
-        match &wire_res.0 {
-            Ok(result) => Some(result.clone()),
-            Err(err) => {
-                // TODO(diagnostics): surface WireError via a diagnostics channel instead of
-                // logging to stderr and returning None.
-                #[allow(clippy::print_stderr)]
-                {
-                    eprintln!("ERROR: {err}; skipping metadata for this file");
-                }
-                None
-            }
-        }
+        self.get_metadata_for_file_checked(file_path)
+            .expect(crate::host::SYNC_HOST_REQUIRED_MSG)
     }
 
     #[cfg(feature = "napi")]

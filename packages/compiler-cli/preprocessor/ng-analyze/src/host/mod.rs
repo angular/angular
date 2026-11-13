@@ -104,6 +104,39 @@ pub enum IdKind {
     Virtual,
 }
 
+/// Direct-entry module reference accepted by host-aware APIs (`string` ≡ `{ id, idKind: 'path' }`).
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum ModuleRef {
+    Path(String),
+    Explicit {
+        id: String,
+        #[serde(rename = "idKind", default)]
+        id_kind: IdKind,
+    },
+}
+
+impl ModuleRef {
+    pub fn into_parts(self) -> (String, IdKind) {
+        match self {
+            Self::Path(id) => (id, IdKind::Path),
+            Self::Explicit { id, id_kind } => (id, id_kind),
+        }
+    }
+}
+
+impl From<String> for ModuleRef {
+    fn from(path: String) -> Self {
+        Self::Path(path)
+    }
+}
+
+impl From<&str> for ModuleRef {
+    fn from(path: &str) -> Self {
+        Self::Path(path.to_owned())
+    }
+}
+
 /// Syntactic format of a module, supplied by the host or inferred from file extensions by
 /// [`DefaultFsHost`].
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
@@ -321,6 +354,10 @@ pub struct LoadedModule {
 
 /// Boxed `'static` future returned by [`AnalysisHost`] methods.
 pub type HostFuture<T> = BoxFuture<'static, T>;
+
+/// Error message surfaced when a synchronous (`*_blocking` / `*Sync`) entry point is invoked while
+/// an asynchronous [`AnalysisHost`] is configured.
+pub const SYNC_HOST_REQUIRED_MSG: &str = "synchronous APIs require a synchronous host";
 
 /// Environment boundary for resolving module specifiers, resolving component resources, and
 /// loading file contents.
@@ -544,6 +581,28 @@ mod tests {
                 ("assert".to_string(), "json".to_string()),
                 ("type".to_string(), "json".to_string()),
             ]
+        );
+    }
+
+    #[test]
+    fn test_module_ref_serde_and_into_parts() {
+        let from_str: ModuleRef = serde_json::from_str("\"/app/a.ts\"").unwrap();
+        assert_eq!(
+            from_str.into_parts(),
+            ("/app/a.ts".to_string(), IdKind::Path)
+        );
+
+        let default_kind: ModuleRef = serde_json::from_str(r#"{"id":"/app/b.ts"}"#).unwrap();
+        assert_eq!(
+            default_kind.into_parts(),
+            ("/app/b.ts".to_string(), IdKind::Path)
+        );
+
+        let virtual_ref: ModuleRef =
+            serde_json::from_str(r#"{"id":"\u0000virtual:mod","idKind":"virtual"}"#).unwrap();
+        assert_eq!(
+            virtual_ref.into_parts(),
+            ("\0virtual:mod".to_string(), IdKind::Virtual)
         );
     }
 }

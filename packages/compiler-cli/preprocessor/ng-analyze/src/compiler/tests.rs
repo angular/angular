@@ -5466,6 +5466,233 @@ fn test_update_file_content_created_file_resolves_failed_import() {
     );
 }
 
+/// Virtual files of a minimal `@angular/core` package under `root`. A fixture without one fails
+/// to resolve `@angular/core`, which alone re-analyzes `app.ts` on every file creation or
+/// deletion and hides whether the failed import a test is about is tracked.
+fn angular_core_stub(root: &str) -> HashMap<String, String> {
+    HashMap::from([
+        (
+            format!("{root}/node_modules/@angular/core/package.json"),
+            r#"{"name": "@angular/core", "types": "./index.d.ts"}"#.to_string(),
+        ),
+        (
+            format!("{root}/node_modules/@angular/core/index.d.ts"),
+            r#"
+                export declare const Component: any;
+                export declare const Directive: any;
+            "#
+            .to_string(),
+        ),
+    ])
+}
+
+/// Whether `app.ts` lists a file whose path ends in the components `suffix` among its resolved
+/// static imports (`AnalysisResult::static_dependencies`).
+fn app_statically_imports(analyzer: &Analyzer, app_path: &str, suffix: &str) -> bool {
+    analyzer
+        .get_metadata_for_file(app_path.to_string())
+        .is_some_and(|meta| {
+            meta.static_dependencies
+                .iter()
+                .any(|dep| Path::new(dep).ends_with(suffix))
+        })
+}
+
+#[test]
+fn test_invalidate_files_created_file_resolves_failed_barrel_reexport() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path().canonicalize().unwrap();
+    let root_str = root.to_string_lossy().into_owned();
+    std::fs::write(root.join("barrel.ts"), "export * from './lib';\n").unwrap();
+    let lib_path = root.join("lib.ts");
+    let app_path = format!("{root_str}/app.ts");
+
+    let analyzer = consumer_analyzer(&root_str, "./barrel", angular_core_stub(&root_str));
+    assert_eq!(imported_lib_dir_selector(&analyzer, &app_path), None);
+    let app_wire_path = analyzer
+        .get_metadata_for_file(app_path.clone())
+        .unwrap()
+        .file_path;
+
+    std::fs::write(&lib_path, lib_source("[libNew]")).unwrap();
+    let invalidated = analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: lib_path.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Created,
+        }])
+        .unwrap();
+
+    assert!(invalidated.contains(&app_wire_path), "{invalidated:?}");
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libNew]"),
+        "transitive re-export of the created file must resolve"
+    );
+}
+
+#[test]
+fn test_update_file_content_created_file_resolves_failed_dts_reexport() {
+    let mut virtual_files = angular_core_stub("/project");
+    virtual_files.insert(
+        "/project/barrel.d.ts".to_string(),
+        "export * from './lib';\n".to_string(),
+    );
+    let analyzer = consumer_analyzer("/project", "./barrel", virtual_files);
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/project/app.ts"),
+        None
+    );
+
+    let invalidated = analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/lib.d.ts".to_string(),
+            content: lib_dts("[libFromDts]"),
+        }])
+        .unwrap();
+
+    assert!(
+        invalidated.contains(&"/project/app.ts".to_string()),
+        "{invalidated:?}"
+    );
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/project/app.ts").as_deref(),
+        Some("[libFromDts]"),
+        "re-export from .d.ts to newly created .d.ts must resolve"
+    );
+}
+
+#[test]
+fn test_invalidate_files_deleted_file_re_resolves_importer_to_fallback() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path().canonicalize().unwrap();
+    let root_str = root.to_string_lossy().into_owned();
+    let lib_file = root.join("lib.ts");
+    let lib_dir = root.join("lib");
+    std::fs::create_dir(&lib_dir).unwrap();
+    std::fs::write(&lib_file, lib_source("[libDirect]")).unwrap();
+    std::fs::write(lib_dir.join("index.ts"), lib_source("[libIndex]")).unwrap();
+    let app_path = format!("{root_str}/app.ts");
+
+    let analyzer = consumer_analyzer(&root_str, "./lib", angular_core_stub(&root_str));
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libDirect]")
+    );
+    assert!(app_statically_imports(&analyzer, &app_path, "lib.ts"));
+    let app_wire_path = analyzer
+        .get_metadata_for_file(app_path.clone())
+        .unwrap()
+        .file_path;
+
+    std::fs::remove_file(&lib_file).unwrap();
+    let invalidated = analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: lib_file.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Deleted,
+        }])
+        .unwrap();
+
+    assert!(invalidated.contains(&app_wire_path), "{invalidated:?}");
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libIndex]"),
+        "deleting the resolved target must evict importer resolution so fallback resolves"
+    );
+    assert!(
+        app_statically_imports(&analyzer, &app_path, "lib/index.ts"),
+        "the importer's static dependency edge must follow the fallback"
+    );
+    assert!(
+        !app_statically_imports(&analyzer, &app_path, "lib.ts"),
+        "the importer must not keep a static dependency edge to the deleted file"
+    );
+}
+
+/// A file creation or deletion stops the engine serving its cached resolutions, but an importer
+/// whose queries stay cached does not resolve again. Deleting the file it resolved to must still
+/// find and re-analyze it.
+#[test]
+fn test_invalidate_files_deleted_file_evicts_importer_after_unrelated_file_created() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path().canonicalize().unwrap();
+    let root_str = root.to_string_lossy().into_owned();
+    let lib_file = root.join("lib.ts");
+    let lib_dir = root.join("lib");
+    std::fs::create_dir(&lib_dir).unwrap();
+    std::fs::write(&lib_file, lib_source("[libDirect]")).unwrap();
+    std::fs::write(lib_dir.join("index.ts"), lib_source("[libIndex]")).unwrap();
+    let app_path = format!("{root_str}/app.ts");
+
+    let analyzer = consumer_analyzer(&root_str, "./lib", angular_core_stub(&root_str));
+    assert!(app_statically_imports(&analyzer, &app_path, "lib.ts"));
+
+    let unrelated = root.join("unrelated.ts");
+    std::fs::write(&unrelated, "export const unrelated = 1;\n").unwrap();
+    let invalidated = analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: unrelated.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Created,
+        }])
+        .unwrap();
+    assert!(
+        !invalidated
+            .iter()
+            .any(|path| Path::new(path).ends_with("app.ts")),
+        "app.ts has no unresolved import, so an unrelated file must leave it cached: \
+         {invalidated:?}"
+    );
+
+    std::fs::remove_file(&lib_file).unwrap();
+    analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: lib_file.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Deleted,
+        }])
+        .unwrap();
+
+    assert!(
+        app_statically_imports(&analyzer, &app_path, "lib/index.ts"),
+        "the importer's static dependency edge must follow the fallback"
+    );
+    assert!(
+        !app_statically_imports(&analyzer, &app_path, "lib.ts"),
+        "the importer must not keep a static dependency edge to the deleted file"
+    );
+}
+
+#[test]
+fn test_clear_resolution_cache_re_resolves_cached_importers() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path().canonicalize().unwrap();
+    let root_str = root.to_string_lossy().into_owned();
+    let lib_dir = root.join("lib");
+    std::fs::create_dir(&lib_dir).unwrap();
+    std::fs::write(lib_dir.join("index.ts"), lib_source("[libIndex]")).unwrap();
+    let app_path = format!("{root_str}/app.ts");
+
+    let analyzer = consumer_analyzer(&root_str, "./lib", HashMap::new());
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libIndex]")
+    );
+    let app_wire_path = analyzer
+        .get_metadata_for_file(app_path.clone())
+        .unwrap()
+        .file_path;
+
+    // Write `lib.ts` shadowing `lib/index.ts` without reporting `FileUpdateType::Created`, then
+    // explicitly flush cached resolutions via `clear_resolution_cache`.
+    std::fs::write(root.join("lib.ts"), lib_source("[libDirect]")).unwrap();
+    let invalidated = analyzer.clear_resolution_cache().unwrap();
+
+    assert!(invalidated.contains(&app_wire_path), "{invalidated:?}");
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libDirect]"),
+        "clear_resolution_cache must evict cached positive resolutions so ./lib re-resolves"
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn test_canonical_paths_resolves_symlinked_host_paths() {
@@ -8760,4 +8987,67 @@ fn test_host_directives_entries_are_never_dropped() {
             );
         }
     }
+}
+
+#[test]
+fn test_request_metadata_core_resolves_component_and_skips_missing_or_non_ts() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+        import { Component } from '@angular/core';
+        @Component({ selector: 'app-root', templateUrl: './app.component.html' })
+        export class AppComponent {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.component.html".to_string(),
+        "<h1>Hello</h1>".to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    let html_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::from("/project/app.component.html"),
+            spawner.clone(),
+        )
+        .unwrap();
+    let html_meta = futures::executor::block_on(html_rx).unwrap().unwrap();
+    assert!(html_meta.is_none());
+
+    let missing_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::from("/project/missing.ts"),
+            spawner.clone(),
+        )
+        .unwrap();
+    let missing_meta = futures::executor::block_on(missing_rx).unwrap().unwrap();
+    assert!(missing_meta.is_none());
+
+    let app_rx = analyzer
+        .request_metadata_core(crate::ModuleRef::from("/project/app.ts"), spawner)
+        .unwrap();
+    let app_meta = futures::executor::block_on(app_rx)
+        .unwrap()
+        .unwrap()
+        .expect("expected metadata for app.ts");
+    assert_eq!(app_meta.classes.len(), 1);
+    assert_eq!(
+        app_meta.classes[0].class_name.as_deref(),
+        Some("AppComponent")
+    );
 }

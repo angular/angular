@@ -2,17 +2,20 @@
 
 use crate::compiler::analyzer::{get_local_spawner, step_local_pool};
 use crate::{Analyzer, AnalyzerOptions, CompilationChunk, FileInvalidation, FileUpdate};
-use futures::channel::mpsc;
+use futures::channel::{mpsc, oneshot};
 use futures::prelude::*;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
+
+type MetadataReceiver = oneshot::Receiver<Result<Option<crate::AnalysisResult>, String>>;
 
 #[wasm_bindgen]
 pub struct WasmAnalyzer {
     analyzer: Arc<Analyzer>,
     next_id: u32,
     receivers: BTreeMap<u32, mpsc::UnboundedReceiver<Result<CompilationChunk, String>>>,
+    metadata_receivers: BTreeMap<u32, MetadataReceiver>,
 }
 
 #[derive(serde::Serialize)]
@@ -24,6 +27,13 @@ enum WasmStreamEvent<'a> {
     AnalysisComplete { id: u32 },
     #[serde(rename = "analysisError")]
     AnalysisError { id: u32, error: &'a str },
+    #[serde(rename = "metadataResult")]
+    MetadataResult {
+        id: u32,
+        data: Option<&'a crate::AnalysisResult>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<&'a str>,
+    },
 }
 
 impl WasmAnalyzer {
@@ -46,6 +56,40 @@ impl WasmAnalyzer {
             Err(e) => {
                 self.receivers.remove(&id);
                 serde_json::to_string(&WasmStreamEvent::AnalysisError { id, error: &e }).ok()
+            }
+        }
+    }
+
+    fn try_poll_metadata_receiver(&mut self, id: u32) -> Option<String> {
+        let rx = self.metadata_receivers.get_mut(&id)?;
+        match rx.try_recv() {
+            Ok(None) => None,
+            Ok(Some(Ok(data))) => {
+                self.metadata_receivers.remove(&id);
+                serde_json::to_string(&WasmStreamEvent::MetadataResult {
+                    id,
+                    data: data.as_ref(),
+                    error: None,
+                })
+                .ok()
+            }
+            Ok(Some(Err(err))) => {
+                self.metadata_receivers.remove(&id);
+                serde_json::to_string(&WasmStreamEvent::MetadataResult {
+                    id,
+                    data: None,
+                    error: Some(&err),
+                })
+                .ok()
+            }
+            Err(_) => {
+                self.metadata_receivers.remove(&id);
+                serde_json::to_string(&WasmStreamEvent::MetadataResult {
+                    id,
+                    data: None,
+                    error: Some("Metadata request cancelled"),
+                })
+                .ok()
             }
         }
     }
@@ -75,6 +119,7 @@ impl WasmAnalyzer {
             analyzer: Arc::new(analyzer),
             next_id: 1,
             receivers: BTreeMap::new(),
+            metadata_receivers: BTreeMap::new(),
         })
     }
 
@@ -112,7 +157,19 @@ impl WasmAnalyzer {
         Ok(id)
     }
 
-    /// Releases the stream `id` when its consumer stops reading before it ends.
+    pub fn request_metadata(&mut self, module_ref_json: &str) -> Result<u32, String> {
+        let module_ref: crate::host::ModuleRef =
+            serde_json::from_str(module_ref_json).map_err(|e| e.to_string())?;
+        let rx = self
+            .analyzer
+            .request_metadata_core(module_ref, get_local_spawner())?;
+        let id = self.next_id;
+        self.next_id += 1;
+        self.metadata_receivers.insert(id, rx);
+        Ok(id)
+    }
+
+    /// Releases the stream or metadata request `id` when its consumer stops reading before it ends.
     ///
     /// Dropping the receiver closes the channel. The engine's sends to a closed channel
     /// are ignored, so the analysis is no longer observed but is not cancelled. The NAPI
@@ -120,6 +177,7 @@ impl WasmAnalyzer {
     /// already ended, or an unknown id, does nothing.
     pub fn close_stream(&mut self, id: u32) {
         self.receivers.remove(&id);
+        self.metadata_receivers.remove(&id);
     }
 
     pub fn update_file_content(&self, updates_json: &str) -> Result<String, String> {
@@ -143,6 +201,15 @@ impl WasmAnalyzer {
         serde_json::to_string(&res).map_err(|e| e.to_string())
     }
 
+    pub fn clear_resolution_cache(&self) -> Result<String, String> {
+        let res = self.analyzer.clear_resolution_cache_core()?;
+        serde_json::to_string(&res).map_err(|e| e.to_string())
+    }
+
+    pub fn is_synchronous_host(&self) -> bool {
+        self.analyzer.is_synchronous_host()
+    }
+
     pub fn get_ts_file_for_template(&self, template_path: String) -> Option<String> {
         let res = self.analyzer.get_ts_file_for_template_core(template_path)?;
         serde_json::to_string(&res).ok()
@@ -152,14 +219,26 @@ impl WasmAnalyzer {
         self.analyzer.get_file_content_core(file_path)
     }
 
-    pub fn get_metadata_for_file(&self, file_path: String) -> Option<String> {
-        let res = self.analyzer.get_metadata_for_file(file_path)?;
-        serde_json::to_string(&res).ok()
+    pub fn get_metadata_for_file(&self, file_path: String) -> Result<Option<String>, String> {
+        let Some(res) = self.analyzer.get_metadata_for_file_checked(file_path)? else {
+            return Ok(None);
+        };
+        serde_json::to_string(&res)
+            .map(Some)
+            .map_err(|e| e.to_string())
     }
 
-    pub fn read_resource(&self, containing_file: String, url: String) -> Option<String> {
-        let res = self.analyzer.read_resource_core(containing_file, url)?;
-        serde_json::to_string(&res).ok()
+    pub fn read_resource(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Result<Option<String>, String> {
+        let Some(res) = self.analyzer.read_resource_checked(containing_file, url)? else {
+            return Ok(None);
+        };
+        serde_json::to_string(&res)
+            .map(Some)
+            .map_err(|e| e.to_string())
     }
 
     pub fn canonical_paths(&self, paths_json: &str) -> Result<String, String> {
@@ -173,6 +252,13 @@ impl WasmAnalyzer {
 
     pub fn pump(&mut self) -> Option<String> {
         step_local_pool();
+
+        let meta_ids: Vec<u32> = self.metadata_receivers.keys().copied().collect();
+        for id in meta_ids {
+            if let Some(event) = self.try_poll_metadata_receiver(id) {
+                return Some(event);
+            }
+        }
 
         let ids: Vec<u32> = self.receivers.keys().copied().collect();
         for id in ids {
