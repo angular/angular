@@ -40,7 +40,7 @@ import {switchTap} from './switch_tap';
  * descendants always have a signal to read even while an ancestor's async `resources` function
  * is still pending.
  */
-function initializeRouteResources(route: ActivatedRoute): void {
+function initializeRouteResources(route: ActivatedRoute, parentRoute: ActivatedRoute | null): void {
   if (route._resourceContextSignal !== undefined) {
     return;
   }
@@ -48,7 +48,7 @@ function initializeRouteResources(route: ActivatedRoute): void {
   // If a custom `RouteReuseStrategy` detaches a child route while an ancestor route with
   // `resources` is deactivated, the ancestor's `_localInjector` (and its resources) will be
   // destroyed on deactivation, which is not supported when reattaching the child under a new parent.
-  const parentContextSignal = route.parent?._resourceContextSignal;
+  const parentContextSignal = parentRoute?._resourceContextSignal;
   if (!route.routeConfig?.resources) {
     route._resourceContextSignal = parentContextSignal;
     return;
@@ -91,28 +91,31 @@ export function setupAndRunResources(
       const resourceSetupPromises: Array<Promise<void>> = [];
       const blockingResourcePromises: Array<Promise<void>> = [];
 
-      const traverse = (stateNode: TreeNode<ActivatedRoute>) => {
+      const traverse = (
+        stateNode: TreeNode<ActivatedRoute>,
+        parentRoute: ActivatedRoute | null,
+      ) => {
         const route = stateNode.value;
         if (route) {
           initializeActivatedRoute(route);
           if (
             route.routeConfig?.resources !== undefined ||
-            route.parent?._resourceContextSignal !== undefined
+            parentRoute?._resourceContextSignal !== undefined
           ) {
-            initializeRouteResources(route);
+            initializeRouteResources(route, parentRoute);
           }
-          processRoute(route, newlyCreatedRoutes, resourceSetupPromises, abortSignal);
+          processRoute(route, parentRoute, newlyCreatedRoutes, resourceSetupPromises, abortSignal);
         }
 
         for (const childState of stateNode.children) {
-          traverse(childState);
+          traverse(childState, route ?? parentRoute);
         }
       };
 
-      traverse(targetRouterState._root);
+      traverse(targetRouterState._root, null);
 
       await Promise.all(resourceSetupPromises);
-      finalizeResources(targetRouterState._root, blockingResourcePromises, abortSignal);
+      finalizeResources(targetRouterState._root, null, blockingResourcePromises, abortSignal);
       await Promise.all(blockingResourcePromises);
     }),
   );
@@ -124,13 +127,14 @@ export function setupAndRunResources(
  */
 function finalizeResources(
   stateNode: TreeNode<ActivatedRoute>,
+  parentRoute: ActivatedRoute | null,
   blockingResourcePromises: Array<Promise<void>>,
   abortSignal: AbortSignal,
 ): void {
   const route = stateNode.value;
   if (route && route._resourceContextSignal) {
     route.resources ??= {
-      ...route.parent?.resources,
+      ...parentRoute?.resources,
       ...route._ownResources,
     };
     route._futureSnapshot.resources = route.resources;
@@ -139,12 +143,13 @@ function finalizeResources(
     }
   }
   for (const childState of stateNode.children) {
-    finalizeResources(childState, blockingResourcePromises, abortSignal);
+    finalizeResources(childState, route ?? parentRoute, blockingResourcePromises, abortSignal);
   }
 }
 
 function processRoute(
   route: ActivatedRoute,
+  parentRoute: ActivatedRoute | null,
   newlyCreatedRoutes: Set<ActivatedRoute>,
   resourceSetupPromises: Array<Promise<void>>,
   abortSignal: AbortSignal,
@@ -156,7 +161,7 @@ function processRoute(
 
   if (newlyCreatedRoutes.has(route)) {
     // This route is new. We need to run its resources function once.
-    resourceSetupPromises.push(setupNewRouterResources(route, resources, abortSignal));
+    resourceSetupPromises.push(setupNewRouterResources(route, parentRoute, resources, abortSignal));
   } else {
     updateExistingResources(route);
   }
@@ -164,6 +169,7 @@ function processRoute(
 
 async function setupNewRouterResources(
   route: ActivatedRoute,
+  parentRoute: ActivatedRoute | null,
   resourcesFn: NonNullable<Route['resources']>,
   abortSignal: AbortSignal,
 ) {
@@ -181,7 +187,7 @@ async function setupNewRouterResources(
     fragment: route.fragmentSignal,
     // TODO(v23): Remove data from ResourceContext (or restrict to static data) in 3p.
     data: route.dataSignal, // 3p-only
-    resources: route.parent?._resourceContextSignal ?? signal<ResourceResult>({}).asReadonly(),
+    resources: parentRoute?._resourceContextSignal ?? signal<ResourceResult>({}).asReadonly(),
   };
 
   const resourceResultRaw = runInInjectionContext(childInjector, () => resourcesFn(context));

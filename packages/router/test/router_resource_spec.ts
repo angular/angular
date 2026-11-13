@@ -922,12 +922,17 @@ describe('Router resources integration', () => {
       const nav = harness.navigateByUrl('/rx/123');
       await timeout(5);
 
-      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      // Pending route has not activated yet, so router.routerState.root.firstChild must remain null.
+      expect(router.routerState.root.firstChild).toBeNull();
+      const targetState = (router.currentNavigation() as any)?.targetRouterState;
+      const pendingRoute = targetState?.firstChild(targetState.root);
+      const resourceRef = pendingRoute?.resources?.['data'];
       expect(resourceRef?.isLoading()).toBe(true);
       expect(resourceRef?.value()).toBeUndefined();
 
       await nav;
 
+      expect(router.routerState.root.firstChild).toBe(pendingRoute);
       expect(resourceRef?.isLoading()).toBe(false);
       expect(resourceRef?.value()).toBe('rx loaded 123');
     });
