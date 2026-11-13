@@ -1565,7 +1565,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
     }
 
-    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+    const def = compileComponentFromMetadata(
+      meta,
+      pool,
+      this.getNewBindingParser(),
+      this.enableHmr ? isStableHmrReference : null,
+    );
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1697,7 +1702,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     }
 
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+    const def = compileComponentFromMetadata(
+      meta,
+      pool,
+      this.getNewBindingParser(),
+      this.enableHmr ? isStableHmrReference : null,
+    );
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1757,7 +1767,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       foreignImports,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+    const def = compileComponentFromMetadata(
+      meta,
+      pool,
+      this.getNewBindingParser(),
+      this.enableHmr ? isStableHmrReference : null,
+    );
     const classMetadata =
       analysis.classMetadata !== null
         ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt()
@@ -2715,6 +2730,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
   private getNewBindingParser() {
     return makeBindingParser();
   }
+}
+
+function isStableHmrReference(expression: o.Expression): boolean {
+  return expression instanceof o.WrappedNodeExpr && ts.isIdentifier(expression.node);
 }
 
 function createMatcherFromScope(scope: ComponentScope): DirectiveMatcher<DirectiveMeta> {
