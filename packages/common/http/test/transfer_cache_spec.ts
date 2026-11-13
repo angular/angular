@@ -979,6 +979,78 @@ describe('TransferCache', () => {
       });
     });
 
+    it('should cache QUERY with the differing body in string form', () => {
+      makeRequestAndExpectOne('/test-1', 'cats-result', {method: 'QUERY', body: '{"q":"cats"}'});
+      const cached = makeRequestAndExpectNone('/test-1', 'QUERY', {body: '{"q":"cats"}'});
+      expect(cached.body).toBe('cats-result');
+      makeRequestAndExpectOne('/test-1', 'dogs-result', {method: 'QUERY', body: '{"q":"dogs"}'});
+    });
+
+    describe('binary request bodies', () => {
+      const encode = (value: string) => Uint8Array.from(value, (c) => c.charCodeAt(0)).buffer;
+      const form = (entries: [string, string | Blob][]) => {
+        const data = new FormData();
+        entries.forEach(([name, value]) => data.append(name, value));
+        return data;
+      };
+
+      it('should cache QUERY with the differing body in ArrayBuffer form', () => {
+        makeRequestAndExpectOne('/test-1', 'cats-result', {method: 'QUERY', body: encode('cats')});
+        const cached = makeRequestAndExpectNone('/test-1', 'QUERY', {body: encode('cats')});
+        expect(cached.body).toBe('cats-result');
+        // A different body must not be served the response of the first one.
+        expect(
+          makeRequestAndExpectOne('/test-1', 'dogs-result', {
+            method: 'QUERY',
+            body: encode('dogs'),
+          }),
+        ).toBe('dogs-result');
+      });
+
+      it('should cache POST with the differing body in ArrayBuffer form', () => {
+        makeRequestAndExpectOne('/test-1', 'cats-result', {
+          method: 'POST',
+          transferCache: true,
+          body: encode('cats'),
+        });
+        makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: encode('cats')});
+        makeRequestAndExpectOne('/test-1', 'dogs-result', {
+          method: 'POST',
+          transferCache: true,
+          body: encode('dogs'),
+        });
+      });
+
+      it('should cache QUERY with the differing body in FormData form', () => {
+        makeRequestAndExpectOne('/test-1', 'cats-result', {
+          method: 'QUERY',
+          body: form([['q', 'cats']]),
+        });
+        const cached = makeRequestAndExpectNone('/test-1', 'QUERY', {body: form([['q', 'cats']])});
+        expect(cached.body).toBe('cats-result');
+        makeRequestAndExpectOne('/test-1', 'dogs-result', {
+          method: 'QUERY',
+          body: form([['q', 'dogs']]),
+        });
+      });
+
+      it('should not cache QUERY requests with a Blob body', () => {
+        makeRequestAndExpectOne('/test-1', 'cats', {method: 'QUERY', body: new Blob(['cats'])});
+        makeRequestAndExpectOne('/test-1', 'dogs', {method: 'QUERY', body: new Blob(['dogs'])});
+      });
+
+      it('should not cache QUERY requests with a file in a FormData body', () => {
+        makeRequestAndExpectOne('/test-1', 'cats', {
+          method: 'QUERY',
+          body: form([['file', new Blob(['cats'])]]),
+        });
+        makeRequestAndExpectOne('/test-1', 'dogs', {
+          method: 'QUERY',
+          body: form([['file', new Blob(['dogs'])]]),
+        });
+      });
+    });
+
     describe('caching in browser context', () => {
       beforeEach(() => {
         globalThis['ngServerMode'] = false;

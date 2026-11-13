@@ -163,6 +163,8 @@ function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions):
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
+    // Do not cache requests whose body cannot be part of the cache key (`Blob`, files in `FormData`).
+    getBodyCacheKey(req) === undefined ||
     // Do not cache requests with authentication or cookie headers unless explicitly enabled.
     (!includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
     // Do not cache requests sent with credentials unless explicitly enabled.
@@ -343,6 +345,47 @@ export function transferCacheInterceptorFn(
   return event$;
 }
 
+/**
+ * Serializes the body of a request into a string that is part of the cache key.
+ *
+ * @returns the serialized body (an empty string when there is no body), or `undefined` when the
+ * body cannot be represented synchronously, i.e. it is a `Blob` or a `FormData` containing files.
+ * Requests with such a body must not be cached, because requests with different bodies would
+ * otherwise share a key and receive each other's responses.
+ */
+function getBodyCacheKey(req: HttpRequest<unknown>): string | undefined {
+  const body = req.serializeBody();
+  if (body === null || typeof body === 'string') {
+    return body ?? '';
+  }
+  if (body instanceof URLSearchParams) {
+    return sortAndConcatParams(body);
+  }
+  // The prefixes contain `\0`, which makes it impossible for a string body to produce the same
+  // key as a binary body with equivalent content.
+  if (isArrayBufferBody(body)) {
+    return '\0arraybuffer\0' + toBase64(body);
+  }
+  if (typeof FormData !== 'undefined' && body instanceof FormData) {
+    // The order of the entries is significant, so they are not sorted.
+    const entries: [string, string][] = [];
+    for (const [name, value] of body.entries()) {
+      if (typeof value !== 'string') {
+        // File contents can only be read asynchronously.
+        return undefined;
+      }
+      entries.push([name, value]);
+    }
+    return '\0formdata\0' + JSON.stringify(entries);
+  }
+  // `Blob`: the contents can only be read asynchronously.
+  return undefined;
+}
+
+function isArrayBufferBody(body: unknown): body is ArrayBuffer {
+  return typeof ArrayBuffer !== 'undefined' && body instanceof ArrayBuffer;
+}
+
 /** @returns true when the request contains authentication or cookie headers. */
 function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
   const headers = req.headers;
@@ -417,12 +460,7 @@ function makeCacheKey(
   const {params, method, responseType} = request;
   const encodedParams = sortAndConcatParams(params);
 
-  let serializedBody = request.serializeBody();
-  if (serializedBody instanceof URLSearchParams) {
-    serializedBody = sortAndConcatParams(serializedBody);
-  } else if (typeof serializedBody !== 'string') {
-    serializedBody = '';
-  }
+  const serializedBody = getBodyCacheKey(request) ?? '';
 
   // Joining with `|` lets a shifted field boundary (url `/a` + body `b|c` vs url `/a|b` + body `c`)
   // collapse to the same string and thus the same hash. `\0` cannot occur in a valid url or in
