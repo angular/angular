@@ -9,7 +9,7 @@
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
 import type {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import type {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
+import {ActivatedRoute, advanceActivatedRoute, RouterState, setRouterState} from '../router_state';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 let warnedAboutUnsupportedInputBinding = false;
@@ -23,6 +23,7 @@ export class ActivateRoutes {
   ) {}
 
   activate(parentContexts: ChildrenOutletContexts): void {
+    setRouterState(this.futureState, this.futureState._root);
     const futureRoot = this.futureState._root;
     const currRoot = this.currState ? this.currState._root : null;
 

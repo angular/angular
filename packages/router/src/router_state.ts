@@ -63,7 +63,6 @@ export class RouterState extends Tree<ActivatedRoute> {
     public snapshot: RouterStateSnapshot,
   ) {
     super(root);
-    setRouterState(<RouterState>this, root);
   }
 
   override toString(): string {
@@ -92,7 +91,10 @@ export function createEmptyState(
     snapshot.root,
   );
   activated.snapshot = snapshot.root;
-  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
+  const root = new TreeNode<ActivatedRoute>(activated, []);
+  const state = new RouterState(root, snapshot);
+  setRouterState(state, root);
+  return state;
 }
 
 export function createEmptyStateSnapshot(
@@ -552,7 +554,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   }
 }
 
-function setRouterState<U, T extends {_routerState: U}>(state: U, node: TreeNode<T>): void {
+export function setRouterState<U, T extends {_routerState: U}>(state: U, node: TreeNode<T>): void {
   node.value._routerState = state;
   node.children.forEach((c) => setRouterState(state, c));
 }
