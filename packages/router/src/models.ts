@@ -59,12 +59,15 @@ export interface ResourceContext {
    * @developerPreview 22.2
    */
   fragment: Signal<string | null>;
+  // TODO(v23): Remove data from ResourceContext (or restrict to static data) in 3p.
+  // 3p-only-start
   /**
    * Data provided in the route configuration.
    *
    * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
+  // 3p-only-end
   /**
    * Resources inherited from ancestor routes, keyed by name.
    *
