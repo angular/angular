@@ -34,6 +34,9 @@ export function exhaustiveCheckNoChangesInterval(interval: number) {
           }
 
           for (const view of applicationRef.allViews) {
+            if (!applicationRef.shouldCheckView(view)) {
+              continue;
+            }
             try {
               checkNoChangesInternal(view._lView, true /** exhaustive */);
             } catch (e) {

@@ -43,7 +43,7 @@ import {profiler} from '../render3/profiler';
 import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
-import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
+import {requiresRefreshOrTraversal, viewAttachedToChangeDetector} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
@@ -311,6 +311,23 @@ export class ApplicationRef {
   }
 
   /**
+   * Whether a view from `allViews` takes part in change detection, i.e. it was not detached
+   * through `ChangeDetectorRef.detach()`.
+   *
+   * Test views requested through `includeAllTestViews` are checked even when detached, so that
+   * `ComponentFixture.detectChanges()` refreshes a detached fixture the same way an explicit
+   * `ChangeDetectorRef.detectChanges()` does.
+   *
+   * @internal
+   */
+  shouldCheckView(view: InternalViewRef<unknown>): boolean {
+    return (
+      viewAttachedToChangeDetector(view._lView) ||
+      (this.includeAllTestViews && this.allTestViews.has(view))
+    );
+  }
+
+  /**
    * Indicates whether this instance was destroyed.
    */
   get destroyed() {
@@ -544,6 +561,10 @@ export class ApplicationRef {
   tick(): void {
     if (!this.zonelessEnabled) {
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
+    } else if (this.includeAllTestViews && this.hasViewsToRefresh()) {
+      // A detached test view is only checked while `includeAllTestViews` is set. The passes which
+      // skipped it also dropped the dirty flags it had requested.
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
     }
     this._tick();
   }
@@ -578,7 +599,9 @@ export class ApplicationRef {
       this.synchronize();
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this.allViews) {
-          view.checkNoChanges();
+          if (this.shouldCheckView(view)) {
+            view.checkNoChanges();
+          }
         }
       }
     } finally {
@@ -647,7 +670,12 @@ export class ApplicationRef {
       this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
 
       // Check all potentially dirty views.
-      for (let {_lView} of this.allViews) {
+      for (let view of this.allViews) {
+        if (!this.shouldCheckView(view)) {
+          continue;
+        }
+
+        const {_lView} = view;
         // When re-checking, only check views which actually need it.
         if (!useGlobalCheck && !requiresRefreshOrTraversal(_lView)) {
           continue;
@@ -713,7 +741,7 @@ export class ApplicationRef {
    *    reachable through traversal from our roots (e.g. it's detached from the CD tree).
    */
   private syncDirtyFlagsWithViews(): void {
-    if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+    if (this.hasViewsToRefresh()) {
       // If after running all afterRender callbacks new views are dirty, ensure we loop back.
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
       return;
@@ -722,6 +750,18 @@ export class ApplicationRef {
       // `ApplicationRef` doesn't require any repeated checking.
       this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
     }
+  }
+
+  /**
+   * Whether any of the views that `synchronizeOnce` checks requires refresh/traversal.
+   *
+   * Views that are skipped there must not count: nothing clears the flags of a dirty view that is
+   * never checked, so `synchronize` would loop until it gives up.
+   */
+  private hasViewsToRefresh(): boolean {
+    return this.allViews.some(
+      (view) => this.shouldCheckView(view) && requiresRefreshOrTraversal(view._lView),
+    );
   }
 
   /**
