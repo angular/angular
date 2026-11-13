@@ -61,7 +61,6 @@ import {run} from './ngp.js';
     if (perfSummaryIndex !== -1 && args[perfSummaryIndex + 1]) {
       perfSummaryPath = args[perfSummaryIndex + 1];
     }
-    const perfTraceDetail = args.includes('--perf-trace-detail');
 
     let targetArg: string | undefined;
     for (let i = 0; i < args.length; i++) {
@@ -83,7 +82,7 @@ import {run} from './ngp.js';
     }
     if (!targetArg) {
       console.error(
-        'Usage: ngp <project-dir|angular.json|tsconfig.json> [--optimize] [--wasm] [--out <dir>] [--in-place] [--root <dir>] [--sidecar <path>] [--perf-trace <path>] [--perf-summary <path>] [--perf-trace-detail]',
+        'Usage: ngp <project-dir|angular.json|tsconfig.json> [--optimize] [--wasm] [--out <dir>] [--in-place] [--root <dir>] [--sidecar <path>] [--perf-trace <path>] [--perf-summary <path>]',
       );
       process.exit(1);
     }
@@ -126,7 +125,7 @@ import {run} from './ngp.js';
         optimize,
         undefined,
         undefined,
-        tracer.enabled ? {perfTrace: true, perfTraceDetail} : undefined,
+        tracer.enabled ? {perfTrace: true} : undefined,
       );
       innerAnalyzer = sidecar;
     } else {

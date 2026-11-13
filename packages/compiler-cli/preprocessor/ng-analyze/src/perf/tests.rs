@@ -1,7 +1,7 @@
 use super::layer::{Cat, Clock, NgPerfLayer, PerfTake, TraceEvent};
 use super::{Counter, KindStats, SpanStats, ASYNC_TARGET, QUERY_TARGET};
 use crate::query::keys::QueryKey;
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
+use std::sync::atomic::{AtomicU64, Ordering::Relaxed};
 use std::sync::Arc;
 use tracing::Dispatch;
 use tracing_subscriber::layer::SubscriberExt;
@@ -13,10 +13,10 @@ struct Harness {
 }
 
 impl Harness {
-    fn new(detail: bool) -> Self {
+    fn new() -> Self {
         let clock = Arc::new(AtomicU64::new(0));
         let layer = NgPerfLayer::new(Clock::Fake(clock.clone()));
-        layer.set_recording(true, detail);
+        layer.set_recording(true);
         let dispatch = Dispatch::new(tracing_subscriber::Registry::default().with(layer.clone()));
         Self {
             layer,
@@ -49,7 +49,6 @@ fn query(key: &QueryKey) -> tracing::Span {
         "query",
         kind = key.kind_index() as u64,
         file = key.file_id(),
-        key = ?key,
         done = tracing::field::Empty,
     )
 }
@@ -74,10 +73,6 @@ fn find<'a>(take: &'a PerfTake, ph: &str, name: &str) -> Vec<&'a TraceEvent> {
         .iter()
         .filter(|e| e.ph == ph && e.name.as_str() == name)
         .collect()
-}
-
-fn key(e: &TraceEvent) -> Option<&str> {
-    e.args.as_ref()?.key.as_deref()
 }
 
 /// The query execution id of an `X` slice.
@@ -126,7 +121,7 @@ fn record(h: &Harness) {
 
 #[test]
 fn records_per_thread_slices_flows_and_totals() {
-    let h = Harness::new(false);
+    let h = Harness::new();
     record(&h);
     let take = h.layer.take(&no_paths);
     let (a, b) = (tid_of(&take, "a"), tid_of(&take, "b"));
@@ -169,12 +164,11 @@ fn records_per_thread_slices_flows_and_totals() {
         (b, 30.0, q(parse[0]), Some("e"))
     );
 
-    // Async spans get a latency slice besides their poll slices; queries don't outside detail.
+    // Async spans get a latency slice besides their poll slices; queries don't.
     let (begin, end) = (find(&take, "b", "Analyze"), find(&take, "e", "Analyze"));
     assert_eq!((begin[0].ts, begin[0].cat), (50.0, Some(Cat::Rust)));
     assert_eq!((end[0].ts, end[0].id2), (52.0, begin[0].id2));
     assert!(find(&take, "b", "ParseFile").is_empty());
-    assert!(take.events.iter().all(|e| key(e).is_none()));
 
     // Thread names, then the timeline.
     let names: Vec<_> = take.events.iter().take_while(|e| e.ph == "M").collect();
@@ -237,7 +231,7 @@ fn records_per_thread_slices_flows_and_totals() {
 
 #[test]
 fn take_drains_events_and_resets_totals() {
-    let h = Harness::new(false);
+    let h = Harness::new();
     record(&h);
     h.layer.count(Counter::FsReads, 2);
     h.on_thread("c", || h.layer.count(Counter::FsReads, 3));
@@ -255,26 +249,8 @@ fn take_drains_events_and_resets_totals() {
 }
 
 #[test]
-fn detail_mode_adds_query_latency_slices_and_keys() {
-    let h = Harness::new(true);
-    record(&h);
-    let take = h.layer.take(&no_paths);
-    let begin = find(&take, "b", "ParseFile");
-    assert_eq!(begin.len(), 2);
-    assert_eq!(key(begin[0]), Some("ParseFile(1)"));
-    let end = find(&take, "e", "ParseFile");
-    assert_eq!(end.iter().map(|e| e.ts).fold(0.0, f64::max), 34.0);
-    assert!(begin
-        .iter()
-        .chain(&end)
-        .all(|e| e.cat == Some(Cat::QueryAsync)));
-    let poll = find(&take, "X", "AnalyzeFileSyntax");
-    assert_eq!(key(poll[0]), Some("AnalyzeFileSyntax(1)"));
-}
-
-#[test]
 fn records_only_while_recording() {
-    let h = Harness::new(false);
+    let h = Harness::new();
     record(&h);
     h.layer.count(Counter::FsReads, 1);
     h.layer.count_cache_hit("ParseFile");
@@ -283,7 +259,7 @@ fn records_only_while_recording() {
     assert_eq!(take.summary.counters["FsReads"], 1);
     assert_eq!(take.summary.queries["ParseFile"].cache_hits, 1);
 
-    h.layer.set_recording(false, false);
+    h.layer.set_recording(false);
     record(&h);
     h.layer.count(Counter::FsReads, 1);
     h.layer.count_cache_hit("ParseFile");
@@ -292,42 +268,15 @@ fn records_only_while_recording() {
     assert_eq!(take.summary.counters["FsReads"], 0);
     assert!(take.summary.queries.is_empty() && take.summary.spans.is_empty());
 
-    h.layer.set_recording(true, true);
+    h.layer.set_recording(true);
     record(&h);
     let take = h.layer.take(&no_paths);
     assert_eq!(find(&take, "X", "AnalyzeFileSyntax").len(), 2);
-    assert_eq!(find(&take, "b", "ParseFile").len(), 2);
-}
-
-#[test]
-fn query_keys_are_only_formatted_in_detail_mode() {
-    struct Key<'a>(&'a AtomicUsize);
-    impl std::fmt::Debug for Key<'_> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            self.0.fetch_add(1, Relaxed);
-            f.write_str("Key")
-        }
-    }
-    let formatted = AtomicUsize::new(0);
-    let run = |h: &Harness| {
-        h.on_thread("a", || {
-            let key = Key(&formatted);
-            drop(tracing::info_span!(target: QUERY_TARGET, "query", kind = 0u64, key = ?key));
-        })
-    };
-    let h = Harness::new(false);
-    run(&h);
-    h.layer.set_recording(false, false);
-    run(&h);
-    assert_eq!(formatted.load(Relaxed), 0);
-    h.layer.set_recording(true, true);
-    run(&h);
-    assert_eq!(formatted.load(Relaxed), 1);
 }
 
 #[test]
 fn take_serializes_to_chrome_trace_events() {
-    let h = Harness::new(true);
+    let h = Harness::new();
     h.on_thread("a", || {
         h.at(1);
         let span = query(&QueryKey::ParseFile(3));
@@ -349,15 +298,7 @@ fn take_serializes_to_chrome_trace_events() {
         *x,
         serde_json::json!({
             "name": "ngp.rust.ParseFile", "cat": "ngp.query", "ph": "X", "tid": tid, "ts": 1.0, "dur": 2.0,
-            "args": {"q": id, "key": "ParseFile(3)"},
-        })
-    );
-    let begin = events.iter().find(|e| e["ph"] == "b").unwrap();
-    assert_eq!(
-        *begin,
-        serde_json::json!({
-            "name": "ngp.rust.ParseFile", "cat": "ngp.query.async", "ph": "b", "tid": tid, "ts": 1.0,
-            "id2": {"local": id}, "args": {"key": "ParseFile(3)"},
+            "args": {"q": id},
         })
     );
     assert!(json["pid"].is_number());
@@ -366,7 +307,7 @@ fn take_serializes_to_chrome_trace_events() {
 
 #[test]
 fn keeps_the_slowest_executions_per_kind_with_paths() {
-    let h = Harness::new(false);
+    let h = Harness::new();
     h.on_thread("a", || {
         // ParseFile(i) is busy for i µs; ParseFile(3) twice.
         for (i, busy) in [(1, 1), (2, 2), (3, 30), (4, 4), (5, 5), (6, 6), (3, 3)] {
@@ -388,7 +329,6 @@ fn keeps_the_slowest_executions_per_kind_with_paths() {
     assert_eq!(slowest[0].file.as_deref(), Some("/src/f3.ts"));
     // The resolver may not know a file.
     assert_eq!(slowest[1].file, None);
-    assert!(slowest.iter().all(|s| s.key.is_none()));
     // `q` matches the execution's slices.
     let x = find(&take, "X", "ParseFile");
     let top = x.iter().find(|e| e.dur == Some(30.0)).unwrap();
@@ -396,23 +336,11 @@ fn keeps_the_slowest_executions_per_kind_with_paths() {
     // Kinds without a file still rank.
     let programs = &take.summary.queries["ProgramFiles"].slowest;
     assert_eq!((programs.len(), programs[0].file.as_deref()), (1, None));
-
-    // Detail mode adds the key; take() starts over.
-    h.layer.set_recording(true, true);
-    h.on_thread("a", || {
-        let span = query(&QueryKey::ModuleExportMap(9));
-        span.in_scope(|| {});
-        span.record("done", true);
-    });
-    let take = h.layer.take(&no_paths);
-    let slow = &take.summary.queries["ModuleExportMap"].slowest[0];
-    assert_eq!(slow.key.as_deref(), Some("ModuleExportMap(9)"));
-    assert!(!take.summary.queries.contains_key("ParseFile"));
 }
 
 #[test]
 fn slowest_executions_serialize_into_the_summary() {
-    let h = Harness::new(false);
+    let h = Harness::new();
     h.on_thread("a", || {
         let span = query(&QueryKey::ParseFile(1));
         h.at(1);

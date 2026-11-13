@@ -1081,13 +1081,12 @@ impl QueryEngine {
         key: QueryKey,
         rerun: usize,
     ) -> BoxFuture<'static, (Arc<CachedResult>, Option<u64>)> {
-        // `kind` indexes `QueryKey::KIND_NAMES`; `key` is only formatted in perf detail mode.
+        // `kind` indexes `QueryKey::KIND_NAMES`.
         let span = tracing::info_span!(
             target: crate::perf::QUERY_TARGET,
             "query",
             kind = key.kind_index() as u64,
             file = key.file_id(),
-            key = ?key,
             done = tracing::field::Empty,
         );
         let done = span.clone();
