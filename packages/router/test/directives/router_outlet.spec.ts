@@ -2320,6 +2320,36 @@ describe('Error boundaries and errorComponent integration', () => {
   });
 });
 
+describe('errorComponent without error boundaries', () => {
+  useAutoTick();
+
+  it('warns once in dev mode when a route defines errorComponent without withErrorBoundaries', async () => {
+    @Component({template: 'Content'})
+    class RouteComponent {}
+
+    @Component({template: 'Error'})
+    class FallbackComponent {}
+
+    const warn = spyOn(console, 'warn');
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {path: 'one', component: RouteComponent, errorComponent: FallbackComponent},
+          {path: 'two', component: RouteComponent, errorComponent: FallbackComponent},
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/one');
+    await harness.navigateByUrl('/two');
+
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.calls.mostRecent().args[0]).toContain(`'withErrorBoundaries()'`);
+  });
+});
+
 async function advance(fixture: ComponentFixture<unknown>, millis = 0): Promise<void> {
   await timeout(millis);
   await fixture.whenStable();
