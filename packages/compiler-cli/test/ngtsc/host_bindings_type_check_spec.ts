@@ -351,6 +351,29 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
 
+    it('should resolve arrow function parameters in host bindings', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: 'button[dir]',
+            host: {
+              '[attr.id]': '((a, b) => a / b + componentProp)(6, 12)',
+              '(click)': 'handle(((event) => event.target)($event))',
+            },
+          })
+          export class Dir {
+            componentProp = 1;
+            handle(target: EventTarget | null) {}
+          }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should not leak @let from the template into the host bindings', () => {
       env.write(
         'test.ts',

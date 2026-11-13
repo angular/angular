@@ -19,6 +19,7 @@ import {
   TmplAstReference,
   TmplAstTemplate,
   TmplAstTextAttribute,
+  TmplAstVariable,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -284,7 +285,7 @@ export class CompletionEngine {
           kind: CompletionKind.LetDeclaration,
           node,
         });
-      } else {
+      } else if (node instanceof TmplAstVariable) {
         templateContext.set(node.name, {
           kind: CompletionKind.Variable,
           node,

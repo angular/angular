@@ -395,6 +395,35 @@ describe('t2 binding', () => {
     expect(target).toBe(null);
   });
 
+  it('should resolve reads of arrow function parameters to the parameter', () => {
+    const template = parseTemplate(
+      `
+        @let value = 1;
+        @let other = 2;
+        {{fn((value) => value + other)}}
+        {{value}}
+      `,
+      '',
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const [call, outsideRead] = (
+      (template.nodes[2] as a.BoundText).value as e.ASTWithSource<e.Interpolation>
+    ).ast.expressions as [e.Call, e.PropertyRead];
+    const arrowFn = call.args[0] as e.ArrowFunction;
+    const param = arrowFn.parameters[0];
+    const body = arrowFn.body as e.Binary;
+
+    expect(res.getExpressionTarget(body.left)).toBe(param);
+    expect(res.getDefinitionNodeOfSymbol(param)).toBe(arrowFn);
+    expect(res.getExpressionTarget(body.right) instanceof a.LetDeclaration).toBe(true);
+    expect(res.getExpressionTarget(outsideRead) instanceof a.LetDeclaration).toBe(true);
+
+    const entities = Array.from(res.getEntitiesInScope(arrowFn));
+    expect(entities).toContain(param);
+    expect(entities.map((entity) => entity.name).sort()).toEqual(['other', 'value']);
+  });
+
   it('should resolve the definition node of let declarations', () => {
     const template = parseTemplate(
       `

@@ -8,6 +8,7 @@
 
 import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
+  ArrowFunction,
   AST,
   BindingPipe,
   ImplicitReceiver,
@@ -191,7 +192,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     const references: ReferenceMap<DirectiveT> = new Map();
     const scopedNodeEntities: ScopedNodeEntities = new Map();
     const expressions = new Map<AST, TemplateEntity>();
-    const symbols = new Map<TemplateEntity, Template>();
+    const symbols = new Map<TemplateEntity, ScopedNode>();
     const nestingLevel = new Map<ScopedNode, number>();
     const usedPipes = new Set<string>();
     const eagerPipes = new Set<string>();
@@ -206,9 +207,6 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       // First, parse the template into a `Scope` structure. This operation captures the syntactic
       // scopes in the template and makes them available for later use.
       const scope = Scope.apply(target.template);
-
-      // Use the `Scope` to extract the entities present at every level of the template.
-      extractScopedNodeEntities(scope, scopedNodeEntities);
 
       // Next, perform directive matching on the template using the `DirectiveBinder`. This returns:
       //   - directives: Map of nodes (elements & ng-templates) to the directives on them.
@@ -227,7 +225,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         conflictingHostDirectiveBindings,
       );
 
-      // Finally, run the TemplateBinder to bind references, variables, and other entities within the
+      // Next, run the TemplateBinder to bind references, variables, and other entities within the
       // template. This extracts all the metadata that doesn't depend on directive matching.
       TemplateBinder.applyWithScope(
         target.template,
@@ -240,6 +238,11 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         deferBlocks,
         pipes,
       );
+
+      // Finally, use the `Scope` to extract the entities present at every level of the template.
+      // Note that this has to happen after the `TemplateBinder` has run, because it creates the
+      // scopes of arrow functions within expressions.
+      extractScopedNodeEntities(scope, scopedNodeEntities);
     }
 
     // Bind the host element in a separate scope. Note that it only uses the
@@ -361,6 +364,8 @@ class Scope implements Visitor {
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
+    } else if (nodeOrNodes instanceof ArrowFunction) {
+      nodeOrNodes.parameters.forEach((param) => this.maybeDeclare(param));
     } else if (!(nodeOrNodes instanceof HostElement)) {
       // No overarching `Template` instance, so process the nodes directly.
       nodeOrNodes.forEach((node) => node.visit(this));
@@ -530,10 +535,20 @@ class Scope implements Visitor {
     return res;
   }
 
-  private ingestScopedNode(node: ScopedNode) {
+  /**
+   * Gets the scope of an arrow function that is a direct child of this scope, creating it
+   * if necessary. Arrow function scopes are created lazily, because the initial pass that
+   * constructs the `Scope` tree only processes template nodes, not the expressions within them.
+   */
+  getOrCreateArrowFunctionScope(node: ArrowFunction): Scope {
+    return this.childScopes.get(node) ?? this.ingestScopedNode(node);
+  }
+
+  private ingestScopedNode(node: ScopedNode): Scope {
     const scope = new Scope(this, node);
     scope.ingest(node);
     this.childScopes.set(node, scope);
+    return scope;
   }
 }
 
@@ -955,7 +970,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     nodeOrNodes: ScopedNode | Node[],
     scope: Scope,
     expressions: Map<AST, TemplateEntity>,
-    symbols: Map<TemplateEntity, Template>,
+    symbols: Map<TemplateEntity, ScopedNode>,
     nestingLevel: Map<ScopedNode, number>,
     usedPipes: Set<string>,
     eagerPipes: Set<string>,
@@ -1028,7 +1043,12 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof HostElement) {
       // Host elements are always at the top level.
+      nodeOrNodes.bindings.forEach(this.visitNode);
+      nodeOrNodes.listeners.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, 0);
+    } else if (nodeOrNodes instanceof ArrowFunction) {
+      nodeOrNodes.parameters.forEach((param) => this.symbols.set(param, nodeOrNodes));
+      nodeOrNodes.body.visit(this);
     } else {
       // Visit each node from the top-level template.
       nodeOrNodes.forEach(this.visitNode);
@@ -1158,6 +1178,24 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     return super.visitSafePropertyRead(ast, context);
   }
 
+  override visitArrowFunction(ast: ArrowFunction): void {
+    // Arrow functions introduce a new scope for their parameters. Note that they don't
+    // create a new view so the binder for the body stays at the same nesting level.
+    const binder = new TemplateBinder(
+      this.bindings,
+      this.symbols,
+      this.usedPipes,
+      this.eagerPipes,
+      this.deferBlocks,
+      this.nestingLevel,
+      this.scope.getOrCreateArrowFunctionScope(ast),
+      ast,
+      this.level,
+      this.pipes,
+    );
+    binder.ingest(ast);
+  }
+
   private ingestScopedNode(node: ScopedNode) {
     const childScope = this.scope.getChildScope(node);
     const binder = new TemplateBinder(
@@ -1211,7 +1249,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     private bindings: BindingsMap<DirectiveT>,
     private references: ReferenceMap<DirectiveT>,
     private exprTargets: Map<AST, TemplateEntity>,
-    private symbols: Map<TemplateEntity, Template>,
+    private symbols: Map<TemplateEntity, ScopedNode>,
     private nestingLevel: Map<ScopedNode, number>,
     private scopedNodeEntities: ScopedNodeEntities,
     private usedPipes: Set<string>,

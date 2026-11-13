@@ -9,6 +9,7 @@
 import {CombinedRecursiveAstVisitor} from '../combined_visitor';
 import {
   AbsoluteSourceSpan,
+  ArrowFunctionIdentifierParameter,
   AST,
   ASTWithSource,
   BindingPipe,
@@ -395,6 +396,12 @@ export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
     }
 
     const {absoluteOffset, source: expressionStr} = this.currentAstWithSource;
+    const targetAst = this.boundTemplate.getExpressionTarget(ast);
+
+    // Arrow function parameters are local to the expression that declares them.
+    if (targetAst instanceof ArrowFunctionIdentifierParameter) {
+      return;
+    }
 
     // The source span of the requested AST starts at a location that is offset from the expression.
     let identifierStart = ast.sourceSpan.start - absoluteOffset;
@@ -418,7 +425,6 @@ export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
     // of the node to get the absolute position of the expression in the source code.
     const absoluteStart = absoluteOffset + identifierStart;
     const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
-    const targetAst = this.boundTemplate.getExpressionTarget(ast);
     const target = targetAst ? this.targetToIdentifier(targetAst) : null;
     const identifier: ExpressionIdentifier<T> = {
       name: ast.name,

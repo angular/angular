@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, BindingPipe} from '../../expression_parser/ast';
+import {
+  ArrowFunction,
+  ArrowFunctionIdentifierParameter,
+  AST,
+  BindingPipe,
+} from '../../expression_parser/ast';
 import {ClassPropertyMapping} from '../../property_mapping';
 import {
   BoundAttribute,
@@ -45,14 +50,16 @@ export type ScopedNode =
   | DeferredBlockPlaceholder
   | Content
   | ContentBlock
-  | HostElement;
+  | HostElement
+  | ArrowFunction;
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> =
   {directive: DirectiveT; node: Exclude<DirectiveOwner, HostElement>} | Element | Template;
 
 /** Entity that is local to the template and defined within the template. */
-export type TemplateEntity = Reference | Variable | LetDeclaration;
+export type TemplateEntity =
+  Reference | Variable | LetDeclaration | ArrowFunctionIdentifierParameter;
 
 /** Nodes that can have directives applied to them. */
 export type DirectiveOwner = Element | Template | HostElement;
