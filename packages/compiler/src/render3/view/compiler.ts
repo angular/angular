@@ -597,12 +597,7 @@ function validateNoEventBindings(
   sourceSpan: ParseSourceSpan,
 ): void {
   for (const prop in bindings.properties) {
-    if (
-      prop.startsWith('class.') ||
-      prop.startsWith('style.') ||
-      prop.startsWith('class!') ||
-      prop.startsWith('style!')
-    ) {
+    if (prop.startsWith('class.') || prop.startsWith('style.')) {
       continue;
     }
     const isAttr = prop.startsWith('attr.');
