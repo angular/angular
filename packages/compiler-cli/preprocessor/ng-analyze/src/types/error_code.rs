@@ -242,6 +242,11 @@ define_error_codes! {
     /// Raised when an `@Service` class is using constructor dependency injection.
     SERVICE_CONSTRUCTOR_DI = 2028,
 
+    /// Raised when a component with `ViewEncapsulation.ExperimentalIsolatedShadowDom` uses
+    /// `<ng-content>`. ExperimentalIsolatedShadowDom components must use native `<slot>` elements
+    /// instead.
+    ISOLATED_SHADOW_DOM_INVALID_CONTENT_PROJECTION = 2029,
+
     SYMBOL_NOT_EXPORTED = 3001,
 
     /// Raised when a relationship between directives and/or pipes would cause a cyclic import to be
