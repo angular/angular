@@ -179,7 +179,8 @@ async function setupNewRouterResources(
     params: route.paramsSignal,
     queryParams: route.queryParamsSignal,
     fragment: route.fragmentSignal,
-    data: route.dataSignal,
+    // TODO(v23): Remove data from ResourceContext (or restrict to static data) in 3p.
+    data: route.dataSignal, // 3p-only
     resources: route.parent?._resourceContextSignal ?? signal<ResourceResult>({}).asReadonly(),
   };
 
