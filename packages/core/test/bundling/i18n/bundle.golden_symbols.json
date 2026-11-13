@@ -258,6 +258,7 @@
       "\\u0275\\u0275sanitizeResourceUrl",
       "\\u0275\\u0275sanitizeScript",
       "\\u0275\\u0275sanitizeStyle",
+      "\\u0275\\u0275sanitizeUrl",
       "\\u0275\\u0275validateAttribute",
       "_DOM",
       "_SECURITY_SCHEMA",
