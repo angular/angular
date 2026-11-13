@@ -29,9 +29,9 @@ pub fn install() {
 }
 
 /// Starts or stops recording, if [`install`] ran.
-pub fn set_recording(on: bool, detail: bool) {
+pub fn set_recording(on: bool) {
     if let Some(layer) = LAYER.get() {
-        layer.set_recording(on, detail);
+        layer.set_recording(on);
     }
 }
 
@@ -144,9 +144,6 @@ pub enum Cat {
     /// Query slices and flows.
     #[serde(rename = "ngp.query")]
     Query,
-    /// Detail-mode query latency slices.
-    #[serde(rename = "ngp.query.async")]
-    QueryAsync,
     #[default]
     #[serde(rename = "ngp.rust")]
     Rust,
@@ -162,9 +159,6 @@ pub struct Args {
     /// Query execution id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub q: Option<u64>,
-    /// Query key, in detail mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub key: Option<String>,
     /// Process or thread name, for `M` events.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -234,11 +228,10 @@ enum Kind {
 }
 
 impl Kind {
-    /// Category of poll slices, and of `b`/`e` latency slices.
-    fn cats(self) -> (Cat, Cat) {
+    fn cat(self) -> Cat {
         match self {
-            Kind::Query => (Cat::Query, Cat::QueryAsync),
-            _ => (Cat::Rust, Cat::Rust),
+            Kind::Query => Cat::Query,
+            _ => Cat::Rust,
         }
     }
 
@@ -281,9 +274,6 @@ struct SpanData {
     self_ns: u64,
     /// Has a flow from its requester.
     flow: bool,
-    /// Has a `b`/`e` latency slice.
-    latency: bool,
-    key: Option<String>,
     /// A query's `file` field.
     file: Option<u32>,
 }
@@ -317,7 +307,6 @@ struct Slow {
     self_ns: u64,
     wall: u64,
     file: Option<u32>,
-    key: Option<String>,
 }
 
 /// Keeps the `SLOWEST` executions with the most busy time.
@@ -344,7 +333,6 @@ struct ThreadBuf {
 
 pub(super) struct State {
     recording: AtomicBool,
-    detail: AtomicBool,
     clock: Clock,
     next_seq: AtomicU64,
     next_tid: AtomicU32,
@@ -358,7 +346,6 @@ impl NgPerfLayer {
     pub(super) fn new(clock: Clock) -> Self {
         Self(Arc::new(State {
             recording: AtomicBool::new(false),
-            detail: AtomicBool::new(false),
             clock,
             next_seq: AtomicU64::new(1),
             next_tid: AtomicU32::new(1001),
@@ -366,12 +353,11 @@ impl NgPerfLayer {
         }))
     }
 
-    pub(super) fn set_recording(&self, on: bool, detail: bool) {
+    pub(super) fn set_recording(&self, on: bool) {
         if on && !self.recording() {
             // Drop what spans still open at the last take recorded since.
             drop(self.take(&|_| None));
         }
-        self.0.detail.store(detail, Relaxed);
         self.0.recording.store(on, Relaxed);
     }
 
@@ -483,7 +469,6 @@ impl NgPerfLayer {
                     self_us: s.self_ns / 1000,
                     wall_us: s.wall / 1000,
                     file: s.file.and_then(file_path),
-                    key: s.key,
                 })
                 .collect();
         }
@@ -503,19 +488,10 @@ impl NgPerfLayer {
     }
 }
 
-fn key_args(key: &Option<String>) -> Option<Args> {
-    key.clone().map(|key| Args {
-        key: Some(key),
-        ..Args::default()
-    })
-}
-
-/// Reads a query span's `kind` and `file`, and its `key` in detail mode.
+/// Reads a query span's `kind` and `file`.
 #[derive(Default)]
 struct QueryFields {
-    detail: bool,
     name: Option<&'static str>,
-    key: Option<String>,
     file: Option<u32>,
 }
 
@@ -529,11 +505,7 @@ impl Visit for QueryFields {
         }
     }
 
-    fn record_debug(&mut self, field: &Field, value: &dyn std::fmt::Debug) {
-        if self.detail && field.name() == "key" {
-            self.key = Some(format!("{value:?}"));
-        }
-    }
+    fn record_debug(&mut self, _: &Field, _: &dyn std::fmt::Debug) {}
 }
 
 impl<S> Layer<S> for NgPerfLayer
@@ -559,17 +531,12 @@ where
         let now = self.now();
         let seq = self.0.next_seq.fetch_add(1, Relaxed);
         let query = kind == Kind::Query;
-        let detail = query && self.0.detail.load(Relaxed);
-        let latency = kind == Kind::Async || detail;
-        let mut fields = QueryFields {
-            detail,
-            ..QueryFields::default()
-        };
+        let mut fields = QueryFields::default();
         if query {
             attrs.record(&mut fields);
         }
         let name = fields.name.unwrap_or_else(|| span_name(meta));
-        let (key, file) = (fields.key, fields.file);
+        let file = fields.file;
         let mut flow = false;
         self.with_buf(|buf| {
             if query {
@@ -581,10 +548,9 @@ where
                     buf.events.push(e);
                 }
             }
-            if latency {
-                let mut e = TraceEvent::new("b", kind.cats().1, name, buf.tid, now);
+            if kind == Kind::Async {
+                let mut e = TraceEvent::new("b", kind.cat(), name, buf.tid, now);
                 e.id2 = Some(LocalId { local: seq });
-                e.args = key_args(&key);
                 buf.events.push(e);
             }
         });
@@ -598,8 +564,6 @@ where
             busy: 0,
             self_ns: 0,
             flow,
-            latency,
-            key,
             file,
         });
     }
@@ -673,12 +637,11 @@ where
             }
             data.busy += dur;
             data.self_ns += dur.saturating_sub(frame.child);
-            let mut e = TraceEvent::new("X", data.kind.cats().0, data.name, buf.tid, frame.start);
+            let mut e = TraceEvent::new("X", data.kind.cat(), data.name, buf.tid, frame.start);
             e.dur = Some(us(dur));
             if data.kind == Kind::Query {
                 e.args = Some(Args {
                     q: Some(data.seq),
-                    key: data.key.clone(),
                     ..Args::default()
                 });
             }
@@ -711,7 +674,6 @@ where
                             self_ns: data.self_ns,
                             wall,
                             file: data.file,
-                            key: data.key,
                         };
                         keep_slowest(&mut agg.slowest, slow);
                     }
@@ -722,9 +684,9 @@ where
                 agg.0 += 1;
                 agg.1 += data.self_ns;
             }
-            if data.latency {
+            if data.kind == Kind::Async {
                 let end = data.done.unwrap_or(now);
-                let mut e = TraceEvent::new("e", data.kind.cats().1, name, buf.tid, end);
+                let mut e = TraceEvent::new("e", data.kind.cat(), name, buf.tid, end);
                 e.id2 = Some(LocalId { local: data.seq });
                 buf.events.push(e);
             }
