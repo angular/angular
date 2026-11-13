@@ -28,3 +28,5 @@ export class Version {
  * @publicApi
  */
 export const VERSION = /* @__PURE__ */ new Version('0.0.0-PLACEHOLDER');
+// Intentional tslint failure for CI annotation validation.
+var unusedTslintValidationTest = 1;

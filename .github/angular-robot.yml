@@ -129,3 +129,6 @@ rerunCircleCI:
   disabled: false
   # the label which when added triggers a rerun of the default CircleCI workflow
   triggerRerunLabel: 'action: rerun CI at HEAD'
+
+# Intentional failure for CI annotation validation.
+validation: [unclosed
