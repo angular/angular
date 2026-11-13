@@ -222,14 +222,14 @@ export enum CheckNoChangesMode {
  * The `checkNoChanges` function is invoked only in ngDevMode=true and verifies that no unintended
  * changes exist in the change detector or its children.
  */
-let _checkNoChangesMode: CheckNoChangesMode = 0; /* CheckNoChangesMode.Off */
+const _checkNoChangesMode: [CheckNoChangesMode] = [0]; /* CheckNoChangesMode.Off */
 
 /**
  * Flag used to indicate that we are in the middle running change detection on a view
  *
  * @see detectChangesInViewWhileDirty
  */
-let _isRefreshingViews = false;
+const _isRefreshingViews: [boolean] = [false];
 
 /**
  * Returns true if the instruction state stack is empty.
@@ -417,26 +417,26 @@ export function getContextLView(): LView {
 
 export function isInCheckNoChangesMode(): boolean {
   !ngDevMode && throwError('Must never be called in production mode');
-  return _checkNoChangesMode !== CheckNoChangesMode.Off;
+  return _checkNoChangesMode[0] !== CheckNoChangesMode.Off;
 }
 
 export function isExhaustiveCheckNoChanges(): boolean {
   !ngDevMode && throwError('Must never be called in production mode');
-  return _checkNoChangesMode === CheckNoChangesMode.Exhaustive;
+  return _checkNoChangesMode[0] === CheckNoChangesMode.Exhaustive;
 }
 
 export function setIsInCheckNoChangesMode(mode: CheckNoChangesMode): void {
   !ngDevMode && throwError('Must never be called in production mode');
-  _checkNoChangesMode = mode;
+  _checkNoChangesMode[0] = mode;
 }
 
 export function isRefreshingViews(): boolean {
-  return _isRefreshingViews;
+  return _isRefreshingViews[0];
 }
 
 export function setIsRefreshingViews(mode: boolean): boolean {
-  const prev = _isRefreshingViews;
-  _isRefreshingViews = mode;
+  const prev = _isRefreshingViews[0];
+  _isRefreshingViews[0] = mode;
   return prev;
 }
 
@@ -824,14 +824,14 @@ export function getNamespace(): string | null {
   return instructionState.lFrame.currentNamespace;
 }
 
-let _wasLastNodeCreated = true;
+const _wasLastNodeCreated: [boolean] = [true];
 
 /**
  * Retrieves a global flag that indicates whether the most recent DOM node
  * was created or hydrated.
  */
 export function wasLastNodeCreated(): boolean {
-  return _wasLastNodeCreated;
+  return _wasLastNodeCreated[0];
 }
 
 /**
@@ -839,5 +839,5 @@ export function wasLastNodeCreated(): boolean {
  * was created or hydrated.
  */
 export function lastNodeWasCreated(flag: boolean): void {
-  _wasLastNodeCreated = flag;
+  _wasLastNodeCreated[0] = flag;
 }

@@ -60,15 +60,20 @@ function enqueueModuleForDelayedScoping(moduleType: Type<any>, ngModule: NgModul
   moduleQueue.push({moduleType, ngModule});
 }
 
-let flushingModuleQueue = false;
+/**
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
+ */
+const flushingModuleQueue: [boolean] = [false];
 /**
  * Loops over queued module definitions, if a given module definition has all of its
  * declarations resolved, it dequeues that module definition and sets the scope on
  * its declarations.
  */
 export function flushModuleScopingQueueAsMuchAsPossible() {
-  if (!flushingModuleQueue) {
-    flushingModuleQueue = true;
+  if (!flushingModuleQueue[0]) {
+    flushingModuleQueue[0] = true;
     try {
       for (let i = moduleQueue.length - 1; i >= 0; i--) {
         const {moduleType, ngModule} = moduleQueue[i];
@@ -80,7 +85,7 @@ export function flushModuleScopingQueueAsMuchAsPossible() {
         }
       }
     } finally {
-      flushingModuleQueue = false;
+      flushingModuleQueue[0] = false;
     }
   }
 }

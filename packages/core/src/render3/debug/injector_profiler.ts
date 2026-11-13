@@ -193,17 +193,22 @@ export interface InjectorProfiler {
   (event: InjectorProfilerEvent): void;
 }
 
-let _injectorProfilerContext: InjectorProfilerContext;
+/**
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
+ */
+const _injectorProfilerContext: [InjectorProfilerContext] = [undefined!];
 export function getInjectorProfilerContext() {
   !ngDevMode && throwError('getInjectorProfilerContext should never be called in production mode');
-  return _injectorProfilerContext;
+  return _injectorProfilerContext[0];
 }
 
 export function setInjectorProfilerContext(context: InjectorProfilerContext) {
   !ngDevMode && throwError('setInjectorProfilerContext should never be called in production mode');
 
-  const previous = _injectorProfilerContext;
-  _injectorProfilerContext = context;
+  const previous = _injectorProfilerContext[0];
+  _injectorProfilerContext[0] = context;
   return previous;
 }
 

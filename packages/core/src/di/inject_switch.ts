@@ -22,11 +22,11 @@ import {ProviderToken} from './provider_token';
  *  1. `Injector` should not depend on ivy logic.
  *  2. To maintain tree shake-ability we don't want to bring in unnecessary code.
  */
-let _injectImplementation:
-  | (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null)
-  | undefined;
+const _injectImplementation: [
+  (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null) | undefined,
+] = [undefined];
 export function getInjectImplementation() {
-  return _injectImplementation;
+  return _injectImplementation[0];
 }
 
 /**
@@ -35,8 +35,8 @@ export function getInjectImplementation() {
 export function setInjectImplementation(
   impl: (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null) | undefined,
 ): (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null) | undefined {
-  const previous = _injectImplementation;
-  _injectImplementation = impl;
+  const previous = _injectImplementation[0];
+  _injectImplementation[0] = impl;
   return previous;
 }
 
@@ -77,5 +77,5 @@ export function assertInjectImplementationNotEqual(
   fn: <T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null,
 ) {
   ngDevMode &&
-    assertNotEqual(_injectImplementation, fn, 'Calling ɵɵinject would cause infinite recursion');
+    assertNotEqual(_injectImplementation[0], fn, 'Calling ɵɵinject would cause infinite recursion');
 }
