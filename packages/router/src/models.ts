@@ -667,6 +667,7 @@ export interface Route {
    *
    * Requires the error boundary feature to be enabled with `withErrorBoundaries`.
    *
+   * @see [Error boundaries](guide/routing/error-boundaries)
    * @developerPreview 22.3
    */
   errorComponent?: Type<unknown>;
