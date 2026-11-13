@@ -18,9 +18,9 @@ import {
   ɵɵsanitizeResourceUrl as _sanitizeResourceUrl,
   ɵɵsanitizeScript as _sanitizeScript,
   ɵɵsanitizeStyle as _sanitizeStyle,
+  ɵɵsanitizeUrl as _sanitizeUrl,
   ɵɵvalidateAttribute as _validateAttribute,
 } from '../../sanitization/sanitization';
-import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
   assertDefined,
   assertEqual,
