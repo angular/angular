@@ -933,10 +933,8 @@ export class NavigationTransitions {
                 );
 
                 if (navigationErrorHandlerResult instanceof RedirectCommand) {
-                  const {message, cancellationCode} = redirectingNavigationError(
-                    this.urlSerializer,
-                    navigationErrorHandlerResult,
-                  );
+                  const {url, message, cancellationCode, navigationBehaviorOptions} =
+                    redirectingNavigationError(this.urlSerializer, navigationErrorHandlerResult);
                   this.events.next(
                     new NavigationCancel(
                       overallTransitionState.id,
@@ -945,12 +943,7 @@ export class NavigationTransitions {
                       cancellationCode,
                     ),
                   );
-                  this.events.next(
-                    new RedirectRequest(
-                      navigationErrorHandlerResult.redirectTo,
-                      navigationErrorHandlerResult.navigationBehaviorOptions,
-                    ),
-                  );
+                  this.events.next(new RedirectRequest(url, navigationBehaviorOptions));
                 } else {
                   this.events.next(navigationError);
                   throw e;
