@@ -64,6 +64,8 @@ export function removeDehydratedViewList(deferBlock: DehydratedDeferBlock) {
     removeDehydratedView(view, renderer);
     ngDevMode && ngDevMode.dehydratedViewsRemoved++;
   }
+  // Without their nodes, these views can't be hydrated when the block renders again.
+  lContainer[DEHYDRATED_VIEWS] = [];
 }
 
 /**

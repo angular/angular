@@ -82,6 +82,7 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
   }
 
   visitDeferredBlockError(block: t.DeferredBlockError): void {
+    this.visitAllTemplateNodes(block.contextVariables);
     this.visitAllTemplateNodes(block.children);
   }
 
