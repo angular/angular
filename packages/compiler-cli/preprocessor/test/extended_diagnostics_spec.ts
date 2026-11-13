@@ -420,7 +420,7 @@ describe('extended template diagnostics', () => {
       }),
     );
     expect(diags[0].messageText).toContain(
-      `NG8101: In the two-way binding syntax the parentheses should be inside the brackets, ex. '[(thing)]="bar"'.`,
+      `In the two-way binding syntax the parentheses should be inside the brackets, ex. '[(thing)]="bar"'.`,
     );
   });
 
@@ -519,11 +519,11 @@ describe('extended template diagnostics', () => {
     );
     expect(diags[1].code).toBe(8104);
     expect(diags[1].messageText).toContain(
-      `NG8104: Attribute, style, and class bindings should be enclosed with square braces. For example, '[class.large]="true"'.`,
+      `Attribute, style, and class bindings should be enclosed with square braces. For example, '[class.large]="true"'.`,
     );
     expect(diags[2].code).toBe(8104);
     expect(diags[2].messageText).toContain(
-      `NG8104: Attribute, style, and class bindings should be enclosed with square braces. For example, '[style.margin]="'10px'"'.`,
+      `Attribute, style, and class bindings should be enclosed with square braces. For example, '[style.margin]="'10px'"'.`,
     );
   });
 
@@ -544,7 +544,7 @@ describe('extended template diagnostics', () => {
     expect(diags.length).toBe(1);
     expect(diags[0].code).toBe(8105);
     expect(diags[0].messageText).toContain(
-      'NG8105: Your ngFor is missing a value. Did you forget to add the `let` keyword? Find more at',
+      'Your ngFor is missing a value. Did you forget to add the `let` keyword? Find more at',
     );
   });
 
@@ -562,7 +562,7 @@ describe('extended template diagnostics', () => {
     expect(diags.length).toBe(1);
     expect(diags[0].code).toBe(8106);
     expect(diags[0].messageText).toContain(
-      `NG8106: The '.px', '.%', '.em' suffixes are only supported on style bindings.`,
+      `The '.px', '.%', '.em' suffixes are only supported on style bindings.`,
     );
   });
 
@@ -579,11 +579,9 @@ describe('extended template diagnostics', () => {
     });
     const ng8108 = diags.filter((d) => d.code === 8108);
     expect(ng8108.length).toBe(2);
-    expect(ng8108[0].messageText).toContain(
-      'NG8108: ngSkipHydration should not be used as a binding.',
-    );
+    expect(ng8108[0].messageText).toContain('ngSkipHydration should not be used as a binding.');
     expect(ng8108[1].messageText).toContain(
-      `NG8108: ngSkipHydration only accepts "true" or "" as value or no value at all. For example 'ngSkipHydration="true"' or 'ngSkipHydration'.`,
+      `ngSkipHydration only accepts "true" or "" as value or no value at all. For example 'ngSkipHydration="true"' or 'ngSkipHydration'.`,
     );
   });
 
@@ -658,22 +656,16 @@ describe('extended template diagnostics', () => {
     });
     const ng8109 = diags.filter((d) => d.code === 8109);
     expect(ng8109.map((d) => d.messageText)).toEqual([
-      jasmine.stringMatching(/NG8109: count is a function and should be invoked: count\(\)\}/),
-      jasmine.stringMatching(
-        /NG8109: roFromProp is a function and should be invoked: roFromProp\(\)\}/,
-      ),
-      jasmine.stringMatching(
-        /NG8109: roFromPriv is a function and should be invoked: roFromPriv\(\)\}/,
-      ),
-      jasmine.stringMatching(/NG8109: doubled is a function and should be invoked: doubled\(\)\}/),
-      jasmine.stringMatching(/NG8109: linked is a function and should be invoked: linked\(\)\}/),
-      jasmine.stringMatching(/NG8109: childEl is a function and should be invoked: childEl\(\)\}/),
-      jasmine.stringMatching(/NG8109: fromObs is a function and should be invoked: fromObs\(\)\}/),
-      jasmine.stringMatching(
-        /NG8109: explicitSig is a function and should be invoked: explicitSig\(\)\}/,
-      ),
-      jasmine.stringMatching(/NG8109: leaf is a function and should be invoked: leaf\(\)\}/),
-      jasmine.stringMatching(/NG8109: alias is a function and should be invoked: alias\(\)\}/),
+      jasmine.stringMatching(/count is a function and should be invoked: count\(\)\}/),
+      jasmine.stringMatching(/roFromProp is a function and should be invoked: roFromProp\(\)\}/),
+      jasmine.stringMatching(/roFromPriv is a function and should be invoked: roFromPriv\(\)\}/),
+      jasmine.stringMatching(/doubled is a function and should be invoked: doubled\(\)\}/),
+      jasmine.stringMatching(/linked is a function and should be invoked: linked\(\)\}/),
+      jasmine.stringMatching(/childEl is a function and should be invoked: childEl\(\)\}/),
+      jasmine.stringMatching(/fromObs is a function and should be invoked: fromObs\(\)\}/),
+      jasmine.stringMatching(/explicitSig is a function and should be invoked: explicitSig\(\)\}/),
+      jasmine.stringMatching(/leaf is a function and should be invoked: leaf\(\)\}/),
+      jasmine.stringMatching(/alias is a function and should be invoked: alias\(\)\}/),
     ]);
   });
 
@@ -718,9 +710,9 @@ describe('extended template diagnostics', () => {
     });
     const ng8109 = diags.filter((d) => d.code === 8109);
     expect(ng8109.map((d) => d.messageText)).toEqual([
-      jasmine.stringMatching(/NG8109: dtsSig is a function and should be invoked: dtsSig\(\)\}/),
-      jasmine.stringMatching(/NG8109: midSig is a function and should be invoked: midSig\(\)\}/),
-      jasmine.stringMatching(/NG8109: ownSig is a function and should be invoked: ownSig\(\)\}/),
+      jasmine.stringMatching(/dtsSig is a function and should be invoked: dtsSig\(\)\}/),
+      jasmine.stringMatching(/midSig is a function and should be invoked: midSig\(\)\}/),
+      jasmine.stringMatching(/ownSig is a function and should be invoked: ownSig\(\)\}/),
     ]);
   });
 
@@ -760,9 +752,7 @@ describe('extended template diagnostics', () => {
     });
     expect(diags.length).toBe(1);
     expect(diags[0].code).toBe(8112);
-    expect(diags[0].messageText).toContain(
-      'NG8112: @let unused is declared but its value is never read.',
-    );
+    expect(diags[0].messageText).toContain('@let unused is declared but its value is never read.');
   });
 
   it('NG8114: unparenthesizedNullishCoalescing', async () => {
@@ -783,7 +773,7 @@ describe('extended template diagnostics', () => {
     expect(diags.length).toBe(1);
     expect(diags[0].code).toBe(8114);
     expect(diags[0].messageText).toContain(
-      `NG8114: Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'.`,
+      `Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'.`,
     );
   });
 
@@ -805,7 +795,7 @@ describe('extended template diagnostics', () => {
     const ng8116 = diags.filter((d) => d.code === 8116);
     expect(ng8116.length).toBe(1);
     expect(ng8116[0].messageText).toContain(
-      'NG8116: A structural directive `customDir` was used in the template without a corresponding import in the component.',
+      'A structural directive `customDir` was used in the template without a corresponding import in the component.',
     );
   });
 
@@ -848,22 +838,22 @@ describe('extended template diagnostics', () => {
     const ng8021 = diags.filter((d) => d.code === 8021);
     expect(ng8021.length).toBe(6);
     expect(ng8021[0].messageText).toContain(
-      `NG8021: The 'immediate' trigger makes additional triggers redundant.`,
+      `The 'immediate' trigger makes additional triggers redundant.`,
     );
     expect(ng8021[1].messageText).toContain(
-      `NG8021: Prefetch triggers have no effect because 'immediate' executes earlier.`,
+      `Prefetch triggers have no effect because 'immediate' executes earlier.`,
     );
     expect(ng8021[2].messageText).toContain(
-      `NG8021: Define a main trigger when using 'prefetch' triggers.`,
+      `Define a main trigger when using 'prefetch' triggers.`,
     );
     expect(ng8021[3].messageText).toContain(
-      `NG8021: The Prefetch 'timer(200ms)' is not scheduled before the main 'timer(100ms)', so it won't run prior to rendering.`,
+      `The Prefetch 'timer(200ms)' is not scheduled before the main 'timer(100ms)', so it won't run prior to rendering.`,
     );
     expect(ng8021[4].messageText).toContain(
-      `NG8021: Prefetch 'hover' matches the main trigger and provides no benefit. Remove the prefetch modifier.`,
+      `Prefetch 'hover' matches the main trigger and provides no benefit. Remove the prefetch modifier.`,
     );
     expect(ng8021[5].messageText).toContain(
-      `NG8021: Prefetch 'viewport' matches the main trigger and provides no benefit. Remove the prefetch modifier.`,
+      `Prefetch 'viewport' matches the main trigger and provides no benefit. Remove the prefetch modifier.`,
     );
   });
 
@@ -888,10 +878,10 @@ describe('extended template diagnostics', () => {
     expect(ng8021[1].category).toBe('warning');
     expect(ng8021[0].span).toEqual(ng8021[1].span);
     expect(ng8021[0].messageText).toContain(
-      `NG8021: The 'immediate' trigger makes additional triggers redundant.`,
+      `The 'immediate' trigger makes additional triggers redundant.`,
     );
     expect(ng8021[1].messageText).toContain(
-      `NG8021: Prefetch triggers have no effect because 'immediate' executes earlier.`,
+      `Prefetch triggers have no effect because 'immediate' executes earlier.`,
     );
   });
 
@@ -1054,19 +1044,19 @@ describe('extended template diagnostics', () => {
 
   it('formatExtendedError formats codes with and without messages consistently', () => {
     expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX)).toBe(
-      `NG8101. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
+      `Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
     expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, null)).toBe(
-      `NG8101. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
+      `Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
     expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, false)).toBe(
-      `NG8101. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
+      `Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
     expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, 'No trailing punctuation')).toBe(
-      `NG8101: No trailing punctuation. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
+      `No trailing punctuation. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
     expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, 'Has trailing punctuation!')).toBe(
-      `NG8101: Has trailing punctuation! Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
+      `Has trailing punctuation! Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
   });
 
