@@ -1086,7 +1086,7 @@ impl QueryEngine {
             target: crate::perf::QUERY_TARGET,
             "query",
             kind = key.kind_index() as u64,
-            file = key.file_id(),
+            file = key.perf_file_id(),
             key = ?key,
             done = tracing::field::Empty,
         );

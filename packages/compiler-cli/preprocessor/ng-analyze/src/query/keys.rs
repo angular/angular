@@ -75,6 +75,20 @@ impl QueryKey {
         }
     }
 
+    /// The file to attribute this query to in perf summaries (`slowest` entries).
+    ///
+    /// Includes [`Self::NgModuleExportsScope`] and [`Self::NgModuleImportsScope`] via the
+    /// NgModule's declaring file without widening [`Self::file_id`], which cache invalidation
+    /// uses to mark per-file results dirty.
+    pub fn perf_file_id(&self) -> Option<FileId> {
+        match *self {
+            Self::NgModuleExportsScope(ref_id) | Self::NgModuleImportsScope(ref_id) => {
+                Some(ref_id.file)
+            }
+            _ => self.file_id(),
+        }
+    }
+
     /// Variant names, indexed by [`Self::kind_index`]. The perf layer maps a query span's
     /// `kind` field back to its name here.
     pub const KIND_NAMES: [&'static str; 13] = [
