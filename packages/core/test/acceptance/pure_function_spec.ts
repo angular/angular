@@ -656,5 +656,36 @@ describe('components using pure function instructions internally', () => {
 
       expect(values).toEqual([{foo: null}, {foo: 'foo!'}]);
     });
+
+    it('should not confuse array literals containing strings with embedded quotes', () => {
+      @Component({
+        template: `{{ ['a', 'b'].length }}|{{ ['a","b'].length }}`,
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('2|1');
+    });
+
+    it('should not confuse object literals with quoted keys containing embedded quotes', () => {
+      @Component({
+        template: `
+          <div [dir]="{'a': 1, 'b': 2}"></div>
+          <div [dir]="{'a&quot;:1,&quot;b': 2}"></div>
+        `,
+        imports: [Dir],
+      })
+      class App {
+        @ViewChildren(Dir) directives!: QueryList<Dir>;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map((directive) => directive.value);
+
+      expect(values).toEqual([{'a': 1, 'b': 2}, {'a":1,"b': 2}]);
+    });
   });
 });
