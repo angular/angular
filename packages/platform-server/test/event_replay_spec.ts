@@ -19,7 +19,7 @@ import {
   ɵgetDocument as getDocument,
   ɵEVENT_REPLAY_QUEUE as EVENT_REPLAY_QUEUE,
 } from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
+import {IMAGE_LOADER, isPlatformBrowser, NgOptimizedImage} from '@angular/common';
 import {
   bootstrapApplication,
   provideClientHydration,
@@ -136,6 +136,38 @@ describe('event replay', () => {
     // Without the fix, jsaction replay fires the handler a second time (count = 2).
     // With the fix, the post-hydration event must not be replayed again (count = 1).
     expect(onClickSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should replay a `load` event that fired before hydration on an optimized image', async () => {
+    const onLoadSpy = jasmine.createSpy();
+
+    @Component({
+      selector: 'app',
+      imports: [NgOptimizedImage],
+      template: `<img id="image" ngSrc="hero.jpg" width="100" height="50" (load)="onLoad()" />`,
+    })
+    class AppComponent {
+      onLoad = onLoadSpy;
+    }
+
+    const envProviders = [
+      {provide: IMAGE_LOADER, useValue: () => 'https://cdn.example.com/hero.jpg'},
+    ];
+    const html = await ssr(AppComponent, {envProviders});
+    const doc = getDocument();
+    prepareEnvironment(doc, getAppContents(html));
+    resetTViewsFor(AppComponent);
+
+    // The image finishes loading before the app hydrates.
+    const loadEvent = doc.createEvent('Event');
+    loadEvent.initEvent('load', false, false);
+    doc.getElementById('image')!.dispatchEvent(loadEvent);
+    expect(onLoadSpy).not.toHaveBeenCalled();
+
+    const appRef = await hydrate(doc, AppComponent, {envProviders});
+    await appRef.whenStable();
+
+    expect(onLoadSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should work for elements with local refs', async () => {
