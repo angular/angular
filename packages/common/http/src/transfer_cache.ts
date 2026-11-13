@@ -52,6 +52,8 @@ export interface HttpTransferCacheOptions {
   /**
    * Enables caching for `POST` requests. By default, only `GET`, `QUERY` and `HEAD` requests are cached.
    * This option can be enabled if `POST` requests are used to retrieve data (for example using `GraphQL`).
+   * Requests with `Blob` or `FormData` bodies are not cached because Angular cannot derive a
+   * complete cache key for them synchronously across supported runtimes.
    */
   includePostRequests?: boolean;
 
@@ -155,11 +157,13 @@ function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions):
     includeRequestsWithCredentials,
     includeNonCacheableRequests,
   } = options;
-  const {transferCache: requestOptions, method: requestMethod} = req;
+  const {transferCache: requestOptions, method: requestMethod, responseType} = req;
 
   if (
     !isCacheActive ||
     requestOptions === false ||
+    // Blob bodies can only be read asynchronously, so they cannot be stored in the cache.
+    responseType === 'blob' ||
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
@@ -226,7 +230,11 @@ export function retrieveStateFromCache(
         ? mapRequestOriginUrl(req.url, originMap)
         : req.url;
 
-    storeKey = makeCacheKey(req, requestUrl);
+    const cacheKey = makeCacheKey(req, requestUrl);
+    if (cacheKey === null) {
+      return null;
+    }
+    storeKey = cacheKey;
   }
 
   const response = transferState.get(storeKey, null);
@@ -244,16 +252,8 @@ export function retrieveStateFromCache(
     [REQ_URL]: url,
   } = response;
   // Request found in cache. Respond using it.
-  let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
-
-  switch (responseType) {
-    case 'arraybuffer':
-      body = fromBase64(undecodedBody);
-      break;
-    case 'blob':
-      body = new Blob([fromBase64(undecodedBody)]);
-      break;
-  }
+  const body: ArrayBuffer | string | undefined =
+    responseType === 'arraybuffer' ? fromBase64(undecodedBody) : undecodedBody;
 
   // We want to warn users accessing a header provided from the cache
   // That HttpTransferCache alters the headers
@@ -293,6 +293,10 @@ export function transferCacheInterceptorFn(
       ? mapRequestOriginUrl(req.url, originMap)
       : req.url;
   const storeKey = makeCacheKey(req, requestUrl);
+  if (storeKey === null) {
+    // Requests without a complete body key bypass the transfer cache to prevent collisions.
+    return next(req);
+  }
 
   const cachedResponse = retrieveStateFromCache(
     req,
@@ -327,8 +331,7 @@ export function transferCacheInterceptorFn(
           const headersToInclude = getHeadersToInclude(options, requestOptions);
 
           transferState.set<TransferHttpResponse>(storeKey, {
-            [BODY]:
-              responseType === 'arraybuffer' || responseType === 'blob' ? toBase64(body) : body,
+            [BODY]: responseType === 'arraybuffer' ? toBase64(body) : body,
             [HEADERS]: getFilteredHeaders(headers, headersToInclude),
             [STATUS]: status,
             [STATUS_TEXT]: statusText,
@@ -413,21 +416,43 @@ function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
 function makeCacheKey(
   request: HttpRequest<any>,
   mappedRequestUrl: string,
-): StateKey<TransferHttpResponse> {
+): StateKey<TransferHttpResponse> | null {
   const {params, method, responseType} = request;
   const encodedParams = sortAndConcatParams(params);
 
-  let serializedBody = request.serializeBody();
-  if (serializedBody instanceof URLSearchParams) {
-    serializedBody = sortAndConcatParams(serializedBody);
-  } else if (typeof serializedBody !== 'string') {
-    serializedBody = '';
+  const serializedBody = request.serializeBody();
+  let bodyType: string;
+  let bodyForCacheKey: string;
+  if (serializedBody === null) {
+    bodyType = 'null';
+    bodyForCacheKey = '';
+  } else if (serializedBody instanceof URLSearchParams) {
+    bodyType = 'urlSearchParams';
+    bodyForCacheKey = sortAndConcatParams(serializedBody);
+  } else if (serializedBody instanceof ArrayBuffer) {
+    bodyType = 'arrayBuffer';
+    // Hash the bytes directly to avoid creating a larger base64 cache-key input.
+    bodyForCacheKey = generateHash(new Uint8Array(serializedBody));
+  } else if (typeof serializedBody === 'string') {
+    bodyType = 'string';
+    bodyForCacheKey = serializedBody;
+  } else {
+    // Blob and FormData cannot provide a complete cache key synchronously. Skipping them
+    // prevents different request bodies from sharing a cache entry.
+    return null;
   }
 
   // Joining with `|` lets a shifted field boundary (url `/a` + body `b|c` vs url `/a|b` + body `c`)
   // collapse to the same string and thus the same hash. `\0` cannot occur in a valid url or in
   // encoded params, so the field boundaries can't be forged by field content.
-  const key = [method, responseType, mappedRequestUrl, serializedBody, encodedParams].join('\0');
+  const key = [
+    method,
+    responseType,
+    mappedRequestUrl,
+    bodyType,
+    bodyForCacheKey,
+    encodedParams,
+  ].join('\0');
   const hash = generateHash(key);
 
   return makeStateKey(hash);
@@ -588,7 +613,7 @@ const SHA256_ROUND_CONSTANTS = /* @__PURE__ */ new Uint32Array([
 let textEncoder: TextEncoder | undefined;
 
 /**
- * Generates a SHA-256 hash representation of a string.
+ * Generates a SHA-256 hash representation of a string or byte array.
  *
  * Note: A custom synchronous SHA-256 implementation is used here because the Web Crypto API
  * (`crypto.subtle.digest`) is strictly asynchronous (Promise-based), whereas the transfer cache
@@ -600,9 +625,9 @@ let textEncoder: TextEncoder | undefined;
  * cached response to legitimate users. SHA-256 provides strong cryptographic collision resistance,
  * preventing cache key collision attacks.
  */
-export function generateHash(value: string): string {
-  textEncoder ??= new TextEncoder();
-  const inputBytes = textEncoder.encode(value);
+export function generateHash(value: string | Uint8Array): string {
+  const inputBytes =
+    typeof value === 'string' ? (textEncoder ??= new TextEncoder()).encode(value) : value;
 
   // Initial hash values (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
   let hashState0 = 0x6a09e667;
