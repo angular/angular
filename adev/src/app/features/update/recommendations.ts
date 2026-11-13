@@ -3118,7 +3118,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: '22.0.0-component-onpush-default',
     action:
-      'Components with no `changeDetection` property defined are now `OnPush` by default. To maintain `Eager` (the previous default) change detection, explicitly set `changeDetection: ChangeDetectionStrategy.Eager` in your component decorator.',
+      'Components with no `changeDetection` property defined are now `OnPush` by default. `ng update` keeps your existing components on the previous behavior by adding `changeDetection: ChangeDetectionStrategy.Eager` to every component that has no `changeDetection` property. It also replaces the deprecated `ChangeDetectionStrategy.Default` with `ChangeDetectionStrategy.Eager`. If you update without running `ng update`, set `changeDetection: ChangeDetectionStrategy.Eager` yourself where you need the previous behavior.',
   },
   {
     possibleIn: 2200,
