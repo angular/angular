@@ -211,6 +211,10 @@ If 'svg:onclick' is a directive input, make sure the directive is imported by th
     expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
     expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
+    expect(registry.securityContext(':svg:use', 'href', true)).toBe(SecurityContext.RESOURCE_URL);
+    expect(registry.securityContext(':svg:use', 'xlink:href', true)).toBe(
+      SecurityContext.RESOURCE_URL,
+    );
     expect(registry.securityContext('iframe', 'credentialless', false)).toBe(
       SecurityContext.ATTRIBUTE_NO_BINDING,
     );

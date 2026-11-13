@@ -628,6 +628,7 @@
       "isRefreshingViews",
       "isRootTemplateMessage",
       "isRootView",
+      "isSafeSvgUseReference",
       "isSchedulerTick",
       "isSkipHydrationRootTNode",
       "isSubscribable",
