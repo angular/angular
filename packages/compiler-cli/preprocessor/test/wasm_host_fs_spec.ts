@@ -116,6 +116,26 @@ describe('wasm engine over a real filesystem', () => {
     expect(JSON.parse(metadata!)).toEqual(jasmine.any(Object));
   });
 
+  it('drives async getMetadataForFile through request_metadata and pump', async () => {
+    const {WasmAnalyzer: RawWasmAnalyzer} = require(wasmGlue);
+    const {WasmAnalyzer} = await import('../src/analyzer_wasm.js');
+    const inner = new RawWasmAnalyzer(
+      JSON.stringify({tsconfigPath, optimize: true}),
+      createNodeHostFs(),
+    );
+    const analyzer = new WasmAnalyzer(inner);
+    try {
+      const metadata = await analyzer.getMetadataForFile(path.join(root, 'src/app.component.ts'));
+      expect(metadata).toBeTruthy();
+      expect(metadata!.classes.length).toBe(1);
+
+      const missing = await analyzer.getMetadataForFile(path.join(root, 'src/missing.ts'));
+      expect(missing).toBeNull();
+    } finally {
+      analyzer.close();
+    }
+  });
+
   it('finds a file added to a subdirectory the glob covers', async () => {
     const nested = path.join(root, 'src/nested');
     await fs.mkdir(nested, {recursive: true});

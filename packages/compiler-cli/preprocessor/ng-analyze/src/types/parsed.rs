@@ -8,6 +8,7 @@ use std::path::PathBuf;
 pub struct ParsedFileOwner {
     pub file_path: PathBuf,
     pub source_text: String,
+    pub loaded: bool,
     pub allocator: Allocator,
 }
 

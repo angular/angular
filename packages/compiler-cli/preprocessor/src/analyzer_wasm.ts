@@ -27,6 +27,10 @@ export interface WasmInner {
   invalidate_files?(updatesJson: string): string;
   setEntryPoints?(entryPointsJson: string): string;
   set_entry_points?(entryPointsJson: string): string;
+  clearResolutionCache?(): string;
+  clear_resolution_cache?(): string;
+  requestMetadata?(moduleRefJson: string): number;
+  request_metadata?(moduleRefJson: string): number;
   getMetadataForFile?(filePath: string): string | undefined;
   get_metadata_for_file?(filePath: string): string | undefined;
   getFileContent?(filePath: string): string;
@@ -43,12 +47,27 @@ export interface WasmInner {
   close_stream?(id: number): void;
 }
 
-interface WasmEvent {
-  id: number;
-  event: 'analysisResult' | 'analysisComplete' | 'analysisError';
-  data?: nga.CompilationChunk;
-  error?: string;
-}
+type WasmEvent =
+  | {
+      id: number;
+      event: 'analysisResult';
+      data: nga.CompilationChunk;
+    }
+  | {
+      id: number;
+      event: 'analysisComplete';
+    }
+  | {
+      id: number;
+      event: 'analysisError';
+      error: string;
+    }
+  | {
+      id: number;
+      event: 'metadataResult';
+      data: nga.AnalysisResult | null;
+      error?: string;
+    };
 
 /** JS-side state of one engine stream; `null` in `queue` marks its end. */
 interface WasmStream {
@@ -57,13 +76,23 @@ interface WasmStream {
   error?: Error;
 }
 
+interface PendingMetadataRequest {
+  resolve: (val: nga.AnalysisResult | null) => void;
+  reject: (err: Error) => void;
+}
+
 export class WasmAnalyzer implements IAnalyzer {
   private inner: WasmInner;
   private streams = new Map<number, WasmStream>();
+  private metadataRequests = new Map<number, PendingMetadataRequest>();
   private isPumping = false;
 
   constructor(inner: WasmInner) {
     this.inner = inner;
+  }
+
+  private hasActivePumpWork(): boolean {
+    return this.streams.size > 0 || this.metadataRequests.size > 0;
   }
 
   private schedulePump() {
@@ -71,18 +100,50 @@ export class WasmAnalyzer implements IAnalyzer {
       return;
     }
     this.isPumping = true;
-    setTimeout(this.pumpLoop, 0);
+    queueMicrotask(this.pumpLoop);
+  }
+
+  private dispatchEvent(event: WasmEvent): void {
+    if (event.event === 'metadataResult') {
+      const pending = this.metadataRequests.get(event.id);
+      if (pending) {
+        this.metadataRequests.delete(event.id);
+        if (event.error !== undefined) {
+          pending.reject(new Error(event.error));
+        } else {
+          pending.resolve(event.data ?? null);
+        }
+      }
+      return;
+    }
+
+    const stream = this.streams.get(event.id);
+    if (!stream) {
+      return;
+    }
+    if (event.event === 'analysisResult' && event.data) {
+      stream.queue.push(event.data);
+    } else if (event.event === 'analysisComplete') {
+      stream.queue.push(null);
+    } else if (event.event === 'analysisError' && event.error) {
+      stream.error = new Error(event.error);
+    }
+    if (stream.nextResolve) {
+      const resolve = stream.nextResolve;
+      stream.nextResolve = null;
+      resolve(null);
+    }
   }
 
   private pumpLoop = () => {
-    if (this.streams.size === 0) {
+    if (!this.hasActivePumpWork()) {
       this.isPumping = false;
       return;
     }
 
     const start = Date.now();
     let idleCount = 0;
-    while (this.streams.size > 0 && Date.now() - start < 15) {
+    while (this.hasActivePumpWork() && Date.now() - start < 15) {
       const eventStr = this.inner.pump();
       if (!eventStr) {
         idleCount++;
@@ -94,27 +155,13 @@ export class WasmAnalyzer implements IAnalyzer {
       idleCount = 0;
       try {
         const event = JSON.parse(eventStr) as WasmEvent;
-        const stream = this.streams.get(event.id);
-        if (stream) {
-          if (event.event === 'analysisResult' && event.data) {
-            stream.queue.push(event.data);
-          } else if (event.event === 'analysisComplete') {
-            stream.queue.push(null);
-          } else if (event.event === 'analysisError' && event.error) {
-            stream.error = new Error(event.error);
-          }
-          if (stream.nextResolve) {
-            const resolve = stream.nextResolve;
-            stream.nextResolve = null;
-            resolve(null);
-          }
-        }
+        this.dispatchEvent(event);
       } catch (e) {
         console.error('Failed to parse WASM pump event', e);
       }
     }
 
-    if (this.streams.size > 0) {
+    if (this.hasActivePumpWork()) {
       setTimeout(this.pumpLoop, 0);
     } else {
       this.isPumping = false;
@@ -224,12 +271,15 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null> {
-    const res = this.invoke(
-      this.inner.getMetadataForFile ?? this.inner.get_metadata_for_file,
-      'getMetadataForFile',
-      filePath,
+    const id = this.invoke(
+      this.inner.requestMetadata ?? this.inner.request_metadata,
+      'requestMetadata',
+      JSON.stringify(filePath),
     );
-    return res ? (JSON.parse(res) as nga.AnalysisResult) : null;
+    return new Promise<nga.AnalysisResult | null>((resolve, reject) => {
+      this.metadataRequests.set(id, {resolve, reject});
+      this.schedulePump();
+    });
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
@@ -263,6 +313,14 @@ export class WasmAnalyzer implements IAnalyzer {
       this.inner.setEntryPoints ?? this.inner.set_entry_points,
       'setEntryPoints',
       JSON.stringify(entryPoints),
+    );
+    return JSON.parse(res) as string[];
+  }
+
+  async clearResolutionCache(): Promise<string[]> {
+    const res = this.invoke(
+      this.inner.clearResolutionCache ?? this.inner.clear_resolution_cache,
+      'clearResolutionCache',
     );
     return JSON.parse(res) as string[];
   }
@@ -313,6 +371,20 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   close(): void {
+    const closeError = new Error('WasmAnalyzer closed');
+    for (const pending of this.metadataRequests.values()) {
+      pending.reject(closeError);
+    }
+    this.metadataRequests.clear();
+    for (const stream of this.streams.values()) {
+      stream.error = closeError;
+      if (stream.nextResolve) {
+        const resolve = stream.nextResolve;
+        stream.nextResolve = null;
+        resolve(null);
+      }
+    }
+    this.streams.clear();
     try {
       this.inner.free();
     } catch {

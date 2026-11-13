@@ -93,6 +93,7 @@ pub struct QueryEngine {
     pub(crate) entrypoints: Arc<std::sync::RwLock<Vec<PathBuf>>>,
     pub(crate) tsconfig_dts_files: RwLock<Vec<PathBuf>>,
     pub(crate) interner: Arc<FileIdInterner>,
+    pub(crate) resolution_cache: crate::query::resolution_cache::ResolutionCache,
     pub(crate) reverse_index: RwLock<HashMap<FileId, HashSet<QueryKey>>>,
     pub(crate) cache: crate::QueryCache<QueryKey, CachedResult>,
     /// The kind epoch at which a host resolution last changed each file's
@@ -237,6 +238,7 @@ impl QueryEngine {
             entrypoints,
             tsconfig_dts_files: RwLock::new(Vec::new()),
             interner: Arc::new(FileIdInterner::new()),
+            resolution_cache: crate::query::resolution_cache::ResolutionCache::new(),
             reverse_index: RwLock::new(HashMap::new()),
             cache: crate::QueryCache::new(),
             kind_changes: RwLock::new(HashMap::new()),
@@ -334,6 +336,16 @@ impl QueryEngine {
         id: &crate::host::ModuleId,
         id_kind: crate::host::IdKind,
     ) -> FileId {
+        self.intern_resolved_tracked(id, id_kind).0
+    }
+
+    /// [`Self::intern_resolved`], also reporting whether the host's `id_kind` replaced the kind
+    /// the module was interned with before.
+    fn intern_resolved_tracked(
+        &self,
+        id: &crate::host::ModuleId,
+        id_kind: crate::host::IdKind,
+    ) -> (FileId, bool) {
         let backing = match id_kind {
             crate::host::IdKind::Path => self.host.resolve_backing_path(Path::new(id.as_str())),
             crate::host::IdKind::Virtual => None,
@@ -345,10 +357,11 @@ impl QueryEngine {
             ),
             None => self.interner.intern_authoritative(id.as_str(), id_kind),
         };
-        if previous_kind.is_some() {
+        let changed = previous_kind.is_some();
+        if changed {
             self.kind_changed(file_id);
         }
-        file_id
+        (file_id, changed)
     }
 
     pub fn validation_context(
@@ -389,48 +402,51 @@ impl QueryEngine {
         self.interner.lookup_module(id)
     }
 
-    pub async fn resolve_from_id(
+    /// Resolve `req` as imported from `importer` through [`Self::resolution_cache`], asking the
+    /// host only when the lookup isn't memoized. Only completed lookups are memoized, so identical
+    /// lookups that overlap each reach the host. A lookup the host answers after files were
+    /// created or deleted ([`Self::invalidate_module_resolution`]) is returned without being
+    /// memoized, and so is a resolution that changes its target's kind ([`Self::kind_changed`]).
+    ///
+    /// Query code resolves through [`QueryContext::resolve_request`], which records `importer`
+    /// (and [`UNRESOLVED_IMPORTS_FILE_ID`] on failure) as dependencies of the calling query.
+    pub(crate) async fn resolve_request_cached(
         &self,
         importer: FileId,
-        specifier: &str,
-        kind: crate::host::ImportKind,
-    ) -> Option<(FileId, crate::host::ResolvedModule)> {
-        let importer_id = self.lookup_id(importer);
-        let resolved = self
-            .host
-            .resolve(crate::host::ResolveRequest::new(
-                importer_id,
-                specifier,
-                kind,
-            ))
-            .await
-            .ok()??;
-        let target_id = self.intern_resolved(&resolved.id, resolved.id_kind);
-        Some((target_id, resolved))
-    }
-
-    pub async fn resolve_from_path(
-        &self,
-        importer_path: &Path,
-        specifier: &str,
-        kind: crate::host::ImportKind,
-    ) -> Option<(FileId, PathBuf)> {
-        if let Some(importer_id) = self.get_interned_file_id(importer_path) {
-            let (target_id, _) = self.resolve_from_id(importer_id, specifier, kind).await?;
-            return Some((target_id, self.lookup_path(target_id)));
+        req: crate::host::ResolveRequest,
+    ) -> crate::query::resolution_cache::CachedResolution {
+        debug_assert_eq!(
+            self.lookup_id(importer),
+            req.importer,
+            "`importer` keys the resolution cache and must name the module the host is asked about"
+        );
+        let key = crate::query::resolution_cache::ResolutionLookupKey::from_request(&req);
+        if let Some(cached) = self.resolution_cache.get(importer, &key) {
+            return cached;
         }
-        let importer_id = crate::host::ModuleId::from_path(importer_path);
-        let resolved = self
-            .host
-            .resolve(crate::host::ResolveRequest::new(
-                importer_id,
-                specifier,
-                kind,
-            ))
-            .await
-            .ok()??;
-        let target_id = self.intern_resolved(&resolved.id, resolved.id_kind);
-        Some((target_id, self.lookup_path(target_id)))
+        // Read before asking the host, so that an answer which arrives after a structure change is
+        // recognized as superseded and not memoized.
+        let generation = self.resolution_cache.generation();
+        let mut kind_changed = false;
+        let outcome = match self.host.resolve(req).await {
+            Ok(Some(resolved)) => {
+                let (target_id, changed) =
+                    self.intern_resolved_tracked(&resolved.id, resolved.id_kind);
+                kind_changed = changed;
+                Ok(Some((target_id, resolved)))
+            }
+            Ok(None) => Ok(None),
+            Err(err) => Err(err),
+        };
+        // A resolution that changed its target's kind is not memoized. `kind_changed` discards the
+        // queries that read the target, and each re-run has to ask the host again, as it did
+        // before resolutions were cached, rather than be served this answer. Until a later lookup
+        // is memoized, `importer` is not indexed under the target.
+        if !kind_changed {
+            self.resolution_cache
+                .insert(importer, key, outcome.clone(), generation);
+        }
+        outcome
     }
 
     pub fn r3_symbols_file(&self) -> Option<PathBuf> {
@@ -533,11 +549,18 @@ impl QueryEngine {
     /// Evict what was computed for `file_id` under its previous kind, after a host resolution
     /// changed it. Queries still running aren't in the reverse index yet; when they complete,
     /// [`Self::record_dependencies`] has them re-run instead.
+    ///
+    /// Importers with a cached resolution to `file_id` hold a [`crate::host::ResolvedModule`]
+    /// reporting the previous kind, so those resolutions and the queries derived from them are
+    /// evicted too.
     fn kind_changed(&self, file_id: FileId) {
         let mut kind_changes = self.kind_changes.write().unwrap();
         let epoch = self.kind_epoch.load(Ordering::SeqCst) + 1;
         kind_changes.insert(file_id, epoch);
+        let importers = self.resolution_cache.remove_deleted_target(file_id);
+        // Also drops the resolutions cached for `file_id` as an importer.
         self.invalidate_file_id(file_id);
+        self.evict_importers_preserving_parse(importers);
         // Publish the epoch only after the eviction, so a query that starts at it can't read a
         // result computed under the previous kind.
         self.kind_epoch.store(epoch, Ordering::SeqCst);
@@ -601,6 +624,12 @@ impl QueryEngine {
                 .write()
                 .unwrap()
                 .clear();
+        }
+        if file_id != ROOTS_FILE_ID
+            && file_id != UNRESOLVED_IMPORTS_FILE_ID
+            && file_id != R3_SYMBOLS_ROOT_FILE_ID
+        {
+            self.resolution_cache.remove_importer(file_id);
         }
         self.mark_ambient_global_names_stale(file_id);
         self.clear_ambient_global_dependents_for_file(file_id);
@@ -1035,13 +1064,106 @@ impl QueryEngine {
         self.invalidate_file_id(R3_SYMBOLS_ROOT_FILE_ID)
     }
 
+    /// Evict every cached query derived from `importers`' module resolutions while keeping each
+    /// importer's own `ParseFile` cached (its source text did not change).
+    fn evict_importers_preserving_parse(
+        &self,
+        importers: impl IntoIterator<Item = FileId>,
+    ) -> Vec<QueryKey> {
+        let importers: Vec<FileId> = importers.into_iter().collect();
+        if importers.is_empty() {
+            return Vec::new();
+        }
+
+        if let Ok(mut graph_guard) = self.static_import_graph.write() {
+            *graph_guard = None;
+        }
+
+        let mut evicted_keys = HashSet::new();
+        let mut r_guard = self.reverse_index.write().ok();
+        for &imp_id in &importers {
+            self.mark_file_dirty(imp_id);
+            evicted_keys.insert(QueryKey::AnalyzeFileSyntax(imp_id));
+            evicted_keys.insert(QueryKey::AnalyzeFileEvaluated(imp_id));
+            evicted_keys.insert(QueryKey::AnalyzeFileSemantic(imp_id));
+            evicted_keys.insert(QueryKey::AnalyzeFileWire {
+                file_id: imp_id,
+                is_optimized: true,
+            });
+            evicted_keys.insert(QueryKey::AnalyzeFileWire {
+                file_id: imp_id,
+                is_optimized: false,
+            });
+            evicted_keys.insert(QueryKey::ModuleExportMap(imp_id));
+
+            let Some(ref mut r_index) = r_guard else {
+                continue;
+            };
+            let Some(deps) = r_index.get_mut(&imp_id) else {
+                continue;
+            };
+            let parse_key = QueryKey::ParseFile(imp_id);
+            let had_parse = deps.contains(&parse_key);
+            for &key in deps.iter() {
+                if key != parse_key {
+                    evicted_keys.insert(key);
+                }
+            }
+            deps.clear();
+            if had_parse {
+                deps.insert(parse_key);
+            }
+        }
+        drop(r_guard);
+
+        evicted_keys.insert(QueryKey::ProgramFiles);
+        evicted_keys.insert(QueryKey::ComponentMapping);
+        evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
+        evicted_keys.insert(QueryKey::LocalExtraImports);
+
+        evicted_keys
+            .into_iter()
+            .filter(|key| self.remove_cached_key(key))
+            .collect()
+    }
+
+    /// Evict importers whose cached module resolutions pointed to `path` before `path` was deleted.
+    pub fn invalidate_deleted_file(&self, path: &Path) -> Vec<QueryKey> {
+        let Some(file_id) = self.get_interned_file_id(path) else {
+            return Vec::new();
+        };
+        let importers = self.resolution_cache.remove_deleted_target(file_id);
+        self.evict_importers_preserving_parse(importers)
+    }
+
     /// Forget module resolution results after files were created or deleted: the resolver caches
-    /// whether each path it probed exists, and a specifier that failed to resolve may resolve now
+    /// whether each path it probed exists, and a specifier that failed to resolve may resolve now.
     ///
     /// Must not run while a resolution is in progress.
     pub fn invalidate_module_resolution(&self) -> Vec<QueryKey> {
         self.host.clear_cache();
-        self.invalidate_file_id(UNRESOLVED_IMPORTS_FILE_ID)
+        let unresolved_importers = self.resolution_cache.clear_for_structure_change();
+        let mut evicted: HashSet<QueryKey> = self
+            .invalidate_file_id(UNRESOLVED_IMPORTS_FILE_ID)
+            .into_iter()
+            .collect();
+        evicted.extend(self.evict_importers_preserving_parse(unresolved_importers));
+        evicted.into_iter().collect()
+    }
+
+    /// Flush every cached module resolution and evict queries derived from any importer's
+    /// resolutions while keeping each file's `ParseFile` result cached.
+    ///
+    /// Must not run while a resolution is in progress.
+    pub fn clear_resolution_cache(&self) -> Vec<QueryKey> {
+        self.host.clear_cache();
+        let importers = self.resolution_cache.clear_all();
+        let mut evicted: HashSet<QueryKey> = self
+            .invalidate_file_id(UNRESOLVED_IMPORTS_FILE_ID)
+            .into_iter()
+            .collect();
+        evicted.extend(self.evict_importers_preserving_parse(importers));
+        evicted.into_iter().collect()
     }
 
     /// Request a query. If not already cached, the body is spawned onto the executor and a shared
@@ -1210,6 +1332,53 @@ impl QueryEngine {
         })
     }
 
+    pub fn is_synchronous_host(&self) -> bool {
+        self.host.is_synchronous()
+    }
+
+    /// Drive `AnalyzeFileWire` for `file_id` and return its wire metadata, or `None` when `file_id`
+    /// is a non-module path or cannot be loaded from the host.
+    pub async fn get_metadata_for_file_id(
+        self: &Arc<Self>,
+        file_id: FileId,
+    ) -> Option<crate::AnalysisResult> {
+        let (_, id_kind) = self.lookup_module(file_id);
+        if id_kind == crate::host::IdKind::Path
+            && !crate::utils::is_ts_file(&self.lookup_path(file_id))
+        {
+            return None;
+        }
+        self.ensure_singletons_fresh(true).await;
+        let ctx = QueryContext::new(self.clone());
+        let parsed = ctx.parse_file(file_id).await;
+        let loaded = parsed.lock().unwrap().borrow_owner().loaded;
+        drop(parsed);
+        if !loaded {
+            return None;
+        }
+        let wire_res = ctx.analyze_file_wire(file_id, true).await;
+        match &wire_res.0 {
+            Ok(result) => Some(result.clone()),
+            Err(err) => {
+                // TODO(diagnostics): surface WireError via a diagnostics channel instead of
+                // logging to stderr and returning None.
+                #[allow(clippy::print_stderr)]
+                {
+                    eprintln!("ERROR: {err}; skipping metadata for this file");
+                }
+                None
+            }
+        }
+    }
+
+    /// Synchronously drive [`Self::get_metadata_for_file_id`] to completion.
+    pub fn get_metadata_for_file_id_blocking(
+        self: &Arc<Self>,
+        file_id: FileId,
+    ) -> Option<crate::AnalysisResult> {
+        Self::block_on_query(self.clone().get_metadata_for_file_id(file_id))
+    }
+
     /// Synchronously drive `AnalyzeFileWire` to completion.
     pub fn analyze_file_wire_blocking(
         self: &Arc<Self>,
@@ -1285,7 +1454,11 @@ impl QueryEngine {
         let file_path = self.lookup_path(file_id);
         // TODO(ngp-host-h5): echo `ResolvedModule::external` instead of passing `false`, and
         // reuse inline `ResolvedModule::code` in H6.
-        let (source_text, host_format, cache_key) = match self
+        // TODO(ngp-host-h6): do not reuse `code` from a resolution served by `ResolutionCache`.
+        // The cache memoizes the whole `ResolvedModule` and survives edits to the target, so a
+        // hit carries the text the target had when it was resolved, and keeps that text alive.
+        // Clear `code` before memoizing, or take it only from an answer the host just gave.
+        let (source_text, host_format, cache_key, loaded) = match self
             .host
             .load(&module_id, crate::host::LoadKind::Module, false)
             .await
@@ -1305,7 +1478,7 @@ impl QueryEngine {
                         return parsed;
                     }
                 }
-                (loaded.code.to_string(), loaded.format, cache_key)
+                (loaded.code.to_string(), loaded.format, cache_key, true)
             }
             Ok(None) => {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
@@ -1316,7 +1489,7 @@ impl QueryEngine {
                         module_id
                     );
                 }
-                (String::new(), None, None)
+                (String::new(), None, None, false)
             }
             Err(e) => {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
@@ -1324,7 +1497,7 @@ impl QueryEngine {
                 {
                     eprintln!("Warning: Failed to read '{}': {}", module_id, e);
                 }
-                (String::new(), None, None)
+                (String::new(), None, None, false)
             }
         };
         let cache_entry = cache_key.map(|key| (file_path.clone(), key));
@@ -1343,6 +1516,7 @@ impl QueryEngine {
         let owner = crate::ParsedFileOwner {
             file_path,
             source_text,
+            loaded,
             allocator: oxc_allocator::Allocator::default(),
         };
 
@@ -1478,33 +1652,77 @@ impl QueryEngine {
 
         // Resolve component resources and static/dynamic module dependencies concurrently through
         // `AnalysisHost` so async hosts can batch all single-file lookups into one wave.
-        let resolve_ts_sources = |specifiers: &[String], kind: crate::host::ImportKind| {
-            futures::future::join_all(specifiers.iter().map(|specifier| {
-                let module_id = module_id.clone();
-                // Owned, so the returned futures don't borrow the closure's argument.
-                let specifier = specifier.clone();
-                async move {
-                    let Ok(Some(resolved)) = self
-                        .host
-                        .resolve(crate::host::ResolveRequest::new(module_id, specifier, kind))
-                        .await
-                    else {
-                        // Creating the file this specifier names must re-run this query.
-                        ctx.record_file(UNRESOLVED_IMPORTS_FILE_ID);
-                        return None;
+        let imported_specifiers: HashSet<&str> = analysis
+            .import_declarations
+            .iter()
+            .map(|decl| decl.specifier.as_str())
+            .collect();
+        let reexport_specifiers: HashSet<&str> = analysis
+            .file_exports
+            .named
+            .iter()
+            .filter(|r| !r.binds_locally)
+            .map(|r| r.source.as_str())
+            .chain(
+                analysis
+                    .file_exports
+                    .wildcards
+                    .iter()
+                    .map(|w| w.source.as_str()),
+            )
+            .collect();
+        let static_requests: Vec<crate::host::ResolveRequest> = {
+            let mut seen = HashSet::new();
+            analysis
+                .static_dependencies
+                .iter()
+                .filter(|spec| seen.insert(spec.as_str()))
+                .map(|spec| {
+                    let kind = if !imported_specifiers.contains(spec.as_str())
+                        && reexport_specifiers.contains(spec.as_str())
+                    {
+                        crate::host::ImportKind::ReExport
+                    } else {
+                        crate::host::ImportKind::Static
                     };
-                    let target_id = self.intern_resolved(&resolved.id, resolved.id_kind);
-                    if resolved.external {
-                        return None;
-                    }
-                    let is_program_ts_source = match resolved.id_kind {
-                        crate::host::IdKind::Path => is_ts_source(Path::new(resolved.id.as_str())),
-                        crate::host::IdKind::Virtual => resolved
-                            .format
-                            .is_some_and(crate::host::ModuleFormat::is_ts_source),
-                    };
-                    is_program_ts_source.then(|| self.lookup_path(target_id))
+                    crate::host::ResolveRequest::new(module_id.clone(), spec.clone(), kind)
+                })
+                .collect()
+        };
+        let dynamic_requests: Vec<crate::host::ResolveRequest> = {
+            let mut seen = HashSet::new();
+            analysis
+                .dynamic_dependencies
+                .iter()
+                .filter(|spec| seen.insert(spec.as_str()))
+                .map(|spec| {
+                    crate::host::ResolveRequest::new(
+                        module_id.clone(),
+                        spec.clone(),
+                        crate::host::ImportKind::Dynamic,
+                    )
+                })
+                .collect()
+        };
+        drop(imported_specifiers);
+        drop(reexport_specifiers);
+
+        let resolve_ts_sources = |requests: Vec<crate::host::ResolveRequest>| {
+            futures::future::join_all(requests.into_iter().map(|req| async move {
+                let Ok(Some((target_id, resolved))) = ctx.resolve_request(file_id, req).await
+                else {
+                    return None;
+                };
+                if resolved.external {
+                    return None;
                 }
+                let is_program_ts_source = match resolved.id_kind {
+                    crate::host::IdKind::Path => is_ts_source(Path::new(resolved.id.as_str())),
+                    crate::host::IdKind::Virtual => resolved
+                        .format
+                        .is_some_and(crate::host::ModuleFormat::is_ts_source),
+                };
+                is_program_ts_source.then(|| self.lookup_path(target_id))
             }))
         };
 
@@ -1515,17 +1733,11 @@ impl QueryEngine {
                 &module_id,
                 file_id,
             ),
-            resolve_ts_sources(
-                &analysis.static_dependencies,
-                crate::host::ImportKind::Static,
-            ),
+            resolve_ts_sources(static_requests),
             // TODO(ngp-host-h3/h5): split `import type` / `export type` and `TSImportType` out of
             // `dynamic_dependencies` so `ResolveRequest` carries `type_only: true` and
             // `ImportKind::TypeImport`.
-            resolve_ts_sources(
-                &analysis.dynamic_dependencies,
-                crate::host::ImportKind::Dynamic,
-            ),
+            resolve_ts_sources(dynamic_requests),
         )
         .await;
         let resolved_dependencies: Vec<PathBuf> = static_resolved.into_iter().flatten().collect();
@@ -1883,9 +2095,13 @@ impl QueryEngine {
             }
         }
 
+        // Deduplicate before resolving: only completed lookups are memoized, so identical
+        // candidates resolved in the same wave would each reach the host.
+        let mut seen_candidates = HashSet::new();
+        candidates.retain(|candidate| seen_candidates.insert(candidate.clone()));
         let resolved_candidates =
             futures::future::join_all(candidates.into_iter().map(|(ep_id, specifier)| async move {
-                let resolved = self
+                let resolved = ctx
                     .resolve_from_id(ep_id, &specifier, crate::host::ImportKind::Static)
                     .await;
                 (ep_id, specifier, resolved)
@@ -1893,7 +2109,6 @@ impl QueryEngine {
             .await;
 
         let mut global_extra_imports: Vec<(FileId, String)> = Vec::new();
-        let mut seen_global: HashSet<(FileId, String)> = HashSet::new();
         for (ep_id, specifier, resolved) in resolved_candidates {
             let is_local_entrypoint = resolved.is_some_and(|(target_id, module)| {
                 if entrypoints_ids.contains(&target_id) {
@@ -1911,9 +2126,7 @@ impl QueryEngine {
             if is_local_entrypoint {
                 continue;
             }
-            if seen_global.insert((ep_id, specifier.clone())) {
-                global_extra_imports.push((ep_id, specifier));
-            }
+            global_extra_imports.push((ep_id, specifier));
         }
 
         Arc::new(crate::query::keys::LocalExtraImportsData {
@@ -5717,6 +5930,422 @@ mod tests {
                 .map(|r| (r.specifier.as_str(), r.symbol.as_str())),
             Some(("pkg-a", "HostDir"))
         );
+    }
+
+    #[test]
+    fn async_host_caches_resolutions_across_queries_and_preserves_other_importers() {
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, IdKind, ImportKind, LoadKind, LoadedModule,
+            ModuleFormat, ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId,
+            ResourceKind,
+        };
+
+        struct CountingAsyncHost {
+            resolutions: RwLock<HashMap<(String, String, ImportKind), ResolvedModule>>,
+            modules: RwLock<HashMap<String, LoadedModule>>,
+            resolve_calls: Mutex<Vec<(String, String, ImportKind)>>,
+            load_calls: Mutex<Vec<String>>,
+        }
+
+        impl AnalysisHost for CountingAsyncHost {
+            fn resolve(
+                &self,
+                req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                let key = (req.importer.as_str().to_owned(), req.specifier, req.kind);
+                self.resolve_calls.lock().unwrap().push(key.clone());
+                let hit = self.resolutions.read().unwrap().get(&key).cloned();
+                yield_once(Ok(hit))
+            }
+
+            fn load(
+                &self,
+                id: &ModuleId,
+                _kind: LoadKind,
+                _external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                self.load_calls.lock().unwrap().push(id.as_str().to_owned());
+                let hit = self.modules.read().unwrap().get(id.as_str()).cloned();
+                yield_once(Ok(hit))
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                yield_once(Ok(None))
+            }
+        }
+
+        let app_path = "/cache_test/app.ts";
+        let barrel_path = "/cache_test/barrel.ts";
+        let child_path = "/cache_test/child.ts";
+        let alt_child_path = "/cache_test/alt_child.ts";
+
+        let mut resolutions = HashMap::new();
+        resolutions.insert(
+            (
+                app_path.to_owned(),
+                "./barrel".to_owned(),
+                ImportKind::Static,
+            ),
+            ResolvedModule {
+                id: ModuleId::new(barrel_path),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                barrel_path.to_owned(),
+                "./child".to_owned(),
+                ImportKind::ReExport,
+            ),
+            ResolvedModule {
+                id: ModuleId::new(child_path),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+
+        let child_source = |sel: &str| LoadedModule {
+            code: Arc::from(format!(
+                "import {{ Directive }} from '@angular/core';\n\
+                 @Directive({{ selector: '{sel}' }})\n\
+                 export class ChildDir {{}}\n"
+            )),
+            format: Some(ModuleFormat::Ts),
+        };
+
+        let mut modules = HashMap::new();
+        modules.insert(
+            app_path.to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     import { BarrelDir } from './barrel';\n\
+                     @Component({\n\
+                       selector: 'app-root',\n\
+                       template: '<div childV1 childV2 childAlt></div>',\n\
+                       imports: [BarrelDir],\n\
+                     })\n\
+                     export class AppCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            barrel_path.to_owned(),
+            LoadedModule {
+                code: Arc::from("export { ChildDir as BarrelDir } from './child';\n"),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(child_path.to_owned(), child_source("[childV1]"));
+        modules.insert(alt_child_path.to_owned(), child_source("[childAlt]"));
+
+        let host = Arc::new(CountingAsyncHost {
+            resolutions: RwLock::new(resolutions),
+            modules: RwLock::new(modules),
+            resolve_calls: Mutex::new(Vec::new()),
+            load_calls: Mutex::new(Vec::new()),
+        });
+        let registry = Arc::new(ResourceRegistry::default());
+        let entrypoints = Arc::new(RwLock::new(vec![PathBuf::from(app_path)]));
+        let engine = QueryEngine::new_default_with_host(host.clone(), registry, entrypoints);
+
+        let app_id = engine.intern_path(Path::new(app_path));
+        let barrel_id = engine.intern_path(Path::new(barrel_path));
+        let child_id = engine.intern_path(Path::new(child_path));
+
+        let ctx = QueryContext::new(engine.clone());
+        let (program_files, semantic, _) = block_on_with_timeout(async move {
+            let pf = ctx.program_files().await;
+            let sem = ctx.analyze_file_semantic(app_id).await;
+            let exports = ctx.module_export_map(barrel_id).await;
+            (pf, sem, exports)
+        });
+        let cmp = semantic.classes[0].as_component().expect("AppCmp");
+        assert_eq!(
+            cmp.resolved_declarations.as_ref().unwrap()[0]
+                .selector
+                .as_deref(),
+            Some("[childV1]")
+        );
+
+        let count_for = |importer: &str, spec: &str, kind: ImportKind| -> usize {
+            host.resolve_calls
+                .lock()
+                .unwrap()
+                .iter()
+                .filter(|(imp, sp, k)| imp == importer && sp == spec && *k == kind)
+                .count()
+        };
+        assert_eq!(count_for(app_path, "./barrel", ImportKind::Static), 1);
+        assert_eq!(count_for(barrel_path, "./child", ImportKind::ReExport), 1);
+        // The syntactic scan asks for the barrel's pure re-export as a re-export too: it shares
+        // the lookup above instead of repeating it as a plain import, and still follows it into
+        // the program closure.
+        assert_eq!(count_for(barrel_path, "./child", ImportKind::Static), 0);
+        assert_eq!(*program_files, vec![app_id, barrel_id, child_id]);
+
+        // Editing the target file (`child.ts`) must reuse cached resolutions for both `app.ts`
+        // and `barrel.ts` without asking the host again.
+        host.resolve_calls.lock().unwrap().clear();
+        host.modules
+            .write()
+            .unwrap()
+            .insert(child_path.to_owned(), child_source("[childV2]"));
+        engine.invalidate_file_id(child_id);
+
+        let engine_v2 = engine.clone();
+        let semantic_v2 = block_on_with_timeout(async move {
+            let ctx = QueryContext::new(engine_v2);
+            ctx.analyze_file_semantic(app_id).await
+        });
+        let cmp_v2 = semantic_v2.classes[0].as_component().expect("AppCmp");
+        assert_eq!(
+            cmp_v2.resolved_declarations.as_ref().unwrap()[0]
+                .selector
+                .as_deref(),
+            Some("[childV2]")
+        );
+        assert_eq!(count_for(app_path, "./barrel", ImportKind::Static), 0);
+        assert_eq!(count_for(barrel_path, "./child", ImportKind::ReExport), 0);
+
+        // Editing `app.ts` itself drops only `app.ts`'s cached resolutions while preserving
+        // `barrel.ts`'s cached resolution to `./child`.
+        engine.invalidate_file_id(app_id);
+        let engine_v3 = engine.clone();
+        let _ = block_on_with_timeout(async move {
+            let ctx = QueryContext::new(engine_v3);
+            ctx.analyze_file_semantic(app_id).await
+        });
+        assert_eq!(count_for(app_path, "./barrel", ImportKind::Static), 1);
+        assert_eq!(count_for(barrel_path, "./child", ImportKind::ReExport), 0);
+
+        // Clearing the resolution cache re-resolves positive cached entries across all importers
+        // while keeping existing `ParseFile` results cached (no host `load` for `app` or `barrel`).
+        host.resolve_calls.lock().unwrap().clear();
+        host.load_calls.lock().unwrap().clear();
+        host.resolutions.write().unwrap().insert(
+            (
+                barrel_path.to_owned(),
+                "./child".to_owned(),
+                ImportKind::ReExport,
+            ),
+            ResolvedModule {
+                id: ModuleId::new(alt_child_path),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        let evicted = engine.clear_resolution_cache();
+        assert!(evicted.contains(&QueryKey::AnalyzeFileSemantic(app_id)));
+        assert!(!evicted.contains(&QueryKey::ParseFile(app_id)));
+        assert!(!evicted.contains(&QueryKey::ParseFile(barrel_id)));
+
+        let semantic_v4 = block_on_with_timeout(async move {
+            let ctx = QueryContext::new(engine);
+            ctx.analyze_file_semantic(app_id).await
+        });
+        let cmp_v4 = semantic_v4.classes[0].as_component().expect("AppCmp");
+        assert_eq!(
+            cmp_v4.resolved_declarations.as_ref().unwrap()[0]
+                .selector
+                .as_deref(),
+            Some("[childAlt]")
+        );
+        assert_eq!(count_for(app_path, "./barrel", ImportKind::Static), 1);
+        assert_eq!(count_for(barrel_path, "./child", ImportKind::ReExport), 1);
+        assert_eq!(
+            *host.load_calls.lock().unwrap(),
+            vec![alt_child_path.to_owned()]
+        );
+    }
+
+    /// A failed lookup served from the resolution cache must still mark the calling query as
+    /// depending on the unresolved imports, or creating the file would not re-run it.
+    #[test]
+    fn memoized_unresolved_lookup_records_unresolved_imports_dependency() {
+        use crate::host::{ImportKind, ResolveRequest};
+        use crate::query::resolution_cache::ResolutionLookupKey;
+
+        let importer = "/negative_cache/app.ts";
+        let engine = QueryEngine::new_default_with_host(
+            Arc::new(AsyncMemoryHost {
+                resolutions: HashMap::new(),
+                modules: HashMap::new(),
+                resources: HashMap::new(),
+                resource_contents: HashMap::new(),
+            }),
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(std::sync::RwLock::new(Vec::new())),
+        );
+        let importer_id = engine.intern_path(importer);
+        let key = ResolutionLookupKey::from_request(&ResolveRequest::new(
+            importer,
+            "./missing",
+            ImportKind::Static,
+        ));
+
+        for memoized in [false, true] {
+            assert_eq!(
+                engine.resolution_cache.get(importer_id, &key).is_some(),
+                memoized
+            );
+            let ctx = QueryContext::new(engine.clone());
+            let lookup_ctx = ctx.clone();
+            let resolved = block_on_with_timeout(async move {
+                lookup_ctx
+                    .resolve_from_id(importer_id, "./missing", ImportKind::Static)
+                    .await
+            });
+            assert!(resolved.is_none());
+            assert_eq!(
+                ctx.dependencies(),
+                HashSet::from([importer_id, UNRESOLVED_IMPORTS_FILE_ID])
+            );
+        }
+    }
+
+    #[test]
+    fn test_get_metadata_for_file_id_async_host() {
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, IdKind, LoadKind, LoadedModule, ModuleFormat,
+            ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId, ResourceKind,
+        };
+
+        struct AsyncMetadataHost {
+            resolutions: HashMap<(String, String), ResolvedModule>,
+            modules: HashMap<String, LoadedModule>,
+            load_calls: Mutex<Vec<String>>,
+        }
+
+        impl AnalysisHost for AsyncMetadataHost {
+            fn resolve(
+                &self,
+                req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                let key = (req.importer.as_str().to_owned(), req.specifier);
+                yield_once(Ok(self.resolutions.get(&key).cloned()))
+            }
+
+            fn load(
+                &self,
+                id: &ModuleId,
+                _kind: LoadKind,
+                _external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                self.load_calls.lock().unwrap().push(id.as_str().to_owned());
+                yield_once(Ok(self.modules.get(id.as_str()).cloned()))
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                yield_once(Ok(None))
+            }
+        }
+
+        let virtual_cmp_id = "\0virtual:app.component";
+        let dir_path = "/async_meta/highlight.dir.ts";
+
+        let mut resolutions = HashMap::new();
+        resolutions.insert(
+            (virtual_cmp_id.to_owned(), "./highlight.dir".to_owned()),
+            ResolvedModule {
+                id: ModuleId::new(dir_path),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+
+        let mut modules = HashMap::new();
+        modules.insert(
+            virtual_cmp_id.to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     import { HighlightDir } from './highlight.dir';\n\
+                     @Component({\n\
+                       selector: 'app-virtual',\n\
+                       template: '<div appHighlight></div>',\n\
+                       imports: [HighlightDir],\n\
+                     })\n\
+                     export class VirtualAppCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            dir_path.to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[appHighlight]' })\n\
+                     export class HighlightDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+
+        let host = Arc::new(AsyncMetadataHost {
+            resolutions,
+            modules,
+            load_calls: Mutex::new(Vec::new()),
+        });
+        let engine = QueryEngine::new_default_with_host(
+            host.clone(),
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(RwLock::new(Vec::new())),
+        );
+        assert!(!engine.is_synchronous_host());
+
+        // The returned future borrows the engine, so each request owns a clone to give
+        // `block_on_with_timeout` the `'static` future it requires.
+        let metadata_for = |file_id| {
+            let engine = engine.clone();
+            block_on_with_timeout(async move { engine.get_metadata_for_file_id(file_id).await })
+        };
+
+        // Non-module paths short-circuit before calling `host.load`.
+        let html_id = engine.intern_module("/async_meta/view.html", IdKind::Path);
+        assert!(metadata_for(html_id).is_none());
+        assert!(host.load_calls.lock().unwrap().is_empty());
+
+        // Missing modules (`host.load` -> `Ok(None)`) return `None` rather than an empty result.
+        let missing_id = engine.intern_module("/async_meta/missing.ts", IdKind::Path);
+        assert!(metadata_for(missing_id).is_none());
+
+        // Virtual component modules resolve dependencies asynchronously across host yields.
+        let cmp_id = engine.intern_module(virtual_cmp_id, IdKind::Virtual);
+        let cmp_meta = metadata_for(cmp_id).expect("expected metadata for virtual component");
+        assert_eq!(cmp_meta.classes.len(), 1);
+        assert_eq!(
+            cmp_meta.classes[0].class_name.as_deref(),
+            Some("VirtualAppCmp")
+        );
+        let declarations = cmp_meta.classes[0]
+            .component
+            .as_ref()
+            .and_then(|c| c.resolved_declarations.as_ref())
+            .expect("resolved declarations");
+        assert_eq!(declarations.len(), 1);
+        assert_eq!(declarations[0].selector.as_deref(), Some("[appHighlight]"));
     }
 }
 
