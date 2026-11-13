@@ -192,6 +192,17 @@ export class BaseControlValueAccessor {
   }
 }
 
+const BUILT_IN_ACCESSOR_TYPE = /* @__PURE__ */ Symbol();
+
+/** Identifies constructors that directly extend the built-in accessor base. */
+export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
+  const type = Object.getPrototypeOf(
+    valueAccessor.constructor,
+  ) as typeof BuiltInControlValueAccessor;
+  const marker = type?._ngBuiltInValueAccessor;
+  return marker?.id === BUILT_IN_ACCESSOR_TYPE && marker.type === type;
+}
+
 /**
  * Base class for all built-in ControlValueAccessor classes (except DefaultValueAccessor, which is
  * used in case no other CVAs can be found). We use this class to distinguish between default CVA,
@@ -202,7 +213,13 @@ export class BaseControlValueAccessor {
  * applications code.
  */
 @Directive()
-export class BuiltInControlValueAccessor extends BaseControlValueAccessor {}
+export class BuiltInControlValueAccessor extends BaseControlValueAccessor {
+  /** @internal */
+  static readonly _ngBuiltInValueAccessor = {
+    id: BUILT_IN_ACCESSOR_TYPE,
+    type: BuiltInControlValueAccessor,
+  };
+}
 
 /**
  * Used to provide a `ControlValueAccessor` for form controls.
