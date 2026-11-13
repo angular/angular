@@ -115,7 +115,7 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
         if perf_trace {
             ng_analyze::perf::install();
         }
-        ng_analyze::perf::set_recording(perf_trace, options.perf_trace_detail == Some(true));
+        ng_analyze::perf::set_recording(perf_trace);
         return match Analyzer::new_core(options) {
             Ok(a) => {
                 let compiler_options =
