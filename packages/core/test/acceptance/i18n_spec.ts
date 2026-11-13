@@ -36,6 +36,8 @@ import {
   PipeTransform,
   provideZoneChangeDetection,
   QueryList,
+  Sanitizer,
+  SecurityContext,
   signal,
   TemplateRef,
   Type,
@@ -3567,6 +3569,48 @@ describe('runtime i18n', () => {
       const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
       expect(link).toBeTruthy();
       expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    describe('with a custom Sanitizer', () => {
+      const customSanitizer: Sanitizer = {
+        sanitize: (context: SecurityContext, value: unknown) =>
+          context === SecurityContext.URL ? `custom:${value}` : String(value),
+      };
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [{provide: Sanitizer, useValue: customSanitizer}],
+        });
+      });
+
+      it('should use the custom sanitizer for translated interpolation', () => {
+        const fixture = initWithTemplate(SanitizeAppComp, '<a href="{{url}}" i18n-href></a>');
+        const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+        expect(link.getAttribute('href')).toBe('custom:javascript:alert("oh no")');
+      });
+
+      it('should use the custom sanitizer for interpolation inside translated element', () => {
+        const fixture = initWithTemplate(
+          SanitizeAppComp,
+          `<div i18n><a href="{{url}}"></a></div>`,
+        );
+        const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+        expect(link.getAttribute('href')).toBe('custom:javascript:alert("oh no")');
+      });
+
+      it('should use the custom sanitizer for interpolation inside an ICU', () => {
+        const fixture = initWithTemplate(
+          SanitizeAppComp,
+          `<div i18n>{count, plural,
+              =0 {no <strong>link</strong> yet}
+              other {{{count}} Here is the <a href="{{url}}">link</a>!}
+          }</div>`,
+        );
+        fixture.componentInstance.count = 1;
+        fixture.detectChanges();
+        const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+        expect(link.getAttribute('href')).toBe('custom:javascript:alert("oh no")');
+      });
     });
 
     it('should sanitize action binding', () => {
