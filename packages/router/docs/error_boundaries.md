@@ -138,9 +138,9 @@ When any component, resource, or lifecycle method throws a `RedirectCommand`:
 3. If an `errorComponent` is configured, it mounts and receives the `RedirectCommand` in its `error` input.
 4. If no `errorComponent` is configured, the error bubbles up (except for `RedirectCommand`, which stops propagating after dispatching the navigation).
 
-#### Deduplication Across Boundaries
+#### Single Dispatch
 
-If a `RedirectCommand` bubbles through multiple nested outlets or template `@boundary` blocks, it is tagged with an internal symbol (`[REDIRECT_DISPATCHED] = true`). This guarantees that only the first boundary dispatches the navigation, preventing duplicate navigations.
+A `RedirectCommand` is handled by the first outlet that catches it and does not propagate any further, so the navigation is dispatched once per thrown command. The command is not mutated, which means the same `RedirectCommand` instance can safely be thrown several times and navigates every time.
 
 #### Custom Errors for Custom Behavior
 

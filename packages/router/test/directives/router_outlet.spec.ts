@@ -1239,6 +1239,53 @@ describe('Error boundaries and errorComponent integration', () => {
     expect(harness.routeNativeElement?.innerText).toContain('Destination Reached');
   });
 
+  it('navigates every time the same RedirectCommand instance is thrown', async () => {
+    let redirect!: RedirectCommand;
+
+    @Component({
+      template: 'Throwing Component Content',
+    })
+    class ThrowingComponent {
+      constructor() {
+        throw redirect;
+      }
+    }
+
+    @Component({
+      template: 'Home',
+    })
+    class HomeComponent {}
+
+    @Component({
+      template: 'Destination Reached',
+    })
+    class DestinationComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouterWithBoundaries([
+          {path: 'home', component: HomeComponent},
+          {path: 'throwing', component: ThrowingComponent},
+          {path: 'destination', component: DestinationComponent},
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    redirect = new RedirectCommand(router.parseUrl('/destination'));
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/throwing');
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/destination');
+
+    await harness.navigateByUrl('/home');
+    await harness.navigateByUrl('/throwing');
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/destination');
+    expect(harness.routeNativeElement?.innerText).toContain('Destination Reached');
+  });
+
   it('bubbles error up when route does not define an errorComponent', async () => {
     @Component({
       template: 'Throwing Component Content',

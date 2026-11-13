@@ -22,10 +22,6 @@ import type {RouterErrorBoundaryHandler} from './router_error_boundary_feature';
 import type {ChildrenOutletContexts} from './router_outlet_context';
 import type {ActivatedRoute} from './router_state';
 
-const REDIRECT_DISPATCHED: unique symbol = /* @__PURE__ */ Symbol(
-  typeof ngDevMode === 'undefined' || ngDevMode ? '__redirectDispatched' : '',
-);
-
 function unwrapRedirectCommand(error: unknown): RedirectCommand | null {
   if (error instanceof RedirectCommand) {
     return error;
@@ -39,18 +35,14 @@ function unwrapRedirectCommand(error: unknown): RedirectCommand | null {
 /**
  * Dispatches a navigation if the given error is (or wraps) a `RedirectCommand`.
  *
- * @returns Whether the error was a redirect. A redirect is only dispatched once, even if the same
- *     error is seen by several outlets while bubbling up.
+ * @returns Whether the error was a redirect.
  */
 function triggerRedirectIfCommand(error: unknown, router: Router): boolean {
   const redirect = unwrapRedirectCommand(error);
   if (redirect === null) {
     return false;
   }
-  if (!(redirect as any)[REDIRECT_DISPATCHED]) {
-    (redirect as any)[REDIRECT_DISPATCHED] = true;
-    router.navigateByUrl(redirect.redirectTo, redirect.navigationBehaviorOptions);
-  }
+  router.navigateByUrl(redirect.redirectTo, redirect.navigationBehaviorOptions);
   return true;
 }
 
