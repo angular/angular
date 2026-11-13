@@ -7,8 +7,10 @@
  */
 
 import {CssSelector, SelectorMatcher} from '../../directive_matching';
+import {splitNsName} from '../../ml_parser/tags';
 import {
   BoundaryBlock,
+  Content,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -20,11 +22,13 @@ import {
   SwitchBlockCaseGroup,
   Template,
   Text,
+  TextAttribute,
 } from '../../render3/r3_ast';
 import {createCssSelectorFromNode} from '../../render3/view/util';
+import {NG_PROJECT_AS} from '../../template_parser/template_preparser';
+import {OutOfBandDiagnosticCategory} from '../oob';
 import {TcbOp} from './base';
 import {Context} from './context';
-import {OutOfBandDiagnosticCategory} from '../oob';
 
 /**
  * A `TcbOp` that finds and flags control flow nodes that interfere with content projection.
@@ -167,4 +171,128 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
     return false;
   }
+}
+
+/**
+ * A `TcbOp` that validates static attributes on `<ng-content>`, allowing attributes that are
+ * either read by Angular or used to match a content projection slot of a parent component.
+ */
+export class TcbContentAttributesOp extends TcbOp {
+  constructor(
+    private tcb: Context,
+    private node: Content,
+  ) {
+    super();
+  }
+
+  override readonly optional = false;
+
+  override execute(): null {
+    const usedInSlot = this.tcb.contentAttributesInProjectionSlots.get(this.node);
+    for (const attr of this.node.attributes) {
+      if (!isAllowedNgContentAttribute(attr.name) && !usedInSlot?.has(attr)) {
+        this.tcb.oobRecorder.unsupportedNgContentAttribute(this.tcb.id, attr);
+      }
+    }
+    return null;
+  }
+}
+
+function isAllowedNgContentAttribute(name: string): boolean {
+  const lower = name.toLowerCase();
+  return (
+    lower === 'select' ||
+    name === 'ngProjectAs' ||
+    name === 'ngSkipHydration' ||
+    name === 'ngPreserveWhitespaces'
+  );
+}
+
+/**
+ * Finds the static attributes on child `<ng-content>` nodes that select a specific content
+ * projection slot of their parent component. An attribute participates in projection if the
+ * `<ng-content>` node would land in a different slot without it.
+ */
+export function getContentAttributesInProjectionSlots(
+  children: Node[],
+  ngContentSelectors: string[],
+): Map<Content, Set<TextAttribute>> {
+  const matcher = new SelectorMatcher<string>();
+  for (const selector of ngContentSelectors) {
+    if (selector !== '*') {
+      matcher.addSelectables(CssSelector.parse(selector), selector);
+    }
+  }
+
+  const result = new Map<Content, Set<TextAttribute>>();
+  for (const child of children) {
+    if (
+      !(child instanceof Content) ||
+      child.attributes.some((attr) => attr.name === NG_PROJECT_AS)
+    ) {
+      continue;
+    }
+    const selector = createContentCssSelector(child);
+    const slot = findProjectionSlot(matcher, ngContentSelectors, selector);
+    const attributes = new Set<TextAttribute>();
+    for (const attr of child.attributes) {
+      const withoutAttr = removeAttributeFromSelector(selector, attr.name);
+      if (findProjectionSlot(matcher, ngContentSelectors, withoutAttr) !== slot) {
+        attributes.add(attr);
+      }
+    }
+    result.set(child, attributes);
+  }
+  return result;
+}
+
+function findProjectionSlot(
+  matcher: SelectorMatcher<string>,
+  ngContentSelectors: string[],
+  selector: CssSelector,
+): number | null {
+  let slot: number | null = null;
+  matcher.match(selector, (_, slotSelector) => {
+    const index = ngContentSelectors.indexOf(slotSelector);
+    if (slot === null || index < slot) {
+      slot = index;
+    }
+  });
+  return slot;
+}
+
+function removeAttributeFromSelector(selector: CssSelector, name: string): CssSelector {
+  const nameNoNs = splitNsName(name)[1];
+  const result = new CssSelector();
+  result.setElement(selector.element);
+  for (let i = 0; i < selector.attrs.length; i += 2) {
+    if (selector.attrs[i] !== nameNoNs) {
+      result.addAttribute(selector.attrs[i], selector.attrs[i + 1]);
+    }
+  }
+  if (nameNoNs.toLowerCase() !== 'class') {
+    for (const className of selector.classNames) {
+      result.addClassName(className);
+    }
+  }
+  return result;
+}
+
+function createContentCssSelector(node: Content): CssSelector {
+  const selector = new CssSelector();
+  for (const attr of node.attributes) {
+    const name = splitNsName(attr.name)[1];
+    if (name.toLowerCase() === 'select') {
+      continue;
+    }
+    selector.addAttribute(name, attr.value);
+    if (name.toLowerCase() === 'class') {
+      for (const className of attr.value.trim().split(/\s+/)) {
+        if (className !== '') {
+          selector.addClassName(className);
+        }
+      }
+    }
+  }
+  return selector;
 }

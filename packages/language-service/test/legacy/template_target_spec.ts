@@ -405,7 +405,7 @@ describe('getTargetAtPosition for template AST', () => {
   });
 
   it('should locate ng-content attribute key', () => {
-    const {errors, nodes, position} = parse('<ng-content cla¦ss="red"></ng-content>');
+    const {errors, nodes, position} = parse('<ng-content sel¦ect="red"></ng-content>');
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
@@ -414,7 +414,7 @@ describe('getTargetAtPosition for template AST', () => {
   });
 
   it('should locate ng-content attribute value', () => {
-    const {errors, nodes, position} = parse('<ng-content class="r¦ed"></ng-content>');
+    const {errors, nodes, position} = parse('<ng-content select="r¦ed"></ng-content>');
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;

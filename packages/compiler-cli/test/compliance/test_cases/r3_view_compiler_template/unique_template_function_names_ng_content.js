@@ -1,17 +1,40 @@
-import { Component, NgModule } from "@angular/core";
+import { Component, Directive, NgModule } from "@angular/core";
 import * as i0 from "@angular/core";
 const _c0 = ["*"];
-const _c1 = ["*ngIf", "show"];
 function AComponent_ng_content_0_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵprojection(0, 0, _c1);
+    i0.ɵɵprojection(0);
   }
 }
 function BComponent_ng_content_0_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵprojection(0, 0, _c1);
+    i0.ɵɵprojection(0);
   }
 }
+export class FakeNgIf {
+  static ɵfac = function FakeNgIf_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || FakeNgIf)();
+  };
+  static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({
+    type: FakeNgIf,
+    selectors: [["", "ngIf", ""]],
+    standalone: false
+  });
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      FakeNgIf,
+      [
+        {
+          type: Directive,
+          args: [{ selector: "[ngIf]", standalone: false }]
+        }
+      ],
+      null,
+      null
+    );
+})();
 export class AComponent {
   show = true;
   static ɵfac = function AComponent_Factory(__ngFactoryType__) {
@@ -34,6 +57,7 @@ export class AComponent {
         i0.ɵɵproperty("ngIf", ctx.show);
       }
     },
+    dependencies: [FakeNgIf],
     encapsulation: 2
   });
 }
@@ -64,7 +88,7 @@ export class AComponent {
     i0.ɵsetClassDebugInfo(AComponent, {
       className: "AComponent",
       filePath: "unique_template_function_names_ng_content.ts",
-      lineNumber: 10
+      lineNumber: 13
     });
 })();
 export class BComponent {
@@ -89,6 +113,7 @@ export class BComponent {
         i0.ɵɵproperty("ngIf", ctx.show);
       }
     },
+    dependencies: [FakeNgIf],
     encapsulation: 2
   });
 }
@@ -119,7 +144,7 @@ export class BComponent {
     i0.ɵsetClassDebugInfo(BComponent, {
       className: "BComponent",
       filePath: "unique_template_function_names_ng_content.ts",
-      lineNumber: 21
+      lineNumber: 24
     });
 })();
 export class AModule {
@@ -136,7 +161,7 @@ export class AModule {
       [
         {
           type: NgModule,
-          args: [{ declarations: [AComponent, BComponent] }]
+          args: [{ declarations: [AComponent, BComponent, FakeNgIf] }]
         }
       ],
       null,
@@ -145,5 +170,5 @@ export class AModule {
 })();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
-    i0.ɵɵsetNgModuleScope(AModule, { declarations: [AComponent, BComponent] });
+    i0.ɵɵsetNgModuleScope(AModule, { declarations: [AComponent, BComponent, FakeNgIf] });
 })();

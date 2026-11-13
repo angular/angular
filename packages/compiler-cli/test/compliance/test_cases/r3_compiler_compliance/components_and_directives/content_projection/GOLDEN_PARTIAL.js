@@ -359,17 +359,26 @@ export declare class MyApp {
 /****************************************************************************************************
  * PARTIAL FILE: ng_content_with_structural_dir.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, Directive } from '@angular/core';
 import * as i0 from "@angular/core";
+export class FakeNgIf {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FakeNgIf, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: FakeNgIf, isStandalone: true, selector: "[ngIf]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FakeNgIf, decorators: [{
+            type: Directive,
+            args: [{ selector: '[ngIf]' }]
+        }] });
 export class SimpleComponent {
+    showContent = true;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SimpleComponent, isStandalone: false, selector: "simple", ngImport: i0, template: '<ng-content *ngIf="showContent"></ng-content>', isInline: true });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SimpleComponent, isStandalone: true, selector: "simple", ngImport: i0, template: '<ng-content *ngIf="showContent"></ng-content>', isInline: true, dependencies: [{ kind: "directive", type: FakeNgIf, selector: "[ngIf]" }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
             args: [{
+                    imports: [FakeNgIf],
                     selector: 'simple', template: '<ng-content *ngIf="showContent"></ng-content>',
-                    standalone: false
                 }]
         }] });
 
@@ -377,9 +386,14 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  * PARTIAL FILE: ng_content_with_structural_dir.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class FakeNgIf {
+    static ɵfac: i0.ɵɵFactoryDeclaration<FakeNgIf, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FakeNgIf, "[ngIf]", never, {}, {}, never, never, true, never>;
+}
 export declare class SimpleComponent {
+    showContent: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<SimpleComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleComponent, "simple", never, {}, {}, never, ["*"], false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleComponent, "simple", never, {}, {}, never, ["*"], true, never>;
 }
 
 /****************************************************************************************************
@@ -464,8 +478,16 @@ export {};
 /****************************************************************************************************
  * PARTIAL FILE: ng_content_fallback.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, Directive } from '@angular/core';
 import * as i0 from "@angular/core";
+export class FakeNgIf {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FakeNgIf, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: FakeNgIf, isStandalone: true, selector: "[ngIf]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FakeNgIf, decorators: [{
+            type: Directive,
+            args: [{ selector: '[ngIf]' }]
+        }] });
 export class TestComponent {
     type = 'complex';
     hasFooter = false;
@@ -489,12 +511,13 @@ export class TestComponent {
     <ng-content select="structural" *ngIf="hasStructural">
       <h2>With a structural directive</h2>
     </ng-content>
-  `, isInline: true });
+  `, isInline: true, dependencies: [{ kind: "directive", type: FakeNgIf, selector: "[ngIf]" }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, decorators: [{
             type: Component,
             args: [{
                     selector: 'test',
+                    imports: [FakeNgIf],
                     template: `
     <ng-content select="basic">Basic fallback</ng-content>
 
@@ -521,6 +544,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  * PARTIAL FILE: ng_content_fallback.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class FakeNgIf {
+    static ɵfac: i0.ɵɵFactoryDeclaration<FakeNgIf, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FakeNgIf, "[ngIf]", never, {}, {}, never, never, true, never>;
+}
 export declare class TestComponent {
     type: string;
     hasFooter: boolean;

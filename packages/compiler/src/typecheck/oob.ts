@@ -216,4 +216,10 @@ export interface OutOfBandDiagnosticRecorder<T> {
     classPropertyName: string,
     aliases: string[],
   ): void;
+
+  /**
+   * Reports an unsupported static attribute on an `<ng-content>` element that does not match any
+   * content projection slot of a parent component.
+   */
+  unsupportedNgContentAttribute(id: TypeCheckId, attr: TextAttribute): void;
 }

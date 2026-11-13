@@ -2866,6 +2866,36 @@ describe('R3 template transform', () => {
     );
   });
 
+  it('should report an error for attribute bindings on ng-template', () => {
+    const template = `<ng-template [attr.title]="'test'"></ng-template>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe(
+      'Attribute bindings are not supported on ng-template. Use property bindings instead.',
+    );
+  });
+
+  it('should report an error for property bindings on ng-content', () => {
+    const template = `<ng-content [id]="'test'"></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Property bindings are not supported on ng-content.');
+  });
+
+  it('should report an error for event bindings on ng-content', () => {
+    const template = `<ng-content (click)="onClick()"></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Event bindings are not supported on ng-content.');
+  });
+
+  it('should report an error for template references on ng-content', () => {
+    const template = `<ng-content #ref></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Template references are not supported on ng-content.');
+  });
+
   // TODO(v23): Enable this breaking change
   xit('should report an error for class bindings on ng-container', () => {
     const template = `<ng-container [class.foo]="true"></ng-container>`;
