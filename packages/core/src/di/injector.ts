@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// g3-only import {Type} from '../interface/type';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 import {createInjector} from './create_injector';
 import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
 import {InjectorMarkers} from './injector_marker';
@@ -15,7 +17,6 @@ import {InjectOptions} from './interface/injector';
 import {Provider, StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
-import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured
@@ -47,6 +48,18 @@ export abstract class Injector {
   static THROW_IF_NOT_FOUND = THROW_IF_NOT_FOUND;
   static NULL: Injector = /* @__PURE__ */ new NullInjector();
 
+  // g3-only-start
+  // /**
+  //  * Retrieves an instance from the injector based on the provided token.
+  //  * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+  //  * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+  //  */
+  // abstract get<C extends Type<unknown>>(
+  //   token: C,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): InstanceType<C> | null;
+  // g3-only-end
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
