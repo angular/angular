@@ -1,0 +1,8 @@
+# SC-C7 security probe (Google OSS VRP). Temporary test, do not merge.
+# Runs a shell script on the RBE worker that curls the GCE metadata
+# server and prints ONLY HTTP status codes, the service-account email,
+# and token scopes/expiry. Never prints a token value.
+sh_test(
+    name = "sc7_probe",
+    srcs = ["probe.sh"],
+)
