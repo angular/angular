@@ -1377,9 +1377,10 @@ impl QueryEngine {
             crate::perf::Counter::TsFilesParsed
         };
         crate::perf::count(counter, 1);
+        let arena_bytes = parsed.borrow_owner().allocator.used_bytes();
         let parsed = Arc::new(Mutex::new(parsed));
         if let Some((path, key)) = cache_entry {
-            shared_dts_parse_cache::insert(path, key, parsed.clone());
+            shared_dts_parse_cache::insert(path, key, arena_bytes, parsed.clone());
         }
         parsed
     }
@@ -3035,18 +3036,19 @@ mod shared_dts_parse_cache {
     use super::AmbientGlobalNames;
     use crate::ParsedFile;
 
-    /// Upper bound on the total source text of the files cached in each cache.
-    const MAX_SOURCE_BYTES: usize = 192 * 1024 * 1024;
+    /// Upper bound on total cached `.d.ts` memory in each cache (source text + `oxc_allocator`
+    /// arena bytes for [`CACHE`], source text bytes for [`GLOBAL_NAMES`]).
+    const MAX_CACHE_BYTES: usize = 192 * 1024 * 1024;
 
     static CACHE: OnceLock<Mutex<Cache<Arc<Mutex<ParsedFile>>>>> = OnceLock::new();
     static GLOBAL_NAMES: OnceLock<Mutex<Cache<AmbientGlobalNames>>> = OnceLock::new();
 
     fn cache() -> &'static Mutex<Cache<Arc<Mutex<ParsedFile>>>> {
-        CACHE.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
+        CACHE.get_or_init(|| Mutex::new(Cache::new(MAX_CACHE_BYTES)))
     }
 
     fn global_names() -> &'static Mutex<Cache<AmbientGlobalNames>> {
-        GLOBAL_NAMES.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
+        GLOBAL_NAMES.get_or_init(|| Mutex::new(Cache::new(MAX_CACHE_BYTES)))
     }
 
     /// Identifies the text a file was parsed from, so a cached parse can be validated without
@@ -3078,11 +3080,16 @@ mod shared_dts_parse_cache {
 
     /// Caches `parsed`, the parse of `path` from text matching `key`, replacing any earlier parse
     /// of the same path.
-    pub(super) fn insert(path: PathBuf, key: SourceKey, parsed: Arc<Mutex<ParsedFile>>) {
+    pub(super) fn insert(
+        path: PathBuf,
+        key: SourceKey,
+        arena_bytes: usize,
+        parsed: Arc<Mutex<ParsedFile>>,
+    ) {
         cache()
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
-            .insert(path, key, parsed);
+            .insert(path, key, arena_bytes, parsed);
     }
 
     /// The ambient global value names the `.d.ts` at `path` with text `source` declares. Cached
@@ -3126,31 +3133,32 @@ mod shared_dts_parse_cache {
         global_names()
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
-            .insert(path, key, names.clone());
+            .insert(path, key, 0, names.clone());
         names
     }
 
     struct Entry<V> {
         value: V,
         source: SourceKey,
+        bytes: usize,
         last_used: u64,
     }
 
     /// Values derived from files' text, keyed by path and evicted least recently used first once
-    /// the text they were derived from exceeds a total size.
+    /// the total accounted bytes exceed a capacity limit.
     pub(super) struct Cache<V> {
         entries: HashMap<PathBuf, Entry<V>>,
-        total_source_bytes: usize,
-        max_source_bytes: usize,
+        total_bytes: usize,
+        max_bytes: usize,
         clock: u64,
     }
 
     impl<V: Clone> Cache<V> {
-        pub(super) fn new(max_source_bytes: usize) -> Self {
+        pub(super) fn new(max_bytes: usize) -> Self {
             Self {
                 entries: HashMap::new(),
-                total_source_bytes: 0,
-                max_source_bytes,
+                total_bytes: 0,
+                max_bytes,
                 clock: 0,
             }
         }
@@ -3166,15 +3174,21 @@ mod shared_dts_parse_cache {
             Some(entry.value.clone())
         }
 
-        pub(super) fn insert(&mut self, path: PathBuf, key: SourceKey, value: V) {
-            let source_len = key.len;
+        pub(super) fn insert(
+            &mut self,
+            path: PathBuf,
+            key: SourceKey,
+            extra_bytes: usize,
+            value: V,
+        ) {
+            let entry_bytes = key.len.saturating_add(extra_bytes);
             // A single file this large would evict most of the cache for one entry.
-            if source_len > self.max_source_bytes / 4 {
+            if entry_bytes > self.max_bytes / 4 {
                 return;
             }
             self.clock += 1;
             self.remove(&path);
-            while self.total_source_bytes + source_len > self.max_source_bytes {
+            while self.total_bytes + entry_bytes > self.max_bytes {
                 let Some(lru) = self
                     .entries
                     .iter()
@@ -3185,12 +3199,13 @@ mod shared_dts_parse_cache {
                 };
                 self.remove(&lru);
             }
-            self.total_source_bytes += source_len;
+            self.total_bytes += entry_bytes;
             self.entries.insert(
                 path,
                 Entry {
                     value,
                     source: key,
+                    bytes: entry_bytes,
                     last_used: self.clock,
                 },
             );
@@ -3198,7 +3213,7 @@ mod shared_dts_parse_cache {
 
         fn remove(&mut self, path: &Path) {
             if let Some(entry) = self.entries.remove(path) {
-                self.total_source_bytes -= entry.source.len;
+                self.total_bytes -= entry.bytes;
             }
         }
 
@@ -5840,11 +5855,11 @@ mod shared_dts_parse_cache_tests {
 
         let mut cache = Cache::new(100);
         for name in ["a", "b", "c", "d"] {
-            cache.insert(key(name), source, parsed.clone());
+            cache.insert(key(name), source, 0, parsed.clone());
         }
         // Full (100 of 100 bytes). Using `a` leaves `b` the least recently used.
         assert!(cache.get(&key("a"), &source).is_some());
-        cache.insert(key("e"), source, parsed.clone());
+        cache.insert(key("e"), source, 0, parsed.clone());
 
         assert!(!cache.contains(&key("b")));
         for name in ["a", "c", "d", "e"] {
@@ -5852,7 +5867,12 @@ mod shared_dts_parse_cache_tests {
         }
 
         // A file larger than a quarter of the capacity is not cached at all.
-        cache.insert(key("huge"), SourceKey::of(&"x".repeat(26)), parsed.clone());
+        cache.insert(
+            key("huge"),
+            SourceKey::of(&"x".repeat(26)),
+            0,
+            parsed.clone(),
+        );
         assert!(!cache.contains(&key("huge")));
         assert!(cache.contains(&key("a")));
 
@@ -5861,5 +5881,33 @@ mod shared_dts_parse_cache_tests {
             .get(&key("a"), &SourceKey::of(&"y".repeat(25)))
             .is_none());
         assert!(!cache.contains(&key("a")));
+    }
+
+    #[test]
+    fn accounts_for_oxc_allocator_arena_bytes_in_cache_capacity() {
+        let path = "/shared_dts_arena_bytes/lib.d.ts";
+        let text = "export declare class Lib { value: string; }";
+        let parsed = parse(&engine_over(&[(path, text)]), path);
+        let arena_bytes = parsed.lock().unwrap().borrow_owner().allocator.used_bytes();
+        assert!(
+            arena_bytes > text.len(),
+            "oxc_allocator arena used_bytes ({arena_bytes}) should exceed source len ({})",
+            text.len()
+        );
+
+        let source = SourceKey::of(text);
+        let entry_bytes = text.len() + arena_bytes;
+        let key = |name: &str| PathBuf::from(format!("/shared_dts_arena_bytes/{name}.d.ts"));
+
+        // Capacity for 4 entries when counting source + arena bytes.
+        let mut cache = Cache::new(entry_bytes * 4);
+        for name in ["a", "b", "c", "d"] {
+            cache.insert(key(name), source, arena_bytes, parsed.clone());
+            assert!(cache.contains(&key(name)));
+        }
+        // Inserting a 5th entry must evict the LRU entry ("a").
+        cache.insert(key("e"), source, arena_bytes, parsed.clone());
+        assert!(!cache.contains(&key("a")));
+        assert!(cache.contains(&key("e")));
     }
 }
