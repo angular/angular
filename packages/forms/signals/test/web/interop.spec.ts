@@ -42,8 +42,10 @@ import {
   FormField,
   hidden,
   max,
+  maxDate,
   maxLength,
   min,
+  minDate,
   minLength,
   pattern,
   readonly,
@@ -1169,6 +1171,27 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.max.set(5));
         expect(input.getAttribute('max')).toBe('5');
       });
+
+      it('should bind a Date to a native date property as a string', () => {
+        @Component({
+          imports: [FormField, CvaDir],
+          template: `<input type="date" [formField]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly max = signal(new Date('2026-01-01'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+            maxDate(p, this.max);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+        expect(input.max).toBe('2026-01-01');
+
+        act(() => fixture.componentInstance.max.set(new Date('2026-02-01')));
+        expect(input.max).toBe('2026-02-01');
+      });
     });
 
     describe('maxLength', () => {
@@ -1268,6 +1291,27 @@ describe('ControlValueAccessor', () => {
 
         act(() => fixture.componentInstance.min.set(5));
         expect(input.getAttribute('min')).toBe('5');
+      });
+
+      it('should bind a Date to a native date property as a string', () => {
+        @Component({
+          imports: [FormField, CvaDir],
+          template: `<input type="date" [formField]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly min = signal(new Date('2026-01-01'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+            minDate(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+        expect(input.min).toBe('2026-01-01');
+
+        act(() => fixture.componentInstance.min.set(new Date('2026-02-01')));
+        expect(input.min).toBe('2026-02-01');
       });
     });
 

@@ -24,7 +24,7 @@ import {
   createBindings,
   readFieldStateBindingValue,
 } from './bindings';
-import {setNativeDomProperty} from './native';
+import {formatDateForMinMax, setNativeDomProperty} from './native';
 import type {FormField} from './form_field';
 
 function isValidatorObject(v: Function | Validator): v is Validator {
@@ -109,11 +109,12 @@ export function cvaControlCreate(
           untracked(() => parent.controlValueAccessor!.setDisabledState!(value as boolean));
         } else if (!propertyWasSet && parent.elementAcceptsNativeProperty(name)) {
           // Fall back to native DOM properties.
+          const domValue = formatDateForMinMax(name, value, parent.nativeFormElement.type);
           setNativeDomProperty(
             parent.renderer,
             parent.nativeFormElement,
             name,
-            value as string | number | undefined,
+            domValue as string | number | undefined,
           );
         }
       }
