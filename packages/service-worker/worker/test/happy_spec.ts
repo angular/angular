@@ -2459,13 +2459,20 @@ import {envIsSupported} from '../testing/utils';
         expect(await getLatestHashFromDb()).toBe(manifestHash);
       });
 
-      it('ignores invalid `only-if-cached` requests ', async () => {
+      it('ignores `only-if-cached` requests ', async () => {
         const requestFoo = (cache: RequestCache | 'only-if-cached', mode: RequestMode) =>
           makeRequest(scope, '/foo.txt', undefined, {cache, mode});
 
         expect(await requestFoo('default', 'no-cors')).toBe('this is foo');
-        expect(await requestFoo('only-if-cached', 'same-origin')).toBe('this is foo');
+        expect(await requestFoo('only-if-cached', 'same-origin')).toBeNull();
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
+
+        const [resPromise, done] = scope.handleFetch(
+          new MockRequest('/error.txt', {cache: 'only-if-cached', mode: 'same-origin'}),
+          'default',
+        );
+        await done;
+        expect(await resPromise).toBeUndefined();
       });
 
       it('ignores passive mixed content requests ', async () => {

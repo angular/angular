@@ -140,10 +140,10 @@ export class Driver implements Debuggable, UpdateSource {
   private scheduledNavUpdateCheck: boolean = false;
 
   /**
-   * Keep track of whether we have logged an invalid `only-if-cached` request.
+   * Keep track of whether we have logged an `only-if-cached` request.
    * (See `.onFetch()` for details.)
    */
-  private loggedInvalidOnlyIfCachedRequest: boolean = false;
+  private loggedOnlyIfCachedRequest: boolean = false;
 
   private ngswStatePath: string;
 
@@ -268,18 +268,17 @@ export class Driver implements Debuggable, UpdateSource {
     }
 
     // When opening DevTools in Chrome, a request is made for the current URL (and possibly related
-    // resources, e.g. scripts) with `cache: 'only-if-cached'` and `mode: 'no-cors'`. These request
-    // will eventually fail, because `only-if-cached` is only allowed to be used with
-    // `mode: 'same-origin'`.
-    // This is likely a bug in Chrome DevTools. Avoid handling such requests.
-    // (See also https://github.com/angular/angular/issues/22362.)
-    // TODO(gkalpak): Remove once no longer necessary (i.e. fixed in Chrome DevTools).
-    if (req.cache === 'only-if-cached' && req.mode !== 'same-origin') {
+    // resources, e.g. scripts) with `cache: 'only-if-cached'`. Such a request must not hit the
+    // network, so falling back on the network would only turn a cache miss into a synthetic 504.
+    // Avoid handling such requests and let the browser answer them from its HTTP cache.
+    // (See also https://github.com/angular/angular/issues/22362 and
+    // https://github.com/angular/angular/issues/72032.)
+    if (req.cache === 'only-if-cached') {
       // Log the incident only the first time it happens, to avoid spamming the logs.
-      if (!this.loggedInvalidOnlyIfCachedRequest) {
-        this.loggedInvalidOnlyIfCachedRequest = true;
+      if (!this.loggedOnlyIfCachedRequest) {
+        this.loggedOnlyIfCachedRequest = true;
         this.debugger.log(
-          `Ignoring invalid request: 'only-if-cached' can be set only with 'same-origin' mode`,
+          `Ignoring 'only-if-cached' request`,
           `Driver.fetch(${req.url}, cache: ${req.cache}, mode: ${req.mode})`,
         );
       }

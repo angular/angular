@@ -510,9 +510,8 @@ export abstract class AssetGroup {
    *   `credentials: 'same-origin'` and `credentials: 'include'` are intentionally not preserved.
    *   Forwarding `'include'` could leak cookies to cross-origin asset hosts, and forwarding
    *   `'same-origin'` matches the default `fetch()` behavior so there is nothing to preserve.
-   *   Requests with `cache: 'only-if-cached'` and `mode !== 'same-origin'` are short-circuited
-   *   earlier in `Driver.onFetch()` (they are a known Chrome DevTools quirk), so no special
-   *   handling for that combination is needed here.
+   *   Requests with `cache: 'only-if-cached'` are short-circuited earlier in `Driver.onFetch()`
+   *   (they are a known Chrome DevTools quirk), so no special handling for them is needed here.
    * TODO(gkalpak):
    *   Investigate preserving more metadata. See, also, discussion on preserving `mode`:
    *   https://github.com/angular/angular/issues/41931#issuecomment-1227601347.
