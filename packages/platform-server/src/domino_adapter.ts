@@ -19,7 +19,6 @@ export function setDomTypes() {
   // Make all Domino types available in the global env.
   // NB: Any changes here should also be done in `packages/platform-server/init/src/shims.ts`.
   Object.assign(globalThis, domino.impl);
-  (globalThis as any)['KeyboardEvent'] = domino.impl.Event;
 }
 
 /**
