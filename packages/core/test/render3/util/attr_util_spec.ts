@@ -8,9 +8,96 @@
 
 import {AttributeMarker} from '../../../src/render3';
 import {TAttributes} from '../../../src/render3/interfaces/node';
-import {mergeHostAttribute, mergeHostAttrs} from '../../../src/render3/util/attrs_utils';
+import {Renderer} from '../../../src/render3/interfaces/renderer';
+import {RElement} from '../../../src/render3/interfaces/renderer_dom';
+import {
+  isResourceAttribute,
+  mergeHostAttribute,
+  mergeHostAttrs,
+  setUpAttributes,
+} from '../../../src/render3/util/attrs_utils';
 
 describe('attr_util', () => {
+  describe('isResourceAttribute', () => {
+    it('should only match the attributes that load a resource again when set', () => {
+      expect(isResourceAttribute('iframe', 'src')).toBeTrue();
+      expect(isResourceAttribute('embed', 'src')).toBeTrue();
+      expect(isResourceAttribute('video', 'src')).toBeTrue();
+      expect(isResourceAttribute('audio', 'src')).toBeTrue();
+      expect(isResourceAttribute('object', 'data')).toBeTrue();
+      expect(isResourceAttribute('img', 'src')).toBeFalse();
+      expect(isResourceAttribute('object', 'src')).toBeFalse();
+      expect(isResourceAttribute('video', 'data')).toBeFalse();
+      expect(isResourceAttribute(null, 'src')).toBeFalse();
+    });
+  });
+
+  describe('setUpAttributes', () => {
+    function setUp(values: Record<string, string>, attrs: TAttributes, tagName: string | null) {
+      const renderer = jasmine.createSpyObj<Renderer>('renderer', ['setAttribute', 'setProperty']);
+      const element = {getAttribute: (name: string) => values[name] ?? null} as unknown as RElement;
+      setUpAttributes(renderer, element, attrs, tagName);
+      return {renderer, element};
+    }
+
+    it('should skip only the resource URL that a hydrated element already has', () => {
+      const {renderer, element} = setUp(
+        {src: 'clip.mp4', title: 'Clip'},
+        ['src', 'clip.mp4', 'title', 'Clip'],
+        'video',
+      );
+
+      expect(renderer.setAttribute.calls.allArgs()).toEqual([[element, 'title', 'Clip']]);
+    });
+
+    it('should write a resource URL that differs from the one in the DOM', () => {
+      const {renderer, element} = setUp({src: 'old.mp4'}, ['src', 'new.mp4'], 'video');
+
+      expect(renderer.setAttribute.calls.allArgs()).toEqual([[element, 'src', 'new.mp4']]);
+    });
+
+    it('should write an unchanged attribute that is not a resource URL', () => {
+      const {renderer, element} = setUp({src: 'hero.jpg'}, ['src', 'hero.jpg'], 'img');
+
+      expect(renderer.setAttribute.calls.allArgs()).toEqual([[element, 'src', 'hero.jpg']]);
+    });
+
+    it('should write a namespaced attribute even if it has the same name', () => {
+      const {renderer, element} = setUp(
+        {src: 'clip.mp4'},
+        [AttributeMarker.NamespaceURI, 'urn:test', 'src', 'clip.mp4'],
+        'video',
+      );
+
+      expect(renderer.setAttribute.calls.allArgs()).toEqual([
+        [element, 'src', 'clip.mp4', 'urn:test'],
+      ]);
+    });
+
+    it('should write every attribute of an element that was not hydrated', () => {
+      const {renderer, element} = setUp({src: 'clip.mp4'}, ['src', 'clip.mp4'], null);
+
+      expect(renderer.setAttribute.calls.allArgs()).toEqual([[element, 'src', 'clip.mp4']]);
+    });
+
+    it('should compare trusted values by their string value', () => {
+      const trustedUrl = {toString: () => 'frame.html'} as unknown as string;
+      const {renderer} = setUp({src: 'frame.html'}, ['src', trustedUrl], 'iframe');
+
+      expect(renderer.setAttribute).not.toHaveBeenCalled();
+    });
+
+    it('should always set animation properties, which are not rendered as attributes', () => {
+      const {renderer, element} = setUp({}, ['@trigger', 'state', '@.disabled', 'true'], 'video');
+
+      expect(renderer.setProperty.calls.allArgs()).toEqual([
+        [element, '@trigger', 'state'],
+        [element, '@.disabled', 'true'],
+      ]);
+      expect(renderer.setAttribute).not.toHaveBeenCalled();
+    });
+  });
+
   describe('mergeHostAttribute', () => {
     it('should add new attributes', () => {
       const attrs: TAttributes = [];

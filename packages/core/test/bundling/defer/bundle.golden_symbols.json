@@ -577,6 +577,7 @@
       "isPositive",
       "isPromise",
       "isRefreshingViews",
+      "isResourceAttribute",
       "isRootView",
       "isSchedulerTick",
       "isSkipHydrationRootTNode",
