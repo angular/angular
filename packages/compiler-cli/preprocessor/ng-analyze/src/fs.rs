@@ -5,10 +5,11 @@ use crate::perf::Counter;
 use crate::physical_fs::{default_physical_fs, PhysicalFs};
 use oxc_resolver::{FileMetadata, FileSystem, ResolveError};
 use std::collections::{HashMap, HashSet};
+use std::ffi::OsString;
 use std::io::{Error, Result};
 use std::path::{Path, PathBuf};
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicU64, Ordering},
     Arc, RwLock,
 };
 
@@ -18,6 +19,14 @@ pub struct VirtualFile {
     pub content: Arc<str>,
     pub is_dir: bool,
     pub path: PathBuf,
+}
+
+struct AllowedSources {
+    paths: HashSet<PathBuf>,
+    file_names: HashSet<OsString>,
+    /// True if any entry in `allowed_sources` was already a realpath (or could not be
+    /// canonicalized), meaning a symlink with a different filename could point to it.
+    has_realpath_only: bool,
 }
 
 /// Overlay filesystem: checks virtual files first, falls back to real FS.
@@ -35,9 +44,19 @@ pub struct OverlayFileSystem {
     cwd: Arc<PathBuf>,
     pub preserve_symlinks: Arc<AtomicBool>,
     /// Optional set of allowed source files for build-system boundaries
-    pub allowed_sources: Arc<Option<HashSet<PathBuf>>>,
+    allowed_sources: Arc<RwLock<Option<AllowedSources>>>,
     /// Cache for is_allowed results to avoid repeated canonicalization and normalization.
     is_allowed_cache: Arc<RwLock<HashMap<PathBuf, bool>>>,
+    /// Cache for physical path canonicalization (`path -> canonical_path`).
+    canonicalize_cache: Arc<RwLock<HashMap<PathBuf, PathBuf>>>,
+    /// Cache of `rootDirs`-merged path redirects (`requested_path -> backing_path`).
+    root_dir_redirects: Arc<RwLock<HashMap<PathBuf, PathBuf>>>,
+    /// Cache of `resolve_root_dirs_backing_path` results (`path -> Option<backing_path>`).
+    backing_path_cache: Arc<RwLock<HashMap<PathBuf, Option<PathBuf>>>>,
+    /// Cache of `.json` file contents read from the physical filesystem (e.g. `tsconfig.json`).
+    json_cache: Arc<RwLock<HashMap<PathBuf, Arc<str>>>>,
+    /// Generation counter incremented whenever overlay or filesystem configuration changes.
+    cache_generation: Arc<AtomicU64>,
     /// The non-virtual filesystem underneath this overlay.
     physical: Arc<dyn PhysicalFs>,
     #[cfg(test)]
@@ -54,6 +73,11 @@ impl Clone for OverlayFileSystem {
             preserve_symlinks: Arc::clone(&self.preserve_symlinks),
             allowed_sources: Arc::clone(&self.allowed_sources),
             is_allowed_cache: Arc::clone(&self.is_allowed_cache),
+            canonicalize_cache: Arc::clone(&self.canonicalize_cache),
+            root_dir_redirects: Arc::clone(&self.root_dir_redirects),
+            backing_path_cache: Arc::clone(&self.backing_path_cache),
+            json_cache: Arc::clone(&self.json_cache),
+            cache_generation: Arc::clone(&self.cache_generation),
             physical: Arc::clone(&self.physical),
             #[cfg(test)]
             delays: Arc::clone(&self.delays),
@@ -138,6 +162,62 @@ pub fn normalize_path_structural<'a>(path: &'a Path) -> std::borrow::Cow<'a, Pat
     std::borrow::Cow::Owned(result)
 }
 
+fn build_allowed_sources(
+    files: HashSet<PathBuf>,
+    physical: &Arc<dyn PhysicalFs>,
+    canon_cache: &mut HashMap<PathBuf, PathBuf>,
+) -> AllowedSources {
+    let mut paths = HashSet::with_capacity(files.len() * 4);
+    let mut file_names = HashSet::new();
+    let mut has_realpath_only = false;
+    for path in files {
+        if let Some(name) = path.file_name() {
+            file_names.insert(name.to_os_string());
+        }
+        paths.insert(path.clone());
+        let normalized = normalize_path(&path).into_owned();
+        if let Some(name) = normalized.file_name() {
+            file_names.insert(name.to_os_string());
+        }
+        paths.insert(normalized.clone());
+        crate::perf::count(Counter::FsCanonicalizeCalls, 1);
+        if let Ok(canon) = physical.canonicalize(&path) {
+            if let Some(name) = canon.file_name() {
+                file_names.insert(name.to_os_string());
+            }
+            canon_cache.insert(path, canon.clone());
+            canon_cache.insert(normalized.clone(), canon.clone());
+            canon_cache.insert(canon.clone(), canon.clone());
+            let canon_normalized = normalize_path(&canon).into_owned();
+            if let Some(name) = canon_normalized.file_name() {
+                file_names.insert(name.to_os_string());
+            }
+            if canon_normalized == normalized {
+                has_realpath_only = true;
+            }
+            paths.insert(canon);
+            paths.insert(canon_normalized);
+        } else {
+            has_realpath_only = true;
+        }
+    }
+    AllowedSources {
+        paths,
+        file_names,
+        has_realpath_only,
+    }
+}
+
+fn strip_root_dir_prefix<'a>(normalized_path: &'a Path, root: &Path) -> Option<&'a Path> {
+    if let Ok(stripped) = normalized_path.strip_prefix(root) {
+        return Some(stripped);
+    }
+    if let Ok(stripped) = normalized_path.strip_prefix(root.strip_prefix("/").unwrap_or(root)) {
+        return Some(stripped);
+    }
+    normalized_path.strip_prefix(Path::new("/").join(root)).ok()
+}
+
 impl OverlayFileSystem {
     /// Create a new overlay filesystem.
     pub fn new_with_overlay() -> Self {
@@ -155,21 +235,9 @@ impl OverlayFileSystem {
         allowed_sources: Option<HashSet<PathBuf>>,
         physical: Arc<dyn PhysicalFs>,
     ) -> Self {
-        let allowed = allowed_sources.map(|files| {
-            let mut set = HashSet::new();
-            for path in files {
-                set.insert(path.clone());
-                let normalized = normalize_path(&path).into_owned();
-                set.insert(normalized);
-                crate::perf::count(Counter::FsCanonicalizeCalls, 1);
-                if let Ok(canon) = physical.canonicalize(&path) {
-                    set.insert(canon.clone());
-                    let canon_normalized = normalize_path(&canon).into_owned();
-                    set.insert(canon_normalized);
-                }
-            }
-            set
-        });
+        let mut initial_canon_cache = HashMap::new();
+        let allowed = allowed_sources
+            .map(|files| build_allowed_sources(files, &physical, &mut initial_canon_cache));
         Self {
             physical,
             virtual_files: Arc::new(RwLock::new(HashMap::new())),
@@ -177,8 +245,13 @@ impl OverlayFileSystem {
             root_dirs: Arc::new(RwLock::new(Vec::new())),
             cwd: Arc::new(std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))),
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
-            allowed_sources: Arc::new(allowed),
+            allowed_sources: Arc::new(RwLock::new(allowed)),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
+            canonicalize_cache: Arc::new(RwLock::new(initial_canon_cache)),
+            root_dir_redirects: Arc::new(RwLock::new(HashMap::new())),
+            backing_path_cache: Arc::new(RwLock::new(HashMap::new())),
+            json_cache: Arc::new(RwLock::new(HashMap::new())),
+            cache_generation: Arc::new(AtomicU64::new(0)),
             #[cfg(test)]
             delays: Arc::new(RwLock::new(HashMap::new())),
         }
@@ -187,6 +260,35 @@ impl OverlayFileSystem {
     #[cfg(test)]
     pub fn set_delay(&self, path: PathBuf, delay_ms: u64) {
         self.delays.write().unwrap().insert(path, delay_ms);
+    }
+
+    pub fn cwd(&self) -> &Path {
+        &self.cwd
+    }
+
+    pub fn has_allowed_sources(&self) -> bool {
+        self.allowed_sources.read().unwrap().is_some()
+    }
+
+    pub fn set_allowed_sources(&self, allowed_sources: Option<HashSet<PathBuf>>) {
+        let built = allowed_sources.map(|files| {
+            let mut canon_cache = self.canonicalize_cache.write().unwrap();
+            build_allowed_sources(files, &self.physical, &mut canon_cache)
+        });
+        *self.allowed_sources.write().unwrap() = built;
+        self.is_allowed_cache.write().unwrap().clear();
+        self.root_dir_redirects.write().unwrap().clear();
+        self.backing_path_cache.write().unwrap().clear();
+        self.cache_generation.fetch_add(1, Ordering::Relaxed);
+    }
+
+    pub fn clear_disk_caches(&self) {
+        self.is_allowed_cache.write().unwrap().clear();
+        self.canonicalize_cache.write().unwrap().clear();
+        self.root_dir_redirects.write().unwrap().clear();
+        self.backing_path_cache.write().unwrap().clear();
+        self.json_cache.write().unwrap().clear();
+        self.cache_generation.fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn set_root_dirs(&self, root_dirs: Vec<PathBuf>) {
@@ -198,12 +300,21 @@ impl OverlayFileSystem {
         // Sort by path length in descending order (longest first) for robust prefix matching.
         // https://github.com/angular/angular/blob/b53fa3c/packages/compiler-cli/src/ngtsc/file_system/src/logical.ts#L70
         normalized.sort_by_key(|p| std::cmp::Reverse(p.as_os_str().len()));
-        *dirs = normalized;
-        self.is_allowed_cache.write().unwrap().clear();
+        if *dirs != normalized {
+            *dirs = normalized;
+            drop(dirs);
+            self.is_allowed_cache.write().unwrap().clear();
+            self.root_dir_redirects.write().unwrap().clear();
+            self.backing_path_cache.write().unwrap().clear();
+            self.cache_generation.fetch_add(1, Ordering::Relaxed);
+        }
     }
 
     pub fn set_preserve_symlinks(&self, value: bool) {
-        self.preserve_symlinks.store(value, Ordering::Relaxed);
+        let old = self.preserve_symlinks.swap(value, Ordering::Relaxed);
+        if old != value {
+            self.cache_generation.fetch_add(1, Ordering::Relaxed);
+        }
     }
 
     /// The physical filesystem underneath this overlay.
@@ -211,16 +322,107 @@ impl OverlayFileSystem {
         &self.physical
     }
 
+    fn canonicalize_physical_cached(&self, path: &Path) -> Result<PathBuf> {
+        if let Some(cached) = self.canonicalize_cache.read().unwrap().get(path).cloned() {
+            return Ok(cached);
+        }
+        crate::perf::count(Counter::FsCanonicalizeCalls, 1);
+        let canon = self.physical.canonicalize(path)?;
+        let mut cache = self.canonicalize_cache.write().unwrap();
+        cache.insert(path.to_path_buf(), canon.clone());
+        cache.insert(canon.clone(), canon.clone());
+        Ok(canon)
+    }
+
     fn exists_raw(&self, path: &Path) -> bool {
-        let in_virtual = {
+        if self.has_virtual_files.load(Ordering::Relaxed) {
             let files = self.virtual_files.read().unwrap();
-            self.get_virtual_file(path, &files).is_some()
-        };
-        if in_virtual {
-            return true;
+            if self.get_virtual_file(path, &files).is_some() {
+                return true;
+            }
         }
         crate::perf::count(Counter::FsStatCalls, 1);
         self.physical.exists(path)
+    }
+
+    fn resolve_across_root_dirs_meta(
+        &self,
+        path: &Path,
+        follow_symlinks: bool,
+    ) -> Option<(PathBuf, FileMetadata)> {
+        let root_dirs = self.root_dirs.read().unwrap();
+        if root_dirs.len() <= 1 {
+            return None;
+        }
+
+        let abs_path = if is_absolute_path(path) {
+            std::borrow::Cow::Borrowed(path)
+        } else {
+            std::borrow::Cow::Owned(self.cwd.join(path))
+        };
+        let normalized_path = normalize_path(&abs_path);
+        let has_virtual = self.has_virtual_files.load(Ordering::Relaxed);
+
+        if !has_virtual {
+            if let Some(cached) = self
+                .root_dir_redirects
+                .read()
+                .unwrap()
+                .get(normalized_path.as_ref())
+                .cloned()
+            {
+                crate::perf::count(Counter::FsStatCalls, 1);
+                let meta_res = if follow_symlinks {
+                    self.physical.metadata(&cached)
+                } else {
+                    self.physical.symlink_metadata(&cached)
+                };
+                if let Ok(m) = meta_res {
+                    return Some((
+                        cached,
+                        FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()),
+                    ));
+                }
+            }
+        }
+
+        for root in root_dirs.iter() {
+            let Some(rel_path) = strip_root_dir_prefix(&normalized_path, root) else {
+                continue;
+            };
+            for target_root in root_dirs.iter() {
+                if target_root == root {
+                    continue;
+                }
+                let candidate = target_root.join(rel_path);
+                if let Some(vf) = self.get_virtual_entry(&candidate) {
+                    return Some((candidate, FileMetadata::new(!vf.is_dir, vf.is_dir, false)));
+                }
+                if !self.is_allowed(&candidate) {
+                    continue;
+                }
+                crate::perf::count(Counter::FsStatCalls, 1);
+                let meta_res = if follow_symlinks {
+                    self.physical.metadata(&candidate)
+                } else {
+                    self.physical.symlink_metadata(&candidate)
+                };
+                if let Ok(m) = meta_res {
+                    if !has_virtual {
+                        self.root_dir_redirects
+                            .write()
+                            .unwrap()
+                            .insert(normalized_path.into_owned(), candidate.clone());
+                    }
+                    return Some((
+                        candidate,
+                        FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()),
+                    ));
+                }
+            }
+            break;
+        }
+        None
     }
 
     /// Attempt to resolve a file across configured `rootDirs`.
@@ -232,55 +434,104 @@ impl OverlayFileSystem {
             return None;
         }
 
-        let abs_path = if path.is_absolute() {
-            path.to_path_buf()
+        let abs_path = if is_absolute_path(path) {
+            std::borrow::Cow::Borrowed(path)
         } else {
-            self.cwd.join(path)
+            std::borrow::Cow::Owned(self.cwd.join(path))
         };
         let normalized_path = normalize_path(&abs_path);
+        let has_virtual = self.has_virtual_files.load(Ordering::Relaxed);
+
+        if !has_virtual {
+            if let Some(cached) = self
+                .root_dir_redirects
+                .read()
+                .unwrap()
+                .get(normalized_path.as_ref())
+                .cloned()
+            {
+                return Some(cached);
+            }
+        }
 
         for root in root_dirs.iter() {
-            let res = normalized_path.strip_prefix(root).or_else(|_| {
-                if let Ok(stripped) =
-                    normalized_path.strip_prefix(root.strip_prefix("/").unwrap_or(root))
-                {
-                    Ok(stripped)
-                } else if let Ok(stripped) = normalized_path.strip_prefix(Path::new("/").join(root))
-                {
-                    Ok(stripped)
-                } else {
-                    Err(())
+            let Some(rel_path) = strip_root_dir_prefix(&normalized_path, root) else {
+                continue;
+            };
+            for target_root in root_dirs.iter() {
+                if target_root == root {
+                    continue;
                 }
-            });
-            if let Ok(rel_path) = res {
-                for target_root in root_dirs.iter() {
-                    if target_root == root {
-                        continue;
+                let candidate = target_root.join(rel_path);
+                if !has_virtual && !self.is_allowed(&candidate) {
+                    continue;
+                }
+                if self.exists_raw(&candidate) {
+                    if !has_virtual {
+                        self.root_dir_redirects
+                            .write()
+                            .unwrap()
+                            .insert(normalized_path.into_owned(), candidate.clone());
                     }
-                    let candidate = target_root.join(rel_path);
-                    if self.exists_raw(&candidate) {
-                        return Some(candidate);
-                    }
+                    return Some(candidate);
                 }
             }
+            break;
         }
         None
     }
 
     /// Remove a virtual file from the overlay
     pub fn remove_virtual_file(&self, path: &std::path::Path) {
+        if path
+            .extension()
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("json"))
+        {
+            self.json_cache.write().unwrap().clear();
+        }
+        if !self.has_virtual_files.load(Ordering::Relaxed) {
+            return;
+        }
         let normalized = normalize_path(path).into_owned();
-        let mut files = self.virtual_files.write().unwrap();
-        files.remove(&normalized);
-        self.is_allowed_cache.write().unwrap().clear();
+        let removed = {
+            let mut files = self.virtual_files.write().unwrap();
+            files.remove(&normalized).is_some()
+        };
+        if removed {
+            self.is_allowed_cache.write().unwrap().clear();
+            self.root_dir_redirects.write().unwrap().clear();
+            self.backing_path_cache.write().unwrap().clear();
+            self.cache_generation.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+
+    /// Evict cached canonicalization and backing-path entries for `path` without touching the
+    /// physical filesystem, returning the previously cached canonical path if one existed.
+    pub(crate) fn take_cached_canonical(&self, path: &Path) -> Option<PathBuf> {
+        let abs_path = if is_absolute_path(path) {
+            std::borrow::Cow::Borrowed(path)
+        } else {
+            std::borrow::Cow::Owned(self.cwd.join(path))
+        };
+        let normalized = normalize_path(&abs_path);
+        let prev = {
+            let mut canon = self.canonicalize_cache.write().unwrap();
+            let p1 = canon.remove(path);
+            let p2 = canon.remove(abs_path.as_ref());
+            let p3 = canon.remove(normalized.as_ref());
+            p1.or(p2).or(p3)
+        };
+        {
+            let mut backing = self.backing_path_cache.write().unwrap();
+            backing.remove(path);
+            backing.remove(abs_path.as_ref());
+            backing.remove(normalized.as_ref());
+        }
+        prev
     }
 
     /// Check if a physical path is allowed by the allowed_sources filter
     pub fn is_allowed(&self, path: &Path) -> bool {
-        let Some(allowed) = self.allowed_sources.as_ref() else {
-            return true;
-        };
-
         let check_allowed =
             crate::utils::is_ts_source(path) || path.extension().is_some_and(|e| e == "js");
 
@@ -288,106 +539,166 @@ impl OverlayFileSystem {
             return true;
         }
 
+        let allowed_guard = self.allowed_sources.read().unwrap();
+        let Some(allowed) = allowed_guard.as_ref() else {
+            return true;
+        };
+
         // Check cache first to avoid expensive normalization, joins, and canonicalization.
         {
             let cache = self.is_allowed_cache.read().unwrap();
-            if let Some(&allowed) = cache.get(path) {
+            if let Some(&cached) = cache.get(path) {
                 crate::perf::count(Counter::IsAllowedCacheHits, 1);
-                return allowed;
+                return cached;
             }
         }
 
         crate::perf::count(Counter::IsAllowedCacheMisses, 1);
         let is_allowed = self.is_allowed_uncached(path, allowed);
+        drop(allowed_guard);
 
         let mut cache = self.is_allowed_cache.write().unwrap();
         cache.insert(path.to_path_buf(), is_allowed);
         is_allowed
     }
 
-    fn is_allowed_uncached(&self, path: &Path, allowed: &HashSet<PathBuf>) -> bool {
+    fn is_allowed_uncached(&self, path: &Path, allowed: &AllowedSources) -> bool {
         // 1. Try checking the path normalized as-is (handles absolute paths and relative paths matching relative entries).
         let norm_path = normalize_path(path);
-        let mut is_allowed = allowed.contains(norm_path.as_ref());
-
-        // 2. If not allowed and the path is relative, resolve it against CWD and check again.
-        if !is_allowed && !path.is_absolute() {
-            let abs_path = self.cwd.join(path);
-            let abs_norm_path = normalize_path(&abs_path);
-            is_allowed = allowed.contains(abs_norm_path.as_ref());
-
-            // If still not allowed, try canonicalizing the absolute path.
-            if !is_allowed {
-                crate::perf::count(Counter::FsCanonicalizeCalls, 1);
-                if let Ok(canon) = self.physical.canonicalize(&abs_path) {
-                    let canon_norm = normalize_path(&canon);
-                    is_allowed = allowed.contains(canon_norm.as_ref());
-                }
-            }
-        } else if !is_allowed {
-            // If absolute path is not allowed, try canonicalizing it.
-            crate::perf::count(Counter::FsCanonicalizeCalls, 1);
-            if let Ok(canon) = self.physical.canonicalize(path) {
-                let canon_norm = normalize_path(&canon);
-                is_allowed = allowed.contains(canon_norm.as_ref());
-            }
+        if allowed.paths.contains(norm_path.as_ref()) {
+            return true;
         }
 
-        // 3. If still not allowed, try resolving across rootDirs.
-        if !is_allowed {
-            let abs_path = if path.is_absolute() {
-                std::borrow::Cow::Borrowed(path)
+        // 2. If not allowed and the path is relative, resolve it against CWD and check again.
+        let abs_path = if !is_absolute_path(path) {
+            let abs = self.cwd.join(path);
+            let abs_norm = normalize_path(&abs);
+            if allowed.paths.contains(abs_norm.as_ref()) {
+                return true;
+            }
+            std::borrow::Cow::Owned(abs)
+        } else {
+            std::borrow::Cow::Borrowed(path)
+        };
+
+        let name_matches = norm_path
+            .file_name()
+            .is_some_and(|name| allowed.file_names.contains(name));
+
+        // Canonicalizing `abs_path` can only match `allowed` if either the filename matches an
+        // allowed source's filename or `allowed` contains a realpath-only entry and `abs_path` is a
+        // symlink renaming the file. Check `symlink_metadata` first so nonexistent probes (such as
+        // `index.ts` in dependency directories) never trigger an ancestor-walking `realpath`.
+        if name_matches || allowed.has_realpath_only {
+            let cached_canon = self
+                .canonicalize_cache
+                .read()
+                .unwrap()
+                .get(abs_path.as_ref())
+                .cloned();
+            if let Some(canon) = cached_canon {
+                if allowed.paths.contains(normalize_path(&canon).as_ref()) {
+                    return true;
+                }
             } else {
-                std::borrow::Cow::Owned(self.cwd.join(path))
-            };
-            let norm_path = normalize_path(&abs_path);
-            if let Some(resolved) = self.resolve_across_root_dirs(&norm_path) {
-                let resolved_norm = normalize_path(&resolved);
-                is_allowed = allowed.contains(resolved_norm.as_ref());
-                if !is_allowed {
-                    crate::perf::count(Counter::FsCanonicalizeCalls, 1);
-                    if let Ok(canon) = self.physical.canonicalize(&resolved) {
-                        let canon_norm = normalize_path(&canon);
-                        is_allowed = allowed.contains(canon_norm.as_ref());
+                crate::perf::count(Counter::FsStatCalls, 1);
+                if let Ok(meta) = self.physical.symlink_metadata(&abs_path) {
+                    if (name_matches || meta.is_symlink())
+                        && self
+                            .canonicalize_physical_cached(&abs_path)
+                            .is_ok_and(|canon| {
+                                allowed.paths.contains(normalize_path(&canon).as_ref())
+                            })
+                    {
+                        return true;
                     }
                 }
             }
         }
 
-        is_allowed
+        // 3. If still not allowed, try resolving across rootDirs when the filename could match.
+        if name_matches || allowed.has_realpath_only {
+            let root_dirs = self.root_dirs.read().unwrap();
+            if root_dirs.len() > 1 {
+                let norm_abs = normalize_path(&abs_path);
+                for root in root_dirs.iter() {
+                    let Some(rel_path) = strip_root_dir_prefix(&norm_abs, root) else {
+                        continue;
+                    };
+                    for target_root in root_dirs.iter() {
+                        if target_root == root {
+                            continue;
+                        }
+                        let candidate = target_root.join(rel_path);
+                        let candidate_norm = normalize_path(&candidate);
+                        if allowed.paths.contains(candidate_norm.as_ref()) {
+                            if self.exists_raw(&candidate) {
+                                return true;
+                            }
+                        } else if self.get_virtual_entry(&candidate).is_none() {
+                            crate::perf::count(Counter::FsStatCalls, 1);
+                            if let Ok(meta) = self.physical.symlink_metadata(&candidate) {
+                                if (name_matches || meta.is_symlink())
+                                    && self.canonicalize_physical_cached(&candidate).is_ok_and(
+                                        |canon| {
+                                            allowed.paths.contains(normalize_path(&canon).as_ref())
+                                        },
+                                    )
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        false
     }
 
     /// Add or update a virtual file with the given content
     pub fn upsert_file(&self, path: PathBuf, content: String) {
         self.has_virtual_files.store(true, Ordering::Relaxed);
+        let is_json = path
+            .extension()
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
+        if is_json {
+            self.json_cache.write().unwrap().clear();
+        }
         let spelled = normalize_path_structural(&path).into_owned();
         let normalized = normalize_path(&spelled).into_owned();
-        let mut files = self.virtual_files.write().unwrap();
+        let old_file = {
+            let mut files = self.virtual_files.write().unwrap();
 
-        // Ensure parent directories exist as virtual dirs
-        for dir in spelled.ancestors().skip(1) {
-            let key = normalize_path(dir).into_owned();
-            files.entry(key).or_insert_with(|| VirtualFile {
-                content: "".into(),
-                is_dir: true,
-                path: dir.to_path_buf(),
-            });
-        }
+            // Ensure parent directories exist as virtual dirs
+            for dir in spelled.ancestors().skip(1) {
+                let key = normalize_path(dir).into_owned();
+                files.entry(key).or_insert_with(|| VirtualFile {
+                    content: "".into(),
+                    is_dir: true,
+                    path: dir.to_path_buf(),
+                });
+            }
 
-        // Add the file itself
-        let old_file = files.insert(
-            normalized,
-            VirtualFile {
-                content: content.into(),
-                is_dir: false,
-                path: spelled,
-            },
-        );
+            // Add the file itself
+            files.insert(
+                normalized,
+                VirtualFile {
+                    content: content.into(),
+                    is_dir: false,
+                    path: spelled,
+                },
+            )
+        };
 
-        // Only invalidate the cache if a new file was actually added.
-        // Modifying an existing file does not change its allowed status.
-        if old_file.is_none() {
+        // Invalidate caches when a new virtual file is added or a JSON config is updated.
+        if old_file.is_none() || is_json {
             self.is_allowed_cache.write().unwrap().clear();
+            self.root_dir_redirects.write().unwrap().clear();
+            self.backing_path_cache.write().unwrap().clear();
+            self.cache_generation.fetch_add(1, Ordering::Relaxed);
         }
     }
 
@@ -459,33 +770,124 @@ impl crate::resource_loader::ResourceResolverFs for OverlayFileSystem {
     }
 
     fn resolve_root_dirs_backing_path(&self, path: &Path) -> Option<PathBuf> {
-        if self.root_dirs.read().unwrap().len() <= 1 || self.exists_raw(path) {
+        if self.root_dirs.read().unwrap().len() <= 1 {
             return None;
         }
-        let resolved = self.resolve_across_root_dirs(path)?;
+        if let Some(cached) = self.backing_path_cache.read().unwrap().get(path).cloned() {
+            return cached;
+        }
+        let has_virtual = self.has_virtual_files.load(Ordering::Relaxed);
+        if !has_virtual {
+            if self.canonicalize_cache.read().unwrap().contains_key(path) {
+                self.backing_path_cache
+                    .write()
+                    .unwrap()
+                    .insert(path.to_path_buf(), None);
+                return None;
+            }
+            let abs_path = if is_absolute_path(path) {
+                std::borrow::Cow::Borrowed(path)
+            } else {
+                std::borrow::Cow::Owned(self.cwd.join(path))
+            };
+            let normalized = normalize_path(&abs_path);
+            if let Some(cached) = self
+                .root_dir_redirects
+                .read()
+                .unwrap()
+                .get(normalized.as_ref())
+                .cloned()
+            {
+                self.backing_path_cache
+                    .write()
+                    .unwrap()
+                    .insert(path.to_path_buf(), Some(cached.clone()));
+                return Some(cached);
+            }
+            let in_root_dirs = {
+                let root_dirs = self.root_dirs.read().unwrap();
+                root_dirs
+                    .iter()
+                    .any(|root| strip_root_dir_prefix(&normalized, root).is_some())
+            };
+            if !in_root_dirs {
+                self.backing_path_cache
+                    .write()
+                    .unwrap()
+                    .insert(path.to_path_buf(), None);
+                return None;
+            }
+        }
+        if self.exists_raw(path) {
+            self.backing_path_cache
+                .write()
+                .unwrap()
+                .insert(path.to_path_buf(), None);
+            return None;
+        }
+        let resolved = self.resolve_across_root_dirs(path);
         // Prefer the virtual file's own spelling over the case-folded lookup key.
-        Some(match self.get_virtual_entry(&resolved) {
+        let result = resolved.map(|resolved| match self.get_virtual_entry(&resolved) {
             Some(vf) => vf.path,
             None => resolved,
-        })
+        });
+        self.backing_path_cache
+            .write()
+            .unwrap()
+            .insert(path.to_path_buf(), result.clone());
+        result
+    }
+
+    fn clear_caches(&self) {
+        self.clear_disk_caches();
+    }
+
+    fn cache_generation(&self) -> u64 {
+        self.cache_generation.load(Ordering::Relaxed)
+    }
+
+    fn has_virtual_files(&self) -> bool {
+        self.has_virtual_files.load(Ordering::Relaxed)
+    }
+
+    fn canonicalize_resolved_path(&self, resolved: PathBuf) -> PathBuf {
+        if self.has_virtual_files.load(Ordering::Relaxed) {
+            let resolved = self
+                .resolve_root_dirs_backing_path(&resolved)
+                .unwrap_or(resolved);
+            return self.canonicalize(&resolved).unwrap_or(resolved);
+        }
+
+        let abs_resolved = if is_absolute_path(&resolved) {
+            resolved
+        } else {
+            self.cwd.join(resolved)
+        };
+        let norm_resolved = normalize_path(&abs_resolved);
+        let backed = self
+            .root_dir_redirects
+            .read()
+            .unwrap()
+            .get(norm_resolved.as_ref())
+            .cloned()
+            .unwrap_or(abs_resolved);
+
+        let result = if self.preserve_symlinks.load(Ordering::Relaxed) {
+            normalize_path_structural(&backed).into_owned()
+        } else {
+            self.canonicalize_physical_cached(&backed).unwrap_or(backed)
+        };
+        self.backing_path_cache
+            .write()
+            .unwrap()
+            .insert(result.clone(), None);
+        result
     }
 }
 
 impl FileSystem for OverlayFileSystem {
     fn new() -> Self {
-        // Default constructor for the trait - creates empty overlay
-        Self {
-            physical: Arc::new(default_physical_fs()),
-            virtual_files: Arc::new(RwLock::new(HashMap::new())),
-            has_virtual_files: Arc::new(AtomicBool::new(false)),
-            root_dirs: Arc::new(RwLock::new(Vec::new())),
-            cwd: Arc::new(std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))),
-            preserve_symlinks: Arc::new(AtomicBool::new(false)),
-            allowed_sources: Arc::new(None),
-            is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
-            #[cfg(test)]
-            delays: Arc::new(RwLock::new(HashMap::new())),
-        }
+        Self::new_with_overlay()
     }
 
     fn read(&self, path: &Path) -> Result<Vec<u8>> {
@@ -503,7 +905,12 @@ impl FileSystem for OverlayFileSystem {
             return Ok(vf.content.as_bytes().to_vec());
         }
 
-        if self.is_allowed(path) {
+        let allowed = self.is_allowed(path);
+        if !allowed && !self.has_virtual_files.load(Ordering::Relaxed) {
+            return Err(Error::from(std::io::ErrorKind::NotFound));
+        }
+
+        if allowed {
             if let Ok(content) = self.physical.read(path) {
                 count_read(content.len());
                 return Ok(content);
@@ -545,9 +952,31 @@ impl FileSystem for OverlayFileSystem {
             return Ok(vf.content.to_string());
         }
 
-        if self.is_allowed(path) {
+        let has_virtual = self.has_virtual_files.load(Ordering::Relaxed);
+        let is_json = !has_virtual
+            && path
+                .extension()
+                .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
+        if is_json {
+            if let Some(cached) = self.json_cache.read().unwrap().get(path).cloned() {
+                return Ok(cached.to_string());
+            }
+        }
+
+        let allowed = self.is_allowed(path);
+        if !allowed && !has_virtual {
+            return Err(Error::from(std::io::ErrorKind::NotFound));
+        }
+
+        if allowed {
             if let Ok(content) = self.physical.read_to_string(path) {
                 count_read(content.len());
+                if is_json {
+                    self.json_cache
+                        .write()
+                        .unwrap()
+                        .insert(path.to_path_buf(), Arc::from(content.as_str()));
+                }
                 return Ok(content);
             }
         }
@@ -564,6 +993,12 @@ impl FileSystem for OverlayFileSystem {
                 let res = self.physical.read_to_string(&resolved);
                 if let Ok(content) = &res {
                     count_read(content.len());
+                    if is_json {
+                        self.json_cache
+                            .write()
+                            .unwrap()
+                            .insert(path.to_path_buf(), Arc::from(content.as_str()));
+                    }
                 }
                 return res;
             }
@@ -577,22 +1012,32 @@ impl FileSystem for OverlayFileSystem {
             return Ok(FileMetadata::new(!vf.is_dir, vf.is_dir, false));
         }
 
-        if self.is_allowed(path) {
+        let allowed = self.is_allowed(path);
+        if !allowed {
+            // Package directories ending in `.js` (e.g. `node_modules/zone.js`) are directories,
+            // not disallowed source files.
+            if path.components().any(|c| c.as_os_str() == "node_modules") {
+                crate::perf::count(Counter::FsStatCalls, 1);
+                if let Ok(m) = self.physical.metadata(path) {
+                    if m.is_dir() {
+                        return Ok(FileMetadata::new(false, true, m.is_symlink()));
+                    }
+                }
+            }
+            if !self.has_virtual_files.load(Ordering::Relaxed) {
+                return Err(Error::from(std::io::ErrorKind::NotFound));
+            }
+        }
+
+        if allowed {
             crate::perf::count(Counter::FsStatCalls, 1);
             if let Ok(m) = self.physical.metadata(path) {
                 return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
             }
         }
 
-        // If direct lookup fails on both virtual and physical FS, check across rootDirs virtual merging
-        if let Some(resolved) = self.resolve_across_root_dirs(path) {
-            if let Some(vf) = self.get_virtual_entry(&resolved) {
-                return Ok(FileMetadata::new(!vf.is_dir, vf.is_dir, false));
-            }
-            crate::perf::count(Counter::FsStatCalls, 1);
-            if let Ok(m) = self.physical.metadata(&resolved) {
-                return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
-            }
+        if let Some((_, meta)) = self.resolve_across_root_dirs_meta(path, true) {
+            return Ok(meta);
         }
 
         Err(Error::from(std::io::ErrorKind::NotFound))
@@ -604,22 +1049,30 @@ impl FileSystem for OverlayFileSystem {
             return Ok(FileMetadata::new(!vf.is_dir, vf.is_dir, false));
         }
 
-        if self.is_allowed(path) {
+        let allowed = self.is_allowed(path);
+        if !allowed {
+            if path.components().any(|c| c.as_os_str() == "node_modules") {
+                crate::perf::count(Counter::FsStatCalls, 1);
+                if let Ok(m) = self.physical.symlink_metadata(path) {
+                    if m.is_dir() || m.is_symlink() {
+                        return Ok(FileMetadata::new(false, m.is_dir(), m.is_symlink()));
+                    }
+                }
+            }
+            if !self.has_virtual_files.load(Ordering::Relaxed) {
+                return Err(Error::from(std::io::ErrorKind::NotFound));
+            }
+        }
+
+        if allowed {
             crate::perf::count(Counter::FsStatCalls, 1);
             if let Ok(m) = self.physical.symlink_metadata(path) {
                 return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
             }
         }
 
-        // If direct lookup fails on both virtual and physical FS, check across rootDirs virtual merging
-        if let Some(resolved) = self.resolve_across_root_dirs(path) {
-            if let Some(vf) = self.get_virtual_entry(&resolved) {
-                return Ok(FileMetadata::new(!vf.is_dir, vf.is_dir, false));
-            }
-            crate::perf::count(Counter::FsStatCalls, 1);
-            if let Ok(m) = self.physical.symlink_metadata(&resolved) {
-                return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
-            }
+        if let Some((_, meta)) = self.resolve_across_root_dirs_meta(path, false) {
+            return Ok(meta);
         }
 
         Err(Error::from(std::io::ErrorKind::NotFound))
@@ -631,9 +1084,47 @@ impl FileSystem for OverlayFileSystem {
             return Err(ResolveError::NotFound(path.to_string_lossy().into_owned()));
         }
 
-        self.physical
-            .read_link(path)
-            .map_err(|_| ResolveError::NotFound(path.to_string_lossy().into_owned()))
+        let allowed = self.is_allowed(path);
+        let in_node_modules = path.components().any(|c| c.as_os_str() == "node_modules");
+        if !allowed && !in_node_modules && !self.has_virtual_files.load(Ordering::Relaxed) {
+            return Err(ResolveError::NotFound(path.to_string_lossy().into_owned()));
+        }
+
+        if allowed || in_node_modules {
+            if let Ok(target) = self.physical.read_link(path) {
+                if allowed || self.physical.metadata(path).is_ok_and(|m| m.is_dir()) {
+                    if !self.preserve_symlinks.load(Ordering::Relaxed) {
+                        if let Ok(canon) = self.canonicalize_physical_cached(path) {
+                            let abs_path = if is_absolute_path(path) {
+                                std::borrow::Cow::Borrowed(path)
+                            } else {
+                                std::borrow::Cow::Owned(self.cwd.join(path))
+                            };
+                            let norm = normalize_path(&abs_path).into_owned();
+                            self.canonicalize_cache.write().unwrap().insert(norm, canon);
+                        }
+                    }
+                    return Ok(target);
+                }
+            }
+        }
+
+        if let Some(resolved) = self.resolve_across_root_dirs(path) {
+            if self.get_virtual_entry(&resolved).is_some() || !self.is_allowed(&resolved) {
+                return Err(ResolveError::NotFound(path.to_string_lossy().into_owned()));
+            }
+            if let Ok(target) = self.physical.read_link(&resolved) {
+                if is_absolute_path(&target) {
+                    return Ok(target);
+                }
+                if let Some(parent) = resolved.parent() {
+                    return Ok(parent.join(target));
+                }
+                return Ok(target);
+            }
+        }
+
+        Err(ResolveError::NotFound(path.to_string_lossy().into_owned()))
     }
 
     fn canonicalize(&self, path: &Path) -> Result<PathBuf> {
@@ -644,18 +1135,16 @@ impl FileSystem for OverlayFileSystem {
         }
 
         if self.preserve_symlinks.load(Ordering::Relaxed) {
-            crate::perf::count(Counter::FsStatCalls, 1);
-            if path.exists() {
-                let abs_path = if path.is_absolute() {
-                    path.to_path_buf()
-                } else {
-                    self.cwd.join(path)
-                };
+            let abs_path = if is_absolute_path(path) {
+                path.to_path_buf()
+            } else {
+                self.cwd.join(path)
+            };
+            if self.exists_raw(&abs_path) {
                 return Ok(normalize_path_structural(&abs_path).into_owned());
             }
         } else {
-            crate::perf::count(Counter::FsCanonicalizeCalls, 1);
-            match self.physical.canonicalize(path) {
+            match self.canonicalize_physical_cached(path) {
                 Ok(canon) => return Ok(canon),
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
                 Err(e) => return Err(e),
@@ -670,8 +1159,9 @@ impl FileSystem for OverlayFileSystem {
             if self.get_virtual_entry(&resolved).is_some() {
                 return Ok(normalize_path_structural(&resolved).into_owned());
             }
-            crate::perf::count(Counter::FsCanonicalizeCalls, 1);
-            return Ok(self.physical.canonicalize(&resolved).unwrap_or(resolved));
+            return Ok(self
+                .canonicalize_physical_cached(&resolved)
+                .unwrap_or(resolved));
         }
 
         Err(Error::from(std::io::ErrorKind::NotFound))
@@ -1265,6 +1755,118 @@ mod tests {
             fs.resolve_root_dirs_backing_path(Path::new("/project/pkg/index.d.ts")),
             None
         );
+    }
+
+    #[test]
+    fn test_disallowed_sources_skip_unnecessary_canonicalize_and_allow_node_modules_js_dirs() {
+        use crate::physical_fs::DirEntry;
+        use std::sync::atomic::AtomicUsize;
+
+        struct FakePhysicalFs {
+            files: HashMap<PathBuf, &'static str>,
+            dirs: HashSet<PathBuf>,
+            links: HashMap<PathBuf, PathBuf>,
+            canonicalize_calls: AtomicUsize,
+            read_link_calls: AtomicUsize,
+        }
+
+        impl PhysicalFs for FakePhysicalFs {
+            fn read(&self, path: &Path) -> Result<Vec<u8>> {
+                self.read_to_string(path).map(String::into_bytes)
+            }
+            fn read_to_string(&self, path: &Path) -> Result<String> {
+                self.files
+                    .get(path)
+                    .map(|s| (*s).to_string())
+                    .ok_or_else(|| Error::from(std::io::ErrorKind::NotFound))
+            }
+            fn metadata(&self, path: &Path) -> Result<FileMetadata> {
+                let target = self.links.get(path).map(PathBuf::as_path).unwrap_or(path);
+                if self.files.contains_key(target) {
+                    return Ok(FileMetadata::new(true, false, false));
+                }
+                if self.dirs.contains(target) {
+                    return Ok(FileMetadata::new(false, true, false));
+                }
+                Err(Error::from(std::io::ErrorKind::NotFound))
+            }
+            fn symlink_metadata(&self, path: &Path) -> Result<FileMetadata> {
+                if self.links.contains_key(path) {
+                    return Ok(FileMetadata::new(false, false, true));
+                }
+                self.metadata(path)
+            }
+            fn read_link(&self, path: &Path) -> Result<PathBuf> {
+                self.read_link_calls.fetch_add(1, Ordering::Relaxed);
+                self.links
+                    .get(path)
+                    .cloned()
+                    .ok_or_else(|| Error::from(std::io::ErrorKind::NotFound))
+            }
+            fn canonicalize(&self, path: &Path) -> Result<PathBuf> {
+                self.canonicalize_calls.fetch_add(1, Ordering::Relaxed);
+                if let Some(target) = self.links.get(path) {
+                    return Ok(target.clone());
+                }
+                if self.files.contains_key(path) || self.dirs.contains(path) {
+                    return Ok(path.to_path_buf());
+                }
+                Err(Error::from(std::io::ErrorKind::NotFound))
+            }
+            fn read_dir(&self, _: &Path) -> Result<Vec<DirEntry>> {
+                Ok(Vec::new())
+            }
+        }
+
+        let fake = Arc::new(FakePhysicalFs {
+            files: HashMap::from([
+                (PathBuf::from("/real/pkg/index.ts"), "export const a = 1;"),
+                (PathBuf::from("/ws/dep/other.ts"), "export const b = 2;"),
+                (
+                    PathBuf::from("/ws/out/dep/other.d.ts"),
+                    "export declare const b: number;",
+                ),
+                (
+                    PathBuf::from("/ws/node_modules/zone.js/index.d.ts"),
+                    "export {};",
+                ),
+            ]),
+            dirs: HashSet::from([
+                PathBuf::from("/ws"),
+                PathBuf::from("/ws/pkg"),
+                PathBuf::from("/ws/dep"),
+                PathBuf::from("/ws/out"),
+                PathBuf::from("/ws/out/dep"),
+                PathBuf::from("/ws/node_modules"),
+                PathBuf::from("/ws/node_modules/zone.js"),
+            ]),
+            links: HashMap::from([(
+                PathBuf::from("/ws/pkg/index.ts"),
+                PathBuf::from("/real/pkg/index.ts"),
+            )]),
+            canonicalize_calls: AtomicUsize::new(0),
+            read_link_calls: AtomicUsize::new(0),
+        });
+
+        let allowed = HashSet::from([PathBuf::from("/ws/pkg/index.ts")]);
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(Some(allowed), fake.clone());
+        fs.set_root_dirs(vec![PathBuf::from("/ws"), PathBuf::from("/ws/out")]);
+        let init_canon = fake.canonicalize_calls.load(Ordering::Relaxed);
+
+        // Non-matching `.ts` filenames and nonexistent `index.ts` probes do not canonicalize or
+        // read symlinks.
+        assert!(fs.metadata(Path::new("/ws/dep/other.ts")).is_err());
+        assert!(fs.symlink_metadata(Path::new("/ws/dep/other.ts")).is_err());
+        assert!(fs.read_link(Path::new("/ws/dep/other.ts")).is_err());
+        assert!(fs.metadata(Path::new("/ws/dep/index.ts")).is_err());
+        assert_eq!(fake.canonicalize_calls.load(Ordering::Relaxed), init_canon);
+        assert_eq!(fake.read_link_calls.load(Ordering::Relaxed), 0);
+
+        // `.d.ts` files across `rootDirs` and package directories ending in `.js` remain visible.
+        let dts_meta = fs.metadata(Path::new("/ws/dep/other.d.ts")).unwrap();
+        assert!(dts_meta.is_file());
+        let zone_dir_meta = fs.metadata(Path::new("/ws/node_modules/zone.js")).unwrap();
+        assert!(zone_dir_meta.is_dir());
     }
 }
 

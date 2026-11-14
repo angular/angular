@@ -6,9 +6,17 @@ use crate::fs::OverlayFileSystem;
 use crate::{ResourceResolver, ResourceResolverFs};
 use futures::future::FutureExt;
 use oxc_resolver::ResolverGeneric;
+use std::collections::HashMap;
 use std::fmt;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
+
+#[derive(Default)]
+struct ResolveCacheState {
+    generation: u64,
+    by_dir: HashMap<(PathBuf, String), Option<ResolvedModule>>,
+    bare: HashMap<String, Option<ResolvedModule>>,
+}
 
 /// Synchronous [`AnalysisHost`] backed by [`oxc_resolver::ResolverGeneric`] and a
 /// [`ResourceResolverFs`] (typically [`crate::fs::OverlayFileSystem`]).
@@ -18,6 +26,8 @@ use std::sync::Arc;
 pub struct DefaultFsHost<Fs: ResourceResolverFs> {
     fs: Fs,
     resolver: Arc<ResolverGeneric<Fs>>,
+    resolve_cache: Arc<RwLock<ResolveCacheState>>,
+    share_bare_resolutions: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone> Clone for DefaultFsHost<Fs> {
@@ -25,6 +35,8 @@ impl<Fs: ResourceResolverFs + Clone> Clone for DefaultFsHost<Fs> {
         Self {
             fs: self.fs.clone(),
             resolver: Arc::clone(&self.resolver),
+            resolve_cache: Arc::clone(&self.resolve_cache),
+            share_bare_resolutions: self.share_bare_resolutions,
         }
     }
 }
@@ -37,7 +49,23 @@ impl<Fs: ResourceResolverFs> fmt::Debug for DefaultFsHost<Fs> {
 
 impl<Fs: ResourceResolverFs> DefaultFsHost<Fs> {
     pub fn new(fs: Fs, resolver: Arc<ResolverGeneric<Fs>>) -> Self {
-        Self { fs, resolver }
+        let generation = fs.cache_generation();
+        Self {
+            fs,
+            resolver,
+            resolve_cache: Arc::new(RwLock::new(ResolveCacheState {
+                generation,
+                ..ResolveCacheState::default()
+            })),
+            share_bare_resolutions: false,
+        }
+    }
+
+    /// Share non-relative, non-`node_modules` module resolutions across directories when unified
+    /// workspace module naming is active.
+    pub fn with_shared_bare_resolutions(mut self, enabled: bool) -> Self {
+        self.share_bare_resolutions = enabled;
+        self
     }
 
     pub fn fs(&self) -> &Fs {
@@ -49,11 +77,7 @@ impl<Fs: ResourceResolverFs> DefaultFsHost<Fs> {
     }
 
     fn canonicalize_resolved_path(&self, resolved: PathBuf) -> PathBuf {
-        let resolved = self
-            .fs
-            .resolve_root_dirs_backing_path(&resolved)
-            .unwrap_or(resolved);
-        self.fs.canonicalize(&resolved).unwrap_or(resolved)
+        self.fs.canonicalize_resolved_path(resolved)
     }
 }
 
@@ -84,6 +108,34 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
     ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
         let importer_path = Path::new(req.importer.as_str());
         let file_dir = importer_path.parent().unwrap_or_else(|| Path::new("."));
+        let gen = self.fs.cache_generation();
+        let is_bare = !req.specifier.starts_with('.')
+            && !req.specifier.starts_with('/')
+            && !req.specifier.starts_with('#');
+        let share_bare = is_bare
+            && self.share_bare_resolutions
+            && !self.fs.has_virtual_files()
+            && !file_dir
+                .components()
+                .any(|c| c.as_os_str() == "node_modules");
+
+        {
+            let cache = self.resolve_cache.read().unwrap();
+            if cache.generation == gen {
+                if share_bare {
+                    if let Some(cached) = cache.bare.get(&req.specifier) {
+                        return futures::future::ready(Ok(cached.clone())).boxed();
+                    }
+                }
+                if let Some(cached) = cache
+                    .by_dir
+                    .get(&(file_dir.to_path_buf(), req.specifier.clone()))
+                {
+                    return futures::future::ready(Ok(cached.clone())).boxed();
+                }
+            }
+        }
+
         let resolved = self
             .resolver
             .resolve(file_dir, &req.specifier)
@@ -99,6 +151,29 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
                     code: None,
                 }
             });
+
+        {
+            let mut cache = self.resolve_cache.write().unwrap();
+            if cache.generation != gen {
+                cache.by_dir.clear();
+                cache.bare.clear();
+                cache.generation = gen;
+            }
+            cache.by_dir.insert(
+                (file_dir.to_path_buf(), req.specifier.clone()),
+                resolved.clone(),
+            );
+            if share_bare
+                && resolved.as_ref().is_some_and(|m| {
+                    !Path::new(m.id.as_str())
+                        .components()
+                        .any(|c| c.as_os_str() == "node_modules")
+                })
+            {
+                cache.bare.insert(req.specifier, resolved.clone());
+            }
+        }
+
         futures::future::ready(Ok(resolved)).boxed()
     }
 
@@ -149,7 +224,12 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
     }
 
     fn clear_cache(&self) {
+        self.fs.clear_caches();
         self.resolver.clear_cache();
+        let mut cache = self.resolve_cache.write().unwrap();
+        cache.by_dir.clear();
+        cache.bare.clear();
+        cache.generation = self.fs.cache_generation();
     }
 
     fn resolve_backing_path(&self, path: &Path) -> Option<PathBuf> {
@@ -482,5 +562,92 @@ mod tests {
                 .expect("expected resource to load");
             assert_eq!(&*loaded.code, expected, "{url}");
         }
+    }
+
+    #[test]
+    fn test_default_fs_host_shared_bare_resolutions_and_invalidation() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let pkg_a = dir.path().join("pkg_a");
+        let pkg_b = dir.path().join("pkg_b");
+        let shared = dir.path().join("shared");
+        let nested_nm = pkg_b.join("node_modules/local-only");
+        std::fs::create_dir_all(&pkg_a).unwrap();
+        std::fs::create_dir_all(&pkg_b).unwrap();
+        std::fs::create_dir_all(&shared).unwrap();
+        std::fs::create_dir_all(&nested_nm).unwrap();
+
+        let shared_dts = shared.join("lib.d.ts");
+        std::fs::write(&shared_dts, "export declare class Shared {}").unwrap();
+        let local_dts = nested_nm.join("index.d.ts");
+        std::fs::write(&local_dts, "export declare class LocalOnly {}").unwrap();
+        let tsconfig = dir.path().join("tsconfig.json");
+        std::fs::write(
+            &tsconfig,
+            r#"{"compilerOptions": {"baseUrl": ".", "paths": {"@ws/*": ["./*"]}}}"#,
+        )
+        .unwrap();
+
+        let fs = OverlayFileSystem::new_with_overlay();
+        let resolver = Arc::new(crate::utils::create_resolver_with_fs(
+            Some(&tsconfig),
+            fs.clone(),
+            false,
+            None,
+        ));
+        let host = DefaultFsHost::new(fs, resolver).with_shared_bare_resolutions(true);
+
+        let from_a = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&pkg_a.join("a.ts")),
+                "@ws/shared/lib",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .expect("expected @ws/shared/lib from pkg_a");
+        let from_b = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&pkg_b.join("b.ts")),
+                "@ws/shared/lib",
+                ImportKind::ReExport,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .expect("expected @ws/shared/lib from pkg_b");
+        assert_eq!(
+            from_a.id,
+            ModuleId::from_path(&std::fs::canonicalize(&shared_dts).unwrap())
+        );
+        assert_eq!(from_a, from_b);
+
+        // A missing bare package in pkg_a must not prevent pkg_b's nested node_modules from
+        // resolving it.
+        let missing_in_a = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&pkg_a.join("a.ts")),
+                "local-only",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap();
+        assert_eq!(missing_in_a, None);
+
+        let found_in_b = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&pkg_b.join("b.ts")),
+                "local-only",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .expect("expected nested node_modules package to resolve in pkg_b");
+        assert_eq!(
+            found_in_b.id,
+            ModuleId::from_path(&std::fs::canonicalize(&local_dts).unwrap())
+        );
     }
 }

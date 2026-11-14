@@ -171,10 +171,14 @@ struct EffectiveConfig {
     emit_declaration_only: bool,
     experimental_local_compilation: bool,
     merged_compiler_options: serde_json::Map<String, serde_json::Value>,
+    fallback_allowed_sources: Option<HashSet<PathBuf>>,
+    initial_resolver: Option<tsconfig_resolution::SharedResolver>,
+    tsconfig_has_extends: bool,
 }
 
 impl EffectiveConfig {
     fn resolve(options: AnalyzerOptions, fs: &OverlayFileSystem) -> Result<Self, String> {
+        let had_explicit_allowed = options.allowed_sources.is_some() || fs.has_allowed_sources();
         let tsconfig_path = options.tsconfig_path.map(PathBuf::from);
         let resolved = match &tsconfig_path {
             Some(path) => Some(
@@ -252,16 +256,34 @@ impl EffectiveConfig {
             })
             .or_else(|| options.r3_symbols_file.is_some().then_some(true));
 
-        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name, merged_compiler_options) =
-            match resolved {
-                Some(r) => (
-                    r.files,
-                    r.compiler_options.root_dirs,
-                    r.workspace_name,
-                    r.merged_compiler_options,
-                ),
-                None => (Vec::new(), None, None, serde_json::Map::new()),
-            };
+        let (
+            tsconfig_files,
+            tsconfig_root_dirs,
+            tsconfig_workspace_name,
+            compilation_target_src,
+            merged_compiler_options,
+            initial_resolver,
+            tsconfig_has_extends,
+        ) = match resolved {
+            Some(r) => (
+                r.files,
+                r.compiler_options.root_dirs,
+                r.workspace_name,
+                r.compilation_target_src,
+                r.merged_compiler_options,
+                r.resolver,
+                r.has_extends,
+            ),
+            None => (
+                Vec::new(),
+                None,
+                None,
+                None,
+                serde_json::Map::new(),
+                None,
+                false,
+            ),
+        };
 
         let mut merge_root_dirs = match default_host.root_dirs {
             Some(dirs) => absolutize_all(dirs)?,
@@ -281,14 +303,30 @@ impl EffectiveConfig {
         };
 
         let entry_points = options.entry_points.map(absolutize_all).transpose()?;
+        let r3_symbols_file = options
+            .r3_symbols_file
+            .map(|path| absolutize(PathBuf::from(path)))
+            .transpose()?;
+
+        let fallback_allowed_sources = if !had_explicit_allowed {
+            compilation_target_src.map(|srcs| {
+                let mut set: HashSet<PathBuf> = srcs.into_iter().collect();
+                if let Some(ref eps) = entry_points {
+                    set.extend(eps.iter().cloned());
+                }
+                if let Some(ref r3) = r3_symbols_file {
+                    set.insert(r3.clone());
+                }
+                set
+            })
+        } else {
+            None
+        };
 
         Ok(Self {
             entry_points,
             tsconfig_files,
-            r3_symbols_file: options
-                .r3_symbols_file
-                .map(|path| absolutize(PathBuf::from(path)))
-                .transpose()?,
+            r3_symbols_file,
             angular_core_compilation,
             preserve_symlinks,
             merge_root_dirs,
@@ -309,6 +347,9 @@ impl EffectiveConfig {
             experimental_local_compilation,
             tsconfig_path,
             merged_compiler_options,
+            fallback_allowed_sources,
+            initial_resolver,
+            tsconfig_has_extends,
         })
     }
 }
@@ -349,9 +390,12 @@ impl Analyzer {
         Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
     }
 
-    /// Build the analyzer from fully merged settings. Order matters: the symlink mode and the
-    /// `rootDirs` must be set on `fs` before entry points are canonicalized through it.
+    /// Build the analyzer from fully merged settings. Order matters: the symlink mode, allowed
+    /// sources, and `rootDirs` must be set on `fs` before entry points are canonicalized through it.
     fn construct(config: EffectiveConfig, fs: OverlayFileSystem) -> Self {
+        if let Some(allowed) = config.fallback_allowed_sources {
+            fs.set_allowed_sources(Some(allowed));
+        }
         fs.set_preserve_symlinks(config.preserve_symlinks);
         fs.set_root_dirs(config.merge_root_dirs);
 
@@ -370,12 +414,28 @@ impl Analyzer {
 
         let resource_registry = Arc::new(ResourceRegistry::default());
 
-        let resolver = Arc::new(create_resolver_with_fs(
-            config.tsconfig_path.as_deref(),
-            fs.clone(),
-            config.preserve_symlinks,
-            config.node_modules_path_override,
-        ));
+        let can_reuse_resolver = !config.preserve_symlinks
+            || (!config.tsconfig_has_extends
+                && !crate::ResourceResolverFs::has_virtual_files(&fs)
+                && config
+                    .tsconfig_path
+                    .as_deref()
+                    .is_some_and(|p| fs.physical().canonicalize(p).ok().as_deref() == Some(p)));
+        let resolver = match config.initial_resolver {
+            Some(shared) if can_reuse_resolver => Arc::new(shared.0.clone_with_options(
+                crate::utils::build_resolve_options(
+                    config.tsconfig_path.as_deref(),
+                    config.preserve_symlinks,
+                    config.node_modules_path_override,
+                ),
+            )),
+            _ => Arc::new(create_resolver_with_fs(
+                config.tsconfig_path.as_deref(),
+                fs.clone(),
+                config.preserve_symlinks,
+                config.node_modules_path_override,
+            )),
+        };
 
         use crate::analyzer::import_emit::{
             ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
@@ -651,12 +711,20 @@ impl Analyzer {
 
         for update in updates {
             let raw_path = PathBuf::from(&update.file_path);
-            let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
+            let prev_cached = self.fs.take_cached_canonical(&raw_path);
+            let path = self
+                .fs
+                .canonicalize(&raw_path)
+                .ok()
+                .or_else(|| prev_cached.clone())
+                .unwrap_or_else(|| raw_path.clone());
             self.fs.remove_virtual_file(&path);
-            files_created_or_deleted |= matches!(
-                update.update_type,
-                crate::FileUpdateType::Created | crate::FileUpdateType::Deleted
-            );
+            let symlink_target_changed = prev_cached.as_ref().is_some_and(|prev| prev != &path);
+            files_created_or_deleted |= symlink_target_changed
+                || matches!(
+                    update.update_type,
+                    crate::FileUpdateType::Created | crate::FileUpdateType::Deleted
+                );
             config_changed |= path
                 .extension()
                 .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
@@ -664,6 +732,17 @@ impl Analyzer {
             if is_ts_file(&path) {
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(path.to_string_lossy().into_owned());
+            }
+            if let Some(ref prev) = prev_cached {
+                if *prev != path {
+                    if is_ts_file(prev) {
+                        self.resource_registry.unregister_ts_file(prev);
+                        ts_paths_to_invalidate.push(prev.to_string_lossy().into_owned());
+                    }
+                    let evicted = self.engine.invalidate_deleted_file(prev);
+                    self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
+                    self.invalidate_changed_path(prev, &mut ts_paths_to_invalidate);
+                }
             }
             if matches!(update.update_type, crate::FileUpdateType::Deleted) {
                 let evicted = self.engine.invalidate_deleted_file(&path);
@@ -685,11 +764,9 @@ impl Analyzer {
         structure_changed: bool,
         config_changed: bool,
     ) -> Result<Vec<String>, String> {
-        if structure_changed {
+        if structure_changed || config_changed {
             let evicted = self.engine.invalidate_module_resolution();
             self.push_evicted_paths(evicted, &mut invalidated_paths);
-        }
-        if structure_changed || config_changed {
             self.re_resolve_entrypoints(&mut invalidated_paths);
         }
         Ok(dedup_preserving_order(invalidated_paths))
