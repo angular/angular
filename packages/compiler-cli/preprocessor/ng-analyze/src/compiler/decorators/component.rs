@@ -213,7 +213,10 @@ async fn resolve_host_directive(
     }
 
     let mut invalid_reason = None;
-    if reference.owning_reference.is_none() && crate::utils::is_dts(declaring_file_path) {
+    if ctx.engine.reference_strategy.uses_owning_reference()
+        && reference.owning_reference.is_none()
+        && crate::utils::is_dts(declaring_file_path)
+    {
         if let Some(owning) = parent_owning {
             let package_entry_resolved = match ctx
                 .resolve_from_id(
@@ -260,11 +263,9 @@ async fn resolve_host_directive(
     let mut directive =
         contextualize_declaration(ctx, &decl_data, consumer_file, consumer_path).await;
     if let Some(reason) = invalid_reason {
-        if ctx.engine.reference_strategy.uses_owning_reference() {
-            directive.ref_meta.consumer_import = None;
-            directive.ref_meta.typecheck_import = None;
-            directive.ref_meta.invalid_reason = Some(reason);
-        }
+        directive.ref_meta.consumer_import = None;
+        directive.ref_meta.typecheck_import = None;
+        directive.ref_meta.invalid_reason = Some(reason);
     }
     directive.resolved_host_directives = Box::pin(resolve_host_directives_for_class(
         ctx,
