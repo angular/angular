@@ -44,6 +44,10 @@ import {PRIMARY_OUTLET} from '../shared';
 
 let warnedAboutMissingErrorBoundaries = false;
 
+export function resetMissingErrorBoundariesWarning(): void {
+  warnedAboutMissingErrorBoundaries = false;
+}
+
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
  * input.

@@ -37,7 +37,7 @@ import {
   withErrorBoundaries,
   withRouterResources,
 } from '../../index';
-import {INPUT_BINDER} from '../../src/directives/router_outlet';
+import {INPUT_BINDER, resetMissingErrorBoundariesWarning} from '../../src/directives/router_outlet';
 import {RouterTestingHarness} from '../../testing';
 
 export function provideRouter(
@@ -2323,6 +2323,8 @@ describe('Error boundaries and errorComponent integration', () => {
 describe('errorComponent without error boundaries', () => {
   useAutoTick();
 
+  beforeEach(() => resetMissingErrorBoundariesWarning());
+
   it('warns once in dev mode when a route defines errorComponent without withErrorBoundaries', async () => {
     @Component({template: 'Content'})
     class RouteComponent {}
@@ -2345,8 +2347,10 @@ describe('errorComponent without error boundaries', () => {
     await harness.navigateByUrl('/one');
     await harness.navigateByUrl('/two');
 
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn.calls.mostRecent().args[0]).toContain(`'withErrorBoundaries()'`);
+    const warnings = warn.calls
+      .allArgs()
+      .filter(([message]) => String(message).includes(`'withErrorBoundaries()'`));
+    expect(warnings.length).toBe(1);
   });
 });
 
