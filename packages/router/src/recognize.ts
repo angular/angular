@@ -444,6 +444,14 @@ export class Recognizer {
     if (!result?.matched) {
       throw new NoMatch(rawSegment);
     }
+
+    if (route.loadConfig && !route._configLoaded) {
+      await this.configLoader.loadConfig(route);
+      if (this.abortSignal.aborted) {
+        throw new Error(this.abortSignal.reason);
+      }
+    }
+
     // If the route has an injector created from providers, we should start using that.
     injector = getOrCreateRouteInjectorIfNeeded(route, injector);
     const {routes: childConfig} = await this.getChildConfig(injector, route, segments);
