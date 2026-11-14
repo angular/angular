@@ -15,6 +15,7 @@ import {
   equalParamsAndUrlSegments,
   RouterState,
   RouterStateSnapshot,
+  setRouterState,
 } from '../src/router_state';
 import {Params, RouteTitleKey} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
@@ -79,6 +80,7 @@ describe('RouterState & Snapshot', () => {
       const root = new TreeNode(a, [new TreeNode(b, []), new TreeNode(c, [])]);
 
       state = new (RouterState as any)(root, null);
+      setRouterState(state, root as any);
     });
 
     it('should return first child', () => {
