@@ -337,6 +337,11 @@ export enum I18nCreateOpCode {
  */
 export interface I18nUpdateOpCodes extends Array<string | number | SanitizerFn | null>, I18nDebug {
   __brand__: 'I18nUpdateOpCodes';
+  /**
+   * Property names that translated bindings set without renaming. Shared by all instances of the
+   * view.
+   */
+  exactDomPropertyNames?: readonly string[];
 }
 
 /**

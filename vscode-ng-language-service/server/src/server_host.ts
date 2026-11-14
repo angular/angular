@@ -32,7 +32,7 @@ export class ServerHost implements ts.server.ServerHost {
 
   constructor(
     readonly isG3: boolean,
-    private readonly useClientSideFileWatcher: boolean,
+    readonly useClientSideFileWatcher: boolean,
   ) {
     this.args = ts.sys.args;
     this.newLine = ts.sys.newLine;
@@ -130,7 +130,9 @@ export class ServerHost implements ts.server.ServerHost {
           fileName,
           type === lsp.FileChangeType.Deleted
             ? ts.FileWatcherEventKind.Deleted
-            : ts.FileWatcherEventKind.Changed,
+            : type === lsp.FileChangeType.Created
+              ? ts.FileWatcherEventKind.Created
+              : ts.FileWatcherEventKind.Changed,
         ),
       );
     }

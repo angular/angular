@@ -151,14 +151,20 @@ export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?:
  *
  * @param index A unique index in the static block
  * @param values
+ * @param exactDomPropertyNames Property names to set without renaming, such as a manifest's
+ *     `readonly`.
  *
  * @codeGenApi
  */
-export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
+export function ɵɵi18nAttributes(
+  index: number,
+  attrsIndex: number,
+  exactDomPropertyNames?: readonly string[],
+): void {
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
   const attrs = getConstant<string[]>(tView.consts, attrsIndex)!;
-  i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs);
+  i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs, exactDomPropertyNames);
 }
 
 /**
