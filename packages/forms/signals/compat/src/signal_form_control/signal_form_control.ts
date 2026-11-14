@@ -89,7 +89,8 @@ export class SignalFormControl<T> extends AbstractControl {
 
   private readonly fieldState: FieldState<T>;
   private readonly initialValue: T;
-  private pendingParentNotifications = 0;
+  private lastNotifiedValue: T;
+  private lastNotifiedStatus: FormControlStatus;
   private readonly onChangeCallbacks: Array<(value?: any, emitModelEvent?: boolean) => void> = [];
   private readonly onDisabledChangeCallbacks: Array<(isDisabled: boolean) => void> = [];
   override readonly valueChanges = new EventEmitter<T>();
@@ -123,19 +124,22 @@ export class SignalFormControl<T> extends AbstractControl {
       ? compatForm(this.sourceValue, schema, formOptions)
       : compatForm(this.sourceValue, formOptions);
 
-    this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
-      this.parent?.updateValueAndValidity({sourceControl: this} as any),
-    );
-    this.fieldState = this.fieldTree();
+    this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () => {
+      this.markParentNotified();
+      this.parent?.updateValueAndValidity({sourceControl: this} as any);
+    });
+    this.fieldState = rawTree();
 
     this.defineCompatProperties();
+    this.lastNotifiedValue = value;
+    this.lastNotifiedStatus = untracked(() => this.status);
 
     // Value changes effect
     effect(
       () => {
         const value = this.sourceValue();
         untracked(() => {
-          this.notifyParentUnlessPending();
+          this.notifyParentIfChanged();
           this.valueChanges.emit(value);
           this.emitControlEvent(new ValueChangeEvent(value, this));
         });
@@ -148,9 +152,10 @@ export class SignalFormControl<T> extends AbstractControl {
       () => {
         const status = this.status;
         untracked(() => {
+          this.notifyParentIfChanged();
           this.statusChanges.emit(status);
+          this.emitControlEvent(new StatusChangeEvent(status, this));
         });
-        this.emitControlEvent(new StatusChangeEvent(status, this));
       },
       {injector},
     );
@@ -236,10 +241,10 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   private updateValue(value: any, options?: ValueUpdateOptions): void {
-    const parent = this.scheduleParentUpdate(options);
     this.sourceValue.set(value);
-    if (parent) {
-      this.updateParentValueAndValidity(parent, options?.emitEvent);
+    this.markParentNotified();
+    if (!options?.onlySelf && this.parent) {
+      this.updateParentValueAndValidity(this.parent, options?.emitEvent);
     }
     if (options?.emitModelToViewChange !== false) {
       for (const fn of this.onChangeCallbacks) {
@@ -280,10 +285,10 @@ export class SignalFormControl<T> extends AbstractControl {
 
     if (value !== undefined) {
       this.updateValue(value, options);
-    } else if (!options?.onlySelf) {
-      const parent = this.parent;
-      if (parent) {
-        this.updateParentValueAndValidity(parent, options?.emitEvent);
+    } else {
+      this.markParentNotified();
+      if (!options?.onlySelf && this.parent) {
+        this.updateParentValueAndValidity(this.parent, options?.emitEvent);
       }
     }
 
@@ -292,19 +297,19 @@ export class SignalFormControl<T> extends AbstractControl {
     }
   }
 
-  private scheduleParentUpdate(options?: ValueUpdateOptions): FormGroup | FormArray | null {
-    const parent = options?.onlySelf ? null : this.parent;
-    if (options?.onlySelf || parent) {
-      this.pendingParentNotifications++;
-    }
-    return parent;
+  private markParentNotified(): void {
+    this.lastNotifiedValue = untracked(this.sourceValue);
+    this.lastNotifiedStatus = untracked(() => this.status);
   }
 
-  private notifyParentUnlessPending(): void {
-    if (this.pendingParentNotifications > 0) {
-      this.pendingParentNotifications--;
+  private notifyParentIfChanged(): void {
+    const value = untracked(this.sourceValue);
+    const status = untracked(() => this.status);
+    if (Object.is(value, this.lastNotifiedValue) && status === this.lastNotifiedStatus) {
       return;
     }
+    this.lastNotifiedValue = value;
+    this.lastNotifiedStatus = status;
     const parent = this.parent;
     if (parent) {
       this.updateParentValueAndValidity(parent);
@@ -424,6 +429,7 @@ export class SignalFormControl<T> extends AbstractControl {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && parent && parent.updateOn !== 'change') {
       throw unsupportedUpdateOnError(parent.updateOn, true);
     }
+    this.markParentNotified();
   }
 
   override get updateOn(): 'change' | 'blur' | 'submit' {

@@ -6,11 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector} from '@angular/core';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {AbstractControl, FormArray, FormControlStatus, FormGroup} from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormControlStatus,
+  FormGroup,
+  StatusChangeEvent,
+} from '@angular/forms';
 import {SignalFormControl} from '../../../compat/src/signal_form_control/signal_form_control';
-import {required} from '../../../public_api';
+import {applyWhen, disabled, required, validateAsync, ValidationError} from '../../../public_api';
 import {SchemaFn} from '../../../src/api/types';
 
 function createSignalFormControl<T>(value: T, schema?: SchemaFn<T>) {
@@ -441,6 +448,435 @@ describe('SignalFormControl in FormGroup', () => {
         const child = createSignalFormControl('meow');
         expect(() => new FormGroup({child})).not.toThrow();
         expect(() => new FormGroup({child}, {updateOn: 'change'})).not.toThrow();
+      });
+    });
+
+    describe('reactive status changes via rules', () => {
+      it('should update parent FormGroup status when conditional required rule changes', () => {
+        const isRequired = signal(false);
+        const child = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+
+        const groupStatuses: FormControlStatus[] = [];
+        const groupStatusEvents: StatusChangeEvent[] = [];
+        group.statusChanges.subscribe((s) => groupStatuses.push(s));
+        group.events.subscribe((e) => {
+          if (e instanceof StatusChangeEvent) {
+            groupStatusEvents.push(e);
+          }
+        });
+
+        isRequired.set(true);
+        TestBed.tick();
+
+        expect(child.status).toBe('INVALID');
+        expect(group.status).toBe('INVALID');
+        expect(group.invalid).toBe(true);
+        expect(groupStatuses).toEqual(['INVALID']);
+        expect(groupStatusEvents.length).toBe(1);
+        expect(groupStatusEvents[0].status).toBe('INVALID');
+        expect(groupStatusEvents[0].source).toBe(child);
+
+        isRequired.set(false);
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+        expect(group.valid).toBe(true);
+        expect(groupStatuses).toEqual(['INVALID', 'VALID']);
+      });
+
+      it('should update parent FormGroup status when applyWhen rule changes', () => {
+        const needsValidation = signal(false);
+        const child = createSignalFormControl('', (p) => {
+          applyWhen(
+            p,
+            () => needsValidation(),
+            (p) => {
+              required(p);
+            },
+          );
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+
+        needsValidation.set(true);
+        TestBed.tick();
+
+        expect(group.status).toBe('INVALID');
+
+        needsValidation.set(false);
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+      });
+
+      it('should update parent FormGroup value and status when disabled rule changes', () => {
+        const isDisabled = signal(false);
+        const name = createSignalFormControl('Alice', (p) => {
+          disabled(p, {when: () => isDisabled()});
+        });
+        const age = new FormControl(30);
+        const group = new FormGroup({name, age});
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+        expect(group.value).toEqual({name: 'Alice', age: 30});
+
+        const groupValues: unknown[] = [];
+        const groupStatuses: FormControlStatus[] = [];
+        group.valueChanges.subscribe((v) => groupValues.push(v));
+        group.statusChanges.subscribe((s) => groupStatuses.push(s));
+
+        isDisabled.set(true);
+        TestBed.tick();
+
+        expect(name.status).toBe('DISABLED');
+        expect(group.status).toBe('VALID');
+        expect(group.value).toEqual({age: 30});
+        expect(group.getRawValue()).toEqual({name: 'Alice', age: 30});
+        expect(groupValues).toEqual([{age: 30}]);
+        expect(groupStatuses).toEqual(['VALID']);
+
+        isDisabled.set(false);
+        TestBed.tick();
+
+        expect(name.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+        expect(group.value).toEqual({name: 'Alice', age: 30});
+        expect(groupValues).toEqual([{age: 30}, {name: 'Alice', age: 30}]);
+        expect(groupStatuses).toEqual(['VALID', 'VALID']);
+      });
+
+      it('should mark parent FormGroup as DISABLED when all child controls become disabled via rule', () => {
+        const isDisabled = signal(false);
+        const child = createSignalFormControl('Alice', (p) => {
+          disabled(p, {when: () => isDisabled()});
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+        expect(group.disabled).toBe(false);
+
+        isDisabled.set(true);
+        TestBed.tick();
+
+        expect(child.status).toBe('DISABLED');
+        expect(group.status).toBe('DISABLED');
+        expect(group.disabled).toBe(true);
+
+        isDisabled.set(false);
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+        expect(group.disabled).toBe(false);
+      });
+
+      it('should update parent FormArray value and status when disabled or required rule changes', () => {
+        const isDisabled = signal(false);
+        const isRequired = signal(false);
+        const first = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+          disabled(p, {when: () => isDisabled()});
+        });
+        const second = createSignalFormControl('keep');
+        const array = new FormArray([first, second]);
+        TestBed.tick();
+
+        expect(array.status).toBe('VALID');
+        expect(array.value).toEqual(['', 'keep']);
+
+        isRequired.set(true);
+        TestBed.tick();
+
+        expect(array.status).toBe('INVALID');
+
+        isDisabled.set(true);
+        TestBed.tick();
+
+        expect(array.status).toBe('VALID');
+        expect(array.value).toEqual(['keep']);
+      });
+
+      it('should propagate async validation status changes to parent FormGroup', async () => {
+        let deferred = Promise.withResolvers<ValidationError[]>();
+        const resolveNext = (errors: ValidationError[]) => {
+          TestBed.tick();
+          deferred.resolve(errors);
+          deferred = Promise.withResolvers<ValidationError[]>();
+        };
+
+        const child = createSignalFormControl('initial', (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              resource({
+                params,
+                loader: () => deferred.promise,
+              }),
+            onSuccess: (errors) => errors,
+            onError: () => null,
+          });
+        });
+        const group = new FormGroup({child});
+        const appRef = TestBed.inject(ApplicationRef);
+
+        expect(child.status).toBe('PENDING');
+        expect(group.status).toBe('PENDING');
+
+        resolveNext([]);
+        await appRef.whenStable();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+
+        child.setValue('invalid');
+        expect(child.status).toBe('PENDING');
+        expect(group.status).toBe('PENDING');
+
+        resolveNext([{kind: 'async-invalid'}]);
+        await appRef.whenStable();
+
+        expect(child.status).toBe('INVALID');
+        expect(group.status).toBe('INVALID');
+      });
+
+      it('should not emit duplicate parent updates when both value and status change', () => {
+        const child = createSignalFormControl('valid', (p) => {
+          required(p);
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        const groupValues: unknown[] = [];
+        const groupStatuses: FormControlStatus[] = [];
+        group.valueChanges.subscribe((v) => groupValues.push(v));
+        group.statusChanges.subscribe((s) => groupStatuses.push(s));
+
+        // Imperative setValue changing both value and status
+        child.setValue('');
+        TestBed.tick();
+
+        expect(groupValues).toEqual([{child: ''}]);
+        expect(groupStatuses).toEqual(['INVALID']);
+
+        // Reactive sourceValue.set changing both value and status
+        child.sourceValue.set('valid-again');
+        TestBed.tick();
+
+        expect(groupValues).toEqual([{child: ''}, {child: 'valid-again'}]);
+        expect(groupStatuses).toEqual(['INVALID', 'VALID']);
+
+        // Synchronous fieldTree().value.set changing both value and status
+        child.fieldTree().value.set('');
+        TestBed.tick();
+
+        expect(groupValues).toEqual([{child: ''}, {child: 'valid-again'}, {child: ''}]);
+        expect(groupStatuses).toEqual(['INVALID', 'VALID', 'INVALID']);
+      });
+
+      it('should respect onlySelf and emitEvent options across tick when status also changes', () => {
+        const child = createSignalFormControl('valid', (p) => {
+          required(p);
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        const groupValues: unknown[] = [];
+        const groupStatuses: FormControlStatus[] = [];
+        group.valueChanges.subscribe((v) => groupValues.push(v));
+        group.statusChanges.subscribe((s) => groupStatuses.push(s));
+
+        child.setValue('', {onlySelf: true});
+        TestBed.tick();
+
+        expect(child.status).toBe('INVALID');
+        expect(group.status).toBe('VALID');
+        expect(groupValues).toEqual([]);
+        expect(groupStatuses).toEqual([]);
+
+        child.setValue('valid', {emitEvent: false});
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+        expect(groupValues).toEqual([]);
+        expect(groupStatuses).toEqual([]);
+      });
+
+      it('should respect onlySelf and emitEvent on reset when status changes and not emit twice', () => {
+        const child = createSignalFormControl('valid', (p) => {
+          required(p);
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        child.setValue('');
+        TestBed.tick();
+        expect(group.status).toBe('INVALID');
+
+        const groupValues: unknown[] = [];
+        const groupStatuses: FormControlStatus[] = [];
+        group.valueChanges.subscribe((v) => groupValues.push(v));
+        group.statusChanges.subscribe((s) => groupStatuses.push(s));
+
+        child.reset(undefined, {onlySelf: true});
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('INVALID');
+        expect(groupValues).toEqual([]);
+        expect(groupStatuses).toEqual([]);
+
+        child.setValue('', {emitEvent: false});
+        TestBed.tick();
+
+        child.reset(undefined, {emitEvent: false});
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+        expect(groupValues).toEqual([]);
+        expect(groupStatuses).toEqual([]);
+
+        child.setValue('', {emitEvent: false});
+        TestBed.tick();
+
+        child.reset();
+        TestBed.tick();
+
+        expect(groupValues).toEqual([{child: 'valid'}]);
+        expect(groupStatuses).toEqual(['VALID']);
+      });
+
+      it('should still propagate reactive updates after multiple synchronous setValue calls', () => {
+        const child = createSignalFormControl('initial');
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        child.setValue('first');
+        child.setValue('second');
+        TestBed.tick();
+
+        expect(group.value).toEqual({child: 'second'});
+
+        child.sourceValue.set('third');
+        TestBed.tick();
+
+        expect(group.value).toEqual({child: 'third'});
+      });
+
+      it('should have updated parent status before child statusChanges subscribers run', () => {
+        const isRequired = signal(false);
+        const child = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+        });
+        const group = new FormGroup({child});
+        TestBed.tick();
+
+        let observedGroupStatus: FormControlStatus | undefined;
+        child.statusChanges.subscribe(() => {
+          observedGroupStatus = group.status;
+        });
+
+        isRequired.set(true);
+        TestBed.tick();
+
+        expect(observedGroupStatus).toBe('INVALID');
+      });
+
+      it('should update parent FormGroup when multiple child controls share a rule signal', () => {
+        const isRequired = signal(false);
+        const first = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+        });
+        const second = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+        });
+        const group = new FormGroup({first, second});
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+
+        isRequired.set(true);
+        TestBed.tick();
+
+        expect(first.status).toBe('INVALID');
+        expect(second.status).toBe('INVALID');
+        expect(group.status).toBe('INVALID');
+
+        first.setValue('filled');
+        TestBed.tick();
+
+        expect(first.status).toBe('VALID');
+        expect(second.status).toBe('INVALID');
+        expect(group.status).toBe('INVALID');
+
+        second.setValue('filled');
+        TestBed.tick();
+
+        expect(first.status).toBe('VALID');
+        expect(second.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
+      });
+
+      it('should propagate rule status changes through nested FormGroups', () => {
+        const isRequired = signal(false);
+        const child = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+        });
+        const nested = new FormGroup({child});
+        const root = new FormGroup({nested});
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(nested.status).toBe('VALID');
+        expect(root.status).toBe('VALID');
+
+        isRequired.set(true);
+        TestBed.tick();
+
+        expect(child.status).toBe('INVALID');
+        expect(nested.status).toBe('INVALID');
+        expect(root.status).toBe('INVALID');
+
+        isRequired.set(false);
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(nested.status).toBe('VALID');
+        expect(root.status).toBe('VALID');
+      });
+
+      it('should update parent status when dynamically adding a SignalFormControl with active rules', () => {
+        const isRequired = signal(true);
+        const child = createSignalFormControl('', (p) => {
+          required(p, {when: () => isRequired()});
+        });
+        const group = new FormGroup({});
+        TestBed.tick();
+
+        expect(group.status).toBe('VALID');
+
+        group.addControl('child', child);
+
+        expect(child.status).toBe('INVALID');
+        expect(group.status).toBe('INVALID');
+
+        isRequired.set(false);
+        TestBed.tick();
+
+        expect(child.status).toBe('VALID');
+        expect(group.status).toBe('VALID');
       });
     });
   });
