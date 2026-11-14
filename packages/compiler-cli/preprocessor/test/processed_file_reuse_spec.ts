@@ -239,6 +239,93 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
+  it('clears un-fingerprinted cached bindings before stamping a new boundFingerprint', async () => {
+    const childTemplate = (slot: string) => `${slot}<ng-content></ng-content>`;
+    const parentSource = `
+      import {Component} from '@angular/core';
+      import {ChildComponent} from './child.component';
+      @Component({
+        selector: 'app-parent',
+        imports: [ChildComponent],
+        template: '<app-child>@if (show) {<span>a</span><b>b</b>}</app-child>',
+      })
+      export class ParentComponent {
+        show = true;
+      }
+    `;
+    const {compiler, analyzer, root, edit} = await createSession(
+      'unfingerprinted_cache_invalidation',
+      false,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['parent.component.ts', 'child.component.ts'],
+        }),
+        'child.component.ts': `
+          import {Component} from '@angular/core';
+          @Component({selector: 'app-child', templateUrl: './child.component.html'})
+          export class ChildComponent {}
+        `,
+        'child.component.html': childTemplate('<!-- <ng-content select="span"></ng-content> -->'),
+        'parent.component.ts': parentSource,
+      },
+    );
+    try {
+      const parentPath = path.join(root, 'parent.component.ts');
+      const parentMeta1 = compiler.analyzer.getMetadataForFileSync(parentPath)!;
+      // Direct processFileSync leaves `boundFingerprint` as `undefined` on `fileCache`.
+      compiler.processFileSync(parentPath, parentSource, undefined, parentMeta1);
+      expect(compiler.fileCache.get(parentPath)?.boundFingerprint).toBeUndefined();
+      expect(compiler.getDiagnostics().filter((diag) => diag.code === 8011)).toEqual([]);
+
+      edit('child.component.html', childTemplate('<ng-content select="span"></ng-content>'));
+      for (const _ of compiler.analyzeOptimizedDeltaSync()) {
+      }
+
+      const parentMeta2 = compiler.getCachedMetadata(parentPath)!;
+      compiler.processFileSync(parentPath, parentSource, undefined, parentMeta2);
+
+      expect(
+        compiler
+          .getDiagnostics()
+          .filter((diag) => diag.code === 8011)
+          .map((diag) => diag.messageText),
+      ).toEqual([jasmine.stringContaining('"span"')]);
+
+      const bound = compiler.ensureBoundWithMetadataSync(parentMeta2, parentSource);
+      const childDecl = bound.preparedTcbData?.targets[0]?.comp.declarations.find(
+        (d) => d.name === 'ChildComponent',
+      );
+      expect(childDecl?.ngContentSelectors).toContain('span');
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('resets cached TCB when re-binding an un-fingerprinted cache entry', async () => {
+    const {compiler, analyzer, root} = await createSession('reset_unfingerprinted_tcb');
+    try {
+      const aPath = path.join(root, 'a.component.ts');
+      const aMeta = compiler.analyzer.getMetadataForFileSync(aPath)!;
+      // Direct processFileSync populates `fileAnalysis.tcb` without setting `boundFingerprint`.
+      compiler.processFileSync(aPath, FILES['a.component.ts'], undefined, aMeta);
+      const strictTcb = compiler.getTcbForFile(aPath);
+      expect(strictTcb).toContain('_t1.first');
+      expect(strictTcb).not.toContain('as any');
+
+      compiler.tcbConfig = {...compiler.tcbConfig, checkTypeOfInputBindings: false};
+      compiler.ensureBoundWithMetadataSync(aMeta, FILES['a.component.ts']);
+
+      const nonStrictTcb = compiler.getTcbForFile(aPath);
+      expect(nonStrictTcb).toBeTruthy();
+      expect(nonStrictTcb).not.toBe(strictTcb);
+      expect(nonStrictTcb).toContain('as any');
+    } finally {
+      analyzer.close();
+    }
+  });
+
   it('in verification mode, re-processes reusable files and accepts identical output', async () => {
     const {compiler, analyzer, root, build} = await createSession('verification', true);
     const first = await build();
