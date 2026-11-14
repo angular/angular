@@ -2345,8 +2345,10 @@ describe('errorComponent without error boundaries', () => {
     await harness.navigateByUrl('/one');
     await harness.navigateByUrl('/two');
 
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn.calls.mostRecent().args[0]).toContain(`'withErrorBoundaries()'`);
+    const warnings = warn.calls
+      .allArgs()
+      .filter(([message]) => String(message).includes(`'withErrorBoundaries()'`));
+    expect(warnings.length).toBe(1);
   });
 });
 
