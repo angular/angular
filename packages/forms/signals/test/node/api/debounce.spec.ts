@@ -95,6 +95,73 @@ describe('debounce', () => {
   });
 
   describe('by function', () => {
+    it('does not abort a completed debounce when touched', async () => {
+      let finish!: () => void;
+      const aborted = jasmine.createSpy('aborted');
+      const f = form(
+        signal(''),
+        (p) =>
+          debounce(p, (_ctx, abortSignal) => {
+            abortSignal.addEventListener('abort', aborted);
+            return new Promise<void>((resolve) => (finish = resolve));
+          }),
+        {injector: TestBed.inject(Injector)},
+      );
+      f().controlValue.set('typed');
+      finish();
+      await Promise.resolve();
+      expect(f().value()).toBe('typed');
+      f().markAsTouched();
+      expect(aborted).not.toHaveBeenCalled();
+    });
+
+    it('allows an abort listener to write a signal after a direct model update', () => {
+      const model = signal('');
+      const searching = signal(true);
+      const errors: unknown[] = [];
+      const f = form(
+        model,
+        (p) =>
+          debounce(p, (_ctx, abortSignal) => {
+            abortSignal.addEventListener('abort', () => {
+              try {
+                searching.set(false);
+              } catch (error) {
+                errors.push(error);
+              }
+            });
+            return new Promise<void>(() => {});
+          }),
+        {injector: TestBed.inject(Injector)},
+      );
+      f().controlValue.set('typed');
+      model.set('direct');
+      f().markAsTouched();
+      expect(errors).toEqual([]);
+      expect(searching()).toBeFalse();
+      expect(model()).toBe('direct');
+    });
+
+    it('does not track signals read by an earlier abort listener', () => {
+      const model = signal('');
+      const unrelated = signal(0);
+      const f = form(
+        model,
+        (p) =>
+          debounce(p, (_ctx, abortSignal) => {
+            abortSignal.addEventListener('abort', () => unrelated());
+            return new Promise<void>(() => {});
+          }),
+        {injector: TestBed.inject(Injector)},
+      );
+      f().controlValue.set('first');
+      model.set('direct');
+      f().controlValue.set('second');
+      unrelated.set(1);
+      f().markAsTouched();
+      expect(model()).toBe('second');
+    });
+
     it('should synchronize value immediately by default', () => {
       const address = signal({street: ''});
       const addressForm = form(
