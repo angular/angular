@@ -18,12 +18,6 @@ import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics';
  */
 export interface LegacyNgcOptions {
   /**
-   * generate all possible generated files
-   *  @deprecated This option is not used anymore.
-   */
-  allowEmptyCodegenFiles?: boolean;
-
-  /**
    * Whether to generate a flat module index of the given name and the corresponding
    * flat module metadata. This option is intended to be used when creating flat
    * modules similar to how `@angular/core` and `@angular/common` are packaged.
