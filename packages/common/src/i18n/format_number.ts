@@ -528,7 +528,16 @@ function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: numbe
   }, 0);
   if (carry) {
     digits.unshift(carry);
-    parsedNumber.integerLen++;
+    if (parsedNumber.exponent) {
+      // In exponential notation the mantissa has a single integer digit. A carry out of it
+      // (e.g. 9.99E+22 rounded to 10.0E+22) is folded into the exponent (1.00E+23) instead.
+      // All digits after the carry are zeros here, so dropping the last one keeps the
+      // number of fraction digits unchanged.
+      digits.pop();
+      parsedNumber.exponent++;
+    } else {
+      parsedNumber.integerLen++;
+    }
   }
 }
 

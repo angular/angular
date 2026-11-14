@@ -38,6 +38,16 @@ describe('Format number', () => {
         expect(formatNumber(1e100, ɵDEFAULT_LOCALE_ID)).toEqual('1E+100');
       });
 
+      it('should normalize the exponent when rounding carries into a new digit', () => {
+        expect(formatNumber(9.99999e22, ɵDEFAULT_LOCALE_ID)).toEqual('1E+23');
+        expect(formatNumber(-9.99999e22, ɵDEFAULT_LOCALE_ID)).toEqual('-1E+23');
+        expect(formatNumber(9.99999e22, ɵDEFAULT_LOCALE_ID, '1.2-2')).toEqual('1.00E+23');
+        expect(formatNumber(9.9999e99, ɵDEFAULT_LOCALE_ID, '1.0-2')).toEqual('1E+100');
+        expect(formatNumber(9.99999e22, ɵDEFAULT_LOCALE_ID, '1.0-10')).toEqual('9.99999E+22');
+        expect(formatPercent(9.99999e22, ɵDEFAULT_LOCALE_ID)).toEqual('1E+25%');
+        expect(formatCurrency(9.99999e22, ɵDEFAULT_LOCALE_ID, '$')).toEqual('$1.00E+23');
+      });
+
       it('should format NaN and Infinity with locale symbols', () => {
         expect(formatNumber(NaN, ɵDEFAULT_LOCALE_ID)).toEqual('NaN');
         expect(formatNumber(Infinity, ɵDEFAULT_LOCALE_ID)).toEqual('∞');
