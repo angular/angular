@@ -4,12 +4,22 @@ use std::collections::HashSet;
 use pathdiff;
 use std::path::{Path, PathBuf};
 
+#[derive(Clone)]
+pub struct SharedResolver(pub std::sync::Arc<ResolverGeneric<crate::fs::OverlayFileSystem>>);
+
+impl std::fmt::Debug for SharedResolver {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SharedResolver(..)")
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ResolvedTsConfig {
     pub files: Vec<PathBuf>,
     pub compiler_options: CompilerOptions,
     pub preserve_symlinks: bool,
     pub workspace_name: Option<String>,
+    pub compilation_target_src: Option<Vec<PathBuf>>,
     pub generate_extra_imports_in_local_mode: bool,
     pub compile_non_exported_classes: bool,
     pub enable_hmr: bool,
@@ -23,18 +33,20 @@ pub struct ResolvedTsConfig {
     /// `angularCompilerOptions._isAngularCoreCompilation`, or `None` when unset.
     pub is_angular_core_compilation: Option<bool>,
     pub merged_compiler_options: serde_json::Map<String, serde_json::Value>,
+    pub resolver: Option<SharedResolver>,
+    pub has_extends: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
     path: &Path,
     fs: &crate::fs::OverlayFileSystem,
 ) -> Result<ResolvedTsConfig, String> {
-    let resolver = ResolverGeneric::new_with_file_system(
+    let resolver = std::sync::Arc::new(ResolverGeneric::new_with_file_system(
         fs.clone(),
         ResolveOptions {
             ..ResolveOptions::default()
         },
-    );
+    ));
 
     let tsconfig = resolver
         .resolve_tsconfig(path)
@@ -58,36 +70,11 @@ pub fn load_and_resolve_tsconfig(
 
     let base_dir = path.parent().unwrap_or(Path::new("."));
 
-    // Like TypeScript, a config with no `exclude` (including through `extends`) skips its own
-    // output directories, so emitted `.d.ts`/`.js` files aren't picked up as sources. oxc has
-    // already resolved these relative to the canonicalized config that set them, so re-anchor
-    // against `base_dir` when `base_dir` is under a symlink. See
-    // `parseJsonConfigFileContentWorker` in TypeScript's `internal/tsoptions/tsconfigparsing.go`.
-    let excluded_dirs: Vec<PathBuf> = if tsconfig.exclude.is_none() {
-        let canonical_base_dir = fs.canonicalize(base_dir).ok();
-        [
-            &resolved_compiler_options.out_dir,
-            &resolved_compiler_options.declaration_dir,
-        ]
-        .into_iter()
-        .flatten()
-        .map(|dir| {
-            let rebased = canonical_base_dir
-                .as_ref()
-                .and_then(|canon| dir.strip_prefix(canon).ok())
-                .map(|rel| base_dir.join(rel));
-            crate::fs::normalize_path(rebased.as_deref().unwrap_or(dir)).into_owned()
-        })
-        .collect()
-    } else {
-        Vec::new()
-    };
-
     // Resolve extended options recursively to handle rootDirs, preserveSymlinks, workspaceName,
     // and merged compiler/bazel/angularCompilerOptions.
     let mut visited = HashSet::new();
-    let merged_compiler_options =
-        resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
+    let extended = resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
+    let merged_compiler_options = extended.compiler_options;
     resolved_compiler_options.root_dirs = merged_compiler_options
         .get("rootDirs")
         .and_then(|v| v.as_array())
@@ -97,13 +84,39 @@ pub fn load_and_resolve_tsconfig(
                 .collect()
         });
 
+    let abs_tsconfig_path = if crate::fs::is_absolute_path(path) {
+        path.to_path_buf()
+    } else {
+        fs.cwd().join(path)
+    };
+    let abs_base_dir = abs_tsconfig_path.parent().unwrap_or(Path::new("."));
+    let workspace_root_dir = extended
+        .resolved_root_dir
+        .unwrap_or_else(|| crate::fs::normalize_path_structural(abs_base_dir).into_owned());
+    let compilation_target_src = extended
+        .raw_compilation_target_src
+        .filter(|srcs| !srcs.is_empty())
+        .map(|srcs| {
+            srcs.into_iter()
+                .map(|src| {
+                    let p = PathBuf::from(src);
+                    if crate::fs::is_absolute_path(&p) {
+                        crate::fs::normalize_path_structural(&p).into_owned()
+                    } else {
+                        crate::fs::normalize_path_structural(&workspace_root_dir.join(p))
+                            .into_owned()
+                    }
+                })
+                .collect()
+        });
+
     // Resolve files (preserving tsconfig `files` order, then sorted `include` expansion)
     let mut files = Vec::new();
     let mut seen_files = HashSet::new();
 
-    // 1. files
+    // 1. files: `.d.ts` files are loaded lazily by the query engine, so skip stating them eagerly.
     for f in resolved_files {
-        if fs.metadata(&f).is_ok() && seen_files.insert(f.clone()) {
+        if (crate::utils::is_dts(&f) || fs.metadata(&f).is_ok()) && seen_files.insert(f.clone()) {
             files.push(f);
         }
     }
@@ -112,6 +125,34 @@ pub fn load_and_resolve_tsconfig(
     let allow_js = resolved_compiler_options.allow_js.unwrap_or(false);
 
     if !resolved_include.is_empty() {
+        // Like TypeScript, a config with no `exclude` (including through `extends`) skips its own
+        // output directories, so emitted `.d.ts`/`.js` files aren't picked up as sources. oxc has
+        // already resolved these relative to the canonicalized config that set them, so re-anchor
+        // against `base_dir` when `base_dir` is under a symlink. See
+        // `parseJsonConfigFileContentWorker` in TypeScript's `internal/tsoptions/tsconfigparsing.go`.
+        let excluded_dirs: Vec<PathBuf> = if tsconfig.exclude.is_none()
+            && (resolved_compiler_options.out_dir.is_some()
+                || resolved_compiler_options.declaration_dir.is_some())
+        {
+            let canonical_base_dir = fs.canonicalize(base_dir).ok();
+            [
+                &resolved_compiler_options.out_dir,
+                &resolved_compiler_options.declaration_dir,
+            ]
+            .into_iter()
+            .flatten()
+            .map(|dir| {
+                let rebased = canonical_base_dir
+                    .as_ref()
+                    .and_then(|canon| dir.strip_prefix(canon).ok())
+                    .map(|rel| base_dir.join(rel));
+                crate::fs::normalize_path(rebased.as_deref().unwrap_or(dir)).into_owned()
+            })
+            .collect()
+        } else {
+            Vec::new()
+        };
+
         let mut expanded: Vec<PathBuf> = tracing::info_span!("ExpandGlobs")
             .in_scope(|| {
                 expand_globs(
@@ -204,6 +245,7 @@ pub fn load_and_resolve_tsconfig(
         compiler_options: resolved_compiler_options,
         preserve_symlinks,
         workspace_name,
+        compilation_target_src,
         generate_extra_imports_in_local_mode,
         compile_non_exported_classes,
         enable_hmr,
@@ -216,6 +258,8 @@ pub fn load_and_resolve_tsconfig(
         experimental_local_compilation,
         is_angular_core_compilation,
         merged_compiler_options,
+        resolver: Some(SharedResolver(resolver)),
+        has_extends: extended.has_extends,
     })
 }
 
@@ -477,22 +521,102 @@ fn collect_local_compiler_options(
     map
 }
 
+struct ExtendedOptions {
+    compiler_options: serde_json::Map<String, serde_json::Value>,
+    resolved_root_dir: Option<PathBuf>,
+    raw_compilation_target_src: Option<Vec<String>>,
+    has_extends: bool,
+}
+
+fn extract_local_root_dir(parsed_json: &serde_json::Value, base_dir: &Path) -> Option<PathBuf> {
+    let raw = parsed_json
+        .get("compilerOptions")
+        .and_then(|v| v.as_object())
+        .and_then(|co| co.get("rootDir"))
+        .and_then(|v| v.as_str())?;
+    let resolved = if let Some(rest) = raw.strip_prefix("${configDir}") {
+        base_dir.join(rest.trim_start_matches(['/', '\\']))
+    } else {
+        let p = Path::new(raw);
+        if crate::fs::is_absolute_path(p) {
+            p.to_path_buf()
+        } else {
+            base_dir.join(p)
+        }
+    };
+    Some(crate::fs::normalize_path_structural(&resolved).into_owned())
+}
+
+fn extract_compilation_target_src(parsed_json: &serde_json::Value) -> Option<Vec<String>> {
+    let mut result = None;
+    for bazel_key in ["bazelOptions", "bazelOpts"] {
+        let Some(srcs) = parsed_json
+            .get(bazel_key)
+            .and_then(|v| v.as_object())
+            .and_then(|bo| bo.get("compilationTargetSrc"))
+            .and_then(|v| v.as_array())
+        else {
+            continue;
+        };
+        result = Some(
+            srcs.iter()
+                .filter_map(|v| v.as_str().map(str::to_owned))
+                .collect(),
+        );
+    }
+    result
+}
+
 fn resolve_extended_options_recursive(
     path: &Path,
     fs: &crate::fs::OverlayFileSystem,
     resolver: &ResolverGeneric<crate::fs::OverlayFileSystem>,
     visited: &mut HashSet<PathBuf>,
-) -> Result<serde_json::Map<String, serde_json::Value>, String> {
-    let abs_path = if path.is_absolute() {
+) -> Result<ExtendedOptions, String> {
+    let abs_path = if crate::fs::is_absolute_path(path) {
         path.to_path_buf()
     } else {
-        std::env::current_dir()
-            .unwrap_or_else(|_| PathBuf::from("."))
-            .join(path)
+        fs.cwd().join(path)
     };
 
-    crate::perf::count(crate::perf::Counter::FsCanonicalizeCalls, 1);
-    let canonical = abs_path.canonicalize().unwrap_or_else(|_| abs_path.clone());
+    let mut stripped_json = fs
+        .read_to_string(path)
+        .map_err(|e| format!("Failed to read tsconfig at {:?}: {}", path, e))?;
+    let _ = json_strip_comments::strip(&mut stripped_json);
+    let trimmed = stripped_json.trim_start_matches('\u{feff}').trim();
+
+    let parsed_json: serde_json::Value = if trimmed.is_empty() {
+        serde_json::Value::Object(serde_json::Map::new())
+    } else {
+        serde_json::from_str(trimmed)
+            .map_err(|e| format!("Failed to parse tsconfig JSON at {:?}: {:?}", path, e))?
+    };
+    let base_dir = abs_path.parent().unwrap_or(Path::new("."));
+    let local_options = collect_local_compiler_options(Some(&parsed_json), base_dir);
+    let local_root_dir = extract_local_root_dir(&parsed_json, base_dir);
+    let local_target_src = extract_compilation_target_src(&parsed_json);
+
+    let extends_list: Vec<String> = match parsed_json.get("extends") {
+        Some(serde_json::Value::String(s)) => vec![s.clone()],
+        Some(serde_json::Value::Array(arr)) => arr
+            .iter()
+            .filter_map(|v| v.as_str().map(str::to_owned))
+            .collect(),
+        _ => Vec::new(),
+    };
+
+    if extends_list.is_empty() {
+        return Ok(ExtendedOptions {
+            compiler_options: local_options,
+            resolved_root_dir: local_root_dir,
+            raw_compilation_target_src: local_target_src,
+            has_extends: false,
+        });
+    }
+
+    let canonical = fs
+        .canonicalize(&abs_path)
+        .unwrap_or_else(|_| abs_path.clone());
     if !visited.insert(canonical.clone()) {
         return Err(format!(
             "Circular dependency detected in tsconfig extends: {:?}",
@@ -500,32 +624,10 @@ fn resolve_extended_options_recursive(
         ));
     }
 
-    let json_str = fs
-        .read_to_string(path)
-        .map_err(|e| format!("Failed to read tsconfig at {:?}: {}", path, e))?;
-
-    let mut stripped_json = json_str.clone();
-    let _ = json_strip_comments::strip(&mut stripped_json);
-
-    let tsconfig = TsConfig::parse(false, path, path, json_str)
-        .map_err(|e| format!("Failed to parse tsconfig JSON at {:?}: {:?}", path, e))?;
-
-    let parsed_json: Result<serde_json::Value, _> = serde_json::from_str(&stripped_json);
-    let base_dir = abs_path.parent().unwrap_or(Path::new("."));
-    let local_options = collect_local_compiler_options(parsed_json.as_ref().ok(), base_dir);
-
-    let Some(extends_field) = &tsconfig.extends else {
-        visited.remove(&canonical);
-        return Ok(local_options);
-    };
-
-    let extends_list: &[String] = match extends_field {
-        oxc_resolver::ExtendsField::Single(s) => std::slice::from_ref(s),
-        oxc_resolver::ExtendsField::Multiple(v) => v.as_slice(),
-    };
-
     let mut merged = serde_json::Map::new();
-    for extends_str in extends_list {
+    let mut inherited_root_dir = None;
+    let mut inherited_target_src = None;
+    for extends_str in &extends_list {
         let base_dir = path.parent().unwrap_or(Path::new("."));
         let extends_path = match resolver.resolve(base_dir, extends_str) {
             Ok(resolution) => resolution.into_path_buf(),
@@ -542,10 +644,15 @@ fn resolve_extended_options_recursive(
             }
         };
 
-        let parent_options =
-            resolve_extended_options_recursive(&extends_path, fs, resolver, visited)?;
-        for (k, v) in parent_options {
+        let parent = resolve_extended_options_recursive(&extends_path, fs, resolver, visited)?;
+        for (k, v) in parent.compiler_options {
             merged.insert(k, v);
+        }
+        if parent.resolved_root_dir.is_some() {
+            inherited_root_dir = parent.resolved_root_dir;
+        }
+        if parent.raw_compilation_target_src.is_some() {
+            inherited_target_src = parent.raw_compilation_target_src;
         }
     }
 
@@ -554,7 +661,12 @@ fn resolve_extended_options_recursive(
     }
 
     visited.remove(&canonical);
-    Ok(merged)
+    Ok(ExtendedOptions {
+        compiler_options: merged,
+        resolved_root_dir: local_root_dir.or(inherited_root_dir),
+        raw_compilation_target_src: local_target_src.or(inherited_target_src),
+        has_extends: true,
+    })
 }
 
 pub fn is_supported_extension(path: &Path, allow_js: bool) -> bool {
@@ -2278,5 +2390,59 @@ mod tests {
         let fs = crate::fs::OverlayFileSystem::new_with_overlay();
         let config = load_and_resolve_tsconfig(&link_dir.join("tsconfig.json"), &fs).unwrap();
         assert_eq!(config.files, vec![link_dir.join("src/app.ts")]);
+    }
+
+    #[test]
+    fn test_compilation_target_src_resolves_against_root_dir() {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(
+            PathBuf::from("/ws/out/bin/pkg/tsconfig.json"),
+            r#"{
+                "compilerOptions": {
+                    "rootDir": "../../.."
+                },
+                "bazelOptions": {
+                    "compilationTargetSrc": ["pkg/app.ts", "/abs/extra.ts"]
+                },
+                "files": ["../../../pkg/app.ts", "../dep/lib.d.ts"]
+            }"#
+            .to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/ws/pkg/app.ts"),
+            "export const x = 1;".to_string(),
+        );
+
+        let config =
+            load_and_resolve_tsconfig(Path::new("/ws/out/bin/pkg/tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            config.compilation_target_src,
+            Some(vec![
+                PathBuf::from("/ws/pkg/app.ts"),
+                PathBuf::from("/abs/extra.ts"),
+            ])
+        );
+        // `.d.ts` entries in `files` are preserved for lazy loading without eager existence checks.
+        assert_eq!(
+            config.files,
+            vec![
+                PathBuf::from("/ws/pkg/app.ts"),
+                PathBuf::from("/ws/out/bin/dep/lib.d.ts"),
+            ]
+        );
+        assert_eq!(
+            config.merged_compiler_options.get("compilationTargetSrc"),
+            None
+        );
+
+        // Empty `compilationTargetSrc` does not activate an empty allowlist.
+        fs.upsert_file(
+            PathBuf::from("/ws/out/bin/pkg/tsconfig.empty.json"),
+            r#"{"bazelOptions": {"compilationTargetSrc": []}, "files": []}"#.to_string(),
+        );
+        let empty_config =
+            load_and_resolve_tsconfig(Path::new("/ws/out/bin/pkg/tsconfig.empty.json"), &fs)
+                .unwrap();
+        assert_eq!(empty_config.compilation_target_src, None);
     }
 }

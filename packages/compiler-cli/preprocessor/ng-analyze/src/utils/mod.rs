@@ -66,6 +66,49 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
     }
 }
 
+/// Build the `oxc_resolver::ResolveOptions` for module resolution.
+pub(crate) fn build_resolve_options(
+    tsconfig_path: Option<&Path>,
+    preserve_symlinks: bool,
+    node_modules_path_override: Option<String>,
+) -> ResolveOptions {
+    let mut modules = vec!["node_modules".into()];
+    if let Some(p) = node_modules_path_override {
+        modules.push(p);
+    }
+
+    ResolveOptions {
+        symlinks: !preserve_symlinks,
+        extensions: vec![".ts".into(), ".tsx".into(), ".d.ts".into(), ".js".into()],
+        // TypeScript resolution semantics: a `./x.js` specifier reaches `x.ts`/`x.d.ts`.
+        // Published `.d.ts` entry points import their chunk files that way, so without
+        // this the declaration chase stops at the package entry.
+        extension_alias: vec![
+            (
+                ".js".into(),
+                vec![".ts".into(), ".tsx".into(), ".d.ts".into(), ".js".into()],
+            ),
+            (
+                ".mjs".into(),
+                vec![".mts".into(), ".d.mts".into(), ".mjs".into()],
+            ),
+            (
+                ".cjs".into(),
+                vec![".cts".into(), ".d.cts".into(), ".cjs".into()],
+            ),
+        ],
+        condition_names: vec!["types".into(), "node".into(), "import".into()],
+        modules,
+        tsconfig: tsconfig_path.map(|path| {
+            TsconfigDiscovery::Manual(TsconfigOptions {
+                config_file: path.to_path_buf(),
+                references: TsconfigReferences::Disabled,
+            })
+        }),
+        ..ResolveOptions::default()
+    }
+}
+
 /// Build the module resolver. With a `tsconfig_path`, its `paths`/`baseUrl` mappings apply.
 pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(
     tsconfig_path: Option<&Path>,
@@ -73,43 +116,9 @@ pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(
     preserve_symlinks: bool,
     node_modules_path_override: Option<String>,
 ) -> ResolverGeneric<Fs> {
-    let mut modules = vec!["node_modules".into()];
-    if let Some(p) = node_modules_path_override {
-        modules.push(p);
-    }
-
     ResolverGeneric::new_with_file_system(
         fs,
-        ResolveOptions {
-            symlinks: !preserve_symlinks,
-            extensions: vec![".ts".into(), ".tsx".into(), ".d.ts".into(), ".js".into()],
-            // TypeScript resolution semantics: a `./x.js` specifier reaches `x.ts`/`x.d.ts`.
-            // Published `.d.ts` entry points import their chunk files that way, so without
-            // this the declaration chase stops at the package entry.
-            extension_alias: vec![
-                (
-                    ".js".into(),
-                    vec![".ts".into(), ".tsx".into(), ".d.ts".into(), ".js".into()],
-                ),
-                (
-                    ".mjs".into(),
-                    vec![".mts".into(), ".d.mts".into(), ".mjs".into()],
-                ),
-                (
-                    ".cjs".into(),
-                    vec![".cts".into(), ".d.cts".into(), ".cjs".into()],
-                ),
-            ],
-            condition_names: vec!["types".into(), "node".into(), "import".into()],
-            modules,
-            tsconfig: tsconfig_path.map(|path| {
-                TsconfigDiscovery::Manual(TsconfigOptions {
-                    config_file: path.to_path_buf(),
-                    references: TsconfigReferences::Disabled,
-                })
-            }),
-            ..ResolveOptions::default()
-        },
+        build_resolve_options(tsconfig_path, preserve_symlinks, node_modules_path_override),
     )
 }
 

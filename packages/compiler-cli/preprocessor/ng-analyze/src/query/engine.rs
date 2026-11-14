@@ -194,7 +194,10 @@ impl QueryEngine {
         emit_declaration_only: bool,
         experimental_local_compilation: bool,
     ) -> Arc<Self> {
-        let host = Arc::new(crate::host::DefaultFsHost::new(fs, resolver));
+        let host = Arc::new(
+            crate::host::DefaultFsHost::new(fs, resolver)
+                .with_shared_bare_resolutions(!reference_strategy.uses_owning_reference()),
+        );
         Self::new_with_host(
             host,
             resource_registry,

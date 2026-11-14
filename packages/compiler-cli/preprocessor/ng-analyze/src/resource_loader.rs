@@ -11,6 +11,30 @@ pub trait ResourceResolverFs: FileSystem {
     fn resolve_root_dirs_backing_path(&self, _path: &Path) -> Option<PathBuf> {
         None
     }
+
+    /// Clear any cached filesystem state after files are created, deleted, or reconfigured.
+    fn clear_caches(&self) {}
+
+    /// Monotonically increasing generation counter bumped whenever the filesystem overlay or
+    /// configuration (`rootDirs`, `preserveSymlinks`, virtual files) changes in a way that can
+    /// affect module resolution.
+    fn cache_generation(&self) -> u64 {
+        0
+    }
+
+    /// Whether the filesystem currently holds any in-memory virtual files.
+    fn has_virtual_files(&self) -> bool {
+        false
+    }
+
+    /// Canonicalize a path returned by `oxc_resolver::ResolverGeneric::resolve`, mapping any
+    /// `rootDirs`-merged virtual path to its physical backing path first.
+    fn canonicalize_resolved_path(&self, resolved: PathBuf) -> PathBuf {
+        let resolved = self
+            .resolve_root_dirs_backing_path(&resolved)
+            .unwrap_or(resolved);
+        self.canonicalize(&resolved).unwrap_or(resolved)
+    }
 }
 
 /// A resource located by [`ResourceResolver::load_resource`].

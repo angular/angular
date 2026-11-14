@@ -8955,3 +8955,307 @@ fn test_host_directives_entries_are_never_dropped() {
         }
     }
 }
+
+#[test]
+fn test_bazel_compilation_target_src_enforces_allowed_sources_fallback() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path();
+    let pkg_dir = ws.join("pkg");
+    let dep_dir = ws.join("dep");
+    let out_pkg_dir = ws.join("out/pkg");
+    let out_dep_dir = ws.join("out/dep");
+    let core_dir = ws.join("node_modules/@angular/core");
+    std::fs::create_dir_all(&pkg_dir).unwrap();
+    std::fs::create_dir_all(&dep_dir).unwrap();
+    std::fs::create_dir_all(&out_pkg_dir).unwrap();
+    std::fs::create_dir_all(&out_dep_dir).unwrap();
+    std::fs::create_dir_all(&core_dir).unwrap();
+
+    std::fs::write(
+        core_dir.join("index.d.ts"),
+        r#"
+            export declare function Component(meta: any): any;
+            export declare function Directive(meta: any): any;
+            export type ɵɵDirectiveDeclaration<A, B, C, D, E, F, G, H, I> = any;
+        "#,
+    )
+    .unwrap();
+
+    // Neighbor `.ts` source on disk intentionally omits `selector` so resolving `.ts` instead of
+    // the compiled `.d.ts` in `out/dep` would fail to match `[depDir]` in `AppCmp`'s template.
+    std::fs::write(dep_dir.join("dir.ts"), "export class DepDir {}").unwrap();
+    std::fs::write(
+        out_dep_dir.join("dir.d.ts"),
+        r#"
+            import * as i0 from '@angular/core';
+            export declare class DepDir {
+                static ɵdir: i0.ɵɵDirectiveDeclaration<DepDir, '[depDir]', never, {}, {}, never, never, true, never>;
+            }
+        "#,
+    )
+    .unwrap();
+
+    std::fs::write(
+        pkg_dir.join("app.ts"),
+        r#"
+            import {Component} from '@angular/core';
+            import {DepDir} from '../dep/dir';
+
+            @Component({
+                selector: 'app-cmp',
+                imports: [DepDir],
+                template: '<div depDir></div>',
+            })
+            export class AppCmp {}
+        "#,
+    )
+    .unwrap();
+
+    let tsconfig_path = out_pkg_dir.join("tsconfig.json");
+    std::fs::write(
+        &tsconfig_path,
+        r#"{
+            "compilerOptions": {
+                "rootDir": "../..",
+                "rootDirs": ["../..", ".."]
+            },
+            "bazelOptions": {
+                "compilationTargetSrc": ["pkg/app.ts"]
+            },
+            "files": ["../../pkg/app.ts", "../dep/dir.d.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig_path.to_string_lossy().into_owned()),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let iter = analyzer.analyze_optimized().unwrap();
+    let mut files = Vec::new();
+    while let Some(chunk) = futures::executor::block_on(iter.next()).unwrap() {
+        files.extend(chunk.files);
+    }
+
+    assert_eq!(files.len(), 1);
+    let cmp = files[0]
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+        .unwrap()
+        .component
+        .as_ref()
+        .unwrap();
+    let matched: Vec<&str> = cmp
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .iter()
+        .map(|d| d.name.as_str())
+        .collect();
+    assert_eq!(matched, vec!["DepDir"]);
+}
+
+#[cfg(unix)]
+#[test]
+fn test_invalidate_files_retargeted_symlink_evicts_importers() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path();
+    let core_dir = root.join("node_modules/@angular/core");
+    std::fs::create_dir_all(&core_dir).unwrap();
+    std::fs::write(
+        core_dir.join("index.d.ts"),
+        "export declare function Component(meta: any): any;",
+    )
+    .unwrap();
+
+    let v1 = root.join("dep_v1.ts");
+    let v2 = root.join("dep_v2.ts");
+    std::fs::write(&v1, "export const TPL = '<span>v1</span>';").unwrap();
+    std::fs::write(&v2, "export const TPL = '<p>v2</p>';").unwrap();
+
+    let link = root.join("dep.ts");
+    std::os::unix::fs::symlink(&v1, &link).unwrap();
+
+    let app = root.join("app.ts");
+    std::fs::write(
+        &app,
+        r#"
+            import {Component} from '@angular/core';
+            import {TPL} from './dep';
+            @Component({selector: 'app-cmp', template: TPL})
+            export class AppCmp {}
+        "#,
+    )
+    .unwrap();
+
+    let tsconfig = root.join("tsconfig.json");
+    std::fs::write(
+        &tsconfig,
+        r#"{"compilerOptions": {"preserveSymlinks": false}, "files": ["app.ts"]}"#,
+    )
+    .unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig.to_string_lossy().into_owned()),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let collect_app_template = |iter: crate::AnalysisIterator| -> String {
+        let mut all = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(iter.next()).unwrap() {
+            all.extend(chunk.files);
+        }
+        all.into_iter()
+            .find(|f| f.file_path.ends_with("app.ts"))
+            .unwrap()
+            .classes[0]
+            .component
+            .as_ref()
+            .unwrap()
+            .template
+            .clone()
+            .unwrap()
+    };
+
+    assert_eq!(
+        collect_app_template(analyzer.analyze_optimized().unwrap()),
+        "<span>v1</span>"
+    );
+
+    std::fs::remove_file(&link).unwrap();
+    std::os::unix::fs::symlink(&v2, &link).unwrap();
+    analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: link.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Changed,
+        }])
+        .unwrap();
+
+    assert_eq!(
+        collect_app_template(analyzer.analyze_optimized_delta().unwrap()),
+        "<p>v2</p>"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn test_preserve_symlinks_with_symlinked_tsconfig_preserves_module_symlinks() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let real_root = std::fs::canonicalize(dir.path()).unwrap();
+    let cas_dir = real_root.join("cas");
+    let real_dep_dir = real_root.join("real_dep");
+    let sandbox_dir = real_root.join("sandbox");
+    let mapped_dir = sandbox_dir.join("mapped");
+    let core_dir = sandbox_dir.join("node_modules/@angular/core");
+    std::fs::create_dir_all(&cas_dir).unwrap();
+    std::fs::create_dir_all(&real_dep_dir).unwrap();
+    std::fs::create_dir_all(&mapped_dir).unwrap();
+    std::fs::create_dir_all(&core_dir).unwrap();
+
+    std::fs::write(
+        core_dir.join("index.d.ts"),
+        r#"
+            export declare function Component(meta: any): any;
+            export declare function Directive(meta: any): any;
+        "#,
+    )
+    .unwrap();
+    std::fs::write(
+        real_dep_dir.join("dir.ts"),
+        r#"
+            import {Directive} from '@angular/core';
+            @Directive({selector: '[mappedDir]'})
+            export class MappedDir {}
+        "#,
+    )
+    .unwrap();
+    let linked_dep = mapped_dir.join("dir.ts");
+    std::os::unix::fs::symlink(real_dep_dir.join("dir.ts"), &linked_dep).unwrap();
+
+    let app_ts = sandbox_dir.join("app.ts");
+    std::fs::write(
+        &app_ts,
+        r#"
+            import {Component} from '@angular/core';
+            import {MappedDir} from '@pkg/dir';
+
+            @Component({
+                selector: 'app-cmp',
+                imports: [MappedDir],
+                template: '<div mappedDir></div>',
+            })
+            export class AppCmp {}
+        "#,
+    )
+    .unwrap();
+
+    let raw_tsconfig = cas_dir.join("tsconfig.raw.json");
+    std::fs::write(
+        &raw_tsconfig,
+        r#"{
+            "compilerOptions": {
+                "preserveSymlinks": true,
+                "baseUrl": "../sandbox",
+                "paths": {
+                    "@pkg/*": ["./mapped/*"]
+                }
+            },
+            "files": ["../sandbox/app.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    // `sandbox_dir` is a real directory, while `tsconfig.json` inside it is a file symlink.
+    let linked_tsconfig = sandbox_dir.join("tsconfig.json");
+    std::os::unix::fs::symlink(&raw_tsconfig, &linked_tsconfig).unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(linked_tsconfig.to_string_lossy().into_owned()),
+        entry_points: Some(vec![app_ts.to_string_lossy().into_owned()]),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let iter = analyzer.analyze_optimized().unwrap();
+    let mut files = Vec::new();
+    while let Some(chunk) = futures::executor::block_on(iter.next()).unwrap() {
+        files.extend(chunk.files);
+    }
+
+    let mut emitted_paths: Vec<String> = files.iter().map(|f| f.file_path.clone()).collect();
+    emitted_paths.sort();
+    assert_eq!(
+        emitted_paths,
+        vec![
+            app_ts.to_string_lossy().into_owned(),
+            linked_dep.to_string_lossy().into_owned(),
+        ]
+    );
+    let app_meta = files
+        .iter()
+        .find(|f| f.file_path == app_ts.to_string_lossy())
+        .unwrap();
+    let cmp = app_meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+        .unwrap()
+        .component
+        .as_ref()
+        .unwrap();
+    let matched: Vec<&str> = cmp
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .iter()
+        .map(|d| d.name.as_str())
+        .collect();
+    assert_eq!(matched, vec!["MappedDir"]);
+}
