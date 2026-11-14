@@ -34,6 +34,12 @@ export interface FileAnalysis {
   preparedTcbData?: PreparedTcbData | null;
 }
 
+/** Cached bound fingerprint computed while preparing a chunk, paired with its source snapshot. */
+export interface BoundChunkFingerprint {
+  readonly sourceContent: string;
+  readonly boundFingerprint: string;
+}
+
 export interface ChunkContext {
   remoteScopedClasses: Set<string>;
   metadataMap: Map<string, AnalysisResult>;
@@ -44,6 +50,11 @@ export interface ChunkContext {
    * set is computed once while detecting cycles rather than re-derived per module.
    */
   eagerlyUsedDeclarations: Map<string, DeclarationMetadata[]>;
+  /**
+   * Bound fingerprints keyed by normalized `filePath` for files prepared with incremental reuse
+   * enabled, reused by `processFile` when `sourceContent` still matches.
+   */
+  readonly boundFingerprints?: ReadonlyMap<string, BoundChunkFingerprint>;
 }
 
 export function getOrCreateFileAnalysis(
