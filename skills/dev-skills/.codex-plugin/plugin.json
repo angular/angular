@@ -1,0 +1,40 @@
+{
+  "name": "angular",
+  "version": "0.1.1",
+  "description": "Angular agent skills for generating modern Angular code, architectural guidance, and scaffolding new apps with the Angular CLI.",
+  "author": {
+    "name": "Angular",
+    "url": "https://angular.dev"
+  },
+  "homepage": "https://angular.dev",
+  "repository": "https://github.com/angular/angular",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "typescript",
+    "web-framework",
+    "signals",
+    "cli",
+    "scaffolding",
+    "best-practices",
+    "coding-agents"
+  ],
+  "skills": ["./angular-developer", "./angular-new-app"],
+  "interface": {
+    "displayName": "Angular",
+    "shortDescription": "Build and scaffold modern Angular apps",
+    "longDescription": "Angular agent skills help coding agents create applications aligned with the latest Angular versions, idiomatic patterns, and current best practices.\n\nThis plugin includes angular-developer for generating components, services, HTTP communication, and architectural guidance on signals, forms, dependency injection, routing, SSR, accessibility, animations, styling, testing, and CLI tooling — and angular-new-app for scaffolding a new project with the Angular CLI and modern defaults.\n\nUse it when creating or changing Angular apps, choosing reactivity and forms approaches, wiring routing or HTTP, or setting up a new project. The skills steer agents toward the Angular CLI and current APIs rather than outdated patterns.",
+    "developerName": "Angular",
+    "category": "Coding",
+    "capabilities": ["Angular best practices", "CLI scaffolding", "Architecture guidance"],
+    "websiteURL": "https://angular.dev",
+    "defaultPrompt": [
+      "Create a new Angular app with routing and SSR",
+      "Add a signal-based product list that loads data with httpResource",
+      "Refactor this form to Signal Forms and keep validation working"
+    ],
+    "brandColor": "#E40035",
+    "composerIcon": "./assets/logo.svg",
+    "logo": "./assets/logo.svg"
+  }
+}

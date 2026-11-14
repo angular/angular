@@ -1,0 +1,20 @@
+{
+  "name": "angular",
+  "interface": {
+    "displayName": "Angular"
+  },
+  "plugins": [
+    {
+      "name": "angular",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
