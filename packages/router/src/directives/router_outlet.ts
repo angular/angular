@@ -42,8 +42,6 @@ import type {RouterResourcesFeatureImplementation} from '../router_resource_feat
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
-let warnedAboutMissingErrorBoundaries = false;
-
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
  * input.
@@ -416,19 +414,6 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // The error handling implementation only exists when the application opts in to the error
     // boundary feature via `withErrorBoundaries`. Without it, errors propagate as usual.
     const errorBoundaryHandler = this.errorBoundaryHandler;
-    if (
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      !errorBoundaryHandler &&
-      snapshot.routeConfig?.errorComponent &&
-      !warnedAboutMissingErrorBoundaries
-    ) {
-      console.warn(
-        `The route '${snapshot.routeConfig.path ?? ''}' defines an 'errorComponent', but router ` +
-          `error boundaries are not enabled. Add 'withErrorBoundaries()' to 'provideRouter' ` +
-          `for it to take effect.`,
-      );
-      warnedAboutMissingErrorBoundaries = true;
-    }
     const onErrorHandler = errorBoundaryHandler
       ? (error: Error, details?: ErrorDetails) => {
           errorBoundaryHandler.handleError(

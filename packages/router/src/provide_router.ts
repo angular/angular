@@ -952,7 +952,6 @@ export function withRouterResources(): RouterResourcesFeature {
 /**
  * Options to configure router error boundary behavior when using `withErrorBoundaries`.
  *
- * @see [Global error boundary configuration](guide/routing/error-boundaries#global-error-boundary-configuration)
  * @developerPreview 22.3
  */
 export interface ErrorBoundaryOptions {
@@ -976,7 +975,6 @@ export interface ErrorBoundaryOptions {
  *
  * @see {@link withErrorBoundaries}
  * @see {@link provideRouter}
- * @see [Global error boundary configuration](guide/routing/error-boundaries#global-error-boundary-configuration)
  *
  * @developerPreview 22.3
  */
@@ -1005,7 +1003,6 @@ export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBounda
  * });
  * ```
  *
- * @see [Global error boundary configuration](guide/routing/error-boundaries#global-error-boundary-configuration)
  * @developerPreview 22.3
  */
 export function withErrorBoundaries(options: ErrorBoundaryOptions = {}): ErrorBoundariesFeature {
