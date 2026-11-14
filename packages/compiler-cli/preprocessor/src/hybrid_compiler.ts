@@ -21,7 +21,12 @@ import {
 } from './compiler_options.js';
 import {DependencyTemplates, ngContentSignature} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
-import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
+import {
+  type BoundChunkFingerprint,
+  ChunkContext,
+  FileAnalysis,
+  getOrCreateFileAnalysis,
+} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {IncrementalEmitTracker} from './incremental.js';
 import {getIndexedComponents} from './indexing/indexer.js';
@@ -624,6 +629,7 @@ export class HybridCompiler {
   ): ChunkContext {
     const remoteScopedClasses = new Set<string>();
     const eagerlyUsedDeclarations = new Map<string, nga.DeclarationMetadata[]>();
+    const boundFingerprints = new Map<string, BoundChunkFingerprint>();
 
     // Identify template dependencies of components in the chunk and check cycleProne.
     const chunkFileIds = new Set(chunk.files.map((f) => f.fileId));
@@ -648,6 +654,17 @@ export class HybridCompiler {
 
     for (const {file, analysis} of boundFiles) {
       if (!analysis) continue;
+
+      if (
+        this.incrementalEnabled &&
+        analysis.boundFingerprint != null &&
+        analysis.sourceContent != null
+      ) {
+        boundFingerprints.set(file.filePath, {
+          sourceContent: analysis.sourceContent,
+          boundFingerprint: analysis.boundFingerprint,
+        });
+      }
 
       for (const classMeta of file.classes) {
         if (!classMeta.component || !classMeta.className) continue;
@@ -734,7 +751,7 @@ export class HybridCompiler {
       }
     }
 
-    return {remoteScopedClasses, metadataMap, eagerlyUsedDeclarations};
+    return {remoteScopedClasses, metadataMap, eagerlyUsedDeclarations, boundFingerprints};
   }
 
   async init() {
@@ -1338,8 +1355,11 @@ export class HybridCompiler {
     const normPath = result ? result.filePath : filePath;
     let processed: ProcessedFile | undefined;
     try {
+      const chunkFingerprint = chunkContext?.boundFingerprints?.get(normPath);
       const boundFingerprint = result
-        ? this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
+        ? chunkFingerprint != null && chunkFingerprint.sourceContent === content
+          ? chunkFingerprint.boundFingerprint
+          : this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
         : undefined;
       const fingerprint = this.processingFingerprint(
         normPath,
@@ -1760,19 +1780,22 @@ function remoteScopeInputs(
   ngModule: nga.ClassMetadata,
   chunkContext: ChunkContext | undefined,
 ): string[] {
+  if (!chunkContext) return [];
   const inputs: string[] = [];
-  for (const [declaringPath, fileMeta] of chunkContext?.metadataMap ?? []) {
+  for (const [declaringPath, fileMeta] of chunkContext.metadataMap) {
     for (const cls of fileMeta.classes) {
       const owner = cls.component?.declaringNgModule;
       if (!cls.className || owner?.filePath !== filePath || owner.symbolId !== ngModule.symbolId) {
         continue;
       }
       const key = `${declaringPath}#${cls.className}`;
-      inputs.push(
-        `scope:${key}`,
-        String(chunkContext!.remoteScopedClasses.has(key)),
-        JSON.stringify(chunkContext!.eagerlyUsedDeclarations.get(key) ?? null),
-      );
+      const isRemotelyScoped = chunkContext.remoteScopedClasses.has(key);
+      inputs.push(`scope:${key}`, String(isRemotelyScoped));
+      if (!isRemotelyScoped) continue;
+      for (const decl of chunkContext.eagerlyUsedDeclarations.get(key) ?? []) {
+        if (decl.refInDeclaringModule == null) continue;
+        inputs.push(decl.declarationType, JSON.stringify(decl.refInDeclaringModule));
+      }
     }
   }
   return inputs;
