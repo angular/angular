@@ -68,6 +68,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_MISSING_SIBLINGS = -501,
     // (undocumented)
+    HYDRATION_MISSING_TEXT = -512,
+    // (undocumented)
     HYDRATION_NODE_MISMATCH = -500,
     // (undocumented)
     HYDRATION_STABLE_TIMEDOUT = -506,
