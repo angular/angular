@@ -107,6 +107,18 @@ def generate_rollup_bundle(bundles):
                 ],
             )
 
+def generate_types(bundles):
+    for b in bundles:
+        module_name = b[0]
+        native.genrule(
+            name = module_name + "-types",
+            outs = [module_name + ".d.ts"],
+            visibility = ["//visibility:public"],
+            # The bundles only patch globals and export nothing, so the
+            # declaration exists purely to give the subpath a `types` target.
+            cmd = "echo 'export {};' > $@",
+        )
+
 def generate_dist(bundles, output_format, umd):
     module_format = "esm.js"
     if output_format == "es5":

@@ -73,6 +73,9 @@ npm_package(
         "//packages/zone.js/fesm2015:" + b + "-es2015.min.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
     ] + [
+        "//packages/zone.js/fesm2015:" + b + "-types"
+        for b in BUNDLES_ENTRY_POINTS.keys()
+    ] + [
         ":zone_js_types",
         "//packages/zone.js/lib:zone_d_ts_types",
     ],
