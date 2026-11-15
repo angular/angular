@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {validateMatchingNode} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {canHydrateNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
@@ -83,10 +84,20 @@ function locateOrCreateTextNodeImpl(
 
   // Hydration mode, looking up an existing element in DOM.
   const hydrationInfo = lView[HYDRATION]!;
-  const textNative = locateNextRNode(hydrationInfo, tView, lView, tNode) as RText;
+  const textNative = locateNextRNode<RText>(hydrationInfo, tView, lView, tNode);
 
   ngDevMode && validateMatchingNode(textNative, Node.TEXT_NODE, null, lView, tNode);
-  ngDevMode && markRNodeAsClaimedByHydration(textNative);
+  ngDevMode && markRNodeAsClaimedByHydration(textNative!);
+
+  // `validateMatchingNode` above only runs in dev mode. Without this check,
+  // production throws a raw TypeError when the caller uses the missing text.
+  if (textNative == null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.HYDRATION_MISSING_TEXT,
+      ngDevMode &&
+        'During hydration Angular expected a text node at this location, but no matching DOM node was found. This usually means the client-rendered DOM no longer matches the server-rendered HTML.',
+    );
+  }
 
   return textNative;
 }
