@@ -186,10 +186,18 @@ describe('Zone.js npm_package', () => {
       });
 
       it('should contain all files in fesm2015', () => {
+        // Every entry point also ships an empty declaration, so that subpath
+        // imports resolve under `moduleResolution: bundler` and `node16`.
+        const expectedFesm2015 = [
+          ...expected,
+          ...expected
+            .filter((file) => !file.endsWith('.min.js'))
+            .map((file) => file.replace(/\.js$/, '.d.ts')),
+        ].sort();
         const list = readdirSync('./fesm2015').sort();
-        expect(list.length).toBe(expected.length);
+        expect(list.length).toBe(expectedFesm2015.length);
         for (let i = 0; i < list.length; i++) {
-          expect(list[i]).toEqual(expected[i]);
+          expect(list[i]).toEqual(expectedFesm2015[i]);
         }
       });
     });

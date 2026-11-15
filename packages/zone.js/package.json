@@ -63,22 +63,27 @@
       "default": "./fesm2015/zone.js"
     },
     "./testing": {
+      "types": "./fesm2015/zone-testing.d.ts",
       "require": "./bundles/zone-testing.umd.js",
       "default": "./fesm2015/zone-testing.js"
     },
     "./node": {
+      "types": "./fesm2015/zone-node.d.ts",
       "require": "./bundles/zone-node.umd.js",
       "default": "./fesm2015/zone-node.js"
     },
     "./mix": {
+      "types": "./fesm2015/zone-mix.d.ts",
       "require": "./bundles/zone-mix.umd.js",
       "default": "./fesm2015/zone-mix.js"
     },
     "./plugins/*.min": {
+      "types": "./fesm2015/*.d.ts",
       "require": "./bundles/*.umd.min.js",
       "default": "./fesm2015/*.min.js"
     },
     "./plugins/*": {
+      "types": "./fesm2015/*.d.ts",
       "require": "./bundles/*.umd.js",
       "default": "./fesm2015/*.js"
     }
