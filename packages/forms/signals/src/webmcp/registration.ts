@@ -79,16 +79,15 @@ async function initWebMcpForm(
 
         // Report the result to the agent.
         if (success) {
-          return {content: [{type: 'text', text: 'Form submitted successfully.'}]};
+          return {success: true};
         } else {
-          const errorMessages = node
+          const errors = node
             .errorSummary()
             .map((err) => {
               const fieldName = (err.fieldTree() as FieldNode).structure.pathKeys().join('.');
               return `${fieldName ? `${fieldName}: ` : ''}${err.message || err.kind}`;
-            })
-            .join('\n');
-          return {content: [{type: 'text', text: `Form submission failed:\n${errorMessages}`}]};
+            });
+          return {success: false, errors};
         }
       },
     },
