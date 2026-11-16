@@ -146,6 +146,7 @@ struct EffectiveConfig {
     /// The tsconfig's file list (root files and `.d.ts` files), empty without a tsconfig. Its
     /// `.d.ts` files are used even when `entry_points` replace its roots.
     tsconfig_files: Vec<PathBuf>,
+    fallback_allowed_sources: Option<HashSet<PathBuf>>,
     r3_symbols_file: Option<PathBuf>,
     /// `angular_core_compilation` > `angularCompilerOptions._isAngularCoreCompilation` > `true`
     /// with an explicit `r3_symbols_file` > none (detected from `r3_symbols.ts` by the engine).
@@ -175,6 +176,7 @@ struct EffectiveConfig {
 
 impl EffectiveConfig {
     fn resolve(options: AnalyzerOptions, fs: &OverlayFileSystem) -> Result<Self, String> {
+        let had_explicit_allowed = options.allowed_sources.is_some() || fs.has_allowed_sources();
         let tsconfig_path = options.tsconfig_path.map(PathBuf::from);
         let resolved = match &tsconfig_path {
             Some(path) => Some(
@@ -252,16 +254,22 @@ impl EffectiveConfig {
             })
             .or_else(|| options.r3_symbols_file.is_some().then_some(true));
 
-        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name, merged_compiler_options) =
-            match resolved {
-                Some(r) => (
-                    r.files,
-                    r.compiler_options.root_dirs,
-                    r.workspace_name,
-                    r.merged_compiler_options,
-                ),
-                None => (Vec::new(), None, None, serde_json::Map::new()),
-            };
+        let (
+            tsconfig_files,
+            tsconfig_root_dirs,
+            tsconfig_workspace_name,
+            compilation_target_src,
+            merged_compiler_options,
+        ) = match resolved {
+            Some(r) => (
+                r.files,
+                r.compiler_options.root_dirs,
+                r.workspace_name,
+                r.compilation_target_src,
+                r.merged_compiler_options,
+            ),
+            None => (Vec::new(), None, None, None, serde_json::Map::new()),
+        };
 
         let mut merge_root_dirs = match default_host.root_dirs {
             Some(dirs) => absolutize_all(dirs)?,
@@ -281,14 +289,30 @@ impl EffectiveConfig {
         };
 
         let entry_points = options.entry_points.map(absolutize_all).transpose()?;
+        let r3_symbols_file = options
+            .r3_symbols_file
+            .map(|path| absolutize(PathBuf::from(path)))
+            .transpose()?;
+        let fallback_allowed_sources = if !had_explicit_allowed {
+            compilation_target_src.map(|srcs| {
+                let mut allowed: HashSet<PathBuf> = srcs.into_iter().collect();
+                if let Some(eps) = &entry_points {
+                    allowed.extend(eps.iter().cloned());
+                }
+                if let Some(r3) = &r3_symbols_file {
+                    allowed.insert(r3.clone());
+                }
+                allowed
+            })
+        } else {
+            None
+        };
 
         Ok(Self {
             entry_points,
             tsconfig_files,
-            r3_symbols_file: options
-                .r3_symbols_file
-                .map(|path| absolutize(PathBuf::from(path)))
-                .transpose()?,
+            fallback_allowed_sources,
+            r3_symbols_file,
             angular_core_compilation,
             preserve_symlinks,
             merge_root_dirs,
@@ -349,11 +373,15 @@ impl Analyzer {
         Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
     }
 
-    /// Build the analyzer from fully merged settings. Order matters: the symlink mode and the
-    /// `rootDirs` must be set on `fs` before entry points are canonicalized through it.
+    /// Build the analyzer from fully merged settings. Order matters: the symlink mode, `rootDirs`,
+    /// and fallback `allowedSources` must be set on `fs` before entry points are filtered and
+    /// canonicalized through it.
     fn construct(config: EffectiveConfig, fs: OverlayFileSystem) -> Self {
         fs.set_preserve_symlinks(config.preserve_symlinks);
         fs.set_root_dirs(config.merge_root_dirs);
+        if let Some(allowed) = config.fallback_allowed_sources {
+            fs.set_allowed_sources(Some(allowed));
+        }
 
         let roots_from_tsconfig = config.entry_points.is_none();
         let (entrypoints, dts_files) = match config.entry_points {
@@ -691,11 +719,14 @@ impl Analyzer {
         config_changed: bool,
     ) -> Result<Vec<String>, String> {
         if structure_changed {
-            let evicted = self.engine.invalidate_module_resolution();
-            self.push_evicted_paths(evicted, &mut invalidated_paths);
+            self.fs.clear_allowed_cache();
         }
         if structure_changed || config_changed {
             self.re_resolve_entrypoints(&mut invalidated_paths);
+        }
+        if structure_changed {
+            let evicted = self.engine.invalidate_module_resolution();
+            self.push_evicted_paths(evicted, &mut invalidated_paths);
         }
         Ok(dedup_preserving_order(invalidated_paths))
     }
@@ -803,7 +834,9 @@ fn partition_tsconfig_files(
     let mut dts_files = Vec::new();
     for path in files {
         if is_compilation_root(&path) {
-            roots.push(canonical_root(&path, fs));
+            if !fs.has_allowed_sources() || fs.metadata(&path).is_ok() {
+                roots.push(canonical_root(&path, fs));
+            }
         } else if crate::utils::is_dts(&path) {
             dts_files.push(crate::fs::normalize_path_structural(&path).into_owned());
         }

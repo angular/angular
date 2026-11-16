@@ -8988,3 +8988,142 @@ fn test_host_directives_entries_are_never_dropped() {
         }
     }
 }
+
+#[test]
+fn test_bazel_compilation_target_src_enforces_allowed_sources_fallback() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path();
+    let pkg_dir = ws.join("pkg");
+    let dep_dir = ws.join("dep");
+    let out_pkg_dir = ws.join("out/pkg");
+    let out_dep_dir = ws.join("out/dep");
+    let core_dir = ws.join("node_modules/@angular/core");
+    std::fs::create_dir_all(&pkg_dir).unwrap();
+    std::fs::create_dir_all(&dep_dir).unwrap();
+    std::fs::create_dir_all(&out_pkg_dir).unwrap();
+    std::fs::create_dir_all(&out_dep_dir).unwrap();
+    std::fs::create_dir_all(&core_dir).unwrap();
+
+    std::fs::write(
+        core_dir.join("index.d.ts"),
+        r#"
+            export declare function Component(meta: any): any;
+            export declare function Directive(meta: any): any;
+            export type ɵɵDirectiveDeclaration<A, B, C, D, E, F, G, H, I> = any;
+        "#,
+    )
+    .unwrap();
+
+    // Neighbor `.ts` source on disk intentionally omits `selector` so resolving `.ts` instead of
+    // the compiled `.d.ts` in `out/dep` would fail to match `[depDir]` in `AppCmp`'s template.
+    std::fs::write(dep_dir.join("dir.ts"), "export class DepDir {}").unwrap();
+    std::fs::write(
+        out_dep_dir.join("dir.d.ts"),
+        r#"
+            import * as i0 from '@angular/core';
+            export declare class DepDir {
+                static ɵdir: i0.ɵɵDirectiveDeclaration<DepDir, '[depDir]', never, {}, {}, never, never, true, never>;
+            }
+        "#,
+    )
+    .unwrap();
+
+    let app_ts = pkg_dir.join("app.ts");
+    std::fs::write(
+        &app_ts,
+        r#"
+            import {Component} from '@angular/core';
+            import {DepDir} from '../dep/dir';
+
+            @Component({
+                selector: 'app-cmp',
+                imports: [DepDir],
+                template: '<div depDir></div>',
+            })
+            export class AppCmp {}
+        "#,
+    )
+    .unwrap();
+
+    let collect_matched_declarations = |analyzer: &Analyzer| -> Vec<String> {
+        let iter = analyzer.analyze_optimized().unwrap();
+        let mut files = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(iter.next()).unwrap() {
+            files.extend(chunk.files);
+        }
+        assert_eq!(files.len(), 1);
+        files[0]
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+            .unwrap()
+            .component
+            .as_ref()
+            .unwrap()
+            .resolved_declarations
+            .as_ref()
+            .unwrap()
+            .iter()
+            .map(|d| d.name.clone())
+            .collect()
+    };
+
+    // 1. Non-empty `compilationTargetSrc: ["pkg/app.ts"]` restricts both root discovery (filtering
+    //    out `../../dep/dir.ts` even when listed in `files`) and `.ts` import probes to `app.ts`.
+    let tsconfig_path = out_pkg_dir.join("tsconfig.json");
+    std::fs::write(
+        &tsconfig_path,
+        r#"{
+            "compilerOptions": {
+                "rootDir": "../..",
+                "rootDirs": ["../..", ".."]
+            },
+            "bazelOptions": {
+                "compilationTargetSrc": ["pkg/app.ts"]
+            },
+            "files": ["../../pkg/app.ts", "../../dep/dir.ts", "../dep/dir.d.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig_path.to_string_lossy().into_owned()),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+    assert_eq!(
+        collect_matched_declarations(&analyzer),
+        vec!["DepDir".to_string()]
+    );
+
+    // 2. Explicit empty `compilationTargetSrc: []` still activates source allowlisting (blocking
+    //    `dep/dir.ts` while allowing explicit `entry_points`).
+    let empty_tsconfig_path = out_pkg_dir.join("tsconfig.empty.json");
+    std::fs::write(
+        &empty_tsconfig_path,
+        r#"{
+            "compilerOptions": {
+                "rootDir": "../..",
+                "rootDirs": ["../..", ".."]
+            },
+            "bazelOptions": {
+                "compilationTargetSrc": []
+            },
+            "files": ["../dep/dir.d.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    let empty_analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(empty_tsconfig_path.to_string_lossy().into_owned()),
+        entry_points: Some(vec![app_ts.to_string_lossy().into_owned()]),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+    assert_eq!(
+        collect_matched_declarations(&empty_analyzer),
+        vec!["DepDir".to_string()]
+    );
+}

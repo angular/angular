@@ -22,6 +22,9 @@ pub struct ResolvedTsConfig {
     pub experimental_local_compilation: bool,
     /// `angularCompilerOptions._isAngularCoreCompilation`, or `None` when unset.
     pub is_angular_core_compilation: Option<bool>,
+    /// `bazelOpts.compilationTargetSrc` / `bazelOptions.compilationTargetSrc`, resolved against
+    /// `compilerOptions.rootDir` (or the defining config's directory when `rootDir` is unset).
+    pub compilation_target_src: Option<Vec<PathBuf>>,
     pub merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
@@ -86,8 +89,8 @@ pub fn load_and_resolve_tsconfig(
     // Resolve extended options recursively to handle rootDirs, preserveSymlinks, workspaceName,
     // and merged compiler/bazel/angularCompilerOptions.
     let mut visited = HashSet::new();
-    let merged_compiler_options =
-        resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
+    let extended = resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
+    let merged_compiler_options = extended.compiler_options;
     resolved_compiler_options.root_dirs = merged_compiler_options
         .get("rootDirs")
         .and_then(|v| v.as_array())
@@ -97,13 +100,32 @@ pub fn load_and_resolve_tsconfig(
                 .collect()
         });
 
+    let compilation_target_src =
+        extended
+            .compilation_target_src
+            .map(|(defining_dir, raw_srcs)| {
+                let root_dir = extended.resolved_root_dir.as_deref().unwrap_or(&defining_dir);
+                raw_srcs
+                    .into_iter()
+                    .map(|src| {
+                        let p = PathBuf::from(src);
+                        let resolved = if crate::fs::is_absolute_path(&p) {
+                            p
+                        } else {
+                            root_dir.join(p)
+                        };
+                        crate::fs::normalize_path_structural(&resolved).into_owned()
+                    })
+                    .collect()
+            });
+
     // Resolve files (preserving tsconfig `files` order, then sorted `include` expansion)
     let mut files = Vec::new();
     let mut seen_files = HashSet::new();
 
-    // 1. files
+    // 1. files: `.d.ts` files are loaded lazily by the query engine, so skip stating them eagerly.
     for f in resolved_files {
-        if fs.metadata(&f).is_ok() && seen_files.insert(f.clone()) {
+        if (crate::utils::is_dts(&f) || fs.metadata(&f).is_ok()) && seen_files.insert(f.clone()) {
             files.push(f);
         }
     }
@@ -215,6 +237,7 @@ pub fn load_and_resolve_tsconfig(
         emit_declaration_only,
         experimental_local_compilation,
         is_angular_core_compilation,
+        compilation_target_src,
         merged_compiler_options,
     })
 }
@@ -477,13 +500,66 @@ fn collect_local_compiler_options(
     map
 }
 
+struct ExtendedOptions {
+    compiler_options: serde_json::Map<String, serde_json::Value>,
+    resolved_root_dir: Option<PathBuf>,
+    compilation_target_src: Option<(PathBuf, Vec<String>)>,
+}
+
+fn extract_local_root_dir(
+    parsed_json: Option<&serde_json::Value>,
+    base_dir: &Path,
+) -> Option<PathBuf> {
+    let raw = parsed_json?
+        .get("compilerOptions")
+        .and_then(|v| v.as_object())
+        .and_then(|co| co.get("rootDir"))
+        .and_then(|v| v.as_str())?;
+    let resolved = if let Some(rest) = raw.strip_prefix("${configDir}") {
+        base_dir.join(rest.trim_start_matches(['/', '\\']))
+    } else {
+        let p = Path::new(raw);
+        if crate::fs::is_absolute_path(p) {
+            p.to_path_buf()
+        } else {
+            base_dir.join(p)
+        }
+    };
+    Some(crate::fs::normalize_path_structural(&resolved).into_owned())
+}
+
+fn extract_compilation_target_src(
+    parsed_json: Option<&serde_json::Value>,
+    base_dir: &Path,
+) -> Option<(PathBuf, Vec<String>)> {
+    let json = parsed_json?;
+    let mut found = None;
+    // Match `collect_local_compiler_options` precedence: `bazelOpts` overrides `bazelOptions`.
+    for bazel_key in ["bazelOptions", "bazelOpts"] {
+        if let Some(srcs) = json
+            .get(bazel_key)
+            .and_then(|v| v.as_object())
+            .and_then(|bo| bo.get("compilationTargetSrc"))
+            .and_then(|v| v.as_array())
+        {
+            found = Some((
+                crate::fs::normalize_path_structural(base_dir).into_owned(),
+                srcs.iter()
+                    .filter_map(|v| v.as_str().map(str::to_owned))
+                    .collect(),
+            ));
+        }
+    }
+    found
+}
+
 fn resolve_extended_options_recursive(
     path: &Path,
     fs: &crate::fs::OverlayFileSystem,
     resolver: &ResolverGeneric<crate::fs::OverlayFileSystem>,
     visited: &mut HashSet<PathBuf>,
-) -> Result<serde_json::Map<String, serde_json::Value>, String> {
-    let abs_path = if path.is_absolute() {
+) -> Result<ExtendedOptions, String> {
+    let abs_path = if crate::fs::is_absolute_path(path) {
         path.to_path_buf()
     } else {
         std::env::current_dir()
@@ -513,10 +589,16 @@ fn resolve_extended_options_recursive(
     let parsed_json: Result<serde_json::Value, _> = serde_json::from_str(&stripped_json);
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
     let local_options = collect_local_compiler_options(parsed_json.as_ref().ok(), base_dir);
+    let local_root_dir = extract_local_root_dir(parsed_json.as_ref().ok(), base_dir);
+    let local_target_src = extract_compilation_target_src(parsed_json.as_ref().ok(), base_dir);
 
     let Some(extends_field) = &tsconfig.extends else {
         visited.remove(&canonical);
-        return Ok(local_options);
+        return Ok(ExtendedOptions {
+            compiler_options: local_options,
+            resolved_root_dir: local_root_dir,
+            compilation_target_src: local_target_src,
+        });
     };
 
     let extends_list: &[String] = match extends_field {
@@ -525,6 +607,8 @@ fn resolve_extended_options_recursive(
     };
 
     let mut merged = serde_json::Map::new();
+    let mut merged_root_dir = None;
+    let mut merged_target_src = None;
     for extends_str in extends_list {
         let base_dir = path.parent().unwrap_or(Path::new("."));
         let extends_path = match resolver.resolve(base_dir, extends_str) {
@@ -542,10 +626,15 @@ fn resolve_extended_options_recursive(
             }
         };
 
-        let parent_options =
-            resolve_extended_options_recursive(&extends_path, fs, resolver, visited)?;
-        for (k, v) in parent_options {
+        let parent = resolve_extended_options_recursive(&extends_path, fs, resolver, visited)?;
+        for (k, v) in parent.compiler_options {
             merged.insert(k, v);
+        }
+        if parent.resolved_root_dir.is_some() {
+            merged_root_dir = parent.resolved_root_dir;
+        }
+        if parent.compilation_target_src.is_some() {
+            merged_target_src = parent.compilation_target_src;
         }
     }
 
@@ -554,7 +643,11 @@ fn resolve_extended_options_recursive(
     }
 
     visited.remove(&canonical);
-    Ok(merged)
+    Ok(ExtendedOptions {
+        compiler_options: merged,
+        resolved_root_dir: local_root_dir.or(merged_root_dir),
+        compilation_target_src: local_target_src.or(merged_target_src),
+    })
 }
 
 pub fn is_supported_extension(path: &Path, allow_js: bool) -> bool {
@@ -2278,5 +2371,77 @@ mod tests {
         let fs = crate::fs::OverlayFileSystem::new_with_overlay();
         let config = load_and_resolve_tsconfig(&link_dir.join("tsconfig.json"), &fs).unwrap();
         assert_eq!(config.files, vec![link_dir.join("src/app.ts")]);
+    }
+
+    #[test]
+    fn test_lazy_dts_files_and_compilation_target_src_precedence() {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(PathBuf::from("/ws/pkg/app.ts"), "export const a = 1;".to_string());
+        fs.upsert_file(
+            PathBuf::from("/ws/out/pkg/tsconfig.json"),
+            r#"{
+                "compilerOptions": {
+                    "rootDir": "../.."
+                },
+                "bazelOptions": {
+                    "compilationTargetSrc": ["pkg/app.ts", "pkg/sub/util.ts"]
+                },
+                "files": ["../../pkg/app.ts", "../../pkg/missing.ts", "../dep/unmaterialized.d.ts"]
+            }"#
+            .to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/ws/out/empty/tsconfig.json"),
+            r#"{
+                "compilerOptions": {
+                    "rootDir": "../.."
+                },
+                "bazelOptions": {
+                    "compilationTargetSrc": []
+                },
+                "files": []
+            }"#
+            .to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/ws/both/tsconfig.json"),
+            r#"{
+                "bazelOptions": {"compilationTargetSrc": ["loser.ts"]},
+                "bazelOpts": {"compilationTargetSrc": ["winner.ts"]},
+                "files": []
+            }"#
+            .to_string(),
+        );
+
+        let config =
+            load_and_resolve_tsconfig(Path::new("/ws/out/pkg/tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            config.files,
+            vec![
+                PathBuf::from("/ws/pkg/app.ts"),
+                PathBuf::from("/ws/out/dep/unmaterialized.d.ts"),
+            ]
+        );
+        assert_eq!(
+            config.compilation_target_src,
+            Some(vec![
+                PathBuf::from("/ws/pkg/app.ts"),
+                PathBuf::from("/ws/pkg/sub/util.ts"),
+            ])
+        );
+        assert!(!config
+            .merged_compiler_options
+            .contains_key("compilationTargetSrc"));
+
+        let empty_config =
+            load_and_resolve_tsconfig(Path::new("/ws/out/empty/tsconfig.json"), &fs).unwrap();
+        assert_eq!(empty_config.compilation_target_src, Some(Vec::new()));
+
+        let both_config =
+            load_and_resolve_tsconfig(Path::new("/ws/both/tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            both_config.compilation_target_src,
+            Some(vec![PathBuf::from("/ws/both/winner.ts")])
+        );
     }
 }
