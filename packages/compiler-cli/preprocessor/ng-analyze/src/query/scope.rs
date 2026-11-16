@@ -594,51 +594,63 @@ fn export_names_by_decl(table: &ExportTable) -> ModuleExportMap {
 }
 
 /// Propagates a `.d.ts` NgModule's absolute specifier to the declarations it exports (matching
-/// `DtsMetadataReader.getNgModuleMetadata`); without it, flattened scope entries in package-private
-/// files degrade to relative imports into the package, which Google3/Bazel layouts reject. Source
-/// NgModules keep their own relative references (`LocalModuleScopeRegistry`): rerouting them
-/// through a tsconfig `paths` barrel could import the consumer back and close a cycle.
+/// `DtsMetadataReader.getNgModuleMetadata`) when the active [`ReferenceEmitStrategy`] uses owning
+/// references; without it, flattened scope entries in package-private files degrade to relative
+/// imports into the package. Strategies that emit directly from the declaring file (such as
+/// [`PrefixImportStrategy`]) ignore `owning_reference` and skip walking the package export map.
+/// Source NgModules keep their own relative references (`LocalModuleScopeRegistry`): rerouting
+/// them through a tsconfig `paths` barrel could import the consumer back and close a cycle.
+///
+/// TODO(parity): Under [`ApfImportStrategy`](crate::analyzer::import_emit::ApfImportStrategy),
+/// `ngtsc`'s `AbsoluteModuleStrategy` defers walking the package export map until emit time for
+/// template-matched declarations and fails with `NG3004` (`IMPORT_GENERATION_FAILURE`) instead of
+/// falling back to a deep relative import when a declaration is missing from the barrel. Deferring
+/// that walk once template matching moves to Rust and reporting `NG3004` on template-matched
+/// declarations are left for follow-up changes.
 pub(crate) async fn propagate_owning_reference_validated(
     ctx: &QueryContext,
     declarations: &[DeclarationData],
     owning_reference: &Option<OwningReference>,
     parent_file: FileId,
 ) -> Vec<DeclarationData> {
+    if !ctx.engine.reference_strategy.uses_owning_reference() {
+        return declarations.to_vec();
+    }
+    let Some(owning) = owning_reference.as_ref() else {
+        return declarations.to_vec();
+    };
+    if !declarations
+        .iter()
+        .any(|d| d.reference.owning_reference.is_none())
+    {
+        return declarations.to_vec();
+    }
     let parent_path = ctx.engine.lookup_path(parent_file);
     if !crate::utils::is_dts(&parent_path) {
         return declarations.to_vec();
     }
 
-    let absolute_owning = owning_reference.as_ref();
-
     // Resolve the package entry point so re-exported aliases use the published name.
-    let package_entry = match absolute_owning {
-        Some(owning) => ctx
-            .resolve_from_id(
-                parent_file,
-                owning.specifier(),
-                crate::host::ImportKind::Static,
-            )
-            .await
-            .map(|(id, _)| id)
-            .unwrap_or(parent_file),
-        None => parent_file,
-    };
+    let package_entry = ctx
+        .resolve_from_id(
+            parent_file,
+            owning.specifier(),
+            crate::host::ImportKind::Static,
+        )
+        .await
+        .map(|(id, _)| id)
+        .unwrap_or(parent_file);
 
     // Enumerate the entry point's exports once (matching ngtsc's `moduleExportsCache`): per-declaration
     // searches would re-walk the package and miss alternative export names required for the alias tie-break.
-    let exports = match absolute_owning {
-        Some(_) => ctx.module_export_map(package_entry).await,
-        None => Arc::new(ModuleExportMap::new()),
-    };
+    let exports = ctx.module_export_map(package_entry).await;
 
     let mut result = Vec::with_capacity(declarations.len());
     for d in declarations {
         let mut d = d.clone();
         if d.reference.owning_reference.is_none() {
             let decl = (d.reference.file, d.reference.name.clone());
-            let published = absolute_owning.zip(exports.get(&decl));
-            d.reference.owning_reference = published.map(|(owning, export_name)| {
+            d.reference.owning_reference = exports.get(&decl).map(|export_name| {
                 OwningReference::from_source_specifier(owning.specifier(), export_name.clone())
             });
         }
@@ -655,18 +667,36 @@ mod tests {
     use oxc_resolver::{ResolveOptions, ResolverGeneric};
     use std::path::PathBuf;
 
-    fn engine_for(files: &[(&str, &str)], entry: &str) -> Arc<QueryEngine> {
+    fn engine_for_with_strategy(
+        files: &[(&str, &str)],
+        entry: &str,
+        alias: &[(&str, &str)],
+        strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
+    ) -> Arc<QueryEngine> {
         let fs = create_test_fs(files);
         let resolver = Arc::new(ResolverGeneric::new_with_file_system(
             fs.clone(),
             ResolveOptions {
+                alias: alias
+                    .iter()
+                    .map(|(k, v)| ((*k).into(), vec![oxc_resolver::AliasValue::from(*v)]))
+                    .collect(),
                 extensions: vec![".ts".into(), ".tsx".into(), ".d.ts".into(), ".js".into()],
                 ..ResolveOptions::default()
             },
         ));
         let registry = Arc::new(ResourceRegistry::default());
         let entrypoints = Arc::new(std::sync::RwLock::new(vec![PathBuf::from(entry)]));
-        QueryEngine::new_default(fs, resolver, registry, entrypoints)
+        QueryEngine::new(fs, resolver, registry, entrypoints, strategy)
+    }
+
+    fn engine_for(files: &[(&str, &str)], entry: &str) -> Arc<QueryEngine> {
+        engine_for_with_strategy(
+            files,
+            entry,
+            &[],
+            Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new()),
+        )
     }
 
     fn export_map_for(
@@ -736,15 +766,17 @@ mod tests {
         assert!(!map.contains_key(&(impl_id, "TypeThing".to_string())));
     }
 
-    /// Propagates `shared`, the specifier `SharedModule` was imported by, over the exports scope
+    /// Propagates `specifier`, the specifier `SharedModule` was imported by, over the exports scope
     /// of the NgModule declared in `module_path`, and reports the owning module each exported
-    /// declaration ends up with. The `shared` entry point publishes `B` in every case, so the
-    /// export check never masks whether propagation happened.
-    fn owners_after_propagation(
+    /// declaration ends up with.
+    fn owners_after_propagation_with(
         files: &[(&str, &str)],
         module_path: &str,
+        specifier: &str,
+        alias: &[(&str, &str)],
+        strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
     ) -> Vec<(String, Option<String>)> {
-        let engine = engine_for(files, module_path);
+        let engine = engine_for_with_strategy(files, module_path, alias, strategy);
         let ctx = QueryContext::new(engine.clone());
         let module_file = engine.intern_path(module_path);
         futures::executor::block_on(async {
@@ -755,7 +787,7 @@ mod tests {
                 .expect("SharedModule is indexed");
             let scope = ctx.ngmodule_exports_scope(module.reference_id).await;
             let owning = Some(OwningReference::from_source_specifier(
-                "shared",
+                specifier,
                 "SharedModule",
             ));
             propagate_owning_reference_validated(&ctx, &scope, &owning, module_file)
@@ -770,6 +802,19 @@ mod tests {
                 })
                 .collect()
         })
+    }
+
+    fn owners_after_propagation(
+        files: &[(&str, &str)],
+        module_path: &str,
+    ) -> Vec<(String, Option<String>)> {
+        owners_after_propagation_with(
+            files,
+            module_path,
+            "shared",
+            &[],
+            Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new()),
+        )
     }
 
     /// A `.d.ts` NgModule hands its owning module to the declarations it exports, as
@@ -802,6 +847,59 @@ mod tests {
             "/node_modules/shared/shared.module.d.ts",
         );
         assert_eq!(owners, vec![("B".to_string(), Some("shared".to_string()))]);
+    }
+
+    #[test]
+    fn prefix_strategy_skips_owning_reference_propagation() {
+        let files = &[
+            (
+                "/workspace/pkg/index.d.ts",
+                "export * from './shared.module';\n\
+                 export * from './b';\n",
+            ),
+            (
+                "/workspace/pkg/shared.module.d.ts",
+                "import * as i0 from '@angular/core';\n\
+                 import * as i1 from './b';\n\
+                 export declare class SharedModule {\n\
+                   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof i1.B], never, [typeof i1.B]>;\n\
+                 }\n",
+            ),
+            (
+                "/workspace/pkg/b.d.ts",
+                "import * as i0 from '@angular/core';\n\
+                 export declare class B {\n\
+                   static ɵcmp: i0.ɵɵComponentDeclaration<B, 'b-cmp', never, {}, {}, never, never, false, never>;\n\
+                 }\n",
+            ),
+        ];
+        let alias = &[("my_ws", "/workspace")];
+        let apf = Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new());
+        let prefix = Arc::new(crate::analyzer::import_emit::PrefixImportStrategy::new(
+            "my_ws",
+            vec![PathBuf::from("/workspace")],
+        ));
+
+        assert_eq!(
+            owners_after_propagation_with(
+                files,
+                "/workspace/pkg/shared.module.d.ts",
+                "my_ws/pkg/index",
+                alias,
+                apf,
+            ),
+            vec![("B".to_string(), Some("my_ws/pkg/index".to_string()))]
+        );
+        assert_eq!(
+            owners_after_propagation_with(
+                files,
+                "/workspace/pkg/shared.module.d.ts",
+                "my_ws/pkg/index",
+                alias,
+                prefix,
+            ),
+            vec![("B".to_string(), None)]
+        );
     }
 
     /// A source NgModule's scope keeps the references resolved in its own file
