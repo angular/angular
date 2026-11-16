@@ -1215,10 +1215,10 @@ pub struct ComponentData {
     pub deferred_imports: Option<Resolved<crate::evaluator::ResolvedValue>>,
     pub parsed_deferred_imports: Vec<ImportInfo>,
     pub parsed_deferred_imports_by_block:
-        Option<std::collections::HashMap<String, Vec<ImportInfo>>>,
+        Option<std::collections::BTreeMap<String, Vec<ImportInfo>>>,
     pub resolved_deferred_declarations: Option<Vec<DeclarationData>>,
     pub resolved_deferred_declarations_by_block:
-        Option<std::collections::HashMap<String, Vec<DeclarationData>>>,
+        Option<std::collections::BTreeMap<String, Vec<DeclarationData>>>,
     pub ng_content_selectors: Option<Vec<String>>,
     pub foreign_imports: Option<Vec<ForeignImportData>>,
     /// The `foreignImports` property's value expression span, present whenever the

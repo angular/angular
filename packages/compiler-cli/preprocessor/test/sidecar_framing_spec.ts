@@ -244,6 +244,7 @@ export class ParentComponent {}
         keepAnalyzerAlive: true,
       });
       expect(compiler.fileCache.get(parentTs)?.boundFingerprint).toBeDefined();
+      expect((await sidecar.getMetadataForFile(parentTs))?.fingerprint).toMatch(/^[0-9a-f]{16}$/);
 
       await fs.writeFile(
         parentHtml,
@@ -254,6 +255,8 @@ export class ParentComponent {}
       expect(invalidated).toContain(parentTs);
       compiler.applyInvalidations(changes, invalidated);
 
+      const serializeCached = spyOn<any>(compiler, 'serializeCached').and.callThrough();
+
       await run(compiler, {
         inPlace: true,
         rootDir: tmpDir,
@@ -262,6 +265,11 @@ export class ParentComponent {}
       });
       const parentNgTs = await fs.readFile(path.join(tmpDir, 'parent.component.ng.ts'), 'utf-8');
       expect(parentNgTs).toContain('v2');
+      expect(
+        serializeCached.calls
+          .allArgs()
+          .some((args) => args[0] && typeof args[0] === 'object' && 'classes' in args[0]),
+      ).toBeFalse();
     } finally {
       sidecar.close();
       await fs.rm(tmpDir, {recursive: true, force: true});

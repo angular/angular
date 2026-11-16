@@ -19,7 +19,13 @@ import {format} from 'prettier';
 
 import type {TestFile} from './golden_markdown.js';
 import {verifyCompilerOptions} from '../src/compiler_options.js';
-import {getDiagnosticPath, serializeDiagnostics, HybridCompiler} from '../src/hybrid_compiler.js';
+import {
+  getDiagnosticPath,
+  serializeDiagnostics,
+  HybridCompiler,
+  type HybridCompilerOptions,
+  type IAnalyzer,
+} from '../src/hybrid_compiler.js';
 import {createAnalyzer} from '../api.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
 
@@ -29,6 +35,63 @@ export {
   writeMarkdownTestCase,
   type TestFile,
 } from './golden_markdown.js';
+
+export interface WasmCompilerSessionOptions {
+  /** Base folder name under `$TEST_TMPDIR` / `.tmp`. */
+  suite: string;
+  testName: string;
+  files: Record<string, string> | ReadonlyArray<TestFile>;
+  /** Pass the written files as `virtualFiles` to `createAnalyzer`. */
+  useVirtualFiles?: boolean;
+  compilerOptions?: HybridCompilerOptions;
+  /** Call `compiler.init()` before returning. */
+  init?: boolean;
+}
+
+/**
+ * Writes fixture `files` into a clean temp directory, creates a WASM analyzer over the built
+ * `@angular/*` fixture packages, and constructs a `HybridCompiler`.
+ */
+export async function createWasmHybridCompilerSession(
+  options: WasmCompilerSessionOptions,
+): Promise<{
+  compiler: HybridCompiler;
+  analyzer: IAnalyzer;
+  root: string;
+}> {
+  const tmpBase = process.env['TEST_TMPDIR'] || path.resolve(process.cwd(), '.tmp');
+  const root = path.resolve(tmpBase, options.suite, options.testName);
+  await fs.rm(root, {recursive: true, force: true});
+  await fs.mkdir(root, {recursive: true});
+
+  const entries = Array.isArray(options.files)
+    ? options.files.map((f) => [f.path, f.content] as const)
+    : Object.entries(options.files);
+  const virtualFiles: Record<string, string> = {};
+  for (const [relPath, content] of entries) {
+    const full = path.join(root, relPath);
+    await fs.mkdir(path.dirname(full), {recursive: true});
+    await fs.writeFile(full, content);
+    virtualFiles[full] = content;
+  }
+
+  const analyzer = await createAnalyzer(path.join(root, 'tsconfig.json'), {
+    backend: 'wasm',
+    wasmBinding: resolveWasmBinding(),
+    optimize: options.compilerOptions?.optimize ?? true,
+    ...(options.useVirtualFiles ? {virtualFiles} : {}),
+    nodeModulesPathOverride: resolveFixtureNodeModules(),
+  });
+  const compiler = new HybridCompiler(analyzer, {
+    optimize: true,
+    tcbConfig: buildTypeCheckingConfig({strictTemplates: true}),
+    ...options.compilerOptions,
+  });
+  if (options.init) {
+    await compiler.init();
+  }
+  return {compiler, analyzer, root};
+}
 
 export function pathExists(p: string): Promise<boolean> {
   return fs.access(p).then(

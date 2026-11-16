@@ -8,41 +8,22 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
-import {resolveFixtureNodeModules, resolveWasmBinding, TestFile} from './utils.js';
-import {createAnalyzer} from '../api.js';
+import {createWasmHybridCompilerSession, TestFile} from './utils.js';
 import {HybridCompiler} from '../src/hybrid_compiler.js';
-import {buildTypeCheckingConfig} from '../src/tcb.js';
 
 async function createCompiler(
   testName: string,
   files: TestFile[],
 ): Promise<{compiler: HybridCompiler; root: string}> {
-  // `Cache` keeps an uppercase component in every path, which the analyzer case-folds on
-  // case-insensitive platforms.
-  const tmpBase = process.env['TEST_TMPDIR'] || path.resolve(process.cwd(), '.tmp');
-  const root = path.resolve(tmpBase, 'Cache_Invalidation', testName);
-  await fs.rm(root, {recursive: true, force: true});
-  const virtualFiles: Record<string, string> = {};
-  for (const f of files) {
-    const full = path.join(root, f.path);
-    await fs.mkdir(path.dirname(full), {recursive: true});
-    await fs.writeFile(full, f.content);
-    virtualFiles[full] = f.content;
-  }
-
-  const tsconfigPath = path.join(root, 'tsconfig.json');
-  const analyzer = await createAnalyzer(tsconfigPath, {
-    backend: 'wasm',
-    wasmBinding: resolveWasmBinding(),
-    virtualFiles,
-    optimize: true,
-    nodeModulesPathOverride: resolveFixtureNodeModules(),
+  // `Cache_Invalidation` keeps an uppercase component in every path, which the analyzer case-folds
+  // on case-insensitive platforms.
+  const {compiler, root} = await createWasmHybridCompilerSession({
+    suite: 'Cache_Invalidation',
+    testName,
+    files,
+    useVirtualFiles: true,
+    init: true,
   });
-  const compiler = new HybridCompiler(analyzer, {
-    optimize: true,
-    tcbConfig: buildTypeCheckingConfig({strictTemplates: true}),
-  });
-  await compiler.init();
   return {compiler, root};
 }
 

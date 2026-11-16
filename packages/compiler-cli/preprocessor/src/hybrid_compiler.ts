@@ -447,6 +447,12 @@ export class HybridCompiler {
 
       const metadataMap = chunkMetadataMap(chunk);
       if (this.emitDeclarationOnly || (!this.optimize && chunk.files.length <= 1)) {
+        for (const file of chunk.files) {
+          const cached = this.fileCache.get(file.filePath);
+          if (cached) {
+            cached.analysisResult = undefined;
+          }
+        }
         return {
           remoteScopedClasses: new Set(),
           metadataMap,
@@ -549,6 +555,7 @@ export class HybridCompiler {
     this.templateStyleUrlsByFile.delete(filePath);
     this.ngContentSignatureByFile.delete(filePath);
     this.jsDirtyFiles.delete(filePath);
+    this.invalidateTemplateConsumers(filePath);
     this.componentTemplateConsumers.delete(filePath);
     for (const consumers of this.componentTemplateConsumers.values()) {
       consumers.delete(filePath);
@@ -569,6 +576,19 @@ export class HybridCompiler {
   private invalidateCachedFile(filePath: string): void {
     this.fileCache.delete(filePath);
     this.metadataByFile.delete(filePath);
+    this.invalidateTemplateConsumers(filePath);
+  }
+
+  private invalidateTemplateConsumers(filePath: string, markDirty = false): void {
+    for (const consumer of this.componentTemplateConsumers.get(filePath) ?? []) {
+      if (markDirty) {
+        this.jsDirtyFiles.add(consumer);
+      }
+      const consumerAnalysis = this.fileCache.get(consumer);
+      if (consumerAnalysis) {
+        consumerAnalysis.analysisResult = undefined;
+      }
+    }
   }
 
   private recordComponentTemplateConsumers(filePath: string, result: nga.AnalysisResult): void {
@@ -616,9 +636,7 @@ export class HybridCompiler {
     const prevSignature = this.ngContentSignatureByFile.get(filePath);
     this.ngContentSignatureByFile.set(filePath, nextSignature);
     if (prevSignature !== undefined && prevSignature !== nextSignature) {
-      for (const consumer of this.componentTemplateConsumers.get(filePath) ?? []) {
-        this.jsDirtyFiles.add(consumer);
-      }
+      this.invalidateTemplateConsumers(filePath, true);
     }
   }
 
@@ -1127,6 +1145,7 @@ export class HybridCompiler {
       fileAnalysis.parsedTemplates.clear();
       fileAnalysis.preparedTcbData = null;
       fileAnalysis.tcb = null;
+      fileAnalysis.analysisResult = undefined;
       fileAnalysis.boundFingerprint = undefined;
       return {
         fileAnalysis,
@@ -1146,6 +1165,7 @@ export class HybridCompiler {
       boundFingerprint !== undefined &&
       fileAnalysis.boundFingerprint === boundFingerprint
     ) {
+      fileAnalysis.analysisResult = result;
       return {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting: true};
     }
     if (
@@ -1155,6 +1175,7 @@ export class HybridCompiler {
       fileAnalysis.parsedTemplates.clear();
       fileAnalysis.preparedTcbData = undefined;
       fileAnalysis.tcb = undefined;
+      fileAnalysis.analysisResult = undefined;
     }
     return {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting: false};
   }
@@ -1230,7 +1251,7 @@ export class HybridCompiler {
     }
     const pieces = [
       content,
-      this.serializeCached(result),
+      result.fingerprint ?? this.serializeCached(result),
       this.serializeCached(this.tcbConfig),
       this.serializeCached(this.templateParseOptions),
     ];
@@ -1280,6 +1301,7 @@ export class HybridCompiler {
       fileAnalysis.preparedTcbData = null;
     }
     fileAnalysis.sourceContent = content;
+    fileAnalysis.analysisResult = result;
     fileAnalysis.boundFingerprint = boundFingerprint;
     return fileAnalysis;
   }
@@ -1364,8 +1386,13 @@ export class HybridCompiler {
     const normPath = result ? result.filePath : filePath;
     let processed: ProcessedFile | undefined;
     try {
+      const cached = chunkContext !== undefined ? this.fileCache.get(normPath) : undefined;
       const boundFingerprint = result
-        ? this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
+        ? cached?.analysisResult === result &&
+          cached.sourceContent === content &&
+          cached.boundFingerprint !== undefined
+          ? cached.boundFingerprint
+          : this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
         : undefined;
       const fingerprint = this.processingFingerprint(
         normPath,
@@ -1416,6 +1443,7 @@ export class HybridCompiler {
       existing.parsedTemplates.clear();
       existing.preparedTcbData = undefined;
       existing.tcb = undefined;
+      existing.analysisResult = undefined;
     }
     existing.boundFingerprint = nextFingerprint;
     existing.sourceContent = content;
@@ -1794,11 +1822,15 @@ function remoteScopeInputs(
         continue;
       }
       const key = `${declaringPath}#${cls.className}`;
-      inputs.push(
-        `scope:${key}`,
-        String(chunkContext!.remoteScopedClasses.has(key)),
-        JSON.stringify(chunkContext!.eagerlyUsedDeclarations.get(key) ?? null),
-      );
+      const isRemotelyScoped = chunkContext!.remoteScopedClasses.has(key);
+      inputs.push(`scope:${key}`, String(isRemotelyScoped));
+      if (isRemotelyScoped) {
+        for (const decl of chunkContext!.eagerlyUsedDeclarations.get(key) ?? []) {
+          if (decl.refInDeclaringModule != null) {
+            inputs.push(decl.declarationType, JSON.stringify(decl.refInDeclaringModule));
+          }
+        }
+      }
     }
   }
   return inputs;
