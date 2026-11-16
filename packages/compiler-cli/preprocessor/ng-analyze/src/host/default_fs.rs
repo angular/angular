@@ -6,9 +6,16 @@ use crate::fs::OverlayFileSystem;
 use crate::{ResourceResolver, ResourceResolverFs};
 use futures::future::FutureExt;
 use oxc_resolver::ResolverGeneric;
+use std::collections::HashMap;
 use std::fmt;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
+
+#[derive(Default)]
+struct HostResolveCache {
+    by_dir: HashMap<PathBuf, HashMap<String, Option<ResolvedModule>>>,
+    canonical_paths: HashMap<PathBuf, PathBuf>,
+}
 
 /// Synchronous [`AnalysisHost`] backed by [`oxc_resolver::ResolverGeneric`] and a
 /// [`ResourceResolverFs`] (typically [`crate::fs::OverlayFileSystem`]).
@@ -18,6 +25,7 @@ use std::sync::Arc;
 pub struct DefaultFsHost<Fs: ResourceResolverFs> {
     fs: Fs,
     resolver: Arc<ResolverGeneric<Fs>>,
+    resolve_cache: Arc<RwLock<HostResolveCache>>,
 }
 
 impl<Fs: ResourceResolverFs + Clone> Clone for DefaultFsHost<Fs> {
@@ -25,6 +33,7 @@ impl<Fs: ResourceResolverFs + Clone> Clone for DefaultFsHost<Fs> {
         Self {
             fs: self.fs.clone(),
             resolver: Arc::clone(&self.resolver),
+            resolve_cache: Arc::clone(&self.resolve_cache),
         }
     }
 }
@@ -37,7 +46,11 @@ impl<Fs: ResourceResolverFs> fmt::Debug for DefaultFsHost<Fs> {
 
 impl<Fs: ResourceResolverFs> DefaultFsHost<Fs> {
     pub fn new(fs: Fs, resolver: Arc<ResolverGeneric<Fs>>) -> Self {
-        Self { fs, resolver }
+        Self {
+            fs,
+            resolver,
+            resolve_cache: Arc::new(RwLock::new(HostResolveCache::default())),
+        }
     }
 
     pub fn fs(&self) -> &Fs {
@@ -49,11 +62,26 @@ impl<Fs: ResourceResolverFs> DefaultFsHost<Fs> {
     }
 
     fn canonicalize_resolved_path(&self, resolved: PathBuf) -> PathBuf {
-        let resolved = self
+        if let Some(cached) = self
+            .resolve_cache
+            .read()
+            .unwrap()
+            .canonical_paths
+            .get(&resolved)
+        {
+            return cached.clone();
+        }
+        let backing = self
             .fs
             .resolve_root_dirs_backing_path(&resolved)
-            .unwrap_or(resolved);
-        self.fs.canonicalize(&resolved).unwrap_or(resolved)
+            .unwrap_or_else(|| resolved.clone());
+        let canonical = self.fs.canonicalize(&backing).unwrap_or(backing);
+        self.resolve_cache
+            .write()
+            .unwrap()
+            .canonical_paths
+            .insert(resolved, canonical.clone());
+        canonical
     }
 }
 
@@ -84,6 +112,17 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
     ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
         let importer_path = Path::new(req.importer.as_str());
         let file_dir = importer_path.parent().unwrap_or_else(|| Path::new("."));
+        if let Some(cached) = self
+            .resolve_cache
+            .read()
+            .unwrap()
+            .by_dir
+            .get(file_dir)
+            .and_then(|specs| specs.get(req.specifier.as_str()))
+        {
+            return futures::future::ready(Ok(cached.clone())).boxed();
+        }
+
         let resolved = self
             .resolver
             .resolve(file_dir, &req.specifier)
@@ -99,6 +138,13 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
                     code: None,
                 }
             });
+        self.resolve_cache
+            .write()
+            .unwrap()
+            .by_dir
+            .entry(file_dir.to_path_buf())
+            .or_default()
+            .insert(req.specifier, resolved.clone());
         futures::future::ready(Ok(resolved)).boxed()
     }
 
@@ -150,6 +196,9 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
 
     fn clear_cache(&self) {
         self.resolver.clear_cache();
+        let mut cache = self.resolve_cache.write().unwrap();
+        cache.by_dir.clear();
+        cache.canonical_paths.clear();
     }
 
     fn resolve_backing_path(&self, path: &Path) -> Option<PathBuf> {
@@ -482,5 +531,151 @@ mod tests {
                 .expect("expected resource to load");
             assert_eq!(&*loaded.code, expected, "{url}");
         }
+    }
+
+    #[test]
+    fn test_default_fs_host_memoizes_resolutions_and_clears_on_clear_cache() {
+        use crate::physical_fs::{default_physical_fs, DirEntry, PhysicalFs};
+        use std::sync::atomic::{AtomicUsize, Ordering};
+
+        struct CountingCanonicalizeFs {
+            inner: Arc<dyn PhysicalFs>,
+            canonicalize_calls: AtomicUsize,
+            stat_calls: AtomicUsize,
+        }
+        impl PhysicalFs for CountingCanonicalizeFs {
+            fn read(&self, path: &Path) -> std::io::Result<Vec<u8>> {
+                self.inner.read(path)
+            }
+            fn read_to_string(&self, path: &Path) -> std::io::Result<String> {
+                self.inner.read_to_string(path)
+            }
+            fn metadata(&self, path: &Path) -> std::io::Result<oxc_resolver::FileMetadata> {
+                self.stat_calls.fetch_add(1, Ordering::Relaxed);
+                self.inner.metadata(path)
+            }
+            fn symlink_metadata(&self, path: &Path) -> std::io::Result<oxc_resolver::FileMetadata> {
+                self.stat_calls.fetch_add(1, Ordering::Relaxed);
+                self.inner.symlink_metadata(path)
+            }
+            fn read_link(&self, path: &Path) -> std::io::Result<PathBuf> {
+                self.inner.read_link(path)
+            }
+            fn read_dir(&self, path: &Path) -> std::io::Result<Vec<DirEntry>> {
+                self.inner.read_dir(path)
+            }
+            fn canonicalize(&self, path: &Path) -> std::io::Result<PathBuf> {
+                self.canonicalize_calls.fetch_add(1, Ordering::Relaxed);
+                self.inner.canonicalize(path)
+            }
+        }
+
+        let dir = tempfile::TempDir::new().unwrap();
+        let ws = dir.path();
+        let dir_a = ws.join("a");
+        let dir_b = ws.join("b");
+        let pkg_dir = ws.join("node_modules/pkg");
+        std::fs::create_dir_all(&dir_a).unwrap();
+        std::fs::create_dir_all(&dir_b).unwrap();
+        std::fs::create_dir_all(&pkg_dir).unwrap();
+        std::fs::write(
+            pkg_dir.join("package.json"),
+            r#"{"name": "pkg", "types": "./index.d.ts"}"#,
+        )
+        .unwrap();
+        let pkg_dts = pkg_dir.join("index.d.ts");
+        std::fs::write(&pkg_dts, "export declare class Lib {}").unwrap();
+
+        let counting = Arc::new(CountingCanonicalizeFs {
+            inner: Arc::new(default_physical_fs()),
+            canonicalize_calls: AtomicUsize::new(0),
+            stat_calls: AtomicUsize::new(0),
+        });
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, counting.clone());
+        let host = DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        counting.canonicalize_calls.store(0, Ordering::Relaxed);
+
+        let expected_pkg = ModuleId::from_path(&std::fs::canonicalize(&pkg_dts).unwrap());
+
+        let r1 = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&dir_a.join("one.ts")),
+                "pkg",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .unwrap();
+        assert_eq!(r1.id, expected_pkg);
+        let canon_after_first = counting.canonicalize_calls.load(Ordering::Relaxed);
+        let stats_after_first = counting.stat_calls.load(Ordering::Relaxed);
+        assert!(canon_after_first >= 1);
+
+        // Sibling importer in `dir_a` hits `by_dir` with 0 additional stats.
+        let r2 = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&dir_a.join("two.ts")),
+                "pkg",
+                ImportKind::TypeImport,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .unwrap();
+        assert_eq!(r2.id, expected_pkg);
+        assert_eq!(
+            counting.stat_calls.load(Ordering::Relaxed),
+            stats_after_first
+        );
+
+        // Importer in `dir_b` hits `canonical_paths` with 0 additional canonicalize calls.
+        let r3 = host
+            .resolve(ResolveRequest::new(
+                ModuleId::from_path(&dir_b.join("three.ts")),
+                "pkg",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .unwrap();
+        assert_eq!(r3.id, expected_pkg);
+        assert_eq!(
+            counting.canonicalize_calls.load(Ordering::Relaxed),
+            canon_after_first
+        );
+
+        // Negative lookup is memoized until `clear_cache()` is called.
+        assert_eq!(
+            host.resolve(ResolveRequest::new(
+                ModuleId::from_path(&dir_a.join("one.ts")),
+                "./created_later",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap(),
+            None
+        );
+
+        let created_later = dir_a.join("created_later.ts");
+        std::fs::write(&created_later, "export const v = 1;").unwrap();
+        host.clear_cache();
+
+        let expected_later = ModuleId::from_path(&std::fs::canonicalize(&created_later).unwrap());
+        assert_eq!(
+            host.resolve(ResolveRequest::new(
+                ModuleId::from_path(&dir_a.join("two.ts")),
+                "./created_later",
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .unwrap()
+            .id,
+            expected_later
+        );
     }
 }
