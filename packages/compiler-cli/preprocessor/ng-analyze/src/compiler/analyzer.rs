@@ -1255,6 +1255,7 @@ impl Analyzer {
         config_changed: bool,
     ) -> Result<Vec<String>, String> {
         if structure_changed {
+            self.fs.clear_allowed_cache();
             let evicted = self.engine.invalidate_module_resolution();
             self.push_evicted_paths(evicted, &mut invalidated_paths);
         }
@@ -1348,6 +1349,7 @@ impl Analyzer {
     pub fn clear_resolution_cache_core(&self) -> Result<Vec<String>, String> {
         let _mutation = self.pause_metadata_requests();
         self.cancel_current_analysis();
+        self.fs.clear_allowed_cache();
         let mut invalidated_paths = Vec::new();
         let evicted = self.engine.clear_resolution_cache();
         self.push_evicted_paths(evicted, &mut invalidated_paths);
