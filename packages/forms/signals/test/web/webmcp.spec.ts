@@ -188,7 +188,7 @@ describe('Signal Forms WebMCP Integration', () => {
 
       expect(submitSpy).toHaveBeenCalledTimes(1);
       expect(JSON.parse(result!)).toEqual({
-        content: [{type: 'text', text: 'Form submitted successfully.'}],
+        success: true,
       });
     });
 
@@ -217,12 +217,8 @@ describe('Signal Forms WebMCP Integration', () => {
       const result = await executeTool('testFormInvalidTool', {name: {first: ''}});
 
       expect(JSON.parse(result!)).toEqual({
-        content: [
-          {
-            type: 'text',
-            text: jasmine.stringContaining('name.first: First name is required'),
-          },
-        ],
+        success: false,
+        errors: [jasmine.stringContaining('name.first: First name is required')],
       });
     });
 
@@ -250,12 +246,8 @@ describe('Signal Forms WebMCP Integration', () => {
       const result = await executeTool('testFormSubmitFailTool', {name: ''});
 
       expect(JSON.parse(result!)).toEqual({
-        content: [
-          {
-            type: 'text',
-            text: jasmine.stringContaining('Database write failed'),
-          },
-        ],
+        success: false,
+        errors: [jasmine.stringContaining('Database write failed')],
       });
     });
 
