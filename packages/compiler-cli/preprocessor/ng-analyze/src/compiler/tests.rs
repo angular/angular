@@ -10453,3 +10453,73 @@ fn test_dts_component_ng_content_selectors_projected_to_wire() {
     );
     assert_eq!(selectors_of("LegacyComponent"), None);
 }
+
+#[cfg(unix)]
+#[test]
+fn test_clear_resolution_cache_flushes_allowed_sources_cache() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path();
+    let ws_str = ws.to_string_lossy().into_owned();
+    let pkg_dir = ws.join("pkg");
+    let dep_dir = ws.join("dep");
+    let real_dir = ws.join("real");
+    std::fs::create_dir_all(&pkg_dir).unwrap();
+    std::fs::create_dir_all(&dep_dir).unwrap();
+    std::fs::create_dir_all(&real_dir).unwrap();
+
+    let blocked_target = real_dir.join("blocked.ts");
+    let allowed_target = real_dir.join("allowed.ts");
+    std::fs::write(&blocked_target, "export class LibDir {}").unwrap();
+    std::fs::write(&allowed_target, lib_source("[libNew]")).unwrap();
+    std::fs::write(dep_dir.join("lib.d.ts"), lib_dts("[libOld]")).unwrap();
+
+    let dep_link = dep_dir.join("lib.ts");
+    std::os::unix::fs::symlink(&blocked_target, &dep_link).unwrap();
+
+    let app_ts = pkg_dir.join("app.ts");
+    let app_path = app_ts.to_string_lossy().into_owned();
+    std::fs::write(
+        &app_ts,
+        LIB_CONSUMER_APP.replace("LIB_SPECIFIER", "../dep/lib"),
+    )
+    .unwrap();
+    let tsconfig_path = ws.join("tsconfig.json");
+    std::fs::write(&tsconfig_path, r#"{"files": ["pkg/app.ts"]}"#).unwrap();
+
+    let mut virtual_files = angular_core_stub(&ws_str);
+    virtual_files.insert(
+        format!("{ws_str}/node_modules/@angular/core/index.d.ts"),
+        r#"
+            export declare const Component: any;
+            export declare const Directive: any;
+            export type ɵɵDirectiveDeclaration<A, B, C, D, E, F, G, H, I> = any;
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig_path.to_string_lossy().into_owned()),
+        allowed_sources: Some(vec![
+            app_path.clone(),
+            allowed_target.to_string_lossy().into_owned(),
+        ]),
+        virtual_files: Some(virtual_files),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libOld]")
+    );
+
+    std::fs::remove_file(&dep_link).unwrap();
+    std::os::unix::fs::symlink(&allowed_target, &dep_link).unwrap();
+    analyzer.clear_resolution_cache_core().unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libNew]")
+    );
+}
