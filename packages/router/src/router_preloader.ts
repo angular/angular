@@ -123,11 +123,13 @@ export class RouterPreloader implements OnDestroy {
     injector: EnvironmentInjector,
     routes: Routes,
     hasUnloadedAncestorConfig = false,
+    ancestors: Route[] = [],
   ): Observable<void> {
     const res: Observable<void>[] = [];
     for (const route of routes) {
       const hasPendingLoadConfig = Boolean(route.loadConfig && !route._configLoaded);
       const canCreateInjector = !hasUnloadedAncestorConfig && !hasPendingLoadConfig;
+      const routeAncestors = [...ancestors, route];
       const injectorForCurrentRoute = canCreateInjector
         ? getOrCreateRouteInjectorIfNeeded(route, injector)
         : this.injector;
@@ -153,7 +155,9 @@ export class RouterPreloader implements OnDestroy {
         (route.loadComponent && !route._loadedComponent) ||
         hasPendingLoadConfig
       ) {
-        res.push(this.preloadConfig(injectorForCurrentRoute, route, canCreateInjector));
+        res.push(
+          this.preloadConfig(injectorForCurrentRoute, route, canCreateInjector, routeAncestors),
+        );
       }
       if (route.children || route._loadedRoutes) {
         res.push(
@@ -161,6 +165,7 @@ export class RouterPreloader implements OnDestroy {
             injectorForChildren,
             (route.children ?? route._loadedRoutes)!,
             !canCreateInjector,
+            routeAncestors,
           ),
         );
       }
@@ -172,6 +177,7 @@ export class RouterPreloader implements OnDestroy {
     injector: EnvironmentInjector,
     route: Route,
     canCreateInjector: boolean,
+    ancestors: Route[],
   ): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
       if (injector.destroyed) {
@@ -187,17 +193,24 @@ export class RouterPreloader implements OnDestroy {
       // TODO(v23): Remove `canLoad` check once removed from 3p.
       if (route.loadChildren && (route as any).canLoad === undefined) {
         loaders.push(
-          from(this.loader.loadChildren(injector, route)).pipe(
+          from(
+            this.loader.loadChildren(
+              injector,
+              route,
+              canCreateInjector ? undefined : () => this.loader.hydrateRoutes(ancestors),
+            ),
+          ).pipe(
             mergeMap((config: LoadedRouterConfig) => {
               route._loadedRoutes = config.routes;
-              route._loadedInjector = canCreateInjector ? config.injector : undefined;
+              route._loadedInjector = config.injector;
               route._loadedNgModuleFactory = config.factory;
               // If the loaded config was a module, use that as the module/module injector going
               // forward. Otherwise, continue using the current module/module injector.
               return this.processRoutes(
-                (canCreateInjector ? config.injector : undefined) ?? injector,
+                config.injector ?? injector,
                 config.routes,
-                !canCreateInjector,
+                !canCreateInjector && !config.injector,
+                ancestors,
               );
             }),
           ),

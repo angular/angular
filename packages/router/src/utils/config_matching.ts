@@ -59,6 +59,9 @@ export function matchWithChecks(
   urlSerializer: UrlSerializer,
   createSnapshot: (result: MatchResult) => ActivatedRouteSnapshot,
   abortSignal: AbortSignal,
+  // 3p-only-start
+  canCreateInjector = true,
+  // 3p-only-end
 ): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
@@ -69,7 +72,11 @@ export function matchWithChecks(
   // Only create the Route's `EnvironmentInjector` if it matches the attempted
   // navigation
   // TODO(v23): Run canMatch guards in root environment injector in 3p as well.
-  injector = getOrCreateRouteInjectorIfNeeded(route, injector); // 3p-only
+  // 3p-only-start
+  if (canCreateInjector) {
+    injector = getOrCreateRouteInjectorIfNeeded(route, injector);
+  }
+  // 3p-only-end
   return runCanMatchGuards(
     injector,
     route,

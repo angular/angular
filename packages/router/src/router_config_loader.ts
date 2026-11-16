@@ -23,7 +23,12 @@ import {
 import {standardizeConfig} from './components/empty_outlet';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoPromise} from './utils/collection';
-import {assertStandalone, validateConfig, validateLoadedConfig} from './utils/config';
+import {
+  assertStandalone,
+  getOrCreateRouteInjectorIfNeeded,
+  validateConfig,
+  validateLoadedConfig,
+} from './utils/config';
 
 /**
  * The DI token for a router configuration.
@@ -77,6 +82,27 @@ export class RouterConfigLoader {
     return loader;
   }
 
+  async hydrateRoutes(routes: Route[]): Promise<EnvironmentInjector> {
+    const loads = routes
+      .filter((r) => r.loadConfig && !r._configLoaded)
+      .map((r) => this.loadConfig(r));
+    if (loads.length > 0) {
+      await Promise.all(loads);
+    }
+    let injector = this.environmentInjector;
+    for (let i = 0; i < routes.length; i++) {
+      const r = routes[i];
+      injector = getOrCreateRouteInjectorIfNeeded(r, injector);
+      if (i < routes.length - 1) {
+        if (r._loadedNgModuleFactory && !r._loadedInjector) {
+          r._loadedInjector = r._loadedNgModuleFactory.create(injector).injector;
+        }
+        injector = r._loadedInjector ?? injector;
+      }
+    }
+    return injector;
+  }
+
   // TODO(v23): Remove unused `injector` parameter once `loadComponent` uses `this.environmentInjector` in 3p.
   async loadComponent(injector: EnvironmentInjector, route: Route): Promise<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
@@ -111,7 +137,11 @@ export class RouterConfigLoader {
     return loader;
   }
 
-  loadChildren(parentInjector: Injector, route: Route): Promise<LoadedRouterConfig> {
+  loadChildren(
+    parentInjector: Injector,
+    route: Route,
+    resolveParentInjector?: () => Promise<Injector>,
+  ): Promise<LoadedRouterConfig> {
     if (this.childrenLoaders.get(route)) {
       return this.childrenLoaders.get(route)!;
     } else if (route._loadedRoutes) {
@@ -128,7 +158,8 @@ export class RouterConfigLoader {
           this.compiler,
           parentInjector,
           this.onLoadEndListener,
-          // g3-only this.environmentInjector,
+          this.environmentInjector,
+          resolveParentInjector,
         );
         route._loadedRoutes = result.routes;
         route._loadedInjector = result.injector;
@@ -157,7 +188,8 @@ export async function loadChildren(
   parentInjector: Injector,
   onLoadEndListener?: (r: Route) => void,
   // TODO(v23): Update `@angular/build` route extractor to pass `environmentInjector` and make it required.
-  // g3-only environmentInjector?: EnvironmentInjector,
+  environmentInjector?: EnvironmentInjector,
+  resolveParentInjector?: () => Promise<Injector>,
 ): Promise<LoadedRouterConfig> {
   const loaded = await wrapIntoPromise(
     // g3-only runInInjectionContext(environmentInjector ?? parentInjector, () => route.loadChildren!()),
@@ -185,6 +217,9 @@ export async function loadChildren(
     rawRoutes = factoryOrRoutes;
     requireStandaloneComponents = true;
   } else {
+    if (resolveParentInjector) {
+      parentInjector = await resolveParentInjector();
+    }
     injector = factoryOrRoutes.create(parentInjector).injector;
     factory = factoryOrRoutes;
     // When loading a module that doesn't provide `RouterModule.forChild()` preloader

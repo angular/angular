@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, Injectable, InjectionToken} from '@angular/core';
+import {Component, inject, Injectable, InjectionToken, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {firstValueFrom, Observable, of} from 'rxjs';
+import {lastValueFrom, Observable, of} from 'rxjs';
 import {
+  ActivatedRoute,
   DefaultExport,
   provideRouter,
   Route,
   Router,
+  RouterModule,
   RouterOutlet,
   PreloadAllModules,
   PreloadingStrategy,
@@ -141,12 +143,25 @@ describe('Route loadConfig', () => {
     expect(harness.routeNativeElement?.innerHTML).toContain('simple-cmp: lazy-val');
   });
 
-  it('evaluates loadConfig sequentially during recognition and loadComponent in parallel post-recognition', async () => {
-    let parentConfigLoaded = false;
-    let childConfigLoaded = false;
+  it('evaluates nested loadConfig routes in parallel after matching and before loadComponent', async () => {
+    const CHILD_TOKEN = new InjectionToken<string>('CHILD_TOKEN');
+
+    @Component({
+      template: 'child: {{ resolved }}',
+    })
+    class ChildResolvedCmp {
+      resolved = inject(ActivatedRoute).snapshot.data['resolvedVal'];
+    }
+
+    let parentConfigStarted = false;
+    let childConfigStarted = false;
     let parentComponentStarted = false;
     let childComponentStarted = false;
 
+    let resolveParentConfig!: () => void;
+    const parentConfigGate = new Promise<void>((resolve) => (resolveParentConfig = resolve));
+    let resolveChildConfig!: () => void;
+    const childConfigGate = new Promise<void>((resolve) => (resolveChildConfig = resolve));
     let resolveComponents!: () => void;
     const componentPromise = new Promise<void>((resolve) => (resolveComponents = resolve));
 
@@ -154,9 +169,11 @@ describe('Route loadConfig', () => {
       {
         path: 'parent',
         loadConfig: async () => {
-          parentConfigLoaded = true;
-          expect(childConfigLoaded).toBeFalse();
-          return {};
+          parentConfigStarted = true;
+          await parentConfigGate;
+          return {
+            providers: [{provide: LAZY_TOKEN, useValue: 'from-parent'}],
+          };
         },
         loadComponent: () => {
           parentComponentStarted = true;
@@ -165,14 +182,19 @@ describe('Route loadConfig', () => {
         children: [
           {
             path: 'child',
+            providers: [{provide: CHILD_TOKEN, useValue: 'from-child'}],
             loadConfig: async () => {
-              expect(parentConfigLoaded).toBeTrue();
-              childConfigLoaded = true;
-              return {};
+              childConfigStarted = true;
+              await childConfigGate;
+              return {
+                resolve: {
+                  resolvedVal: () => `${inject(LAZY_TOKEN)}:${inject(CHILD_TOKEN)}`,
+                },
+              };
             },
             loadComponent: () => {
               childComponentStarted = true;
-              return componentPromise.then(() => ChildCmp);
+              return componentPromise.then(() => ChildResolvedCmp);
             },
           },
         ],
@@ -187,8 +209,16 @@ describe('Route loadConfig', () => {
     const nav = harness.navigateByUrl('/parent/child');
     await timeout();
 
-    expect(parentConfigLoaded).toBeTrue();
-    expect(childConfigLoaded).toBeTrue();
+    // Both parent and child `loadConfig` start concurrently without child waiting on parent.
+    expect(parentConfigStarted).toBeTrue();
+    expect(childConfigStarted).toBeTrue();
+    expect(parentComponentStarted).toBeFalse();
+    expect(childComponentStarted).toBeFalse();
+
+    resolveParentConfig();
+    resolveChildConfig();
+    await timeout();
+
     expect(parentComponentStarted).toBeTrue();
     expect(childComponentStarted).toBeTrue();
 
@@ -196,7 +226,213 @@ describe('Route loadConfig', () => {
     await nav;
 
     expect(harness.routeNativeElement?.innerHTML).toContain('parent:');
-    expect(harness.routeNativeElement?.innerHTML).toContain('child');
+    expect(harness.routeNativeElement?.innerHTML).toContain('child: from-parent:from-child');
+  });
+
+  it('does not invoke parent loadConfig when child route rejects in canMatch and backtracks', async () => {
+    const rejectedParentConfigSpy = jasmine.createSpy('rejectedParentConfig').and.resolveTo({});
+    const matchedParentConfigSpy = jasmine.createSpy('matchedParentConfig').and.resolveTo({
+      providers: [{provide: LAZY_TOKEN, useValue: 'matched-parent'}],
+    });
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'parent',
+            component: ParentCmp,
+            loadConfig: rejectedParentConfigSpy,
+            children: [
+              {
+                path: 'child',
+                canMatch: [() => false],
+                component: ChildCmp,
+              },
+            ],
+          },
+          {
+            path: 'parent',
+            component: ParentCmp,
+            loadConfig: matchedParentConfigSpy,
+            children: [
+              {
+                path: 'child',
+                component: SimpleCmp,
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create('/parent/child');
+    expect(rejectedParentConfigSpy).not.toHaveBeenCalled();
+    expect(matchedParentConfigSpy).toHaveBeenCalledTimes(1);
+    expect(harness.routeNativeElement?.innerHTML).toContain('simple-cmp: matched-parent');
+  });
+
+  it('does not block standalone loadChildren on parent loadConfig and loads nested loadConfigs in parallel', async () => {
+    let parentConfigStarted = false;
+    let loadChildrenStarted = false;
+    let leafConfigStarted = false;
+
+    let resolveParentConfig!: () => void;
+    const parentConfigGate = new Promise<void>((resolve) => (resolveParentConfig = resolve));
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'parent',
+            component: ParentCmp,
+            loadConfig: async () => {
+              parentConfigStarted = true;
+              await parentConfigGate;
+              return {
+                providers: [{provide: LAZY_TOKEN, useValue: 'from-parent'}],
+              };
+            },
+            children: [
+              {
+                path: 'lazy',
+                loadChildren: async () => {
+                  loadChildrenStarted = true;
+                  return [
+                    {
+                      path: 'leaf',
+                      component: SimpleCmp,
+                      loadConfig: async () => {
+                        leafConfigStarted = true;
+                        return {};
+                      },
+                    },
+                  ];
+                },
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    const nav = harness.navigateByUrl('/parent/lazy/leaf');
+    await timeout();
+
+    expect(loadChildrenStarted).toBeTrue();
+    expect(parentConfigStarted).toBeTrue();
+    expect(leafConfigStarted).toBeTrue();
+
+    resolveParentConfig();
+    await nav;
+
+    expect(harness.routeNativeElement?.innerHTML).toContain('simple-cmp: from-parent');
+  });
+
+  it('propagates parent loadConfig providers to child loadChildren NgModule and instantiates the module once', async () => {
+    const MODULE_TOKEN = new InjectionToken<string>('MODULE_TOKEN');
+    let moduleConstructCount = 0;
+
+    @Component({
+      template: 'leaf: {{ parentVal }} / {{ modVal }}',
+    })
+    class LeafCmp {
+      parentVal = inject(LAZY_TOKEN);
+      modVal = inject(MODULE_TOKEN);
+    }
+
+    @NgModule({
+      imports: [RouterModule.forChild([{path: 'leaf', component: LeafCmp}])],
+      providers: [{provide: MODULE_TOKEN, useValue: 'from-module'}],
+    })
+    class LazyChildModule {
+      parentVal = inject(LAZY_TOKEN);
+      constructor() {
+        moduleConstructCount++;
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'parent',
+            component: ParentCmp,
+            loadConfig: async () => ({
+              providers: [{provide: LAZY_TOKEN, useValue: 'from-parent'}],
+            }),
+            children: [
+              {
+                path: 'lazy',
+                loadChildren: () => Promise.resolve(LazyChildModule),
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create('/parent/lazy/leaf');
+    expect(moduleConstructCount).toBe(1);
+    expect(harness.routeNativeElement?.innerHTML).toContain('leaf: from-parent / from-module');
+  });
+
+  it('instantiates a preloaded child loadChildren NgModule only once when parent has loadConfig', async () => {
+    const MODULE_TOKEN = new InjectionToken<string>('MODULE_TOKEN');
+    let moduleConstructCount = 0;
+
+    @Component({
+      template: 'leaf: {{ parentVal }} / {{ modVal }}',
+    })
+    class LeafCmp {
+      parentVal = inject(LAZY_TOKEN);
+      modVal = inject(MODULE_TOKEN);
+    }
+
+    @NgModule({
+      imports: [RouterModule.forChild([{path: 'leaf', component: LeafCmp}])],
+      providers: [{provide: MODULE_TOKEN, useValue: 'from-module'}],
+    })
+    class PreloadedChildModule {
+      parentVal = inject(LAZY_TOKEN);
+      constructor() {
+        moduleConstructCount++;
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: '', component: HomeCmp},
+            {
+              path: 'parent',
+              component: ParentCmp,
+              loadConfig: async () => ({
+                providers: [{provide: LAZY_TOKEN, useValue: 'from-parent'}],
+              }),
+              children: [
+                {
+                  path: 'lazy',
+                  loadChildren: () => Promise.resolve(PreloadedChildModule),
+                },
+              ],
+            },
+          ],
+          withPreloading(PreloadAllModules),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create('/');
+    const preloader = TestBed.inject(RouterPreloader);
+    await lastValueFrom(preloader.preload(), {defaultValue: undefined});
+
+    expect(moduleConstructCount).toBe(1);
+
+    await harness.navigateByUrl('/parent/lazy/leaf');
+    expect(moduleConstructCount).toBe(1);
+    expect(harness.routeNativeElement?.innerHTML).toContain('leaf: from-parent / from-module');
   });
 
   it('propagates route injector to child routes', async () => {
@@ -540,7 +776,7 @@ describe('Route loadConfig', () => {
 
     const harness = await RouterTestingHarness.create('/');
     const preloader = TestBed.inject(RouterPreloader);
-    const preloadDone = firstValueFrom(preloader.preload(), {defaultValue: undefined});
+    const preloadDone = lastValueFrom(preloader.preload(), {defaultValue: undefined});
     await timeout();
 
     // All loaders along the static tree start without waiting on parent `loadConfig`.
@@ -596,7 +832,7 @@ describe('Route loadConfig', () => {
 
     await RouterTestingHarness.create('/');
     const preloader = TestBed.inject(RouterPreloader);
-    await firstValueFrom(preloader.preload(), {defaultValue: undefined});
+    await lastValueFrom(preloader.preload(), {defaultValue: undefined});
 
     expect(parentConfigSpy).not.toHaveBeenCalled();
     expect(childConfigSpy).toHaveBeenCalledTimes(1);
