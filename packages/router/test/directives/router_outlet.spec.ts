@@ -1175,7 +1175,7 @@ describe('Error boundaries and errorComponent integration', () => {
     expect(harness.routeNativeElement?.innerText).toContain('Login Page Content');
   });
 
-  it('dispatches RedirectCommand only once when bubbling through multiple boundaries', async () => {
+  it('dispatches RedirectCommand only once when thrown from a route in a nested outlet', async () => {
     let navigateByUrlCalls = 0;
 
     @Component({
@@ -1236,6 +1236,53 @@ describe('Error boundaries and errorComponent integration', () => {
     await harness.fixture.whenStable();
 
     expect(navigateByUrlCalls).toBe(1);
+    expect(harness.routeNativeElement?.innerText).toContain('Destination Reached');
+  });
+
+  it('navigates every time the same RedirectCommand instance is thrown', async () => {
+    let redirect!: RedirectCommand;
+
+    @Component({
+      template: 'Throwing Component Content',
+    })
+    class ThrowingComponent {
+      constructor() {
+        throw redirect;
+      }
+    }
+
+    @Component({
+      template: 'Home',
+    })
+    class HomeComponent {}
+
+    @Component({
+      template: 'Destination Reached',
+    })
+    class DestinationComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouterWithBoundaries([
+          {path: 'home', component: HomeComponent},
+          {path: 'throwing', component: ThrowingComponent},
+          {path: 'destination', component: DestinationComponent},
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    redirect = new RedirectCommand(router.parseUrl('/destination'));
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/throwing');
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/destination');
+
+    await harness.navigateByUrl('/home');
+    await harness.navigateByUrl('/throwing');
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/destination');
     expect(harness.routeNativeElement?.innerText).toContain('Destination Reached');
   });
 
