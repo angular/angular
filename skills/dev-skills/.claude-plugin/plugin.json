@@ -1,0 +1,19 @@
+{
+  "name": "angular",
+  "version": "0.1.1",
+  "description": "Angular agent skills for generating modern Angular code, architectural guidance, and scaffolding new apps with the Angular CLI, plus the official Angular CLI MCP server.",
+  "author": {
+    "name": "Angular",
+    "url": "https://angular.dev"
+  },
+  "homepage": "https://angular.dev",
+  "repository": "https://github.com/angular/angular",
+  "license": "MIT",
+  "skills": ["./angular-developer", "./angular-new-app"],
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["-y", "@angular/cli", "mcp"]
+    }
+  }
+}
