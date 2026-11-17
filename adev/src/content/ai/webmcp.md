@@ -52,6 +52,8 @@ import {provideExperimentalWebMcpTools} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {AppRoot} from './app-root';
 
+const allProducts: string[] = [/* ... */];
+
 bootstrapApplication(AppRoot, {
   providers: [
     provideExperimentalWebMcpTools([
@@ -73,6 +75,18 @@ bootstrapApplication(AppRoot, {
           required: ['query'],
           additionalProperties: false,
         },
+        outputSchema: {
+          type: 'object',
+          properties: {
+            results: {
+              type: 'array',
+              items: {type: 'string'},
+              description: 'List of matching product names.',
+            },
+          },
+          required: ['results'],
+          additionalProperties: false,
+        },
         execute: ({query, maxResults}) => {
           // Type of `query` is inferred as `string`.
           // Type of `maxResults` is inferred as `number | undefined`.
@@ -83,9 +97,11 @@ bootstrapApplication(AppRoot, {
             throw new Error(`Bad maxResults: ${maxResults}`);
 
           const limit = maxResults ?? 5;
-          return {
-            content: [{type: 'text', text: `Returning up to ${limit} results for "${query}".`}],
-          };
+          const matchingProducts = allProducts
+            .filter((product) => product.includes(query))
+            .slice(0, limit);
+
+          return {results: matchingProducts};
         },
       },
     ]),
@@ -250,6 +266,10 @@ Prefer placing tools on application providers, route providers, or root services
 ### Validate tool inputs
 
 Angular does not provide any implicit validation that the inputs provided by an agent actually match the defined JSON schema. Consider explicitly validating arguments to the `execute` function before using them to ensure reliability.
+
+### Define explicit output schemas
+
+To make tool execution as predictable as possible for the AI agent, explicitly define an `outputSchema` and ensure your `execute` function returns an object that strictly matches it. Angular does not automatically validate that the returned content matches the defined `outputSchema`. Ensure your data matches the `outputSchema` or consider validating it at runtime to avoid confusing the agent with inconsistent information.
 
 ### Testing
 
