@@ -1359,6 +1359,28 @@ describe('fake async', () => {
   });
 
   describe('timers', () => {
+    it('should not clear a fake timer when cancelling a timer scheduled outside of fakeAsync', () => {
+      const cancel = jasmine.createSpy('cancel');
+      const task = Zone.current.scheduleMacroTask(
+        'setTimeout',
+        () => {},
+        {},
+        () => {},
+        cancel,
+      );
+      let ran = false;
+      fakeAsync(() => {
+        const id: any = setTimeout(() => {
+          ran = true;
+        }, 10);
+        task.data!['handleId'] = id;
+        task.zone.cancelTask(task);
+        tick(10);
+      })();
+      expect(ran).toEqual(true);
+      expect(cancel).toHaveBeenCalled();
+    });
+
     it('should run queued zero duration timer on zero tick', fakeAsync(() => {
       let ran = false;
       setTimeout(() => {

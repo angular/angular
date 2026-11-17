@@ -362,6 +362,8 @@ class Scheduler {
   }
 }
 
+const fakeAsyncTaskOwners = new WeakMap<Task, FakeAsyncTestZoneSpec>();
+
 class FakeAsyncTestZoneSpec implements ZoneSpec {
   static assertInZone(): void {
     if (Zone.current.get('FakeAsyncTestZoneSpec') == null) {
@@ -827,6 +829,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
             }
             throw new Error('Unknown macroTask scheduled in fake async test: ' + task.source);
         }
+        fakeAsyncTaskOwners.set(task, this);
         break;
       case 'eventTask':
         task = delegate.scheduleTask(target, task);
@@ -836,23 +839,28 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   }
 
   onCancelTask(delegate: ZoneDelegate, current: Zone, target: Zone, task: Task): any {
+    const owner = fakeAsyncTaskOwners.get(task);
+    // A task scheduled outside of fakeAsync can still be cancelled here through the ProxyZoneSpec.
+    if (owner === undefined) {
+      return delegate.cancelTask(target, task);
+    }
     switch (task.source) {
       case 'setTimeout':
       case 'requestAnimationFrame':
       case 'webkitRequestAnimationFrame':
       case 'mozRequestAnimationFrame':
-        return this._clearTimeout(<number>task.data!['handleId']);
+        return owner._clearTimeout(<number>task.data!['handleId']);
       case 'setInterval':
-        return this._clearInterval(<number>task.data!['handleId']);
+        return owner._clearInterval(<number>task.data!['handleId']);
       default:
         // user can define which macroTask they want to support by passing
         // macroTaskOptions
-        const macroTaskOption = this.findMacroTaskOption(task);
+        const macroTaskOption = owner.findMacroTaskOption(task);
         if (macroTaskOption) {
           const handleId: number = <number>task.data!['handleId'];
           return macroTaskOption.isPeriodic
-            ? this._clearInterval(handleId)
-            : this._clearTimeout(handleId);
+            ? owner._clearInterval(handleId)
+            : owner._clearTimeout(handleId);
         }
         return delegate.cancelTask(target, task);
     }
