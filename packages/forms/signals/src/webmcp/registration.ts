@@ -36,6 +36,20 @@ const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
   });
 };
 
+const FORM_OUTPUT_SCHEMA = {
+  type: 'object',
+  properties: {
+    success: {type: 'boolean', description: 'Whether the form was submitted successfully.'},
+    errors: {
+      type: 'array',
+      items: {type: 'string'},
+      description: 'Validation error messages if the submission failed.',
+    },
+  },
+  required: ['success'],
+  additionalProperties: false,
+};
+
 async function initWebMcpForm(
   formTree: FieldTree<unknown>,
   options: {name: string; description: string; annotations?: {consequentialHint?: boolean}},
@@ -56,6 +70,7 @@ async function initWebMcpForm(
       name: options.name,
       description: options.description,
       inputSchema,
+      outputSchema: FORM_OUTPUT_SCHEMA,
       annotations: {
         ...options.annotations,
 
@@ -81,12 +96,10 @@ async function initWebMcpForm(
         if (success) {
           return {success: true};
         } else {
-          const errors = node
-            .errorSummary()
-            .map((err) => {
-              const fieldName = (err.fieldTree() as FieldNode).structure.pathKeys().join('.');
-              return `${fieldName ? `${fieldName}: ` : ''}${err.message || err.kind}`;
-            });
+          const errors = node.errorSummary().map((err) => {
+            const fieldName = (err.fieldTree() as FieldNode).structure.pathKeys().join('.');
+            return `${fieldName ? `${fieldName}: ` : ''}${err.message || err.kind}`;
+          });
           return {success: false, errors};
         }
       },
