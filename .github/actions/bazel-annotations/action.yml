@@ -1,0 +1,8 @@
+name: 'Bazel failure annotations'
+description: 'Configures Bazel BEP output and problem matchers, and emits ::error annotations on failure.'
+
+runs:
+  using: 'node24'
+  main: 'setup.mjs'
+  post: 'post.mjs'
+  post-if: 'failure()'
