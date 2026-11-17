@@ -230,6 +230,12 @@ describe('declareExperimentalWebMcpTool', () => {
             required: ['foo'],
             additionalProperties: false,
           },
+          outputSchema: {
+            type: 'object',
+            properties: {
+              success: {type: 'boolean'},
+            },
+          },
           execute: (args) => {
             // Verify assignability.
             const _assignable: {foo?: string; bar?: number} = args;
