@@ -1508,6 +1508,40 @@ describe('ControlValueAccessor', () => {
       expect(input.value).toBe('10');
     });
 
+    it('should keep transformedValue in sync when a FormControl is reset and restored before rendering', async () => {
+      @Component({
+        selector: 'transformed-input',
+        template: `<input [value]="rawValue()" />`,
+      })
+      class TransformedInput {
+        readonly value = model<string | null>(null);
+        protected readonly rawValue = transformedValue(this.value, {
+          parse: (value: string) => ({value}),
+          format: (value) => value ?? '',
+        });
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TransformedInput],
+        template: `<transformed-input [formControl]="control" />`,
+      })
+      class TestCmp {
+        readonly control = new FormControl('Ada');
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const control = fixture.componentInstance.control;
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+      expect(input.value).toBe('Ada');
+
+      control.reset();
+      control.setValue('Ada');
+      await fixture.whenStable();
+
+      expect(input.value).toBe('Ada');
+    });
+
     it('should automatically reset transformedValue when FormControl is swapped and the new one is reset', async () => {
       // --- 1. Component Setup ---
       // Verification for control-swappingTiming/lifecycle safety across packages in the monorepo.
