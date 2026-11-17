@@ -36,9 +36,8 @@
 
 version: 3
 
-availability:
-  users_unavailable:
-    - devversion
+#availability:
+#  users_unavailable: []
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -103,7 +102,6 @@ groups:
         - ~AndrewKushnir
         - atscott
         - crisbeto
-        - devversion
         - ~thePunderWoman
         - kirjs
         - JoostK
@@ -152,7 +150,6 @@ groups:
         - ~AndrewKushnir
         - atscott
         - crisbeto
-        - devversion
         - kirjs
         - ~thePunderWoman
         - ~pkozlowski-opensource
@@ -207,7 +204,6 @@ groups:
         - ~AndrewKushnir
         - atscott
         - crisbeto
-        - devversion
         - kirjs
         - alan-agius4
         - ~thePunderWoman
@@ -262,7 +258,6 @@ groups:
         - kirjs
         - JeanMeche
         - ~thePunderWoman
-        - devversion
         - josephperrott
         - ~pkozlowski-opensource
         - ~mgechev
@@ -288,7 +283,6 @@ groups:
       users:
         - AleksanderBodurri
         - csmick
-        - ~devversion
         - dgp1130
         - eduhmc
         - hawkgs
@@ -344,7 +338,6 @@ groups:
     reviewers:
       users:
         - alan-agius4
-        - devversion
         - josephperrott
 
   # =========================================================
@@ -382,7 +375,6 @@ groups:
         - ~pkozlowski-opensource
         - kirjs
         - crisbeto
-        - devversion
         - JeanMeche
         - ~hybrist
         - ~iteriani
