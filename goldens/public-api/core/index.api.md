@@ -2157,9 +2157,10 @@ export abstract class ViewRef extends ChangeDetectorRef {
 export type WebMcpClient = ToolExecuteCallbackOptions;
 
 // @public
-export interface WebMcpToolDescriptor<InputSchema extends object = object> extends Omit<ModelContextTool, 'execute'> {
+export interface WebMcpToolDescriptor<InputSchema extends object = object, OutputSchema extends object = object> extends Omit<ModelContextTool, 'execute'> {
     execute: WebMcpToolExecute<InputSchema>;
     inputSchema?: InputSchema;
+    outputSchema?: OutputSchema;
 }
 
 // @public
