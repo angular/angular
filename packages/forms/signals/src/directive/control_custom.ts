@@ -17,16 +17,25 @@ import {
 } from './bindings';
 import {formatDateForMinMax, setNativeDomProperty} from './native';
 
+const STALE_CONTROL_VALUE = /* @__PURE__ */ Symbol('STALE_CONTROL_VALUE');
+
 export function customControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
 ): () => void {
-  host.listenToCustomControlModel((value) => parent.state().controlValue.set(value));
+  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
+  host.listenToCustomControlModel((value) => {
+    // A control may update its own model or only emit a change request. In either case,
+    // reconcile the input on the next update if it may differ from the last write.
+    if (!Object.is(value, bindings['controlValue'])) {
+      bindings['controlValue'] = STALE_CONTROL_VALUE;
+    }
+    parent.state().controlValue.set(value);
+  });
   host.listenToCustomControlOutput('touch', () => parent.state().markAsTouched());
 
   parent.registerAsBinding(host.customControl as FormFieldBindingOptions);
 
-  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
   return () => {
     const state = parent.state();
     // Bind custom form control model ('value' or 'checked').
