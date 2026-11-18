@@ -4539,6 +4539,30 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('typing');
   });
 
+  it('restores a control model when the field returns to its previous value before rendering', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput {
+      readonly value = model('');
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal('initial'));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const {f, control} = fixture.componentInstance;
+    expect(control().value()).toBe('initial');
+
+    control().value.set('edited');
+    f().value.set('initial');
+    await fixture.whenStable();
+
+    expect(control().value()).toBe('initial');
+  });
+
   it('synchronizes with a custom value control with separate input and output properties', () => {
     @Component({
       selector: 'my-input',
@@ -4574,6 +4598,7 @@ describe('field directive', () => {
       element.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe('typing');
+    expect(fix.debugElement.children[0].injector.get(CustomInput).value()).toBe('typing');
   });
 
   it('synchronizes with a custom value control with separate @Input and @Output properties', () => {
