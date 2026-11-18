@@ -1,3 +1,18 @@
+<a name="22.2.7"></a>
+# 22.2.7 (2026-11-18)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [424c9f4f5c](https://github.com/angular/angular/commit/424c9f4f5ce413a61336f8fdd390fd2904ad8370) | fix | suppress hydration warnings in test environments |
+| [22b7937849](https://github.com/angular/angular/commit/22b7937849e7bdbf1dc1f465d01b8828a986170e) | fix | throw NG0502 instead of a TypeError when a hydration comment is missing |
+| [490be3e2c2](https://github.com/angular/angular/commit/490be3e2c24328048217c251e8e37afa32a3a6fc) | fix | throw NG0512 instead of TypeError when hydration text node is missing |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [818bf54607](https://github.com/angular/angular/commit/818bf54607d551004fe1424245a89d68c1280786) | fix | format Date min/max for controls with a ControlValueAccessor |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.6"></a>
 # 22.2.6 (2026-11-11)
 ### animations
