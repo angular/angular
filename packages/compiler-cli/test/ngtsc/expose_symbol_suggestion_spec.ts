@@ -9,17 +9,14 @@
 import ts from 'typescript';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {isNgpTestMode, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
 const testFiles = loadStandardTestFiles();
 
-// TODO: port the suggestion to ngp.
-const describeNgtscOnly = isNgpTestMode() ? xdescribe : describe;
-
 runInEachFileSystem(() => {
-  describeNgtscOnly('suggestion to expose file and global symbols on the class', () => {
+  describe('suggestion to expose file and global symbols on the class', () => {
     let env!: NgtscTestEnvironment;
 
     beforeEach(() => {

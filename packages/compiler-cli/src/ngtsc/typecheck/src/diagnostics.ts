@@ -109,17 +109,18 @@ const IGNORED_GLOBAL_LIBS = /(^|[\\/])lib\.(dom|webworker|scripthost)[^\\/]*\.d\
  * Template and host binding expressions read bare names from the component instance (`foo` is
  * `this.foo`), so a symbol that is imported or declared in the component's file, or a global, can't
  * be used directly. When TS reports that such a property doesn't exist, checks whether the name
- * refers to a value in the file or a global. If so, the diagnostic suggests exposing it as a member
- * of the class, e.g. `protected readonly foo = foo;`.
+ * refers to a value in the file or a global. If so, returns a sentence suggesting to expose it as a
+ * member of the class, e.g. `protected readonly foo = foo;`. Otherwise returns `null`.
  *
- * Returns the diagnostic with the suggestion added, or the diagnostic unchanged.
+ * @param tsDiagnostic Diagnostic reported by TS in a type-check block.
+ * @param componentFile Source file declaring the component or directive.
+ * @param typeChecker Type checker of the program containing the type-check block.
  */
-export function addExposeSymbolSuggestion(
-  templateDiagnostic: TemplateDiagnostic,
+export function getExposeSymbolSuggestion(
   tsDiagnostic: ts.Diagnostic,
   componentFile: ts.SourceFile,
   typeChecker: ts.TypeChecker,
-): TemplateDiagnostic {
+): string | null {
   const {file, start, length} = tsDiagnostic;
   if (
     !PROPERTY_DOES_NOT_EXIST_CODES.has(tsDiagnostic.code) ||
@@ -128,24 +129,41 @@ export function addExposeSymbolSuggestion(
     length === undefined ||
     !isAccessOnThis(file.text, start)
   ) {
-    return templateDiagnostic;
+    return null;
   }
 
   const name = file.text.substring(start, start + length);
   const origin = findSymbolOrigin(name, componentFile, typeChecker);
   if (origin === null) {
-    return templateDiagnostic;
+    return null;
   }
 
-  const suggestion =
-    ` '${name}' is ${origin}, but template expressions can only read members of the class. ` +
+  return (
+    `'${name}' is ${origin}, but template expressions can only read members of the class. ` +
     `To use it in the template, add it to the class, e.g. ` +
-    `'protected readonly ${name} = ${name};'.`;
+    `'protected readonly ${name} = ${name};'.`
+  );
+}
+
+/**
+ * Appends the suggestion from `getExposeSymbolSuggestion` (if any) to the message of a translated
+ * template diagnostic.
+ */
+export function addExposeSymbolSuggestion<T extends ts.Diagnostic>(
+  templateDiagnostic: T,
+  tsDiagnostic: ts.Diagnostic,
+  componentFile: ts.SourceFile,
+  typeChecker: ts.TypeChecker,
+): T {
+  const suggestion = getExposeSymbolSuggestion(tsDiagnostic, componentFile, typeChecker);
+  if (suggestion === null) {
+    return templateDiagnostic;
+  }
   const messageText = templateDiagnostic.messageText;
   templateDiagnostic.messageText =
     typeof messageText === 'string'
-      ? messageText + suggestion
-      : {...messageText, messageText: messageText.messageText + suggestion};
+      ? `${messageText} ${suggestion}`
+      : {...messageText, messageText: `${messageText.messageText} ${suggestion}`};
   return templateDiagnostic;
 }
 
