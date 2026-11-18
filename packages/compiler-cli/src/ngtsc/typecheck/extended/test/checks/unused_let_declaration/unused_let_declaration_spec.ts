@@ -80,6 +80,16 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('@let foo = 1;');
     });
 
+    it('should exempt unused @let declarations whose names start with an underscore', () => {
+      const diags = diagnose(`
+        @let _intentionallyUnused = 1;
+        @let unused_value = 2;
+      `);
+
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('@let unused_value = 2;');
+    });
+
     it('should not report a @let declaration that is only used in other @let declarations', () => {
       const diags = diagnose(`
         @let one = 1;

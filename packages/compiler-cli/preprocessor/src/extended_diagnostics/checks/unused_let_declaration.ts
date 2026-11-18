@@ -43,7 +43,7 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<ErrorCode.UNUSE
     const {allLetDeclarations, usedLetDeclarations} = this.getAnalysis(component);
 
     for (const decl of allLetDeclarations) {
-      if (!usedLetDeclarations.has(decl)) {
+      if (!decl.name.startsWith('_') && !usedLetDeclarations.has(decl)) {
         diagnostics.push(
           ctx.makeTemplateDiagnostic(
             decl.sourceSpan,

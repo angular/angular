@@ -24,7 +24,7 @@ interface ClassAnalysis {
 }
 
 /**
- * Ensures that all `@let` declarations in a template are used.
+ * Reports unused `@let` declarations unless their name starts with an underscore.
  */
 class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<ErrorCode.UNUSED_LET_DECLARATION> {
   override code = ErrorCode.UNUSED_LET_DECLARATION as const;
@@ -41,7 +41,7 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<ErrorCode.UNUSE
     const {allLetDeclarations, usedLetDeclarations} = this.getAnalysis(component);
 
     for (const decl of allLetDeclarations) {
-      if (!usedLetDeclarations.has(decl)) {
+      if (!decl.name.startsWith('_') && !usedLetDeclarations.has(decl)) {
         diagnostics.push(
           ctx.makeTemplateDiagnostic(
             decl.sourceSpan,
