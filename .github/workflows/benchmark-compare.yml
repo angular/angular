@@ -28,13 +28,60 @@ jobs:
       - uses: alessbell/pull-request-comment-branch@ef3408c9757d05f89cb525036383033a313758a0 # v2.1.0
         id: comment-branch
 
+      # The previous step resolves the live PR tip. Pin checkout to the commit
+      # that was at the head of the PR branch when the team member commented,
+      # and fail if the head has moved since then.
+      - name: Pin checkout to the comment-time head commit
+        id: pin-sha
+        env:
+          GH_TOKEN: ${{github.token}}
+          HEAD_OWNER: ${{steps.comment-branch.outputs.head_owner}}
+          HEAD_REPO: ${{steps.comment-branch.outputs.head_repo}}
+          HEAD_REF: ${{steps.comment-branch.outputs.head_ref}}
+          HEAD_SHA: ${{steps.comment-branch.outputs.head_sha}}
+          COMMENT_AT: ${{github.event.comment.created_at}}
+        run: |
+          set -euo pipefail
+          if [[ ! "$HEAD_OWNER" =~ ^[A-Za-z0-9._-]+$ || ! "$HEAD_REPO" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "Unexpected repository identity"
+            exit 1
+          fi
+          if [[ ! "$HEAD_REF" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "Unexpected head ref"
+            exit 1
+          fi
+          if [[ ! "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Unexpected head SHA"
+            exit 1
+          fi
+          if [[ ! "$COMMENT_AT" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z$ ]]; then
+            echo "Unexpected comment timestamp"
+            exit 1
+          fi
+          # The commits API "until" parameter is exclusive, so extend the
+          # comment time by one second to include a same-second commit.
+          UNTIL="$(date -u -d "${COMMENT_AT} + 1 second" +%Y-%m-%dT%H:%M:%SZ)"
+          PINNED_SHA="$(gh api -X GET "repos/${HEAD_OWNER}/${HEAD_REPO}/commits" -f sha="$HEAD_REF" -f until="$UNTIL" -F per_page=1 --jq '.[0].sha // empty')"
+          if [[ ! "$PINNED_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Could not resolve the PR head commit at comment time (${COMMENT_AT})"
+            exit 1
+          fi
+          if [[ "$PINNED_SHA" != "$HEAD_SHA" ]]; then
+            echo "The PR head moved after the triggering comment (${COMMENT_AT})."
+            echo "Commit at comment time: ${PINNED_SHA}"
+            echo "Current PR head:        ${HEAD_SHA}"
+            echo "Please post a new /benchmark-compare comment for the intended commit."
+            exit 1
+          fi
+          echo "verified_sha=${PINNED_SHA}" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Specify repository as the PR branch might be from a fork.
           repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
-          # Checkout the pull request and assume it being trusted given we've checked
-          # that the action was triggered by a team member.
-          ref: ${{steps.comment-branch.outputs.head_sha}}
+          # Checkout the commit that was at PR head when the team member commented.
+          # The previous step fails if the head has moved since then.
+          ref: ${{steps.pin-sha.outputs.verified_sha}}
 
       # We cannot use `angular/dev-infra/github-actions/npm/checkout-and-setup-node` here
       # because it does not support checking out from a fork (as it lacks a `repository` input).
