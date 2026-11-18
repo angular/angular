@@ -108,7 +108,11 @@ import {
   TypeCheckData,
   TypeCheckingHost,
 } from './context';
-import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {
+  addExposeSymbolSuggestion,
+  shouldReportDiagnostic,
+  translateDiagnostic,
+} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
@@ -672,7 +676,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         diagnostics.push(
           ...typeCheckProgram
             .getSemanticDiagnostics(inlineSf)
-            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager, sf, typeCheckProgram)),
         );
       }
 
@@ -683,7 +687,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
 
         diagnostics.push(
-          ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+          ...filteredDiagnostics.map((diag) =>
+            convertDiagnostic(diag, fileRecord.sourceManager, sf, typeCheckProgram),
+          ),
         );
         diagnostics.push(...shimRecord.genesisDiagnostics);
 
@@ -760,7 +766,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         diagnostics.push(
           ...typeCheckProgram
             .getSemanticDiagnostics(inlineSf)
-            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager, sf, typeCheckProgram)),
         );
       }
 
@@ -769,7 +775,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
 
       diagnostics.push(
-        ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+        ...filteredDiagnostics.map((diag) =>
+          convertDiagnostic(diag, fileRecord.sourceManager, sf, typeCheckProgram),
+        ),
       );
       diagnostics.push(...shimRecord.genesisDiagnostics);
 
@@ -1755,11 +1763,24 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 function convertDiagnostic(
   diag: ts.Diagnostic,
   sourceResolver: TypeCheckSourceResolver,
+  componentFile?: ts.SourceFile,
+  typeCheckProgram?: ts.Program,
 ): TemplateDiagnostic | null {
   if (!shouldReportDiagnostic(diag)) {
     return null;
   }
-  return translateDiagnostic(diag, sourceResolver);
+  const translated = translateDiagnostic(diag, sourceResolver);
+  if (translated === null || componentFile === undefined || typeCheckProgram === undefined) {
+    return translated;
+  }
+  // Prefer the type-check program's version of the component file, so that its nodes belong to
+  // the program of the type checker.
+  return addExposeSymbolSuggestion(
+    translated,
+    diag,
+    typeCheckProgram.getSourceFile(componentFile.fileName) ?? componentFile,
+    typeCheckProgram.getTypeChecker(),
+  );
 }
 
 /**
