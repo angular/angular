@@ -359,6 +359,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Routing',
+        status: 'updated',
         children: [
           {
             label: 'Overview',
