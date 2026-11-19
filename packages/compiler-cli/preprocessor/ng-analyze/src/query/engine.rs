@@ -15,7 +15,7 @@ use crate::compiler::decorators::component::{
 };
 use crate::compiler::decorators::ng_module::optimize_ng_module;
 
-use crate::query::keys::{CachedResult, QueryKey, QueryValue};
+use crate::query::keys::{CachedResult, QueryKey, QueryValue, WireFileResult};
 use crate::query::{FileId, FileIdInterner, QueryContext};
 use crate::resource_registry::ResourceRegistry;
 use crate::utils::is_ts_source;
@@ -129,6 +129,13 @@ pub struct QueryEngine {
     /// Files whose own `.ts` source or external resource was directly invalidated since the last
     /// completed stream, as opposed to transitive dependency evictions.
     pub(crate) directly_invalidated_files: Mutex<HashSet<FileId>>,
+    /// Evicted `AnalyzeFileWire` results from the last completed stream, used by delta streams
+    /// to skip re-streaming dependency-invalidated files whose wire result is unchanged (`None`
+    /// when evicted while still in flight).
+    pub(crate) last_wire_results: Mutex<HashMap<FileId, Option<Arc<WireFileResult>>>>,
+    /// Optimization mode (`is_optimized`) of the last completed stream, or `None` before any
+    /// stream has completed.
+    pub(crate) last_stream_optimized: Mutex<Option<bool>>,
     /// The set of `FileId`s that were part of the program in the last completed stream.
     pub(crate) last_program_files: Mutex<HashSet<FileId>>,
     pub(crate) reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
@@ -258,6 +265,8 @@ impl QueryEngine {
             last_scope_registry: Mutex::new(None),
             dirty_wire_files: Mutex::new(None),
             directly_invalidated_files: Mutex::new(HashSet::new()),
+            last_wire_results: Mutex::new(HashMap::new()),
+            last_stream_optimized: Mutex::new(None),
             last_program_files: Mutex::new(HashSet::new()),
             reference_strategy,
             r3_symbols_file,
@@ -556,17 +565,47 @@ impl QueryEngine {
             if let Ok(mut guard) = self.directly_invalidated_files.lock() {
                 guard.insert(file_id);
             }
+            if let Ok(mut wire_guard) = self.last_wire_results.lock() {
+                wire_guard.remove(&file_id);
+            }
         }
     }
 
     fn remove_cached_key(&self, key: &QueryKey) -> bool {
-        let removed = self.cache.remove(key).is_some();
-        if removed {
-            if let &QueryKey::AnalyzeFileWire { file_id, .. } = key {
+        let Some(removed) = self.cache.remove(key) else {
+            return false;
+        };
+        if let &QueryKey::AnalyzeFileWire {
+            file_id,
+            is_optimized,
+        } = key
+        {
+            let same_stream_mode = self
+                .last_stream_optimized
+                .lock()
+                .is_ok_and(|g| *g == Some(is_optimized));
+            if same_stream_mode {
                 self.mark_file_dirty(file_id);
+                let directly_invalidated = self
+                    .directly_invalidated_files
+                    .lock()
+                    .is_ok_and(|g| g.contains(&file_id));
+                if !directly_invalidated {
+                    let resolved = removed.peek().cloned().or_else(|| {
+                        use futures::FutureExt;
+                        removed.now_or_never()
+                    });
+                    let prev_wire = resolved.and_then(|cached| match cached.value.as_ref() {
+                        QueryValue::Wire(wire) => Some(Arc::clone(wire)),
+                        _ => None,
+                    });
+                    if let Ok(mut last_guard) = self.last_wire_results.lock() {
+                        last_guard.entry(file_id).or_insert(prev_wire);
+                    }
+                }
             }
         }
-        removed
+        true
     }
 
     /// Whether `AnalyzeFileWire` for `file_id` and `is_optimized` is currently in the cache.
