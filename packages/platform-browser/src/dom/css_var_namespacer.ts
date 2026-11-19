@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Service} from '@angular/core';
-import {CSS_VAR_NAMESPACE} from './dom_renderer';
+import {inject, Service, ɵCSS_VAR_NAMESPACE as CSS_VAR_NAMESPACE} from '@angular/core';
 
 /**
  * A service that can be used to manually namespace CSS variable names at runtime.

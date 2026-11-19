@@ -69,6 +69,7 @@ export function enterViewWithOneDiv() {
       rendererFactory,
       sanitizer: null,
       changeDetectionScheduler: null,
+      cssVarNamespace: '',
       ngReflect: false,
       tracingService: null,
       locale: 'en-us',

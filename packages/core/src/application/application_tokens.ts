@@ -51,6 +51,11 @@ export const APP_ID = new InjectionToken<string>(
 /** Default value of the `APP_ID` token. */
 const DEFAULT_APP_ID = 'ng';
 
+/** Prefix substituted for the namespace marker in compiled CSS custom property names. */
+export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CSS_VAR_NAMESPACE' : '',
+);
+
 /**
  * Internal token that indicates whether the application is running in a test environment (e.g. TestBed).
  */

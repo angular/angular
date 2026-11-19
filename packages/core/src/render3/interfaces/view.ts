@@ -405,6 +405,9 @@ export interface LViewEnvironment {
    */
   ngReflect: boolean;
 
+  /** Prefix used to resolve CSS custom property names during styling precedence checks. */
+  cssVarNamespace: string;
+
   /** Locale that should be used in i18n instructions. */
   locale: string;
 }
