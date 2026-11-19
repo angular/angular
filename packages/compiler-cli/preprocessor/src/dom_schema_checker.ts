@@ -104,7 +104,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
-    isNonAngularElement: boolean = true,
+    hasComponent: boolean = false,
   ): void {
     const report = REGISTRY.validateProperty(name);
 
@@ -122,7 +122,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
 
     if (
       !REGISTRY.hasProperty(tagName, name, schemas) &&
-      !(isNonAngularElement && this.isKnownCustomElement(tagName))
+      !(!hasComponent && this.isKnownCustomElement(tagName))
     ) {
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemasStr = `'${decorator}.schemas'`;

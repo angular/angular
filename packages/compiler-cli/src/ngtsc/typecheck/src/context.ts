@@ -82,6 +82,12 @@ export interface ShimTypeCheckingData {
    * type-checking process.
    */
   data: Map<TypeCheckId, TypeCheckData>;
+
+  /**
+   * Candidate custom element tags queried against `HTMLElementTagNameMap` while generating this
+   * shim, mapped to whether they were known. Undefined when no candidate tags were queried.
+   */
+  checkedCustomElements?: ReadonlyMap<string, boolean>;
 }
 
 /**
@@ -589,11 +595,18 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           genesisDiagnostics.unshift(...pendingShimData.shimDiagnostics);
         }
 
+        const checkedCustomElements =
+          pendingShimData.domSchemaChecker instanceof RegistryDomSchemaChecker &&
+          pendingShimData.domSchemaChecker.checkedCustomElements.size > 0
+            ? pendingShimData.domSchemaChecker.checkedCustomElements
+            : undefined;
+
         this.host.recordShimData(sfPath, {
           genesisDiagnostics,
           hasInlines: pendingFileData.hasInlines,
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
+          checkedCustomElements,
         });
 
         const sfText = pendingShimData.file.render();

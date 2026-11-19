@@ -63,7 +63,7 @@ export interface DomSchemaChecker<T> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
-    isNonAngularElement?: boolean,
+    hasComponent?: boolean,
   ): void;
 
   /**

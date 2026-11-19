@@ -1443,6 +1443,7 @@ export class HybridCompiler {
 
     const candidateCustomElementTags = collectCandidateCustomElementTags(
       fileAnalysis.preparedTcbData,
+      this.tcbConfig,
     );
     this.recordCustomElementCandidates(normPath, candidateCustomElementTags);
     const knownCustomElements =
@@ -1514,7 +1515,10 @@ export class HybridCompiler {
         : undefined;
       let candidateCustomElementTags: ReadonlySet<string> | undefined;
       let knownCustomElements: ReadonlySet<string> | undefined;
-      if (this.optimize && !this.emitDeclarationOnly && result) {
+      const mayReuse =
+        this.reuseProcessedFiles &&
+        this.processedFiles.hasBoundFingerprint(normPath, boundFingerprint);
+      if (mayReuse && this.optimize && !this.emitDeclarationOnly && result) {
         candidateCustomElementTags = this.candidateCustomElementTagsForReuse(
           normPath,
           content,
@@ -1524,14 +1528,16 @@ export class HybridCompiler {
           knownCustomElements = await this.getKnownCustomElements();
         }
       }
-      const fingerprint = this.processingFingerprint(
-        normPath,
-        result,
-        chunkContext,
-        boundFingerprint,
-        candidateCustomElementTags,
-        knownCustomElements,
-      );
+      const fingerprint = mayReuse
+        ? this.processingFingerprint(
+            normPath,
+            result,
+            chunkContext,
+            boundFingerprint,
+            candidateCustomElementTags,
+            knownCustomElements,
+          )
+        : null;
       const reused = this.reusableOutput(normPath, fingerprint);
       if (!reused && result) {
         this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint, chunkContext);
@@ -1539,8 +1545,15 @@ export class HybridCompiler {
       if (reused) {
         processed = this.adoptReused(normPath, reused);
       } else {
+        let usedKnownCustomElements: ReadonlySet<string> | undefined;
         const fresh = await processFile(
-          this,
+          {
+            ...this,
+            getKnownCustomElements: async () => {
+              usedKnownCustomElements = await this.getKnownCustomElements();
+              return usedKnownCustomElements;
+            },
+          },
           normPath,
           content,
           result || undefined,
@@ -1548,20 +1561,15 @@ export class HybridCompiler {
           fileId,
         );
         this.recordCustomElementCandidates(normPath, fresh.candidateCustomElementTags);
-        const finalFingerprint =
-          candidateCustomElementTags === undefined &&
-          fresh.candidateCustomElementTags &&
-          fresh.candidateCustomElementTags.size > 0
-            ? this.processingFingerprint(
-                normPath,
-                result,
-                chunkContext,
-                boundFingerprint,
-                fresh.candidateCustomElementTags,
-                this.knownCustomElements ?? undefined,
-              )
-            : fingerprint;
-        processed = this.rememberProcessed(normPath, finalFingerprint, fresh);
+        const finalFingerprint = this.processingFingerprint(
+          normPath,
+          result,
+          chunkContext,
+          boundFingerprint,
+          fresh.candidateCustomElementTags,
+          usedKnownCustomElements,
+        );
+        processed = this.rememberProcessed(normPath, finalFingerprint, fresh, boundFingerprint);
       }
       this.recordProcessedDiagnostics(normPath, processed);
       return processed;
@@ -1636,7 +1644,7 @@ export class HybridCompiler {
       cached.sourceContent === content &&
       (cached.boundFingerprint === undefined || cached.boundFingerprint === boundFingerprint)
     ) {
-      return collectCandidateCustomElementTags(cached.preparedTcbData);
+      return collectCandidateCustomElementTags(cached.preparedTcbData, this.tcbConfig);
     }
     return this.customElementCandidatesByFile.get(filePath);
   }
@@ -1645,6 +1653,7 @@ export class HybridCompiler {
     filePath: string,
     fingerprint: string | null,
     processed: ProcessedFile,
+    boundFingerprint?: string,
   ): ProcessedFile {
     const reusable = this.pendingVerification.get(filePath);
     if (reusable !== undefined) {
@@ -1662,7 +1671,7 @@ export class HybridCompiler {
     if (fingerprint === null) {
       this.processedFiles.delete(filePath);
     } else {
-      this.processedFiles.set(filePath, fingerprint, processed);
+      this.processedFiles.set(filePath, fingerprint, processed, boundFingerprint);
     }
     return processed;
   }
@@ -1818,7 +1827,11 @@ export class HybridCompiler {
     }
     const content = await this.analyzer.getFileContent(result.filePath);
     const processed = await processFile(
-      {...this, hmrUpdateTarget: className},
+      {
+        ...this,
+        hmrUpdateTarget: className,
+        getKnownCustomElements: () => this.getKnownCustomElements(),
+      },
       result.filePath,
       content,
       result,

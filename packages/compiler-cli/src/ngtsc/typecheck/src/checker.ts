@@ -965,7 +965,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
-      if (previousResults === null || !previousResults.isComplete) {
+      if (
+        previousResults === null ||
+        !previousResults.isComplete ||
+        !this.areCustomElementChecksStillValid(previousResults)
+      ) {
         continue;
       }
 
@@ -974,6 +978,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     this.priorResultsAdopted = true;
+  }
+
+  private areCustomElementChecksStillValid(data: FileTypeCheckingData): boolean {
+    for (const shimData of data.shimData.values()) {
+      if (shimData.checkedCustomElements === undefined) {
+        continue;
+      }
+      for (const [tag, wasKnown] of shimData.checkedCustomElements) {
+        if (this.isKnownCustomElement(tag) !== wasKnown) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   private ensureAllShimsForAllFiles(): void {
@@ -2244,6 +2262,15 @@ function isSymbolTypeMatch(
 function collectKnownCustomElements(program: ts.Program): ReadonlySet<string> {
   const tags = new Set<string>();
   const checker = program.getTypeChecker();
+  const documentSymbol = checker.resolveName(
+    'document',
+    /* location */ undefined,
+    ts.SymbolFlags.Value,
+    /* excludeGlobals */ false,
+  );
+  if (documentSymbol === undefined) {
+    return tags;
+  }
   const tagNameMapSymbol = checker.resolveName(
     'HTMLElementTagNameMap',
     /* location */ undefined,

@@ -92,6 +92,9 @@ pub struct QueryEngine {
     pub(crate) resource_registry: Arc<ResourceRegistry>,
     pub(crate) entrypoints: Arc<std::sync::RwLock<Vec<PathBuf>>>,
     pub(crate) tsconfig_dts_files: RwLock<Vec<PathBuf>>,
+    /// Entry `.d.ts` files discovered from `compilerOptions.typeRoots` / `node_modules/@types`
+    /// (respecting `compilerOptions.types`), scanned only on demand by `KnownCustomElements`.
+    pub(crate) tsconfig_type_root_dts_files: RwLock<Vec<PathBuf>>,
     pub(crate) interner: Arc<FileIdInterner>,
     pub(crate) resolution_cache: crate::query::resolution_cache::ResolutionCache,
     pub(crate) reverse_index: RwLock<HashMap<FileId, HashSet<QueryKey>>>,
@@ -107,6 +110,9 @@ pub struct QueryEngine {
     /// Canonical [`FileId`]s of a prefix of `tsconfig_dts_files`, extended on demand and
     /// dropped when the roots change.
     pub(crate) tsconfig_dts_file_ids: RwLock<Vec<FileId>>,
+    /// Canonical [`FileId`]s of a prefix of `tsconfig_type_root_dts_files`, extended on demand
+    /// and dropped when the roots change.
+    pub(crate) tsconfig_type_root_dts_file_ids: RwLock<Vec<FileId>>,
     /// The ambient global value names each `.d.ts` scanned by an ambient global lookup declares.
     pub(crate) ambient_global_names: RwLock<HashMap<FileId, AmbientGlobalNames>>,
     /// Held while a lookup scans `.d.ts` files whose names aren't cached yet, so concurrent
@@ -237,6 +243,7 @@ impl QueryEngine {
             resource_registry,
             entrypoints,
             tsconfig_dts_files: RwLock::new(Vec::new()),
+            tsconfig_type_root_dts_files: RwLock::new(Vec::new()),
             interner: Arc::new(FileIdInterner::new()),
             resolution_cache: crate::query::resolution_cache::ResolutionCache::new(),
             reverse_index: RwLock::new(HashMap::new()),
@@ -245,6 +252,7 @@ impl QueryEngine {
             kind_epoch: AtomicU64::new(0),
             static_import_graph: RwLock::new(None),
             tsconfig_dts_file_ids: RwLock::new(Vec::new()),
+            tsconfig_type_root_dts_file_ids: RwLock::new(Vec::new()),
             ambient_global_names: RwLock::new(HashMap::new()),
             ambient_global_scan: futures::lock::Mutex::new(()),
             ambient_global_first_candidates: RwLock::new(FirstAmbientGlobalCandidates::default()),
@@ -627,11 +635,9 @@ impl QueryEngine {
         deps: &HashSet<FileId>,
     ) -> bool {
         self.kind_epoch() != started
-            && deps.iter().any(|dep| {
-                kind_changes
-                    .get(dep)
-                    .is_some_and(|&changed| changed > started)
-            })
+            && deps
+                .iter()
+                .any(|dep| kind_changes.get(dep).is_some_and(|&changed| changed > started))
     }
 
     /// Record `key` in the reverse index under `deps`, the dependencies of a run of `key` that
@@ -670,6 +676,10 @@ impl QueryEngine {
     pub fn invalidate_file_id(&self, file_id: FileId) -> Vec<QueryKey> {
         if file_id == ROOTS_FILE_ID {
             self.tsconfig_dts_file_ids.write().unwrap().clear();
+            self.tsconfig_type_root_dts_file_ids
+                .write()
+                .unwrap()
+                .clear();
             self.ambient_global_first_candidates
                 .write()
                 .unwrap()
@@ -983,6 +993,30 @@ impl QueryEngine {
             return None;
         }
         let mut file_ids = self.tsconfig_dts_file_ids.write().unwrap();
+        while file_ids.len() <= position {
+            let path = dts_files.get(file_ids.len())?;
+            let path = self.host.canonicalize_path(path).unwrap_or_else(|| path.clone());
+            file_ids.push(self.intern_path(&path));
+        }
+        Some(file_ids[position])
+    }
+
+    /// The canonical [`FileId`] of the `.d.ts` at `position` in `tsconfig_type_root_dts_files`,
+    /// or `None` past the end. Canonicalized lazily when `KnownCustomElements` first runs.
+    pub(crate) fn tsconfig_type_root_dts_file_id(&self, position: usize) -> Option<FileId> {
+        if let Some(&file_id) = self
+            .tsconfig_type_root_dts_file_ids
+            .read()
+            .unwrap()
+            .get(position)
+        {
+            return Some(file_id);
+        }
+        let dts_files = self.tsconfig_type_root_dts_files.read().unwrap();
+        if position >= dts_files.len() {
+            return None;
+        }
+        let mut file_ids = self.tsconfig_type_root_dts_file_ids.write().unwrap();
         while file_ids.len() <= position {
             let path = dts_files.get(file_ids.len())?;
             let path = self
@@ -1518,9 +1552,13 @@ impl QueryEngine {
         let host = Arc::clone(&self.host);
         let url = url.to_owned();
         self.block_on_query(async move {
-            let (resolved_path, content) =
-                crate::analyzer::resolve_and_load_resource(host.as_ref(), &containing, &url, kind)
-                    .await?;
+            let (resolved_path, content) = crate::analyzer::resolve_and_load_resource(
+                host.as_ref(),
+                &containing,
+                &url,
+                kind,
+            )
+            .await?;
             Some(crate::ResolvedResource {
                 resolved_path,
                 content,
@@ -1566,7 +1604,10 @@ impl QueryEngine {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
                 #[allow(clippy::print_stderr)]
                 {
-                    eprintln!("Warning: Failed to read '{}': module not found", module_id);
+                    eprintln!(
+                        "Warning: Failed to read '{}': module not found",
+                        module_id
+                    );
                 }
                 (String::new(), None, None, false)
             }
@@ -1706,6 +1747,7 @@ impl QueryEngine {
                 top_level_value_bindings: None,
                 namespace_alias_conflicts: Vec::new(),
                 custom_element_contributions: Default::default(),
+                triple_slash_references: Default::default(),
             });
         }
 
@@ -1848,6 +1890,7 @@ impl QueryEngine {
             top_level_value_bindings: analysis.top_level_value_bindings,
             namespace_alias_conflicts: analysis.namespace_alias_conflicts,
             custom_element_contributions: analysis.custom_element_contributions,
+            triple_slash_references: analysis.triple_slash_references,
         })
     }
 
@@ -2035,11 +2078,7 @@ impl QueryEngine {
     /// host can't load it.
     async fn load_dts_file(&self, file_id: FileId) -> Option<crate::host::LoadedModule> {
         self.host
-            .load(
-                &self.lookup_id(file_id),
-                crate::host::LoadKind::Module,
-                false,
-            )
+            .load(&self.lookup_id(file_id), crate::host::LoadKind::Module, false)
             .await
             .ok()
             .flatten()
@@ -2127,12 +2166,15 @@ impl QueryEngine {
 
     /// Collect all lowercase custom element tag names (containing `-`) declared on TypeScript's
     /// global `HTMLElementTagNameMap` across program `.ts` files, tsconfig `.d.ts` files,
-    /// transitively imported `.d.ts` files, and cross-file `extends` heritage clauses.
+    /// `typeRoots` / `@types` `.d.ts` files, transitively imported or `/// <reference>`'d `.d.ts`
+    /// files, and cross-file `extends` heritage clauses (both imported and ambient).
     async fn known_custom_elements_body(self: &Arc<Self>, ctx: &QueryContext) -> Arc<Vec<String>> {
         ctx.record_file(ROOTS_FILE_ID);
 
         let mut tags: HashSet<String> = HashSet::new();
         let mut extends_queue: std::collections::VecDeque<(FileId, String, String)> =
+            std::collections::VecDeque::new();
+        let mut ambient_queue: std::collections::VecDeque<Vec<String>> =
             std::collections::VecDeque::new();
         let mut dts_frontier: Vec<FileId> = Vec::new();
 
@@ -2140,21 +2182,60 @@ impl QueryEngine {
             |file_id: FileId,
              contributions: &crate::analyzer::custom_elements::CustomElementTagContributions,
              tags: &mut HashSet<String>,
-             extends_queue: &mut std::collections::VecDeque<(FileId, String, String)>| {
+             extends_queue: &mut std::collections::VecDeque<(FileId, String, String)>,
+             ambient_queue: &mut std::collections::VecDeque<Vec<String>>| {
                 tags.extend(contributions.tags.iter().cloned());
                 for (spec, exported) in &contributions.external_extends {
                     extends_queue.push_back((file_id, spec.clone(), exported.clone()));
                 }
+                for path in &contributions.ambient_extends {
+                    ambient_queue.push_back(path.clone());
+                }
             };
 
-        // 1. Program `.ts` files (already parsed via `AnalyzeFileSyntax`).
+        let enqueue_references =
+            |importer_id: FileId,
+             refs: &crate::analyzer::custom_elements::TripleSlashReferences,
+             resolve_pairs: &mut Vec<(FileId, String)>,
+             seen_pairs: &mut HashSet<(FileId, String)>| {
+                for ref_path in &refs.paths {
+                    let spec = if ref_path.starts_with('.') || ref_path.starts_with('/') {
+                        ref_path.clone()
+                    } else {
+                        format!("./{ref_path}")
+                    };
+                    let pair = (importer_id, spec);
+                    if seen_pairs.insert(pair.clone()) {
+                        resolve_pairs.push(pair);
+                    }
+                }
+                for ref_type in &refs.types {
+                    if !ref_type.starts_with("@types/") {
+                        let pair = (importer_id, format!("@types/{ref_type}"));
+                        if seen_pairs.insert(pair.clone()) {
+                            resolve_pairs.push(pair);
+                        }
+                    }
+                    let pair = (importer_id, ref_type.clone());
+                    if seen_pairs.insert(pair.clone()) {
+                        resolve_pairs.push(pair);
+                    }
+                }
+            };
+
+        // 1. Program `.ts` files (already parsed via `AnalyzeFileSyntax`), plus any extra files
+        //    reached through `/// <reference path/types ... />` directives on `.ts` files.
         let program_files = ctx.program_files().await;
+        let mut ts_files_to_search: Vec<FileId> = program_files.iter().copied().collect();
+        let mut seen_ts_files: HashSet<FileId> = ts_files_to_search.iter().copied().collect();
         let program_syntax = futures::future::join_all(
             program_files
                 .iter()
                 .map(|&file_id| ctx.analyze_file_syntax(file_id)),
         )
         .await;
+        let mut ts_ref_pairs: Vec<(FileId, String)> = Vec::new();
+        let mut seen_ts_ref_pairs: HashSet<(FileId, String)> = HashSet::new();
         for syntax in &program_syntax {
             if !syntax.custom_element_contributions.is_empty() {
                 record_contributions(
@@ -2162,45 +2243,86 @@ impl QueryEngine {
                     &syntax.custom_element_contributions,
                     &mut tags,
                     &mut extends_queue,
+                    &mut ambient_queue,
                 );
             }
             dts_frontier.extend(syntax.dts_dependencies.iter().copied());
-        }
-
-        // 2. Tsconfig `.d.ts` files (skipping parse when `HTMLElementTagNameMap` is absent).
-        let tsconfig_dts_ids: Vec<FileId> = (0..)
-            .map_while(|position| self.tsconfig_dts_file_id(position))
-            .collect();
-        let mut scanned_dts: HashSet<FileId> = HashSet::with_capacity(tsconfig_dts_ids.len());
-        for &file_id in &tsconfig_dts_ids {
-            ctx.record_file(file_id);
-            scanned_dts.insert(file_id);
-        }
-        let tsconfig_loads = futures::future::join_all(
-            tsconfig_dts_ids
-                .iter()
-                .map(|&file_id| self.load_dts_file(file_id)),
-        )
-        .await;
-        for (file_id, loaded) in tsconfig_dts_ids.into_iter().zip(tsconfig_loads) {
-            let Some(loaded) = loaded else {
-                continue;
-            };
-            let contributions = shared_dts_parse_cache::custom_element_contributions(
-                self.lookup_path(file_id),
-                &loaded.code,
-            );
-            if !contributions.is_empty() {
-                record_contributions(file_id, &contributions, &mut tags, &mut extends_queue);
+            if !syntax.triple_slash_references.is_empty() {
+                enqueue_references(
+                    syntax.file_id,
+                    &syntax.triple_slash_references,
+                    &mut ts_ref_pairs,
+                    &mut seen_ts_ref_pairs,
+                );
             }
         }
 
-        // 3. Transitive `.d.ts` files imported by program `.ts` files (e.g. npm barrels).
-        let mut visited_imported_dts: HashSet<FileId> = HashSet::new();
+        while !ts_ref_pairs.is_empty() {
+            let batch = std::mem::take(&mut ts_ref_pairs);
+            let resolved = futures::future::join_all(batch.into_iter().map(
+                |(importer_id, spec)| async move {
+                    ctx.resolve_from_id(importer_id, &spec, crate::host::ImportKind::Static)
+                        .await
+                },
+            ))
+            .await;
+            let mut extra_ts_wave: Vec<FileId> = Vec::new();
+            for (target_id, module) in resolved.into_iter().flatten() {
+                if module.external {
+                    continue;
+                }
+                if Self::is_dts_resolved(&module) {
+                    dts_frontier.push(target_id);
+                } else if seen_ts_files.insert(target_id) {
+                    ts_files_to_search.push(target_id);
+                    extra_ts_wave.push(target_id);
+                }
+            }
+            if extra_ts_wave.is_empty() {
+                break;
+            }
+            let extra_syntax = futures::future::join_all(
+                extra_ts_wave
+                    .iter()
+                    .map(|&file_id| ctx.analyze_file_syntax(file_id)),
+            )
+            .await;
+            for syntax in &extra_syntax {
+                if !syntax.custom_element_contributions.is_empty() {
+                    record_contributions(
+                        syntax.file_id,
+                        &syntax.custom_element_contributions,
+                        &mut tags,
+                        &mut extends_queue,
+                        &mut ambient_queue,
+                    );
+                }
+                dts_frontier.extend(syntax.dts_dependencies.iter().copied());
+                if !syntax.triple_slash_references.is_empty() {
+                    enqueue_references(
+                        syntax.file_id,
+                        &syntax.triple_slash_references,
+                        &mut ts_ref_pairs,
+                        &mut seen_ts_ref_pairs,
+                    );
+                }
+            }
+        }
+
+        // 2. Seed `.d.ts` BFS with tsconfig `.d.ts` files and `typeRoots` / `@types` entries so
+        //    every `.d.ts` is scanned once (single-pass) and its transitive imports/references are
+        //    followed too.
+        dts_frontier.extend((0..).map_while(|position| self.tsconfig_dts_file_id(position)));
+        dts_frontier
+            .extend((0..).map_while(|position| self.tsconfig_type_root_dts_file_id(position)));
+
+        // 3. Unified `.d.ts` BFS (single-pass scan per file, skipping parse on leaf `.d.ts` files).
+        let mut visited_dts: HashSet<FileId> = HashSet::new();
+        let mut scanned_dts_ids: Vec<FileId> = Vec::new();
         while !dts_frontier.is_empty() {
             let wave: Vec<FileId> = std::mem::take(&mut dts_frontier)
                 .into_iter()
-                .filter(|&fid| visited_imported_dts.insert(fid))
+                .filter(|&fid| visited_dts.insert(fid))
                 .collect();
             if wave.is_empty() {
                 break;
@@ -2217,28 +2339,35 @@ impl QueryEngine {
                 let Some(loaded) = loaded else {
                     continue;
                 };
+                scanned_dts_ids.push(file_id);
                 let path = self.lookup_path(file_id);
-                if scanned_dts.insert(file_id) {
-                    let contributions = shared_dts_parse_cache::custom_element_contributions(
-                        path.clone(),
-                        &loaded.code,
+                let scan = shared_dts_parse_cache::dts_custom_element_scan(path, &loaded.code);
+                if !scan.contributions.is_empty() {
+                    record_contributions(
+                        file_id,
+                        &scan.contributions,
+                        &mut tags,
+                        &mut extends_queue,
+                        &mut ambient_queue,
                     );
-                    if !contributions.is_empty() {
-                        record_contributions(
-                            file_id,
-                            &contributions,
-                            &mut tags,
-                            &mut extends_queue,
-                        );
-                    }
                 }
-                let specs = shared_dts_parse_cache::dts_import_specifiers(path, &loaded.code);
-                for spec in specs.iter() {
+                for spec in &scan.import_specifiers {
                     let pair = (file_id, spec.clone());
                     if seen_pairs.insert(pair.clone()) {
                         resolve_pairs.push(pair);
                     }
                 }
+                if !scan.references.is_empty() {
+                    enqueue_references(
+                        file_id,
+                        &scan.references,
+                        &mut resolve_pairs,
+                        &mut seen_pairs,
+                    );
+                }
+            }
+            if resolve_pairs.is_empty() {
+                continue;
             }
             let resolved_wave = futures::future::join_all(resolve_pairs.into_iter().map(
                 |(importer_id, spec)| async move {
@@ -2254,44 +2383,128 @@ impl QueryEngine {
             }
         }
 
-        // 4. Cross-file `interface HTMLElementTagNameMap extends ImportedTagMap` resolution.
+        // 4. Cross-file `interface HTMLElementTagNameMap extends ...` fixpoint resolution (both
+        //    imported base types and cross-file ambient/namespace base types).
         let mut visited_extends: HashSet<(FileId, String)> = HashSet::new();
-        while !extends_queue.is_empty() {
-            let batch: Vec<(FileId, String, String)> = extends_queue.drain(..).collect();
-            let resolved_batch = futures::future::join_all(batch.into_iter().map(
-                |(from_id, spec, exported)| async move {
-                    let resolved = ctx
-                        .resolve_from_id(from_id, &spec, crate::host::ImportKind::Static)
-                        .await;
-                    (resolved, exported)
-                },
-            ))
-            .await;
-            let mut targets_to_read: Vec<(FileId, bool, String)> = Vec::new();
-            for (resolved, exported) in resolved_batch {
-                let Some((target_id, module)) = resolved else {
-                    continue;
-                };
-                if module.external {
-                    continue;
+        let mut visited_ambient: HashSet<Vec<String>> = HashSet::new();
+        let mut loaded_dts_for_ambient: Option<Vec<(FileId, PathBuf, Arc<str>)>> = None;
+        while !extends_queue.is_empty() || !ambient_queue.is_empty() {
+            if !extends_queue.is_empty() {
+                let batch: Vec<(FileId, String, String)> = extends_queue.drain(..).collect();
+                let resolved_batch = futures::future::join_all(batch.into_iter().map(
+                    |(from_id, spec, exported)| async move {
+                        let resolved = ctx
+                            .resolve_from_id(from_id, &spec, crate::host::ImportKind::Static)
+                            .await;
+                        (resolved, exported)
+                    },
+                ))
+                .await;
+                let mut targets_to_read: Vec<(FileId, bool, String)> = Vec::new();
+                for (resolved, exported) in resolved_batch {
+                    let Some((target_id, module)) = resolved else {
+                        continue;
+                    };
+                    if module.external {
+                        continue;
+                    }
+                    if !visited_extends.insert((target_id, exported.clone())) {
+                        continue;
+                    }
+                    targets_to_read.push((target_id, Self::is_dts_resolved(&module), exported));
                 }
-                if !visited_extends.insert((target_id, exported.clone())) {
-                    continue;
+                let extracted_batch = futures::future::join_all(targets_to_read.into_iter().map(
+                    |(target_id, is_dts, exported)| async move {
+                        let contrib = self
+                            .resolve_custom_element_exported_type(target_id, is_dts, &exported, ctx)
+                            .await;
+                        (target_id, contrib)
+                    },
+                ))
+                .await;
+                for (target_id, contrib) in extracted_batch {
+                    if !contrib.is_empty() {
+                        record_contributions(
+                            target_id,
+                            &contrib,
+                            &mut tags,
+                            &mut extends_queue,
+                            &mut ambient_queue,
+                        );
+                    }
                 }
-                targets_to_read.push((target_id, Self::is_dts_resolved(&module), exported));
             }
-            let extracted_batch = futures::future::join_all(targets_to_read.into_iter().map(
-                |(target_id, is_dts, exported)| async move {
-                    let contrib = self
-                        .resolve_custom_element_exported_type(target_id, is_dts, &exported, ctx)
-                        .await;
-                    (target_id, contrib)
-                },
-            ))
-            .await;
-            for (target_id, contrib) in extracted_batch {
-                if !contrib.is_empty() {
-                    record_contributions(target_id, &contrib, &mut tags, &mut extends_queue);
+
+            if !ambient_queue.is_empty() {
+                let ambient_batch: Vec<Vec<String>> = ambient_queue
+                    .drain(..)
+                    .filter(|path| !path.is_empty() && visited_ambient.insert(path.clone()))
+                    .collect();
+                if ambient_batch.is_empty() {
+                    continue;
+                }
+                if loaded_dts_for_ambient.is_none() {
+                    let loads = futures::future::join_all(
+                        scanned_dts_ids
+                            .iter()
+                            .map(|&file_id| self.load_dts_file(file_id)),
+                    )
+                    .await;
+                    let mut cached = Vec::with_capacity(scanned_dts_ids.len());
+                    for (&file_id, loaded) in scanned_dts_ids.iter().zip(loads) {
+                        let Some(loaded) = loaded else {
+                            continue;
+                        };
+                        cached.push((file_id, self.lookup_path(file_id), loaded.code));
+                    }
+                    loaded_dts_for_ambient = Some(cached);
+                }
+                for type_path in ambient_batch {
+                    let root_ident = type_path[0].as_str();
+                    let path_refs: Vec<&str> = type_path.iter().map(String::as_str).collect();
+                    for &file_id in &ts_files_to_search {
+                        let parsed = ctx.parse_file(file_id).await;
+                        let contrib = {
+                            let guard = parsed.lock().unwrap();
+                            if !guard.borrow_owner().source_text.contains(root_ident) {
+                                continue;
+                            }
+                            let dep = guard.borrow_dependent();
+                            crate::analyzer::custom_elements::extract_tags_from_ambient_type(
+                                dep.program,
+                                &dep.module_record,
+                                &path_refs,
+                            )
+                        };
+                        if !contrib.is_empty() {
+                            record_contributions(
+                                file_id,
+                                &contrib,
+                                &mut tags,
+                                &mut extends_queue,
+                                &mut ambient_queue,
+                            );
+                        }
+                    }
+                    if let Some(dts_files) = &loaded_dts_for_ambient {
+                        for (file_id, path, code) in dts_files {
+                            if !code.contains(root_ident) {
+                                continue;
+                            }
+                            let contrib = shared_dts_parse_cache::extract_dts_ambient_type(
+                                path, code, &path_refs,
+                            );
+                            if !contrib.is_empty() {
+                                record_contributions(
+                                    *file_id,
+                                    &contrib,
+                                    &mut tags,
+                                    &mut extends_queue,
+                                    &mut ambient_queue,
+                                );
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -2420,15 +2633,14 @@ impl QueryEngine {
         // candidates resolved in the same wave would each reach the host.
         let mut seen_candidates = HashSet::new();
         candidates.retain(|candidate| seen_candidates.insert(candidate.clone()));
-        let resolved_candidates = futures::future::join_all(candidates.into_iter().map(
-            |(ep_id, specifier)| async move {
+        let resolved_candidates =
+            futures::future::join_all(candidates.into_iter().map(|(ep_id, specifier)| async move {
                 let resolved = ctx
                     .resolve_from_id(ep_id, &specifier, crate::host::ImportKind::Static)
                     .await;
                 (ep_id, specifier, resolved)
-            },
-        ))
-        .await;
+            }))
+            .await;
 
         let mut global_extra_imports: Vec<(FileId, String)> = Vec::new();
         for (ep_id, specifier, resolved) in resolved_candidates {
@@ -3573,15 +3785,12 @@ mod shared_dts_parse_cache {
     /// Upper bound on the total source text of the files cached in each cache.
     const MAX_SOURCE_BYTES: usize = 192 * 1024 * 1024;
 
-    type DtsCustomElementContributions =
-        Arc<crate::analyzer::custom_elements::CustomElementTagContributions>;
-    type DtsImportSpecifiers = Arc<Vec<String>>;
+    type CachedDtsCustomElementScan = Arc<crate::analyzer::custom_elements::DtsCustomElementScan>;
 
     static CACHE: OnceLock<Mutex<Cache<Arc<Mutex<ParsedFile>>>>> = OnceLock::new();
     static GLOBAL_NAMES: OnceLock<Mutex<Cache<AmbientGlobalNames>>> = OnceLock::new();
-    static CUSTOM_ELEMENT_CONTRIBUTIONS: OnceLock<Mutex<Cache<DtsCustomElementContributions>>> =
+    static DTS_CUSTOM_ELEMENT_SCAN: OnceLock<Mutex<Cache<CachedDtsCustomElementScan>>> =
         OnceLock::new();
-    static DTS_IMPORT_SPECIFIERS: OnceLock<Mutex<Cache<DtsImportSpecifiers>>> = OnceLock::new();
 
     fn cache() -> &'static Mutex<Cache<Arc<Mutex<ParsedFile>>>> {
         CACHE.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
@@ -3591,13 +3800,8 @@ mod shared_dts_parse_cache {
         GLOBAL_NAMES.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
     }
 
-    fn custom_element_contributions_cache() -> &'static Mutex<Cache<DtsCustomElementContributions>>
-    {
-        CUSTOM_ELEMENT_CONTRIBUTIONS.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
-    }
-
-    fn dts_import_specifiers_cache() -> &'static Mutex<Cache<DtsImportSpecifiers>> {
-        DTS_IMPORT_SPECIFIERS.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
+    fn dts_custom_element_scan_cache() -> &'static Mutex<Cache<CachedDtsCustomElementScan>> {
+        DTS_CUSTOM_ELEMENT_SCAN.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
     }
 
     fn with_lightweight_dts_parse<R>(
@@ -3682,84 +3886,92 @@ mod shared_dts_parse_cache {
         names
     }
 
-    /// Custom element tag contributions declared on global `HTMLElementTagNameMap` in the `.d.ts`
-    /// at `path` with text `source`. Fast-paths to empty without parsing when `source` does not
-    /// mention `HTMLElementTagNameMap`.
-    pub(super) fn custom_element_contributions(
+    /// Single-pass custom-element scan for a `.d.ts` file: extracts global
+    /// `HTMLElementTagNameMap` contributions, static/require import specifiers, and
+    /// `/// <reference ... />` directives.
+    ///
+    /// Fast-paths without invoking the JS/TS parser when `source` mentions neither
+    /// `HTMLElementTagNameMap` nor any import/re-export keywords (`import` / `from`).
+    pub(super) fn dts_custom_element_scan(
         path: PathBuf,
         source: &str,
-    ) -> DtsCustomElementContributions {
-        if !source.contains("HTMLElementTagNameMap") {
-            return DtsCustomElementContributions::default();
+    ) -> CachedDtsCustomElementScan {
+        let has_tag_map = source.contains("HTMLElementTagNameMap");
+        let has_imports = source.contains("import") || source.contains("from");
+        if !has_tag_map && !has_imports {
+            let references =
+                crate::analyzer::custom_elements::extract_triple_slash_references(source);
+            if references.is_empty() {
+                return CachedDtsCustomElementScan::default();
+            }
+            return Arc::new(crate::analyzer::custom_elements::DtsCustomElementScan {
+                references,
+                ..Default::default()
+            });
         }
         let key = SourceKey::of(source);
-        if let Some(cached) = custom_element_contributions_cache()
+        if let Some(cached) = dts_custom_element_scan_cache()
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .get(&path, &key)
         {
             return cached;
         }
-        let contributions = Arc::new(match get(&path, &key) {
+        let references = crate::analyzer::custom_elements::extract_triple_slash_references(source);
+        let (contributions, import_specifiers) = match get(&path, &key) {
             Some(parsed) => {
                 let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
                 let dep = guard.borrow_dependent();
-                crate::analyzer::custom_elements::extract_custom_element_contributions(
-                    dep.program,
-                    &dep.module_record,
-                    source,
-                )
+                let contributions = if has_tag_map {
+                    crate::analyzer::custom_elements::extract_custom_element_contributions(
+                        dep.program,
+                        &dep.module_record,
+                        source,
+                    )
+                } else {
+                    Default::default()
+                };
+                let import_specifiers = if has_imports {
+                    crate::analyzer::custom_elements::extract_dts_import_specifiers(
+                        dep.program,
+                        &dep.module_record,
+                    )
+                } else {
+                    Vec::new()
+                };
+                (contributions, import_specifiers)
             }
             None => with_lightweight_dts_parse(source, |program, module_record| {
-                crate::analyzer::custom_elements::extract_custom_element_contributions(
-                    program,
-                    module_record,
-                    source,
-                )
+                let contributions = if has_tag_map {
+                    crate::analyzer::custom_elements::extract_custom_element_contributions(
+                        program,
+                        module_record,
+                        source,
+                    )
+                } else {
+                    Default::default()
+                };
+                let import_specifiers = if has_imports {
+                    crate::analyzer::custom_elements::extract_dts_import_specifiers(
+                        program,
+                        module_record,
+                    )
+                } else {
+                    Vec::new()
+                };
+                (contributions, import_specifiers)
             }),
+        };
+        let scan = Arc::new(crate::analyzer::custom_elements::DtsCustomElementScan {
+            contributions,
+            import_specifiers,
+            references,
         });
-        custom_element_contributions_cache()
+        dts_custom_element_scan_cache()
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
-            .insert(path, key, contributions.clone());
-        contributions
-    }
-
-    /// Static module specifiers imported or re-exported by the `.d.ts` at `path` with text
-    /// `source`. Fast-paths to empty when `source` contains neither `import` nor `export`.
-    pub(super) fn dts_import_specifiers(path: PathBuf, source: &str) -> DtsImportSpecifiers {
-        if !source.contains("import") && !source.contains("export") {
-            return DtsImportSpecifiers::default();
-        }
-        let key = SourceKey::of(source);
-        if let Some(cached) = dts_import_specifiers_cache()
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .get(&path, &key)
-        {
-            return cached;
-        }
-        let specifiers = Arc::new(match get(&path, &key) {
-            Some(parsed) => {
-                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
-                let dep = guard.borrow_dependent();
-                crate::analyzer::custom_elements::extract_dts_import_specifiers(
-                    dep.program,
-                    &dep.module_record,
-                )
-            }
-            None => with_lightweight_dts_parse(source, |program, module_record| {
-                crate::analyzer::custom_elements::extract_dts_import_specifiers(
-                    program,
-                    module_record,
-                )
-            }),
-        });
-        dts_import_specifiers_cache()
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .insert(path, key, specifiers.clone());
-        specifiers
+            .insert(path, key, scan.clone());
+        scan
     }
 
     /// Extract tags from an exported interface/type alias in a `.d.ts` file without building a
@@ -3785,6 +3997,40 @@ mod shared_dts_parse_cache {
                     program,
                     module_record,
                     exported_name,
+                )
+            }),
+        }
+    }
+
+    /// Extract tags from an ambient global interface/type alias/namespace member in a `.d.ts` file
+    /// without building a semantic model or polluting the full `ParseFile` cache.
+    pub(super) fn extract_dts_ambient_type(
+        path: &Path,
+        source: &str,
+        type_path: &[&str],
+    ) -> crate::analyzer::custom_elements::CustomElementTagContributions {
+        let Some(root_ident) = type_path.first() else {
+            return Default::default();
+        };
+        if !source.contains(root_ident) {
+            return Default::default();
+        }
+        let key = SourceKey::of(source);
+        match get(path, &key) {
+            Some(parsed) => {
+                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
+                let dep = guard.borrow_dependent();
+                crate::analyzer::custom_elements::extract_tags_from_ambient_type(
+                    dep.program,
+                    &dep.module_record,
+                    type_path,
+                )
+            }
+            None => with_lightweight_dts_parse(source, |program, module_record| {
+                crate::analyzer::custom_elements::extract_tags_from_ambient_type(
+                    program,
+                    module_record,
+                    type_path,
                 )
             }),
         }
@@ -4006,6 +4252,125 @@ mod tests {
                 "barrel-el".to_string(),
                 "local-el".to_string(),
                 "renamed-el".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_known_custom_elements_follows_tsconfig_dts_imports_references_type_roots_and_ambient_namespaces(
+    ) {
+        let fs = create_test_fs(&[
+            (
+                "/ce_adv/app.ts",
+                r#"
+                    /// <reference path="./from-ts-ref.d.ts" />
+                    export class App {}
+                "#,
+            ),
+            (
+                "/ce_adv/from-ts-ref.d.ts",
+                r#"
+                    interface HTMLElementTagNameMap {
+                        'ts-ref-el': HTMLElement;
+                    }
+                "#,
+            ),
+            (
+                "/ce_adv/env.d.ts",
+                r#"
+                    /// <reference path="./referenced/extra.d.ts" />
+                    /// <reference types="ref-pkg" />
+                    import 'global-barrel';
+                "#,
+            ),
+            (
+                "/ce_adv/referenced/extra.d.ts",
+                r#"
+                    interface HTMLElementTagNameMap {
+                        'dts-ref-el': HTMLElement;
+                    }
+                "#,
+            ),
+            (
+                "/ce_adv/node_modules/global-barrel/package.json",
+                r#"{"name": "global-barrel", "exports": {".": {"types": "./index.d.ts"}}}"#,
+            ),
+            (
+                "/ce_adv/node_modules/global-barrel/index.d.ts",
+                r#"
+                    declare global {
+                        interface HTMLElementTagNameMap {
+                            'global-barrel-el': HTMLElement;
+                        }
+                    }
+                    export {};
+                "#,
+            ),
+            (
+                "/ce_adv/node_modules/@types/ref-pkg/index.d.ts",
+                r#"
+                    interface HTMLElementTagNameMap {
+                        'ref-types-el': HTMLElement;
+                    }
+                "#,
+            ),
+            (
+                "/ce_adv/node_modules/@types/auto-pkg/index.d.ts",
+                r#"
+                    interface HTMLElementTagNameMap {
+                        'auto-types-el': HTMLElement;
+                    }
+                "#,
+            ),
+            (
+                "/ce_adv/google-maps.d.ts",
+                r#"
+                    declare namespace google.maps {
+                        interface HTMLElementTagNameMap {
+                            'gmp-map': HTMLElement;
+                        }
+                    }
+                "#,
+            ),
+            (
+                "/ce_adv/augment.d.ts",
+                r#"
+                    interface HTMLElementTagNameMap extends google.maps.HTMLElementTagNameMap {}
+                "#,
+            ),
+        ]);
+        let resolver = Arc::new(crate::utils::create_resolver_with_fs(
+            None,
+            fs.clone(),
+            false,
+            None,
+        ));
+        let engine = QueryEngine::new_default(
+            fs.clone(),
+            resolver,
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
+                "/ce_adv/app.ts",
+            )])),
+        );
+        *engine.tsconfig_dts_files.write().unwrap() = vec![
+            PathBuf::from("/ce_adv/env.d.ts"),
+            PathBuf::from("/ce_adv/google-maps.d.ts"),
+            PathBuf::from("/ce_adv/augment.d.ts"),
+        ];
+        *engine.tsconfig_type_root_dts_files.write().unwrap() =
+            vec![PathBuf::from("/ce_adv/node_modules/@types/auto-pkg/index.d.ts")];
+
+        let tags = engine.get_known_custom_elements_blocking();
+        assert_eq!(
+            *tags,
+            vec![
+                "auto-types-el".to_string(),
+                "dts-ref-el".to_string(),
+                "global-barrel-el".to_string(),
+                "gmp-map".to_string(),
+                "ref-types-el".to_string(),
+                "ts-ref-el".to_string(),
             ]
         );
     }
@@ -5764,13 +6129,14 @@ mod tests {
         > {
             let hit = match kind {
                 crate::host::LoadKind::Module => self.modules.get(id.as_str()).cloned(),
-                crate::host::LoadKind::Template | crate::host::LoadKind::Style => self
-                    .resource_contents
-                    .get(id.as_str())
-                    .map(|text| crate::host::LoadedModule {
-                        code: Arc::from(text.as_str()),
-                        format: None,
-                    }),
+                crate::host::LoadKind::Template | crate::host::LoadKind::Style => {
+                    self.resource_contents.get(id.as_str()).map(|text| {
+                        crate::host::LoadedModule {
+                            code: Arc::from(text.as_str()),
+                            format: None,
+                        }
+                    })
+                }
             };
             yield_once(Ok(hit))
         }
@@ -5893,15 +6259,10 @@ mod tests {
 
         let cmp = semantic.classes[0].as_component().expect("AppCmp");
         assert_eq!(
-            cmp.template
-                .as_ref()
-                .and_then(|template| template.get_optional()),
+            cmp.template.as_ref().and_then(|template| template.get_optional()),
             Some("<child-cmp></child-cmp>".to_owned())
         );
-        assert_eq!(
-            cmp.styles_from_urls,
-            Some(vec![".host { color: red; }".to_owned()])
-        );
+        assert_eq!(cmp.styles_from_urls, Some(vec![".host { color: red; }".to_owned()]));
         let decls = cmp
             .resolved_declarations
             .as_ref()
@@ -7168,8 +7529,8 @@ mod tests {
             Result<Option<crate::host::LoadedModule>, crate::host::HostError>,
         > {
             use std::sync::atomic::Ordering;
-            let loaded =
-                (kind == crate::host::LoadKind::Module && id.as_str() == self.id).then(|| {
+            let loaded = (kind == crate::host::LoadKind::Module && id.as_str() == self.id).then(
+                || {
                     let load = self.load_calls.fetch_add(1, Ordering::SeqCst);
                     crate::host::LoadedModule {
                         code: Arc::from(format!(
@@ -7180,7 +7541,8 @@ mod tests {
                         )),
                         format: Some(crate::host::ModuleFormat::Ts),
                     }
-                });
+                },
+            );
             yield_once(Ok(loaded))
         }
 
@@ -7291,8 +7653,7 @@ mod tests {
         );
         let flipping_id = flipping_engine.intern_module(lib, IdKind::Path);
         let ctx = QueryContext::new(flipping_engine.clone());
-        let _wire =
-            block_on_with_timeout(async move { ctx.analyze_file_wire(flipping_id, false).await });
+        let _wire = block_on_with_timeout(async move { ctx.analyze_file_wire(flipping_id, false).await });
         assert!(!flipping_engine.has_cached_wire(flipping_id, false));
     }
 
@@ -7333,11 +7694,8 @@ mod tests {
             Arc::new(ResourceRegistry::default()),
             Arc::new(std::sync::RwLock::new(Vec::new())),
         );
-        let _ = engine.read_resource_blocking(
-            "/app/cmp.ts",
-            "./cmp.css",
-            crate::host::ResourceKind::Style,
-        );
+        let _ =
+            engine.read_resource_blocking("/app/cmp.ts", "./cmp.css", crate::host::ResourceKind::Style);
     }
 
     #[test]

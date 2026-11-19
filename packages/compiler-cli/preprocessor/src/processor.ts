@@ -457,7 +457,9 @@ export async function processFile(
   let candidateCustomElementTags: Set<string> | undefined;
   if (ctx.optimize && !ctx.emitDeclarationOnly) {
     const prepared = prepareTcbForFile(file);
-    candidateCustomElementTags = prepared ? collectCandidateCustomElementTags(prepared) : undefined;
+    candidateCustomElementTags = prepared
+      ? collectCandidateCustomElementTags(prepared, ctx.tcbConfig)
+      : undefined;
     const knownCustomElements =
       candidateCustomElementTags && candidateCustomElementTags.size > 0
         ? await ctx.getKnownCustomElements?.()

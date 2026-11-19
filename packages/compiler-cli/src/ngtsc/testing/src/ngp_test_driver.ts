@@ -766,6 +766,22 @@ export function performNgpCompilationSync(params: {
     return baseHost.fileExists(fileName);
   };
 
+  overlayHost.directoryExists = (directoryName: string): boolean => {
+    const absPath = fs.resolve(directoryName);
+    return fs.exists(absPath) && fs.stat(absPath).isDirectory();
+  };
+
+  overlayHost.getDirectories = (directoryName: string): string[] => {
+    const absPath = fs.resolve(directoryName);
+    if (!fs.exists(absPath) || !fs.stat(absPath).isDirectory()) {
+      return [];
+    }
+    return fs.readdir(absPath).filter((name) => {
+      const entryPath = fs.resolve(absPath, name);
+      return fs.exists(entryPath) && fs.stat(entryPath).isDirectory();
+    });
+  };
+
   overlayHost.readFile = (fileName: string): string | undefined => {
     const absPath = fs.resolve(fileName);
     const tcb = tcbFileMap.get(absPath);
