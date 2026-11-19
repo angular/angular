@@ -9,7 +9,6 @@
 import {BoundTarget, MatchSource, TcbDirectiveMetadata} from '@angular/compiler';
 
 import {makeClassKey} from './compiler-utils.js';
-import {fingerprintOf} from './processed_file_cache.js';
 import type {ProcessedFile} from './processor.js';
 import type * as nga from './types.js';
 
@@ -63,13 +62,12 @@ interface FileSemantics {
    */
   readonly ngModuleInjectorImports: ReadonlyMap<string, string>;
   /**
-   * Fingerprint of the file's processed output (its `.ng.ts` text), or `null` when it is not
-   * known (processing failed). ngtsc has no equivalent: it decides from semantic dependencies
-   * alone because it does not know what a file's output will be until it emits it. Here the
-   * output is known before the emit decision, so a file whose output changed is re-emitted
-   * whatever caused the change.
+   * The file's latest `ProcessedFile`, or `null` when it is not known (processing failed). ngtsc
+   * has no equivalent: it decides from semantic dependencies alone because it does not know what a
+   * file's output will be until it emits it. Here the output is known before the emit decision, so
+   * a file whose output changed is re-emitted whatever caused the change.
    */
-  readonly output: string | null;
+  readonly processed: ProcessedFile | null;
 }
 
 /**
@@ -98,8 +96,6 @@ export class IncrementalEmitTracker {
   private readonly emitted = new Set<string>();
   /** Source files and resources changed or deleted since the baseline. */
   private readonly changedSinceBaseline = new Set<string>();
-  /** Output fingerprints by `ProcessedFile`, so a reused output is not fingerprinted again. */
-  private readonly outputFingerprints = new WeakMap<ProcessedFile, string>();
 
   /**
    * Records that `paths` changed or were deleted. A change is a change even when the content is
@@ -183,17 +179,8 @@ export class IncrementalEmitTracker {
       resources,
       components,
       ngModuleInjectorImports,
-      output: processed ? this.outputFingerprintOf(processed) : null,
+      processed: processed ?? null,
     });
-  }
-
-  private outputFingerprintOf(processed: ProcessedFile): string {
-    let fingerprint = this.outputFingerprints.get(processed);
-    if (fingerprint === undefined) {
-      fingerprint = fingerprintOf([processed.magicString.toString()]);
-      this.outputFingerprints.set(processed, fingerprint);
-    }
-    return fingerprint;
   }
 
   /**
@@ -229,7 +216,7 @@ export class IncrementalEmitTracker {
       if (
         changed.has(filePath) ||
         previous === undefined ||
-        semantics.output !== previous.output ||
+        !isProcessedOutputEqual(semantics.processed, previous.processed) ||
         semantics.dependencies.some((dep) => changed.has(dep)) ||
         previous.dependencies.some((dep) => changed.has(dep)) ||
         semantics.resources.some((resource) => changed.has(resource)) ||
@@ -444,6 +431,19 @@ function isRemoteScopeEqual(
     }
   }
   return true;
+}
+
+function isProcessedOutputEqual(
+  current: ProcessedFile | null,
+  previous: ProcessedFile | null,
+): boolean {
+  if (current === previous) {
+    return true;
+  }
+  if (current === null || previous === null) {
+    return false;
+  }
+  return current.magicString.toString() === previous.magicString.toString();
 }
 
 /** The file declaring the NgModule a `filePath#symbolId` key refers to. */
