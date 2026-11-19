@@ -21,15 +21,18 @@ import {
   TcbReferenceMetadata,
   TcbTypeCheckBlockMetadata,
   TcbTypeParameter,
+  TmplAstElement,
   TmplAstHostElement,
   TmplAstNode,
+  TmplAstRecursiveVisitor,
+  tmplAstVisitAll,
   TypeCheckId,
   TypeCheckingConfig,
   TypeCtorMetadata,
 } from '@angular/compiler';
 import type {ExtendedDiagnosticsOptions, NgpCompilerOptions} from './compiler_options.js';
 import {Diagnostic} from './diagnostic.js';
-import {RegistryDomSchemaChecker} from './dom_schema_checker.js';
+import {normalizeCustomElementTagName, RegistryDomSchemaChecker} from './dom_schema_checker.js';
 import {runExtendedDiagnostics} from './extended_diagnostics.js';
 
 import MagicString from 'magic-string';
@@ -659,11 +662,50 @@ export function prepareTcbTargets(
   return {targets, boundTargetMap, hostElementsMap, typeCheckIdMap, requiresInline};
 }
 
+class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
+  constructor(
+    private readonly boundTarget: BoundTarget<TcbDirectiveMetadata>,
+    private readonly candidates: Set<string>,
+  ) {
+    super();
+  }
+
+  override visitElement(element: TmplAstElement): void {
+    const tagName = normalizeCustomElementTagName(element.name);
+    if (tagName !== null && this.boundTarget.getForeignComponent(element) === null) {
+      const directives = this.boundTarget.getDirectivesOfNode(element);
+      if (!directives?.some((dir) => dir.isComponent)) {
+        this.candidates.add(tagName);
+      }
+    }
+    super.visitElement(element);
+  }
+}
+
+/**
+ * Collects normalized tag names of non-Angular dashed elements present in `prepared`'s templates
+ * whose recognition or type-checking may depend on TypeScript's global `HTMLElementTagNameMap`.
+ * Components without any such tags return an empty set so the analyzer's `.d.ts` custom element
+ * scan is never triggered.
+ */
+export function collectCandidateCustomElementTags(prepared: PreparedTcbData): Set<string> {
+  const candidates = new Set<string>();
+  for (const {comp, tcbMeta} of prepared.targets) {
+    if (comp.templateNodes.length === 0) {
+      continue;
+    }
+    const collector = new CustomElementCandidateCollector(tcbMeta.boundTarget, candidates);
+    tmplAstVisitAll(collector, comp.templateNodes);
+  }
+  return candidates;
+}
+
 export function generateTcbCode(
   filePath: string,
   preparedData: PreparedTcbData,
   config: NgpTypeCheckingConfig,
   namespaceAliasConflicts?: ReadonlyArray<string>,
+  knownCustomElements?: ReadonlySet<string>,
 ): TcbResult | null {
   const {targets, requiresInline} = preparedData;
   if (targets.length === 0) return null;
@@ -674,7 +716,9 @@ export function generateTcbCode(
     requiresInline && namespaceAliasConflicts ? new Set(namespaceAliasConflicts) : undefined,
   );
   const oobRecorder = new OutOfBandDiagnosticRecorderImpl();
-  const domSchemaChecker = new RegistryDomSchemaChecker();
+  const domSchemaChecker = new RegistryDomSchemaChecker(
+    knownCustomElements ? (tagName) => knownCustomElements.has(tagName) : undefined,
+  );
   const semanticsDiagnostics: Diagnostic[] = [];
   const extendedDiagnostics: Diagnostic[] = [];
 

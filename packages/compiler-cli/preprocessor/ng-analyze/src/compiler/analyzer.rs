@@ -695,6 +695,13 @@ impl Analyzer {
         Ok(self.engine.get_metadata_for_file_id_blocking(file_id))
     }
 
+    /// Fallible form of [`Self::get_known_custom_elements`]: an asynchronous host is reported as
+    /// an `Err` instead of a panic.
+    pub fn get_known_custom_elements_checked(&self) -> Result<Vec<String>, String> {
+        self.ensure_synchronous_host()?;
+        Ok((*self.engine.get_known_custom_elements_blocking()).clone())
+    }
+
     /// Resolve `url` the way a component's `templateUrl`/`styleUrls` are resolved from
     /// `containing_file` and read it. Backs the stylesheets the TypeScript layer discovers only
     /// after parsing a template (`<link rel="stylesheet">`), which ngtsc also resolves from the
@@ -1059,6 +1066,23 @@ impl Analyzer {
             .map_err(|e| e.to_string())?;
         Ok(rx)
     }
+
+    /// Spawn a `KnownCustomElements` query onto `spawner` and return a oneshot receiver for its
+    /// outcome.
+    pub fn request_known_custom_elements_core<S: Spawner>(
+        &self,
+        spawner: S,
+    ) -> Result<oneshot::Receiver<Result<Vec<String>, String>>, String> {
+        let (tx, rx) = oneshot::channel();
+        let engine = self.engine.clone();
+        spawner
+            .spawn(async move {
+                let res = (*engine.get_known_custom_elements().await).clone();
+                let _ = tx.send(Ok(res));
+            })
+            .map_err(|e| e.to_string())?;
+        Ok(rx)
+    }
 }
 
 /// Store `value` in `lock` and report whether it differed from the previous value.
@@ -1320,6 +1344,22 @@ impl Analyzer {
         file_path: String,
     ) -> napi::Result<Option<AnalysisResult>> {
         self.get_metadata_for_file_checked(file_path)
+            .map_err(napi::Error::from_reason)
+    }
+
+    /// Panicking form of [`Self::get_known_custom_elements_checked`], for Rust callers with no
+    /// error channel. N-API is served by `get_known_custom_elements_napi` instead.
+    pub fn get_known_custom_elements(&self) -> Vec<String> {
+        self.get_known_custom_elements_checked()
+            .unwrap_or_else(|msg| panic!("{msg}"))
+    }
+
+    /// N-API `getKnownCustomElements`: an asynchronous host is thrown as a JS error, since a panic
+    /// over N-API aborts the host process.
+    #[cfg(feature = "napi")]
+    #[napi(js_name = "getKnownCustomElements")]
+    pub fn get_known_custom_elements_napi(&self) -> napi::Result<Vec<String>> {
+        self.get_known_custom_elements_checked()
             .map_err(napi::Error::from_reason)
     }
 

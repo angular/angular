@@ -563,15 +563,22 @@ export class Scope {
       // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
       // to add them if needed.
       if (node instanceof Element) {
-        this.opQueue.push(
-          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
-        );
-
         // Skip DOM schema checks for elements matched as foreign components.
         // An element can never match both an Angular directive and a foreign component
         // without throwing a fatal error, so we are guaranteed that directives is empty
         // and we only need to intercept in this directiveless block.
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(
+            this.tcb,
+            this,
+            node.inputs,
+            node,
+            claimedInputs,
+            /* checkCustomElementBindings */ !isForeign,
+          ),
+        );
+
         if (!isForeign) {
           this.opQueue.push(
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
@@ -660,7 +667,18 @@ export class Scope {
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
+      const checkCustomElementBindings =
+        node instanceof Element && this.isNonAngularElement(node, directives);
+      this.opQueue.push(
+        new TcbUnclaimedInputsOp(
+          this.tcb,
+          this,
+          node.inputs,
+          node,
+          claimedInputs,
+          checkCustomElementBindings,
+        ),
+      );
 
       const schemaClaimedInputs = new Set<string>(claimedInputs);
       if (explicitNgTemplate) {
@@ -683,7 +701,13 @@ export class Scope {
       const checkElement =
         node instanceof Element && this.requiresUnknownElementCheck(node, directives);
       this.opQueue.push(
-        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs),
+        new TcbDomSchemaCheckerOp(
+          this.tcb,
+          node,
+          checkElement,
+          schemaClaimedInputs,
+          checkCustomElementBindings,
+        ),
       );
     }
   }
@@ -812,7 +836,15 @@ export class Scope {
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
           const checkElement = this.requiresUnknownElementCheck(node, directives);
-          this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(
+              this.tcb,
+              node,
+              checkElement,
+              claimedInputs,
+              this.isNonAngularElement(node, directives),
+            ),
+          );
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
         const schemaClaimedInputs = new Set<string>();
@@ -1011,6 +1043,22 @@ export class Scope {
   }
 
   /**
+   * Returns whether an element node is a non-Angular element (neither an Angular component nor
+   * matched by a directive whose selector explicitly targets the element's tag name).
+   */
+  private isNonAngularElement(node: Element, directives: TcbDirectiveMetadata[] | null): boolean {
+    if (directives === null || directives.length === 0) {
+      return true;
+    }
+
+    const hasComponent = directives.some((dir) => dir.isComponent);
+    const hasDirectiveMatchingTag = directives.some((dir) =>
+      matchesTagName(dir.selector, node.name),
+    );
+    return !hasComponent && !hasDirectiveMatchingTag;
+  }
+
+  /**
    * Checks the element against the DOM schema unless it is matched by an Angular component
    * or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
    * Directives that only match attributes (like `[formControl]`) do not claim the element name.
@@ -1027,11 +1075,7 @@ export class Scope {
       return false;
     }
 
-    const hasComponent = directives.some((dir) => dir.isComponent);
-    const hasDirectiveMatchingTag = directives.some((dir) =>
-      matchesTagName(dir.selector, node.name),
-    );
-    return !hasComponent && !hasDirectiveMatchingTag;
+    return this.isNonAngularElement(node, directives);
   }
 }
 

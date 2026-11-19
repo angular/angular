@@ -213,6 +213,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     private host: TypeCheckingHost,
     private inlining: InliningMode,
     private perf: PerfRecorder,
+    private isCustomElement: (tagName: string) => boolean = () => false,
   ) {
     if (inlining === InliningMode.Error && config.useInlineTypeConstructors) {
       // We cannot use inlining for type checking since this environment does not support it.
@@ -638,7 +639,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const shimPath = TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
-        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
+        domSchemaChecker: new RegistryDomSchemaChecker(
+          fileData.sourceManager,
+          this.isCustomElement,
+        ),
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
           this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
         ),
