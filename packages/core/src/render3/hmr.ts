@@ -136,11 +136,13 @@ function mergeWithExistingDefinition(
   // Keep the object in place, because there can be references to it, for example in the
   // `directiveDefs` of another definition.
   const replacement = Object.assign(currentDef, newDef, {
-    // We need to keep the existing directive and pipe defs, because they can get patched on
-    // by a call to `setComponentScope` from a module file. That call won't make it into the
-    // HMR replacement function, because it lives in an entirely different file.
-    directiveDefs: clone.directiveDefs,
-    pipeDefs: clone.pipeDefs,
+    // For standalone components, `setComponentScope` is never used (imports are always inlined on
+    // the component definition), so always take the new directive and pipe defs, including `null`
+    // when the last import is removed. For non-standalone components, keep the existing defs
+    // unconditionally, because `setComponentScope` in the module file won't run again during an
+    // HMR replacement of the component file.
+    directiveDefs: newDef.standalone ? newDef.directiveDefs : clone.directiveDefs,
+    pipeDefs: newDef.standalone ? newDef.pipeDefs : clone.pipeDefs,
 
     // Preserve the old `setInput` function, because it has some state.
     // This is fine, because the component instance is preserved as well.
