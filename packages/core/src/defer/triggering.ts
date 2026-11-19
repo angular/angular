@@ -391,12 +391,6 @@ export async function triggerHydrationFromBlockName(
   const {parentBlockPromise, hydrationQueue} = getParentBlockHydrationQueue(blockName, injector);
   if (hydrationQueue.length === 0) return;
 
-  // It's possible that the hydrationQueue topmost item is actually in the process of hydrating and has
-  // a promise already. In that case, we don't want to destroy that promise and queue it again.
-  if (parentBlockPromise !== null) {
-    hydrationQueue.shift();
-  }
-
   // The hydrating map in the registry prevents re-triggering hydration for a block that's already in
   // the hydration queue. Here we generate promises for each of the blocks about to be hydrated
   populateHydratingStateForQueue(dehydratedBlockRegistry, hydrationQueue);
