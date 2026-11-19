@@ -1234,19 +1234,31 @@ fn get_type_reference_info<'a>(
         }
     }
 
-    if is_qualified
-        && !import_map.contains_key(ref_ident.name.as_str())
-        && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
-    {
-        return no_value_declaration(None);
+    if is_qualified && !import_map.contains_key(ref_ident.name.as_str()) {
+        if !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value) {
+            return no_value_declaration(None);
+        }
+        if !flags.intersects(
+            oxc_syntax::symbol::SymbolFlags::Import | oxc_syntax::symbol::SymbolFlags::TypeImport,
+        ) {
+            if let Some(info) =
+                classify_same_file_qualified_type(symbol_id, flags, full_type_name, semantic)
+            {
+                return info;
+            }
+        }
     }
 
-    // Unqualified class declared in the same file is guaranteed to exist at runtime.
+    // Unqualified value declaration in the same file (class, non-const non-ambient enum, or
+    // value+type companion such as `interface Token {} const Token = new InjectionToken(...)`) is
+    // guaranteed to exist at runtime.
     if !is_qualified
-        && flags.contains(oxc_syntax::symbol::SymbolFlags::Class)
         && !flags.intersects(
             oxc_syntax::symbol::SymbolFlags::Import | oxc_syntax::symbol::SymbolFlags::TypeImport,
         )
+        && (flags.contains(oxc_syntax::symbol::SymbolFlags::Class)
+            || (flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
+                && has_non_ambient_runtime_value(symbol_id, flags, semantic)))
     {
         return TypeRefInfo::VERIFIED_VALUE;
     }
@@ -1255,6 +1267,451 @@ fn get_type_reference_info<'a>(
     // (emitted under `@ts-ignore`), since misclassifying a class as type-only would emit
     // `ɵɵinject(null)` and break injection; `query::engine` verifies them in optimize mode.
     TypeRefInfo::UNVERIFIED_VALUE
+}
+
+fn is_in_ambient_context(
+    node_id: oxc_semantic::NodeId,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> bool {
+    if semantic.source_type().is_typescript_definition() {
+        return true;
+    }
+    semantic
+        .nodes()
+        .ancestors(node_id)
+        .any(|ancestor| match ancestor.kind() {
+            oxc_ast::AstKind::TSGlobalDeclaration(g) => g.declare,
+            oxc_ast::AstKind::TSNamespaceDeclaration(ns) => ns.declare,
+            oxc_ast::AstKind::TSExternalModuleDeclaration(m) => m.declare,
+            _ => false,
+        })
+}
+
+/// TODO: Remove once ngp is the default compiler. Enum members (`StyleEnum.ONE`) are never valid
+/// standalone DI tokens, and when `@Inject(TOK)` overrides the parameter, `reflectDependency` in
+/// `@angular/core` overwrites `type` with `TOK` — so verifying `Enum.Member` (and retaining enum
+/// `type` references in `ɵsetClassMetadata` under `@Inject`) only exists for `ngtsc` parity with
+/// no runtime difference.
+fn has_non_ambient_regular_enum_member(
+    symbol_id: oxc_semantic::SymbolId,
+    member_name: &str,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> bool {
+    use oxc_ast::ast::TSEnumMemberName;
+
+    let nodes = semantic.nodes();
+    std::iter::once(semantic.symbol_declaration(symbol_id))
+        .chain(
+            semantic
+                .scoping()
+                .symbol_redeclarations(symbol_id)
+                .iter()
+                .map(|r| nodes.get_node(r.declaration)),
+        )
+        .any(|node| {
+            let oxc_ast::AstKind::TSEnumDeclaration(decl) = node.kind() else {
+                return false;
+            };
+            if decl.r#const || decl.declare || is_in_ambient_context(node.id(), semantic) {
+                return false;
+            }
+            decl.body.members.iter().any(|m| match &m.id {
+                TSEnumMemberName::Identifier(ident) => ident.name.as_str() == member_name,
+                TSEnumMemberName::String(s) | TSEnumMemberName::ComputedString(s) => {
+                    s.value.as_str() == member_name
+                }
+                TSEnumMemberName::ComputedTemplateString(_) => false,
+            })
+        })
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ClassStaticMember {
+    None,
+    Public,
+    NonPublic,
+}
+
+fn classify_non_ambient_class_static_member(
+    symbol_id: oxc_semantic::SymbolId,
+    member_name: &str,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> ClassStaticMember {
+    use oxc_ast::ast::{ClassElement, PropertyKey, TSAccessibility};
+
+    let nodes = semantic.nodes();
+    let mut found_non_public = false;
+    for node in std::iter::once(semantic.symbol_declaration(symbol_id)).chain(
+        semantic
+            .scoping()
+            .symbol_redeclarations(symbol_id)
+            .iter()
+            .map(|r| nodes.get_node(r.declaration)),
+    ) {
+        let oxc_ast::AstKind::Class(decl) = node.kind() else {
+            continue;
+        };
+        if decl.declare || is_in_ambient_context(node.id(), semantic) {
+            continue;
+        }
+        for el in &decl.body.body {
+            let (is_static, key, accessibility) = match el {
+                ClassElement::PropertyDefinition(p) => {
+                    (p.r#static && !p.declare, &p.key, p.accessibility)
+                }
+                ClassElement::MethodDefinition(m) => {
+                    (m.r#static && m.value.body.is_some(), &m.key, m.accessibility)
+                }
+                ClassElement::AccessorProperty(a) => (a.r#static, &a.key, a.accessibility),
+                _ => continue,
+            };
+            if is_static
+                && !matches!(key, PropertyKey::PrivateIdentifier(_))
+                && key.static_name().as_deref() == Some(member_name)
+            {
+                if accessibility.is_none_or(|a| a == TSAccessibility::Public) {
+                    return ClassStaticMember::Public;
+                }
+                found_non_public = true;
+            }
+        }
+    }
+    if found_non_public {
+        ClassStaticMember::NonPublic
+    } else {
+        ClassStaticMember::None
+    }
+}
+
+fn is_instantiated_namespace(decl: &oxc_ast::ast::TSNamespaceDeclaration<'_>) -> bool {
+    use oxc_ast::ast::{Declaration, Statement, TSNamespaceDeclarationBody};
+
+    if decl.declare {
+        return false;
+    }
+    match &decl.body {
+        TSNamespaceDeclarationBody::TSNamespaceDeclaration(inner) => {
+            is_instantiated_namespace(inner)
+        }
+        TSNamespaceDeclarationBody::TSModuleBlock(block) => block.body.iter().any(|stmt| {
+            let inner_decl = match stmt {
+                Statement::ExportDeclaration(exp) => Some(&exp.declaration),
+                Statement::ExportNamedDeclaration(exp) => {
+                    return !exp.export_kind.is_type();
+                }
+                Statement::TSInterfaceDeclaration(_) | Statement::TSTypeAliasDeclaration(_) => {
+                    return false;
+                }
+                other => match other.as_declaration() {
+                    Some(d) => Some(d),
+                    None => return true,
+                },
+            };
+            match inner_decl {
+                Some(Declaration::VariableDeclaration(v)) => !v.declare,
+                Some(Declaration::FunctionDeclaration(f)) => !f.declare && f.body.is_some(),
+                Some(Declaration::ClassDeclaration(c)) => !c.declare,
+                Some(Declaration::TSImportEqualsDeclaration(i)) => !i.import_kind.is_type(),
+                Some(Declaration::TSEnumDeclaration(en)) => !en.r#const && !en.declare,
+                Some(Declaration::TSNamespaceDeclaration(ns)) => is_instantiated_namespace(ns),
+                _ => false,
+            }
+        }),
+    }
+}
+
+fn is_node_exported_from_namespace(
+    node: &oxc_semantic::AstNode<'_>,
+    export_name: &str,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> bool {
+    use oxc_ast::ast::Statement;
+    use oxc_ast::AstKind;
+
+    let nodes = semantic.nodes();
+    let decl_node_id = match node.kind() {
+        AstKind::VariableDeclarator(_) => nodes.parent_id(node.id()),
+        _ => node.id(),
+    };
+    let parent = nodes.parent_node(decl_node_id);
+    match parent.kind() {
+        AstKind::ExportDeclaration(_) | AstKind::TSNamespaceDeclaration(_) => return true,
+        AstKind::TSModuleBlock(block) => {
+            return block.body.iter().any(|stmt| {
+                let Statement::ExportNamedDeclaration(exp) = stmt else {
+                    return false;
+                };
+                !exp.export_kind.is_type()
+                    && exp.specifiers.iter().any(|sp| {
+                        !sp.export_kind.is_type() && sp.exported.name().as_str() == export_name
+                    })
+            });
+        }
+        _ => {}
+    }
+    false
+}
+
+fn has_non_ambient_runtime_value(
+    symbol_id: oxc_semantic::SymbolId,
+    flags: oxc_syntax::symbol::SymbolFlags,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> bool {
+    has_non_ambient_runtime_value_inner(symbol_id, flags, None, semantic)
+}
+
+fn has_non_ambient_runtime_value_inner(
+    symbol_id: oxc_semantic::SymbolId,
+    flags: oxc_syntax::symbol::SymbolFlags,
+    required_namespace_export: Option<&str>,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> bool {
+    let nodes = semantic.nodes();
+    std::iter::once(semantic.symbol_declaration(symbol_id))
+        .chain(
+            semantic
+                .scoping()
+                .symbol_redeclarations(symbol_id)
+                .iter()
+                .map(|r| nodes.get_node(r.declaration)),
+        )
+        .any(|node| {
+            if let Some(export_name) = required_namespace_export {
+                if !is_node_exported_from_namespace(node, export_name, semantic) {
+                    return false;
+                }
+            }
+            let is_value_decl = match node.kind() {
+                oxc_ast::AstKind::Class(decl) => !decl.declare,
+                oxc_ast::AstKind::TSEnumDeclaration(decl) => !decl.r#const && !decl.declare,
+                oxc_ast::AstKind::Function(decl) => !decl.declare && decl.body.is_some(),
+                oxc_ast::AstKind::VariableDeclarator(_) => matches!(
+                    nodes.parent_kind(node.id()),
+                    oxc_ast::AstKind::VariableDeclaration(var_decl) if !var_decl.declare
+                ),
+                oxc_ast::AstKind::TSNamespaceDeclaration(decl) => {
+                    flags.contains(oxc_syntax::symbol::SymbolFlags::ValueModule)
+                        && is_instantiated_namespace(decl)
+                }
+                _ => false,
+            };
+            is_value_decl && !is_in_ambient_context(node.id(), semantic)
+        })
+}
+
+fn classify_same_file_qualified_type(
+    symbol_id: oxc_semantic::SymbolId,
+    flags: oxc_syntax::symbol::SymbolFlags,
+    full_type_name: &str,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> Option<TypeRefInfo> {
+    use oxc_span::GetSpan;
+    use oxc_syntax::symbol::SymbolFlags;
+
+    let (ns_prefix, leaf) = full_type_name.rsplit_once('.')?;
+    let nested_rest = ns_prefix.split_once('.').map(|(_, rest)| rest).unwrap_or("");
+
+    if nested_rest.is_empty() {
+        if flags.contains(SymbolFlags::RegularEnum)
+            && has_non_ambient_regular_enum_member(symbol_id, leaf, semantic)
+        {
+            return Some(TypeRefInfo::VERIFIED_VALUE);
+        }
+        if flags.contains(SymbolFlags::Class) {
+            match classify_non_ambient_class_static_member(symbol_id, leaf, semantic) {
+                ClassStaticMember::Public => return Some(TypeRefInfo::VERIFIED_VALUE),
+                ClassStaticMember::NonPublic => return None,
+                ClassStaticMember::None => {}
+            }
+        }
+    }
+
+    if !flags.intersects(SymbolFlags::ValueModule | SymbolFlags::NamespaceModule)
+        || !has_non_ambient_runtime_value(symbol_id, flags, semantic)
+    {
+        return None;
+    }
+
+    let nodes = semantic.nodes();
+    let scoping = semantic.scoping();
+    let mut leaf_scopes = Vec::new();
+    let mut path_has_uninstantiated_hop = false;
+
+    if !nested_rest.is_empty() {
+        // Verify each intermediate namespace hop is exported and runtime-instantiated when deciding
+        // whether a runtime value is reachable, while still collecting scopes for type-only checks.
+        let mut current_scopes = Vec::new();
+        for node in std::iter::once(semantic.symbol_declaration(symbol_id)).chain(
+            scoping
+                .symbol_redeclarations(symbol_id)
+                .iter()
+                .map(|r| nodes.get_node(r.declaration)),
+        ) {
+            if let oxc_ast::AstKind::TSNamespaceDeclaration(decl) = node.kind() {
+                if !decl.declare && !is_in_ambient_context(node.id(), semantic) {
+                    if let Some(scope_id) = decl.scope_id.get() {
+                        current_scopes.push((decl, scope_id));
+                    }
+                }
+            }
+        }
+        let segments: Vec<&str> = nested_rest.split('.').collect();
+        let mut found_verified_member = false;
+        let mut found_non_public_member = false;
+        for (idx, &seg) in segments.iter().enumerate() {
+            let is_last_seg = idx + 1 == segments.len();
+            let mut next_scopes = Vec::new();
+            let mut seg_instantiated = false;
+            for (parent_decl, scope_id) in &current_scopes {
+                match &parent_decl.body {
+                    oxc_ast::ast::TSNamespaceDeclarationBody::TSNamespaceDeclaration(inner)
+                        if inner.id.name.as_str() == seg && !inner.declare =>
+                    {
+                        if is_instantiated_namespace(inner) {
+                            seg_instantiated = true;
+                        }
+                        if let Some(s) = inner.scope_id.get() {
+                            next_scopes.push((inner.as_ref(), s));
+                        }
+                    }
+                    oxc_ast::ast::TSNamespaceDeclarationBody::TSModuleBlock(_) => {
+                        if let Some(child_sym) = scoping.get_binding(*scope_id, seg.into()) {
+                            let child_flags = scoping.symbol_flags(child_sym);
+                            let child_has_exported_value = has_non_ambient_runtime_value_inner(
+                                child_sym,
+                                child_flags,
+                                Some(seg),
+                                semantic,
+                            );
+                            if child_has_exported_value {
+                                seg_instantiated = true;
+                                if is_last_seg && !path_has_uninstantiated_hop {
+                                    if child_flags.contains(SymbolFlags::RegularEnum)
+                                        && has_non_ambient_regular_enum_member(
+                                            child_sym, leaf, semantic,
+                                        )
+                                    {
+                                        found_verified_member = true;
+                                    }
+                                    if child_flags.contains(SymbolFlags::Class) {
+                                        match classify_non_ambient_class_static_member(
+                                            child_sym, leaf, semantic,
+                                        ) {
+                                            ClassStaticMember::Public => {
+                                                found_verified_member = true;
+                                            }
+                                            ClassStaticMember::NonPublic => {
+                                                found_non_public_member = true;
+                                            }
+                                            ClassStaticMember::None => {}
+                                        }
+                                    }
+                                }
+                            }
+                            for node in std::iter::once(semantic.symbol_declaration(child_sym))
+                                .chain(
+                                    scoping
+                                        .symbol_redeclarations(child_sym)
+                                        .iter()
+                                        .map(|r| nodes.get_node(r.declaration)),
+                                )
+                            {
+                                let oxc_ast::AstKind::TSNamespaceDeclaration(d) = node.kind()
+                                else {
+                                    continue;
+                                };
+                                if !d.declare
+                                    && is_node_exported_from_namespace(node, seg, semantic)
+                                {
+                                    if let Some(s) = d.scope_id.get() {
+                                        next_scopes.push((d, s));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            if !seg_instantiated {
+                path_has_uninstantiated_hop = true;
+            }
+            current_scopes = next_scopes;
+        }
+        if found_verified_member {
+            return Some(TypeRefInfo::VERIFIED_VALUE);
+        }
+        if found_non_public_member {
+            return None;
+        }
+        leaf_scopes.extend(current_scopes.into_iter().map(|(_, s)| s));
+    } else {
+        for node in std::iter::once(semantic.symbol_declaration(symbol_id)).chain(
+            scoping
+                .symbol_redeclarations(symbol_id)
+                .iter()
+                .map(|r| nodes.get_node(r.declaration)),
+        ) {
+            let oxc_ast::AstKind::TSNamespaceDeclaration(decl) = node.kind() else {
+                continue;
+            };
+            if decl.declare || is_in_ambient_context(node.id(), semantic) {
+                continue;
+            }
+            if let Some(scope_id) = decl.scope_id.get() {
+                leaf_scopes.push(scope_id);
+            }
+        }
+    }
+
+    let mut combined_flags = SymbolFlags::empty();
+    let mut first_sym = None;
+    let mut has_runtime_value = false;
+    for scope_id in leaf_scopes {
+        let Some(sym) = scoping.get_binding(scope_id, leaf.into()) else {
+            continue;
+        };
+        let sym_flags = scoping.symbol_flags(sym);
+        if sym_flags.intersects(SymbolFlags::Import | SymbolFlags::TypeImport)
+            || matches!(
+                semantic.symbol_declaration(sym).kind(),
+                oxc_ast::AstKind::TSImportEqualsDeclaration(_)
+            )
+        {
+            return None;
+        }
+        first_sym.get_or_insert(sym);
+        combined_flags |= sym_flags;
+        if !path_has_uninstantiated_hop
+            && sym_flags.intersects(SymbolFlags::Value)
+            && !sym_flags.contains(SymbolFlags::ConstEnum)
+            && has_non_ambient_runtime_value_inner(sym, sym_flags, Some(leaf), semantic)
+        {
+            has_runtime_value = true;
+        }
+    }
+
+    let first_sym = first_sym?;
+    if has_runtime_value {
+        return Some(TypeRefInfo::VERIFIED_VALUE);
+    }
+
+    if combined_flags.contains(SymbolFlags::ConstEnum)
+        || combined_flags.intersects(
+            SymbolFlags::Interface
+                | SymbolFlags::TypeAlias
+                | SymbolFlags::TypeParameter
+                | SymbolFlags::NamespaceModule,
+        )
+    {
+        return Some(TypeRefInfo::unavailable(
+            UnavailableValue::NoValueDeclaration {
+                decl: Some(semantic.symbol_declaration(first_sym).kind().span()),
+            },
+        ));
+    }
+
+    None
 }
 
 /// The node ngtsc blames for a type-only import: the specifier when it carries the `type`
