@@ -8,10 +8,42 @@
 
 import {assertNumber} from '../../util/assert';
 
-import {ID, LView} from './view';
+import {ID, LView, TVIEW, TView} from './view';
 
 // Keeps track of the currently-active LViews.
 const TRACKED_LVIEWS = new Map<number, LView>();
+
+// Unlike discovery tracking, HMR needs views without debug data, including detached views.
+let hmrLViews: WeakMap<TView, Set<WeakRef<LView>>> | undefined;
+let hmrViewFinalizer:
+  | FinalizationRegistry<{
+      views: Set<WeakRef<LView>>;
+      reference: WeakRef<LView>;
+    }>
+  | undefined;
+
+export function trackHmrLView(lView: LView): void {
+  const tView = lView[TVIEW];
+  hmrLViews ??= new WeakMap();
+  let views = hmrLViews.get(tView);
+  if (views === undefined) {
+    views = new Set();
+    hmrLViews.set(tView, views);
+  }
+  const reference = new WeakRef(lView);
+  views.add(reference);
+  hmrViewFinalizer ??= new FinalizationRegistry(({views, reference}) => views.delete(reference));
+  hmrViewFinalizer.register(lView, {views, reference});
+}
+
+export function* getHmrLViews(tView: TView): Iterable<LView> {
+  for (const reference of hmrLViews?.get(tView) ?? []) {
+    const view = reference.deref();
+    if (view !== undefined) {
+      yield view;
+    }
+  }
+}
 
 // Used for generating unique IDs for LViews.
 let uniqueIdCounter = 0;

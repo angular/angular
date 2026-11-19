@@ -14,6 +14,7 @@ import {namespaceCssVariables, ShadowCss} from '../../shadow_css';
 import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
+import {getHmrTextSignature} from '../../template/pipeline/src/phases/hmr_text';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3CompiledExpression, tsIgnoreComment, typeWithParameters} from '../util';
@@ -28,7 +29,11 @@ import {
   R3TemplateDependency,
 } from './api';
 import {ENABLE_TEMPLATE_SOURCE_LOCATIONS} from './config';
-import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
+import {
+  createContentQueriesFunction,
+  createViewQueriesFunction,
+  getHmrViewQueries,
+} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
 
@@ -171,11 +176,15 @@ export function compileDirectiveFromMetadata(
 
 /**
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
+ *
+ * When HMR is enabled, `hmrStableReference` identifies frontend-specific expressions that
+ * can be compared by reference at runtime, such as TypeScript identifiers used in view queries.
  */
 export function compileComponentFromMetadata(
   meta: R3ComponentMetadata<R3TemplateDependency>,
   constantPool: ConstantPool,
   bindingParser: BindingParser,
+  hmrStableReference: ((expression: o.Expression) => boolean) | null = null,
 ): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
@@ -216,6 +225,12 @@ export function compileComponentFromMetadata(
     meta.foreignImports,
   );
 
+  const hmrTextSignature =
+    hmrStableReference !== null && !tpl.enableDebugLocations && !meta.foreignImports?.length
+      ? getHmrTextSignature(meta.template.nodes)
+      : null;
+  tpl.hmrTextEnabled = hmrTextSignature !== null;
+
   // Then the IR is transformed to prepare it for code generation.
   transform(tpl, CompilationJobKind.Tmpl);
 
@@ -243,6 +258,21 @@ export function compileComponentFromMetadata(
     }
   }
   definitionMap.set('template', templateFn);
+  if (hmrTextSignature !== null && tpl.hmrTextViews !== null && hmrStableReference !== null) {
+    const queries = getHmrViewQueries(meta.viewQueries, constantPool, hmrStableReference);
+    if (queries !== null) {
+      definitionMap.set(
+        'hmrText',
+        o.literalArr([
+          hmrTextSignature,
+          o.literal(compilationMode),
+          o.literal(meta.legacyOptionalChaining),
+          tpl.hmrTextViews,
+          queries,
+        ]),
+      );
+    }
+  }
 
   if (
     meta.declarationListEmitMode !== DeclarationListEmitMode.RuntimeResolved &&

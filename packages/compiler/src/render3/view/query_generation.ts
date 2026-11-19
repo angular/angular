@@ -106,6 +106,41 @@ function getQueryCreateParameters(
   return parameters;
 }
 
+/** Describes view queries without evaluating arbitrary token expressions during HMR. */
+export function getHmrViewQueries(
+  queries: R3QueryMetadata[],
+  constantPool: ConstantPool,
+  isStableReference: (expression: o.Expression) => boolean,
+): o.Expression | null {
+  const isStableToken = (expression: o.Expression) =>
+    expression instanceof o.ExternalExpr ||
+    (expression instanceof o.ReadVarExpr && !expression.name.includes('.')) ||
+    isStableReference(expression);
+  const entries: o.Expression[] = [];
+  for (const query of queries) {
+    if (
+      (!Array.isArray(query.predicate) &&
+        (query.predicate.forwardRef === ForwardRefHandling.Wrapped ||
+          !isStableToken(query.predicate.expression))) ||
+      (query.read !== null && !isStableToken(query.read))
+    ) {
+      return null;
+    }
+    entries.push(
+      o.literalArr([
+        o.literal(query.propertyName),
+        o.literal(query.first),
+        o.literal(query.isSignal),
+        o.literal(toQueryFlags(query)),
+        getQueryPredicate(query, constantPool),
+        query.read ?? o.literal(null),
+      ]),
+    );
+  }
+  // A token may be declared later in the module, so resolve it only when comparing an update.
+  return o.arrowFn([], o.literalArr(entries));
+}
+
 const queryAdvancePlaceholder = Symbol('queryAdvancePlaceholder');
 
 /**

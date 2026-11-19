@@ -119,6 +119,9 @@ export class ComponentCompilationJob extends CompilationJob {
 
   override readonly fnSuffix: string = 'Template';
 
+  hmrTextEnabled = false;
+  hmrTextViews: o.Expression | null = null;
+
   /**
    * The root view, representing the component's template.
    */
