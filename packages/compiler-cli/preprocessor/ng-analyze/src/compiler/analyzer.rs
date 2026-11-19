@@ -1342,6 +1342,11 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     } else {
         None
     };
+    let delta_direct_files = if delta_dirty_files.is_some() {
+        Some(dirty_snapshot.direct_files().clone())
+    } else {
+        None
+    };
 
     // Spawns the per-file task: Stage-1 analysis (resolving static/dynamic dependencies),
     // dep fan-out over `event_sender`, and Stage-2 processing, checking cancellation at each await.
@@ -1350,6 +1355,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     let task_cancel_token = cancel_token.clone();
     let task_engine = engine.clone();
     let task_delta_dirty = delta_dirty_files.clone();
+    let task_delta_direct = delta_direct_files.clone();
     let task_prev_program = prev_program_files.clone();
     let spawn_file_task = move |path: PathBuf| {
         let event_sender = event_sender.clone();
@@ -1358,6 +1364,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
         let cancel_token = task_cancel_token.clone();
         let engine = task_engine.clone();
         let delta_dirty = task_delta_dirty.clone();
+        let delta_direct = task_delta_direct.clone();
         let prev_program = task_prev_program.clone();
         spawner
             .spawn_with_handle(async move {
@@ -1380,9 +1387,13 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
                     return;
                 }
                 let file_id = local_res.file_id;
+                let directly_invalidated = delta_direct
+                    .as_ref()
+                    .is_some_and(|set| set.contains(&file_id));
                 let is_dirty = match &delta_dirty {
                     Some(dirty) => {
-                        dirty.contains(&file_id)
+                        directly_invalidated
+                            || dirty.contains(&file_id)
                             || !prev_program.contains(&file_id)
                             || !engine.has_cached_wire(file_id, is_optimized)
                     }
@@ -1527,6 +1538,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
 struct DirtyFilesSnapshot {
     engine: Arc<crate::QueryEngine>,
     files: Option<Arc<HashSet<FileId>>>,
+    direct_files: Arc<HashSet<FileId>>,
     consumed: bool,
 }
 
@@ -1537,9 +1549,17 @@ impl DirtyFilesSnapshot {
             .lock()
             .ok()
             .and_then(|mut guard| guard.as_mut().map(|set| Arc::new(std::mem::take(set))));
+        let direct_files = Arc::new(
+            engine
+                .directly_invalidated_files
+                .lock()
+                .map(|mut guard| std::mem::take(&mut *guard))
+                .unwrap_or_default(),
+        );
         Self {
             engine: engine.clone(),
             files,
+            direct_files,
             consumed: false,
         }
     }
@@ -1547,6 +1567,11 @@ impl DirtyFilesSnapshot {
     /// The files to re-stream, or `None` before the first full stream completed.
     fn files(&self) -> Option<&Arc<HashSet<FileId>>> {
         self.files.as_ref()
+    }
+
+    /// The files whose own `.ts` source or external resource was directly invalidated.
+    fn direct_files(&self) -> &Arc<HashSet<FileId>> {
+        &self.direct_files
     }
 
     /// Marks the run complete: the snapshot is spent, and from now on dirty files are tracked.
@@ -1568,6 +1593,9 @@ impl Drop for DirtyFilesSnapshot {
         let Some(files) = self.files.take() else {
             return;
         };
+        if let Ok(mut direct_guard) = self.engine.directly_invalidated_files.lock() {
+            direct_guard.extend(self.direct_files.iter().copied());
+        }
         if let Ok(mut guard) = self.engine.dirty_wire_files.lock() {
             match guard.as_mut() {
                 Some(live) => live.extend(files.iter().copied()),
@@ -3286,6 +3314,129 @@ mod entry_point_tests {
         assert_eq!(
             *engine.dirty_wire_files.lock().unwrap(),
             Some(HashSet::new())
+        );
+    }
+
+    #[test]
+    fn test_analyze_file_wire_shared_peek_and_delta_dirty_tracking() {
+        let mut files = HashMap::new();
+        files.insert(
+            "/project/tsconfig.json".to_string(),
+            r#"{
+                "compilerOptions": {"rootDirs": ["/project"]},
+                "files": ["child.ts", "parent.ts", "untouched.ts"]
+            }"#
+            .to_string(),
+        );
+        files.insert(
+            "/project/child.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             @Component({selector: 'app-child', template: '<p>v1</p>'})\n\
+             export class ChildCmp {}\n"
+                .to_string(),
+        );
+        files.insert(
+            "/project/parent.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             import { ChildCmp } from './child';\n\
+             @Component({selector: 'app-parent', imports: [ChildCmp], template: '<app-child></app-child>'})\n\
+             export class ParentCmp {}\n"
+                .to_string(),
+        );
+        files.insert(
+            "/project/untouched.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             @Component({selector: 'app-untouched', template: '<p>ok</p>'})\n\
+             export class UntouchedCmp {}\n"
+                .to_string(),
+        );
+        files.insert(
+            "/project/unused_dep.ts".to_string(),
+            "export const UNUSED = 1;\n".to_string(),
+        );
+
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(true),
+            virtual_files: Some(files),
+            ..Default::default()
+        })
+        .expect("create analyzer");
+
+        let initial = analyzer.analyze_optimized().expect("initial stream");
+        while futures::executor::block_on(initial.next())
+            .expect("initial chunk")
+            .is_some()
+        {}
+
+        let parent_id = analyzer.engine.intern_path("/project/parent.ts");
+        let cached = analyzer
+            .engine
+            .cache
+            .get(&QueryKey::AnalyzeFileWire {
+                file_id: parent_id,
+                is_optimized: true,
+            })
+            .expect("cached parent wire");
+        assert!(
+            cached.peek().is_some(),
+            "Shared::peek must return the cached result immediately after initial insertion"
+        );
+
+        // Evicting a non-wire query (`ModuleExportMap`) for `untouched.ts` must not mark
+        // `untouched.ts`'s wire output dirty.
+        let untouched_id = analyzer.engine.intern_path("/project/untouched.ts");
+        let unused_dep_id = analyzer.engine.intern_path("/project/unused_dep.ts");
+        let _ = futures::executor::block_on(
+            analyzer
+                .engine
+                .query(QueryKey::ModuleExportMap(untouched_id)),
+        );
+        analyzer
+            .engine
+            .reverse_index
+            .write()
+            .unwrap()
+            .entry(unused_dep_id)
+            .or_default()
+            .insert(QueryKey::ModuleExportMap(untouched_id));
+        analyzer
+            .update_file_content(vec![FileUpdate {
+                file_path: "/project/unused_dep.ts".to_string(),
+                content: "export const UNUSED = 2;\n".to_string(),
+            }])
+            .expect("update unused_dep.ts");
+
+        // Edit `child.ts` so `parent.ts`'s wire result changes, then call `get_metadata_for_file`
+        // on both `child.ts` and `parent.ts` to repopulate `engine.cache` before the delta pass.
+        analyzer
+            .update_file_content(vec![FileUpdate {
+                file_path: "/project/child.ts".to_string(),
+                content: "import { Component } from '@angular/core';\n\
+                          @Component({selector: 'app-child-v2', template: '<p>v2</p>'})\n\
+                          export class ChildCmp {}\n"
+                    .to_string(),
+            }])
+            .expect("update child.ts");
+        let _ = analyzer
+            .get_metadata_for_file("/project/child.ts".to_string())
+            .expect("repopulate child.ts wire cache");
+        let _ = analyzer
+            .get_metadata_for_file("/project/parent.ts".to_string())
+            .expect("repopulate parent.ts wire cache");
+
+        let delta = analyzer.analyze_optimized_delta().expect("delta stream");
+        let mut delta_paths = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(delta.next()).expect("delta chunk") {
+            delta_paths.extend(chunk.files.into_iter().map(|f| f.file_path));
+        }
+        delta_paths.sort();
+        assert_eq!(
+            delta_paths,
+            vec![
+                "/project/child.ts".to_string(),
+                "/project/parent.ts".to_string(),
+            ]
         );
     }
 

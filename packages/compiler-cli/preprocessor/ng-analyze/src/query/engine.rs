@@ -123,9 +123,12 @@ pub struct QueryEngine {
     pub(crate) last_component_mapping: Mutex<Option<Arc<NgModuleComponentMap>>>,
     pub(crate) last_scope_registry:
         Mutex<Option<Arc<crate::query::module_scope::NgModuleScopeRegistry>>>,
-    /// Files whose cached queries were evicted since the last completed stream, or `None` before
-    /// the first full stream completes.
+    /// Files whose cached wire queries were evicted since the last completed stream, or `None`
+    /// before the first full stream completes.
     pub(crate) dirty_wire_files: Mutex<Option<HashSet<FileId>>>,
+    /// Files whose own `.ts` source or external resource was directly invalidated since the last
+    /// completed stream, as opposed to transitive dependency evictions.
+    pub(crate) directly_invalidated_files: Mutex<HashSet<FileId>>,
     /// The set of `FileId`s that were part of the program in the last completed stream.
     pub(crate) last_program_files: Mutex<HashSet<FileId>>,
     pub(crate) reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
@@ -254,6 +257,7 @@ impl QueryEngine {
             last_component_mapping: Mutex::new(None),
             last_scope_registry: Mutex::new(None),
             dirty_wire_files: Mutex::new(None),
+            directly_invalidated_files: Mutex::new(HashSet::new()),
             last_program_files: Mutex::new(HashSet::new()),
             reference_strategy,
             r3_symbols_file,
@@ -526,12 +530,15 @@ impl QueryEngine {
         self.invalidate_file_id(file_id)
     }
 
-    /// Record that `file_id`'s wire analysis must be re-emitted on the next delta stream.
-    fn mark_file_dirty(&self, file_id: FileId) {
-        if file_id == ROOTS_FILE_ID
+    fn is_pseudo_file_id(file_id: FileId) -> bool {
+        file_id == ROOTS_FILE_ID
             || file_id == UNRESOLVED_IMPORTS_FILE_ID
             || file_id == R3_SYMBOLS_ROOT_FILE_ID
-        {
+    }
+
+    /// Record that `file_id`'s wire analysis was evicted or invalidated since the last stream.
+    fn mark_file_dirty(&self, file_id: FileId) {
+        if Self::is_pseudo_file_id(file_id) {
             return;
         }
         if let Ok(mut guard) = self.dirty_wire_files.lock() {
@@ -541,11 +548,25 @@ impl QueryEngine {
         }
     }
 
-    fn remove_cached_key(&self, key: &QueryKey) -> bool {
-        if let Some(fid) = key.file_id() {
-            self.mark_file_dirty(fid);
+    fn mark_directly_invalidated(&self, file_id: FileId) {
+        if Self::is_pseudo_file_id(file_id) {
+            return;
         }
-        self.cache.remove(key).is_some()
+        if self.dirty_wire_files.lock().is_ok_and(|g| g.is_some()) {
+            if let Ok(mut guard) = self.directly_invalidated_files.lock() {
+                guard.insert(file_id);
+            }
+        }
+    }
+
+    fn remove_cached_key(&self, key: &QueryKey) -> bool {
+        let removed = self.cache.remove(key).is_some();
+        if removed {
+            if let &QueryKey::AnalyzeFileWire { file_id, .. } = key {
+                self.mark_file_dirty(file_id);
+            }
+        }
+        removed
     }
 
     /// Whether `AnalyzeFileWire` for `file_id` and `is_optimized` is currently in the cache.
@@ -646,6 +667,7 @@ impl QueryEngine {
         self.mark_ambient_global_names_stale(file_id);
         self.clear_ambient_global_dependents_for_file(file_id);
         self.mark_file_dirty(file_id);
+        self.mark_directly_invalidated(file_id);
 
         let mut evicted_keys = if let Ok(mut r_index) = self.reverse_index.write() {
             r_index.remove(&file_id).unwrap_or_default()
@@ -698,6 +720,8 @@ impl QueryEngine {
         let Some(file_id) = self.get_interned_file_id(path) else {
             return Vec::new();
         };
+        self.mark_file_dirty(file_id);
+        self.mark_directly_invalidated(file_id);
         [
             QueryKey::AnalyzeFileSyntax(file_id),
             QueryKey::AnalyzeFileEvaluated(file_id),
