@@ -871,6 +871,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
             ? {
                 inlineStyles: allStyles,
                 inlineTemplate: hasTemplateUrl ? (template ?? '') : null,
+                inlineTemplateIndex: component.inlineTemplateIndex ?? undefined,
                 stripStyleFields: hasStyleField,
               }
             : undefined,
@@ -2168,6 +2169,7 @@ interface DecoratorMetadata {
   resourceOverride?: {
     inlineStyles: string[];
     inlineTemplate: string | null;
+    inlineTemplateIndex?: number;
     stripStyleFields: boolean;
   };
 }
@@ -2179,8 +2181,9 @@ interface DecoratorMetadata {
  * https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/resources.ts#L587
  *
  * Non-resource properties are sliced verbatim from the original source (via spans recorded in Rust,
- * avoiding a TS re-parse); the regenerated `template` then `styles` are appended at the end — matching
- * the reference's `Map.delete`/`Map.set` field ordering.
+ * avoiding a TS re-parse); `template` updates an existing `template` slot in place when both
+ * `template` and `templateUrl` were written (else appends), and `styles` is appended at the end —
+ * matching the reference's `Map.delete`/`Map.set` field ordering.
  */
 function inlineDecoratorResources(
   preservedProperties: nga.SpanMetadata[],
@@ -2191,7 +2194,14 @@ function inlineDecoratorResources(
 ): string {
   const props = preservedProperties.map((span) => sliceGuarded(s, span, guards, functionSpans));
   if (override.inlineTemplate !== null) {
-    props.push(`template: ${JSON.stringify(override.inlineTemplate)}`);
+    const templateProp = `template: ${JSON.stringify(override.inlineTemplate)}`;
+    // TODO: Remove once ngp is the default compiler (splicing `template` in place when superseded
+    // by `templateUrl` is only needed for syntactic parity with ngtsc).
+    if (override.inlineTemplateIndex != null) {
+      props.splice(override.inlineTemplateIndex, 0, templateProp);
+    } else {
+      props.push(templateProp);
+    }
   }
   if (override.stripStyleFields) {
     const styles = override.inlineStyles.filter((style) => style.trim().length > 0);
