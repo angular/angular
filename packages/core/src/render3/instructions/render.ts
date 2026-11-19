@@ -9,6 +9,7 @@
 import {retrieveHydrationInfo} from '../../hydration/utils';
 import {assertEqual, assertNotReactive} from '../../util/assert';
 import {RenderFlags} from '../interfaces/definition';
+import {trackHmrLView} from '../interfaces/lview_tracking';
 import {
   CONTEXT,
   FLAGS,
@@ -20,6 +21,7 @@ import {
   QUERIES,
   TVIEW,
   TView,
+  TViewType,
 } from '../interfaces/view';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../../../primitives/devtools';
@@ -138,6 +140,9 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
     const components = tView.components;
     if (components !== null) {
       renderChildComponents(lView, components);
+    }
+    if (typeof ngHmrMode !== 'undefined' && ngHmrMode && tView.type !== TViewType.Root) {
+      trackHmrLView(lView);
     }
   } catch (error) {
     // If we didn't manage to get past the first template pass due to

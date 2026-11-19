@@ -7,17 +7,18 @@
  */
 
 import {Type} from '../interface/type';
-import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+import {assertDefined, assertNotEqual} from '../util/assert';
 import {assertLView} from './assert';
 import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
+import {prepareHmrTextUpdate} from './hmr_text';
 import {refreshView} from './instructions/change_detection';
 import {renderView} from './instructions/render';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
-import {getTrackedLViews} from './interfaces/lview_tracking';
+import {getHmrLViews, getTrackedLViews} from './interfaces/lview_tracking';
 import {isTNodeShape, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
+import {isDestroyed, isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {
   CHILD_HEAD,
   CHILD_TAIL,
@@ -98,12 +99,49 @@ export function ɵɵreplaceMetadata(
   // them at the right time.
   applyMetadata.apply(null, [type, namespaces, ...locals]);
 
-  const {newDef, oldDef} = mergeWithExistingDefinition(currentDef, getComponentDef(type)!);
+  const replacement = getReplacementDefinition(currentDef, getComponentDef(type)!);
 
   // TODO(crisbeto): the `applyMetadata` call above will replace the definition on the type.
   // Ideally we should adjust the compiler output so the metadata is returned, however that'll
   // require some internal changes. We re-add the metadata here manually.
-  (type as any)[NG_COMP_DEF] = newDef;
+  (type as any)[NG_COMP_DEF] = currentDef;
+
+  if (typeof ngHmrMode !== 'undefined' && ngHmrMode) {
+    const update = executeWithInvalidateFallback(importMeta, id, () =>
+      prepareHmrTextUpdate(currentDef, replacement),
+    );
+    if (update !== null) {
+      executeWithInvalidateFallback(importMeta, id, () => {
+        update(Object.assign(currentDef, replacement));
+      });
+      return;
+    }
+
+    const hot = importMeta?.hot;
+    if (id !== null && typeof hot?.send === 'function') {
+      const tView = currentDef.tView;
+      if (tView !== null) {
+        for (const view of getHmrLViews(tView)) {
+          if (!isDestroyed(view)) {
+            // Reload before destroying a live view. The old instance may hold references
+            // to descendants, and the framework cannot rebind application-owned references.
+            hot.send('angular:invalidate', {
+              id,
+              message: 'Cannot safely preserve state when replacing the component view.',
+            });
+            return;
+          }
+        }
+      }
+      // There are no live instances to update. Install the definition for future instances.
+      Object.assign(currentDef, replacement);
+      return;
+    }
+  }
+
+  // Callers without a dev-server connection can still use the original replacement path.
+  const oldDef = {...currentDef};
+  const newDef = Object.assign(currentDef, replacement);
 
   // If a `tView` hasn't been created yet, it means that this component hasn't been instantianted
   // before. In this case there's nothing left for us to do aside from patching it in.
@@ -120,40 +158,33 @@ export function ɵɵreplaceMetadata(
 }
 
 /**
- * Merges two component definitions while preseving the original one in place.
- * @param currentDef Definition that should receive the new metadata.
- * @param newDef Source of the new metadata.
+ * Prepares the definition to install if the update can proceed.
  */
-function mergeWithExistingDefinition(
+function getReplacementDefinition(
   currentDef: ComponentDef<unknown>,
   newDef: ComponentDef<unknown>,
-) {
-  // Clone the current definition since we reference its original data further
-  // down in the replacement process (e.g. when destroying the renderer).
-  const clone = {...currentDef};
+): ComponentDef<unknown> {
+  // The caller installs this into the existing definition object, which other definitions
+  // may reference (e.g. in their directiveDefs).
+  return {
+    ...newDef,
+    hmrText: newDef.hmrText,
 
-  // Assign the new metadata in place while preserving the object literal. It's important to
-  // Keep the object in place, because there can be references to it, for example in the
-  // `directiveDefs` of another definition.
-  const replacement = Object.assign(currentDef, newDef, {
     // We need to keep the existing directive and pipe defs, because they can get patched on
     // by a call to `setComponentScope` from a module file. That call won't make it into the
     // HMR replacement function, because it lives in an entirely different file.
-    directiveDefs: clone.directiveDefs,
-    pipeDefs: clone.pipeDefs,
+    directiveDefs: currentDef.directiveDefs,
+    pipeDefs: currentDef.pipeDefs,
 
     // Preserve the old `setInput` function, because it has some state.
     // This is fine, because the component instance is preserved as well.
-    setInput: clone.setInput,
+    setInput: currentDef.setInput,
 
     // Externally this is redundant since we redeclare the definition using the original type.
     // Internally we may receive a definition with an alternate, but identical, type so we have
     // to ensure that the original one is preserved.
-    type: clone.type,
-  });
-
-  ngDevMode && assertEqual(replacement, currentDef, 'Expected definition to be merged in place');
-  return {newDef: replacement, oldDef: clone};
+    type: currentDef.type,
+  };
 }
 
 /**
@@ -327,13 +358,13 @@ function recreateLView(
  * Runs an HMR-related function and falls back to
  * invalidating the HMR data if it throws an error.
  */
-function executeWithInvalidateFallback(
+function executeWithInvalidateFallback<T>(
   importMeta: ImportMetaExtended | null,
   id: string | null,
-  callback: () => void,
-) {
+  callback: () => T,
+): T {
   try {
-    callback();
+    return callback();
   } catch (e) {
     const error = e as {message?: string; stack?: string};
 

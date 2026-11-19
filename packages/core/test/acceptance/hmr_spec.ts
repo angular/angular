@@ -27,19 +27,32 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
   SimpleChanges,
+  TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
   ViewEncapsulation,
   ɵNG_COMP_DEF,
+  ɵɵdefineComponent,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵloadQuery,
+  ɵɵqueryRefresh,
   ɵɵreplaceMetadata,
   ɵɵsetComponentScope,
+  ɵɵtemplate,
+  ɵɵtemplateRefExtractor,
+  ɵɵtext,
+  ɵɵviewQuery,
 } from '../../src/core';
 import {NUM_ROOT_NODES} from '../../src/hydration/interfaces';
 import {ComponentType} from '../../src/render3';
+import {getComponentDef} from '../../src/render3/def_getters';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {DEHYDRATED_VIEWS} from '../../src/render3/interfaces/container';
 import {isLContainer} from '../../src/render3/interfaces/type_checks';
 import {HEADER_OFFSET, TVIEW} from '../../src/render3/interfaces/view';
@@ -53,6 +66,153 @@ describe('hot module replacement', () => {
       providers: [provideZoneChangeDetection()],
     });
   });
+
+  it('updates existing and future embedded views from the same template', async () => {
+    TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+    const previousHmrMode = globalThis.ngHmrMode;
+    globalThis.ngHmrMode = true;
+    try {
+      class TestComponent {
+        readonly container = inject(ViewContainerRef);
+        header!: TemplateRef<{}>;
+        static ɵfac = () => new TestComponent();
+        static ɵcmp = makeDefinition(this, 'Status');
+      }
+
+      function makeDefinition(type: Type<TestComponent>, text: string) {
+        const header = (rf: RenderFlags) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelementStart(0, 'span');
+            ɵɵtext(1, text);
+            ɵɵelementEnd();
+          }
+        };
+        return ɵɵdefineComponent({
+          type,
+          selectors: [['test-cmp']],
+          decls: 1,
+          vars: 0,
+          consts: [['header', '']],
+          viewQuery: (rf, ctx) => {
+            if (rf & RenderFlags.Create) {
+              ɵɵviewQuery(['header'], 5);
+            }
+            if (rf & RenderFlags.Update) {
+              const query = ɵɵloadQuery<TemplateRef<{}>>();
+              if (ɵɵqueryRefresh(query)) {
+                ctx.header = query.first;
+              }
+            }
+          },
+          template: (rf) => {
+            if (rf & RenderFlags.Create) {
+              ɵɵtemplate(0, header, 2, 0, 'ng-template', null, 0, ɵɵtemplateRefExtractor);
+            }
+          },
+          hmrText: [
+            ['<ng-template #header><span>', '</span></ng-template>'],
+            0,
+            false,
+            [1, 0, [], [[0, header, [2, 0, [[1, text]], []]]]],
+            () => [['header', true, false, 5, ['header'], null]],
+          ],
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+      const {container, header} = fixture.componentInstance;
+      const inserted = container.createEmbeddedView(header);
+      const detached = header.createEmbeddedView({});
+      const insertedText = inserted.rootNodes[0].firstChild;
+      const detachedText = detached.rootNodes[0].firstChild;
+      expect(insertedText.textContent).toBe('Status');
+      expect(detachedText.textContent).toBe('Status');
+
+      try {
+        const send = jasmine.createSpy('send');
+        for (const label of ['State', 'Phase']) {
+          ɵɵreplaceMetadata(
+            TestComponent,
+            () => {
+              TestComponent.ɵcmp = makeDefinition(TestComponent, label);
+            },
+            [],
+            [],
+            {...import.meta, hot: {send}},
+            'app.ts%40TestComponent',
+          );
+          await fixture.whenStable();
+          expect(fixture.componentInstance.header).toBe(header);
+          expect(inserted.rootNodes[0].firstChild).toBe(insertedText);
+          expect(detached.rootNodes[0].firstChild).toBe(detachedText);
+          expect(insertedText.textContent).toBe(label);
+          expect(detachedText.textContent).toBe(label);
+        }
+
+        const future = container.createEmbeddedView(header);
+        expect(future.rootNodes[0].textContent).toBe('Phase');
+        expect(send).not.toHaveBeenCalled();
+      } finally {
+        detached.destroy();
+      }
+    } finally {
+      globalThis.ngHmrMode = previousHmrMode;
+    }
+  });
+
+  it('requests a page reload before rebuilding a live view with unknown state compatibility', async () => {
+    TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+    const previousHmrMode = globalThis.ngHmrMode;
+    globalThis.ngHmrMode = true;
+    try {
+      let destroyed = 0;
+      @Component({selector: 'child-cmp', template: ''})
+      class Child implements OnDestroy {
+        ngOnDestroy() {
+          destroyed++;
+        }
+      }
+
+      @Component({imports: [Child], template: '<child-cmp/><p>Before</p>'})
+      class Parent {}
+
+      const fixture = TestBed.createComponent(Parent);
+      await fixture.whenStable();
+      const paragraph = fixture.nativeElement.querySelector('p');
+      const definition = getComponentDef(Parent)!;
+      const originalTemplate = definition.template;
+      const originalView = definition.tView;
+      const send = jasmine.createSpy('send');
+      const server = {...import.meta, hot: {send}};
+      const update = {imports: [Child], template: '<child-cmp/><strong>After</strong>'};
+      const id = 'app.ts%40Parent';
+
+      replaceMetadata(Parent, update, server, id);
+
+      expect(send).toHaveBeenCalledOnceWith('angular:invalidate', {
+        id,
+        message: 'Cannot safely preserve state when replacing the component view.',
+      });
+      expect(destroyed).toBe(0);
+      expect(fixture.nativeElement.querySelector('p')).toBe(paragraph);
+      expect(getComponentDef(Parent)).toBe(definition);
+      expect(definition.template).toBe(originalTemplate);
+      expect(definition.tView).toBe(originalView);
+
+      fixture.destroy();
+      send.calls.reset();
+      replaceMetadata(Parent, update, server, id);
+      const future = TestBed.createComponent(Parent);
+      await future.whenStable();
+
+      expect(send).not.toHaveBeenCalled();
+      expect(future.nativeElement.querySelector('strong').textContent).toBe('After');
+    } finally {
+      globalThis.ngHmrMode = previousHmrMode;
+    }
+  });
+
   it('should recreate a single usage of a basic component', () => {
     let instance!: ChildCmp;
     const initialMetadata: Component = {
@@ -2196,7 +2356,12 @@ describe('hot module replacement', () => {
   // during HMR operation. We do it for *testing* purposes only.
   const CREATED_INITIALLY_MARKER = '__ngCreatedInitially__';
 
-  function replaceMetadata(type: Type<unknown>, metadata: Component) {
+  function replaceMetadata(
+    type: Type<unknown>,
+    metadata: Component,
+    importMeta: Parameters<typeof ɵɵreplaceMetadata>[4] = null,
+    id = '',
+  ) {
     ɵɵreplaceMetadata(
       type,
       () => {
@@ -2210,8 +2375,8 @@ describe('hot module replacement', () => {
       },
       [angularCoreEnv],
       [],
-      null,
-      '',
+      importMeta,
+      id,
     );
   }
 
