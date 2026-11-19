@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {setActiveConsumer} from '../../primitives/signals';
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {Injector} from '../di/injector';
@@ -779,6 +780,10 @@ export function getNodeInjectable(
         true,
         "Because flags do not contain `SkipSelf' we expect this to always succeed.",
       );
+    // Constructors and field initializers must not run in a reactive context, otherwise their
+    // signal reads become dependencies of the caller and their signal writes are rejected.
+    // `R3Injector.hydrate` does the same for the environment injector.
+    const prevConsumer = setActiveConsumer(null);
     try {
       ngDevMode && emitInjectorToCreateInstanceEvent(token);
 
@@ -797,6 +802,7 @@ export function getNodeInjectable(
         registerPreOrderHooks(index, tData[index] as DirectiveDef<any>, tView);
       }
     } finally {
+      setActiveConsumer(prevConsumer);
       ngDevMode && setInjectorProfilerContext(prevInjectContext!);
 
       previousInjectImplementation !== null &&
