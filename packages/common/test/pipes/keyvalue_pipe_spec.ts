@@ -68,6 +68,16 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 1},
       ]);
     });
+    it('should follow changes to object key order when compareFn is null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      pipe.transform({a: 1, b: 2}, null);
+      const reordered = pipe.transform({b: 2, a: 1}, null);
+      expect(reordered).toEqual([
+        {key: 'b', value: 2},
+        {key: 'a', value: 1},
+      ]);
+      expect(pipe.transform({b: 2, a: 1}, null)).toBe(reordered);
+    });
     it('should reorder when compareFn changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = {'b': 1, 'a': 2};
@@ -281,6 +291,25 @@ describe('KeyValuePipe', () => {
         {key: 'b', value: 1},
         {key: 'a', value: 1},
       ]);
+    });
+    it('should follow changes to Map insertion order when compareFn is null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = new Map([
+        ['a', 1],
+        ['b', 2],
+      ]);
+      const initial = pipe.transform(input, null);
+      const reversed = new Map([...input].reverse());
+      const reordered = pipe.transform(reversed, null);
+      expect(reordered).toEqual([
+        {key: 'b', value: 2},
+        {key: 'a', value: 1},
+      ]);
+      expect(pipe.transform(new Map(reversed), null)).toBe(reordered);
+
+      reversed.delete('b');
+      reversed.set('b', 2);
+      expect(pipe.transform(reversed, null)).toEqual(initial);
     });
     it('should reorder when compareFn changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
