@@ -1427,11 +1427,37 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
                             }
                             Err(_) => false,
                         };
-                        if prev_same && (!group_chunks_by_ng_module || !wire.1.has_non_standalone) {
-                            return;
+                        if prev_same {
+                            if !group_chunks_by_ng_module || !wire.1.has_non_standalone {
+                                return;
+                            }
+                            let Ok(ref res) = wire.0 else {
+                                unreachable!();
+                            };
+                            // TODO(ngp): remove once template compilation moves into Rust and
+                            // unchanged peer metadata no longer crosses the Rust-JS IPC boundary.
+                            let stub = AnalysisResult {
+                                file_id: res.file_id,
+                                file_path: res.file_path.clone(),
+                                imports_end: res.imports_end,
+                                classes: Vec::new(),
+                                imports: Vec::new(),
+                                import_equals_declarations: Vec::new(),
+                                type_only_exports: Vec::new(),
+                                diagnostics: Vec::new(),
+                                source_file_validator_diagnostics: Vec::new(),
+                                signal_debug_names: Vec::new(),
+                                r3_symbols_specifier: None,
+                                top_level_value_bindings: None,
+                                namespace_alias_conflicts: Vec::new(),
+                                static_dependencies: Vec::new(),
+                                unchanged: true,
+                            };
+                            (Ok(stub), wire.1.clone(), false)
+                        } else {
+                            let (res, info) = Arc::unwrap_or_clone(wire);
+                            (res, info, was_dirty)
                         }
-                        let (res, info) = Arc::unwrap_or_clone(wire);
-                        (res, info, !prev_same && was_dirty)
                     }
                     Err(err) => (Err(err), FileChunkInfo::default(), was_dirty),
                 };
@@ -1750,6 +1776,7 @@ fn handle_coordinator_event(
 struct ChunkState {
     members: HashSet<FileId>,
     expected: HashSet<FileId>,
+    required_owners: HashSet<FileId>,
     completed: HashMap<FileId, crate::AnalysisResult>,
     has_dirty: bool,
 }
@@ -1786,6 +1813,7 @@ impl UnionFind {
         self.states.entry(root).or_insert_with(|| ChunkState {
             members: [file_id].into_iter().collect(),
             expected: [file_id].into_iter().collect(),
+            required_owners: HashSet::new(),
             completed: HashMap::new(),
             has_dirty: false,
         });
@@ -1803,6 +1831,7 @@ impl UnionFind {
         let state2 = self.states.remove(&root2).unwrap_or_else(|| ChunkState {
             members: [root2].into_iter().collect(),
             expected: [root2].into_iter().collect(),
+            required_owners: HashSet::new(),
             completed: HashMap::new(),
             has_dirty: false,
         });
@@ -1810,12 +1839,14 @@ impl UnionFind {
         let state1 = self.states.entry(root1).or_insert_with(|| ChunkState {
             members: [root1].into_iter().collect(),
             expected: [root1].into_iter().collect(),
+            required_owners: HashSet::new(),
             completed: HashMap::new(),
             has_dirty: false,
         });
 
         state1.members.extend(state2.members);
         state1.expected.extend(state2.expected);
+        state1.required_owners.extend(state2.required_owners);
         state1.completed.extend(state2.completed);
         state1.has_dirty |= state2.has_dirty;
     }
@@ -1874,10 +1905,12 @@ fn compute_intra_chunk_static_edges(
 pub struct FileChunkInfo {
     pub has_non_standalone: bool,
     pub declared_file_ids: Vec<FileId>,
+    pub owner_file_ids: Vec<FileId>,
 }
 
 /// Summarize what a completed file contributes to chunk grouping: whether it holds anything that
-/// needs an `@NgModule` scope at all, and which files the `@NgModule`s it declares pull in.
+/// needs an `@NgModule` scope at all, which files the `@NgModule`s it declares pull in, and which
+/// declaring `@NgModule` files its non-standalone classes require before the chunk can complete.
 pub(crate) async fn extract_chunk_info(
     file_data: &FileData,
     engine: &crate::QueryEngine,
@@ -1885,6 +1918,7 @@ pub(crate) async fn extract_chunk_info(
 ) -> FileChunkInfo {
     let mut has_non_standalone = false;
     let mut declared_file_ids = Vec::new();
+    let mut owner_file_ids = Vec::new();
 
     for class in &file_data.classes {
         match &class.decorator {
@@ -1919,16 +1953,25 @@ pub(crate) async fn extract_chunk_info(
                 if !c.directive.standalone || c.directive.declaring_ng_module.is_some() =>
             {
                 has_non_standalone = true;
+                if let Some(ref owner) = c.directive.declaring_ng_module {
+                    owner_file_ids.push(owner.file);
+                }
             }
             crate::analyzer::DecoratorData::Directive(d)
                 if !d.standalone || d.declaring_ng_module.is_some() =>
             {
                 has_non_standalone = true;
+                if let Some(ref owner) = d.declaring_ng_module {
+                    owner_file_ids.push(owner.file);
+                }
             }
             crate::analyzer::DecoratorData::Pipe(p)
                 if !p.standalone.unwrap_or(true) || p.declaring_ng_module.is_some() =>
             {
                 has_non_standalone = true;
+                if let Some(ref owner) = p.declaring_ng_module {
+                    owner_file_ids.push(owner.file);
+                }
             }
             _ => {}
         }
@@ -1937,6 +1980,7 @@ pub(crate) async fn extract_chunk_info(
     FileChunkInfo {
         has_non_standalone,
         declared_file_ids,
+        owner_file_ids,
     }
 }
 
@@ -1998,6 +2042,7 @@ fn handle_completed_file(
     let root = uf.find(file_id);
     if let Some(state) = uf.states.get_mut(&root) {
         state.completed.insert(file_id, res);
+        state.required_owners.extend(chunk_info.owner_file_ids);
         state.has_dirty |= is_dirty;
     }
 
@@ -2014,24 +2059,14 @@ fn handle_completed_file(
 
         if expected_all_completed {
             // Complete the chunk only once every non-standalone class's declaring NgModule
-            // file is also present (fixes the streaming race where a component completes
-            // before its module). An ownerless non-standalone class (declared by no NgModule)
-            // is emitted, not errored — ngtsc compiles a component with a null scope:
+            // file is also present (including when the class's file is an `unchanged: true` stub).
+            // An ownerless non-standalone class (declared by no NgModule) is emitted, not
+            // errored — ngtsc compiles a component with a null scope:
             // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1355-L1360
-            let mut chunk_valid = true;
-            'outer: for file_res in state.completed.values() {
-                for class in &file_res.classes {
-                    let ClassOwner::HasNgModule(ref owner_path) = get_class_owner(class) else {
-                        continue;
-                    };
-                    let owner_id = engine.intern_path(Path::new(owner_path));
-                    if !state.completed.contains_key(&owner_id) {
-                        chunk_valid = false;
-                        break 'outer;
-                    }
-                }
-            }
-            chunk_valid
+            state
+                .required_owners
+                .iter()
+                .all(|owner_id| state.completed.contains_key(owner_id))
         } else {
             false
         }
@@ -2067,40 +2102,6 @@ fn dedup_preserving_order(mut paths: Vec<String>) -> Vec<String> {
     let mut seen = HashSet::new();
     paths.retain(|path| seen.insert(path.clone()));
     paths
-}
-
-#[derive(Debug)]
-enum ClassOwner {
-    Other,
-    HasNgModule(String),
-    NoNgModule,
-}
-
-fn get_class_owner(class: &crate::ClassMetadata) -> ClassOwner {
-    let declaring = if let Some(comp) = &class.component {
-        if comp.standalone && comp.declaring_ng_module.is_none() {
-            return ClassOwner::Other;
-        }
-        &comp.declaring_ng_module
-    } else if let Some(dir) = &class.directive {
-        if dir.standalone && dir.declaring_ng_module.is_none() {
-            return ClassOwner::Other;
-        }
-        &dir.declaring_ng_module
-    } else if let Some(pipe) = &class.pipe {
-        if pipe.standalone.unwrap_or(true) && pipe.declaring_ng_module.is_none() {
-            return ClassOwner::Other;
-        }
-        &pipe.declaring_ng_module
-    } else {
-        return ClassOwner::Other;
-    };
-
-    let Some(r) = declaring else {
-        return ClassOwner::NoNgModule;
-    };
-
-    ClassOwner::HasNgModule(r.file_path.clone())
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
