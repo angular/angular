@@ -1456,4 +1456,193 @@ mod tests {
             ]
         );
     }
+
+    #[test]
+    fn same_file_runtime_values_and_namespaces_classify_verified_vs_type_only() {
+        let source = r#"
+            import {Component, Inject, InjectionToken} from '@angular/core';
+
+            export const TOK = new InjectionToken<unknown>('TOK');
+            export enum RegularE { A = 0, B = 1 }
+            export const enum ConstE { A = 0 }
+            declare enum AmbientE { A = 0 }
+
+            export namespace MergedEnumNs {
+                export const flag = true;
+                export interface Meta { label: string; }
+            }
+            export enum MergedEnumNs { FIRST = 0 }
+
+            declare namespace AmbientMergedNs { export type T = string; }
+            export enum AmbientMergedNs { FIRST = 0 }
+
+            export interface CompanionCfg { url: string; }
+            export const CompanionCfg = new InjectionToken<CompanionCfg>('cfg');
+
+            export interface CompanionNs { id: number; }
+            export namespace CompanionNs { export const create = () => ({ id: 0 }); }
+
+            export interface ConstEnumOnlyNs { id: number; }
+            export namespace ConstEnumOnlyNs { export const enum CE { A = 0 } }
+
+            export namespace Ns {
+                export enum Mode { FAST = 0 }
+                export interface PureIface { x: number; }
+                export interface PrivateShadow { url: string; }
+                const PrivateShadow = { url: '/' };
+                export const flag = true;
+
+                export class NestedWidget {
+                    static readonly Options = new InjectionToken<NestedWidget.Options>('NestedOptions');
+                }
+                export namespace NestedWidget {
+                    export interface Options { label: string; }
+                    export interface PureNestedIface { flag: boolean; }
+                }
+            }
+            export namespace Ns {
+                export interface SplitPureIface { y: number; }
+            }
+
+            export enum TypeOnlyMergedEnum { FIRST = 0 }
+            export namespace TypeOnlyMergedEnum {
+                export interface Meta { label: string; }
+            }
+
+            export namespace Outer {
+                export const flag = true;
+                export namespace Inner {
+                    export interface DeepPureIface { z: number; }
+                }
+            }
+
+            export class MyWidget {
+                static readonly Options = new InjectionToken<MyWidget.Options>('Options');
+            }
+            export namespace MyWidget {
+                export const VERSION = 1;
+                export interface Options { label: string; }
+            }
+
+            const Options = Symbol('Options');
+            export class PrivateWidget {
+                private static readonly Options = 'internal-default';
+            }
+            export namespace PrivateWidget {
+                export interface Options { label: string; }
+            }
+
+            export class ComputedWidget {
+                static readonly [Options] = 'computed-internal';
+            }
+            export namespace ComputedWidget {
+                export interface Options { label: string; }
+            }
+
+            @Component({ selector: 'test-cmp', template: '' })
+            export class TestCmp {
+                constructor(
+                    @Inject(TOK) regularEnum: RegularE,
+                    @Inject(TOK) constEnum: ConstE,
+                    @Inject(TOK) ambientEnum: AmbientE,
+                    @Inject(TOK) mergedEnum: MergedEnumNs,
+                    @Inject(TOK) mergedEnumTypeMember: MergedEnumNs.Meta,
+                    @Inject(TOK) typeOnlyMergedEnumMember: TypeOnlyMergedEnum.Meta,
+                    @Inject(TOK) ambientMergedEnum: AmbientMergedNs,
+                    @Inject(CompanionCfg) companionConst: CompanionCfg,
+                    @Inject(TOK) companionNs: CompanionNs,
+                    @Inject(TOK) constEnumOnlyNs: ConstEnumOnlyNs,
+                    @Inject(TOK) nsMode: Ns.Mode,
+                    @Inject(TOK) nsModeMember: Ns.Mode.FAST,
+                    @Inject(TOK) nsPureIface: Ns.PureIface,
+                    @Inject(TOK) nsPrivateShadow: Ns.PrivateShadow,
+                    @Inject(TOK) nsSplitPureIface: Ns.SplitPureIface,
+                    @Inject(TOK) deepPureIface: Outer.Inner.DeepPureIface,
+                    @Inject(MyWidget.Options) widgetOpts: MyWidget.Options,
+                    nsNestedWidgetOpts: Ns.NestedWidget.Options,
+                    @Inject(TOK) nsNestedWidgetPure: Ns.NestedWidget.PureNestedIface,
+                    @Inject(TOK) privateWidgetOpts: PrivateWidget.Options,
+                    @Inject(TOK) computedWidgetOpts: ComputedWidget.Options,
+                    @Inject(TOK) enumMember: RegularE.A,
+                ) {}
+            }
+        "#;
+
+        let fs = crate::test_utils::create_test_fs(&[
+            ("/tsconfig.json", r#"{ "files": ["test.ts"] }"#),
+            ("/test.ts", source),
+        ]);
+        let results = crate::test_utils::run_analyzer(fs, "/tsconfig.json", false);
+        assert!(
+            results[0].diagnostics.is_empty(),
+            "expected no diagnostics (e.g. false NG2003 on Ns.NestedWidget.Options), got: {:?}",
+            results[0].diagnostics
+        );
+        let class = results[0]
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("TestCmp"))
+            .expect("TestCmp metadata");
+        let params = class
+            .constructor_params
+            .as_ref()
+            .expect("constructor_params");
+
+        let summary: Vec<(&str, Option<&str>, bool, bool)> = [
+            "regularEnum",
+            "constEnum",
+            "ambientEnum",
+            "mergedEnum",
+            "mergedEnumTypeMember",
+            "typeOnlyMergedEnumMember",
+            "ambientMergedEnum",
+            "companionConst",
+            "companionNs",
+            "constEnumOnlyNs",
+            "nsMode",
+            "nsModeMember",
+            "nsPureIface",
+            "nsPrivateShadow",
+            "nsSplitPureIface",
+            "deepPureIface",
+            "widgetOpts",
+            "nsNestedWidgetOpts",
+            "nsNestedWidgetPure",
+            "privateWidgetOpts",
+            "computedWidgetOpts",
+            "enumMember",
+        ]
+        .into_iter()
+        .zip(params.iter())
+        .map(|(label, p)| (label, p.type_name.as_deref(), p.is_value_verified, p.is_type_only))
+        .collect();
+
+        assert_eq!(
+            summary,
+            vec![
+                ("regularEnum", Some("RegularE"), true, false),
+                ("constEnum", Some("ConstE"), false, true),
+                ("ambientEnum", Some("AmbientE"), false, true),
+                ("mergedEnum", Some("MergedEnumNs"), true, false),
+                ("mergedEnumTypeMember", Some("MergedEnumNs.Meta"), false, true),
+                ("typeOnlyMergedEnumMember", Some("TypeOnlyMergedEnum.Meta"), false, true),
+                ("ambientMergedEnum", Some("AmbientMergedNs"), true, false),
+                ("companionConst", Some("CompanionCfg"), true, false),
+                ("companionNs", Some("CompanionNs"), true, false),
+                ("constEnumOnlyNs", Some("ConstEnumOnlyNs"), false, true),
+                ("nsMode", Some("Ns.Mode"), true, false),
+                ("nsModeMember", Some("Ns.Mode.FAST"), true, false),
+                ("nsPureIface", Some("Ns.PureIface"), false, true),
+                ("nsPrivateShadow", Some("Ns.PrivateShadow"), false, true),
+                ("nsSplitPureIface", Some("Ns.SplitPureIface"), false, true),
+                ("deepPureIface", Some("Outer.Inner.DeepPureIface"), false, true),
+                ("widgetOpts", Some("MyWidget.Options"), true, false),
+                ("nsNestedWidgetOpts", Some("Ns.NestedWidget.Options"), true, false),
+                ("nsNestedWidgetPure", Some("Ns.NestedWidget.PureNestedIface"), false, true),
+                ("privateWidgetOpts", Some("PrivateWidget.Options"), false, true),
+                ("computedWidgetOpts", Some("ComputedWidget.Options"), false, true),
+                ("enumMember", Some("RegularE.A"), true, false),
+            ]
+        );
+    }
 }
