@@ -64,6 +64,7 @@ import {
   createEmptySourceSpan,
   createForeignComponentMatcher,
   getOrParseComponentTemplate,
+  isDeclarationFilePath,
   makeClassKey,
   metadataToDeclaration,
   refName,
@@ -310,7 +311,8 @@ export async function processFile(
   if (!result) {
     return unprocessedFile(new MagicString(content));
   }
-  const {parsedTemplates: templatesByClass} = getOrCreateFileAnalysis(rawCtx.fileCache, filePath);
+  const fileAnalysis = getOrCreateFileAnalysis(rawCtx.fileCache, filePath);
+  const {parsedTemplates: templatesByClass} = fileAnalysis;
   const resourceMap = new Map<string, nga.ResolvedResource | null>();
   for (const classMeta of result.classes) {
     if (!classMeta.component || !classMeta.className) continue;
@@ -331,9 +333,14 @@ export async function processFile(
     }
   }
   // Templates of dependencies declared in other files are needed to bind this file's
-  // templates for type-checking; read them here, where the analyzer can be awaited. The
-  // condition mirrors when `processFile` builds the TCB targets.
-  if (rawCtx.optimize && !rawCtx.emitDeclarationOnly) {
+  // templates for type-checking; read them here, where the analyzer can be awaited, unless
+  // `generateTcb` will be skipped or reuse `preparedTcbData`.
+  if (
+    rawCtx.optimize &&
+    !rawCtx.emitDeclarationOnly &&
+    rawCtx.hmrUpdateTarget === undefined &&
+    (fileAnalysis.preparedTcbData === undefined || fileAnalysis.sourceContent !== content)
+  ) {
     await new DependencyTemplates(
       rawCtx.analyzer,
       rawCtx.fileCache,
@@ -1949,7 +1956,7 @@ function serializeOutput(file: FileCompilation): void {
   // type-checked output also reports TS2450). Skipping aliases of local declarations would fix both.
   // https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/translator/src/import_manager/import_typescript_transform.ts#L114-L148
   const hoistedImports: string[] = [];
-  if (!filePath.endsWith('.d.ts') && compiledClasses.length > 0) {
+  if (!isDeclarationFilePath(filePath) && compiledClasses.length > 0) {
     const lateImports = [
       ...importDeclarations.filter((decl) => !removedDecls.has(decl)),
       ...(result.importEqualsDeclarations ?? []),
