@@ -1641,5 +1641,57 @@ describe('Resource Resolution E2E Test Suite', () => {
       const sidecarJs = sidecarOutputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
       expect(sidecarJs).toBe(wasmJs);
     });
+
+    it('preserves property order in ɵsetClassMetadata when both inline template and templateUrl are specified', async () => {
+      const files: TestFile[] = [
+        {path: 'tsconfig.json', content: JSON.stringify({compilerOptions: {}})},
+        {
+          path: 'app.component.ts',
+          content: `
+            import { Component } from '@angular/core';
+
+            const template = 'customTemplateKey';
+            const templateUrl = 'customTemplateUrlKey';
+
+            @Component({
+              template: 'inline ignored first',
+              selector: 'cmp-first',
+              templateUrl: './app.component.html',
+            })
+            export class FirstTemplateCmp {}
+
+            @Component({
+              [template]: 'computed prop preserved',
+              selector: 'cmp-middle',
+              template: 'inline ignored middle',
+              standalone: true,
+              templateUrl: './app.component.html',
+            })
+            export class MiddleTemplateCmp {}
+
+            @Component({
+              [templateUrl]: './does-not-exist.html',
+              selector: 'cmp-computed',
+              template: '<p>Inline kept</p>',
+              [template]: 'not a template',
+            })
+            export class ComputedResourceKeyCmp {}
+          `,
+        },
+        {path: 'app.component.html', content: '<p>From file</p>'},
+      ];
+
+      const outputs = await runTest('template_and_template_url_property_order', files);
+      const content = outputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
+
+      expect(content).not.toContain('inline ignored');
+      expect(content).toContain('Inline kept');
+      expect(content).toMatch(
+        /ɵsetClassMetadata\(\s*FirstTemplateCmp,\s*\[\s*\{\s*type:\s*Component,\s*args:\s*\[\s*\{\s*template:\s*['"]<p>From file<\/p>['"],\s*selector:\s*'cmp-first',?\s*\}/,
+      );
+      expect(content).toMatch(
+        /ɵsetClassMetadata\(\s*MiddleTemplateCmp,\s*\[\s*\{\s*type:\s*Component,\s*args:\s*\[\s*\{\s*\[template\]:\s*'computed prop preserved',\s*selector:\s*'cmp-middle',\s*template:\s*['"]<p>From file<\/p>['"],\s*standalone:\s*true,?\s*\}/,
+      );
+    });
   });
 });
