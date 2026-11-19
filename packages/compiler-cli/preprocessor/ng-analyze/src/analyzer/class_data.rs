@@ -127,6 +127,11 @@ pub struct ClassData {
     pub ng_decorator_spans: Vec<oxc_span::Span>,
     /// Spans of non-Angular decorators applied to the class.
     pub non_ng_decorator_spans: Vec<oxc_span::Span>,
+    /// True when the class, any of its members, or any constructor/method parameter carries a
+    /// surviving decorator that TypeScript compiles into `tslib.__decorate(...)`. Kept separate
+    /// from `non_ng_decorator_spans` because local/declaration-only compilation only rejects
+    /// custom *class* decorators (`NG1005`), not custom member or parameter decorators.
+    pub has_non_angular_decorators: bool,
     /// Spans the processor deletes to strip Angular class and member decorators, including
     /// trailing whitespace. Separate from `ng_decorator_spans`, which diagnostics use.
     pub decorator_removal_spans: Vec<oxc_span::Span>,
@@ -155,6 +160,7 @@ pub struct ClassData {
     pub di_issues: Vec<ValueIssue>,
     pub member_decorators: Vec<crate::DecoratedMemberMetadata>,
     pub later_declaration_references: Vec<oxc_span::Span>,
+    pub outside_metadata_guards: Vec<oxc_span::Span>,
     pub decorator_function_spans: Vec<oxc_span::Span>,
     pub top_level_references: Option<Vec<super::TopLevelReference>>,
     pub type_parameters: Option<Vec<TypeParameterData>>,
@@ -4437,6 +4443,11 @@ impl ClassData {
                 .iter()
                 .map(|span| crate::types::metadata::SpanMetadata::new(*span, cx.converter))
                 .collect(),
+            outside_metadata_guards: self
+                .outside_metadata_guards
+                .iter()
+                .map(|span| crate::types::metadata::SpanMetadata::new(*span, cx.converter))
+                .collect(),
             decorator_function_spans: if self.decorator_function_spans.is_empty() {
                 None
             } else {
@@ -4542,7 +4553,7 @@ impl ClassData {
             uses_on_changes: self.uses_on_changes,
             is_exported: self.is_exported,
             has_non_exported_bounds: self.has_non_exported_bounds,
-            has_non_angular_class_decorators: !self.non_ng_decorator_spans.is_empty(),
+            has_non_angular_class_decorators: self.has_non_angular_decorators,
         };
         Ok(metadata)
     }

@@ -45,24 +45,19 @@ export class MyService {
       factory: MyService.ɵfac,
       providedIn: 'root',
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        MyService,
-        [{ type: Injectable, args: [{ providedIn: 'root' }] }],
-        null,
-        {
-          dep: [{ type: Optional }],
-          apiUrl: [
-            { type: Host },
-            { type: Self },
-            { type: SkipSelf },
-            { type: Inject, args: [API_URL] },
-          ],
-        },
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(MyService, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, {
+      dep: [{ type: Optional }],
+      apiUrl: [
+        { type: Host },
+        { type: Self },
+        { type: SkipSelf },
+        { type: Inject, args: [API_URL] },
+      ],
+    });
+})();
 
 export class MyComponent {
   readonly dep = inject(DepService, { optional: true });

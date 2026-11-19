@@ -202,6 +202,7 @@ export interface ClassMetadata {
   constructorParams?: Array<ConstructorParamMetadata>;
   memberDecorators?: Array<DecoratedMemberMetadata>;
   laterDeclarationReferences: Array<SpanMetadata>;
+  outsideMetadataGuards?: Array<SpanMetadata>;
   decoratorFunctionSpans?: Array<SpanMetadata>;
   topLevelReferences?: Array<TopLevelReferenceMetadata>;
   injectable?: InjectableMetadata;

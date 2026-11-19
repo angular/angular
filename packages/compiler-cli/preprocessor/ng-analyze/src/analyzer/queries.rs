@@ -405,6 +405,7 @@ pub fn extract_queries<'a>(
     angular_imports: &crate::analyzer::imports::AngularImports,
     semantic: &Semantic<'a>,
     eval: &crate::evaluator::EvalInput<'a, '_>,
+    mut outside_metadata: Option<&mut super::OutsideMetadataScope<'_, '_, 'a>>,
     mut top_level_reads: Option<&mut super::TopLevelReads<'_, 'a, '_>>,
     issues: &mut Vec<ValueIssue>,
 ) -> Vec<AngularField> {
@@ -533,6 +534,24 @@ pub fn extract_queries<'a>(
         let predicate = extract_predicate(&call.arguments[0], PredicateKind::Signal, eval);
         let (descendants, emit_distinct_changes_only, read_span, is_static) =
             extract_query_options(&call.arguments, default_descendants, semantic);
+        let mut outside_guards = Vec::new();
+        if outside_metadata.is_some() || top_level_reads.is_some() {
+            let mut local_scope = outside_metadata.as_deref_mut().map(|scope| {
+                super::OutsideMetadataScope {
+                    enclosing_class: scope.enclosing_class,
+                    guards: &mut outside_guards,
+                }
+            });
+            super::collect_argument_references(
+                &call.arguments,
+                semantic,
+                u32::MAX,
+                local_scope.as_mut(),
+                None,
+                top_level_reads.as_deref_mut(),
+                None,
+            );
+        }
         let options_arg = call.arguments.get(1);
         let options_span = options_arg
             .and_then(|arg| arg.as_expression())
@@ -541,18 +560,11 @@ pub fn extract_queries<'a>(
             super::strip_type_arguments_from_args(
                 std::slice::from_ref(arg),
                 semantic.source_text(),
-                &[],
+                &outside_guards,
             )
         });
-        if let Some(reads) = top_level_reads.as_deref_mut() {
-            super::collect_argument_references(
-                &call.arguments,
-                semantic,
-                class.span.end,
-                None,
-                Some(reads),
-                None,
-            );
+        if let Some(scope) = outside_metadata.as_deref_mut() {
+            scope.guards.extend(outside_guards);
         }
 
         let meta = QueryData {
@@ -801,6 +813,7 @@ mod tests {
                     &angular_imports,
                     &semantic,
                     &eval,
+                    None,
                     None,
                     &mut issues,
                 );

@@ -232,17 +232,27 @@ struct TopLevelReferenceSink<'s, 'a, 'e> {
 ///   https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/hmr/src/extract_dependencies.ts#L229-L263
 ///
 /// Types are erased and never evaluated, so neither consumer looks inside them.
-struct DecoratorReferenceFinder<'s, 'a, 'e> {
+/// Per-class accumulator for `private`/`protected` static member access guards needed only when
+/// `ɵsetClassMetadata` moves outside `enclosing_class` (never injected into `ɵcmp`/`ɵdir`/`ɵprov`).
+pub struct OutsideMetadataScope<'c, 'g, 'a> {
+    pub enclosing_class: &'c oxc_ast::ast::Class<'a>,
+    pub guards: &'g mut Vec<oxc_span::Span>,
+}
+
+struct DecoratorReferenceFinder<'s, 'c, 'g, 'a, 'e> {
     semantic: &'s oxc_semantic::Semantic<'a>,
     class_end: u32,
+    outside_metadata: Option<OutsideMetadataScope<'c, 'g, 'a>>,
     later: Option<&'s mut Vec<oxc_span::Span>>,
     top_level: Option<TopLevelReferenceSink<'s, 'a, 'e>>,
     function_spans: Option<&'s mut Vec<oxc_span::Span>>,
     /// How many function bodies enclose the current node.
     function_depth: u32,
+    /// Non-zero while walking TypeScript type annotations (`TSType`) for `outside_metadata`.
+    type_depth: u32,
 }
 
-impl<'a> DecoratorReferenceFinder<'_, 'a, '_> {
+impl<'a> DecoratorReferenceFinder<'_, '_, '_, 'a, '_> {
     fn resolve(
         &self,
         ident: &oxc_ast::ast::IdentifierReference<'a>,
@@ -343,10 +353,56 @@ impl<'a> DecoratorReferenceFinder<'_, 'a, '_> {
             }
         }
     }
+
+    /// When `ɵsetClassMetadata` is emitted as a top-level IIFE outside `enclosing_class` (because
+    /// surviving non-Angular decorators exist), `ClassName.member`, `BaseClass.member`, or
+    /// `ns.BaseClass.member` accesses targeting `private` (TS2341) or `protected` (TS2445) static
+    /// members leave the class's lexical access scope. Guarding `expr.property.span` places
+    /// `// @ts-ignore\n` right before the property identifier (`SubCmp.// @ts-ignore\nSECRET`),
+    /// avoiding `return`/`throw`/`yield` ASI hazards and handling multi-line member accesses.
+    fn record_non_public_static_access(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
+        let Some(scope) = self.outside_metadata.as_mut() else {
+            return;
+        };
+        let Some(target) = resolve_expression_class_target(&expr.object, self.semantic) else {
+            return;
+        };
+        if is_non_public_static_target_outside_class(
+            scope.enclosing_class,
+            &target,
+            expr.property.name.as_str(),
+            self.semantic,
+        ) {
+            scope.guards.push(expr.property.span);
+        }
+    }
+
+    fn record_non_public_type_query(&mut self, qual: &oxc_ast::ast::TSQualifiedName<'a>) {
+        if let oxc_ast::ast::TSTypeName::QualifiedName(inner) = &qual.left {
+            self.record_non_public_type_query(inner);
+        }
+        let Some(scope) = self.outside_metadata.as_mut() else {
+            return;
+        };
+        let Some(target) = resolve_type_name_class_target(&qual.left, self.semantic) else {
+            return;
+        };
+        if is_non_public_static_target_outside_class(
+            scope.enclosing_class,
+            &target,
+            qual.right.name.as_str(),
+            self.semantic,
+        ) {
+            scope.guards.push(qual.right.span);
+        }
+    }
 }
 
-impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
+impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, '_, '_, 'a, '_> {
     fn visit_identifier_reference(&mut self, ident: &oxc_ast::ast::IdentifierReference<'a>) {
+        if self.type_depth > 0 {
+            return;
+        }
         let Some(symbol_id) = self.resolve(ident) else {
             return;
         };
@@ -355,6 +411,9 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
     }
 
     fn visit_static_member_expression(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
+        if self.type_depth > 0 {
+            return;
+        }
         if let oxc_ast::ast::Expression::Identifier(ident) = &expr.object {
             let later_before = self.later.as_deref().map_or(0, Vec::len);
             if let Some(symbol_id) = self.resolve(ident) {
@@ -364,6 +423,7 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
             if self.later.as_deref().map_or(0, Vec::len) == later_before {
                 self.record_later_property(expr);
             }
+            self.record_non_public_static_access(expr);
             return;
         }
 
@@ -373,6 +433,8 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
             oxc_ast::ast::Expression::ThisExpression(_) | oxc_ast::ast::Expression::Super(_)
         ) {
             self.record_later_property(expr);
+        } else {
+            self.record_non_public_static_access(expr);
         }
     }
 
@@ -389,11 +451,13 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
 
     fn visit_expression(&mut self, expr: &oxc_ast::ast::Expression<'a>) {
         use oxc_span::GetSpan;
-        if matches!(
-            expr,
-            oxc_ast::ast::Expression::FunctionExpression(_)
-                | oxc_ast::ast::Expression::ArrowFunctionExpression(_)
-        ) {
+        if self.type_depth == 0
+            && matches!(
+                expr,
+                oxc_ast::ast::Expression::FunctionExpression(_)
+                    | oxc_ast::ast::Expression::ArrowFunctionExpression(_)
+            )
+        {
             if let Some(spans) = self.function_spans.as_deref_mut() {
                 spans.push(expr.span());
             }
@@ -406,7 +470,10 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
         func: &oxc_ast::ast::Function<'a>,
         flags: oxc_syntax::scope::ScopeFlags,
     ) {
-        if self.top_level.is_none() && self.function_spans.is_none() {
+        if self.top_level.is_none()
+            && self.function_spans.is_none()
+            && self.outside_metadata.is_none()
+        {
             return;
         }
         self.function_depth += 1;
@@ -418,7 +485,10 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
         &mut self,
         arrow: &oxc_ast::ast::ArrowFunctionExpression<'a>,
     ) {
-        if self.top_level.is_none() && self.function_spans.is_none() {
+        if self.top_level.is_none()
+            && self.function_spans.is_none()
+            && self.outside_metadata.is_none()
+        {
             return;
         }
         self.function_depth += 1;
@@ -426,8 +496,263 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
         self.function_depth -= 1;
     }
 
-    // Types are erased and never evaluated.
-    fn visit_ts_type(&mut self, _ty: &oxc_ast::ast::TSType<'a>) {}
+    fn visit_ts_type(&mut self, ty: &oxc_ast::ast::TSType<'a>) {
+        // Types are erased and never evaluated; only `outside_metadata` inspects `typeof` queries
+        // (`TSTypeQuery`) because `.ts` output retains type annotations outside the class body.
+        if self.outside_metadata.is_none() {
+            return;
+        }
+        self.type_depth += 1;
+        oxc_ast_visit::walk::walk_ts_type(self, ty);
+        self.type_depth -= 1;
+    }
+
+    fn visit_ts_type_query(&mut self, query: &oxc_ast::ast::TSTypeQuery<'a>) {
+        if let oxc_ast::ast::TSTypeQueryExprName::QualifiedName(qual) = &query.expr_name {
+            self.record_non_public_type_query(qual);
+        }
+        if let Some(type_args) = &query.type_arguments {
+            self.visit_ts_type_parameter_instantiation(type_args);
+        }
+    }
+}
+
+enum ClassTarget<'a> {
+    Local(&'a oxc_ast::ast::Class<'a>),
+    Imported {
+        root_symbol: oxc_semantic::SymbolId,
+        member_path: Vec<&'a str>,
+    },
+}
+
+fn resolve_expression_class_target<'a>(
+    expr: &'a oxc_ast::ast::Expression<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+) -> Option<ClassTarget<'a>> {
+    use oxc_ast::ast::Expression;
+
+    let mut cur = expr.without_parentheses();
+    let mut member_path = Vec::new();
+    for _ in 0..16 {
+        match cur {
+            Expression::Identifier(ident) => {
+                member_path.reverse();
+                return resolve_class_target(ident, &member_path, semantic);
+            }
+            Expression::StaticMemberExpression(mem) if !mem.optional => {
+                member_path.push(mem.property.name.as_str());
+                cur = mem.object.without_parentheses();
+            }
+            _ => return None,
+        }
+    }
+    None
+}
+
+fn resolve_type_name_class_target<'a>(
+    type_name: &'a oxc_ast::ast::TSTypeName<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+) -> Option<ClassTarget<'a>> {
+    use oxc_ast::ast::TSTypeName;
+
+    let mut cur = type_name;
+    let mut member_path = Vec::new();
+    for _ in 0..16 {
+        match cur {
+            TSTypeName::IdentifierReference(ident) => {
+                member_path.reverse();
+                return resolve_class_target(ident, &member_path, semantic);
+            }
+            TSTypeName::QualifiedName(qual) => {
+                member_path.push(qual.right.name.as_str());
+                cur = &qual.left;
+            }
+            TSTypeName::ThisExpression(_) => return None,
+        }
+    }
+    None
+}
+
+fn resolve_class_target<'a>(
+    root_ident: &oxc_ast::ast::IdentifierReference<'a>,
+    member_path: &[&'a str],
+    semantic: &oxc_semantic::Semantic<'a>,
+) -> Option<ClassTarget<'a>> {
+    use oxc_ast::ast::{Declaration, Statement, TSNamespaceDeclarationBody};
+    use oxc_ast::AstKind;
+    use oxc_syntax::symbol::SymbolFlags;
+
+    let scoping = semantic.scoping();
+    let root_sym = root_ident
+        .reference_id
+        .get()
+        .and_then(|id| scoping.get_reference(id).symbol_id())?;
+
+    if scoping.symbol_flags(root_sym).contains(SymbolFlags::Import) {
+        return Some(ClassTarget::Imported {
+            root_symbol: root_sym,
+            member_path: member_path.to_vec(),
+        });
+    }
+
+    if member_path.is_empty() {
+        return match semantic.symbol_declaration(root_sym).kind() {
+            AstKind::Class(c) => Some(ClassTarget::Local(c)),
+            _ => None,
+        };
+    }
+
+    let nodes = semantic.nodes();
+    let mut current_ns = Vec::new();
+    for node in std::iter::once(semantic.symbol_declaration(root_sym)).chain(
+        scoping
+            .symbol_redeclarations(root_sym)
+            .iter()
+            .map(|r| nodes.get_node(r.declaration)),
+    ) {
+        if let AstKind::TSNamespaceDeclaration(decl) = node.kind() {
+            if let Some(scope_id) = decl.scope_id.get() {
+                current_ns.push((decl, scope_id));
+            }
+        }
+    }
+
+    let (intermediate, &[class_name]) = member_path.split_at(member_path.len() - 1) else {
+        return None;
+    };
+    for &seg in intermediate {
+        let mut next_ns = Vec::new();
+        for (parent_decl, _) in &current_ns {
+            match &parent_decl.body {
+                TSNamespaceDeclarationBody::TSNamespaceDeclaration(inner)
+                    if inner.id.name.as_str() == seg =>
+                {
+                    if let Some(s) = inner.scope_id.get() {
+                        next_ns.push((inner.as_ref(), s));
+                    }
+                }
+                TSNamespaceDeclarationBody::TSModuleBlock(block) => {
+                    for stmt in &block.body {
+                        let decl = match stmt {
+                            Statement::ExportDeclaration(exp) => Some(&exp.declaration),
+                            other => other.as_declaration(),
+                        };
+                        if let Some(Declaration::TSNamespaceDeclaration(d)) = decl {
+                            if d.id.name.as_str() == seg {
+                                if let Some(s) = d.scope_id.get() {
+                                    next_ns.push((d.as_ref(), s));
+                                }
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        current_ns = next_ns;
+    }
+
+    for (_, scope_id) in current_ns {
+        let Some(sym) = scoping.get_binding(scope_id, class_name.into()) else {
+            continue;
+        };
+        if let AstKind::Class(c) = semantic.symbol_declaration(sym).kind() {
+            return Some(ClassTarget::Local(c));
+        }
+    }
+    None
+}
+
+fn is_non_public_static_target_outside_class<'a>(
+    enclosing_class: &'a oxc_ast::ast::Class<'a>,
+    target: &ClassTarget<'a>,
+    prop_name: &str,
+    semantic: &oxc_semantic::Semantic<'a>,
+) -> bool {
+    use oxc_ast::ast::{ClassElement, PropertyKey, TSAccessibility};
+
+    // Step 1: Verify `target` is actually `enclosing_class` or one of its `extends` ancestors
+    // (avoiding suppressing genuine TS2341/TS2445 errors on unrelated classes).
+    let mut cur_class = enclosing_class;
+    let mut matched_class = None;
+    for _ in 0..16 {
+        if let ClassTarget::Local(target_cls) = target {
+            if target_cls.span == cur_class.span {
+                matched_class = Some(cur_class);
+                break;
+            }
+        }
+        let Some(heritage) = &cur_class.heritage else {
+            return false;
+        };
+        let Some(super_target) = resolve_expression_class_target(&heritage.expression, semantic)
+        else {
+            return false;
+        };
+        if let (
+            ClassTarget::Imported {
+                root_symbol: a_sym,
+                member_path: a_path,
+            },
+            ClassTarget::Imported {
+                root_symbol: b_sym,
+                member_path: b_path,
+            },
+        ) = (&super_target, target)
+        {
+            if a_sym == b_sym && a_path == b_path {
+                return true;
+            }
+        }
+        let ClassTarget::Local(super_class) = super_target else {
+            return false;
+        };
+        cur_class = super_class;
+    }
+
+    let Some(mut decl_class) = matched_class else {
+        return false;
+    };
+
+    // Step 2: Walk from the referenced class up its `extends` chain to locate `prop_name`.
+    // `private` is only legal inside `enclosing_class` itself (not on base classes, where `Base.B`
+    // is already TS2341 inside `SubCmp`), whereas `protected` is legal across the entire hierarchy.
+    for _ in 0..16 {
+        for element in &decl_class.body.body {
+            let (is_static, key, accessibility) = match element {
+                ClassElement::PropertyDefinition(p) => (p.r#static, &p.key, p.accessibility),
+                ClassElement::MethodDefinition(m) => (m.r#static, &m.key, m.accessibility),
+                ClassElement::AccessorProperty(a) => (a.r#static, &a.key, a.accessibility),
+                _ => continue,
+            };
+            if is_static
+                && !matches!(key, PropertyKey::PrivateIdentifier(_))
+                && key.static_name().as_deref() == Some(prop_name)
+            {
+                return if decl_class.span == enclosing_class.span {
+                    matches!(
+                        accessibility,
+                        Some(TSAccessibility::Private | TSAccessibility::Protected)
+                    )
+                } else {
+                    matches!(accessibility, Some(TSAccessibility::Protected))
+                };
+            }
+        }
+        let Some(heritage) = &decl_class.heritage else {
+            return false;
+        };
+        let Some(super_target) = resolve_expression_class_target(&heritage.expression, semantic)
+        else {
+            return true;
+        };
+        match super_target {
+            ClassTarget::Imported { .. } => return true,
+            ClassTarget::Local(super_class) => decl_class = super_class,
+        }
+    }
+
+    false
 }
 
 /// Pushes onto `spans` every identifier or static member expression in `decorator`'s arguments
@@ -437,6 +762,7 @@ pub(crate) fn collect_decorator_references<'a>(
     decorator: &oxc_ast::ast::Decorator<'a>,
     semantic: &oxc_semantic::Semantic<'a>,
     class_end: u32,
+    outside_metadata: Option<&mut OutsideMetadataScope<'_, '_, 'a>>,
     later: Option<&mut Vec<oxc_span::Span>>,
     top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
     function_spans: Option<&mut Vec<oxc_span::Span>>,
@@ -444,13 +770,22 @@ pub(crate) fn collect_decorator_references<'a>(
     let Some(args) = get_decorator_args(decorator) else {
         return;
     };
-    collect_argument_references(args, semantic, class_end, later, top_level, function_spans);
+    collect_argument_references(
+        args,
+        semantic,
+        class_end,
+        outside_metadata,
+        later,
+        top_level,
+        function_spans,
+    );
 }
 
 pub(crate) fn collect_argument_references<'a>(
     args: &[oxc_ast::ast::Argument<'a>],
     semantic: &oxc_semantic::Semantic<'a>,
     class_end: u32,
+    outside_metadata: Option<&mut OutsideMetadataScope<'_, '_, 'a>>,
     later: Option<&mut Vec<oxc_span::Span>>,
     top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
     function_spans: Option<&mut Vec<oxc_span::Span>>,
@@ -458,6 +793,10 @@ pub(crate) fn collect_argument_references<'a>(
     let mut finder = DecoratorReferenceFinder {
         semantic,
         class_end,
+        outside_metadata: outside_metadata.map(|s| OutsideMetadataScope {
+            enclosing_class: s.enclosing_class,
+            guards: &mut *s.guards,
+        }),
         later,
         top_level: top_level.map(|reads| TopLevelReferenceSink {
             out: &mut reads.out,
@@ -465,6 +804,7 @@ pub(crate) fn collect_argument_references<'a>(
         }),
         function_spans,
         function_depth: 0,
+        type_depth: 0,
     };
     for arg in args {
         finder.visit_argument(arg);
@@ -636,6 +976,7 @@ pub fn get_constructor_params<'a>(
     converter: &Utf8ToUtf16,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
     angular_imports: &crate::analyzer::imports::AngularImports,
+    mut outside_metadata: Option<&mut OutsideMetadataScope<'_, '_, 'a>>,
     jit_removal_spans: &mut Vec<oxc_span::Span>,
     mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Option<ConstructorParams> {
@@ -679,15 +1020,26 @@ pub fn get_constructor_params<'a>(
                 None
             };
             let decorator_span = is_angular.then(|| SpanMetadata::new(decorator.span, converter));
+            let mut outside_guards = Vec::new();
             if is_angular {
-                collect_decorator_references(
-                    decorator,
-                    semantic,
-                    class.span.end,
-                    None,
-                    top_level_reads.as_deref_mut(),
-                    None,
-                );
+                if outside_metadata.is_some() || top_level_reads.is_some() {
+                    let mut local_scope =
+                        outside_metadata
+                            .as_deref_mut()
+                            .map(|scope| OutsideMetadataScope {
+                                enclosing_class: scope.enclosing_class,
+                                guards: &mut outside_guards,
+                            });
+                    collect_decorator_references(
+                        decorator,
+                        semantic,
+                        u32::MAX,
+                        local_scope.as_mut(),
+                        None,
+                        top_level_reads.as_deref_mut(),
+                        None,
+                    );
+                }
                 jit_removal_spans.push(self::utils::decorator_removal_span(
                     decorator,
                     semantic.source_text(),
@@ -728,12 +1080,15 @@ pub fn get_constructor_params<'a>(
                     None
                 },
                 args_string: if is_angular {
-                    extract_decorator_args_string(decorator, semantic.source_text(), &[])
+                    extract_decorator_args_string(decorator, semantic.source_text(), &outside_guards)
                 } else {
                     None
                 },
                 is_angular,
             });
+            if let Some(scope) = outside_metadata.as_deref_mut() {
+                scope.guards.extend(outside_guards);
+            }
         }
 
         params.push(crate::ConstructorParamMetadata {
@@ -768,6 +1123,7 @@ pub fn get_member_decorators<'a>(
     semantic: &oxc_semantic::Semantic<'a>,
     angular_imports: &crate::analyzer::imports::AngularImports,
     source_text: &str,
+    mut outside_metadata: Option<&mut OutsideMetadataScope<'_, '_, 'a>>,
     later_references: &mut Vec<oxc_span::Span>,
     removal_spans: &mut Vec<oxc_span::Span>,
     jit_removal_spans: &mut Vec<oxc_span::Span>,
@@ -810,13 +1166,22 @@ pub fn get_member_decorators<'a>(
                 let canonical_name =
                     get_canonical_decorator_name(decorator, semantic, angular_imports);
                 let is_angular = is_angular_decorator(decorator, semantic, angular_imports);
-                let mut guards = Vec::new();
+                let mut later_guards = Vec::new();
+                let mut outside_guards = Vec::new();
                 if is_angular {
+                    let mut local_scope =
+                        outside_metadata
+                            .as_deref_mut()
+                            .map(|scope| OutsideMetadataScope {
+                                enclosing_class: scope.enclosing_class,
+                                guards: &mut outside_guards,
+                            });
                     collect_decorator_references(
                         decorator,
                         semantic,
                         class.span.end,
-                        Some(&mut guards),
+                        local_scope.as_mut(),
+                        Some(&mut later_guards),
                         top_level_reads.as_deref_mut(),
                         None,
                     );
@@ -825,6 +1190,11 @@ pub fn get_member_decorators<'a>(
                     if !matches!(key, PropertyKey::StringLiteral(_)) {
                         jit_removal_spans.push(removal_span);
                     }
+                }
+                let mut combined_guards = Vec::new();
+                if !later_guards.is_empty() || !outside_guards.is_empty() {
+                    combined_guards.extend_from_slice(&later_guards);
+                    combined_guards.extend_from_slice(&outside_guards);
                 }
                 // `args` is intentionally omitted as an optimization, because `ɵsetClassMetadata`
                 // emission in TypeScript only requires `args_span` for verbatim source slicing.
@@ -839,13 +1209,16 @@ pub fn get_member_decorators<'a>(
                         None
                     },
                     args_string: if is_angular {
-                        extract_decorator_args_string(decorator, source_text, &guards)
+                        extract_decorator_args_string(decorator, source_text, &combined_guards)
                     } else {
                         None
                     },
                     is_angular,
                 };
-                later_references.extend(guards);
+                later_references.extend(later_guards);
+                if let Some(scope) = outside_metadata.as_deref_mut() {
+                    scope.guards.extend(outside_guards);
+                }
                 Some(metadata)
             })
             .collect();
@@ -860,6 +1233,101 @@ pub fn get_member_decorators<'a>(
         });
     }
     members
+}
+
+/// Whether `class`, any of its members, or any of its constructor/method parameters carries a
+/// decorator that survives Angular compilation and is lowered by TypeScript into `tslib.__decorate`.
+///
+/// Class-level and constructor-parameter decorators compile to `ClassName = __decorate(..., ClassName)`
+/// and can replace or wrap the constructor, so `ɵsetClassMetadata` must run after them.
+///
+/// TODO: Remove the member and method-parameter decorator checks once ngp is the default compiler
+/// if syntactic statement-ordering parity with ngtsc (`__decorate` before `ɵsetClassMetadata`) is
+/// no longer required.
+pub(crate) fn has_surviving_non_angular_decorators<'a>(
+    class: &'a oxc_ast::ast::Class<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+) -> bool {
+    use oxc_ast::ast::{ClassElement, MethodDefinitionKind, PropertyKey};
+
+    if class
+        .decorators
+        .iter()
+        .any(|d| !is_angular_decorator(d, semantic, angular_imports))
+    {
+        return true;
+    }
+
+    if let Some(ctor) = constructor_method(class, false) {
+        let has_non_ng_ctor_param = ctor
+            .value
+            .params
+            .items
+            .iter()
+            .flat_map(|p| p.decorators.iter())
+            .chain(
+                ctor.value
+                    .params
+                    .rest
+                    .iter()
+                    .flat_map(|r| r.decorators.iter()),
+            )
+            .any(|d| !is_angular_decorator(d, semantic, angular_imports));
+        if has_non_ng_ctor_param {
+            return true;
+        }
+    }
+
+    for element in &class.body.body {
+        match element {
+            ClassElement::PropertyDefinition(p)
+                if !matches!(p.key, PropertyKey::PrivateIdentifier(_)) =>
+            {
+                if p.decorators
+                    .iter()
+                    .any(|d| !is_angular_decorator(d, semantic, angular_imports))
+                {
+                    return true;
+                }
+            }
+            ClassElement::AccessorProperty(a)
+                if !matches!(a.key, PropertyKey::PrivateIdentifier(_)) =>
+            {
+                if a.decorators
+                    .iter()
+                    .any(|d| !is_angular_decorator(d, semantic, angular_imports))
+                {
+                    return true;
+                }
+            }
+            ClassElement::MethodDefinition(m)
+                if m.kind != MethodDefinitionKind::Constructor
+                    && m.value.body.is_some()
+                    && !matches!(m.key, PropertyKey::PrivateIdentifier(_)) =>
+            {
+                if m.decorators
+                    .iter()
+                    .any(|d| !is_angular_decorator(d, semantic, angular_imports))
+                {
+                    return true;
+                }
+                if m.kind == MethodDefinitionKind::Method
+                    && (m.value.params.items.iter().any(|p| !p.decorators.is_empty())
+                        || m.value
+                            .params
+                            .rest
+                            .as_ref()
+                            .is_some_and(|r| !r.decorators.is_empty()))
+                {
+                    return true;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    false
 }
 
 /// Why a constructor parameter's type cannot be used as a DI token.
