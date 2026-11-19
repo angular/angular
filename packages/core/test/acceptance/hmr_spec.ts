@@ -26,6 +26,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  Pipe,
+  PipeTransform,
   provideZoneChangeDetection,
   QueryList,
   SimpleChanges,
@@ -40,6 +42,7 @@ import {
 } from '../../src/core';
 import {NUM_ROOT_NODES} from '../../src/hydration/interfaces';
 import {ComponentType} from '../../src/render3';
+import {getComponentDef} from '../../src/render3/def_getters';
 import {DEHYDRATED_VIEWS} from '../../src/render3/interfaces/container';
 import {isLContainer} from '../../src/render3/interfaces/type_checks';
 import {HEADER_OFFSET, TVIEW} from '../../src/render3/interfaces/view';
@@ -539,8 +542,8 @@ describe('hot module replacement', () => {
 
   it('should carry over dependencies defined by setComponentScope', () => {
     // In some cases the AoT compiler produces a `setComponentScope` for non-standalone
-    // components. We simulate it here by declaring two components that are not standalone
-    // and manually calling `setComponentScope`.
+    // components. We simulate it here by declaring two components and a pipe that are not
+    // standalone and manually calling `setComponentScope`.
     @Component({
       selector: 'child-cmp',
       template: 'hello',
@@ -548,22 +551,29 @@ describe('hot module replacement', () => {
     })
     class ChildCmp {}
 
+    @Pipe({name: 'upperPipe', standalone: false})
+    class UpperPipe implements PipeTransform {
+      transform(value: string): string {
+        return value.toUpperCase();
+      }
+    }
+
     @Component({
-      template: 'Initial <child-cmp/>',
+      template: 'Initial <child-cmp/> {{ "ok" | upperPipe }}',
       standalone: false,
     })
     class RootCmp {}
 
-    ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], []);
+    ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], [UpperPipe]);
 
     const fixture = TestBed.createComponent(RootCmp);
     fixture.detectChanges();
     markNodesAsCreatedInitially(fixture.nativeElement);
-    expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp>');
+    expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp> OK');
 
     replaceMetadata(RootCmp, {
       standalone: false,
-      template: 'Changed <child-cmp/>',
+      template: 'Changed <child-cmp/> {{ "ok" | upperPipe }}',
     });
     fixture.detectChanges();
 
@@ -571,7 +581,157 @@ describe('hot module replacement', () => {
     verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
     verifyNodesWereRecreated(recreatedNodes);
 
-    expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp>');
+    expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp> OK');
+  });
+
+  describe('directiveDefs and pipeDefs replacement', () => {
+    @Directive({
+      selector: '[myDir]',
+      host: {'[attr.data-dir]': '"active"'},
+    })
+    class MyDirective {}
+
+    @Directive({
+      selector: '[otherDir]',
+      host: {'[attr.data-other]': '"other"'},
+    })
+    class OtherDirective {}
+
+    @Pipe({name: 'myPipe'})
+    class MyPipe implements PipeTransform {
+      transform(value: string): string {
+        return value.toUpperCase();
+      }
+    }
+
+    // Use a separate replacement class so JIT `depsTracker` computes a fresh standalone scope.
+    function hmrUpdateFrom(
+      target: Type<unknown>,
+      replacement: Type<unknown>,
+      overrides: Record<string, unknown> = {},
+    ) {
+      const replacementDef = getComponentDef(replacement)!;
+      ɵɵreplaceMetadata(
+        target,
+        (cmp: any) => {
+          cmp.ɵcmp = {...replacementDef, ...overrides, type: cmp};
+        },
+        [],
+        [],
+        null,
+        '',
+      );
+    }
+
+    it('should swap and clear standalone directives during HMR', () => {
+      @Component({
+        selector: 'app-swap',
+        imports: [MyDirective],
+        template: '<div id="box" myDir otherDir>v1</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppSwap {}
+
+      @Component({
+        selector: 'app-swap',
+        imports: [OtherDirective],
+        template: '<div id="box" myDir otherDir>v2</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppSwapV2 {}
+
+      const fixture = TestBed.createComponent(AppSwap);
+      fixture.detectChanges();
+      let box = fixture.nativeElement.querySelector('#box');
+      expect(box.getAttribute('data-dir')).toBe('active');
+      expect(box.getAttribute('data-other')).toBeNull();
+
+      hmrUpdateFrom(AppSwap, AppSwapV2);
+      fixture.detectChanges();
+      box = fixture.nativeElement.querySelector('#box');
+      expect(box.textContent).toBe('v2');
+      expect(box.getAttribute('data-dir')).toBeNull();
+      expect(box.getAttribute('data-other')).toBe('other');
+
+      // Clearing all standalone imports (AoT omits `dependencies`, leaving `directiveDefs: null`)
+      // must not restore the previously active directive defs.
+      hmrUpdateFrom(AppSwap, AppSwapV2, {
+        directiveDefs: null,
+        pipeDefs: null,
+        dependencies: null,
+      });
+      fixture.detectChanges();
+      box = fixture.nativeElement.querySelector('#box');
+      expect(box.getAttribute('data-dir')).toBeNull();
+      expect(box.getAttribute('data-other')).toBeNull();
+    });
+
+    it('should activate newly added directive and pipe on standalone component', () => {
+      @Component({
+        selector: 'app-add',
+        imports: [],
+        template: '<div id="box" myDir>initial</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppAdd {}
+
+      @Component({
+        selector: 'app-add',
+        imports: [MyDirective, MyPipe],
+        template: '<div id="box" myDir>{{ "added" | myPipe }}</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppAddV2 {}
+
+      const fixture = TestBed.createComponent(AppAdd);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('#box').getAttribute('data-dir')).toBeNull();
+
+      hmrUpdateFrom(AppAdd, AppAddV2);
+      fixture.detectChanges();
+      const box = fixture.nativeElement.querySelector('#box');
+      expect(box.getAttribute('data-dir')).toBe('active');
+      expect(box.textContent).toBe('ADDED');
+    });
+
+    it('should render recursive standalone self-reference added in HMR update', () => {
+      @Component({
+        selector: 'app-tree',
+        template: '<span class="node">{{ label }}</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TreeNode {
+        @Input() label = 'root';
+        @Input() child: string | null = null;
+      }
+
+      // Include `TreeNode` in `imports` so JIT emits `ɵɵelementStart` (matching AoT `ngtsc`).
+      @Component({
+        selector: 'app-tree',
+        imports: [TreeNode],
+        template: '<span class="node">{{ label }}</span>@if (child) {<app-tree [label]="child" />}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TreeNodeV2 {
+        @Input() label = 'root';
+        @Input() child: string | null = null;
+      }
+
+      // Match AoT `ngtsc` output where a non-recursive initial template omits the self-reference.
+      getComponentDef(TreeNode)!.directiveDefs = null;
+
+      const fixture = TestBed.createComponent(TreeNode);
+      fixture.componentInstance.label = 'parent';
+      fixture.componentInstance.child = 'nested-child';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelectorAll('.node').length).toBe(1);
+
+      hmrUpdateFrom(TreeNode, TreeNodeV2, {directiveDefs: [getComponentDef(TreeNode)!]});
+      fixture.detectChanges();
+      const nodes = fixture.nativeElement.querySelectorAll('.node');
+      expect(nodes.length).toBe(2);
+      expect(nodes[1].textContent).toBe('nested-child');
+    });
   });
 
   describe('queries', () => {
