@@ -610,7 +610,7 @@ function serializeLView(
     // This situation may happen during the content projection, when some nodes don't make it
     // into one of the content projection slots (for example, when there is no default
     // <ng-content /> slot in projector component's template).
-    if (isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode)) {
+    if (isDisconnectedContentProjectedNode(tNode, lView)) {
       appendDisconnectedNodeIndex(ngh, tNode);
       continue;
     }
@@ -716,7 +716,14 @@ function serializeLView(
         ) {
           nextTNode = nextTNode.next;
         }
-        if (nextTNode && !isInSkipHydrationBlock(nextTNode)) {
+        // Skip content-projected nodes that are disconnected from the DOM (for example, content
+        // that is not projected): they have no path, and are annotated as disconnected when
+        // processed. Any other node missing from the DOM still fails with a serialization error.
+        if (
+          nextTNode &&
+          !isInSkipHydrationBlock(nextTNode) &&
+          !isDisconnectedContentProjectedNode(nextTNode, lView)
+        ) {
           // Handle a tNode after the `<ng-content>` slot.
           appendSerializedNodePath(ngh, nextTNode, lView, i18nChildren);
         }
@@ -885,6 +892,16 @@ function isContentProjectedNode(tNode: TNode): boolean {
     currentTNode = currentTNode.parent as TNode;
   }
   return false;
+}
+
+/**
+ * Detects whether a given TNode is content projected and its native node is
+ * disconnected from the DOM (for example, because the content is not projected
+ * into any slot). Such nodes are annotated as disconnected instead of being
+ * located by a path, so the client creates them instead of hydrating them.
+ */
+function isDisconnectedContentProjectedNode(tNode: TNode, lView: LView): boolean {
+  return isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode);
 }
 
 /**

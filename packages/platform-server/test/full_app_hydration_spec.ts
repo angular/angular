@@ -4166,8 +4166,7 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           template: `
             This is hydrated content.
-            <span>{{ spanText }}</span
-            >.
+            <span>{{ spanText }}</span>.
             <p>{{ pText }}</p>
             <div>{{ anotherText }}</div>
           `,
@@ -5447,6 +5446,180 @@ describe('platform-server full application hydration integration', () => {
           const clientRootNode = compRef.location.nativeElement;
           verifyAllNodesClaimedForHydration(clientRootNode);
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should support nodes after <ng-content> when the content is not projected (@if)', async () => {
+          @Component({
+            selector: 'app-container',
+            template: `
+              @if (open) {
+                <ng-content />
+              }
+            `,
+          })
+          class ContainerComponent {
+            @Input() open = false;
+          }
+
+          @Component({
+            selector: 'app-wrapper',
+            imports: [ContainerComponent],
+            template: `
+              <app-container [open]="open">
+                <ng-content />
+                @if (true) {
+                  <p>after</p>
+                }
+              </app-container>
+            `,
+          })
+          class WrapperComponent {
+            @Input() open = false;
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [WrapperComponent],
+            template: `<app-wrapper [open]="open()">projected text</app-wrapper>`,
+          })
+          class SimpleComponent {
+            readonly open = signal(false);
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+          expect(ssrContents).not.toContain('projected text');
+          expect(ssrContents).not.toContain('after');
+
+          resetTViewsFor(SimpleComponent, WrapperComponent, ContainerComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          await appRef.whenStable();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          // The content that was not projected on the server renders once the slot opens.
+          compRef.instance.open.set(true);
+          await appRef.whenStable();
+
+          const container = clientRootNode.querySelector('app-container');
+          expect(container.textContent).toContain('projected text');
+          expect(container.querySelector('p').textContent).toBe('after');
+        });
+
+        it('should support nodes after @let when the content is not projected', async () => {
+          @Component({
+            selector: 'app-container',
+            template: `
+              @if (open) {
+                <ng-content />
+              }
+            `,
+          })
+          class ContainerComponent {
+            @Input() open = false;
+          }
+
+          // The `@let` is read in a nested view, so the compiler keeps it as a `@let` node
+          // instead of inlining it as a local constant.
+          @Component({
+            selector: 'app',
+            imports: [ContainerComponent],
+            template: `
+              <app-container [open]="open()">
+                @let label = 'after';
+                @if (true) {
+                  <p>{{ label }}</p>
+                }
+              </app-container>
+            `,
+          })
+          class SimpleComponent {
+            readonly open = signal(false);
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+          expect(ssrContents).not.toContain('after');
+
+          resetTViewsFor(SimpleComponent, ContainerComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          await appRef.whenStable();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          // The content that was not projected on the server renders once the slot opens.
+          compRef.instance.open.set(true);
+          await appRef.whenStable();
+
+          const container = clientRootNode.querySelector('app-container');
+          expect(container.querySelector('p').textContent).toBe('after');
+        });
+
+        describe('disconnected nodes that are not content projected', () => {
+          // Mimics a third-party script that removes a node from the DOM on the server.
+          @Directive({selector: '[removeFromDom]'})
+          class RemoveFromDom {
+            private readonly element = inject(ElementRef).nativeElement;
+
+            ngOnInit() {
+              this.element.remove();
+            }
+          }
+
+          async function getSerializationError(template: string) {
+            @Component({selector: 'projector-cmp', imports: [RemoveFromDom], template})
+            class ProjectorCmp {}
+
+            @Component({
+              selector: 'app',
+              imports: [ProjectorCmp],
+              template: `<projector-cmp>projected text</projector-cmp>`,
+            })
+            class SimpleComponent {}
+
+            return ssr(SimpleComponent).then(
+              () => null,
+              (e: Error) => e,
+            );
+          }
+
+          it('should throw NG0502 for a node after <ng-content> that was removed from the DOM', async () => {
+            const error = await getSerializationError(`
+              <ng-content />
+              <p removeFromDom>after</p>
+            `);
+            expect(error?.message).toContain(
+              'NG0502: During serialization, Angular was unable to find an element in the DOM',
+            );
+          });
+
+          it('should throw NG0502 for a node after @let that was removed from the DOM', async () => {
+            // The `@let` is read in a nested view, so the compiler keeps it as a `@let` node
+            // instead of inlining it as a local constant.
+            const error = await getSerializationError(`
+              @let label = 'after';
+              <p removeFromDom>
+                @if (true) {
+                  {{ label }}
+                }
+              </p>
+            `);
+            expect(error?.message).toContain(
+              'NG0502: During serialization, Angular was unable to find an element in the DOM',
+            );
+          });
         });
 
         it('should support cases when view containers are not projected', async () => {
