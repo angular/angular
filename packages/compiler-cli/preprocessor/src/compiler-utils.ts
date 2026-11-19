@@ -650,6 +650,24 @@ export function parseDirectInlineTemplate(
   });
 }
 
+/** Whether `filePath` is a TypeScript declaration file (`.d.ts`, `.d.mts`, or `.d.cts`). */
+export function isDeclarationFilePath(filePath: string | undefined): boolean {
+  return (
+    filePath !== undefined &&
+    (filePath.endsWith('.d.ts') || filePath.endsWith('.d.mts') || filePath.endsWith('.d.cts'))
+  );
+}
+
+/**
+ * Whether `component` declares an inline template literal whose spans map directly into its
+ * declaring source file (as opposed to `templateUrl` or an indirect `template` expression).
+ */
+export function usesDirectInlineTemplate(
+  component: nga.ComponentMetadata,
+): component is nga.ComponentMetadata & {templateContentSpan: nga.SpanMetadata} {
+  return component.templateUrl == null && component.templateContentSpan != null;
+}
+
 export function parseComponentTemplate(
   component: nga.ComponentMetadata,
   filePath: string,
@@ -681,18 +699,18 @@ export function parseComponentTemplate(
   // (`diagNodes`: whitespace, line endings and leading trivia preserved) for type-checking,
   // diagnostics, and indexing, parsed lazily on first access so devmode and cross-file
   // `ngContentSelectors` lookups do not pay for a second parse when `diagNodes` is unused.
-  const contentSpan = component.templateContentSpan;
-  const parseWithOptions =
-    component.templateUrl == null && contentSpan != null
-      ? (opts: ParseTemplateOptions) =>
-          traced(() => parseDirectInlineTemplate(content, filePath, contentSpan, opts))
-      : (opts: ParseTemplateOptions) => {
-          // The URL identifies the file the spans are offsets into, which for an external template
-          // is the template file itself (as in ngtsc's `extractTemplate`).
-          const templateStr = component.template || '';
-          const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
-          return traced(() => parseTemplate(templateStr, templateUrl, opts));
-        };
+  const parseWithOptions = usesDirectInlineTemplate(component)
+    ? (opts: ParseTemplateOptions) =>
+        traced(() =>
+          parseDirectInlineTemplate(content, filePath, component.templateContentSpan, opts),
+        )
+    : (opts: ParseTemplateOptions) => {
+        // The URL identifies the file the spans are offsets into, which for an external template
+        // is the template file itself (as in ngtsc's `extractTemplate`).
+        const templateStr = component.template || '';
+        const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
+        return traced(() => parseTemplate(templateStr, templateUrl, opts));
+      };
 
   let cachedDiagNodes: TmplAstNode[] | undefined;
   return {
