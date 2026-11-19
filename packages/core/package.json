@@ -19,7 +19,7 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "webmcp-types": "0.1.10"
+    "webmcp-types": "0.1.11"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",

@@ -15,9 +15,20 @@ export class ModelContextMock implements Pick<
   ModelContext,
   'registerTool' | 'getTools' | 'executeTool'
 > {
-  private readonly tools = new Map<string, ModelContextTool>();
+  private readonly tools = new Map<
+    string,
+    Omit<ModelContextTool, 'execute'> & {
+      execute: (inputObject: never, options: any) => unknown;
+    }
+  >();
 
-  async registerTool(tool: ModelContextTool, {signal}: {signal?: AbortSignal} = {}) {
+  async registerTool<
+    const TInputSchema extends object = object,
+    const TOutputSchema extends object = object,
+  >(
+    tool: WebMCP.ModelContextToolFromSchema<TInputSchema, TOutputSchema>,
+    options?: WebMCP.ModelContextRegisterToolOptions,
+  ): Promise<void> {
     if (this.tools.has(tool.name)) {
       throw new DOMException(
         `A tool named ${tool.name} is already registered`,
@@ -25,7 +36,7 @@ export class ModelContextMock implements Pick<
       );
     }
     this.tools.set(tool.name, tool);
-    signal?.addEventListener('abort', () => this.tools.delete(tool.name));
+    options?.signal?.addEventListener('abort', () => this.tools.delete(tool.name));
   }
 
   async getTools(): ReturnType<ModelContext['getTools']> {
@@ -42,9 +53,11 @@ export class ModelContextMock implements Pick<
     );
   }
 
-  async executeTool({name}: {name: string}, input: Record<string, unknown> = {}): Promise<string> {
-    const tool = this.tools.get(name)!;
-    const output = await tool.execute(input, {signal: new AbortController().signal});
+  async executeTool(tool: {name: string}, input: Record<string, unknown> = {}): Promise<string> {
+    const registeredTool = this.tools.get(tool.name)!;
+    const output = await registeredTool.execute(input as never, {
+      signal: new AbortController().signal,
+    });
 
     return JSON.stringify(output);
   }
