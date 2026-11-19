@@ -40,6 +40,8 @@ fn test_is_ts_file() {
     use std::path::Path;
     assert!(super::is_ts_file(Path::new("foo.ts")));
     assert!(super::is_ts_file(Path::new("foo.d.ts")));
+    assert!(super::is_ts_file(Path::new("foo.d.mts")));
+    assert!(super::is_ts_file(Path::new("foo.d.cts")));
     assert!(super::is_ts_file(Path::new("foo.js")));
     assert!(super::is_ts_file(Path::new("foo.tsx")));
     assert!(!super::is_ts_file(Path::new("foo.css")));
@@ -49,12 +51,27 @@ fn test_is_ts_file() {
 }
 
 #[test]
+fn test_is_dts() {
+    use std::path::Path;
+    assert!(super::is_dts(Path::new("foo.d.ts")));
+    assert!(super::is_dts(Path::new("foo.d.mts")));
+    assert!(super::is_dts(Path::new("foo.d.cts")));
+    assert!(!super::is_dts(Path::new("foo.ts")));
+    assert!(!super::is_dts(Path::new("foo.mts")));
+    assert!(!super::is_dts(Path::new("foo.cts")));
+}
+
+#[test]
 fn test_is_compilation_root() {
     use std::path::Path;
     assert!(super::is_compilation_root(Path::new("foo.ts")));
+    assert!(super::is_compilation_root(Path::new("foo.mts")));
+    assert!(super::is_compilation_root(Path::new("foo.cts")));
     assert!(super::is_compilation_root(Path::new("foo.tsx")));
     assert!(super::is_compilation_root(Path::new("foo.js")));
     assert!(!super::is_compilation_root(Path::new("foo.d.ts")));
+    assert!(!super::is_compilation_root(Path::new("foo.d.mts")));
+    assert!(!super::is_compilation_root(Path::new("foo.d.cts")));
     assert!(!super::is_compilation_root(Path::new(
         "node_modules/@angular/core/index.d.ts"
     )));

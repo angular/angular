@@ -131,34 +131,11 @@ pub(crate) fn is_ts_source(path: &Path) -> bool {
 }
 
 pub(crate) fn is_dts(path: &Path) -> bool {
-    let Some(ext) = path.extension() else {
-        return false;
-    };
-    if ext != "ts" {
-        return false;
-    }
-    let Some(file_name) = path.file_name() else {
-        return false;
-    };
-    if let Some(s) = file_name.to_str() {
-        s.ends_with(".d.ts")
-    } else {
-        file_name.to_string_lossy().ends_with(".d.ts")
-    }
+    crate::host::ModuleFormat::from_path(path).is_some_and(crate::host::ModuleFormat::is_dts)
 }
 
 pub(crate) fn is_ts_file(path: &Path) -> bool {
-    let Some(ext) = path.extension() else {
-        return false;
-    };
-    if let Some(s) = ext.to_str() {
-        matches!(
-            s,
-            "ts" | "tsx" | "js" | "jsx" | "mts" | "cts" | "mjs" | "cjs"
-        ) || is_dts(path)
-    } else {
-        false
-    }
+    crate::host::ModuleFormat::from_path(path).is_some()
 }
 
 /// Whether `path` is a root of the compilation: a TS/JS file that is not a declaration file.
@@ -169,7 +146,8 @@ pub(crate) fn is_ts_file(path: &Path) -> bool {
 /// (`TraitCompiler.analyzeSync` returns early for `isDeclarationFile`), so they are neither part
 /// of the compilation unit nor streamed to the host.
 pub(crate) fn is_compilation_root(path: &Path) -> bool {
-    is_ts_file(path) && !is_dts(path)
+    crate::host::ModuleFormat::from_path(path)
+        .is_some_and(crate::host::ModuleFormat::is_compilation_root)
 }
 
 #[cfg(test)]
