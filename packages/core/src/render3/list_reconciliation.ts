@@ -8,7 +8,7 @@
 
 import {setActiveConsumer, type ReactiveNode} from '@angular/core/primitives/signals';
 import {TrackByFunction} from '../change_detection';
-import {formatRuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 
 import {stringifyForError} from './util/stringify_utils';
 
@@ -243,8 +243,19 @@ export function reconcile<T, V>(
   } else if (newCollection != null) {
     // iterable - immediately fallback to the slow path
     setActiveConsumer(reactiveConsumer);
-    const newCollectionIterator = newCollection[Symbol.iterator]();
+    const iteratorFn = newCollection[Symbol.iterator];
+    const newCollectionIterator =
+      typeof iteratorFn === 'function' ? iteratorFn.call(newCollection) : null;
     setActiveConsumer(null);
+
+    if (newCollectionIterator === null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.LOOP_INVALID_COLLECTION,
+        ngDevMode &&
+          `@for expected an array or an iterable, but got ${typeof newCollection}. ` +
+            `Did you mean to use the keyvalue pipe?`,
+      );
+    }
     let newIterationResult = newCollectionIterator.next();
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
       const liveValue = liveCollection.at(liveStartIdx);

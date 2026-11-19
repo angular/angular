@@ -41,6 +41,7 @@
 | `NG0951`  | [Child query result is required but no value is available](errors/NG0951)            |
 | `NG0955`  | [Track expression resulted in duplicated keys for a given collection](errors/NG0955) |
 | `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
+| `NG0957`  | [Collection used in @for is not iterable](errors/NG0957)                             |
 | `NG0991`  | [Resource completed before producing a value](errors/NG0991)                         |
 | `NG01002` | [Missing Control Value](errors/NG01002)                                              |
 | `NG01055` | [Missing control for `formControlName`](errors/NG01055)                              |

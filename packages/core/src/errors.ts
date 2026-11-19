@@ -152,6 +152,7 @@ export const enum RuntimeErrorCode {
   // Repeater errors
   LOOP_TRACK_DUPLICATE_KEYS = -955,
   LOOP_TRACK_RECREATE = -956,
+  LOOP_INVALID_COLLECTION = -957,
 
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
