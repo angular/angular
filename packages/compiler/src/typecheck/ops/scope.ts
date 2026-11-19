@@ -667,8 +667,8 @@ export class Scope {
         }
       }
 
-      const checkCustomElementBindings =
-        node instanceof Element && this.isNonAngularElement(node, directives);
+      const hasComponent = directives.some((dir) => dir.isComponent);
+      const checkCustomElementBindings = node instanceof Element && !hasComponent;
       this.opQueue.push(
         new TcbUnclaimedInputsOp(
           this.tcb,
@@ -701,13 +701,7 @@ export class Scope {
       const checkElement =
         node instanceof Element && this.requiresUnknownElementCheck(node, directives);
       this.opQueue.push(
-        new TcbDomSchemaCheckerOp(
-          this.tcb,
-          node,
-          checkElement,
-          schemaClaimedInputs,
-          checkCustomElementBindings,
-        ),
+        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs, hasComponent),
       );
     }
   }
@@ -836,14 +830,9 @@ export class Scope {
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
           const checkElement = this.requiresUnknownElementCheck(node, directives);
+          const hasComponent = directives?.some((dir) => dir.isComponent) ?? false;
           this.opQueue.push(
-            new TcbDomSchemaCheckerOp(
-              this.tcb,
-              node,
-              checkElement,
-              claimedInputs,
-              this.isNonAngularElement(node, directives),
-            ),
+            new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs, hasComponent),
           );
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
@@ -1043,22 +1032,6 @@ export class Scope {
   }
 
   /**
-   * Returns whether an element node is a non-Angular element (neither an Angular component nor
-   * matched by a directive whose selector explicitly targets the element's tag name).
-   */
-  private isNonAngularElement(node: Element, directives: TcbDirectiveMetadata[] | null): boolean {
-    if (directives === null || directives.length === 0) {
-      return true;
-    }
-
-    const hasComponent = directives.some((dir) => dir.isComponent);
-    const hasDirectiveMatchingTag = directives.some((dir) =>
-      matchesTagName(dir.selector, node.name),
-    );
-    return !hasComponent && !hasDirectiveMatchingTag;
-  }
-
-  /**
    * Checks the element against the DOM schema unless it is matched by an Angular component
    * or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
    * Directives that only match attributes (like `[formControl]`) do not claim the element name.
@@ -1075,7 +1048,11 @@ export class Scope {
       return false;
     }
 
-    return this.isNonAngularElement(node, directives);
+    const hasComponent = directives.some((dir) => dir.isComponent);
+    const hasDirectiveMatchingTag = directives.some((dir) =>
+      matchesTagName(dir.selector, node.name),
+    );
+    return !hasComponent && !hasDirectiveMatchingTag;
   }
 }
 

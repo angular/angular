@@ -2546,9 +2546,7 @@ impl ClassData {
             DecoratorData::NgModule(m) => {
                 !m.analysis_failed
                     || m.injectable.as_ref().is_some_and(|i| {
-                        cx.strict_injection_parameters
-                            && !self.is_abstract
-                            && i.requires_valid_ctor()
+                        cx.strict_injection_parameters && !self.is_abstract && i.requires_valid_ctor()
                     })
             }
             DecoratorData::Directive(d) => d.selector.is_some(),
@@ -4363,9 +4361,7 @@ impl ClassData {
             }
             // Already projected via injectable_data()/service_data() above, or skipped after a
             // fatal NgModule analysis error.
-            DecoratorData::Injectable(_)
-            | DecoratorData::Service(_)
-            | DecoratorData::NgModule(_) => {}
+            DecoratorData::Injectable(_) | DecoratorData::Service(_) | DecoratorData::NgModule(_) => {}
         }
 
         // Member-level API surface: from the directive part; empty defaults for

@@ -7,6 +7,10 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Clone)]
 pub struct ResolvedTsConfig {
     pub files: Vec<PathBuf>,
+    /// Entry `.d.ts` files discovered from `compilerOptions.typeRoots` / `node_modules/@types`
+    /// (respecting `compilerOptions.types`). Kept separate from `files` so automatic type packages
+    /// are only scanned on demand for global `HTMLElementTagNameMap` discovery.
+    pub type_root_dts_files: Vec<PathBuf>,
     pub compiler_options: CompilerOptions,
     pub preserve_symlinks: bool,
     pub workspace_name: Option<String>,
@@ -198,9 +202,12 @@ pub fn load_and_resolve_tsconfig(
     let is_angular_core_compilation = merged_compiler_options
         .get("_isAngularCoreCompilation")
         .and_then(|v| v.as_bool());
+    let type_root_dts_files =
+        discover_type_root_dts_files(base_dir, &merged_compiler_options, fs);
 
     Ok(ResolvedTsConfig {
         files,
+        type_root_dts_files,
         compiler_options: resolved_compiler_options,
         preserve_symlinks,
         workspace_name,
@@ -450,31 +457,229 @@ fn collect_local_compiler_options(
         }
     }
 
-    if let Some(dirs) = map.get("rootDirs").and_then(|v| v.as_array()) {
-        let resolved_dirs: Vec<serde_json::Value> = dirs
-            .iter()
-            .filter_map(|v| v.as_str())
-            .map(|d_str| {
-                let d = Path::new(d_str);
-                let p = if d.is_absolute() {
-                    d.to_path_buf()
-                } else {
-                    base_dir.join(d)
-                };
-                serde_json::Value::String(
-                    crate::fs::normalize_path_structural(&p)
-                        .to_string_lossy()
-                        .into_owned(),
-                )
-            })
-            .collect();
-        map.insert(
-            "rootDirs".to_string(),
-            serde_json::Value::Array(resolved_dirs),
-        );
+    for path_array_key in ["rootDirs", "typeRoots"] {
+        if let Some(dirs) = map.get(path_array_key).and_then(|v| v.as_array()) {
+            let resolved_dirs: Vec<serde_json::Value> = dirs
+                .iter()
+                .filter_map(|v| v.as_str())
+                .map(|d_str| {
+                    let d = Path::new(d_str);
+                    let p = if crate::fs::is_absolute_path(d) {
+                        d.to_path_buf()
+                    } else {
+                        base_dir.join(d)
+                    };
+                    serde_json::Value::String(
+                        crate::fs::normalize_path_structural(&p)
+                            .to_string_lossy()
+                            .into_owned(),
+                    )
+                })
+                .collect();
+            map.insert(
+                path_array_key.to_string(),
+                serde_json::Value::Array(resolved_dirs),
+            );
+        }
     }
 
     map
+}
+
+/// Discover entry `.d.ts` files for automatic `@types` / `typeRoots` packages, matching
+/// TypeScript 6.0's `compilerOptions.types` and `compilerOptions.typeRoots` rules:
+/// - Omitted `types` or `types: []` includes no automatic type packages.
+/// - `types: ["*"]` includes all packages from `typeRoots`.
+/// - Explicit names include only those packages from `typeRoots`.
+fn discover_type_root_dts_files(
+    base_dir: &Path,
+    merged_compiler_options: &serde_json::Map<String, serde_json::Value>,
+    fs: &crate::fs::OverlayFileSystem,
+) -> Vec<PathBuf> {
+    let Some(types_arr) = merged_compiler_options
+        .get("types")
+        .and_then(|v| v.as_array())
+    else {
+        return Vec::new();
+    };
+    let explicit_types: Vec<&str> = types_arr.iter().filter_map(|v| v.as_str()).collect();
+    if explicit_types.is_empty() {
+        return Vec::new();
+    }
+    let include_all = explicit_types.contains(&"*");
+
+    let abs_base_dir = if crate::fs::is_absolute_path(base_dir) {
+        crate::fs::normalize_path_structural(base_dir).into_owned()
+    } else {
+        let joined = std::env::current_dir()
+            .unwrap_or_else(|_| PathBuf::from("."))
+            .join(base_dir);
+        crate::fs::normalize_path_structural(&joined).into_owned()
+    };
+
+    let type_roots: Vec<PathBuf> = if let Some(arr) = merged_compiler_options
+        .get("typeRoots")
+        .and_then(|v| v.as_array())
+    {
+        arr.iter()
+            .filter_map(|v| v.as_str())
+            .map(|s| {
+                let p = Path::new(s);
+                let full = if crate::fs::is_absolute_path(p) {
+                    p.to_path_buf()
+                } else {
+                    abs_base_dir.join(p)
+                };
+                crate::fs::normalize_path_structural(&full).into_owned()
+            })
+            .collect()
+    } else {
+        abs_base_dir
+            .ancestors()
+            .map(|ancestor| {
+                crate::fs::normalize_path_structural(&ancestor.join("node_modules").join("@types"))
+                    .into_owned()
+            })
+            .collect()
+    };
+
+    if type_roots.is_empty() {
+        return Vec::new();
+    }
+
+    let mut result = Vec::new();
+    let mut seen_packages = HashSet::new();
+    let mut seen_files = HashSet::new();
+
+    if !include_all {
+        for name in explicit_types {
+            if name.is_empty() || !seen_packages.insert(name.to_string()) {
+                continue;
+            }
+            for root in &type_roots {
+                let pkg_dir = root.join(name);
+                if let Some(entry) = resolve_type_package_entry(&pkg_dir, fs) {
+                    if seen_files.insert(entry.clone()) {
+                        result.push(entry);
+                    }
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    for root in &type_roots {
+        for pkg_name in list_type_root_packages(root, fs) {
+            if !seen_packages.insert(pkg_name.clone()) {
+                continue;
+            }
+            let pkg_dir = root.join(&pkg_name);
+            if let Some(entry) = resolve_type_package_entry(&pkg_dir, fs) {
+                if seen_files.insert(entry.clone()) {
+                    result.push(entry);
+                }
+            }
+        }
+    }
+
+    result
+}
+
+/// Return sorted direct subdirectory names inside a `typeRoot` directory (ignoring dot-prefixed
+/// entries), consulting both the physical filesystem and virtual overlay entries.
+fn list_type_root_packages(root: &Path, fs: &crate::fs::OverlayFileSystem) -> Vec<String> {
+    let mut names = HashSet::new();
+
+    if let Ok(entries) = fs.physical().read_dir(root) {
+        for entry in entries {
+            if entry.name.starts_with('.') {
+                continue;
+            }
+            let is_dir = entry.is_dir
+                || (entry.is_symlink && fs.physical().is_dir(&root.join(&entry.name)));
+            if is_dir {
+                names.insert(entry.name);
+            }
+        }
+    }
+
+    let norm_root = crate::fs::normalize_path(root).into_owned();
+    let mut virtual_candidates = Vec::new();
+    fs.for_each_virtual_path(|p| {
+        if let Some(parent) = p.parent() {
+            if crate::fs::normalize_path(parent).as_ref() == norm_root.as_path() {
+                virtual_candidates.push(p.clone());
+            }
+        }
+    });
+    for cand in virtual_candidates {
+        let Some(name) = cand.file_name().and_then(|n| n.to_str()) else {
+            continue;
+        };
+        if name.starts_with('.') {
+            continue;
+        }
+        if fs.metadata(&cand).is_ok_and(|m| m.is_dir()) {
+            names.insert(name.to_string());
+        }
+    }
+
+    let mut sorted: Vec<String> = names.into_iter().collect();
+    sorted.sort();
+    sorted
+}
+
+/// Resolve the entry `.d.ts` file for a package directory inside a `typeRoot`
+/// (`package.json` `types`/`typings`/`exports["."].types` or fallback `index.d.ts`).
+fn resolve_type_package_entry(
+    pkg_dir: &Path,
+    fs: &crate::fs::OverlayFileSystem,
+) -> Option<PathBuf> {
+    let pkg_json_path = pkg_dir.join("package.json");
+    if let Ok(content) = fs.read_to_string(&pkg_json_path) {
+        if let Ok(json) = serde_json::from_str::<serde_json::Value>(&content) {
+            let rel = json
+                .get("types")
+                .and_then(|v| v.as_str())
+                .or_else(|| json.get("typings").and_then(|v| v.as_str()))
+                .or_else(|| {
+                    json.get("exports")
+                        .and_then(|e| e.get("."))
+                        .and_then(|dot| {
+                            dot.get("types")
+                                .and_then(|v| v.as_str())
+                                .or_else(|| dot.as_str())
+                        })
+                });
+            if let Some(rel) = rel {
+                let cand = crate::fs::normalize_path_structural(&pkg_dir.join(rel)).into_owned();
+                if crate::utils::is_dts(&cand) && fs.metadata(&cand).is_ok_and(|m| m.is_file()) {
+                    return Some(cand);
+                }
+                if !crate::utils::is_dts(&cand) {
+                    let mut with_dts = cand.clone().into_os_string();
+                    with_dts.push(".d.ts");
+                    let with_dts = PathBuf::from(with_dts);
+                    if fs.metadata(&with_dts).is_ok_and(|m| m.is_file()) {
+                        return Some(with_dts);
+                    }
+                    let nested_index =
+                        crate::fs::normalize_path_structural(&cand.join("index.d.ts")).into_owned();
+                    if fs.metadata(&nested_index).is_ok_and(|m| m.is_file()) {
+                        return Some(nested_index);
+                    }
+                }
+            }
+        }
+    }
+
+    let index_dts =
+        crate::fs::normalize_path_structural(&pkg_dir.join("index.d.ts")).into_owned();
+    if fs.metadata(&index_dts).is_ok_and(|m| m.is_file()) {
+        return Some(index_dts);
+    }
+    None
 }
 
 fn resolve_extended_options_recursive(
@@ -2278,5 +2483,87 @@ mod tests {
         let fs = crate::fs::OverlayFileSystem::new_with_overlay();
         let config = load_and_resolve_tsconfig(&link_dir.join("tsconfig.json"), &fs).unwrap();
         assert_eq!(config.files, vec![link_dir.join("src/app.ts")]);
+    }
+
+    #[test]
+    fn test_discover_type_root_dts_files_respects_types_and_type_roots() {
+        let dir = TempDir::new().unwrap();
+        let root = dir.path();
+        std::fs::create_dir_all(root.join("src")).unwrap();
+        std::fs::create_dir_all(root.join("node_modules/@types/pkg-a")).unwrap();
+        std::fs::create_dir_all(root.join("node_modules/@types/pkg-b/dist")).unwrap();
+        std::fs::create_dir_all(root.join("custom-types/pkg-c")).unwrap();
+        std::fs::write(root.join("src/app.ts"), "export const x = 1;").unwrap();
+        std::fs::write(
+            root.join("node_modules/@types/pkg-a/index.d.ts"),
+            "interface HTMLElementTagNameMap { 'pkg-a': HTMLElement; }",
+        )
+        .unwrap();
+        std::fs::write(
+            root.join("node_modules/@types/pkg-b/package.json"),
+            r#"{"name": "@types/pkg-b", "types": "./dist/custom.d.ts"}"#,
+        )
+        .unwrap();
+        std::fs::write(
+            root.join("node_modules/@types/pkg-b/dist/custom.d.ts"),
+            "interface HTMLElementTagNameMap { 'pkg-b': HTMLElement; }",
+        )
+        .unwrap();
+        std::fs::write(
+            root.join("custom-types/pkg-c/index.d.ts"),
+            "interface HTMLElementTagNameMap { 'pkg-c': HTMLElement; }",
+        )
+        .unwrap();
+
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+
+        // Omitted `types` defaults to empty in TypeScript 6.0.
+        std::fs::write(
+            root.join("tsconfig.json"),
+            r#"{"compilerOptions": {"typeRoots": ["./node_modules/@types", "./custom-types"]}}"#,
+        )
+        .unwrap();
+        let omitted = load_and_resolve_tsconfig(&root.join("tsconfig.json"), &fs).unwrap();
+        assert!(omitted.type_root_dts_files.is_empty());
+
+        // Wildcard `types: ["*"]` discovers all packages across `typeRoots`.
+        std::fs::write(
+            root.join("tsconfig.json"),
+            r#"{"compilerOptions": {"typeRoots": ["./node_modules/@types", "./custom-types"], "types": ["*"]}}"#,
+        )
+        .unwrap();
+        let all = load_and_resolve_tsconfig(&root.join("tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            all.type_root_dts_files,
+            vec![
+                root.join("node_modules/@types/pkg-a/index.d.ts"),
+                root.join("node_modules/@types/pkg-b/dist/custom.d.ts"),
+                root.join("custom-types/pkg-c/index.d.ts"),
+            ]
+        );
+
+        // Explicit `types` subset.
+        std::fs::write(
+            root.join("tsconfig.json"),
+            r#"{"compilerOptions": {"typeRoots": ["./node_modules/@types", "./custom-types"], "types": ["pkg-b", "pkg-c"]}}"#,
+        )
+        .unwrap();
+        let subset = load_and_resolve_tsconfig(&root.join("tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            subset.type_root_dts_files,
+            vec![
+                root.join("node_modules/@types/pkg-b/dist/custom.d.ts"),
+                root.join("custom-types/pkg-c/index.d.ts"),
+            ]
+        );
+
+        // Empty `types: []` disables automatic type package discovery.
+        std::fs::write(
+            root.join("tsconfig.json"),
+            r#"{"compilerOptions": {"typeRoots": ["./node_modules/@types"], "types": []}}"#,
+        )
+        .unwrap();
+        let none = load_and_resolve_tsconfig(&root.join("tsconfig.json"), &fs).unwrap();
+        assert!(none.type_root_dts_files.is_empty());
     }
 }

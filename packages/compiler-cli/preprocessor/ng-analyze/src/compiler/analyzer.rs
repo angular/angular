@@ -152,6 +152,9 @@ struct EffectiveConfig {
     /// The tsconfig's file list (root files and `.d.ts` files), empty without a tsconfig. Its
     /// `.d.ts` files are used even when `entry_points` replace its roots.
     tsconfig_files: Vec<PathBuf>,
+    /// Entry `.d.ts` files discovered from `typeRoots` / `node_modules/@types`, empty without a
+    /// tsconfig or when `compilerOptions.types` is `[]`.
+    type_root_dts_files: Vec<PathBuf>,
     r3_symbols_file: Option<PathBuf>,
     /// `angular_core_compilation` > `angularCompilerOptions._isAngularCoreCompilation` > `true`
     /// with an explicit `r3_symbols_file` > none (detected from `r3_symbols.ts` by the engine).
@@ -266,16 +269,22 @@ impl EffectiveConfig {
             })
             .or_else(|| options.r3_symbols_file.is_some().then_some(true));
 
-        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name, merged_compiler_options) =
-            match resolved {
-                Some(r) => (
-                    r.files,
-                    r.compiler_options.root_dirs,
-                    r.workspace_name,
-                    r.merged_compiler_options,
-                ),
-                None => (Vec::new(), None, None, serde_json::Map::new()),
-            };
+        let (
+            tsconfig_files,
+            type_root_dts_files,
+            tsconfig_root_dirs,
+            tsconfig_workspace_name,
+            merged_compiler_options,
+        ) = match resolved {
+            Some(r) => (
+                r.files,
+                r.type_root_dts_files,
+                r.compiler_options.root_dirs,
+                r.workspace_name,
+                r.merged_compiler_options,
+            ),
+            None => (Vec::new(), Vec::new(), None, None, serde_json::Map::new()),
+        };
 
         let mut merge_root_dirs = match default_host.root_dirs {
             Some(dirs) => absolutize_all(dirs)?,
@@ -325,6 +334,7 @@ impl EffectiveConfig {
         Ok(Self {
             entry_points,
             tsconfig_files,
+            type_root_dts_files,
             r3_symbols_file: options
                 .r3_symbols_file
                 .map(|path| absolutize(PathBuf::from(path)))
@@ -473,6 +483,7 @@ impl Analyzer {
             config.experimental_local_compilation,
         );
         *engine.tsconfig_dts_files.write().unwrap() = dts_files;
+        *engine.tsconfig_type_root_dts_files.write().unwrap() = config.type_root_dts_files;
         for id in virtual_entry_ids {
             engine.intern_resolved(
                 &crate::host::ModuleId::from(id.as_str()),
@@ -919,13 +930,19 @@ impl Analyzer {
             return;
         };
         let files = resolved_config.files;
+        let type_root_dts_files = resolved_config.type_root_dts_files;
         let (roots, dts_files) = if self.roots_from_tsconfig.load(Ordering::SeqCst) {
             let (roots, dts_files) = partition_tsconfig_files(files, &self.fs);
             (Some(roots), dts_files)
         } else {
             (None, tsconfig_dts_files(files))
         };
-        self.replace_program_files(roots, Some(dts_files), invalidated_paths);
+        self.replace_program_files(
+            roots,
+            Some(dts_files),
+            Some(type_root_dts_files),
+            invalidated_paths,
+        );
     }
 
     /// Replace the compilation roots and return every path whose cached analysis is now stale.
@@ -980,7 +997,7 @@ impl Analyzer {
                 }
             }
         }
-        self.replace_program_files(Some(roots), None, &mut invalidated_paths);
+        self.replace_program_files(Some(roots), None, None, &mut invalidated_paths);
         Ok(dedup_preserving_order(invalidated_paths))
     }
 
@@ -1001,6 +1018,7 @@ impl Analyzer {
         &self,
         roots: Option<Vec<PathBuf>>,
         dts_files: Option<Vec<PathBuf>>,
+        type_root_dts_files: Option<Vec<PathBuf>>,
         invalidated_paths: &mut Vec<String>,
     ) {
         let r3_symbols_file = self.engine.r3_symbols_file();
@@ -1008,7 +1026,10 @@ impl Analyzer {
         let dts_files_changed = dts_files.is_some_and(|dts_files| {
             replace_if_changed(&self.engine.tsconfig_dts_files, dts_files)
         });
-        if !roots_changed && !dts_files_changed {
+        let type_root_dts_files_changed = type_root_dts_files.is_some_and(|files| {
+            replace_if_changed(&self.engine.tsconfig_type_root_dts_files, files)
+        });
+        if !roots_changed && !dts_files_changed && !type_root_dts_files_changed {
             return;
         }
         let mut evicted = self.engine.invalidate_roots();

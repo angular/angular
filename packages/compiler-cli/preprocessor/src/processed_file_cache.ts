@@ -17,15 +17,30 @@ import type {ProcessedFile} from './processor.js';
  * `ProcessedFile`.
  */
 export class ProcessedFileCache {
-  private readonly entries = new Map<string, {fingerprint: string; processed: ProcessedFile}>();
+  private readonly entries = new Map<
+    string,
+    {fingerprint: string; boundFingerprint?: string; processed: ProcessedFile}
+  >();
+
+  hasBoundFingerprint(filePath: string, boundFingerprint: string | undefined): boolean {
+    if (boundFingerprint === undefined) {
+      return false;
+    }
+    return this.entries.get(filePath)?.boundFingerprint === boundFingerprint;
+  }
 
   get(filePath: string, fingerprint: string): ProcessedFile | undefined {
     const entry = this.entries.get(filePath);
     return entry?.fingerprint === fingerprint ? entry.processed : undefined;
   }
 
-  set(filePath: string, fingerprint: string, processed: ProcessedFile): void {
-    this.entries.set(filePath, {fingerprint, processed});
+  set(
+    filePath: string,
+    fingerprint: string,
+    processed: ProcessedFile,
+    boundFingerprint?: string,
+  ): void {
+    this.entries.set(filePath, {fingerprint, boundFingerprint, processed});
   }
 
   delete(filePath: string): void {

@@ -705,6 +705,8 @@ pub struct FileData {
     /// file.
     pub(crate) custom_element_contributions:
         crate::analyzer::custom_elements::CustomElementTagContributions,
+    /// Triple-slash `/// <reference path/types ... />` directives at the top of this file.
+    pub(crate) triple_slash_references: crate::analyzer::custom_elements::TripleSlashReferences,
     /// Declared classes keyed by name. A cross-file `selector` is `None` here in Stage 1;
     /// see `QueryKey::AnalyzeFileEvaluated`.
     pub(crate) class_index: Arc<HashMap<String, ClassInfo>>,

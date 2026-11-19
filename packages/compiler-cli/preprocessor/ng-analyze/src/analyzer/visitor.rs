@@ -934,6 +934,8 @@ pub struct ParsedFileAnalysis {
     /// Custom element tag names declared on global `HTMLElementTagNameMap` augmentations in this
     /// file (plus any imported base types referenced via `extends`).
     pub(crate) custom_element_contributions: super::custom_elements::CustomElementTagContributions,
+    /// Triple-slash `/// <reference path/types ... />` directives at the top of this file.
+    pub(crate) triple_slash_references: super::custom_elements::TripleSlashReferences,
 }
 
 /// Raw output of [`ClassVisitor`] before the file-level fields (`imports_end`, …) are attached.
@@ -1038,6 +1040,8 @@ pub fn analyze_parsed(
         module_record,
         source_text,
     );
+    let triple_slash_references =
+        super::custom_elements::extract_triple_slash_references(source_text);
 
     ParsedFileAnalysis {
         classes: output.classes,
@@ -1059,6 +1063,7 @@ pub fn analyze_parsed(
         top_level_value_bindings,
         namespace_alias_conflicts,
         custom_element_contributions,
+        triple_slash_references,
     }
 }
 

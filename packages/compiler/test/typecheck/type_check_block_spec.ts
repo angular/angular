@@ -1040,6 +1040,43 @@ describe('type check blocks', () => {
       expect(block).not.toContain('document.createElement("my-widget")');
       expect(block).toContain('((this).title);');
     });
+
+    it('should emit custom element assignments for unclaimed bindings when only a non-component directive matches the tag', () => {
+      const TEMPLATE = `<my-widget enhance [label]="title"></my-widget>`;
+      const block = tcb(
+        TEMPLATE,
+        [{type: 'directive', name: 'EnhanceDir', selector: 'my-widget[enhance]'}],
+        undefined,
+        {knownCustomElements: ['my-widget']},
+      );
+      expect(block).toContain('var _t1 = document.createElement("my-widget");');
+      expect(block).toContain('_t1.label = (((this).title));');
+    });
+
+    it('should skip assignment for aria-* and security-sanitized properties on known custom elements', () => {
+      const TEMPLATE = `<my-widget [aria-describedby]="desc" [aria-hidden]="hidden" [innerHTML]="html"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).not.toContain('document.createElement("my-widget")');
+      expect(block).not.toContain('aria-describedby');
+      expect(block).not.toContain('aria-hidden');
+      expect(block).not.toContain('.innerHTML =');
+      expect(block).toContain('((this).desc);');
+      expect(block).toContain('((this).hidden);');
+      expect(block).toContain('((this).html);');
+    });
+
+    it('should not emit custom element property assignments when checkTypeOfInputBindings is false', () => {
+      const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
+      const block = tcb(
+        TEMPLATE,
+        undefined,
+        {checkTypeOfInputBindings: false},
+        {knownCustomElements: ['my-widget']},
+      );
+      expect(block).not.toContain('document.createElement("my-widget")');
+      expect(block).not.toContain('_t1.label');
+      expect(block).toContain('((((this).title)) as any);');
+    });
   });
 
   describe('template guards', () => {

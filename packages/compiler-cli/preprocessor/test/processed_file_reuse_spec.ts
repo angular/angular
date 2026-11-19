@@ -505,4 +505,144 @@ describe('HybridCompiler processed output reuse', () => {
 
     analyzer.close();
   });
+
+  it('skips querying known custom elements for element-selector directives with no unclaimed bindings', async () => {
+    const {analyzer, build} = await createSession('custom_elements_element_dir_skip', true, true, {
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {},
+        files: ['a.component.ts', 'b.component.ts', 'dir.ts', 'outlet.ts', 'host.component.ts'],
+      }),
+      'outlet.ts': `
+        import {Directive, Input} from '@angular/core';
+        @Directive({selector: 'router-outlet'})
+        export class FakeRouterOutlet {
+          @Input() routerOutletData: unknown;
+        }
+      `,
+      'host.component.ts': `
+        import {Component} from '@angular/core';
+        import {FakeRouterOutlet} from './outlet';
+        @Component({
+          selector: 'app-host',
+          imports: [FakeRouterOutlet],
+          template: '<router-outlet [routerOutletData]="data"></router-outlet>',
+        })
+        export class HostComponent {
+          data = 1;
+        }
+      `,
+    });
+    let calls = 0;
+    const orig = analyzer.getKnownCustomElements!.bind(analyzer);
+    analyzer.getKnownCustomElements = async () => {
+      calls++;
+      return orig();
+    };
+
+    await build();
+    expect(calls).toBe(0);
+    analyzer.close();
+  });
+
+  it('keeps reuse fingerprints accurate when a component changes or drops custom element tags', async () => {
+    const {compiler, analyzer, build, edit} = await createSession(
+      'custom_elements_tag_edit_reuse',
+      true,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['a.component.ts', 'b.component.ts', 'dir.ts', 'widget.component.ts', 'ce.d.ts'],
+        }),
+        'widget.component.ts': `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'app-widget-host',
+            template: '<my-widget [label]="title"></my-widget>',
+          })
+          export class WidgetHostComponent {
+            title = 'hello';
+          }
+        `,
+        'ce.d.ts': `
+          declare global {
+            interface HTMLElementTagNameMap {
+              'my-widget': HTMLElement & {label: string};
+              'other-widget': HTMLElement & {label: string};
+            }
+          }
+          export {};
+        `,
+      },
+    );
+
+    const first = await build();
+    expect(compiler.getDiagnostics()).toEqual([]);
+
+    // Switch template to a different known custom element: must update cached fingerprint so
+    // subsequent builds reuse cleanly (`verifyReusedProcessedFiles: true`).
+    await edit(
+      'widget.component.ts',
+      `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'app-widget-host',
+          template: '<other-widget [label]="title"></other-widget>',
+        })
+        export class WidgetHostComponent {
+          title = 'hello';
+        }
+      `,
+    );
+    const second = await build();
+    expect(second.get('widget.component.ts')).not.toBe(first.get('widget.component.ts'));
+    expect(compiler.getDiagnostics()).toEqual([]);
+
+    // Trigger a no-op edit on another file to ensure `widget.component.ts` reuses on rebuild.
+    await edit(
+      'a.component.ts',
+      `
+        import {Component} from '@angular/core';
+        @Component({selector: 'app-a', template: '<p>updated</p>'})
+        export class AComponent {}
+      `,
+    );
+    const third = await build();
+    expect(third.get('widget.component.ts')).toBe(second.get('widget.component.ts'));
+
+    // Removing the custom element tag should stop querying `getKnownCustomElements` once cached.
+    await edit(
+      'widget.component.ts',
+      `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'app-widget-host',
+          template: '<div>{{ title }}</div>',
+        })
+        export class WidgetHostComponent {
+          title = 'hello';
+        }
+      `,
+    );
+    await build();
+
+    let callsAfterRemoval = 0;
+    const orig = analyzer.getKnownCustomElements!.bind(analyzer);
+    analyzer.getKnownCustomElements = async () => {
+      callsAfterRemoval++;
+      return orig();
+    };
+    await edit(
+      'a.component.ts',
+      `
+        import {Component} from '@angular/core';
+        @Component({selector: 'app-a', template: '<p>updated again</p>'})
+        export class AComponent {}
+      `,
+    );
+    await build();
+    expect(callsAfterRemoval).toBe(0);
+
+    analyzer.close();
+  });
 });

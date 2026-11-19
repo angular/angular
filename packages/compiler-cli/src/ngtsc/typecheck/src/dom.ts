@@ -40,9 +40,19 @@ const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
  */
 export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
   private _diagnostics: TemplateDiagnostic[] = [];
+  private _checkedCustomElements = new Map<string, boolean>();
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
+  }
+
+  /**
+   * Normalized candidate custom element tag names queried via `isKnownCustomElement` during this
+   * check pass, mapped to whether they were known in `HTMLElementTagNameMap`. Used to invalidate
+   * cached type-check results in incremental builds when global `HTMLElementTagNameMap` changes.
+   */
+  get checkedCustomElements(): ReadonlyMap<string, boolean> {
+    return this._checkedCustomElements;
   }
 
   constructor(
@@ -61,7 +71,9 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     ) {
       return false;
     }
-    return this.isCustomElement(name);
+    const known = this.isCustomElement(name);
+    this._checkedCustomElements.set(name, known);
+    return known;
   }
 
   checkElement(
@@ -111,7 +123,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
-    isNonAngularElement: boolean = true,
+    hasComponent: boolean = false,
   ): void {
     const report = REGISTRY.validateProperty(name);
     if (report.error) {
@@ -130,7 +142,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
 
     if (
       !REGISTRY.hasProperty(tagName, name, schemas) &&
-      !(isNonAngularElement && this.isKnownCustomElement(tagName))
+      !(!hasComponent && this.isKnownCustomElement(tagName))
     ) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
