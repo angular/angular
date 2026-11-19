@@ -590,7 +590,10 @@ async fn resolve_style_urls(
 }
 
 fn strip_bom(content: &str) -> String {
-    content.strip_prefix('\u{feff}').unwrap_or(content).to_owned()
+    content
+        .strip_prefix('\u{feff}')
+        .unwrap_or(content)
+        .to_owned()
 }
 
 /// Resolve and read `url` for `containing` through `host`, returning `None` when the host

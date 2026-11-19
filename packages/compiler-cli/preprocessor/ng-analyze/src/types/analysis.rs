@@ -698,6 +698,13 @@ pub struct FileData {
     /// Resolved on-disk TS paths of dynamic `import()` calls and literal import types (included in
     /// the program closure, excluded from static cycle detection).
     pub(crate) dynamic_dependencies: Vec<PathBuf>,
+    /// Resolved `.d.ts` files imported by this file (static, type-only, or dynamic), used to
+    /// discover global `HTMLElementTagNameMap` augmentations in imported packages/declarations.
+    pub(crate) dts_dependencies: Vec<FileId>,
+    /// Custom element tag contributions from global `HTMLElementTagNameMap` augmentations in this
+    /// file.
+    pub(crate) custom_element_contributions:
+        crate::analyzer::custom_elements::CustomElementTagContributions,
     /// Declared classes keyed by name. A cross-file `selector` is `None` here in Stage 1;
     /// see `QueryKey::AnalyzeFileEvaluated`.
     pub(crate) class_index: Arc<HashMap<String, ClassInfo>>,

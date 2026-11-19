@@ -5169,6 +5169,426 @@ runInEachFileSystem(() => {
         expect(diags).toEqual([]);
       });
 
+      describe('custom elements declared in HTMLElementTagNameMap', () => {
+        beforeEach(() => {
+          env.tsconfig({strictTemplates: true});
+        });
+
+        const customElementDts = `
+            export declare class MyWidgetElement extends HTMLElement {
+              label: string;
+              count: number;
+              beforeDispatch: (() => void) | null;
+            }
+            declare global {
+              interface HTMLElementTagNameMap {
+                'my-widget': MyWidgetElement;
+              }
+            }
+          `;
+
+        it('should allow and type-check a known custom element without CUSTOM_ELEMENTS_SCHEMA', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-widget [label]="label" [count]="count"></my-widget>',
+                })
+                export class TestCmp {
+                  label = 'hello';
+                  count = 42;
+                }
+              `,
+          );
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should report type mismatches and unknown properties on a known custom element', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: \`
+                    <my-widget
+                      [label]="123"
+                      [unknownProp]="'x'"
+                      [before-dispatch]="handler"
+                    ></my-widget>
+                  \`,
+                })
+                export class TestCmp {
+                  handler = () => {};
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Type 'number' is not assignable to type 'string'.`,
+            `Property 'unknownProp' does not exist on type 'MyWidgetElement'.`,
+            `Property 'before-dispatch' does not exist on type 'MyWidgetElement'. Did you mean 'beforeDispatch'?`,
+          ]);
+        });
+
+        it('should still type-check a known custom element when CUSTOM_ELEMENTS_SCHEMA is present', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+                  template: '<my-widget [count]="notANumber"></my-widget>',
+                })
+                export class TestCmp {
+                  notANumber = 'oops';
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+        });
+
+        it('should disable property type-checking on a known custom element when NO_ERRORS_SCHEMA is present', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  schemas: [NO_ERRORS_SCHEMA],
+                  template: '<my-widget [count]="notANumber" [doesNotExist]="1"></my-widget>',
+                })
+                export class TestCmp {
+                  notANumber = 'oops';
+                }
+              `,
+          );
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should check directive inputs on directives and unclaimed bindings on a known custom element', () => {
+          env.tsconfig({strictTemplates: true, strictUnknownElements: true});
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component, Directive, Input} from '@angular/core';
+
+                @Directive({selector: '[dirInput]'})
+                export class AttrDir {
+                  @Input() dirInput!: boolean;
+                }
+
+                @Component({
+                  selector: 'test-cmp',
+                  imports: [AttrDir],
+                  template: '<my-widget [dirInput]="true" [count]="wrong"></my-widget>',
+                })
+                export class TestCmp {
+                  wrong = 'bad';
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+        });
+
+        it('should still report NG8002 for unknown properties on an Angular component whose selector is in HTMLElementTagNameMap', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component, Input} from '@angular/core';
+
+                @Component({
+                  selector: 'my-widget',
+                  template: '',
+                })
+                export class MyWidgetCmp {
+                  @Input() label = '';
+                }
+
+                @Component({
+                  selector: 'test-cmp',
+                  imports: [MyWidgetCmp],
+                  template: '<my-widget [count]="1"></my-widget>',
+                })
+                export class TestCmp {}
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        });
+
+        it('should report a security error without a duplicate TS error for on* properties on a known custom element', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-widget [onclick]="handler"></my-widget>',
+                })
+                export class TestCmp {
+                  handler = () => {};
+                }
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+            `Binding to event property 'onclick' is disallowed for security reasons`,
+          );
+        });
+
+        it('should exempt unclaimed camelCase events on a known custom element when strictUnclaimedEventNames is enabled', () => {
+          env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-widget (valueChanged)="onChange()"></my-widget>',
+                })
+                export class TestCmp {
+                  onChange() {}
+                }
+              `,
+          );
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should recognize known custom elements inside SVG foreignObject but not directly inside SVG', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: \`
+                    <svg>
+                      <foreignObject>
+                        <my-widget [count]="bad"></my-widget>
+                      </foreignObject>
+                      <my-widget></my-widget>
+                    </svg>
+                  \`,
+                })
+                export class TestCmp {
+                  bad = 'not-a-number';
+                }
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(2);
+          expect(diags.map((d) => d.code)).toEqual(
+            jasmine.arrayWithExactContents([2322, ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT)]),
+          );
+          const tsDiag = diags.find((d) => d.code === 2322)!;
+          expect(ts.flattenDiagnosticMessageText(tsDiag.messageText, '\n')).toBe(
+            `Type 'string' is not assignable to type 'number'.`,
+          );
+        });
+
+        it('should match known custom element tag names case-insensitively', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<MY-WIDGET [label]="label"></MY-WIDGET>',
+                })
+                export class TestCmp {
+                  label = 'ok';
+                }
+              `,
+          );
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should recognize custom elements declared via declare global in a side-effect imported .ts file', () => {
+          env.write(
+            'my-lit-widget.ts',
+            `
+                export class MyLitWidgetElement extends HTMLElement {
+                  titleText = '';
+                }
+                declare global {
+                  interface HTMLElementTagNameMap {
+                    'my-lit-widget': MyLitWidgetElement;
+                  }
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+                import './my-lit-widget';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-lit-widget [titleText]="badTitle"></my-lit-widget>',
+                })
+                export class TestCmp {
+                  badTitle = 123;
+                }
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Type 'number' is not assignable to type 'string'.",
+          );
+        });
+
+        it('should recognize custom elements declared in an imported node_modules .d.ts barrel', () => {
+          env.write(
+            'node_modules/my-wc-lib/package.json',
+            JSON.stringify({
+              name: 'my-wc-lib',
+              exports: {
+                '.': {
+                  types: './index.d.ts',
+                },
+              },
+            }),
+          );
+          env.write('node_modules/my-wc-lib/index.d.ts', `export * from './button.js';`);
+          env.write(
+            'node_modules/my-wc-lib/button.d.ts',
+            `
+                export declare class WcButtonElement extends HTMLElement {
+                  disabled: boolean;
+                }
+                declare global {
+                  interface HTMLElementTagNameMap {
+                    'wc-button': WcButtonElement;
+                  }
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+                import 'my-wc-lib';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<wc-button [disabled]="badDisabled"></wc-button>',
+                })
+                export class TestCmp {
+                  badDisabled = 'nope';
+                }
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Type 'string' is not assignable to type 'boolean'.",
+          );
+        });
+
+        it('should recognize custom elements inherited via HTMLElementTagNameMap extends', () => {
+          env.write(
+            'tags.d.ts',
+            `
+                export interface CustomTagMap {
+                  'ext-widget': HTMLElement & {value: number};
+                }
+              `,
+          );
+          env.write(
+            'global.d.ts',
+            `
+                import {CustomTagMap} from './tags';
+                declare global {
+                  interface HTMLElementTagNameMap extends CustomTagMap {}
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<ext-widget [value]="badValue"></ext-widget>',
+                })
+                export class TestCmp {
+                  badValue = 'not-a-number';
+                }
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Type 'string' is not assignable to type 'number'.",
+          );
+        });
+
+        it('should not treat ng-template as a custom element even if declared in HTMLElementTagNameMap', () => {
+          env.tsconfig({strictTemplates: true, strictNgTemplateTypes: true});
+          env.write(
+            'custom.d.ts',
+            `
+                declare global {
+                  interface HTMLElementTagNameMap {
+                    'ng-template': HTMLElement & {foobar: number};
+                  }
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<ng-template [foobar]="1"></ng-template>',
+                })
+                export class TestCmp {}
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        });
+      });
+
       it('should report unknown element error when matched only by an attribute directive', () => {
         env.tsconfig({strictTemplates: true, strictUnknownElements: true});
         env.write(

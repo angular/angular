@@ -931,6 +931,9 @@ pub struct ParsedFileAnalysis {
     /// ([`super::imports::namespace_alias_conflicts`]); empty when `classes` is, as nothing then
     /// generates an import.
     pub namespace_alias_conflicts: Vec<String>,
+    /// Custom element tag names declared on global `HTMLElementTagNameMap` augmentations in this
+    /// file (plus any imported base types referenced via `extends`).
+    pub(crate) custom_element_contributions: super::custom_elements::CustomElementTagContributions,
 }
 
 /// Raw output of [`ClassVisitor`] before the file-level fields (`imports_end`, …) are attached.
@@ -1030,6 +1033,11 @@ pub fn analyze_parsed(
     } else {
         super::imports::namespace_alias_conflicts(semantic)
     };
+    let custom_element_contributions = super::custom_elements::extract_custom_element_contributions(
+        program,
+        module_record,
+        source_text,
+    );
 
     ParsedFileAnalysis {
         classes: output.classes,
@@ -1050,6 +1058,7 @@ pub fn analyze_parsed(
         is_core,
         top_level_value_bindings,
         namespace_alias_conflicts,
+        custom_element_contributions,
     }
 }
 

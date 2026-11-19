@@ -282,6 +282,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    */
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
   private generatedRangeCache = new WeakMap<ts.SourceFile, ts.TextRange[]>();
+  private knownCustomElements: ReadonlySet<string> | null = null;
 
   private isComplete = false;
   private priorResultsAdopted = false;
@@ -1049,6 +1050,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.updateFromContext(ctx);
   }
 
+  private isKnownCustomElement(tagName: string): boolean {
+    if (this.knownCustomElements === null) {
+      this.knownCustomElements = collectKnownCustomElements(this.originalProgram);
+    }
+    return this.knownCustomElements.has(tagName);
+  }
+
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
     return new TypeCheckContextImpl(
       this.config,
@@ -1058,6 +1066,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       host,
       this.programDriver.inliningMode,
       this.perf,
+      (tagName) => this.isKnownCustomElement(tagName),
     );
   }
 
@@ -2226,4 +2235,29 @@ function isSymbolTypeMatch(
   const firstTypeNode = getFirstTypeDeclarationOfSymbol(first, typeChecker);
   const lastTypeNode = getFirstTypeDeclarationOfSymbol(last, typeChecker);
   return firstTypeNode === lastTypeNode && firstTypeNode !== undefined;
+}
+
+/**
+ * Extracts custom element tag names (containing `-`) declared on TypeScript's global
+ * `HTMLElementTagNameMap` interface in the given program.
+ */
+function collectKnownCustomElements(program: ts.Program): ReadonlySet<string> {
+  const tags = new Set<string>();
+  const checker = program.getTypeChecker();
+  const tagNameMapSymbol = checker.resolveName(
+    'HTMLElementTagNameMap',
+    /* location */ undefined,
+    ts.SymbolFlags.Type,
+    /* excludeGlobals */ false,
+  );
+  if (tagNameMapSymbol === undefined) {
+    return tags;
+  }
+  const tagNameMapType = checker.getDeclaredTypeOfSymbol(tagNameMapSymbol);
+  for (const prop of checker.getPropertiesOfType(tagNameMapType)) {
+    if (prop.name.includes('-') && prop.name === prop.name.toLowerCase()) {
+      tags.add(prop.name);
+    }
+  }
+  return tags;
 }

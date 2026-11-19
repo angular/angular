@@ -57,13 +57,19 @@ fn test_exports_its_just_angular() {
         exports_its_just_angular(&ret.program)
     };
     assert!(exports_marker("export const ITS_JUST_ANGULAR = true;"));
-    assert!(exports_marker("export const A = 1, ITS_JUST_ANGULAR = true;"));
-    assert!(exports_marker("export let ITS_JUST_ANGULAR: boolean = true;"));
+    assert!(exports_marker(
+        "export const A = 1, ITS_JUST_ANGULAR = true;"
+    ));
+    assert!(exports_marker(
+        "export let ITS_JUST_ANGULAR: boolean = true;"
+    ));
     // As in ngtsc, the exported statement itself must initialize the name to the literal `true`.
     assert!(!exports_marker("export const ITS_JUST_ANGULAR = false;"));
     assert!(!exports_marker("export const ITS_JUST_ANGULAR = !0;"));
     assert!(!exports_marker("const ITS_JUST_ANGULAR = true;"));
-    assert!(!exports_marker("const ITS_JUST_ANGULAR = true;\nexport {ITS_JUST_ANGULAR};"));
+    assert!(!exports_marker(
+        "const ITS_JUST_ANGULAR = true;\nexport {ITS_JUST_ANGULAR};"
+    ));
     assert!(!exports_marker("export const SOME_SYMBOL = true;"));
 }
 

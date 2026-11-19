@@ -31,6 +31,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     private element: Element | Template | HostElement,
     private checkElement: boolean,
     private claimedInputs: Set<string> | null,
+    private isNonAngularElement: boolean = checkElement,
   ) {
     super();
   }
@@ -76,6 +77,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
             binding.sourceSpan,
             this.tcb.schemas,
             this.tcb.hostIsStandalone,
+            this.isNonAngularElement,
           );
         } else {
           this.tcb.domSchemaChecker.checkHostElementProperty(

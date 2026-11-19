@@ -45,7 +45,24 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     return this._diagnostics;
   }
 
-  constructor(private resolver: TypeCheckSourceResolver) {}
+  constructor(
+    private resolver: TypeCheckSourceResolver,
+    private isCustomElement: (tagName: string) => boolean = () => false,
+  ) {}
+
+  isKnownCustomElement(tagName: string): boolean {
+    const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
+    if (
+      name.startsWith(':') ||
+      !name.includes('-') ||
+      name === 'ng-container' ||
+      name === 'ng-content' ||
+      name === 'ng-template'
+    ) {
+      return false;
+    }
+    return this.isCustomElement(name);
+  }
 
   checkElement(
     id: TypeCheckId,
@@ -59,7 +76,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
 
-    if (!REGISTRY.hasElement(name, schemas)) {
+    if (!REGISTRY.hasElement(name, schemas) && !this.isKnownCustomElement(name)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
@@ -94,6 +111,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+    isNonAngularElement: boolean = true,
   ): void {
     const report = REGISTRY.validateProperty(name);
     if (report.error) {
@@ -110,7 +128,10 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
       return;
     }
 
-    if (!REGISTRY.hasProperty(tagName, name, schemas)) {
+    if (
+      !REGISTRY.hasProperty(tagName, name, schemas) &&
+      !(isNonAngularElement && this.isKnownCustomElement(tagName))
+    ) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
@@ -180,7 +201,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
         (schema) =>
           schema.name === NO_ERRORS_SCHEMA.name ||
           (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
-      )
+      ) ||
+      (!hasComponent && this.isKnownCustomElement(tagName))
     ) {
       return;
     }

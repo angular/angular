@@ -83,6 +83,11 @@ impl TestAnalyzer {
     }
 
     #[cfg_attr(feature = "napi", napi)]
+    pub fn get_known_custom_elements(&self) -> Vec<String> {
+        self.analyzer.get_known_custom_elements()
+    }
+
+    #[cfg_attr(feature = "napi", napi)]
     pub fn get_compiler_options(&self) -> String {
         self.analyzer.get_compiler_options()
     }

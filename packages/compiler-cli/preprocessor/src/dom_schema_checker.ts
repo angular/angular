@@ -25,6 +25,24 @@ const REMOVE_XHTML_REGEX = /^:xhtml:/;
 const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
 
 /**
+ * Normalizes a template element tag name into a candidate custom element tag name, or returns
+ * `null` for built-in HTML/Angular elements and non-HTML namespaced tags (e.g. `:svg:...`).
+ */
+export function normalizeCustomElementTagName(tagName: string): string | null {
+  const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
+  if (
+    name.startsWith(':') ||
+    !name.includes('-') ||
+    name === 'ng-container' ||
+    name === 'ng-content' ||
+    name === 'ng-template'
+  ) {
+    return null;
+  }
+  return name;
+}
+
+/**
  * Checks non-Angular elements and properties against the `DomElementSchemaRegistry`, a schema
  * maintained by the Angular team via extraction from a browser IDL.
  */
@@ -33,6 +51,13 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
 
   get diagnostics(): ReadonlyArray<Diagnostic> {
     return this._diagnostics;
+  }
+
+  constructor(private isCustomElement: (tagName: string) => boolean = () => false) {}
+
+  isKnownCustomElement(tagName: string): boolean {
+    const name = normalizeCustomElementTagName(tagName);
+    return name !== null && this.isCustomElement(name);
   }
 
   checkElement(
@@ -47,7 +72,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
 
-    if (!REGISTRY.hasElement(name, schemas)) {
+    if (!REGISTRY.hasElement(name, schemas) && !this.isKnownCustomElement(name)) {
       const schemasStr = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let errorMsg = `'${name}' is not a known element:\n`;
       errorMsg += `1. If '${name}' is an Angular component, then verify that it is ${
@@ -79,6 +104,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+    isNonAngularElement: boolean = true,
   ): void {
     const report = REGISTRY.validateProperty(name);
 
@@ -94,24 +120,30 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       return;
     }
 
-    if (!REGISTRY.hasProperty(tagName, name, schemas)) {
+    if (
+      !REGISTRY.hasProperty(tagName, name, schemas) &&
+      !(isNonAngularElement && this.isKnownCustomElement(tagName))
+    ) {
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemasStr = `'${decorator}.schemas'`;
-      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${tagName}'.`;
-      if (tagName.startsWith('ng-')) {
+      const localTagName = tagName.startsWith(':')
+        ? tagName.slice(tagName.indexOf(':', 1) + 1)
+        : tagName;
+      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${localTagName}'.`;
+      if (localTagName.startsWith('ng-')) {
         errorMsg +=
           `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '${decorator}.imports' of this component.` +
           `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemasStr} of this component.`;
-      } else if (tagName.indexOf('-') > -1) {
+      } else if (localTagName.indexOf('-') > -1) {
         errorMsg +=
           `\n1. If '${
-            tagName
+            localTagName
           }' is an Angular component and it has '${name}' input, then verify that it is ${
             hostIsStandalone
               ? "included in the '@Component.imports' of this component"
               : 'part of this module'
           }.` +
-          `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemasStr} of this component to suppress this message.` +
+          `\n2. If '${localTagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemasStr} of this component to suppress this message.` +
           `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemasStr} of this component.`;
       }
 
@@ -197,7 +229,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
         (schema) =>
           schema.name === NO_ERRORS_SCHEMA.name ||
           (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
-      )
+      ) ||
+      (!hasComponent && this.isKnownCustomElement(tagName))
     ) {
       return;
     }

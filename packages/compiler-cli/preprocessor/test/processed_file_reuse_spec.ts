@@ -412,4 +412,97 @@ describe('HybridCompiler processed output reuse', () => {
     incremental.analyzer.close();
     oneShot.analyzer.close();
   });
+
+  it('skips querying known custom elements when no template has non-Angular dashed tags', async () => {
+    const {analyzer, build} = await createSession('custom_elements_lazy_skip');
+    let calls = 0;
+    const orig = analyzer.getKnownCustomElements!.bind(analyzer);
+    analyzer.getKnownCustomElements = async () => {
+      calls++;
+      return orig();
+    };
+
+    await build();
+
+    expect(calls).toBe(0);
+    analyzer.close();
+  });
+
+  it('reprocesses only affected custom element consumers when HTMLElementTagNameMap changes', async () => {
+    const {compiler, analyzer, build, edit} = await createSession(
+      'custom_elements_dts_incremental',
+      true,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['a.component.ts', 'b.component.ts', 'dir.ts', 'widget.component.ts', 'ce.d.ts'],
+        }),
+        'widget.component.ts': `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'app-widget-host',
+            template: '<my-widget [label]="title"></my-widget>',
+          })
+          export class WidgetHostComponent {
+            title = 'hello';
+          }
+        `,
+        'ce.d.ts': `export {};`,
+      },
+    );
+
+    const first = await build();
+    expect(compiler.getDiagnostics().map((d) => d.code)).toContain(8001);
+    expect(compiler.getDiagnostics().map((d) => d.code)).toContain(8002);
+
+    // Declaring `my-widget` in `ce.d.ts` must reprocess `widget.component.ts` (clearing NG8001/NG8002
+    // and emitting the property check into its TCB) while leaving unrelated files reused.
+    await edit(
+      'ce.d.ts',
+      `
+        declare global {
+          interface HTMLElementTagNameMap {
+            'my-widget': HTMLElement & {label: string};
+          }
+        }
+        export {};
+      `,
+    );
+    const second = await build();
+    expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
+    expect(second.get('b.component.ts')).toBe(first.get('b.component.ts'));
+    expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
+    expect(second.get('widget.component.ts')).not.toBe(first.get('widget.component.ts'));
+    expect(compiler.getDiagnostics()).toEqual([]);
+    expect(second.get('widget.component.ts')!.tcb?.code).toMatch(/_t\d+\.label\b.*=/);
+
+    // Adding an unrelated tag to `ce.d.ts` leaves `widget.component.ts` reused (verified by
+    // `verifyReusedProcessedFiles: true`).
+    await edit(
+      'ce.d.ts',
+      `
+        declare global {
+          interface HTMLElementTagNameMap {
+            'my-widget': HTMLElement & {label: string};
+            'other-widget': HTMLElement;
+          }
+        }
+        export {};
+      `,
+    );
+    const third = await build();
+    expect(third.get('widget.component.ts')).toBe(second.get('widget.component.ts'));
+    expect(compiler.getDiagnostics()).toEqual([]);
+
+    // Removing `my-widget` from `ce.d.ts` reprocesses `widget.component.ts` and restores NG8001/NG8002.
+    await edit('ce.d.ts', `export {};`);
+    const fourth = await build();
+    expect(fourth.get('widget.component.ts')).not.toBe(third.get('widget.component.ts'));
+    expect(fourth.get('widget.component.ts')!.tcb?.code).not.toMatch(/_t\d+\.label\b/);
+    expect(compiler.getDiagnostics().map((d) => d.code)).toContain(8001);
+    expect(compiler.getDiagnostics().map((d) => d.code)).toContain(8002);
+
+    analyzer.close();
+  });
 });

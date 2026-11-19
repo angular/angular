@@ -67,6 +67,10 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.analyzer.getMetadataForFile(filePath) ?? null;
   }
 
+  async getKnownCustomElements(): Promise<string[]> {
+    return this.analyzer.getKnownCustomElements?.() ?? [];
+  }
+
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
     return this.analyzer.updateFileContent(updates);
   }

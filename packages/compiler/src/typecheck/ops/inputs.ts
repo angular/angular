@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NO_ERRORS_SCHEMA} from '../../core';
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
@@ -265,6 +266,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     private inputs: BoundAttribute[],
     private target: LocalSymbol,
     private claimedInputs: Set<string> | null,
+    private checkCustomElementBindings: boolean = false,
   ) {
     super();
   }
@@ -277,6 +279,15 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     // `this.inputs` contains only those bindings not matched by any directive. These bindings go to
     // the element itself.
     let elId: TcbExpr | null = null;
+    const hasNoErrorsSchema = this.tcb.schemas.some(
+      (schema) => schema.name === NO_ERRORS_SCHEMA.name,
+    );
+    const checkCustomElement =
+      this.checkCustomElementBindings &&
+      !hasNoErrorsSchema &&
+      this.target instanceof Element &&
+      (this.tcb.domSchemaChecker.isKnownCustomElement?.(this.target.name) ?? false);
+    const shouldCheckDomBindings = this.tcb.env.config.checkTypeOfDomBindings || checkCustomElement;
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.inputs) {
@@ -294,16 +305,34 @@ export class TcbUnclaimedInputsOp extends TcbOp {
         binding.value,
       );
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
+      if (shouldCheckDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
+          // A direct binding to a property.
+          const propertyName = REGISTRY.getMappedPropName(binding.name);
+          if (REGISTRY.validateProperty(propertyName).error) {
+            // `TcbDomSchemaCheckerOp` already reports an error for disallowed properties (e.g.
+            // `on*` event properties). Still validate the RHS expression without emitting an
+            // assignment that could produce a duplicate diagnostic.
+            this.scope.addStatement(expr);
+            continue;
+          }
           if (elId === null) {
             elId = this.scope.resolve(this.target);
           }
-          // A direct binding to a property.
-          const propertyName = REGISTRY.getMappedPropName(binding.name);
-          const stmt = new TcbExpr(
-            `${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
-          ).addParseSpanInfo(binding.sourceSpan);
+          const target = isUnsafeObjectKey(propertyName)
+            ? new TcbExpr(`${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}]`)
+            : new TcbExpr(`${elId.print()}.${propertyName}`);
+          target.addParseSpanInfo(binding.keySpan);
+          let assignment = expr.wrapForTypeChecker();
+          if (
+            binding.type === BindingType.TwoWay &&
+            this.tcb.env.config.allowSignalsInTwoWayBindings
+          ) {
+            assignment = unwrapWritableSignal(assignment, this.tcb);
+          }
+          const stmt = new TcbExpr(`${target.print()} = ${assignment.print()}`).addParseSpanInfo(
+            binding.sourceSpan,
+          );
           this.scope.addStatement(stmt);
         } else {
           this.scope.addStatement(expr);

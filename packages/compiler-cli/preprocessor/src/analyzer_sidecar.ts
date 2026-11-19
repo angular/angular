@@ -354,6 +354,10 @@ export class SidecarAnalyzer implements IAnalyzer {
     return this.callRpc<AnalysisResult | null>('getMetadataForFile', {filePath});
   }
 
+  async getKnownCustomElements(): Promise<string[]> {
+    return this.callRpc<string[]>('getKnownCustomElements', {});
+  }
+
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
     return this.callRpc('updateFileContent', updates);
   }

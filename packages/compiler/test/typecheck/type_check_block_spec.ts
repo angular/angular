@@ -979,8 +979,66 @@ describe('type check blocks', () => {
       const TEMPLATE = `<label [for]="'test'"></label>`;
       const CONFIG = {...ALL_ENABLED_CONFIG, checkTypeOfDomBindings: true};
       expect(tcb(TEMPLATE, /* declarations */ undefined, CONFIG)).toContain(
-        '_t1["htmlFor"] = ("test");',
+        '_t1.htmlFor = ("test");',
       );
+    });
+  });
+
+  describe('custom element bindings', () => {
+    it('should emit property assignments for known custom elements', () => {
+      const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).toContain('var _t1 = document.createElement("my-widget");');
+      expect(block).toContain('_t1.label = (((this).title));');
+    });
+
+    it('should use element access notation for unsafe custom element property keys', () => {
+      const TEMPLATE = `<my-widget [before-dispatch]="fn"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).toContain('_t1["before-dispatch"] = (((this).fn));');
+    });
+
+    it('should skip assignment for disallowed event properties on known custom elements', () => {
+      const TEMPLATE = `<my-widget [onclick]="fn"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).not.toContain('.onclick =');
+      expect(block).not.toContain('["onclick"] =');
+      expect(block).toContain('((this).fn);');
+    });
+
+    it('should strip the :xhtml: prefix in document.createElement inside foreignObject', () => {
+      const TEMPLATE = `<svg><foreignObject><my-widget [label]="title"></my-widget></foreignObject></svg>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).toContain('var _t1 = document.createElement("my-widget");');
+      expect(block).toContain('_t1.label = (((this).title));');
+    });
+
+    it('should unwrap writable signals in two-way bindings on known custom elements', () => {
+      const TEMPLATE = `<my-widget [(value)]="val"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).toContain('_t1.value = i1.ɵunwrapWritableSignal((((this).val)));');
+    });
+
+    it('should not emit property assignments when NO_ERRORS_SCHEMA is present', () => {
+      const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {
+        knownCustomElements: ['my-widget'],
+        schemas: [{name: 'no-errors-schema'}],
+      });
+      expect(block).not.toContain('document.createElement("my-widget")');
+      expect(block).toContain('((this).title);');
+    });
+
+    it('should not emit custom element assignments when an Angular component matches the tag', () => {
+      const TEMPLATE = `<my-widget [unknownProp]="title"></my-widget>`;
+      const block = tcb(
+        TEMPLATE,
+        [{type: 'directive', name: 'MyWidgetCmp', selector: 'my-widget', isComponent: true}],
+        undefined,
+        {knownCustomElements: ['my-widget']},
+      );
+      expect(block).not.toContain('document.createElement("my-widget")');
+      expect(block).toContain('((this).title);');
     });
   });
 
