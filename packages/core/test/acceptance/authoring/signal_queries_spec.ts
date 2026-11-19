@@ -16,6 +16,7 @@ import {
   ElementRef,
   EnvironmentInjector,
   inject,
+  Injectable,
   InjectionToken,
   Injector,
   QueryList,
@@ -293,6 +294,35 @@ describe('queries as signals', () => {
       const queried = fixture.componentInstance.elInjector()!;
       expect(queried.get(TOKEN)).toBe('from directive');
       expect(fixture.componentInstance.ownInjector.get(TOKEN, null)).toBeNull();
+    });
+
+    it('should not create a provider read by a query in a reactive context', () => {
+      @Injectable()
+      class Service {
+        label = signal('');
+        constructor() {
+          this.label.set('service');
+        }
+      }
+
+      @Directive({
+        selector: '[provider]',
+        providers: [Service],
+      })
+      class ProviderDir {}
+
+      @Component({
+        imports: [ProviderDir],
+        template: `<div provider></div>`,
+      })
+      class AppComponent {
+        service = viewChild(ProviderDir, {read: Service});
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.service()!.label()).toBe('service');
     });
   });
 
