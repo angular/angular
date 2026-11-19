@@ -2548,14 +2548,19 @@ function buildPropDecoratorsExpr(
         ? R3Identifiers.contentChildDecorator
         : R3Identifiers.contentChildrenDecorator;
 
-    const predicateStr = s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
+    // `memberMetadataFromSignalQuery` (AOT only): a locator that is not string-literal-like (the
+    // only case in which a signal query has no selectors) is wrapped in `forwardRef`. In `jit: true`,
+    // `queryFunctionsTransforms` passes the locator verbatim, so we only wrap when the user
+    // explicitly wrote `forwardRef(() => ...)` (`ng-analyze` unwraps `predicateSpan` to the inner
+    // expression and sets `isForwardRef`).
+    const wrapInForwardRef = Boolean(query.isForwardRef || (!isJit && !query.predicateSelectors));
+    const predicateStr = wrapInForwardRef
+      ? s.original.slice(query.predicateSpan.start, query.predicateSpan.end)
+      : sliceGuarded(s.original, query.predicateSpan, guards);
     let predicateExpr: o.Expression = new o.WrappedNodeExpr(
       new RawSource(predicateStr, [query.predicateSpan]),
     );
-    // `memberMetadataFromSignalQuery`: a locator that is not string-literal-like (the only case
-    // in which a signal query has no selectors) is wrapped in `forwardRef`. When the user already
-    // wrote `forwardRef(() => ...)`, preserve the local `forwardRef` identifier to match ngtsc.
-    if (!query.predicateSelectors) {
+    if (wrapInForwardRef) {
       const prefixBeforePredicate = s.original.slice(
         query.propertySpan?.start ?? classMeta.span.start,
         query.predicateSpan.start,
@@ -2571,12 +2576,11 @@ function buildPropDecoratorsExpr(
 
     const queryOptionsEntries: o.LiteralMapEntry[] = [];
     if (query.optionsSpan) {
-      // TODO(cleanup): `laterDeclarationReferences` only covers decorator arguments, so a signal
-      // query's options naming a later declaration is unguarded and fails `tsc` inside the static
-      // block. Type arguments are pre-stripped (`optionsString`) since they may name class type
+      // Type arguments are pre-stripped (`optionsString`) since they may name class type
       // parameters (TS2302); they contain no value reads, so the span still describes it for HMR.
-      const optionsStr =
-        query.optionsString ?? s.original.slice(query.optionsSpan.start, query.optionsSpan.end);
+      // Pass `s.original` (not `s`) so the signal query's own `debugName` insertion is not
+      // duplicated into `propDecorators`.
+      const optionsStr = query.optionsString ?? sliceGuarded(s.original, query.optionsSpan, guards);
       queryOptionsEntries.push(
         new o.LiteralMapSpreadAssignment(
           new o.WrappedNodeExpr(new RawSource(optionsStr, [query.optionsSpan])),
