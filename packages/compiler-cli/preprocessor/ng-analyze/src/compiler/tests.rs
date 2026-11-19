@@ -9287,3 +9287,274 @@ fn test_request_metadata_core_resolves_component_and_skips_missing_or_non_ts() {
         Some("VirtualCmp")
     );
 }
+
+#[test]
+fn test_analyze_delta_skips_unchanged_importers_on_dependency_edit() {
+    // Local mode: editing an imported service streams only the service, not unchanged components.
+    let mut local_files = HashMap::new();
+    local_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{
+            "compilerOptions": {"rootDirs": ["/project"]},
+            "angularCompilerOptions": {"generateExtraImportsInLocalMode": true},
+            "files": ["badge.d.ts", "store.ts", "cmp_a.ts", "cmp_b.ts"]
+        }"#
+        .to_string(),
+    );
+    local_files.insert(
+        "/project/badge.d.ts".to_string(),
+        "import * as i0 from '@angular/core';\n\
+         export declare class BadgeDir {\n\
+           value: string;\n\
+           static ɵdir: i0.ɵɵDirectiveDeclaration<BadgeDir, '[badge]', never, {'value': {'alias': 'value'; 'required': false}}, {}, never, never, true, never>;\n\
+         }\n"
+            .to_string(),
+    );
+    local_files.insert(
+        "/project/store.ts".to_string(),
+        "import { Injectable } from '@angular/core';\n\
+         @Injectable({providedIn: 'root'})\n\
+         export class Store { count(): number { return 1; } }\n"
+            .to_string(),
+    );
+    local_files.insert(
+        "/project/cmp_a.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         import { BadgeDir } from './badge';\n\
+         import { Store } from './store';\n\
+         @Component({selector: 'cmp-a', imports: [BadgeDir], template: '<p badge>a</p>'})\n\
+         export class CmpA { constructor(readonly s: Store) {} }\n"
+            .to_string(),
+    );
+    local_files.insert(
+        "/project/cmp_b.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         import { Store } from './store';\n\
+         @Component({selector: 'cmp-b', template: '<p>b</p>'})\n\
+         export class CmpB { constructor(readonly s: Store) {} }\n"
+            .to_string(),
+    );
+
+    let local_analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(false),
+        virtual_files: Some(local_files),
+        ..Default::default()
+    })
+    .expect("create local analyzer");
+
+    let initial = local_analyzer.analyze().expect("initial stream");
+    while futures::executor::block_on(initial.next())
+        .expect("initial chunk")
+        .is_some()
+    {}
+
+    local_analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/store.ts".to_string(),
+            content: "import { Injectable } from '@angular/core';\n\
+                      @Injectable({providedIn: 'root'})\n\
+                      export class Store {\n\
+                        label(): string { return 'x'; }\n\
+                        count(): number { return 2; }\n\
+                      }\n"
+            .to_string(),
+        }])
+        .expect("update store.ts");
+
+    let delta = local_analyzer.analyze_delta().expect("delta stream");
+    let mut delta_paths = Vec::new();
+    while let Some(chunk) = futures::executor::block_on(delta.next()).expect("delta chunk") {
+        delta_paths.extend(chunk.files.into_iter().map(|f| f.file_path));
+    }
+    assert_eq!(delta_paths, vec!["/project/store.ts".to_string()]);
+
+    // Querying semantic metadata in local mode populates `(cmp_a, is_optimized: true)` against
+    // `badge.d.ts`; editing `badge.d.ts` must not mark `cmp_a` dirty for local `analyze_delta()`.
+    let _ = local_analyzer
+        .get_metadata_for_file("/project/cmp_a.ts".to_string())
+        .expect("cmp_a semantic metadata");
+    local_analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/badge.d.ts".to_string(),
+            content: "import * as i0 from '@angular/core';\n\
+                      export declare class BadgeDir {\n\
+                        renamed: string;\n\
+                        static ɵdir: i0.ɵɵDirectiveDeclaration<BadgeDir, '[badge]', never, {'renamed': {'alias': 'renamed'; 'required': false}}, {}, never, never, true, never>;\n\
+                      }\n"
+                .to_string(),
+        }])
+        .expect("update badge.d.ts");
+
+    let dts_delta = local_analyzer.analyze_delta().expect("dts delta stream");
+    let mut dts_delta_paths = Vec::new();
+    while let Some(chunk) = futures::executor::block_on(dts_delta.next()).expect("dts delta chunk")
+    {
+        dts_delta_paths.extend(chunk.files.into_iter().map(|f| f.file_path));
+    }
+    assert!(
+        dts_delta_paths.is_empty(),
+        "expected no local-mode delta files on .d.ts edit, got: {dts_delta_paths:?}"
+    );
+
+    // Optimized mode: a private implementation edit in an imported directive skips the consumer,
+    // while an @Input() change re-streams both.
+    let mut opt_files = HashMap::new();
+    opt_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{
+            "compilerOptions": {"rootDirs": ["/project"]},
+            "files": ["dir.ts", "cmp.ts"]
+        }"#
+        .to_string(),
+    );
+    opt_files.insert(
+        "/project/dir.ts".to_string(),
+        "import { Directive, Input } from '@angular/core';\n\
+         @Directive({selector: '[appDir]'})\n\
+         export class Dir {\n\
+           @Input() value = '';\n\
+           private helper(): number { return 1; }\n\
+         }\n"
+        .to_string(),
+    );
+    opt_files.insert(
+        "/project/cmp.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         import { Dir } from './dir';\n\
+         @Component({selector: 'app-cmp', imports: [Dir], template: '<div appDir [value]=\"v\"></div>'})\n\
+         export class Cmp { v = 'hi'; }\n"
+            .to_string(),
+    );
+
+    let opt_analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(opt_files),
+        ..Default::default()
+    })
+    .expect("create optimized analyzer");
+
+    let initial_opt = opt_analyzer.analyze_optimized().expect("initial stream");
+    while futures::executor::block_on(initial_opt.next())
+        .expect("initial chunk")
+        .is_some()
+    {}
+
+    opt_analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/dir.ts".to_string(),
+            content: "import { Directive, Input } from '@angular/core';\n\
+                      @Directive({selector: '[appDir]'})\n\
+                      export class Dir {\n\
+                        @Input() value = '';\n\
+                        private helper(): number { return 2; }\n\
+                      }\n"
+            .to_string(),
+        }])
+        .expect("update dir.ts private method");
+
+    let delta_private = opt_analyzer
+        .analyze_optimized_delta()
+        .expect("delta stream");
+    let mut private_paths = Vec::new();
+    while let Some(chunk) = futures::executor::block_on(delta_private.next()).expect("delta chunk")
+    {
+        private_paths.extend(chunk.files.into_iter().map(|f| f.file_path));
+    }
+    assert_eq!(private_paths, vec!["/project/dir.ts".to_string()]);
+
+    opt_analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/dir.ts".to_string(),
+            content: "import { Directive, Input } from '@angular/core';\n\
+                      @Directive({selector: '[appDir]'})\n\
+                      export class Dir {\n\
+                        @Input() renamed = '';\n\
+                      }\n"
+            .to_string(),
+        }])
+        .expect("update dir.ts input");
+
+    let delta_public = opt_analyzer
+        .analyze_optimized_delta()
+        .expect("delta stream");
+    let mut public_paths = Vec::new();
+    while let Some(chunk) = futures::executor::block_on(delta_public.next()).expect("delta chunk") {
+        public_paths.extend(chunk.files.into_iter().map(|f| f.file_path));
+    }
+    public_paths.sort();
+    assert_eq!(
+        public_paths,
+        vec!["/project/cmp.ts".to_string(), "/project/dir.ts".to_string()]
+    );
+}
+
+#[test]
+fn test_analyze_delta_emits_unchanged_stub_for_ngmodule_peer() {
+    let mut files = HashMap::new();
+    files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{
+            "compilerOptions": {"rootDirs": ["/project"]},
+            "files": ["cmp_a.ts", "cmp_b.ts", "app.module.ts"]
+        }"#
+        .to_string(),
+    );
+    files.insert("/project/cmp_a.html".to_string(), "<p>a v1</p>".to_string());
+    files.insert(
+        "/project/cmp_a.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         @Component({selector: 'cmp-a', templateUrl: './cmp_a.html', standalone: false})\n\
+         export class CmpA {}\n"
+            .to_string(),
+    );
+    files.insert(
+        "/project/cmp_b.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         @Component({selector: 'cmp-b', template: '<p>b</p>', standalone: false})\n\
+         export class CmpB {}\n"
+            .to_string(),
+    );
+    files.insert(
+        "/project/app.module.ts".to_string(),
+        "import { NgModule } from '@angular/core';\n\
+         import { CmpA } from './cmp_a';\n\
+         import { CmpB } from './cmp_b';\n\
+         @NgModule({declarations: [CmpA, CmpB], exports: [CmpA, CmpB]})\n\
+         export class AppModule {}\n"
+            .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(files),
+        ..Default::default()
+    })
+    .expect("create analyzer");
+
+    let initial = analyzer.analyze_optimized().expect("initial stream");
+    while futures::executor::block_on(initial.next())
+        .expect("initial chunk")
+        .is_some()
+    {}
+
+    analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/cmp_a.html".to_string(),
+            content: "<p>a v2</p>".to_string(),
+        }])
+        .expect("update cmp_a.html");
+
+    let delta = analyzer.analyze_optimized_delta().expect("delta stream");
+    let mut results = HashMap::new();
+    while let Some(chunk) = futures::executor::block_on(delta.next()).expect("delta chunk") {
+        for file in chunk.files {
+            results.insert(file.file_path, (file.unchanged, file.classes.len()));
+        }
+    }
+    assert_eq!(results.get("/project/cmp_a.ts"), Some(&(false, 1)));
+    assert_eq!(results.get("/project/cmp_b.ts"), Some(&(true, 0)));
+    assert_eq!(results.get("/project/app.module.ts"), Some(&(true, 0)));
+}

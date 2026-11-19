@@ -104,7 +104,7 @@ impl NgDiagnostic {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AnalysisResult {
     pub file_id: FileId,
@@ -139,6 +139,13 @@ pub struct AnalysisResult {
     /// re-emit decisions) without resolving module specifiers themselves.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub static_dependencies: Vec<String>,
+    /// True on a delta stream when this file's `AnalysisResult` is unchanged since the previous
+    /// completed pass (an unchanged peer emitted alongside a dirty file in a multi-file
+    /// `@NgModule` chunk).
+    // TODO(ngp): remove once template compilation moves into Rust and unchanged peer metadata no
+    // longer crosses the Rust-JS IPC boundary.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub unchanged: bool,
 }
 
 /// Options for constructing an [`crate::Analyzer`].
@@ -269,7 +276,7 @@ pub struct FileInvalidation {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeclarationMetadata {
     pub name: String,
@@ -310,7 +317,7 @@ pub struct DeclarationMetadata {
 
 /// Wire form of `ResolvedHostDirective`.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ResolvedHostDirectiveMetadata {
     pub directive: DeclarationMetadata,

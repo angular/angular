@@ -99,6 +99,15 @@ export interface AnalysisResult {
    * decisions) without resolving module specifiers themselves.
    */
   staticDependencies?: Array<string>;
+  /**
+   * Set on delta streams when this file's wire `AnalysisResult` is unchanged since the previous
+   * completed pass (an unchanged peer emitted alongside a dirty file in a multi-file `@NgModule`
+   * chunk).
+   *
+   * TODO(ngp): remove once template compilation moves into Rust and unchanged peer metadata no
+   * longer crosses the Rust-JS IPC boundary.
+   */
+  unchanged?: boolean;
 }
 
 /**

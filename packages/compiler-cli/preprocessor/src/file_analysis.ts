@@ -8,7 +8,7 @@
 
 import {ParsedTemplate, TmplAstNode} from '@angular/compiler';
 
-import {PreparedTcbData} from './tcb.js';
+import {type NgpTypeCheckingConfig, PreparedTcbData} from './tcb.js';
 import {AnalysisResult, DeclarationMetadata} from './types.js';
 
 export interface ParsedComponentTemplate extends ParsedTemplate {
@@ -25,10 +25,27 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
   classNameStart?: number;
 }
 
+/**
+ * Per-file invalidation level since the file was last bound and processed, ordered from least to
+ * most work required so multiple invalidation signals combine via `Math.max`.
+ */
+export enum ChangeKind {
+  /** File, resources, and dependency inputs are unchanged; reuse bound state and `ProcessedFile`. */
+  Unchanged = 0,
+  /** Dependency metadata, `<ng-content>` selectors, or chunk scope changed; keep parsed templates. */
+  Dependency = 1,
+  /** External template or stylesheet changed while `.ts` source text did not; keep `sourceContent`. */
+  ResourceOnly = 2,
+  /** The `.ts` source file changed (or has no prior baseline). */
+  Source = 3,
+}
+
 export interface FileAnalysis {
   filePath: string;
   sourceContent?: string;
-  boundFingerprint?: string;
+  analysisResult?: AnalysisResult;
+  tcbConfig?: NgpTypeCheckingConfig;
+  changeKind?: ChangeKind;
   tcb?: string | null;
   parsedTemplates: Map<string, ParsedComponentTemplate>;
   preparedTcbData?: PreparedTcbData | null;

@@ -115,9 +115,49 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
-  it("reprocesses a component when a dependency's public API changes", async () => {
-    const {analyzer, build, edit} = await createSession('dependency_edit');
+  it('hydrates unchanged peer stubs and reuses peer outputs in multi-file NgModule chunks', async () => {
+    const {analyzer, build, edit} = await createSession('ngmodule_peer_stubs', false, true, {
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {},
+        files: ['cmp_a.ts', 'cmp_b.ts', 'app.module.ts'],
+      }),
+      'cmp_a.html': '<p>a v1</p>',
+      'cmp_a.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'cmp-a', templateUrl: './cmp_a.html', standalone: false})
+        export class CmpA {}
+      `,
+      'cmp_b.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'cmp-b', template: '<cmp-a></cmp-a>', standalone: false})
+        export class CmpB {}
+      `,
+      'app.module.ts': `
+        import {NgModule} from '@angular/core';
+        import {CmpA} from './cmp_a';
+        import {CmpB} from './cmp_b';
+        @NgModule({declarations: [CmpA, CmpB], exports: [CmpA, CmpB]})
+        export class AppModule {}
+      `,
+    });
     const first = await build();
+
+    await edit('cmp_a.html', '<p>a v2</p>');
+    const second = await build();
+
+    expect(second.get('cmp_a.ts')).not.toBe(first.get('cmp_a.ts'));
+    expect(second.get('cmp_a.ts')!.magicString.toString()).toContain('a v2');
+    expect(second.get('cmp_b.ts')).toBe(first.get('cmp_b.ts'));
+    expect(second.get('app.module.ts')).toBe(first.get('app.module.ts'));
+    analyzer.close();
+  });
+
+  it("reprocesses a component when a dependency's public API changes", async () => {
+    const {compiler, analyzer, root, build, edit} = await createSession('dependency_edit');
+    const first = await build();
+    const aPath = path.join(root, 'a.component.ts');
+    const cachedTemplatesBefore = [...compiler.fileCache.get(aPath)!.parsedTemplates.values()];
+    expect(cachedTemplatesBefore.length).toBe(1);
 
     await edit('dir.ts', FILES['dir.ts'].replace(`@Input() first = '';`, `@Input() second = '';`));
     const second = await build();
@@ -125,6 +165,13 @@ describe('HybridCompiler processed output reuse', () => {
     expect(second.get('dir.ts')).not.toBe(first.get('dir.ts'));
     expect(second.get('a.component.ts')).not.toBe(first.get('a.component.ts'));
     expect(second.get('b.component.ts')).toBe(first.get('b.component.ts'));
+    // Dependency-only changes re-bind and re-process `a.component.ts` without re-parsing its own template.
+    expect([...compiler.fileCache.get(aPath)!.parsedTemplates.values()]).toEqual([
+      cachedTemplatesBefore[0],
+    ]);
+    expect(compiler.fileCache.get(aPath)!.parsedTemplates.values().next().value).toBe(
+      cachedTemplatesBefore[0],
+    );
     analyzer.close();
   });
 
@@ -384,14 +431,10 @@ describe('HybridCompiler processed output reuse', () => {
         .toBe(normalize(expected.tcb?.code, incremental.root));
     }
 
-    // Both bind the templates for this build, but only the incremental compiler keys that
-    // binding for reuse in later builds.
     const boundState = (session: {compiler: HybridCompiler; root: string}) =>
       session.compiler.fileCache.get(path.join(session.root, 'a.component.ts'));
     expect(boundState(incremental)?.preparedTcbData).toBeTruthy();
-    expect(boundState(incremental)?.boundFingerprint).toBeDefined();
     expect(boundState(oneShot)?.preparedTcbData).toBeTruthy();
-    expect(boundState(oneShot)?.boundFingerprint).toBeUndefined();
 
     // Processing a file again with unchanged inputs reuses the cached output only when incremental.
     const reprocess = async (session: {compiler: HybridCompiler; root: string}) => {
