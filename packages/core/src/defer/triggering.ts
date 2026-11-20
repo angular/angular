@@ -10,11 +10,13 @@ import {afterNextRender} from '../render3/after_render/hooks';
 import {Injector} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {replayQueuedBlockEvents} from '../event_delegation_utils';
 import {
   cleanupHydratedDeferBlocks,
   cleanupLContainer,
   removeDehydratedViewList,
 } from '../hydration/cleanup';
+import {EVENT_REPLAY_QUEUE} from '../hydration/tokens';
 import {BlockSummary, ElementTrigger, NUM_ROOT_NODES} from '../hydration/interfaces';
 import {
   assertSsrIdDefined,
@@ -365,17 +367,8 @@ export function triggerDeferBlock(triggerType: TriggerType, lView: LView, tNode:
  * The core mechanism for incremental hydration. This triggers or
  * queues hydration for all the blocks in the tree that need to be hydrated
  * and keeps track of all those blocks that were hydrated along the way.
- *
- * Note: the `replayQueuedEventsFn` is only provided when hydration is invoked
- * as a result of an event replay (via JsAction). When hydration is invoked from
- * an instruction set (e.g. `deferOnImmediate`) - there is no need to replay any
- * events.
  */
-export async function triggerHydrationFromBlockName(
-  injector: Injector,
-  blockName: string,
-  replayQueuedEventsFn?: Function,
-) {
+export async function triggerHydrationFromBlockName(injector: Injector, blockName: string) {
   const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
   const blocksBeingHydrated = dehydratedBlockRegistry.hydrating;
 
@@ -405,7 +398,7 @@ export async function triggerHydrationFromBlockName(
   if (dehydratedBlockRegistry.has(topmostParentBlock)) {
     // the topmost parent block is already in the registry and we can proceed
     // with hydration.
-    await triggerHydrationForBlockQueue(injector, hydrationQueue, replayQueuedEventsFn);
+    await triggerHydrationForBlockQueue(injector, hydrationQueue);
   } else {
     // the topmost parent block is not yet in the registry, which may mean
     // a lazy loaded route, a control flow branch was taken, a route has
@@ -414,8 +407,7 @@ export async function triggerHydrationFromBlockName(
     // instruction executed.
     dehydratedBlockRegistry.awaitParentBlock(
       topmostParentBlock,
-      async () =>
-        await triggerHydrationForBlockQueue(injector, hydrationQueue, replayQueuedEventsFn),
+      async () => await triggerHydrationForBlockQueue(injector, hydrationQueue),
     );
   }
 }
@@ -424,16 +416,10 @@ export async function triggerHydrationFromBlockName(
  * The core mechanism for incremental hydration. This triggers
  * hydration for all the blocks in the tree that need to be hydrated
  * and keeps track of all those blocks that were hydrated along the way.
- *
- * Note: the `replayQueuedEventsFn` is only provided when hydration is invoked
- * as a result of an event replay (via JsAction). When hydration is invoked from
- * an instruction set (e.g. `deferOnImmediate`) - there is no need to replay any
- * events.
  */
 export async function triggerHydrationForBlockQueue(
   injector: Injector,
   hydrationQueue: string[],
-  replayQueuedEventsFn?: Function,
 ): Promise<void> {
   const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
   const blocksBeingHydrated = dehydratedBlockRegistry.hydrating;
@@ -491,39 +477,54 @@ export async function triggerHydrationForBlockQueue(
     pendingTasks.remove(taskId);
   }
 
-  // Replay any queued events, if any exist and the replay operation was requested.
-  if (replayQueuedEventsFn) {
-    replayQueuedEventsFn(hydrationQueue);
-  }
+  // Mark hydrated blocks as ready for synchronous initial event replay before
+  // potentially parking at `await appRef.whenStable()`, preserving early event
+  // order and `$event.stopPropagation()` against eager listeners.
+  dehydratedBlockRegistry.deferListenerCleanup(hydrationQueue);
 
-  // `cleanupHydratedDeferBlocks` -> `cleanupDehydratedViews` walks all LViews
-  // registered with ApplicationRef and removes dehydrated views that aren't
-  // associated with a defer block. This is only safe once the app is stable.
-  // There may still be other pending tasks that need one of those views before
-  // they get a chance to hydrate it.
-  //
-  // This block's task is removed above, but other tasks may still be pending.
-  // Wait for those before treating any remaining dehydrated views as orphaned.
-  //
-  // Don't wait if there are no other pending tasks. Calling `whenStable()`
-  // creates another subscription to the stability signal, which can move this
-  // cleanup to a later microtask than callers already waiting on
-  // `appRef.whenStable()`. Keeping this path synchronous preserves the existing
-  // behavior when the app is already stable.
+  const queue = injector.get(EVENT_REPLAY_QUEUE);
   const appRef = injector.get(ApplicationRef);
   // Read the block before waiting, so it is looked up at the same point as before.
   const lastDeferBlock = dehydratedBlockRegistry.get(lastBlockName);
-  if (pendingTasks.hasPendingTasks) {
-    await appRef.whenStable();
 
-    // The app can be destroyed while we wait. The bootstrap cleanup checks this too.
-    if (appRef.destroyed) {
-      return;
+  try {
+    if (queue.length > 0) {
+      replayQueuedBlockEvents(queue, hydrationQueue);
+    }
+
+    // `cleanupHydratedDeferBlocks` -> `cleanupDehydratedViews` walks all LViews
+    // registered with ApplicationRef and removes dehydrated views that aren't
+    // associated with a defer block. This is only safe once the app is stable.
+    // There may still be other pending tasks that need one of those views before
+    // they get a chance to hydrate it.
+    //
+    // This block's task is removed above, but other tasks may still be pending.
+    // Wait for those before treating any remaining dehydrated views as orphaned.
+    //
+    // Don't wait if there are no other pending tasks. Calling `whenStable()`
+    // creates another subscription to the stability signal, which can move this
+    // cleanup to a later microtask than callers already waiting on
+    // `appRef.whenStable()`. Keeping this path synchronous preserves the existing
+    // behavior when the app is already stable.
+    if (pendingTasks.hasPendingTasks) {
+      await appRef.whenStable();
+
+      // The app can be destroyed while we wait. The bootstrap cleanup checks this too.
+      if (appRef.destroyed) {
+        return;
+      }
+
+      // Drain again in case live events were queued while waiting for stability.
+      if (queue.length > 0) {
+        replayQueuedBlockEvents(queue, hydrationQueue);
+      }
+    }
+  } finally {
+    if (!appRef.destroyed) {
+      // Cleanup after hydration of all affected defer blocks.
+      cleanupHydratedDeferBlocks(lastDeferBlock, hydrationQueue, dehydratedBlockRegistry, appRef);
     }
   }
-
-  // Cleanup after hydration of all affected defer blocks.
-  cleanupHydratedDeferBlocks(lastDeferBlock, hydrationQueue, dehydratedBlockRegistry, appRef);
 }
 
 export function deferBlockHasErrored(deferBlock: DehydratedDeferBlock): boolean {
