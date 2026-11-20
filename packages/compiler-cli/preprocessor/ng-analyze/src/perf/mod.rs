@@ -10,8 +10,7 @@
 //! - Query spans, one kind per `QueryKey` variant, named by `QueryKey::name()` (`ParseFile`,
 //!   `ModuleExportMap`, ...). `QueryEngine::execute` opens one per cache miss; each poll is an
 //!   `X` slice (cat `ngp.query`, `args.q` execution id) on the worker thread that ran it, with an
-//!   `s`/`f` flow named `Query` from the requesting slice to the first poll. In detail mode they
-//!   also get a `b`/`e` latency slice (cat `ngp.query.async`) and `args.key`.
+//!   `s`/`f` flow named `Query` from the requesting slice to the first poll.
 //! - Sync spans (cat `ngp.rust`, `X` only): `Initialize`, `ResolveTsconfig` and
 //!   `ConstructAnalyzer` in `compiler/analyzer.rs`; `ExpandGlobs` in `tsconfig_resolution.rs`;
 //!   `Resolve` from `oxc_resolver`'s own `resolve` span.
@@ -121,9 +120,6 @@ pub struct SlowQuery {
     /// Path of the file the query is about, if any.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub file: Option<String>,
-    /// The query key, in detail mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub key: Option<String>,
 }
 
 /// Totals for spans other than queries, in µs.

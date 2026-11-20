@@ -116,8 +116,6 @@ export interface RustSlowQuery {
   selfUs: number;
   wallUs: number;
   file?: string;
-  /** In detail mode. */
-  key?: string;
 }
 
 export interface RustSummary {
