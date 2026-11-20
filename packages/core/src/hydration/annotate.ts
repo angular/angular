@@ -610,7 +610,7 @@ function serializeLView(
     // This situation may happen during the content projection, when some nodes don't make it
     // into one of the content projection slots (for example, when there is no default
     // <ng-content /> slot in projector component's template).
-    if (isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode)) {
+    if (isDisconnectedContentProjectedNode(tNode, lView)) {
       appendDisconnectedNodeIndex(ngh, tNode);
       continue;
     }
@@ -709,10 +709,15 @@ function serializeLView(
         // thus it has no DOM elements associated with it, so the **next sibling**
         // node would not be able to find an anchor. In this case, use full path instead.
         let nextTNode = tNode.next;
-        // Skip over all `<ng-content>` slots and `@let` declarations in a row.
+        // Skip over all `<ng-content>` slots and `@let` declarations in a row, as well as
+        // content-projected nodes that are disconnected from the DOM (for example, content that
+        // is not projected): those are annotated as disconnected when processed, and the next
+        // connected node can't be located from them. Any other node missing from the DOM still
+        // fails with a serialization error.
         while (
           nextTNode !== null &&
-          nextTNode.type & (TNodeType.Projection | TNodeType.LetDeclaration)
+          (nextTNode.type & (TNodeType.Projection | TNodeType.LetDeclaration) ||
+            isDisconnectedContentProjectedNode(nextTNode, lView))
         ) {
           nextTNode = nextTNode.next;
         }
@@ -885,6 +890,16 @@ function isContentProjectedNode(tNode: TNode): boolean {
     currentTNode = currentTNode.parent as TNode;
   }
   return false;
+}
+
+/**
+ * Detects whether a given TNode is content projected and its native node is
+ * disconnected from the DOM (for example, because the content is not projected
+ * into any slot). Such nodes are annotated as disconnected instead of being
+ * located by a path, so the client creates them instead of hydrating them.
+ */
+function isDisconnectedContentProjectedNode(tNode: TNode, lView: LView): boolean {
+  return isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode);
 }
 
 /**
