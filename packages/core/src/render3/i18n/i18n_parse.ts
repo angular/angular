@@ -848,14 +848,15 @@ function walkIcuTree(
 
             if (hasBinding) {
               if (Object.hasOwn(VALID_ATTRS, lowerAttrName)) {
-                generateBindingUpdateOpCodes(
-                  update,
-                  attr.value,
-                  newIndex,
-                  attr.name,
-                  0,
-                  i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace),
-                );
+                bindingMask =
+                  generateBindingUpdateOpCodes(
+                    update,
+                    attr.value,
+                    newIndex,
+                    attr.name,
+                    0,
+                    i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace),
+                  ) | bindingMask;
               } else {
                 ngDevMode &&
                   console.warn(
