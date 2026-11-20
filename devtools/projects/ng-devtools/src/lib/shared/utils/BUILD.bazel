@@ -7,6 +7,7 @@ ts_project(
     srcs = [
         "control-flow.ts",
         "debouncer.ts",
+        "dtlink-utils.ts",
         "formatting.ts",
     ],
     deps = [

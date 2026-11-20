@@ -12,3 +12,5 @@
 
 export * from './lib/shared-utils';
 export * from './lib/angular-check';
+export * from './lib/dtlink';
+export * from './lib/error';

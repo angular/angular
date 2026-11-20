@@ -22,9 +22,9 @@ import {
   SerializedInjector,
   SerializedProviderRecord,
 } from '../../../../protocol';
+import {AngularDevtoolsError} from '../../../../shared-utils';
 import {ngDebugApiIsSupported, ngDebugClient} from '../shared/ng-debug-api/ng-debug-api';
 import {log} from '../shared/utils/log';
-import {AngularDevtoolsError} from '../shared/utils/error';
 import {elementToDirectiveNames} from '../directive-forest/utils/directive';
 
 const INTERNAL_TOKENS = [

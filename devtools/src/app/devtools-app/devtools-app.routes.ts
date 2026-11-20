@@ -13,6 +13,7 @@ import {FrameManager} from '../../../projects/ng-devtools/src/lib/application-se
 import {Events, MessageBus, PriorityAwareMessageBus} from '../../../projects/protocol';
 import {IFrameMessageBus} from '../../iframe-message-bus';
 import {DEVTOOLS_BACKEND_URI, DEVTOOLS_FRONTEND_URI} from '../../communication';
+import {provideDtLink} from '../../../projects/ng-devtools/src/lib/application-providers/dtlink_provider';
 
 export const DEVTOOL_ROUTES: Routes = [
   {
@@ -32,6 +33,7 @@ export const DEVTOOL_ROUTES: Routes = [
           );
         },
       },
+      provideDtLink(),
       {provide: FrameManager, useFactory: () => FrameManager.initialize(null)},
     ],
   },

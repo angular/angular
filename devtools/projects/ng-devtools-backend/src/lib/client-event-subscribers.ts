@@ -30,6 +30,7 @@ import {
   appIsAngularInDevMode,
   appIsAngularIvy,
   appIsSupportedAngularVersion,
+  exposeDtLinkApi,
   getAngularVersion,
   isHydrationEnabled,
 } from '../../../shared-utils';
@@ -78,6 +79,7 @@ import {debugLog, log, setupLogging} from './shared/utils/log';
 import {sanitizeObject} from './shared/utils/serialization';
 import {SignalGraphRef} from './shared/utils/signal-graph-ref';
 import {getConfig} from './config/config';
+import {BACKEND_DTLINK_API} from './rpc';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -93,6 +95,9 @@ export const subscribeToClientEvents = (
   setupLogging(config?.devtoolsDevMode ?? false);
 
   const cleanUpFns: (() => void)[] = [
+    // Exposing remote calls via DtLink.
+    exposeDtLinkApi(messageBus, BACKEND_DTLINK_API, {errorLogger: debugLog.error}),
+
     loadCdDataStream(messageBus),
     loadCdHighlighting(),
     loadHydrationOverlays(),

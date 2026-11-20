@@ -14,10 +14,10 @@ ts_project(
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:directive",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter/rendering",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
         "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
     ],
 )
 

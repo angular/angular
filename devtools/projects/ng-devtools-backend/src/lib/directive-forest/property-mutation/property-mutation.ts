@@ -8,7 +8,7 @@
 
 import type {Signal, WritableSignal} from '@angular/core';
 import {isSignal} from '../../shared/utils/general';
-import {AngularDevtoolsError} from '../../shared/utils/error';
+import {AngularDevtoolsError} from '../../../../../shared-utils';
 
 /** Represents a property access operation. */
 interface PropertyAccess {

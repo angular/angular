@@ -55,6 +55,17 @@ ng_project(
     ],
 )
 
+ng_project(
+    name = "dtlink",
+    srcs = ["dtlink_provider.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend:types",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)
+
 ts_test_library(
     name = "test_application_providers_lib",
     srcs = glob(["*_spec.ts"]),

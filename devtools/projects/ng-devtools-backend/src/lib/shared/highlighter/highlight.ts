@@ -7,7 +7,7 @@
  */
 
 import {EventEmitter} from '@angular/core';
-import {AngularDevtoolsError} from '../utils/error';
+import {AngularDevtoolsError} from '../../../../../shared-utils';
 import {debugLog} from '../utils/log';
 import {Highlight, HighlightLabelDefinition, HighlightLabelProps, HighlightTemplate} from './types';
 import {Renderer} from './rendering/renderer';
