@@ -16,6 +16,22 @@ import {AssetGroupConfig} from './manifest';
 import {NamedCache} from './named-cache-storage';
 import {sha1Binary} from './sha1';
 
+const UNCACHEABLE_CACHE_CONTROL_DIRECTIVES = new Set(['no-store', 'private', 'no-cache']);
+
+function hasUncacheableCacheControl(headers: Headers): boolean {
+  const cacheControl = headers.get('cache-control');
+
+  if (!cacheControl) {
+    return false;
+  }
+
+  return cacheControl.split(',').some((directive) => {
+    const directiveName = directive.split('=', 1)[0].trim().toLowerCase();
+
+    return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
+  });
+}
+
 /**
  * A group of assets that are cached in a `Cache` and managed by a given policy.
  *
@@ -151,16 +167,20 @@ export abstract class AssetGroup {
           // the response.
           return cachedResponse;
         } else {
-          // This resource has no hash, and yet exists in the cache. Check how old this request is
-          // to make sure it's still usable.
-          if (await this.needToRevalidate(req, cachedResponse)) {
-            this.idle.schedule(`revalidate(${cache.name}): ${req.url}`, async () => {
-              await this.fetchAndCacheOnce(req);
-            });
-          }
+          if (hasUncacheableCacheControl(cachedResponse.headers)) {
+            await this.removeCachedResource(req, cache);
+          } else {
+            // This resource has no hash, and yet exists in the cache. Check how old this request
+            // is to make sure it's still usable.
+            if (await this.needToRevalidate(req, cachedResponse)) {
+              this.idle.schedule(`revalidate(${cache.name}): ${req.url}`, async () => {
+                await this.fetchAndCacheOnce(req);
+              });
+            }
 
-          // In either case (revalidation or not), the cached response must be good.
-          return cachedResponse;
+            // In either case (revalidation or not), the cached response must be good.
+            return cachedResponse;
+          }
         }
       }
 
@@ -298,10 +318,13 @@ export abstract class AssetGroup {
    * Fetch the given resource from the network, and cache it if able.
    */
   protected async fetchAndCacheOnce(req: Request, used: boolean = true): Promise<Response> {
+    const url = this.adapter.normalizeUrl(req.url);
+    const shouldDeduplicate = this.hashes.has(url);
+
     // The `inFlightRequests` map holds information about which caching operations are currently
-    // underway for known resources. If this request appears there, another "thread" is already
+    // underway for hashed resources. If this request appears there, another "thread" is already
     // in the process of caching it, and this work should not be duplicated.
-    if (this.inFlightRequests.has(req.url)) {
+    if (shouldDeduplicate && this.inFlightRequests.has(req.url)) {
       // There is a caching operation already in progress for this request. Wait for it to
       // complete, and hopefully it will have yielded a useful response.
       return this.inFlightRequests.get(req.url)!;
@@ -313,7 +336,9 @@ export abstract class AssetGroup {
 
     // Save this operation in `inFlightRequests` so any other "thread" attempting to cache it
     // will block on this chain instead of duplicating effort.
-    this.inFlightRequests.set(req.url, fetchOp);
+    if (shouldDeduplicate) {
+      this.inFlightRequests.set(req.url, fetchOp);
+    }
 
     // Make sure this attempt is cleaned up properly on failure.
     try {
@@ -330,9 +355,17 @@ export abstract class AssetGroup {
       }
 
       try {
+        const cache = await this.cache;
+
+        if (!this.hashes.has(url) && hasUncacheableCacheControl(res.headers)) {
+          // This response must not be stored. Also remove any copy cached earlier, so it is not
+          // served again.
+          await this.removeCachedResource(req, cache);
+          return res;
+        }
+
         // This response is safe to cache (as long as it's cloned). Wait until the cache operation
         // is complete.
-        const cache = await this.cache;
         await cache.put(req, res.clone());
 
         // If the request is not hashed, update its metadata, especially the timestamp. This is
@@ -359,7 +392,9 @@ export abstract class AssetGroup {
     } finally {
       // Finally, it can be removed from `inFlightRequests`. This might result in a double-remove
       // if some other chain was already making this request too, but that won't hurt anything.
-      this.inFlightRequests.delete(req.url);
+      if (shouldDeduplicate) {
+        this.inFlightRequests.delete(req.url);
+      }
     }
   }
 
@@ -381,6 +416,15 @@ export abstract class AssetGroup {
     }
 
     return res;
+  }
+
+  /**
+   * Remove an unhashed resource and its metadata from the cache.
+   */
+  private async removeCachedResource(req: Request, cache: Cache): Promise<void> {
+    await cache.delete(req, this.config.cacheQueryOptions);
+    const metaTable = await this.metadata;
+    await metaTable.delete(req.url);
   }
 
   /**
@@ -647,6 +691,10 @@ export class PrefetchAssetGroup extends AssetGroup {
           const res = await updateFrom.lookupResourceWithoutHash(url);
           if (res === null || res.metadata === undefined) {
             // Unexpected, but not harmful.
+            return;
+          }
+
+          if (hasUncacheableCacheControl(res.response.headers)) {
             return;
           }
 

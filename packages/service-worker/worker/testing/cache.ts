@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MockResponse} from './fetch';
+import {MockRequest, MockResponse} from './fetch';
 import {normalizeUrl} from './utils';
 
 export interface DehydratedResponse {
@@ -131,11 +131,11 @@ export class MockCache {
     return false;
   }
 
-  async keys(match?: Request | string): Promise<string[]> {
+  async keys(match?: Request | string): Promise<Request[]> {
     if (match !== undefined) {
       throw 'Not implemented';
     }
-    return Array.from(this.cache.keys());
+    return Array.from(this.cache.keys(), (url) => new MockRequest(url));
   }
 
   async match(request: RequestInfo, options?: CacheQueryOptions): Promise<Response> {
