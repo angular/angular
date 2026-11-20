@@ -47,17 +47,18 @@ export function observeSelectMutations(
 /**
  * Checks if a given mutation record is relevant for resyncing a <select>.
  * In general its relevant if:
- * - Non comment content of the select changed
+ * - Non comment nodes were added to / removed from the select
+ * - The text of an option without a value attribute changed
  * - The value attribute of an option changed.
  */
 function isRelevantSelectMutation(mutation: MutationRecord) {
-  // Consider changes that may add / remove options, or change their text content.
-  if (mutation.type === 'childList' || mutation.type === 'characterData') {
-    // If the target element is a comment it's not relevant.
-    if (mutation.target instanceof Comment) {
-      return false;
-    }
-    // Otherwise if any non-comment nodes were added / removed it is relevant.
+  // If the target is a comment it's not relevant.
+  if (mutation.target instanceof Comment) {
+    return false;
+  }
+  // Consider changes that may add / remove options.
+  if (mutation.type === 'childList') {
+    // If any non-comment nodes were added / removed it is relevant.
     for (const node of mutation.addedNodes) {
       if (!(node instanceof Comment)) {
         return true;
@@ -70,6 +71,14 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
     }
     // Otherwise it's not relevant.
     return false;
+  }
+  // If the text of an option changed, it's only relevant if the option has no value attribute,
+  // because only then is the text used as its value.
+  if (mutation.type === 'characterData') {
+    // The target is the text node, its parent the option.
+    // Not handled: `<option><span>{{ x }}</span></option>`
+    const parent = mutation.target.parentElement;
+    return parent instanceof HTMLOptionElement && !parent.hasAttribute('value');
   }
   // If the value attribute of an option changed, it's relevant.
   if (mutation.type === 'attributes' && mutation.target instanceof HTMLOptionElement) {

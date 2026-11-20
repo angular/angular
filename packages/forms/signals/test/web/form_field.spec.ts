@@ -4862,6 +4862,99 @@ describe('field directive', () => {
     expect(fix.componentInstance.select()!.nativeElement.value).toEqual('four');
   });
 
+  it("should resync the select value when an option's text changes to the field value", async () => {
+    @Component({
+      imports: [FormField],
+      template: `
+        <select #select [formField]="f">
+          <option>{{ label() }}</option>
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal('two'));
+      select = viewChild.required<ElementRef<HTMLSelectElement>>('select');
+      label = signal('pending');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    await fix.whenStable();
+    const select = fix.componentInstance.select().nativeElement;
+
+    expect(select.value).toEqual('');
+
+    act(() => fix.componentInstance.label.set('two'));
+    await fix.whenStable();
+
+    expect(select.value).toEqual('two');
+  });
+
+  it("should resync the select value when an option's text changes away from the field value", async () => {
+    @Component({
+      imports: [FormField],
+      template: `
+        <select #select [formField]="f">
+          <option>{{ label() }}</option>
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal('two'));
+      select = viewChild.required<ElementRef<HTMLSelectElement>>('select');
+      label = signal('two');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    await fix.whenStable();
+    const select = fix.componentInstance.select().nativeElement;
+
+    expect(select.value).toEqual('two');
+
+    act(() => fix.componentInstance.label.set('three'));
+    await fix.whenStable();
+
+    // No option matches the field value anymore, so nothing is selected.
+    expect(select.value).toEqual('');
+  });
+
+  it('should not resync the select value when the text of an option with an explicit value changes', async () => {
+    @Component({
+      imports: [FormField],
+      template: `
+        <select #select [formField]="f">
+          <option [value]="value()">{{ label() }}</option>
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal('two'));
+      select = viewChild.required<ElementRef<HTMLSelectElement>>('select');
+      value = signal('two');
+      label = signal('Two');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    await fix.whenStable();
+    const select = fix.componentInstance.select().nativeElement;
+
+    expect(select.value).toEqual('two');
+
+    // A resync writes the same value again, so the selection alone cannot show that none happened.
+    const valueSetter = spyOnProperty(select, 'value', 'set').and.callThrough();
+
+    act(() => fix.componentInstance.label.set('Second'));
+    await fix.whenStable();
+
+    expect(valueSetter).not.toHaveBeenCalled();
+    expect(select.value).toEqual('two');
+
+    // Positive control for the spy: a changed value attribute does trigger a resync.
+    act(() => fix.componentInstance.value.set('other'));
+    await fix.whenStable();
+
+    expect(valueSetter).toHaveBeenCalled();
+  });
+
   it('initializes a required value input before the component lifecycle runs', () => {
     let initialValue: string | undefined = undefined;
     @Component({
