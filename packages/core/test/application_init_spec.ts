@@ -9,6 +9,8 @@ import {
   APP_INITIALIZER,
   ApplicationInitStatus,
   Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
   inject,
   InjectionToken,
   provideAppInitializer,
@@ -246,6 +248,85 @@ describe('ApplicationInitStatus', () => {
       await initApp();
 
       expect(isInitialized).toBeTrue();
+    });
+
+    it('should unsubscribe observable initializers and resolve donePromise when injector is destroyed', async () => {
+      let unsubscribed = false;
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideAppInitializer(
+            () =>
+              new Observable(() => () => {
+                unsubscribed = true;
+              }),
+          ),
+        ],
+      });
+
+      const initStatus = TestBed.inject(ApplicationInitStatus);
+      expect(initStatus.done).toBeFalse();
+      expect(unsubscribed).toBeFalse();
+
+      TestBed.resetTestingModule();
+
+      await initStatus.donePromise;
+      expect(unsubscribed).toBeTrue();
+      expect(initStatus.done).toBeFalse();
+    });
+
+    it('should resolve donePromise and ignore late rejections when injector is destroyed during promise initializer', async () => {
+      let rejectInit!: (reason?: unknown) => void;
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideAppInitializer(
+            () =>
+              new Promise<void>((_, reject) => {
+                rejectInit = reject;
+              }),
+          ),
+        ],
+      });
+
+      const initStatus = TestBed.inject(ApplicationInitStatus);
+      expect(initStatus.done).toBeFalse();
+
+      TestBed.resetTestingModule();
+
+      await initStatus.donePromise;
+      expect(initStatus.done).toBeFalse();
+
+      // Rejecting after destruction should not cause an unhandled rejection.
+      await jasmine.spyOnGlobalErrorsAsync(async (globalErrorSpy) => {
+        rejectInit(new Error('late failure'));
+        await timeout();
+        expect(globalErrorSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should stop running remaining initializers if an earlier initializer destroys the injector', async () => {
+      let secondInitializerRan = false;
+
+      const injector = createEnvironmentInjector(
+        [
+          ApplicationInitStatus,
+          provideAppInitializer(() => {
+            injector.destroy();
+          }),
+          provideAppInitializer(() => {
+            secondInitializerRan = true;
+          }),
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
+
+      const initStatus = injector.get(ApplicationInitStatus);
+      (initStatus as any).runInitializers();
+      await initStatus.donePromise;
+
+      expect(secondInitializerRan).toBeFalse();
+      expect(initStatus.done).toBeFalse();
     });
   });
 });

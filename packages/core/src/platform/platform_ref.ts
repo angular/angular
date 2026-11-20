@@ -100,9 +100,20 @@ export class PlatformRef {
   ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
     setModuleBootstrapImpl();
-    return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
-      this.bootstrapModuleFactory(moduleFactory, options),
-    );
+    const wasDestroyed = this._destroyed;
+    return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) => {
+      if (!wasDestroyed && this._destroyed) {
+        const moduleRef = createNgModuleRefWithProviders(
+          moduleFactory.moduleType,
+          this.injector,
+          [],
+        );
+        moduleRef.destroy();
+        return moduleRef;
+      }
+
+      return this.bootstrapModuleFactory(moduleFactory, options);
+    });
   }
 
   /**
