@@ -563,15 +563,22 @@ export class Scope {
       // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
       // to add them if needed.
       if (node instanceof Element) {
-        this.opQueue.push(
-          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
-        );
-
         // Skip DOM schema checks for elements matched as foreign components.
         // An element can never match both an Angular directive and a foreign component
         // without throwing a fatal error, so we are guaranteed that directives is empty
         // and we only need to intercept in this directiveless block.
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(
+            this.tcb,
+            this,
+            node.inputs,
+            node,
+            claimedInputs,
+            /* checkCustomElementBindings */ !isForeign,
+          ),
+        );
+
         if (!isForeign) {
           this.opQueue.push(
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
@@ -660,7 +667,18 @@ export class Scope {
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
+      const hasComponent = directives.some((dir) => dir.isComponent);
+      const checkCustomElementBindings = node instanceof Element && !hasComponent;
+      this.opQueue.push(
+        new TcbUnclaimedInputsOp(
+          this.tcb,
+          this,
+          node.inputs,
+          node,
+          claimedInputs,
+          checkCustomElementBindings,
+        ),
+      );
 
       const schemaClaimedInputs = new Set<string>(claimedInputs);
       if (explicitNgTemplate) {
@@ -683,7 +701,7 @@ export class Scope {
       const checkElement =
         node instanceof Element && this.requiresUnknownElementCheck(node, directives);
       this.opQueue.push(
-        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs),
+        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs, hasComponent),
       );
     }
   }
@@ -812,7 +830,10 @@ export class Scope {
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
           const checkElement = this.requiresUnknownElementCheck(node, directives);
-          this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
+          const hasComponent = directives?.some((dir) => dir.isComponent) ?? false;
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs, hasComponent),
+          );
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
         const schemaClaimedInputs = new Set<string>();

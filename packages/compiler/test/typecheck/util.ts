@@ -19,6 +19,7 @@ import {
   ParseTemplateOptions,
   R3Identifiers,
   R3TargetBinder,
+  SchemaMetadata,
   SelectorlessMatcher,
   SelectorMatcher,
   TcbComponentMetadata,
@@ -159,7 +160,7 @@ export function tcb(
   template: string,
   declarations: TestDeclaration[] = [],
   config?: Partial<TypeCheckingConfig>,
-  options?: {emitSpans?: boolean},
+  options?: {emitSpans?: boolean; schemas?: SchemaMetadata[]; knownCustomElements?: string[]},
   templateParserOptions?: ParseTemplateOptions,
   foreignComponents: string[] = [],
 ): string {
@@ -192,7 +193,7 @@ export function tcb(
     id: 'tcb' as TypeCheckId,
     boundTarget,
     pipes: usedPipes,
-    schemas: [],
+    schemas: options?.schemas ?? [],
     isStandalone: false,
     preserveWhitespaces: false,
   };
@@ -213,7 +214,7 @@ export function tcb(
       component,
       '_tcb1',
       meta,
-      new NoopSchemaChecker(),
+      new NoopSchemaChecker(options?.knownCustomElements),
       new NoopOobRecorder(),
     ),
   );
@@ -551,8 +552,18 @@ function parseMappingArray(values: string[]): {[field: string]: string} {
 }
 
 class NoopSchemaChecker implements DomSchemaChecker<unknown> {
+  private readonly knownCustomElements: ReadonlySet<string>;
+
+  constructor(knownCustomElements: string[] = []) {
+    this.knownCustomElements = new Set(knownCustomElements.map((tag) => tag.toLowerCase()));
+  }
+
   get diagnostics(): ReadonlyArray<unknown> {
     return [];
+  }
+  isKnownCustomElement(tagName: string): boolean {
+    const name = tagName.replace(/^:xhtml:/, '').toLowerCase();
+    return this.knownCustomElements.has(name);
   }
   checkElement(): void {}
   checkTemplateElementProperty(): void {}

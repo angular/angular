@@ -20,9 +20,26 @@ import {
 import {ErrorCode} from './error_code.js';
 import {Diagnostic} from './diagnostic.js';
 
-const REGISTRY = new DomElementSchemaRegistry();
+export const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
-const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
+export const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
+
+/**
+ * Normalizes a template element tag name into a candidate custom element tag name, or returns
+ * `null` for built-in HTML/Angular elements and non-HTML namespaced tags (e.g. `:svg:...`).
+ */
+export function normalizeCustomElementTagName(tagName: string): string | null {
+  const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
+  if (
+    !/^[a-z].*-/.test(name) ||
+    name === 'ng-container' ||
+    name === 'ng-content' ||
+    name === 'ng-template'
+  ) {
+    return null;
+  }
+  return name;
+}
 
 /**
  * Checks non-Angular elements and properties against the `DomElementSchemaRegistry`, a schema
@@ -30,9 +47,30 @@ const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
  */
 export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
   private _diagnostics: Diagnostic[] = [];
+  private _checkedCustomElements = new Map<string, boolean>();
 
   get diagnostics(): ReadonlyArray<Diagnostic> {
     return this._diagnostics;
+  }
+
+  /**
+   * Normalized candidate custom element tag names actually queried via `isKnownCustomElement`
+   * during this check pass, mapped to whether they were known in `HTMLElementTagNameMap`.
+   */
+  get checkedCustomElements(): ReadonlyMap<string, boolean> {
+    return this._checkedCustomElements;
+  }
+
+  constructor(private isCustomElement: (tagName: string) => boolean = () => false) {}
+
+  isKnownCustomElement(tagName: string): boolean {
+    const name = normalizeCustomElementTagName(tagName);
+    if (name === null) {
+      return false;
+    }
+    const known = this.isCustomElement(name);
+    this._checkedCustomElements.set(name, known);
+    return known;
   }
 
   checkElement(
@@ -47,7 +85,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
 
-    if (!REGISTRY.hasElement(name, schemas)) {
+    if (!REGISTRY.hasElement(name, schemas) && !this.isKnownCustomElement(name)) {
       const schemasStr = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let errorMsg = `'${name}' is not a known element:\n`;
       errorMsg += `1. If '${name}' is an Angular component, then verify that it is ${
@@ -79,6 +117,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+    hasComponent: boolean = false,
   ): void {
     const report = REGISTRY.validateProperty(name);
 
@@ -94,24 +133,35 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       return;
     }
 
-    if (!REGISTRY.hasProperty(tagName, name, schemas)) {
+    // Known WAI-ARIA attributes are mapped to camelCase (e.g. `aria-label` -> `ariaLabel`) before
+    // this check and accepted by `REGISTRY.hasProperty`. Any remaining `aria-*` name is an unknown
+    // ARIA attribute; do not exempt it as a custom element property since Angular compiles
+    // `[aria-*]` via `ɵɵariaProperty` and skips TCB property assignment for it.
+    const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
+    if (
+      !REGISTRY.hasProperty(tagName, name, schemas) &&
+      !(!hasComponent && !isUnknownAriaAttr && this.isKnownCustomElement(tagName))
+    ) {
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemasStr = `'${decorator}.schemas'`;
-      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${tagName}'.`;
-      if (tagName.startsWith('ng-')) {
+      const localTagName = tagName.startsWith(':')
+        ? tagName.slice(tagName.indexOf(':', 1) + 1)
+        : tagName;
+      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${localTagName}'.`;
+      if (localTagName.startsWith('ng-')) {
         errorMsg +=
           `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '${decorator}.imports' of this component.` +
           `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemasStr} of this component.`;
-      } else if (tagName.indexOf('-') > -1) {
+      } else if (localTagName.indexOf('-') > -1) {
         errorMsg +=
           `\n1. If '${
-            tagName
+            localTagName
           }' is an Angular component and it has '${name}' input, then verify that it is ${
             hostIsStandalone
               ? "included in the '@Component.imports' of this component"
               : 'part of this module'
           }.` +
-          `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemasStr} of this component to suppress this message.` +
+          `\n2. If '${localTagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemasStr} of this component to suppress this message.` +
           `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemasStr} of this component.`;
       }
 
@@ -197,7 +247,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
         (schema) =>
           schema.name === NO_ERRORS_SCHEMA.name ||
           (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
-      )
+      ) ||
+      (!hasComponent && this.isKnownCustomElement(tagName))
     ) {
       return;
     }

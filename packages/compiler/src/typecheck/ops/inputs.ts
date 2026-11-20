@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NO_ERRORS_SCHEMA, SecurityContext} from '../../core';
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
@@ -17,6 +18,7 @@ import {TcbOp} from './base';
 import {declareVariable, TcbExpr} from './codegen';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 const REGISTRY = new DomElementSchemaRegistry();
+import {isAriaAttribute} from '../../template/pipeline/src/util/attributes';
 import {tcbExpression, unwrapWritableSignal} from './expression';
 import {
   checkUnsupportedFieldBindings,
@@ -26,7 +28,7 @@ import {
 } from './signal_forms';
 import {getBoundAttributes, widenBinding} from './bindings';
 import {LocalSymbol} from './references';
-import {isUnsafeObjectKey} from '../../render3/util';
+import {IDENTIFIER_PATTERN, isUnsafeObjectKey} from '../../render3/util';
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -265,6 +267,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     private inputs: BoundAttribute[],
     private target: LocalSymbol,
     private claimedInputs: Set<string> | null,
+    private checkCustomElementBindings: boolean = false,
   ) {
     super();
   }
@@ -277,6 +280,28 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     // `this.inputs` contains only those bindings not matched by any directive. These bindings go to
     // the element itself.
     let elId: TcbExpr | null = null;
+    const hasNoErrorsSchema = this.tcb.schemas.some(
+      (schema) => schema.name === NO_ERRORS_SCHEMA.name,
+    );
+    const isCheckableDomProperty = (binding: BoundAttribute): boolean =>
+      binding.name !== 'style' &&
+      binding.name !== 'class' &&
+      !isAriaAttribute(binding.name) &&
+      binding.securityContext === SecurityContext.NONE;
+    const checkCustomElement =
+      this.checkCustomElementBindings &&
+      this.tcb.env.config.checkTypeOfInputBindings &&
+      !hasNoErrorsSchema &&
+      this.target instanceof Element &&
+      this.inputs.some(
+        (binding) =>
+          (binding.type === BindingType.Property || binding.type === BindingType.TwoWay) &&
+          !this.claimedInputs?.has(binding.name) &&
+          isCheckableDomProperty(binding) &&
+          !REGISTRY.validateProperty(REGISTRY.getMappedPropName(binding.name)).error,
+      ) &&
+      (this.tcb.domSchemaChecker.isKnownCustomElement?.(this.target.name) ?? false);
+    const shouldCheckDomBindings = this.tcb.env.config.checkTypeOfDomBindings || checkCustomElement;
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.inputs) {
@@ -294,16 +319,34 @@ export class TcbUnclaimedInputsOp extends TcbOp {
         binding.value,
       );
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
-        if (binding.name !== 'style' && binding.name !== 'class') {
+      if (shouldCheckDomBindings && isPropertyBinding) {
+        if (isCheckableDomProperty(binding)) {
+          // A direct binding to a property.
+          const propertyName = REGISTRY.getMappedPropName(binding.name);
+          if (REGISTRY.validateProperty(propertyName).error) {
+            // `TcbDomSchemaCheckerOp` already reports an error for disallowed properties (e.g.
+            // `on*` event properties). Still validate the RHS expression without emitting an
+            // assignment that could produce a duplicate diagnostic.
+            this.scope.addStatement(expr);
+            continue;
+          }
           if (elId === null) {
             elId = this.scope.resolve(this.target);
           }
-          // A direct binding to a property.
-          const propertyName = REGISTRY.getMappedPropName(binding.name);
-          const stmt = new TcbExpr(
-            `${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
-          ).addParseSpanInfo(binding.sourceSpan);
+          const target = !IDENTIFIER_PATTERN.test(propertyName)
+            ? new TcbExpr(`${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}]`)
+            : new TcbExpr(`${elId.print()}.${propertyName}`);
+          target.addParseSpanInfo(binding.keySpan);
+          let assignment = expr.wrapForTypeChecker();
+          if (
+            binding.type === BindingType.TwoWay &&
+            this.tcb.env.config.allowSignalsInTwoWayBindings
+          ) {
+            assignment = unwrapWritableSignal(assignment, this.tcb);
+          }
+          const stmt = new TcbExpr(`${target.print()} = ${assignment.print()}`).addParseSpanInfo(
+            binding.sourceSpan,
+          );
           this.scope.addStatement(stmt);
         } else {
           this.scope.addStatement(expr);

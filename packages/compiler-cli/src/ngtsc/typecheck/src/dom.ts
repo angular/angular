@@ -40,12 +40,40 @@ const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
  */
 export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
   private _diagnostics: TemplateDiagnostic[] = [];
+  private _checkedCustomElements = new Map<string, boolean>();
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
   }
 
-  constructor(private resolver: TypeCheckSourceResolver) {}
+  /**
+   * Normalized candidate custom element tag names queried via `isKnownCustomElement` during this
+   * check pass, mapped to whether they were known in `HTMLElementTagNameMap`. Used to invalidate
+   * cached type-check results in incremental builds when global `HTMLElementTagNameMap` changes.
+   */
+  get checkedCustomElements(): ReadonlyMap<string, boolean> {
+    return this._checkedCustomElements;
+  }
+
+  constructor(
+    private resolver: TypeCheckSourceResolver,
+    private isCustomElement: (tagName: string) => boolean = () => false,
+  ) {}
+
+  isKnownCustomElement(tagName: string): boolean {
+    const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
+    if (
+      !/^[a-z].*-/.test(name) ||
+      name === 'ng-container' ||
+      name === 'ng-content' ||
+      name === 'ng-template'
+    ) {
+      return false;
+    }
+    const known = this.isCustomElement(name);
+    this._checkedCustomElements.set(name, known);
+    return known;
+  }
 
   checkElement(
     id: TypeCheckId,
@@ -59,7 +87,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
 
-    if (!REGISTRY.hasElement(name, schemas)) {
+    if (!REGISTRY.hasElement(name, schemas) && !this.isKnownCustomElement(name)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
@@ -94,6 +122,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+    hasComponent: boolean = false,
   ): void {
     const report = REGISTRY.validateProperty(name);
     if (report.error) {
@@ -110,7 +139,15 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
       return;
     }
 
-    if (!REGISTRY.hasProperty(tagName, name, schemas)) {
+    // Known WAI-ARIA attributes are mapped to camelCase (e.g. `aria-label` -> `ariaLabel`) before
+    // this check and accepted by `REGISTRY.hasProperty`. Any remaining `aria-*` name is an unknown
+    // ARIA attribute; do not exempt it as a custom element property since Angular compiles
+    // `[aria-*]` via `ɵɵariaProperty` and skips TCB property assignment for it.
+    const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
+    if (
+      !REGISTRY.hasProperty(tagName, name, schemas) &&
+      !(!hasComponent && !isUnknownAriaAttr && this.isKnownCustomElement(tagName))
+    ) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
@@ -180,7 +217,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
         (schema) =>
           schema.name === NO_ERRORS_SCHEMA.name ||
           (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
-      )
+      ) ||
+      (!hasComponent && this.isKnownCustomElement(tagName))
     ) {
       return;
     }

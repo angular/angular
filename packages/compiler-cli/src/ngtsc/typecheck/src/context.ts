@@ -82,6 +82,12 @@ export interface ShimTypeCheckingData {
    * type-checking process.
    */
   data: Map<TypeCheckId, TypeCheckData>;
+
+  /**
+   * Candidate custom element tags queried against `HTMLElementTagNameMap` while generating this
+   * shim, mapped to whether they were known. Undefined when no candidate tags were queried.
+   */
+  checkedCustomElements?: ReadonlyMap<string, boolean>;
 }
 
 /**
@@ -213,6 +219,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     private host: TypeCheckingHost,
     private inlining: InliningMode,
     private perf: PerfRecorder,
+    private isCustomElement: (tagName: string) => boolean = () => false,
   ) {
     if (inlining === InliningMode.Error && config.useInlineTypeConstructors) {
       // We cannot use inlining for type checking since this environment does not support it.
@@ -588,11 +595,18 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           genesisDiagnostics.unshift(...pendingShimData.shimDiagnostics);
         }
 
+        const checkedCustomElements =
+          pendingShimData.domSchemaChecker instanceof RegistryDomSchemaChecker &&
+          pendingShimData.domSchemaChecker.checkedCustomElements.size > 0
+            ? pendingShimData.domSchemaChecker.checkedCustomElements
+            : undefined;
+
         this.host.recordShimData(sfPath, {
           genesisDiagnostics,
           hasInlines: pendingFileData.hasInlines,
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
+          checkedCustomElements,
         });
 
         const sfText = pendingShimData.file.render();
@@ -638,7 +652,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const shimPath = TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
-        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
+        domSchemaChecker: new RegistryDomSchemaChecker(
+          fileData.sourceManager,
+          this.isCustomElement,
+        ),
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
           this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
         ),

@@ -282,6 +282,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    */
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
   private generatedRangeCache = new WeakMap<ts.SourceFile, ts.TextRange[]>();
+  private knownCustomElements: ReadonlySet<string> | null = null;
 
   private isComplete = false;
   private priorResultsAdopted = false;
@@ -964,7 +965,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
-      if (previousResults === null || !previousResults.isComplete) {
+      if (
+        previousResults === null ||
+        !previousResults.isComplete ||
+        !this.areCustomElementChecksStillValid(previousResults)
+      ) {
         continue;
       }
 
@@ -973,6 +978,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     this.priorResultsAdopted = true;
+  }
+
+  private areCustomElementChecksStillValid(data: FileTypeCheckingData): boolean {
+    for (const shimData of data.shimData.values()) {
+      if (shimData.checkedCustomElements === undefined) {
+        continue;
+      }
+      for (const [tag, wasKnown] of shimData.checkedCustomElements) {
+        if (this.isKnownCustomElement(tag) !== wasKnown) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   private ensureAllShimsForAllFiles(): void {
@@ -1049,6 +1068,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.updateFromContext(ctx);
   }
 
+  private isKnownCustomElement(tagName: string): boolean {
+    if (this.knownCustomElements === null) {
+      this.knownCustomElements = collectKnownCustomElements(this.originalProgram);
+    }
+    return this.knownCustomElements.has(tagName);
+  }
+
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
     return new TypeCheckContextImpl(
       this.config,
@@ -1058,6 +1084,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       host,
       this.programDriver.inliningMode,
       this.perf,
+      (tagName) => this.isKnownCustomElement(tagName),
     );
   }
 
@@ -2226,4 +2253,57 @@ function isSymbolTypeMatch(
   const firstTypeNode = getFirstTypeDeclarationOfSymbol(first, typeChecker);
   const lastTypeNode = getFirstTypeDeclarationOfSymbol(last, typeChecker);
   return firstTypeNode === lastTypeNode && firstTypeNode !== undefined;
+}
+
+function isNullishType(type: ts.Type): boolean {
+  if ((type.flags & (ts.TypeFlags.Undefined | ts.TypeFlags.Null)) !== 0) {
+    return true;
+  }
+  return type.isUnion() && type.types.some(isNullishType);
+}
+
+/**
+ * Extracts custom element tag names (lowercase WHATWG names starting with `[a-z]` and containing
+ * `-`) declared on TypeScript's global `HTMLElementTagNameMap` interface in the given program.
+ */
+function collectKnownCustomElements(program: ts.Program): ReadonlySet<string> {
+  const tags = new Set<string>();
+  const checker = program.getTypeChecker();
+  const documentSymbol = checker.resolveName(
+    'document',
+    /* location */ undefined,
+    ts.SymbolFlags.Value,
+    /* excludeGlobals */ false,
+  );
+  if (
+    documentSymbol === undefined ||
+    checker.getPropertyOfType(checker.getTypeOfSymbol(documentSymbol), 'createElement') ===
+      undefined
+  ) {
+    return tags;
+  }
+  const tagNameMapSymbol = checker.resolveName(
+    'HTMLElementTagNameMap',
+    /* location */ undefined,
+    ts.SymbolFlags.Type,
+    /* excludeGlobals */ false,
+  );
+  if (tagNameMapSymbol === undefined) {
+    return tags;
+  }
+  const tagNameMapType = checker.getDeclaredTypeOfSymbol(tagNameMapSymbol);
+  for (const prop of checker.getPropertiesOfType(tagNameMapType)) {
+    if (
+      !/^[a-z].*-/.test(prop.name) ||
+      prop.name !== prop.name.toLowerCase() ||
+      (prop.flags & ts.SymbolFlags.Optional) !== 0
+    ) {
+      continue;
+    }
+    if (isNullishType(checker.getTypeOfSymbol(prop))) {
+      continue;
+    }
+    tags.add(prop.name);
+  }
+  return tags;
 }

@@ -525,6 +525,10 @@ export function performNgpCompilationSync(params: {
           ? {baseUrl: toPosixPath(fs.resolve(basePath, options.baseUrl))}
           : {}),
         ...(options.paths ? {paths: options.paths} : {}),
+        ...(options.types !== undefined ? {types: options.types} : {}),
+        ...(options.typeRoots !== undefined
+          ? {typeRoots: options.typeRoots.map((d: string) => toPosixPath(fs.resolve(basePath, d)))}
+          : {}),
       },
       angularCompilerOptions: {
         generateExtraImportsInLocalMode: Boolean(
@@ -764,6 +768,22 @@ export function performNgpCompilationSync(params: {
       return true;
     }
     return baseHost.fileExists(fileName);
+  };
+
+  overlayHost.directoryExists = (directoryName: string): boolean => {
+    const absPath = fs.resolve(directoryName);
+    return fs.exists(absPath) && fs.stat(absPath).isDirectory();
+  };
+
+  overlayHost.getDirectories = (directoryName: string): string[] => {
+    const absPath = fs.resolve(directoryName);
+    if (!fs.exists(absPath) || !fs.stat(absPath).isDirectory()) {
+      return [];
+    }
+    return fs.readdir(absPath).filter((name) => {
+      const entryPath = fs.resolve(absPath, name);
+      return fs.exists(entryPath) && fs.stat(entryPath).isDirectory();
+    });
   };
 
   overlayHost.readFile = (fileName: string): string | undefined => {

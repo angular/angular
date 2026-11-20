@@ -9,6 +9,7 @@ use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 
 type MetadataReceiver = oneshot::Receiver<Result<Option<crate::AnalysisResult>, String>>;
+type KnownCustomElementsReceiver = oneshot::Receiver<Result<Vec<String>, String>>;
 
 #[wasm_bindgen]
 pub struct WasmAnalyzer {
@@ -16,6 +17,7 @@ pub struct WasmAnalyzer {
     next_id: u32,
     receivers: BTreeMap<u32, mpsc::UnboundedReceiver<Result<CompilationChunk, String>>>,
     metadata_receivers: BTreeMap<u32, MetadataReceiver>,
+    known_custom_elements_receivers: BTreeMap<u32, KnownCustomElementsReceiver>,
 }
 
 #[derive(serde::Serialize)]
@@ -31,6 +33,13 @@ enum WasmStreamEvent<'a> {
     MetadataResult {
         id: u32,
         data: Option<&'a crate::AnalysisResult>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<&'a str>,
+    },
+    #[serde(rename = "knownCustomElementsResult")]
+    KnownCustomElementsResult {
+        id: u32,
+        data: Option<&'a [String]>,
         #[serde(skip_serializing_if = "Option::is_none")]
         error: Option<&'a str>,
     },
@@ -89,6 +98,36 @@ impl WasmAnalyzer {
         };
         event.ok()
     }
+
+    fn poll_next_known_custom_elements_event(&mut self) -> Option<String> {
+        let (id, outcome) =
+            self.known_custom_elements_receivers
+                .iter_mut()
+                .find_map(|(&id, rx)| match rx.try_recv() {
+                    Ok(None) => None,
+                    Ok(Some(res)) => Some((id, Some(res))),
+                    Err(_) => Some((id, None)),
+                })?;
+        self.known_custom_elements_receivers.remove(&id);
+        let failed = |error: &str| {
+            serde_json::to_string(&WasmStreamEvent::KnownCustomElementsResult {
+                id,
+                data: None,
+                error: Some(error),
+            })
+        };
+        let event = match outcome {
+            Some(Ok(data)) => serde_json::to_string(&WasmStreamEvent::KnownCustomElementsResult {
+                id,
+                data: Some(data.as_slice()),
+                error: None,
+            })
+            .or_else(|err| failed(&err.to_string())),
+            Some(Err(err)) => failed(&err),
+            None => failed("KnownCustomElements request cancelled"),
+        };
+        event.ok()
+    }
 }
 
 #[wasm_bindgen]
@@ -126,6 +165,7 @@ impl WasmAnalyzer {
             next_id: 1,
             receivers: BTreeMap::new(),
             metadata_receivers: BTreeMap::new(),
+            known_custom_elements_receivers: BTreeMap::new(),
         })
     }
 
@@ -175,6 +215,16 @@ impl WasmAnalyzer {
         Ok(id)
     }
 
+    pub fn request_known_custom_elements(&mut self) -> Result<u32, String> {
+        let rx = self
+            .analyzer
+            .request_known_custom_elements_core(get_local_spawner())?;
+        let id = self.next_id;
+        self.next_id += 1;
+        self.known_custom_elements_receivers.insert(id, rx);
+        Ok(id)
+    }
+
     /// Releases the stream or metadata request `id` when its consumer stops reading before it ends.
     ///
     /// Dropping the receiver closes the channel. The engine's sends to a closed channel
@@ -184,6 +234,7 @@ impl WasmAnalyzer {
     pub fn close_stream(&mut self, id: u32) {
         self.receivers.remove(&id);
         self.metadata_receivers.remove(&id);
+        self.known_custom_elements_receivers.remove(&id);
     }
 
     pub fn update_file_content(&self, updates_json: &str) -> Result<String, String> {
@@ -230,6 +281,11 @@ impl WasmAnalyzer {
             .map_err(|e| e.to_string())
     }
 
+    pub fn get_known_custom_elements(&self) -> Result<String, String> {
+        let res = self.analyzer.get_known_custom_elements_checked()?;
+        serde_json::to_string(&res).map_err(|e| e.to_string())
+    }
+
     pub fn read_resource(
         &self,
         containing_file: String,
@@ -256,6 +312,10 @@ impl WasmAnalyzer {
         step_local_pool();
 
         if let Some(event) = self.poll_next_metadata_event() {
+            return Some(event);
+        }
+
+        if let Some(event) = self.poll_next_known_custom_elements_event() {
             return Some(event);
         }
 
