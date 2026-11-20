@@ -151,13 +151,18 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
       // so we inject it lazily.
       const zone = inject(NgZone);
       const injector = inject(EnvironmentInjector);
+      const isServer = typeof ngServerMode !== 'undefined' && ngServerMode;
       let userErrorHandler: ErrorHandler;
       return (e: unknown) => {
         zone.runOutsideAngular(() => {
           if (injector.destroyed && !userErrorHandler) {
-            setTimeout(() => {
-              throw e;
-            });
+            if (isServer) {
+              console.error('ERROR', e);
+            } else {
+              setTimeout(() => {
+                throw e;
+              });
+            }
           } else {
             userErrorHandler ??= injector.get(ErrorHandler);
             userErrorHandler.handleError(e);

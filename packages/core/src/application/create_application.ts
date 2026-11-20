@@ -82,6 +82,12 @@ export function internalCreateApplication(config: {
       runEnvironmentInitializers: false,
     });
 
+    if (platformRef?.destroyed) {
+      const appRef = adapter.injector.get(ApplicationRef);
+      adapter.injector.destroy();
+      return Promise.resolve(appRef);
+    }
+
     return bootstrap({
       r3Injector: adapter.injector,
       platformInjector,

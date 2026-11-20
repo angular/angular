@@ -13,6 +13,7 @@ import {
   NotificationSource,
 } from './change_detection/scheduling/zoneless_scheduling';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
+import {DestroyRef} from './linker/destroy_ref';
 import {PendingTasksInternal} from './pending_tasks_internal';
 
 /**
@@ -43,6 +44,7 @@ export class PendingTasks {
   private readonly internalPendingTasks = inject(PendingTasksInternal);
   private readonly scheduler = inject(ChangeDetectionScheduler);
   private readonly errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly destroyRef = inject(DestroyRef);
   /**
    * Adds a new task that should block application's stability.
    * @returns A cleanup function that removes a task when called.
@@ -76,9 +78,17 @@ export class PendingTasks {
   run(fn: () => Promise<unknown>): void {
     const removeTask = this.add();
     try {
-      fn().catch(this.errorHandler).finally(removeTask);
+      fn()
+        .catch((err) => {
+          if (!this.destroyRef.destroyed) {
+            this.errorHandler(err);
+          }
+        })
+        .finally(removeTask);
     } catch (err) {
-      this.errorHandler(err);
+      if (!this.destroyRef.destroyed) {
+        this.errorHandler(err);
+      }
       removeTask();
     }
   }

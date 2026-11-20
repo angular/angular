@@ -83,24 +83,46 @@ export class FetchBackend implements HttpBackend {
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
+      if (this.destroyRef.destroyed) {
+        observer.unsubscribe();
+        return undefined;
+      }
+
       const aborter = new AbortController();
       let done = false;
       const wrappedObserver: Observer<HttpEvent<any>> = {
         next: (val) => {
+          if (this.destroyRef.destroyed) {
+            return;
+          }
           if (val.type === HttpEventType.Response) {
             done = true;
           }
           observer.next(val);
         },
         error: (err) => {
+          if (this.destroyRef.destroyed) {
+            return;
+          }
           done = true;
           observer.error(err);
         },
         complete: () => {
+          if (this.destroyRef.destroyed) {
+            return;
+          }
           done = true;
           observer.complete();
         },
       };
+
+      const unregisterOnDestroy = this.destroyRef.onDestroy(() => {
+        // Call `unsubscribe()` instead of `complete()` or `error()` when the
+        // injector is destroyed. This aborts the in-flight `fetch` and releases
+        // observers without triggering `EmptyError` in `firstValueFrom`/`lastValueFrom`
+        // or unhandled rejections in unawaited async lifecycle hooks.
+        observer.unsubscribe();
+      });
 
       this.doRequest(request, aborter.signal, wrappedObserver).then(noop, (error) =>
         wrappedObserver.error(new HttpErrorResponse({error})),
@@ -120,6 +142,7 @@ export class FetchBackend implements HttpBackend {
       }
 
       return () => {
+        unregisterOnDestroy();
         if (timeoutId !== undefined) {
           clearTimeout(timeoutId);
         }
@@ -164,6 +187,11 @@ export class FetchBackend implements HttpBackend {
           headers: error.headers,
         }),
       );
+      return;
+    }
+
+    if (this.destroyRef.destroyed) {
+      await response.body?.cancel();
       return;
     }
 
@@ -229,6 +257,14 @@ export class FetchBackend implements HttpBackend {
 
           const {done, value} = await reader.read();
 
+          if (this.destroyRef.destroyed) {
+            if (!done) {
+              await reader.cancel();
+            }
+            canceled = true;
+            break;
+          }
+
           if (done) {
             break;
           }
@@ -265,7 +301,6 @@ export class FetchBackend implements HttpBackend {
       // We need to `return` because `parseBody` may not be able to parse chunks
       // that were only partially read (due to cancellation caused by app destruction).
       if (canceled) {
-        observer.complete();
         return;
       }
 
