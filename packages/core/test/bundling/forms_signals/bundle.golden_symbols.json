@@ -350,6 +350,7 @@
       "_applyRootElementTransformImpl",
       "_bind",
       "_callAndReportToErrorHandler",
+      "_clearProjectedNodeHydrationStateImpl",
       "_currentInjector",
       "_document",
       "_findAndReconcileMatchingDehydratedViewsImpl",

@@ -277,6 +277,7 @@
       "_bind",
       "_callAndReportToErrorHandler",
       "_claimDehydratedIcuCaseImpl",
+      "_clearProjectedNodeHydrationStateImpl",
       "_currentInjector",
       "_document",
       "_getInsertInFrontOfRNodeWithI18n",

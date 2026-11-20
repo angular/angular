@@ -334,6 +334,7 @@
       "_arrayIndexOfSorted",
       "_bind",
       "_callAndReportToErrorHandler",
+      "_clearProjectedNodeHydrationStateImpl",
       "_currentInjector",
       "_document",
       "_findMatchingDehydratedViewImpl",

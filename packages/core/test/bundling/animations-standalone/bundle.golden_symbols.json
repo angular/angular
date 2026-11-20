@@ -297,6 +297,7 @@
       "_applyRootElementTransformImpl",
       "_bind",
       "_callAndReportToErrorHandler",
+      "_clearProjectedNodeHydrationStateImpl",
       "_convertTimeValueToMS",
       "_currentInjector",
       "_document",
