@@ -224,6 +224,90 @@ describe('constructor DI tokens imported via named imports', () => {
         expect(out).toContain("import { type DeferredComp } from './deferred';");
         expect(out).toContain('i0.ɵɵdirectiveInject(DEFERRED_TOKEN)');
       });
+
+      it('treats same-file regular enums, value companions, and instantiated namespaces as verified runtime values', async () => {
+        const ifaceFile: TestFile = {
+          path: '/iface.ts',
+          content: `export interface ShadowedEnum {}\n`,
+        };
+        const appFile: TestFile = {
+          path: '/app.ts',
+          content: `
+            import {Component, Inject, InjectionToken} from '@angular/core';
+            export {ShadowedEnum} from './iface';
+
+            export const TOK = new InjectionToken<unknown>('TOK');
+            export enum StyleEnum { ONE = 0, TWO = 1 }
+            export const enum ConstStyleEnum { ONE = 0 }
+            enum ShadowedEnum { LOCAL = 0 }
+
+            export interface CompanionToken { id: string; }
+            export const CompanionToken = new InjectionToken<CompanionToken>('CompanionToken');
+
+            export namespace Ns {
+              export enum Mode { FAST = 0 }
+              export interface PureIface { x: number; }
+              export class NestedWidget {
+                static readonly Options = new InjectionToken<NestedWidget.Options>('NestedOptions');
+              }
+              export namespace NestedWidget {
+                export interface Options { label: string; }
+              }
+            }
+
+            const Options = Symbol('Options');
+            export class PrivateWidget {
+              private static readonly Options = 'internal';
+            }
+            export namespace PrivateWidget {
+              export interface Options { label: string; }
+            }
+            export class ComputedWidget {
+              static readonly [Options] = 'computed-internal';
+            }
+            export namespace ComputedWidget {
+              export interface Options { label: string; }
+            }
+
+            @Component({selector: 'enum-di-cmp', template: ''})
+            export class EnumDiComponent {
+              constructor(
+                @Inject(TOK) a: StyleEnum,
+                b: StyleEnum,
+                @Inject(TOK) c: ConstStyleEnum,
+                d: ShadowedEnum,
+                @Inject(CompanionToken) e: CompanionToken,
+                @Inject(TOK) f: Ns.Mode,
+                @Inject(TOK) g: Ns.PureIface,
+                @Inject(TOK) h: StyleEnum.ONE,
+                i: Ns.NestedWidget.Options,
+                @Inject(TOK) j: PrivateWidget.Options,
+                @Inject(TOK) k: ComputedWidget.Options,
+              ) {}
+            }
+          `,
+        };
+
+        const out = await compile(
+          [tsconfig(['app.ts', 'iface.ts']), ifaceFile, appFile],
+          '/out/app.ts',
+          optimize,
+        );
+
+        expect(out).toContain('type: StyleEnum, decorators:');
+        expect(out).toContain('type: undefined, decorators: [{ type: Inject, args: [TOK] }]');
+        expect(out).toContain('type: CompanionToken, decorators:');
+        expect(out).toContain('type: Ns.Mode, decorators:');
+        expect(out).toContain('type: StyleEnum.ONE, decorators:');
+        expect(out).toContain('type: Ns.NestedWidget.Options');
+        expect(out).not.toContain('type: PrivateWidget.Options');
+        expect(out).not.toContain('type: ComputedWidget.Options');
+        // Unadorned same-file enum and companion are verified without `@ts-ignore` even in optimize: false.
+        expect(out).toContain('i0.ɵɵdirectiveInject(StyleEnum)');
+        expect(out).toContain('i0.ɵɵdirectiveInject(ShadowedEnum)');
+        expect(out).toContain('i0.ɵɵdirectiveInject(Ns.NestedWidget.Options)');
+        expect(out).not.toContain('// @ts-ignore\nStyleEnum');
+      });
     });
   }
 });
