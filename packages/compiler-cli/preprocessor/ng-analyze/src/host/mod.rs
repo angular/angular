@@ -3,11 +3,16 @@
 //! [`AnalysisHost`] is the boundary between `ng-analyze` and the surrounding build environment:
 //! - [`DefaultFsHost`] wraps `oxc_resolver` and [`crate::ResourceResolverFs`] for standalone CLI,
 //!   language-service, and test runs, completing futures immediately on first poll.
-//! - Asynchronous bundler hosts (the planned `BatchingHost`) suspend queries across pump waves so
-//!   external bundlers can supply resolutions and source text without filesystem access in Rust.
+//! - [`BatchingHost`] suspends queries across pump waves so external bundlers can supply
+//!   resolutions and source text without filesystem access in Rust.
 
+mod batching;
 mod default_fs;
 
+pub use batching::{
+    BatchingHost, HostBatchResults, HostFileContentLookup, HostRequestBatch, WireLoadRequest,
+    WireLoadResult, WireResolveRequest, WireResolveResult, WireSlotOutcome,
+};
 pub use default_fs::DefaultFsHost;
 
 use futures::future::BoxFuture;
@@ -433,6 +438,9 @@ pub trait AnalysisHost: Send + Sync + 'static {
 
     /// Clear any internal resolution caches held by the host.
     fn clear_cache(&self) {}
+
+    /// Drop any pending or active in-flight asynchronous host requests on cancellation.
+    fn cancel_pending(&self) {}
 
     /// Resolve a `rootDirs` virtual path to its backing path when supported by the host.
     fn resolve_backing_path(&self, _path: &Path) -> Option<PathBuf> {

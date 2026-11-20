@@ -10,6 +10,16 @@ import type * as nga from './types.js';
 import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
+function unwrapPathModuleRef(ref: nga.ModuleRef, method: string): string {
+  if (typeof ref === 'string') {
+    return ref;
+  }
+  if (ref.idKind === 'virtual') {
+    throw new Error(`${method} does not support virtual ModuleRef IDs on the native backend`);
+  }
+  return ref.id;
+}
+
 export class NapiAnalyzer implements IAnalyzer {
   private analyzer: nga.Analyzer | nga.TestAnalyzer;
 
@@ -63,11 +73,12 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.consumeIterator(this.analyzer.analyzeOptimizedDelta());
   }
 
-  async getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null> {
+  async getMetadataForFile(file: nga.ModuleRef): Promise<nga.AnalysisResult | null> {
+    const filePath = unwrapPathModuleRef(file, 'NapiAnalyzer.getMetadataForFile');
     return this.analyzer.getMetadataForFile(filePath) ?? null;
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: nga.FileUpdate[]): Promise<string[]> {
     return this.analyzer.updateFileContent(updates);
   }
 
@@ -75,8 +86,10 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.analyzer.invalidateFiles(updates);
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    return this.analyzer.setEntryPoints(entryPoints);
+  async setEntryPoints(entryPoints: nga.ModuleRef[]): Promise<string[]> {
+    return this.analyzer.setEntryPoints(
+      entryPoints.map((entry) => unwrapPathModuleRef(entry, 'NapiAnalyzer.setEntryPoints')),
+    );
   }
 
   async clearResolutionCache(): Promise<string[]> {

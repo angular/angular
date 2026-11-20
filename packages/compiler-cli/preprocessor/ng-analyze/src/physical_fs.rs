@@ -321,15 +321,14 @@ impl PhysicalFs for HostFs {
 
 /// A physical filesystem that has nothing behind it.
 ///
-/// The wasm default when no host is supplied. Every operation reports "unsupported"
+/// The wasm default when no host is supplied, and the filesystem under a
+/// [`crate::host::BatchingHost`] on every target. Every operation reports "unsupported"
 /// rather than "not found", so a caller who forgot the host gets an actionable error
 /// instead of a project that mysteriously contains no files. Virtual files are
 /// unaffected — the overlay answers those before consulting this layer.
-#[cfg(target_arch = "wasm32")]
 #[derive(Debug, Default, Clone, Copy)]
 pub struct NoopFs;
 
-#[cfg(target_arch = "wasm32")]
 impl NoopFs {
     fn unsupported<T>(op: &str, path: &Path) -> Result<T> {
         Err(std::io::Error::new(
@@ -343,7 +342,6 @@ impl NoopFs {
     }
 }
 
-#[cfg(target_arch = "wasm32")]
 impl PhysicalFs for NoopFs {
     fn read(&self, path: &Path) -> Result<Vec<u8>> {
         Self::unsupported("read", path)

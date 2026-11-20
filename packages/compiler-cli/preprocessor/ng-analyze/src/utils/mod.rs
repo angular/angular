@@ -64,6 +64,22 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
         let mut write = self.map.write().unwrap();
         write.remove(key)
     }
+
+    /// Remove every entry whose `SharedQuery` has not completed yet (`peek().is_none()`),
+    /// returning the removed keys.
+    pub fn remove_incomplete(&self) -> Vec<K> {
+        let mut write = self.map.write().unwrap();
+        let mut removed = Vec::new();
+        write.retain(|key, shared| {
+            if shared.peek().is_some() {
+                true
+            } else {
+                removed.push(key.clone());
+                false
+            }
+        });
+        removed
+    }
 }
 
 /// Build the module resolver. With a `tsconfig_path`, its `paths`/`baseUrl` mappings apply.

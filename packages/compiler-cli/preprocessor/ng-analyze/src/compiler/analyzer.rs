@@ -62,10 +62,34 @@ pub(crate) fn step_local_pool() {
     });
 }
 
-#[derive(Clone)]
+#[cfg(target_arch = "wasm32")]
+pub(crate) fn try_step_local_pool() {
+    LOCAL_POOL.with(|pool| {
+        if let Ok(mut pool) = pool.try_borrow_mut() {
+            pool.run_until_stalled();
+        }
+    });
+}
+
+/// Cancellation flag for one analysis run. Clones share the flag, and each clone can be awaited:
+/// it completes once the run is cancelled.
 pub struct CancellationToken {
-    cancelled: Arc<AtomicBool>,
-    waker: Arc<Mutex<Option<Waker>>>,
+    state: Arc<CancellationState>,
+    /// This clone's entry in [`CancellationWakers::by_key`], assigned the first time it is polled.
+    /// Each awaiting task holds its own clone, so registering is a map insert rather than a scan
+    /// of every other task's waker, and the entry is released when the clone is dropped.
+    waker_key: Option<u64>,
+}
+
+struct CancellationState {
+    cancelled: AtomicBool,
+    wakers: Mutex<CancellationWakers>,
+}
+
+#[derive(Default)]
+struct CancellationWakers {
+    next_key: u64,
+    by_key: HashMap<u64, Waker>,
 }
 
 impl Default for CancellationToken {
@@ -74,23 +98,47 @@ impl Default for CancellationToken {
     }
 }
 
+impl Clone for CancellationToken {
+    fn clone(&self) -> Self {
+        Self {
+            state: Arc::clone(&self.state),
+            waker_key: None,
+        }
+    }
+}
+
+impl Drop for CancellationToken {
+    fn drop(&mut self) {
+        let Some(key) = self.waker_key else {
+            return;
+        };
+        if let Ok(mut wakers) = self.state.wakers.lock() {
+            wakers.by_key.remove(&key);
+        }
+    }
+}
+
 impl CancellationToken {
     pub fn new() -> Self {
         Self {
-            cancelled: Arc::new(AtomicBool::new(false)),
-            waker: Arc::new(Mutex::new(None)),
+            state: Arc::new(CancellationState {
+                cancelled: AtomicBool::new(false),
+                wakers: Mutex::new(CancellationWakers::default()),
+            }),
+            waker_key: None,
         }
     }
 
     pub fn cancel(&self) {
-        self.cancelled.store(true, Ordering::SeqCst);
-        if let Some(waker) = self.waker.lock().unwrap().take() {
+        self.state.cancelled.store(true, Ordering::SeqCst);
+        let wakers = std::mem::take(&mut self.state.wakers.lock().unwrap().by_key);
+        for waker in wakers.into_values() {
             waker.wake();
         }
     }
 
     pub fn is_cancelled(&self) -> bool {
-        self.cancelled.load(Ordering::SeqCst)
+        self.state.cancelled.load(Ordering::SeqCst)
     }
 }
 
@@ -101,13 +149,27 @@ impl std::future::Future for CancellationToken {
         self: std::pin::Pin<&mut Self>,
         cx: &mut std::task::Context<'_>,
     ) -> std::task::Poll<Self::Output> {
-        if self.is_cancelled() {
-            std::task::Poll::Ready(())
-        } else {
-            let mut waker = self.waker.lock().unwrap();
-            *waker = Some(cx.waker().clone());
-            std::task::Poll::Pending
+        let this = self.get_mut();
+        if this.is_cancelled() {
+            return std::task::Poll::Ready(());
         }
+        let mut wakers = this.state.wakers.lock().unwrap();
+        // `cancel` sets the flag before it drains the wakers, so checking again under the lock
+        // means a waker registered here is either drained by `cancel` or never needed.
+        if this.state.cancelled.load(Ordering::SeqCst) {
+            return std::task::Poll::Ready(());
+        }
+        let key = match this.waker_key {
+            Some(key) => key,
+            None => {
+                let key = wakers.next_key;
+                wakers.next_key += 1;
+                this.waker_key = Some(key);
+                key
+            }
+        };
+        wakers.by_key.insert(key, cx.waker().clone());
+        std::task::Poll::Pending
     }
 }
 
@@ -118,8 +180,8 @@ use napi_derive::napi;
 pub struct Analyzer {
     resource_registry: Arc<ResourceRegistry>,
     fs: OverlayFileSystem,
+    batching_host: Option<Arc<crate::host::BatchingHost>>,
     engine: Arc<crate::query::QueryEngine>,
-    #[cfg(not(target_arch = "wasm32"))]
     active_handles: Arc<RwLock<Vec<futures::future::RemoteHandle<()>>>>,
 
     /// The tsconfig, re-read after file updates for the `.d.ts` files it lists and, while
@@ -400,7 +462,54 @@ impl Analyzer {
         fs: OverlayFileSystem,
     ) -> Result<Self, String> {
         let config = EffectiveConfig::resolve(options, &fs)?;
-        Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
+        let analyzer = tracing::info_span!("ConstructAnalyzer")
+            .in_scope(|| Self::construct(config, fs, None));
+        Ok(analyzer)
+    }
+
+    /// Construct an analyzer backed by [`crate::host::BatchingHost`] over
+    /// [`crate::physical_fs::NoopFs`].
+    ///
+    /// Every resolution and content read goes through `BatchingHost` (plus any proactive
+    /// `virtual_files` / `updateFileContent` overlay entries); no physical filesystem is consulted.
+    pub fn new_core_with_batching_host(
+        options: AnalyzerOptions,
+    ) -> Result<(Self, Arc<crate::host::BatchingHost>), String> {
+        Self::new_core_with_batching_host_and_entry_refs(options, None)
+    }
+
+    /// Like [`Self::new_core_with_batching_host`], accepting [`crate::host::ModuleRef`] entry
+    /// points so [`crate::host::IdKind::Virtual`] roots bypass path validation.
+    pub fn new_core_with_batching_host_and_entry_refs(
+        options: AnalyzerOptions,
+        entry_refs: Option<Vec<crate::host::ModuleRef>>,
+    ) -> Result<(Self, Arc<crate::host::BatchingHost>), String> {
+        let _span = tracing::info_span!("InitializeBatchingHost").entered();
+        if options.tsconfig_path.is_some() {
+            return Err("tsconfig_path cannot be combined with a custom host".to_string());
+        }
+        if options.allowed_sources.is_some() {
+            return Err("allowed_sources cannot be combined with a custom host".to_string());
+        }
+        let batching_host = Arc::new(crate::host::BatchingHost::new());
+        if let Some(ref virtual_files) = options.virtual_files {
+            for (id, content) in virtual_files {
+                let format = crate::host::ModuleFormat::from_path(Path::new(id));
+                batching_host.upsert_overlay(
+                    crate::host::ModuleId::from(id.as_str()),
+                    Arc::from(content.as_str()),
+                    format,
+                );
+            }
+        }
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(
+            None,
+            Arc::new(crate::physical_fs::NoopFs),
+        );
+        let config = EffectiveConfig::resolve_with_entry_refs(options, entry_refs, &fs)?;
+        let analyzer = tracing::info_span!("ConstructAnalyzer")
+            .in_scope(|| Self::construct(config, fs, Some(batching_host.clone())));
+        Ok((analyzer, batching_host))
     }
 
     pub fn new_core_with_fs_and_entry_refs(
@@ -409,12 +518,18 @@ impl Analyzer {
         fs: OverlayFileSystem,
     ) -> Result<Self, String> {
         let config = EffectiveConfig::resolve_with_entry_refs(options, entry_refs, &fs)?;
-        Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
+        let analyzer = tracing::info_span!("ConstructAnalyzer")
+            .in_scope(|| Self::construct(config, fs, None));
+        Ok(analyzer)
     }
 
     /// Build the analyzer from fully merged settings. Order matters: the symlink mode and the
     /// `rootDirs` must be set on `fs` before entry points are canonicalized through it.
-    fn construct(config: EffectiveConfig, fs: OverlayFileSystem) -> Self {
+    fn construct(
+        config: EffectiveConfig,
+        fs: OverlayFileSystem,
+        batching_host: Option<Arc<crate::host::BatchingHost>>,
+    ) -> Self {
         fs.set_preserve_symlinks(config.preserve_symlinks);
         fs.set_root_dirs(config.merge_root_dirs);
 
@@ -432,17 +547,10 @@ impl Analyzer {
         };
         let r3_symbols_file = config
             .r3_symbols_file
-            .map(|path| fs.canonicalize(&path).unwrap_or(path));
+            .map(|path| canonical_root(&path, &fs));
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
         let resource_registry = Arc::new(ResourceRegistry::default());
-
-        let resolver = Arc::new(create_resolver_with_fs(
-            config.tsconfig_path.as_deref(),
-            fs.clone(),
-            config.preserve_symlinks,
-            config.node_modules_path_override,
-        ));
 
         use crate::analyzer::import_emit::{
             ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
@@ -454,9 +562,21 @@ impl Analyzer {
             _ => Arc::new(ApfImportStrategy::new()),
         };
 
-        let engine = crate::query::QueryEngine::new_with_options(
-            fs.clone(),
-            resolver,
+        let host: Arc<dyn crate::host::AnalysisHost> = match &batching_host {
+            Some(batch_host) => batch_host.clone(),
+            None => {
+                let resolver = Arc::new(create_resolver_with_fs(
+                    config.tsconfig_path.as_deref(),
+                    fs.clone(),
+                    config.preserve_symlinks,
+                    config.node_modules_path_override,
+                ));
+                Arc::new(crate::host::DefaultFsHost::new(fs.clone(), resolver))
+            }
+        };
+
+        let engine = crate::query::QueryEngine::new_with_host(
+            host,
             resource_registry.clone(),
             entrypoints_lock.clone(),
             reference_strategy,
@@ -483,8 +603,8 @@ impl Analyzer {
         Analyzer {
             resource_registry,
             fs,
+            batching_host,
             engine,
-            #[cfg(not(target_arch = "wasm32"))]
             active_handles: Arc::new(RwLock::new(Vec::new())),
             tsconfig_path: config.tsconfig_path,
             roots_from_tsconfig: AtomicBool::new(roots_from_tsconfig),
@@ -492,6 +612,10 @@ impl Analyzer {
             current_cancel_token: RwLock::new(None),
             merged_compiler_options: config.merged_compiler_options,
         }
+    }
+
+    pub fn batching_host(&self) -> Option<&Arc<crate::host::BatchingHost>> {
+        self.batching_host.as_ref()
     }
 
     pub fn merged_compiler_options(&self) -> &serde_json::Map<String, serde_json::Value> {
@@ -560,27 +684,46 @@ impl Analyzer {
         Ok(receiver)
     }
 
+    /// Cancel the in-flight stream, if any, and return once its coordinator has stopped.
+    ///
+    /// The coordinator must be gone before this returns: it puts back the dirty files it took
+    /// ([`DirtyFilesSnapshot`]) when it stops, and the next stream reads them as soon as it starts.
+    /// On native targets the coordinator runs on the pool, so this waits for it to see the token
+    /// (under a synchronous host that also lets the queries it awaits finish, see
+    /// `run_coordinator`). On WASM there is no thread to wait on, so its handle is dropped and
+    /// the local pool is stepped to run the drop.
     pub fn cancel_current_analysis(&self) {
-        let mut token_write = self.current_cancel_token.write().unwrap();
-        if let Some(token) = token_write.take() {
+        let token = self.current_cancel_token.write().unwrap().take();
+        if let Some(token) = token {
             token.cancel();
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
-        {
+        let handles = {
             let mut handles_write = self.active_handles.write().unwrap();
-            let handles = std::mem::take(&mut *handles_write);
-            drop(handles_write);
+            std::mem::take(&mut *handles_write)
+        };
 
-            if !handles.is_empty() {
-                use futures::stream::FuturesUnordered;
-                use futures::StreamExt;
-                let mut pool = FuturesUnordered::new();
-                for h in handles {
-                    pool.push(h);
-                }
-                futures::executor::block_on(async { while pool.next().await.is_some() {} });
+        #[cfg(not(target_arch = "wasm32"))]
+        if !handles.is_empty() {
+            let mut pool = FuturesUnordered::new();
+            for h in handles {
+                pool.push(h);
             }
+            futures::executor::block_on(async { while pool.next().await.is_some() {} });
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        {
+            drop(handles);
+            try_step_local_pool();
+        }
+
+        if !self.is_synchronous_host() {
+            // Queries parked on a host answer would otherwise stay in the cache, with their host
+            // requests still queued, and be joined by the next stream. Drop both.
+            self.engine.cancel_in_flight_queries();
+            #[cfg(target_arch = "wasm32")]
+            try_step_local_pool();
         }
     }
 
@@ -668,18 +811,68 @@ impl Analyzer {
 
     /// Read `file_path` from the analyzer's filesystem.
     ///
-    /// This never calls the host, but it is still gated on a synchronous host: under an
+    /// This never calls the host, and it remains gated on a synchronous host: under an
     /// asynchronous host, module text comes from [`crate::host::AnalysisHost::load`] and the
-    /// filesystem is not authoritative, so it could return text that differs from what was
-    /// analyzed or miss virtual modules entirely.
+    /// filesystem is not authoritative, so synchronous callers fail fast while async WASM callers
+    /// go through [`Self::lookup_host_file_content_core`] + `AnalyzerHost.load`.
     ///
-    /// TODO: add pump-driven equivalents of this and [`Self::read_resource_checked`] that go
-    /// through the host (as `request_metadata_core` does for metadata) so asynchronous hosts can
-    /// serve file content and resources.
+    /// TODO: add a pump-driven equivalent of [`Self::read_resource_checked`] that goes through the
+    /// host so asynchronous hosts can serve `<link rel="stylesheet">` template resources.
     pub fn get_file_content_core(&self, file_path: String) -> Result<String, String> {
         self.ensure_synchronous_host()?;
         let path = PathBuf::from(&file_path);
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
+    }
+
+    /// Look up cached module text or fallback load metadata (`id`, `external`) for host-backed
+    /// `WasmAnalyzer.getFileContent`.
+    ///
+    /// Probes proactive/inline [`crate::host::BatchingHost`] state first so unanalyzed overlay
+    /// updates win immediately, then falls back to any completed [`QueryKey::ParseFile`] entry in
+    /// the query cache. When neither cache holds the module's text, returns `code: None` alongside
+    /// the canonical [`crate::host::ModuleId`] and authoritative `external` flag so JS can request
+    /// it from `AnalyzerHost.load`.
+    pub fn lookup_host_file_content_core(
+        &self,
+        file_path: String,
+    ) -> Result<crate::host::HostFileContentLookup, String> {
+        let Some(batch_host) = &self.batching_host else {
+            return Err(
+                "lookupHostFileContent requires an analyzer configured with a host".to_string(),
+            );
+        };
+
+        let raw_id = crate::host::ModuleId::from(file_path.as_str());
+        let interned = self.engine.get_interned_file_id(Path::new(&file_path));
+        let (canonical_id, external) = match interned {
+            Some(fid) => (self.engine.lookup_id(fid), self.engine.lookup_external(fid)),
+            None => (raw_id.clone(), false),
+        };
+
+        let mut cached = batch_host.cached_module_code(&canonical_id);
+        if cached.is_none() && canonical_id != raw_id {
+            cached = batch_host.cached_module_code(&raw_id);
+        }
+        if cached.is_none() && interned.is_none() {
+            let norm = crate::fs::path_to_string(
+                crate::fs::normalize_path_structural(Path::new(&file_path)).into_owned(),
+            );
+            let norm_id = crate::host::ModuleId::from(norm.as_str());
+            if norm_id != raw_id {
+                cached = batch_host.cached_module_code(&norm_id);
+            }
+        }
+        let code = match (cached, interned) {
+            (Some(code), _) => Some(code.to_string()),
+            (None, Some(fid)) => self.engine.cached_parsed_source(fid),
+            (None, None) => None,
+        };
+
+        Ok(crate::host::HostFileContentLookup {
+            code,
+            id: canonical_id,
+            external,
+        })
     }
 
     /// Fallible form of [`Self::get_metadata_for_file`]: an asynchronous host is reported as an
@@ -781,14 +974,23 @@ impl Analyzer {
             let kind = self.resolve_update_kind(&update.file_path, update.id_kind);
             if kind == crate::host::IdKind::Virtual {
                 let path = PathBuf::from(&update.file_path);
-                let existed = self.engine.get_virtual_if_interned(&update.file_path).is_some()
-                    && (!self.engine.is_synchronous_host() || self.fs.metadata(&path).is_ok());
+                let module_id = crate::host::ModuleId::from(update.file_path.as_str());
+                let prev_virtual_fid = self.engine.get_virtual_if_interned(&update.file_path);
+                let existed = if let Some(batch_host) = &self.batching_host {
+                    batch_host.has_overlay(&module_id)
+                        || prev_virtual_fid
+                            .is_some_and(|fid| self.engine.cached_parsed_source(fid).is_some())
+                } else {
+                    prev_virtual_fid.is_some()
+                        && (!self.engine.is_synchronous_host() || self.fs.metadata(&path).is_ok())
+                };
                 files_created |= !existed;
-                let file_id = self.engine.intern_resolved(
-                    &crate::host::ModuleId::from(update.file_path.as_str()),
-                    crate::host::IdKind::Virtual,
-                );
-                if self.engine.is_synchronous_host() {
+                let file_id = self
+                    .engine
+                    .intern_resolved(&module_id, crate::host::IdKind::Virtual);
+                if let Some(batch_host) = &self.batching_host {
+                    batch_host.upsert_overlay(module_id, Arc::from(update.content.as_str()), None);
+                } else if self.engine.is_synchronous_host() {
                     self.fs.upsert_file(path.clone(), update.content.clone());
                 }
                 paths_to_invalidate.push(update.file_path.clone());
@@ -799,6 +1001,28 @@ impl Analyzer {
             }
 
             let raw_path = PathBuf::from(&update.file_path);
+            if let Some(batch_host) = &self.batching_host {
+                let norm_path = crate::fs::normalize_path_structural(&raw_path).into_owned();
+                let norm_str = crate::fs::path_to_string(norm_path.clone());
+                let interned_fid = self.engine.get_interned_file_id(&norm_path);
+                let module_id = match interned_fid {
+                    Some(fid) => self.engine.lookup_id(fid),
+                    None => crate::host::ModuleId::from(norm_str.as_str()),
+                };
+                let existed = batch_host.has_overlay(&module_id)
+                    || interned_fid
+                        .is_some_and(|fid| self.engine.cached_parsed_source(fid).is_some());
+                files_created |= !existed;
+                batch_host.upsert_overlay(
+                    module_id.clone(),
+                    Arc::from(update.content.as_str()),
+                    crate::host::ModuleFormat::from_path(&norm_path),
+                );
+                paths_to_invalidate.push(module_id.as_str().to_owned());
+                self.invalidate_changed_path(&norm_path, &mut paths_to_invalidate);
+                continue;
+            }
+
             let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
             files_created |= self.fs.metadata(&path).is_err();
             config_changed |= path
@@ -832,7 +1056,13 @@ impl Analyzer {
             let kind = self.resolve_update_kind(&update.file_path, update.id_kind);
             if kind == crate::host::IdKind::Virtual {
                 let path = PathBuf::from(&update.file_path);
-                self.fs.remove_virtual_file(&path);
+                if let Some(batch_host) = &self.batching_host {
+                    batch_host.remove_overlay(&crate::host::ModuleId::from(
+                        update.file_path.as_str(),
+                    ));
+                } else {
+                    self.fs.remove_virtual_file(&path);
+                }
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(update.file_path.clone());
                 let should_intern = update.id_kind == Some(crate::host::IdKind::Virtual)
@@ -859,11 +1089,26 @@ impl Analyzer {
             }
 
             let raw_path = PathBuf::from(&update.file_path);
-            let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
-            self.fs.remove_virtual_file(&path);
-            config_changed |= path
-                .extension()
-                .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
+            let path = if let Some(batch_host) = &self.batching_host {
+                let norm_path = crate::fs::normalize_path_structural(&raw_path).into_owned();
+                let norm_str = crate::fs::path_to_string(norm_path.clone());
+                let norm_id = crate::host::ModuleId::from(norm_str.as_str());
+                batch_host.remove_overlay(&norm_id);
+                if let Some(fid) = self.engine.get_interned_file_id(&norm_path) {
+                    let canonical_id = self.engine.lookup_id(fid);
+                    if canonical_id != norm_id {
+                        batch_host.remove_overlay(&canonical_id);
+                    }
+                }
+                norm_path
+            } else {
+                let canonical = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
+                self.fs.remove_virtual_file(&canonical);
+                config_changed |= canonical
+                    .extension()
+                    .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
+                canonical
+            };
 
             if is_ts_file(&path) {
                 self.resource_registry.unregister_ts_file(&path);
@@ -1045,7 +1290,7 @@ impl Analyzer {
         module_ref: crate::host::ModuleRef,
         spawner: S,
     ) -> Result<oneshot::Receiver<Result<Option<AnalysisResult>, String>>, String> {
-        let (tx, rx) = oneshot::channel();
+        let (mut tx, rx) = oneshot::channel();
         let Some(file_id) = self.resolve_metadata_target(module_ref) else {
             let _ = tx.send(Ok(None));
             return Ok(rx);
@@ -1053,8 +1298,18 @@ impl Analyzer {
         let engine = self.engine.clone();
         spawner
             .spawn(async move {
-                let res = engine.get_metadata_for_file_id(file_id).await;
-                let _ = tx.send(Ok(res));
+                let res = {
+                    let fut = engine.get_metadata_for_file_id(file_id);
+                    let cancel = tx.cancellation();
+                    futures::pin_mut!(fut, cancel);
+                    match futures::future::select(fut, cancel).await {
+                        futures::future::Either::Left((res, _)) => Some(res),
+                        futures::future::Either::Right(_) => None,
+                    }
+                };
+                if let Some(res) = res {
+                    let _ = tx.send(Ok(res));
+                }
             })
             .map_err(|e| e.to_string())?;
         Ok(rx)
@@ -1471,7 +1726,8 @@ impl Analyzer {
                 is_delta,
             )
             .instrument(span);
-            spawner.spawn_local(fut).unwrap();
+            let handle = spawner.spawn_local_with_handle(fut).unwrap();
+            self.active_handles.write().unwrap().push(handle);
         }
     }
 }
@@ -1519,13 +1775,38 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
         return;
     }
 
-    engine
-        .ensure_singletons_fresh(is_optimized)
-        .instrument(tracing::info_span!(
-            target: crate::perf::ASYNC_TARGET,
-            "EnsureSingletonsFresh"
-        ))
-        .await;
+    // Whether work in flight is abandoned as soon as the run is cancelled.
+    //
+    // Under an asynchronous host a query can be parked on a host answer that will never arrive,
+    // so waiting for it would hang `cancel_current_analysis`; the parked queries are dropped from
+    // the cache afterwards (`cancel_in_flight_queries`).
+    //
+    // Under a synchronous host the queries keep running on the pool once their awaiter is gone,
+    // and nothing drops them from the cache. `cancel_current_analysis` blocks on this run so that
+    // none is still reading a file when the caller changes it: a query that finishes after its
+    // file was invalidated is not in the reverse index yet, so it would stay cached with the
+    // old content. There the work is awaited, and cancellation is only checked between awaits.
+    let abandon_on_cancel = !engine.is_synchronous_host();
+
+    {
+        let singletons_fut = engine
+            .ensure_singletons_fresh(is_optimized)
+            .instrument(tracing::info_span!(
+                target: crate::perf::ASYNC_TARGET,
+                "EnsureSingletonsFresh"
+            ));
+        if abandon_on_cancel {
+            futures::pin_mut!(singletons_fut);
+            if matches!(
+                futures::future::select(singletons_fut, cancel_token.clone()).await,
+                futures::future::Either::Right(_)
+            ) {
+                return;
+            }
+        } else {
+            singletons_fut.await;
+        }
+    }
 
     if cancel_token.is_cancelled() {
         return;
@@ -1552,53 +1833,63 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
         let local_analyzer = local_analyzer.clone();
         let processor = processor.clone();
         let cancel_token = task_cancel_token.clone();
+        let cancel_wait = task_cancel_token.clone();
         let engine = task_engine.clone();
         let delta_dirty = task_delta_dirty.clone();
         let prev_program = task_prev_program.clone();
         spawner
             .spawn_with_handle(async move {
-                if cancel_token.is_cancelled() {
-                    return;
-                }
-                let local_res = local_analyzer(path.clone()).await;
-
-                if cancel_token.is_cancelled() {
-                    return;
-                }
-                let _ = event_sender
-                    .clone()
-                    .send(CoordinatorEvent::DepsDiscovered {
-                        deps: local_res.program_dependencies().cloned().collect(),
-                    })
-                    .await;
-
-                if cancel_token.is_cancelled() {
-                    return;
-                }
-                let file_id = local_res.file_id;
-                let is_dirty = match &delta_dirty {
-                    Some(dirty) => {
-                        dirty.contains(&file_id)
-                            || !prev_program.contains(&file_id)
-                            || !engine.has_cached_wire(file_id, is_optimized)
+                let work = async move {
+                    if cancel_token.is_cancelled() {
+                        return;
                     }
-                    None => true,
+                    let local_res = local_analyzer(path.clone()).await;
+
+                    if cancel_token.is_cancelled() {
+                        return;
+                    }
+                    let _ = event_sender
+                        .clone()
+                        .send(CoordinatorEvent::DepsDiscovered {
+                            deps: local_res.program_dependencies().cloned().collect(),
+                        })
+                        .await;
+
+                    if cancel_token.is_cancelled() {
+                        return;
+                    }
+                    let file_id = local_res.file_id;
+                    let is_dirty = match &delta_dirty {
+                        Some(dirty) => {
+                            dirty.contains(&file_id)
+                                || !prev_program.contains(&file_id)
+                                || !engine.has_cached_wire(file_id, is_optimized)
+                        }
+                        None => true,
+                    };
+                    if !is_dirty
+                        && (!group_chunks_by_ng_module
+                            || !local_res.may_have_non_standalone_class())
+                    {
+                        return;
+                    }
+                    let (result, chunk_info) = processor(path, local_res).await;
+                    let _ = event_sender
+                        .clone()
+                        .send(CoordinatorEvent::FileCompleted {
+                            file_id,
+                            result,
+                            chunk_info,
+                            is_dirty,
+                        })
+                        .await;
                 };
-                if !is_dirty
-                    && (!group_chunks_by_ng_module || !local_res.may_have_non_standalone_class())
-                {
-                    return;
+                futures::pin_mut!(work);
+                if abandon_on_cancel {
+                    let _ = futures::future::select(work, cancel_wait).await;
+                } else {
+                    work.await;
                 }
-                let (result, chunk_info) = processor(path, local_res).await;
-                let _ = event_sender
-                    .clone()
-                    .send(CoordinatorEvent::FileCompleted {
-                        file_id,
-                        result,
-                        chunk_info,
-                        is_dirty,
-                    })
-                    .await;
             })
             .unwrap()
     };
@@ -1636,6 +1927,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     }
 
     let mut event_receiver = event_receiver.fuse();
+    let mut cancel_fut = cancel_token.clone().fuse();
     loop {
         if cancel_token.is_cancelled() {
             while pending_tasks.next().await.is_some() {}
@@ -1663,6 +1955,10 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
         }
 
         futures::select! {
+            _ = cancel_fut => {
+                while pending_tasks.next().await.is_some() {}
+                return;
+            }
             _ = pending_tasks.select_next_some() => {}
             event = event_receiver.select_next_some() => {
                 handle_coordinator_event(
@@ -3682,6 +3978,102 @@ mod entry_point_tests {
         assert_eq!(
             *engine.dirty_wire_files.lock().unwrap(),
             Some(HashSet::new())
+        );
+    }
+
+    /// Under a synchronous host a cancelled run must not finish while a file's analysis is still
+    /// in flight. `cancel_current_analysis` blocks on the run so that the caller can change files
+    /// afterwards: an analysis still running then would complete with the old content after its
+    /// file was invalidated, and stay cached. The file's analysis is held open here, so a run
+    /// that abandoned it on cancellation would finish while it is still pending.
+    #[test]
+    fn cancelled_run_under_synchronous_host_waits_for_in_flight_analysis() {
+        let analyzer = analyzer(&[
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        let engine = analyzer.engine.clone();
+        assert!(engine.is_synchronous_host());
+
+        let token = CancellationToken::new();
+        let (event_sender, event_receiver) = mpsc::channel::<CoordinatorEvent>(100);
+        let (release_sender, release_receiver) = oneshot::channel::<()>();
+        let release = release_receiver.shared();
+        let started = Arc::new(AtomicBool::new(false));
+        let finished = Arc::new(AtomicBool::new(false));
+
+        let local_engine = engine.clone();
+        let local_started = started.clone();
+        let local_finished = finished.clone();
+        let local_analyzer = move |path: PathBuf| {
+            let engine = local_engine.clone();
+            let release = release.clone();
+            let started = local_started.clone();
+            let finished = local_finished.clone();
+            async move {
+                started.store(true, Ordering::SeqCst);
+                let _ = release.await;
+                let file_id = engine.intern_path(path);
+                let syntax = QueryContext::new(engine).analyze_file_syntax(file_id).await;
+                finished.store(true, Ordering::SeqCst);
+                syntax
+            }
+            .boxed()
+        };
+        let processor_engine = engine.clone();
+        let processor = move |_path: PathBuf, local: Arc<FileData>| {
+            let engine = processor_engine.clone();
+            async move {
+                let wire = QueryContext::new(engine)
+                    .analyze_file_wire(local.file_id, true)
+                    .await;
+                (*wire).clone()
+            }
+            .boxed()
+        };
+        let mut run = get_global_pool()
+            .spawn_with_handle(run_coordinator(
+                engine.clone(),
+                engine.entrypoints.read().unwrap().clone(),
+                get_global_pool().clone(),
+                event_receiver,
+                event_sender,
+                local_analyzer,
+                processor,
+                token.clone(),
+                None,
+                true,
+                true,
+                false,
+            ))
+            .unwrap();
+
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while !started.load(Ordering::SeqCst) {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "timed out waiting for the file's analysis to start"
+            );
+            std::thread::sleep(std::time::Duration::from_micros(200));
+        }
+
+        // Cancel while the analysis is held open, and give a run that abandons it time to finish.
+        token.cancel();
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        assert!(
+            (&mut run).now_or_never().is_none(),
+            "a cancelled run must not finish while a file's analysis is in flight"
+        );
+        assert!(!finished.load(Ordering::SeqCst));
+
+        release_sender.send(()).unwrap();
+        futures::executor::block_on(run);
+        assert!(
+            finished.load(Ordering::SeqCst),
+            "the run must wait for the analysis it started"
         );
     }
 
