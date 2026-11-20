@@ -665,7 +665,7 @@ describe('bootstrap', () => {
       );
 
       it(
-        'should not run initializers or bootstrap when platformRef is destroyed before bootstrap starts',
+        'should not run initializers or bootstrap when platformRef is destroyed before bootstrapApplication starts',
         withBody('<app-root></app-root>', async () => {
           let initRan = false;
           let componentCreated = false;
@@ -681,7 +681,9 @@ describe('bootstrap', () => {
           }
 
           const platformRef = platformBrowser();
-          const bootstrapPromise = bootstrapApplication(
+          platformRef.destroy();
+
+          const appRef = await bootstrapApplication(
             App,
             {
               providers: [
@@ -692,9 +694,7 @@ describe('bootstrap', () => {
             },
             {platformRef},
           );
-          platformRef.destroy();
 
-          const appRef = await bootstrapPromise;
           expect(appRef.destroyed).toBeTrue();
           expect(initRan).toBeFalse();
           expect(componentCreated).toBeFalse();
@@ -702,7 +702,7 @@ describe('bootstrap', () => {
       );
 
       it(
-        'should not run initializers or bootstrap module when platformRef is destroyed before bootstrapModule starts',
+        'should not run initializers or bootstrap module when platformRef is destroyed while compiling the module',
         withBody('<app-root></app-root>', async () => {
           let initRan = false;
           let componentCreated = false;
