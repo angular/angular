@@ -372,6 +372,26 @@ All three skip validation and prevent user editing while active. The key differe
 | Users can focus/select           | No         | No           | Yes          |
 | Included in HTML form submission | No         | No           | Yes          |
 
+## Custom equality
+
+Signal Forms use reference equality for object values by default. Use `equality()` to provide a
+custom comparator when two different object instances represent the same value. This is useful for
+types such as `Temporal.PlainDate`:
+
+```ts
+import {signal} from '@angular/core';
+import {form, equality} from '@angular/forms/signals';
+
+const model = signal({date: Temporal.Now.plainDateISO()});
+const profileForm = form(model, (schemaPath) => {
+  equality(schemaPath.date, (a, b) => a.equals(b));
+});
+```
+
+With this configuration, setting `profileForm.date().value` to another `PlainDate` with the same
+date does not replace the current value or notify dependent signals. Values that the comparator
+considers different are applied normally.
+
 ## Delay input operations with `debounce()`
 
 The `debounce()` rule delays updating the form model. This is useful for performance optimization and reducing unnecessary operations during rapid input.

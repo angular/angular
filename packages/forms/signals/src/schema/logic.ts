@@ -7,12 +7,12 @@
  */
 
 import {untracked} from '@angular/core';
-import type {MetadataKey} from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import {DisabledReason, type FieldContext, type LogicFn, type SchemaPath} from '../api/types';
 import type {FieldNode} from '../field/node';
 import {cast} from '../field/util';
 import {isArray} from '../util/type_guards';
+import type {MetadataKey} from './metadata';
 
 /**
  * Special key which is used to represent a dynamic logic property in a `FieldPathNode` path.
