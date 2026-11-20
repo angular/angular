@@ -619,6 +619,27 @@ describe('ComponentFixture with zoneless', () => {
     expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
   });
 
+  it('refreshes a detached fixture only when detectChanges is called', async () => {
+    @Component({
+      template: '{{thing()}}',
+    })
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toEqual('initial');
+
+    fixture.changeDetectorRef.detach();
+    fixture.componentInstance.thing.set('new');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toEqual('initial');
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toEqual('new');
+  });
+
   it('disallows autoDetect: false', () => {
     @Component({
       template: '{{thing()}}',
