@@ -31,6 +31,7 @@ import {ComponentFixture, TestBed} from '../../testing';
 
 const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 const MATH_ML_NAMESPACE_URI = 'http://www.w3.org/1998/Math/MathML';
+const XLINK_NAMESPACE_URI = 'http://www.w3.org/1999/xlink';
 
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments
@@ -1361,5 +1362,164 @@ describe('SVG <a> link sanitization', () => {
     const links = fixture.nativeElement.querySelectorAll('a');
     expect(links[0].getAttribute('href')).toEqual('javascript:alert(1)');
     expect(links[1].getAttribute('xlink:href')).toEqual('javascript:alert(2)');
+  });
+});
+
+describe('SVG <use> reference sanitization', () => {
+  const RESOURCE_URL_ERROR = /NG0904: unsafe value used in a resource URL context/;
+
+  // Reference shapes that make the browser fetch a document and clone it into the page, which is
+  // what both routes of #71618 rely on: a `data:` URL the application stores and binds back, and
+  // bytes at a URL on its own origin. The last one is the common sprite shape, where only the
+  // fragment comes from data but the reference still leaves the current document.
+  const DOCUMENT_REFERENCES: [description: string, url: string][] = [
+    // Decodes to `<svg xmlns="http://www.w3.org/2000/svg" id="x"><image href="data:,"
+    // onerror="alert(1)"/></svg>`.
+    [
+      'a data: URL',
+      'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGlkPSJ4Ij' +
+        '48aW1hZ2UgaHJlZj0iZGF0YTosIiBvbmVycm9yPSJhbGVydCgxKSIvPjwvc3ZnPg==#x',
+    ],
+    ['an upload on the application origin', '/uploads/avatar.png#x'],
+    ['an XML response on the application origin', '/api/profile.xml#x'],
+    ['a document reference without a fragment', '/asset.svg'],
+    ['a sprite reference with the fragment from data', '/assets/sprite.svg#/uploads/avatar.png#x'],
+  ];
+
+  // The host element of a directive is unknown at compile time, so its bindings are sanitized at
+  // runtime instead, through `ɵɵsanitizeUrlOrResourceUrl`.
+  @Directive({selector: '[icon]', host: {'[attr.xlink:href]': 'icon'}})
+  class Icon {
+    @Input() icon = '';
+  }
+
+  @Component({template: '<svg><use [attr.href]="url"></use></svg>'})
+  class HrefCmp {
+    url: string | null = null;
+  }
+
+  @Component({template: '<svg><use [attr.xlink:href]="url"></use></svg>'})
+  class XlinkHrefCmp {
+    url: string | null = null;
+  }
+
+  for (const [description, url] of DOCUMENT_REFERENCES) {
+    it(`should reject ${description} bound to \`href\``, async () => {
+      const fixture = TestBed.createComponent(HrefCmp);
+      fixture.componentInstance.url = url;
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(RESOURCE_URL_ERROR);
+    });
+
+    it(`should reject ${description} bound to \`xlink:href\``, async () => {
+      const fixture = TestBed.createComponent(XlinkHrefCmp);
+      fixture.componentInstance.url = url;
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(RESOURCE_URL_ERROR);
+    });
+  }
+
+  it('should allow a document reference marked as a trusted resource URL', async () => {
+    @Component({template: '<svg><use [attr.href]="url"></use></svg>'})
+    class TestCmp {
+      url = inject(DomSanitizer).bypassSecurityTrustResourceUrl('/assets/sprite.svg#icon');
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const use = fixture.nativeElement.querySelector('use');
+    expect(use.getAttribute('href')).toBe('/assets/sprite.svg#icon');
+  });
+
+  it('should allow same document fragment references', async () => {
+    @Component({
+      template: `
+        <svg>
+          <use [attr.href]="url"></use>
+          <use [attr.xlink:href]="url"></use>
+        </svg>
+      `,
+    })
+    class TestCmp {
+      url = '#icon';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const uses = fixture.nativeElement.querySelectorAll('use');
+    expect(uses[0].getAttribute('href')).toBe('#icon');
+    expect(uses[1].getAttributeNS(XLINK_NAMESPACE_URI, 'href')).toBe('#icon');
+  });
+
+  it('should remove the reference when the value becomes nullish', async () => {
+    @Component({template: '<svg><use [attr.href]="url()"></use></svg>'})
+    class TestCmp {
+      url = signal<string | null>('#icon');
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const use = fixture.nativeElement.querySelector('use');
+    expect(use.getAttribute('href')).toBe('#icon');
+
+    fixture.componentInstance.url.set(null);
+    await fixture.whenStable();
+
+    expect(use.hasAttribute('href')).toBeFalse();
+  });
+
+  it('should allow static unsafe `href` and `xlink:href` on <svg:use>', async () => {
+    @Component({
+      template: `
+        <svg>
+          <use href="/assets/sprite.svg#icon"></use>
+          <use xlink:href="/assets/sprite.svg#icon"></use>
+        </svg>
+      `,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const uses = fixture.nativeElement.querySelectorAll('use');
+    expect(uses[0].getAttribute('href')).toBe('/assets/sprite.svg#icon');
+    expect(uses[1].getAttributeNS(XLINK_NAMESPACE_URI, 'href')).toBe('/assets/sprite.svg#icon');
+  });
+
+  it('should allow a fragment applied through a host binding', async () => {
+    @Component({template: `<svg><use [icon]="'#icon'"></use></svg>`, imports: [Icon]})
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    // Host bindings do not resolve the `xlink` prefix to its namespace, unlike template bindings.
+    const use = fixture.nativeElement.querySelector('use');
+    expect(use.getAttribute('xlink:href')).toBe('#icon');
+  });
+
+  it('should reject a document reference applied through a host binding', async () => {
+    @Component({
+      template: `<svg><use [icon]="'/uploads/avatar.png#x'"></use></svg>`,
+      imports: [Icon],
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(RESOURCE_URL_ERROR);
+  });
+
+  it('should not allow fragments in other resource URL contexts', async () => {
+    @Component({template: '<iframe [attr.src]="url"></iframe>'})
+    class TestCmp {
+      url = '#fragment';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(RESOURCE_URL_ERROR);
   });
 });
