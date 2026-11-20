@@ -993,9 +993,24 @@ describe('type check blocks', () => {
     });
 
     it('should use element access notation for unsafe custom element property keys', () => {
-      const TEMPLATE = `<my-widget [before-dispatch]="fn"></my-widget>`;
+      const TEMPLATE = `<my-widget [before-dispatch]="fn" [123]="num" [foo(]="broken" [foo?]="q"></my-widget>`;
       const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
       expect(block).toContain('_t1["before-dispatch"] = (((this).fn));');
+      expect(block).toContain('_t1["123"] = (((this).num));');
+      expect(block).toContain('_t1["foo("] = (((this).broken));');
+      expect(block).toContain('_t1["foo?"] = (((this).q));');
+    });
+
+    it('should normalize uppercase known custom element tag names in document.createElement', () => {
+      const TEMPLATE = `<MY-WIDGET #w [label]="title"></MY-WIDGET>`;
+      const known = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(known).toContain('var _t1 = document.createElement("my-widget");');
+      expect(known).toContain('_t1.label = (((this).title));');
+
+      const unknown = tcb(`<MY-WIDGET #w></MY-WIDGET>{{ w }}`, undefined, undefined, {
+        knownCustomElements: [],
+      });
+      expect(unknown).toContain('document.createElement("MY-WIDGET")');
     });
 
     it('should skip assignment for disallowed event properties on known custom elements', () => {

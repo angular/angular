@@ -28,7 +28,7 @@ import {
 } from './signal_forms';
 import {getBoundAttributes, widenBinding} from './bindings';
 import {LocalSymbol} from './references';
-import {isUnsafeObjectKey} from '../../render3/util';
+import {IDENTIFIER_PATTERN, isUnsafeObjectKey} from '../../render3/util';
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -333,7 +333,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
           if (elId === null) {
             elId = this.scope.resolve(this.target);
           }
-          const target = isUnsafeObjectKey(propertyName)
+          const target = !IDENTIFIER_PATTERN.test(propertyName)
             ? new TcbExpr(`${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}]`)
             : new TcbExpr(`${elId.print()}.${propertyName}`);
           target.addParseSpanInfo(binding.keySpan);

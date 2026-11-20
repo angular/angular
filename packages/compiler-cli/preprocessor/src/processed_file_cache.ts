@@ -22,11 +22,15 @@ export class ProcessedFileCache {
     {fingerprint: string; boundFingerprint?: string; processed: ProcessedFile}
   >();
 
-  hasBoundFingerprint(filePath: string, boundFingerprint: string | undefined): boolean {
+  getByBoundFingerprint(
+    filePath: string,
+    boundFingerprint: string | undefined,
+  ): ProcessedFile | undefined {
     if (boundFingerprint === undefined) {
-      return false;
+      return undefined;
     }
-    return this.entries.get(filePath)?.boundFingerprint === boundFingerprint;
+    const entry = this.entries.get(filePath);
+    return entry?.boundFingerprint === boundFingerprint ? entry.processed : undefined;
   }
 
   get(filePath: string, fingerprint: string): ProcessedFile | undefined {

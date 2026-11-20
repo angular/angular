@@ -63,8 +63,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
   isKnownCustomElement(tagName: string): boolean {
     const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
     if (
-      name.startsWith(':') ||
-      !name.includes('-') ||
+      !/^[a-z].*-/.test(name) ||
       name === 'ng-container' ||
       name === 'ng-content' ||
       name === 'ng-template'
@@ -140,9 +139,14 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
       return;
     }
 
+    // Known WAI-ARIA attributes are mapped to camelCase (e.g. `aria-label` -> `ariaLabel`) before
+    // this check and accepted by `REGISTRY.hasProperty`. Any remaining `aria-*` name is an unknown
+    // ARIA attribute; do not exempt it as a custom element property since Angular compiles
+    // `[aria-*]` via `ɵɵariaProperty` and skips TCB property assignment for it.
+    const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
     if (
       !REGISTRY.hasProperty(tagName, name, schemas) &&
-      !(!hasComponent && this.isKnownCustomElement(tagName))
+      !(!hasComponent && !isUnknownAriaAttr && this.isKnownCustomElement(tagName))
     ) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 

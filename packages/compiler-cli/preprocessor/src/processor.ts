@@ -454,21 +454,40 @@ export async function processFile(
 
   ctx.tracer.slice(SpanKind.SerializeOutput, () => serializeOutput(file), fileId);
   let returnTcb: TcbResult | undefined;
-  let candidateCustomElementTags: Set<string> | undefined;
+  let checkedCustomElementTags: Set<string> | undefined;
   if (ctx.optimize && !ctx.emitDeclarationOnly) {
-    const prepared = prepareTcbForFile(file);
-    candidateCustomElementTags = prepared
+    const diagCountBeforeTcb = fileDiagnostics.length;
+    const prepared = ctx.tracer.slice(SpanKind.GenerateTcb, () => prepareTcbForFile(file), fileId);
+    const hintTags = prepared
       ? collectCandidateCustomElementTags(prepared, ctx.tcbConfig)
       : undefined;
-    const knownCustomElements =
-      candidateCustomElementTags && candidateCustomElementTags.size > 0
-        ? await ctx.getKnownCustomElements?.()
-        : undefined;
+    let knownCustomElements =
+      hintTags && hintTags.size > 0 ? await ctx.getKnownCustomElements?.() : undefined;
     returnTcb = ctx.tracer.slice(
       SpanKind.GenerateTcb,
       () => generateTcb(file, prepared, knownCustomElements),
       fileId,
     );
+    // Safety net: if the pre-fetch hint missed an op that actually queried `isKnownCustomElement`,
+    // fetch the global custom element tags and re-run TCB generation once so `ngp` stays exact by
+    // construction.
+    if (
+      knownCustomElements === undefined &&
+      returnTcb &&
+      returnTcb.checkedCustomElements.size > 0 &&
+      ctx.getKnownCustomElements
+    ) {
+      fileDiagnostics.length = diagCountBeforeTcb;
+      knownCustomElements = await ctx.getKnownCustomElements();
+      returnTcb = ctx.tracer.slice(
+        SpanKind.GenerateTcb,
+        () => generateTcb(file, prepared, knownCustomElements),
+        fileId,
+      );
+    }
+    if (returnTcb && returnTcb.checkedCustomElements.size > 0) {
+      checkedCustomElementTags = new Set(returnTcb.checkedCustomElements.keys());
+    }
   }
 
   if (file.pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
@@ -482,10 +501,7 @@ export async function processFile(
     diagnostics: fileDiagnostics,
     hmrUpdateModule,
     referencedStyleFiles: referencedStyleFiles.length > 0 ? referencedStyleFiles : undefined,
-    candidateCustomElementTags:
-      candidateCustomElementTags && candidateCustomElementTags.size > 0
-        ? candidateCustomElementTags
-        : undefined,
+    candidateCustomElementTags: checkedCustomElementTags,
   };
 }
 

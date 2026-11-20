@@ -5369,18 +5369,39 @@ runInEachFileSystem(() => {
           env.write(
             'test.ts',
             `
-                import {Component} from '@angular/core';
+                import {Component, Directive} from '@angular/core';
+
+                @Directive({selector: '[enhance]'})
+                export class EnhanceDir {}
 
                 @Component({
-                  selector: 'test-cmp',
+                  selector: 'my-widget',
+                  template: '',
+                })
+                export class MyWidgetCmp {}
+
+                @Component({
+                  selector: 'test-ce-cmp',
+                  imports: [EnhanceDir],
+                  template: '<my-widget enhance (valueChanged)="onChange()"></my-widget>',
+                })
+                export class TestCeCmp {
+                  onChange() {}
+                }
+
+                @Component({
+                  selector: 'test-ng-cmp',
+                  imports: [MyWidgetCmp],
                   template: '<my-widget (valueChanged)="onChange()"></my-widget>',
                 })
-                export class TestCmp {
+                export class TestNgCmp {
                   onChange() {}
                 }
               `,
           );
-          expect(env.driveDiagnostics()).toEqual([]);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.UNCLAIMED_EVENT_BINDING));
         });
 
         it('should recognize known custom elements inside SVG foreignObject but not directly inside SVG', () => {
@@ -5920,6 +5941,282 @@ runInEachFileSystem(() => {
           env.write('custom-el.ts', `export const placeholder = true;`);
           const thirdCodes = env.driveDiagnostics().map((d) => d.code);
           expect(thirdCodes).toContain(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+        });
+
+        it('should ignore optional or nullish HTMLElementTagNameMap entries instead of emitting TS18048', () => {
+          env.write(
+            'nullable-ce.d.ts',
+            `
+                interface OptEl extends HTMLElement {
+                  label: string;
+                }
+                interface PartialMap {
+                  'partial-el': OptEl;
+                }
+                interface HTMLElementTagNameMap extends Partial<PartialMap> {
+                  'opt-el'?: OptEl;
+                  'undef-el': OptEl | undefined;
+                  'null-el': OptEl | null;
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: \`
+                    <opt-el [label]="'a'"></opt-el>
+                    <undef-el [label]="'b'"></undef-el>
+                    <null-el [label]="'c'"></null-el>
+                    <partial-el [label]="'d'"></partial-el>
+                  \`,
+                })
+                export class TestCmp {}
+              `,
+          );
+          const codes = env.driveDiagnostics().map((d) => d.code);
+          expect(codes).not.toContain(18048);
+          expect(codes).toContain(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+        });
+
+        it('should still report NG8002 for unknown aria-* typos on known custom elements', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-widget [aria-label]="ok" [aria-lbel]="typo"></my-widget>',
+                })
+                export class TestCmp {
+                  ok = 'good';
+                  typo = 'bad';
+                }
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+            `Can't bind to 'aria-lbel'`,
+          );
+        });
+
+        it('should normalize uppercase custom element tag references under CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, and directives', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, NO_ERRORS_SCHEMA} from '@angular/core';
+
+                @Directive({selector: '[enhance]'})
+                export class EnhanceDir {}
+
+                @Component({
+                  selector: 'ce-schema-cmp',
+                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+                  template: '<MY-WIDGET #w></MY-WIDGET>{{ expectStr(w.label) }}{{ expectNum(w.label) }}',
+                })
+                export class CeSchemaCmp {
+                  expectStr(_v: string) {}
+                  expectNum(_v: number) {}
+                }
+
+                @Component({
+                  selector: 'no-err-schema-cmp',
+                  schemas: [NO_ERRORS_SCHEMA],
+                  template: '<MY-WIDGET #w></MY-WIDGET>{{ expectStr(w.label) }}{{ expectNum(w.label) }}',
+                })
+                export class NoErrSchemaCmp {
+                  expectStr(_v: string) {}
+                  expectNum(_v: number) {}
+                }
+
+                @Component({
+                  selector: 'dir-cmp',
+                  imports: [EnhanceDir],
+                  template: '<MY-WIDGET enhance #w></MY-WIDGET>{{ expectStr(w.label) }}{{ expectNum(w.label) }}',
+                })
+                export class DirCmp {
+                  expectStr(_v: string) {}
+                  expectNum(_v: number) {}
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+            `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+            `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+          ]);
+        });
+
+        it('should not emit document.createElement errors in non-DOM builds without lib.dom', () => {
+          env.tsconfig({strictTemplates: true}, {lib: ['es2022']});
+          env.write(
+            'ce.d.ts',
+            `
+                interface FakeEl {
+                  label: string;
+                }
+                interface HTMLElementTagNameMap {
+                  'non-dom-widget': FakeEl;
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<non-dom-widget [label]="title"></non-dom-widget>',
+                })
+                export class TestCmp {
+                  title = 'ok';
+                }
+              `,
+          );
+          const codes = env.driveDiagnostics().map((d) => d.code);
+          expect(codes).not.toContain(2304);
+          expect(codes).toContain(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+        });
+
+        it('should recognize custom elements from packages using main+types fields and compilerOptions.types secondaryLookup', () => {
+          env.write(
+            'node_modules/legacy-wc/package.json',
+            JSON.stringify({
+              name: 'legacy-wc',
+              main: './index.js',
+              types: './types/index.d.ts',
+            }),
+          );
+          env.write('node_modules/legacy-wc/index.js', `export const x = 1;`);
+          env.write(
+            'node_modules/legacy-wc/types/index.d.ts',
+            `
+                declare global {
+                  interface HTMLElementTagNameMap {
+                    'legacy-wc-el': HTMLElement & {count: number};
+                  }
+                }
+                export {};
+              `,
+          );
+          env.write(
+            'node_modules/bundled-types-wc/package.json',
+            JSON.stringify({
+              name: 'bundled-types-wc',
+              types: './index.d.ts',
+            }),
+          );
+          env.write(
+            'node_modules/bundled-types-wc/index.d.ts',
+            `
+                declare global {
+                  interface HTMLElementTagNameMap {
+                    'bundled-types-el': HTMLElement & {flag: boolean};
+                  }
+                }
+                export {};
+              `,
+          );
+          // Write a standalone tsconfig without explicit `typeRoots` so TypeScript's
+          // `secondaryLookup` resolves `bundled-types-wc` directly from `node_modules/`.
+          env.write(
+            'tsconfig.json',
+            JSON.stringify({
+              compilerOptions: {
+                emitDecoratorMetadata: false,
+                strictPropertyInitialization: false,
+                experimentalDecorators: true,
+                skipLibCheck: true,
+                noImplicitAny: true,
+                noEmitOnError: true,
+                outDir: 'built',
+                rootDir: '.',
+                allowJs: true,
+                declaration: true,
+                target: 'es2015',
+                newLine: 'lf',
+                module: 'es2015',
+                moduleResolution: 'bundler',
+                lib: ['es2015', 'dom'],
+                types: ['bundled-types-wc'],
+              },
+              angularCompilerOptions: {
+                strictTemplates: true,
+              },
+              exclude: ['built'],
+            }),
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+                import 'legacy-wc';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<legacy-wc-el [count]="badCount"></legacy-wc-el><bundled-types-el [flag]="badFlag"></bundled-types-el>',
+                })
+                export class TestCmp {
+                  badCount = 'oops';
+                  badFlag = 123;
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Type 'string' is not assignable to type 'number'.`,
+            `Type 'number' is not assignable to type 'boolean'.`,
+          ]);
+        });
+
+        it('should invalidate custom element consumers incrementally when a .d.ts file is removed from the program', () => {
+          env.enableMultipleCompilations();
+          env.write(
+            'ce.d.ts',
+            `
+                interface HTMLElementTagNameMap {
+                  'removable-el': HTMLElement & {count: number};
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<removable-el [count]="bad"></removable-el>',
+                })
+                export class TestCmp {
+                  bad = 'not-a-number';
+                }
+              `,
+          );
+          env.tsconfig({strictTemplates: true}, undefined, ['test.ts', 'ce.d.ts']);
+          const firstMessages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(firstMessages).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+
+          // Remove `ce.d.ts` from the program without touching `test.ts`.
+          env.tsconfig({strictTemplates: true}, undefined, ['test.ts']);
+          const secondCodes = env.driveDiagnostics().map((d) => d.code);
+          expect(secondCodes).toContain(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
         });
       });
 
