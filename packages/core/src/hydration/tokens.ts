@@ -64,6 +64,26 @@ export const EVENT_REPLAY_QUEUE = new InjectionToken<EventReplayQueue>(
   },
 );
 
+export interface InitialEventReplayState {
+  /** Whether initial early event replay has been scheduled and has not finished yet. */
+  pending: boolean;
+  /** Blocks whose listener cleanup is deferred until initial event replay finishes. */
+  pendingListenerCleanup: Set<string>;
+  /** Callback registered by `DehydratedBlockRegistry` to flush deferred listener cleanup. */
+  flushPendingListenerCleanup: (() => void) | null;
+}
+
+export const INITIAL_EVENT_REPLAY_STATE = new InjectionToken<InitialEventReplayState>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'INITIAL_EVENT_REPLAY_STATE' : '',
+  {
+    factory: () => ({
+      pending: false,
+      pendingListenerCleanup: new Set<string>(),
+      flushPendingListenerCleanup: null,
+    }),
+  },
+);
+
 /**
  * Internal token that indicates whether incremental hydration support
  * is enabled.

@@ -32,7 +32,7 @@ import {
   EVENT_REPLAY_ENABLED_DEFAULT,
   IS_EVENT_REPLAY_ENABLED,
   EVENT_REPLAY_QUEUE,
-  EventReplayQueue,
+  INITIAL_EVENT_REPLAY_STATE,
 } from './tokens';
 import {
   sharedStashFunction,
@@ -152,8 +152,13 @@ export function withEventReplay(): Provider[] {
 
             appsWithEventReplay.add(appRef);
 
+            const initialReplayState = injector.get(INITIAL_EVENT_REPLAY_STATE);
+            initialReplayState.pending = true;
+
             const appId = injector.get(APP_ID);
             appRef.onDestroy(() => {
+              initialReplayState.pending = false;
+              initialReplayState.flushPendingListenerCleanup?.();
               appsWithEventReplay.delete(appRef);
               // Ensure that we're always safe calling this in the browser.
               if (typeof ngServerMode !== 'undefined' && !ngServerMode) {
@@ -179,9 +184,16 @@ export function withEventReplay(): Provider[] {
               }
 
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
-              if (!initEventReplay(eventContractDetails, injector)) {
-                // Another app with the same APP_ID already used the early event data.
-                // Nothing left to replay here.
+              let replayed = false;
+              try {
+                replayed = initEventReplay(eventContractDetails, injector);
+              } finally {
+                initialReplayState.pending = false;
+                initialReplayState.flushPendingListenerCleanup?.();
+              }
+              if (!replayed || appRef.destroyed) {
+                // Another app with the same APP_ID already used the early event data,
+                // or a replayed listener destroyed the application.
                 return;
               }
               const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
@@ -305,7 +317,10 @@ export function invokeRegisteredReplayListeners(
 ) {
   const blockName =
     (currentTarget && currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)) ?? '';
-  if (/d\d+/.test(blockName)) {
+  if (
+    /d\d+/.test(blockName) &&
+    !injector.get(INITIAL_EVENT_REPLAY_STATE).pendingListenerCleanup.has(blockName)
+  ) {
     hydrateAndInvokeBlockListeners(blockName, injector, event, currentTarget!);
   } else if (event.eventPhase === EventPhase.REPLAY) {
     invokeListeners(event, currentTarget);
@@ -320,23 +335,5 @@ function hydrateAndInvokeBlockListeners(
 ) {
   const queue = injector.get(EVENT_REPLAY_QUEUE);
   queue.push({event, currentTarget});
-  triggerHydrationFromBlockName(injector, blockName, createReplayQueuedBlockEventsFn(queue));
-}
-
-function createReplayQueuedBlockEventsFn(queue: EventReplayQueue) {
-  return (hydratedBlocks: string[]) => {
-    const hydrated = new Set<string>(hydratedBlocks);
-    const newQueue: EventReplayQueue = [];
-    for (let {event, currentTarget} of queue) {
-      const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
-      if (hydrated.has(blockName)) {
-        invokeListeners(event, currentTarget);
-      } else {
-        // requeue events that weren't yet hydrated
-        newQueue.push({event, currentTarget});
-      }
-    }
-    queue.length = 0;
-    queue.push(...newQueue);
-  };
+  triggerHydrationFromBlockName(injector, blockName);
 }

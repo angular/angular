@@ -13,7 +13,7 @@ import {
   JSACTION_EVENT_CONTRACT,
   removeListenersFromBlocks,
 } from '../event_delegation_utils';
-import {JSACTION_BLOCK_ELEMENT_MAP} from '../hydration/tokens';
+import {INITIAL_EVENT_REPLAY_STATE, JSACTION_BLOCK_ELEMENT_MAP} from '../hydration/tokens';
 import {DehydratedDeferBlock} from './interfaces';
 import type {PromiseWithResolvers} from '../util/promise_with_resolvers';
 
@@ -36,6 +36,7 @@ export class DehydratedBlockRegistry {
   private cleanupFns = new Map<string, Function[]>();
   private jsActionMap: Map<string, Set<Element>> = inject(JSACTION_BLOCK_ELEMENT_MAP);
   private contract: EventContractDetails = inject(JSACTION_EVENT_CONTRACT);
+  private initialReplayState = inject(INITIAL_EVENT_REPLAY_STATE);
 
   add(blockId: string, info: DehydratedDeferBlock) {
     this.registry.set(blockId, info);
@@ -59,16 +60,68 @@ export class DehydratedBlockRegistry {
     return this.registry.has(blockId);
   }
 
+  deferListenerCleanup(hydratedBlocks: string[]): void {
+    // Keep jsaction/ngb attributes and stashed listeners intact while initial
+    // event replay is still pending so early events on blocks that hydrate
+    // before `whenStable()` are still replayed (retained until `whenStable()` or
+    // `appRef.onDestroy()`, matching `EAGER_CONTENT_LISTENERS_KEY`).
+    if (!this.initialReplayState.pending) {
+      return;
+    }
+    for (const blockId of hydratedBlocks) {
+      this.initialReplayState.pendingListenerCleanup.add(blockId);
+    }
+    this.initialReplayState.flushPendingListenerCleanup ??= () =>
+      this.flushPendingListenerCleanup();
+  }
+
   cleanup(hydratedBlocks: string[]) {
-    removeListenersFromBlocks(hydratedBlocks, this.jsActionMap);
+    const deferListenerCleanup = this.initialReplayState.pending;
+    if (deferListenerCleanup) {
+      this.deferListenerCleanup(hydratedBlocks);
+    } else {
+      removeListenersFromBlocks(hydratedBlocks, this.jsActionMap);
+    }
     for (let blockId of hydratedBlocks) {
       this.registry.delete(blockId);
-      this.jsActionMap.delete(blockId);
+      if (!deferListenerCleanup) {
+        this.jsActionMap.delete(blockId);
+      }
       this.invokeTriggerCleanupFns(blockId);
       this.hydrating.delete(blockId);
       this.awaitingCallbacks.delete(blockId);
     }
-    if (this.size === 0) {
+    if (!deferListenerCleanup && this.canCleanUpEventContract()) {
+      this.contract.instance?.cleanUp();
+    }
+  }
+
+  private canCleanUpEventContract(): boolean {
+    if (this.size > 0 || this.hydrating.size > 0 || this.awaitingCallbacks.size > 0) {
+      return false;
+    }
+    for (const key of this.jsActionMap.keys()) {
+      // Empty string is EAGER_CONTENT_LISTENERS_KEY; any other key belongs to a defer block.
+      if (key !== '') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private flushPendingListenerCleanup(): void {
+    this.initialReplayState.flushPendingListenerCleanup = null;
+    const pending = this.initialReplayState.pendingListenerCleanup;
+    if (pending.size === 0) {
+      return;
+    }
+    const blockIds = Array.from(pending);
+    pending.clear();
+    removeListenersFromBlocks(blockIds, this.jsActionMap);
+    for (const blockId of blockIds) {
+      this.jsActionMap.delete(blockId);
+    }
+    if (this.canCleanUpEventContract()) {
       this.contract.instance?.cleanUp();
     }
   }
