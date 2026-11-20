@@ -37,21 +37,20 @@ export class MyApp {
     dependencies: [EagerDep, LoadingDep],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadataAsync(
-      MyApp,
-      () => [/* @ts-ignore */ import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)],
-      LazyDep => {
-        i0.ɵsetClassMetadata(
-          MyApp,
-          [
-            {
-              type: Component,
-              args: [
-                {
-                  template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadataAsync(
+        MyApp,
+        () => [/* @ts-ignore */   import("./deferred_with_external_deps_lazy"  ).then(m => m.LazyDep)],
+        LazyDep => {
+          i0.ɵsetClassMetadata(
+            MyApp,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    template: `
     <div>
       <eager-dep/>
       @defer {
@@ -60,18 +59,19 @@ export class MyApp {
         <loading-dep/>
       }
     </div>
-  `,
-                  imports: [EagerDep, LazyDep, LoadingDep]
-                }
-              ]
-            }
-          ],
-          null,
-          null
-        );
-      }
-    );
-})();
+  `  ,
+                    imports: [EagerDep, LazyDep, LoadingDep]
+                  }
+                ]
+              }
+            ],
+            null,
+            null
+          );
+        }
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

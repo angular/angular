@@ -51,29 +51,29 @@ var MyComponent = /** @class */ (function () {
     },
     encapsulation: 2
   });
+  (function () {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component",
+                template: '<div i18n="meaning:A|descA@@idA">Content A</div>',
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  })();
   return MyComponent;
 })();
 export { MyComponent };
-(function () {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: '<div i18n="meaning:A|descA@@idA">Content A</div>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -89,23 +89,23 @@ var MyModule = /** @class */ (function () {
   };
   MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  (function () {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  })();
   return MyModule;
 })();
 export { MyModule };
-(function () {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] });

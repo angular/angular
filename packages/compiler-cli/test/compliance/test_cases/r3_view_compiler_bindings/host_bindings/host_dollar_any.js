@@ -19,30 +19,30 @@ export class HostBindingDir {
     template: function HostBindingDir_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingDir,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "[hostBindingDir]"  ,
+                host: {
+                "[style.color]"  : '$any("red")'
+                },
+                template: ``  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingDir,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "[hostBindingDir]",
-              host: {
-                "[style.color]": '$any("red")'
-              },
-              template: ``,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(HostBindingDir, {

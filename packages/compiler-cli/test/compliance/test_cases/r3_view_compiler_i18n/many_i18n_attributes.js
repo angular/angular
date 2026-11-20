@@ -16837,17 +16837,16 @@ export class App {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      App,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        App,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <b aria-label="1" i18n-aria-label="1"></b>
     <b aria-label="2" i18n-aria-label="2"></b>
     <b aria-label="3" i18n-aria-label="3"></b>
@@ -17849,14 +17848,15 @@ export class App {
     <b aria-label="999" i18n-aria-label="999"></b>
     <b aria-label="1000" i18n-aria-label="1000"></b>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(App, {

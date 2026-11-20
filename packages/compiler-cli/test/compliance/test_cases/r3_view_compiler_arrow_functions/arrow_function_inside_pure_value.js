@@ -29,28 +29,28 @@ export class TestComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     {{[(a) => a + 1][0](1000)}}
     {{[(a) => a + 1 + componentProp][0](1000)}}
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

@@ -17,23 +17,23 @@ export class HostBindingDir {
       }
     }
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[hostBindingDir]"  ,
+                host: { "[style.background-image]"  : "imgUrl"  , "[style]"  : "styles"   }
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[hostBindingDir]",
-              host: { "[style.background-image]": "imgUrl", "[style]": "styles" }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

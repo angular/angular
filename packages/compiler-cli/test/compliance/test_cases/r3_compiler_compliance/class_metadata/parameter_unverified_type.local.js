@@ -17,32 +17,32 @@ export class ParameterizedInjectable {
     token: ParameterizedInjectable,
     factory: ParameterizedInjectable.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ParameterizedInjectable,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        () => [
+          { type: LocalService },
+          {
+          /* @ts-ignore */
+            type: i1.SomeService
+          },
+          {
+          /* @ts-ignore */
+            type: i1.SomeService,
+            decorators: [
+              {
+                type: Optional
+              }
+            ]
+          }
+        ],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ParameterizedInjectable,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      () => [
-        { type: LocalService },
-        {
-          /* @ts-ignore */
-          type: i1.SomeService
-        },
-        {
-          /* @ts-ignore */
-          type: i1.SomeService,
-          decorators: [
-            {
-              type: Optional
-            }
-          ]
-        }
-      ],
-      null
-    );
-})();

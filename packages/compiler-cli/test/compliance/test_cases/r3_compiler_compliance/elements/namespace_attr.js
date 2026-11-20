@@ -22,29 +22,29 @@ export class MyComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: `
     <svg:use [attr.xlink:href]="value"/>
     <svg:use id="foo" xlink:href="/foo" name="foo"/>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

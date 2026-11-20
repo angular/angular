@@ -25,30 +25,30 @@ export class InnerCmp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      InnerCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "inner-cmp",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        InnerCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "inner-cmp"  ,
+                template: `
     @defer (hydrate on idle) {
       hello
     }
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(InnerCmp, {

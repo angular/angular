@@ -47,17 +47,16 @@ export class TestComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @let fn = (a, b) => componentValue + a + b;
     One: {{fn(0, 1)}}
 
@@ -67,14 +66,15 @@ export class TestComp {
       <button (click)="componentValue = fn(2, 1)"></button>
     }
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

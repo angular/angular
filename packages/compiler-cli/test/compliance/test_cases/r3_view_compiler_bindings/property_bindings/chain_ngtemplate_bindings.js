@@ -24,27 +24,27 @@ export class MyComponent {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template:
+                '<ng-template [title]="myTitle" [id]="buttonId" [tabindex]="1"></ng-template>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template:
-                '<ng-template [title]="myTitle" [id]="buttonId" [tabindex]="1"></ng-template>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

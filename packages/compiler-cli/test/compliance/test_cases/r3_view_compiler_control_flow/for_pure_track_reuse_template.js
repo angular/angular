@@ -44,17 +44,16 @@ export class MyApp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @for (item of items; track item.name[0].toUpperCase()) {
       {{item.name}}
     }
@@ -62,16 +61,17 @@ export class MyApp {
     @for (otherItem of otherItems; track otherItem.name[0].toUpperCase()) {
       {{otherItem.name}}
     }
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

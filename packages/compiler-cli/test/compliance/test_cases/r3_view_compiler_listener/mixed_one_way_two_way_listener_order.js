@@ -16,52 +16,52 @@ export class Dir {
     inputs: { a: "a", c: "c" },
     outputs: { aChange: "aChange", b: "b", cChange: "cChange", d: "d" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Dir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Dir,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "[dir]"   }]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{ selector: "[dir]" }]
+          a: [
+            {
+              type: Input
+            }
+          ],
+          aChange: [
+            {
+              type: Output
+            }
+          ],
+          b: [
+            {
+              type: Output
+            }
+          ],
+          c: [
+            {
+              type: Input
+            }
+          ],
+          cChange: [
+            {
+              type: Output
+            }
+          ],
+          d: [
+            {
+              type: Output
+            }
+          ]
         }
-      ],
-      null,
-      {
-        a: [
-          {
-            type: Input
-          }
-        ],
-        aChange: [
-          {
-            type: Output
-          }
-        ],
-        b: [
-          {
-            type: Output
-          }
-        ],
-        c: [
-          {
-            type: Input
-          }
-        ],
-        cChange: [
-          {
-            type: Output
-          }
-        ],
-        d: [
-          {
-            type: Output
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class App {
   value = "hi";
   noop = () => {};
@@ -100,28 +100,28 @@ export class App {
     dependencies: [Dir],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      App,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              imports: [Dir],
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        App,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                imports: [Dir],
+                template: `
     <div dir [(a)]="value" (b)="noop()" [(c)]="value" (d)="noop()"></div>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(App, {

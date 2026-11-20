@@ -19,27 +19,27 @@ export class MyApp {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: `<div>My App</div>`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: `<div>My App</div>`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -72,27 +72,27 @@ export class MyComponent {
     dependencies: [MyApp],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: `<my-app (click)="onClick($event);"></my-app>`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: `<my-app (click)="onClick($event);"></my-app>`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -107,21 +107,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, MyApp] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, MyApp] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, MyApp] });

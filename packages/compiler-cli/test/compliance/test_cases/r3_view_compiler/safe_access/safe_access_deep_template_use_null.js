@@ -85,31 +85,31 @@ export class MyApp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
   <span>Safe Property: {{ p?.a?.b?.c?.d }}</span>
   <span>Safe Keyed: {{ p?.['a']?.['b']?.['c']?.['d'] }}</span>
   <span>Mixed Property: {{ p?.a?.b.c.d?.e?.f?.g.h }}</span>
   <span>Mixed Property and Keyed: {{ p.a['b'].c.d?.['e']?.['f']?.g['h']['i']?.j.k }}</span>
-`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -124,21 +124,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyApp] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyApp] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyApp] });

@@ -98,32 +98,32 @@ export class MyComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-comp",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-comp"  ,
+                template: `
   <div i18n>
     <span title="{{foo}}-{{foo}}"></span>
     <span>{foo, select, other {<span title="{{foo}}-{{foo}}">foo</span>}}</span>
     <span>{foo, select, other {{{foo}}-{{foo}}}}</span>
   </div>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

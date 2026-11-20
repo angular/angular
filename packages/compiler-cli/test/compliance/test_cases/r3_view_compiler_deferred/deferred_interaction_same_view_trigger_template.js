@@ -30,17 +30,16 @@ export class MyApp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     {{message}}
     @defer (on interaction(button); prefetch on interaction(button)) {}
 
@@ -51,16 +50,17 @@ export class MyApp {
         </div>
       </div>
     </div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

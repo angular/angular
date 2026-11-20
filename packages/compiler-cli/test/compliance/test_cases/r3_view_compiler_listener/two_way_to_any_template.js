@@ -14,26 +14,26 @@ export class NgModelDirective {
     inputs: { ngModel: [1, "ngModel"] },
     outputs: { ngModel: "ngModelChange" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NgModelDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NgModelDirective,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "[ngModel]"   }]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{ selector: "[ngModel]" }]
+          ngModel: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "ngModel"  , required: false }] },
+            { type: i0.Output, args: ["ngModelChange"  ] }
+          ]
         }
-      ],
-      null,
-      {
-        ngModel: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "ngModel", required: false }] },
-          { type: i0.Output, args: ["ngModelChange"] }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class TestCmp {
   value = 123;
   static ɵfac = function TestCmp_Factory(__ngFactoryType__) {
@@ -66,27 +66,27 @@ export class TestCmp {
     dependencies: [NgModelDirective],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "test-cmp"  ,
+                template: '<input [(ngModel)]="$any(value)">'  ,
+                imports: [NgModelDirective]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "test-cmp",
-              template: '<input [(ngModel)]="$any(value)">',
-              imports: [NgModelDirective]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {

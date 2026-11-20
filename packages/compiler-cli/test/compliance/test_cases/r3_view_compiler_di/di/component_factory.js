@@ -14,20 +14,20 @@ export class MyService {
     return new (__ngFactoryType__ || MyService)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, factory: MyService.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 function dynamicAttrName() {
   return "the-attr";
 }
@@ -55,90 +55,90 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: ``  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        () => [
+          {
+            type: undefined,
+            decorators: [
+              {
+                type: Attribute,
+                args: ["name"  ]
+              }
+            ]
+          },
+          {
+            type: undefined,
+            decorators: [
+              {
+                type: Attribute,
+                args: [dynamicAttrName()]
+              }
+            ]
+          },
+          { type: MyService },
+          {
+            type: MyService,
+            decorators: [
+              {
+                type: Host
+              }
+            ]
+          },
+          {
+            type: MyService,
+            decorators: [
+              {
+                type: Self
+              }
+            ]
+          },
+          {
+            type: MyService,
+            decorators: [
+              {
+                type: SkipSelf
+              }
+            ]
+          },
+          {
+            type: MyService,
+            decorators: [
+              {
+                type: Optional
+              }
+            ]
+          },
+          {
+            type: MyService,
+            decorators: [
+              {
+                type: Self
+              },
+              {
+                type: Optional
+              }
+            ]
+          }
+        ],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: ``,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      () => [
-        {
-          type: undefined,
-          decorators: [
-            {
-              type: Attribute,
-              args: ["name"]
-            }
-          ]
-        },
-        {
-          type: undefined,
-          decorators: [
-            {
-              type: Attribute,
-              args: [dynamicAttrName()]
-            }
-          ]
-        },
-        { type: MyService },
-        {
-          type: MyService,
-          decorators: [
-            {
-              type: Host
-            }
-          ]
-        },
-        {
-          type: MyService,
-          decorators: [
-            {
-              type: Self
-            }
-          ]
-        },
-        {
-          type: MyService,
-          decorators: [
-            {
-              type: SkipSelf
-            }
-          ]
-        },
-        {
-          type: MyService,
-          decorators: [
-            {
-              type: Optional
-            }
-          ]
-        },
-        {
-          type: MyService,
-          decorators: [
-            {
-              type: Self
-            },
-            {
-              type: Optional
-            }
-          ]
-        }
-      ],
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -153,21 +153,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [MyService] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent], providers: [MyService] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent], providers: [MyService] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] });

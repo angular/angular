@@ -31,30 +31,30 @@ export class MyApp extends BaseCmp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @defer {
       <defer-dep/>
     }
-  `,
-              imports: [DeferDep]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [DeferDep]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

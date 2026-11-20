@@ -61,18 +61,17 @@ export class MyComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: `
   <svg xmlns="http://www.w3.org/2000/svg">
     <foreignObject i18n>
       <xhtml:div xmlns="http://www.w3.org/1999/xhtml">
@@ -80,16 +79,17 @@ export class MyComponent {
       </xhtml:div>
     </foreignObject>
   </svg>
-`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -104,21 +104,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] });

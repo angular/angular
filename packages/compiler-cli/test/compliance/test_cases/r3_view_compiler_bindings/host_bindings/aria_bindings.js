@@ -22,30 +22,30 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: ``,
-              host: {
-                "[attr.aria-disabled]": "disabled",
-                "[aria-readonly]": "readonly",
-                "[ariaLabel]": "label"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: ``  ,
+                host: {
+                "[attr.aria-disabled]"  : "disabled"  ,
+                "[aria-readonly]"  : "readonly"  ,
+                "[ariaLabel]"  : "label"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

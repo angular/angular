@@ -20,30 +20,30 @@ export class HostBindingLinkDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingLinkDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "a[hostBindingLinkDir]",
-              host: {
-                "[innerHtml]": "evil",
-                "[href]": "evil",
-                "[attr.style]": "evil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingLinkDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "a[hostBindingLinkDir]"  ,
+                host: {
+                "[innerHtml]"  : "evil"  ,
+                "[href]"  : "evil"  ,
+                "[attr.style]"  : "evil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 export class HostBindingImageDir {
   evil = "evil";
   nonEvil = "nonEvil";
@@ -65,30 +65,30 @@ export class HostBindingImageDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingImageDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "img[hostBindingImgDir]",
-              host: {
-                "[innerHtml]": "evil",
-                "[attr.style]": "evil",
-                "[src]": "nonEvil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingImageDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "img[hostBindingImgDir]"  ,
+                host: {
+                "[innerHtml]"  : "evil"  ,
+                "[attr.style]"  : "evil"  ,
+                "[src]"  : "nonEvil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 export class HostBindingIframeDir {
   evil = "evil";
   nonEvil = "nonEvil";
@@ -114,32 +114,32 @@ export class HostBindingIframeDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingIframeDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "iframe[hostBindingIframeDir]",
-              host: {
-                "[innerHtml]": "evil",
-                "[attr.style]": "evil",
-                "[src]": "evil",
-                "[sandbox]": "evil",
-                "[attr.attributeName]": "nonEvil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingIframeDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "iframe[hostBindingIframeDir]"  ,
+                host: {
+                "[innerHtml]"  : "evil"  ,
+                "[attr.style]"  : "evil"  ,
+                "[src]"  : "evil"  ,
+                "[sandbox]"  : "evil"  ,
+                "[attr.attributeName]"  : "nonEvil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 export class HostBindingSvgAnimateDir {
   evil = "evil";
   static ɵfac = function HostBindingSvgAnimateDir_Factory(__ngFactoryType__) {
@@ -155,28 +155,28 @@ export class HostBindingSvgAnimateDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingSvgAnimateDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "animateMotion[hostBindingSvgAnimateDir]",
-              host: {
-                "[attr.attributeName]": "evil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingSvgAnimateDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "animateMotion[hostBindingSvgAnimateDir]"  ,
+                host: {
+                "[attr.attributeName]"  : "evil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 export class HostBindingCustomSrcdocDir {
   evil = "evil";
   static ɵfac = function HostBindingCustomSrcdocDir_Factory(__ngFactoryType__) {
@@ -192,28 +192,28 @@ export class HostBindingCustomSrcdocDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingCustomSrcdocDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "safe-srcdoc-carrier",
-              host: {
-                "[attr.srcdoc]": "evil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingCustomSrcdocDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "safe-srcdoc-carrier"  ,
+                host: {
+                "[attr.srcdoc]"  : "evil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 export class HostBindingCustomSrcDir {
   evil = "evil";
   static ɵfac = function HostBindingCustomSrcDir_Factory(__ngFactoryType__) {
@@ -229,28 +229,28 @@ export class HostBindingCustomSrcDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingCustomSrcDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "safe-src-carrier",
-              host: {
-                "[attr.src]": "evil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingCustomSrcDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "safe-src-carrier"  ,
+                host: {
+                "[attr.src]"  : "evil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 export class HostBindingCustomDataDir {
   evil = "evil";
   static ɵfac = function HostBindingCustomDataDir_Factory(__ngFactoryType__) {
@@ -266,25 +266,25 @@ export class HostBindingCustomDataDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingCustomDataDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "safe-data-carrier",
-              host: {
-                "[attr.data]": "evil"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingCustomDataDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "safe-data-carrier"  ,
+                host: {
+                "[attr.data]"  : "evil"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}

@@ -15,24 +15,24 @@ export class MyComponent {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Directive
-        }
-      ],
-      null,
-      {
-        click: [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
           {
-            type: HostListener,
-            args: ["click", ["$event.target"]]
+            type: Directive
           }
-        ]
-      }
-    );
-})();
+        ],
+        null,
+        {
+          click: [
+            {
+              type: HostListener,
+              args: ["click"  , ["$event.target"  ]]
+            }
+          ]
+        }
+      );
+  }
+}

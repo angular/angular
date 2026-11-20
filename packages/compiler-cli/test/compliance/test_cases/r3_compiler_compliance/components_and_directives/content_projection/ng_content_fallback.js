@@ -79,18 +79,17 @@ export class TestComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "test",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "test"  ,
+                template: `
     <ng-content select="basic">Basic fallback</ng-content>
 
     <div>
@@ -109,14 +108,15 @@ export class TestComponent {
       <h2>With a structural directive</h2>
     </ng-content>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComponent, {

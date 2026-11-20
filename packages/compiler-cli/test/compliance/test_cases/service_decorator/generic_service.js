@@ -11,17 +11,17 @@ export class MyService {
     return new (__ngFactoryType__ || MyService)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineService({ token: MyService, factory: MyService.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Service
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Service
-        }
-      ],
-      null,
-      null
-    );
-})();

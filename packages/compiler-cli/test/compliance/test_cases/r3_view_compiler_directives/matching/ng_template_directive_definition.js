@@ -14,26 +14,26 @@ export class DirectiveA {
     selectors: [["ng-template", "directiveA", ""]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveA,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "ng-template[directiveA]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveA,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "ng-template[directiveA]",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -53,29 +53,29 @@ export class MyComponent {
     dependencies: [DirectiveA],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: `
     <ng-template directiveA>Some content</ng-template>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -90,21 +90,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [DirectiveA, MyComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [DirectiveA, MyComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [DirectiveA, MyComponent] });

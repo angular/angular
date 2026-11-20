@@ -21,25 +21,25 @@ export class TestComp {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `{{(param => param + value + 1)('param')}}`
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `{{(param => param + value + 1)('param')}}`
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

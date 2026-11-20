@@ -13,21 +13,21 @@ export class IdentityPipe {
     type: IdentityPipe,
     pure: true
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        IdentityPipe,
+        [
+          {
+            type: Pipe,
+            args: [{ name: "identity"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      IdentityPipe,
-      [
-        {
-          type: Pipe,
-          args: [{ name: "identity" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class Bar {}
 export class MyApp {
   foo = { bar: "baz" };
@@ -144,17 +144,16 @@ export class MyApp {
     dependencies: [IdentityPipe],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     {{ 1 + 2 }}
     {{ (1 % 2) + 3 / 4 * 5 ** 6 }}
     {{ +1 }}
@@ -179,16 +178,17 @@ export class MyApp {
     <button (click)="number--"></button>
     <button (click)="++number"></button>
     <button (click)="--number"></button>
-  `,
-              imports: [IdentityPipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [IdentityPipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, { className: "MyApp", filePath: "operators.ts", lineNumber: 41 });

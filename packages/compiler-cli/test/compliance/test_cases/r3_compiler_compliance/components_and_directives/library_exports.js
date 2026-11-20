@@ -23,28 +23,28 @@ export class TestComponent {
     dependencies: [i1.LibDirective],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <lib-dir></lib-dir>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComponent, {
@@ -59,26 +59,26 @@ export class TestModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LibModule] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                declarations: [TestComponent],
+                imports: [LibModule]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              declarations: [TestComponent],
-              imports: [LibModule]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestComponent], imports: [LibModule] });

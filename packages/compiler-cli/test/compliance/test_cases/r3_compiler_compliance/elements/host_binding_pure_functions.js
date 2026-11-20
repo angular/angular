@@ -55,64 +55,64 @@ export class MyComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "...",
-              host: {
-                "[@expansionHeight]": `{
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: "..."  ,
+                host: {
+                "[@expansionHeight]"  : `{
         value: getExpandedState(),
         params: {
           collapsedHeight: collapsedHeight,
           expandedHeight: expandedHeight
         }
-    }`,
-                "[@expansionWidth]": `{
+    }`  ,
+                "[@expansionWidth]"  : `{
       value: getExpandedState(),
       params: {
         collapsedWidth: collapsedWidth,
         expandedWidth: expandedWidth
       }
     }`
-              },
-              standalone: false
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        {
+          expandedHeight: [
+            {
+              type: Input
+            }
+          ],
+          collapsedHeight: [
+            {
+              type: Input
+            }
+          ],
+          expandedWidth: [
+            {
+              type: Input
+            }
+          ],
+          collapsedWidth: [
+            {
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        expandedHeight: [
-          {
-            type: Input
-          }
-        ],
-        collapsedHeight: [
-          {
-            type: Input
-          }
-        ],
-        expandedWidth: [
-          {
-            type: Input
-          }
-        ],
-        collapsedWidth: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -127,21 +127,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] });

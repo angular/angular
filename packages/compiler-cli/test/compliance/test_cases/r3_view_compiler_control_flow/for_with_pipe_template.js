@@ -17,21 +17,21 @@ export class TestPipe {
     return new (__ngFactoryType__ || TestPipe)();
   };
   static ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test", type: TestPipe, pure: true });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestPipe,
+        [
+          {
+            type: Pipe,
+            args: [{ name: "test"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestPipe,
-      [
-        {
-          type: Pipe,
-          args: [{ name: "test" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyApp {
   message = "hello";
   items = [1, 2, 3];
@@ -69,33 +69,33 @@ export class MyApp {
     dependencies: [TestPipe],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <div>
       {{message}}
       @for (item of items | test; track item) {
         {{item}}
       }
     </div>
-  `,
-              imports: [TestPipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [TestPipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

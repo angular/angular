@@ -8,20 +8,20 @@ class MyAlternateService {
     token: MyAlternateService,
     factory: MyAlternateService.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyAlternateService,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyAlternateService,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyService {
   static ɵfac = function MyService_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyService)();
@@ -31,18 +31,18 @@ export class MyService {
     factory: __ngFactoryType__ => MyAlternateService.ɵfac(__ngFactoryType__),
     providedIn: "root"
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Injectable,
+            args: [{ providedIn: "root"  , useClass: MyAlternateService }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Injectable,
-          args: [{ providedIn: "root", useClass: MyAlternateService }]
-        }
-      ],
-      null,
-      null
-    );
-})();

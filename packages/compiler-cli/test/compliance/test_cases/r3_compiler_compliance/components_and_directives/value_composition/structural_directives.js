@@ -24,26 +24,26 @@ export class IfDirective {
     selectors: [["", "if", ""]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        IfDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[if]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        () => [{ type: i0.TemplateRef }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      IfDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[if]",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      () => [{ type: i0.TemplateRef }],
-      null
-    );
-})();
 export class MyComponent {
   salutation = "Hello";
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
@@ -69,27 +69,27 @@ export class MyComponent {
     dependencies: [IfDirective],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: "<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -104,21 +104,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [IfDirective, MyComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [IfDirective, MyComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [IfDirective, MyComponent] });

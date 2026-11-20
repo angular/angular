@@ -13,31 +13,31 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-comp",
-              template: "",
-              host: {
-                ["class.is-compact"]: "false",
-                ["style.width"]: "0",
-                ["attr.tabindex"]: "5"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-comp"  ,
+                template: ""  ,
+                host: {
+                  ["class.is-compact"  ]: "false"  ,
+                  ["style.width"  ]: "0"  ,
+                  ["attr.tabindex"  ]: "5"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -66,31 +66,31 @@ export class MyComponent2 {
     template: function MyComponent2_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent2,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-comp-2",
-              template: "",
-              host: {
-                "[class.is-compact]": "false",
-                "[style.width]": "0",
-                "[attr.tabindex]": "5"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent2,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-comp-2"  ,
+                template: ""  ,
+                host: {
+                "[class.is-compact]"  : "false"  ,
+                "[style.width]"  : "0"  ,
+                "[attr.tabindex]"  : "5"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent2, {

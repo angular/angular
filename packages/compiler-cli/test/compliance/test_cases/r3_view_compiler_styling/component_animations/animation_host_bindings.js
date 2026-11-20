@@ -28,31 +28,31 @@ class MyAnimDir {
     },
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyAnimDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-anim-dir]"  ,
+                host: {
+                "[@myAnim]"  : "myAnimState"  ,
+                "(@myAnim.start)"  : "onStart()"  ,
+                "(@myAnim.done)"  : "onDone()"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyAnimDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[my-anim-dir]",
-              host: {
-                "[@myAnim]": "myAnimState",
-                "(@myAnim.start)": "onStart()",
-                "(@myAnim.done)": "onDone()"
-              },
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -72,29 +72,29 @@ class MyComponent {
     dependencies: [MyAnimDir],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-cmp",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-cmp"  ,
+                template: `
     <div my-anim-dir></div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -109,21 +109,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, MyAnimDir] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, MyAnimDir] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, MyAnimDir] });

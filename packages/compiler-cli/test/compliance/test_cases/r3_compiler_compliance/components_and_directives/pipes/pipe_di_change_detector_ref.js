@@ -15,26 +15,26 @@ export class MyPipe {
     pure: true,
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyPipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "myPipe"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        () => [{ type: i0.ChangeDetectorRef }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyPipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "myPipe",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      () => [{ type: i0.ChangeDetectorRef }],
-      null
-    );
-})();
 export class MyOtherPipe {
   constructor(changeDetectorRef) {}
   transform(value, ...args) {
@@ -50,35 +50,35 @@ export class MyOtherPipe {
     pure: true,
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyOtherPipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "myOtherPipe"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        () => [
+          {
+            type: i0.ChangeDetectorRef,
+            decorators: [
+              {
+                type: Optional
+              }
+            ]
+          }
+        ],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyOtherPipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "myOtherPipe",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      () => [
-        {
-          type: i0.ChangeDetectorRef,
-          decorators: [
-            {
-              type: Optional
-            }
-          ]
-        }
-      ],
-      null
-    );
-})();
 export class MyApp {
   name = "World";
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
@@ -108,27 +108,27 @@ export class MyApp {
     dependencies: [MyPipe, MyOtherPipe],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: "{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: "{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -143,21 +143,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyPipe, MyOtherPipe, MyApp] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyPipe, MyOtherPipe, MyApp] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyOtherPipe, MyApp] });

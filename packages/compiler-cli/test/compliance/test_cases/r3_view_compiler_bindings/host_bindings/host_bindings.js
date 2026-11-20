@@ -16,54 +16,54 @@ export class HostBindingDir {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[hostBindingDir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          dirId: [
             {
-              selector: "[hostBindingDir]",
-              standalone: false
+              type: HostBinding,
+              args: ["id"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        dirId: [
-          {
-            type: HostBinding,
-            args: ["id"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyModule {
   static ɵfac = function MyModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [HostBindingDir] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [HostBindingDir] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] });

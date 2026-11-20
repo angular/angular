@@ -17,24 +17,24 @@ export class MyDirective {
     },
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-dir]"  ,
+                host: { "[attr.title]"  : "myTitle"  , "[attr.tabindex]"  : "1"  , "[attr.id]"  : "myId"   },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[my-dir]",
-              host: { "[attr.title]": "myTitle", "[attr.tabindex]": "1", "[attr.id]": "myId" },
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

@@ -24,29 +24,29 @@ export class ForOfDirective {
     standalone: false,
     features: [i0.ɵɵNgOnChangesFeature]
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ForOfDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ForOfDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[forOf]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }],
         {
-          type: Directive,
-          args: [
+          forOf: [
             {
-              selector: "[forOf]",
-              standalone: false
+              type: Input
             }
           ]
         }
-      ],
-      () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }],
-      {
-        forOf: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

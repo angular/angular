@@ -16,25 +16,25 @@ export class AnyStructuralDirective {
     type: AnyStructuralDirective,
     selectors: [["", "any-structural-directive", ""]]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AnyStructuralDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[any-structural-directive]"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AnyStructuralDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[any-structural-directive]"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -55,31 +55,31 @@ export class MyComponent {
     dependencies: [AnyStructuralDirective],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              imports: [AnyStructuralDirective],
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                imports: [AnyStructuralDirective],
+                template: `
     <div>
       <p *any-structural-directive animate.enter="slide">Sliding Content</p>
     </div>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

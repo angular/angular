@@ -28,20 +28,20 @@ export class BasicInjectable {
     token: BasicInjectable,
     factory: BasicInjectable.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BasicInjectable,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BasicInjectable,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class RootInjectable {
   static ɵfac = function RootInjectable_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || RootInjectable)();
@@ -51,21 +51,21 @@ export class RootInjectable {
     factory: RootInjectable.ɵfac,
     providedIn: "root"
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        RootInjectable,
+        [
+          {
+            type: Injectable,
+            args: [{ providedIn: "root"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      RootInjectable,
-      [
-        {
-          type: Injectable,
-          args: [{ providedIn: "root" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 let CustomInjectable = class CustomInjectable {
   static ɵfac = function CustomInjectable_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || CustomInjectable)();
@@ -107,21 +107,21 @@ export class ComponentWithExternalResource {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ComponentWithExternalResource,
+        [
+          {
+            type: Component,
+            args: [{ selector: "test-cmp"  , template: "<span>Test template</span>\n"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ComponentWithExternalResource,
-      [
-        {
-          type: Component,
-          args: [{ selector: "test-cmp", template: "<span>Test template</span>\n" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ComponentWithExternalResource, {

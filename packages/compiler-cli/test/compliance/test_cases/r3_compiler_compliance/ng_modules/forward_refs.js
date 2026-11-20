@@ -12,38 +12,38 @@ export class TestModule {
     imports: () => [ForwardModule]
   });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [provideModule()] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestModule,
+        [
+          {
+            type: NgModule,
+            args: [{ imports: [provideModule()] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestModule,
-      [
-        {
-          type: NgModule,
-          args: [{ imports: [provideModule()] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class ForwardModule {
   static ɵfac = function ForwardModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || ForwardModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ForwardModule,
+        [
+          {
+            type: NgModule
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ForwardModule,
-      [
-        {
-          type: NgModule
-        }
-      ],
-      null,
-      null
-    );
-})();

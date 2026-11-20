@@ -77,30 +77,30 @@ export class TestCmp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "main",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "main"  ,
+                template: `
     <FancyButton class="btn-cls" unsafe-attr="value" [label]="title" [unsafe-input]="title" />
-  `,
+  `  ,
               // @ts-ignore: @angular/core does not expose the `foreignImports` property.
-              foreignImports: [frameworkImport(FancyButton)]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+                foreignImports: [frameworkImport(FancyButton)]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {
@@ -141,18 +141,17 @@ export class TestCmpChildren {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmpChildren,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "main-children",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmpChildren,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "main-children"  ,
+                template: `
     <FancyButton [label]="title">
       @content (icon) {
         <span>Icon!</span>
@@ -162,17 +161,18 @@ export class TestCmpChildren {
       }
       <span>Other children</span>
     </FancyButton>
-  `,
+  `  ,
               // @ts-ignore: @angular/core does not expose the `foreignImports` property.
-              foreignImports: [frameworkImport(FancyButton)]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+                foreignImports: [frameworkImport(FancyButton)]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmpChildren, {
@@ -201,34 +201,34 @@ export class TestCmpRenderProps {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmpRenderProps,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "main-render-props",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmpRenderProps,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "main-render-props"  ,
+                template: `
     <FancyButton [label]="title">
       @content (items; let item, index) {
         <span>#{{index}}: {{item}}</span>
       }
     </FancyButton>
-  `,
+  `  ,
               // @ts-ignore: @angular/core does not expose the `foreignImports` property.
-              foreignImports: [frameworkImport(FancyButton)]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+                foreignImports: [frameworkImport(FancyButton)]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmpRenderProps, {
@@ -261,34 +261,34 @@ export class TestCmpConditional {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmpConditional,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "main-conditional",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmpConditional,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "main-conditional"  ,
+                template: `
     @if (outerCondition) {
       @if (innerCondition) {
         <FancyButton [label]="title" />
       }
     }
-  `,
+  `  ,
               // @ts-ignore: @angular/core does not expose the `foreignImports` property.
-              foreignImports: [frameworkImport(FancyButton)]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+                foreignImports: [frameworkImport(FancyButton)]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmpConditional, {

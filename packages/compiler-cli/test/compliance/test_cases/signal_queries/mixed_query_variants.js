@@ -41,33 +41,33 @@ export class TestDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{}]
+          decoratorViewChild: [
+            {
+              type: ViewChild,
+              args: ["locator1"  ]
+            }
+          ],
+          signalViewChild: [{ type: i0.ViewChild, args: ["locator1"  , { isSignal: true }] }],
+          decoratorContentChild: [
+            {
+              type: ContentChild,
+              args: ["locator2"  ]
+            }
+          ],
+          signalContentChild: [{ type: i0.ContentChild, args: ["locator2"  , { isSignal: true }] }]
         }
-      ],
-      null,
-      {
-        decoratorViewChild: [
-          {
-            type: ViewChild,
-            args: ["locator1"]
-          }
-        ],
-        signalViewChild: [{ type: i0.ViewChild, args: ["locator1", { isSignal: true }] }],
-        decoratorContentChild: [
-          {
-            type: ContentChild,
-            args: ["locator2"]
-          }
-        ],
-        signalContentChild: [{ type: i0.ContentChild, args: ["locator2", { isSignal: true }] }]
-      }
-    );
-})();
+      );
+  }
+}

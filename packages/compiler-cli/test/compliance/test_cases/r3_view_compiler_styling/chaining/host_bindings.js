@@ -29,45 +29,45 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: ""  ,
+                host: {
+                "[class.apple]"  : "yesToApple"  ,
+                "[style.color]"  : "color"  ,
+                "[class.tomato]"  : "yesToTomato"  ,
+                "[style.transition]"  : "transition"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          border: [
             {
-              template: "",
-              host: {
-                "[class.apple]": "yesToApple",
-                "[style.color]": "color",
-                "[class.tomato]": "yesToTomato",
-                "[style.transition]": "transition"
-              },
-              standalone: false
+              type: HostBinding,
+              args: ["style.border"  ]
+            }
+          ],
+          yesToOrange: [
+            {
+              type: HostBinding,
+              args: ["class.orange"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        border: [
-          {
-            type: HostBinding,
-            args: ["style.border"]
-          }
-        ],
-        yesToOrange: [
-          {
-            type: HostBinding,
-            args: ["class.orange"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

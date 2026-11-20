@@ -18,25 +18,25 @@ class Outer {
         },
         encapsulation: 2
       });
+      static {
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵsetClassMetadata(
+            Inner,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    template: "inner"
+                  }
+                ]
+              }
+            ],
+            null,
+            null
+          );
+      }
     }
-    (() => {
-      (typeof ngDevMode === "undefined" || ngDevMode) &&
-        i0.ɵsetClassMetadata(
-          Inner,
-          [
-            {
-              type: Component,
-              args: [
-                {
-                  template: "inner"
-                }
-              ]
-            }
-          ],
-          null,
-          null
-        );
-    })();
     (() => {
       (typeof ngDevMode === "undefined" || ngDevMode) &&
         i0.ɵsetClassDebugInfo(Inner, {
@@ -61,25 +61,25 @@ class Outer {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Outer,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "outer"
+              }
+            ]
+          }
+        ],
+        () => [],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Outer,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: "outer"
-            }
-          ]
-        }
-      ],
-      () => [],
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Outer, {

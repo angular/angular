@@ -9,26 +9,26 @@ export class NotStandaloneDir {
     selectors: [["", "not-standalone", ""]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NotStandaloneDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[not-standalone]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NotStandaloneDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[not-standalone]",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class NotStandalonePipe {
   transform(value) {}
   static ɵfac = function NotStandalonePipe_Factory(__ngFactoryType__) {
@@ -40,52 +40,52 @@ export class NotStandalonePipe {
     pure: true,
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NotStandalonePipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "nspipe"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NotStandalonePipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "nspipe",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class NotStandaloneStuffModule {
   static ɵfac = function NotStandaloneStuffModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || NotStandaloneStuffModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NotStandaloneStuffModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NotStandaloneStuffModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                declarations: [NotStandaloneDir, NotStandalonePipe],
+                exports: [NotStandaloneDir, NotStandalonePipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NotStandaloneStuffModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              declarations: [NotStandaloneDir, NotStandalonePipe],
-              exports: [NotStandaloneDir, NotStandalonePipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(NotStandaloneStuffModule, {
@@ -101,25 +101,25 @@ export class IndirectDir {
     type: IndirectDir,
     selectors: [["", "indirect", ""]]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        IndirectDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[indirect]"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      IndirectDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[indirect]"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class IndirectPipe {
   transform(value) {}
   static ɵfac = function IndirectPipe_Factory(__ngFactoryType__) {
@@ -130,51 +130,51 @@ export class IndirectPipe {
     type: IndirectPipe,
     pure: true
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        IndirectPipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "indirectpipe"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      IndirectPipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "indirectpipe"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class SomeModule {
   static ɵfac = function SomeModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || SomeModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SomeModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [NotStandaloneStuffModule] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SomeModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                imports: [IndirectDir, IndirectPipe],
+                exports: [NotStandaloneStuffModule, IndirectDir, IndirectPipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SomeModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              imports: [IndirectDir, IndirectPipe],
-              exports: [NotStandaloneStuffModule, IndirectDir, IndirectPipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(SomeModule, {
@@ -190,25 +190,25 @@ export class DirectDir {
     type: DirectDir,
     selectors: [["", "direct", ""]]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[direct]"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[direct]"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DirectPipe {
   transform(value) {}
   static ɵfac = function DirectPipe_Factory(__ngFactoryType__) {
@@ -219,25 +219,25 @@ export class DirectPipe {
     type: DirectPipe,
     pure: true
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectPipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "directpipe"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectPipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "directpipe"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class TestCmp {
   data = true;
   static ɵfac = function TestCmp_Factory(__ngFactoryType__) {
@@ -294,31 +294,31 @@ export class TestCmp {
     ],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "test-cmp",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "test-cmp"  ,
+                template: `
     <p>Reference some non-standalone things:<span not-standalone>{{data | nspipe}}</span></p>
     <p>Reference some indirect standalone things:<span indirect>{{data | indirectpipe}}</span></p>
     <p>Reference some standalone things directly:<span direct>{{data | directpipe}}</span></p>
-  `,
-              imports: [SomeModule, DirectDir, DirectPipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [SomeModule, DirectDir, DirectPipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {

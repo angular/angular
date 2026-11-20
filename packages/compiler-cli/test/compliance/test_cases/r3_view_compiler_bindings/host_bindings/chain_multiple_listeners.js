@@ -23,34 +23,34 @@ export class MyDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-dir]"  ,
+                host: {
+                "(mousedown)"  : "mousedown()"  ,
+                "(mouseup)"  : "mouseup()"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          click: [
             {
-              selector: "[my-dir]",
-              host: {
-                "(mousedown)": "mousedown()",
-                "(mouseup)": "mouseup()"
-              },
-              standalone: false
+              type: HostListener,
+              args: ["click"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        click: [
-          {
-            type: HostListener,
-            args: ["click"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

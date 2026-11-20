@@ -12,26 +12,26 @@ export class OtherCmp {
     template: function OtherCmp_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        OtherCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "other-cmp"  ,
+                template: ""
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      OtherCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "other-cmp",
-              template: ""
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(OtherCmp, {
@@ -57,26 +57,26 @@ export class StandaloneCmp {
     dependencies: [OtherCmp],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        StandaloneCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "<other-cmp></other-cmp>"  ,
+                imports: [OtherCmp]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      StandaloneCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: "<other-cmp></other-cmp>",
-              imports: [OtherCmp]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(StandaloneCmp, {

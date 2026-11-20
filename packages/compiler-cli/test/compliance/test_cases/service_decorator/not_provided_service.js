@@ -9,18 +9,18 @@ export class MyService {
     factory: MyService.ɵfac,
     autoProvided: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Service,
+            args: [{ autoProvided: false }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Service,
-          args: [{ autoProvided: false }]
-        }
-      ],
-      null,
-      null
-    );
-})();

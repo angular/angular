@@ -16,41 +16,41 @@ export class EagerDep {
     return new (__ngFactoryType__ || EagerDep)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: EagerDep, selectors: [["eager-dep"]] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        EagerDep,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "eager-dep"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      EagerDep,
-      [
-        {
-          type: Directive,
-          args: [{ selector: "eager-dep" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class LazyDep {
   static ɵfac = function LazyDep_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || LazyDep)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LazyDep, selectors: [["lazy-dep"]] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LazyDep,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "lazy-dep"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      LazyDep,
-      [
-        {
-          type: Directive,
-          args: [{ selector: "lazy-dep" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class LoadingDep {
   static ɵfac = function LoadingDep_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || LoadingDep)();
@@ -59,21 +59,21 @@ export class LoadingDep {
     type: LoadingDep,
     selectors: [["loading-dep"]]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LoadingDep,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "loading-dep"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      LoadingDep,
-      [
-        {
-          type: Directive,
-          args: [{ selector: "loading-dep" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyApp {
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyApp)();
@@ -96,17 +96,16 @@ export class MyApp {
     dependencies: [EagerDep, LoadingDep],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <div>
       <eager-dep/>
       @defer {
@@ -115,16 +114,17 @@ export class MyApp {
         <loading-dep/>
       }
     </div>
-  `,
-              imports: [EagerDep, LazyDep, LoadingDep]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [EagerDep, LazyDep, LoadingDep]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

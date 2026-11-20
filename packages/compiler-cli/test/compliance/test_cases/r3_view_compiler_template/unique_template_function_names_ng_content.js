@@ -36,29 +36,29 @@ export class AComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "a-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "a-component"  ,
+                template: `
     <ng-content *ngIf="show"></ng-content>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(AComponent, {
@@ -91,29 +91,29 @@ export class BComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "b-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "b-component"  ,
+                template: `
     <ng-content *ngIf="show"></ng-content>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(BComponent, {
@@ -128,21 +128,21 @@ export class AModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [AComponent, BComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [AComponent, BComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AModule, { declarations: [AComponent, BComponent] });

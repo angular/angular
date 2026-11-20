@@ -21,29 +21,29 @@ export class MyComponentWithInterpolation {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponentWithInterpolation,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component-with-interpolation",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponentWithInterpolation,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component-with-interpolation"  ,
+                template: `
     <div class="foo foo-{{ fooId }}"></div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponentWithInterpolation, {
@@ -74,29 +74,29 @@ export class MyComponentWithMuchosInterpolation {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponentWithMuchosInterpolation,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component-with-muchos-interpolation",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponentWithMuchosInterpolation,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component-with-muchos-interpolation"  ,
+                template: `
     <div class="foo foo-{{ fooId }}-{{ fooUsername }}"></div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponentWithMuchosInterpolation, {
@@ -126,29 +126,29 @@ export class MyComponentWithoutInterpolation {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponentWithoutInterpolation,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component-without-interpolation",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponentWithoutInterpolation,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component-without-interpolation"  ,
+                template: `
     <div [class]="exp"></div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponentWithoutInterpolation, {
@@ -163,29 +163,29 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                declarations: [
+                  MyComponentWithInterpolation,
+                  MyComponentWithMuchosInterpolation,
+                  MyComponentWithoutInterpolation
+                ]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              declarations: [
-                MyComponentWithInterpolation,
-                MyComponentWithMuchosInterpolation,
-                MyComponentWithoutInterpolation
-              ]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, {

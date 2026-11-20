@@ -32,32 +32,32 @@ export class MyComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `<div
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `<div
     style.color="a{{one}}b"
     style.border="a{{one}}b"
     style.transition="a{{one}}b{{two}}c"
     style.width="a{{one}}b{{two}}c"
     style.height="a{{one}}b{{two}}c{{three}}d"
-    style.top="a{{one}}b{{two}}c{{three}}d"></div>`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+    style.top="a{{one}}b{{two}}c{{three}}d"></div>`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
