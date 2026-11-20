@@ -10,7 +10,6 @@ import {consumerDestroy, setActiveConsumer} from '../../primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
-import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {
@@ -122,6 +121,7 @@ function applyToElementOrContainer(
   tNode: TNode,
   beforeNode?: RNode | null,
   parentLView?: LView,
+  clearHydrationState = false,
 ) {
   // If this slot was allocated for a text node dynamically created by i18n, the text node itself
   // won't be created until i18nApply() in the update block, so this node should be skipped.
@@ -181,7 +181,16 @@ function applyToElementOrContainer(
       });
     }
     if (lContainer != null) {
-      applyContainer(renderer, action, injector, lContainer, tNode, parent, beforeNode);
+      applyContainer(
+        renderer,
+        action,
+        injector,
+        lContainer,
+        tNode,
+        parent,
+        beforeNode,
+        clearHydrationState,
+      );
     }
   }
 }
@@ -790,6 +799,7 @@ function applyNodes(
   parentRElement: RElement | null,
   beforeNode: RNode | null,
   isProjection: boolean,
+  clearHydrationState = false,
 ) {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
@@ -815,8 +825,20 @@ function applyNodes(
       }
     }
     if (!isDetachedByI18n(tNode)) {
+      if (clearHydrationState && _clearProjectedNodeHydrationStateImpl !== null) {
+        _clearProjectedNodeHydrationStateImpl(lView, tNode, rawSlotValue);
+      }
       if (tNodeType & TNodeType.ElementContainer) {
-        applyNodes(renderer, action, tNode.child, lView, parentRElement, beforeNode, false);
+        applyNodes(
+          renderer,
+          action,
+          tNode.child,
+          lView,
+          parentRElement,
+          beforeNode,
+          false,
+          clearHydrationState,
+        );
         applyToElementOrContainer(
           action,
           renderer,
@@ -826,6 +848,7 @@ function applyNodes(
           tNode,
           beforeNode,
           lView,
+          clearHydrationState,
         );
       } else if (tNodeType & TNodeType.Icu) {
         const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
@@ -860,6 +883,7 @@ function applyNodes(
           tNode as TProjectionNode,
           parentRElement,
           beforeNode,
+          clearHydrationState,
         );
       } else {
         ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.Container);
@@ -872,6 +896,7 @@ function applyNodes(
           tNode,
           beforeNode,
           lView,
+          clearHydrationState,
         );
       }
     }
@@ -917,6 +942,7 @@ export function applyView(
   action: WalkTNodeTreeAction,
   parentRElement: RElement | null,
   beforeNode: RNode | null,
+  clearHydrationState?: boolean,
 ): void;
 export function applyView(
   tView: TView,
@@ -925,11 +951,21 @@ export function applyView(
   action: WalkTNodeTreeAction,
   parentRElement: RElement | null,
   beforeNode: RNode | null,
+  clearHydrationState = false,
 ): void {
   if (tView.type === TViewType.Foreign) {
     applyForeignNodes(renderer, action, lView, parentRElement, beforeNode);
   } else {
-    applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);
+    applyNodes(
+      renderer,
+      action,
+      tView.firstChild,
+      lView,
+      parentRElement,
+      beforeNode,
+      false,
+      clearHydrationState,
+    );
   }
 }
 
@@ -1022,6 +1058,7 @@ function applyProjectionRecursive(
   tProjectionNode: TProjectionNode,
   parentRElement: RElement | null,
   beforeNode: RNode | null,
+  clearHydrationState = false,
 ) {
   const componentLView = lView[DECLARATION_COMPONENT_VIEW];
   const componentNode = componentLView[T_HOST] as TElementNode;
@@ -1048,13 +1085,13 @@ function applyProjectionRecursive(
       );
     }
   } else {
-    let nodeToProject: TNode | null = nodeToProjectOrRNodes;
-    const projectedComponentLView = componentLView[PARENT] as LView;
-    // If a parent <ng-content> is located within a skip hydration block,
-    // annotate an actual node that is being projected with the same flag too.
-    if (hasInSkipHydrationBlockFlag(tProjectionNode)) {
-      nodeToProject.flags |= TNodeFlags.inSkipHydrationBlock;
+    const nodeToProject: TNode | null = nodeToProjectOrRNodes;
+    if (nodeToProject === null) {
+      return;
     }
+    const projectedComponentLView = componentLView[PARENT] as LView;
+    // Clear per-instance hydration state when projecting in creation mode (e.g. into a
+    // skip-hydration or non-hydrated boundary) rather than mutating the shared `TView`.
     applyNodes(
       renderer,
       action,
@@ -1063,8 +1100,19 @@ function applyProjectionRecursive(
       parentRElement,
       beforeNode,
       true,
+      clearHydrationState || action === WalkTNodeTreeAction.Create,
     );
   }
+}
+
+let _clearProjectedNodeHydrationStateImpl:
+  | ((lView: LView, tNode: TNode, rawSlotValue: any) => void)
+  | null = null;
+
+export function enableClearProjectedNodeHydrationStateImpl(
+  fn: (lView: LView, tNode: TNode, rawSlotValue: any) => void,
+) {
+  _clearProjectedNodeHydrationStateImpl = fn;
 }
 
 /**
@@ -1088,6 +1136,7 @@ function applyContainer(
   tNode: TNode,
   parentRElement: RElement | null,
   beforeNode: RNode | null | undefined,
+  clearHydrationState = false,
 ) {
   ngDevMode && assertLContainer(lContainer);
   const anchor = lContainer[NATIVE]; // LContainer has its own before node.
@@ -1118,7 +1167,7 @@ function applyContainer(
   }
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const lView = lContainer[i] as LView;
-    applyView(lView[TVIEW], lView, renderer, action, parentRElement, anchor);
+    applyView(lView[TVIEW], lView, renderer, action, parentRElement, anchor, clearHydrationState);
   }
 }
 

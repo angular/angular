@@ -26,6 +26,7 @@ import {enableApplyRootElementTransformImpl} from '../render3/instructions/share
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 import {TransferState} from '../transfer_state';
+import {enableClearProjectedNodeHydrationStateImpl} from '../render3/node_manipulation';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 import {withEventReplay} from './event_replay';
@@ -61,7 +62,7 @@ import {
   NGH_DATA_KEY,
   verifySsrContentsIntegrity,
 } from './utils';
-import {enableFindMatchingDehydratedViewImpl} from './views';
+import {clearProjectedNodeHydrationState, enableFindMatchingDehydratedViewImpl} from './views';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -107,6 +108,7 @@ function enableHydrationRuntimeSupport() {
     enableLocateOrCreateContainerRefImpl();
     enableFindMatchingDehydratedViewImpl();
     enableApplyRootElementTransformImpl();
+    enableClearProjectedNodeHydrationStateImpl(clearProjectedNodeHydrationState);
   }
 }
 
