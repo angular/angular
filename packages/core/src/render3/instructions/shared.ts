@@ -423,7 +423,7 @@ export function setNgReflectProperties(
 /**
  * Instantiate all the directives that were previously resolved on the current node.
  */
-function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveHostNode) {
+export function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveHostNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
 

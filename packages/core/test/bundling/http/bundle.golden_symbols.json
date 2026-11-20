@@ -357,7 +357,6 @@
       "createComponentLView",
       "createComputed",
       "createDictionary",
-      "createDirectivesInstances",
       "createEffectFn",
       "createElementNode",
       "createElementRef",
