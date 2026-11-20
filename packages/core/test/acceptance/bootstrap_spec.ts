@@ -14,6 +14,7 @@ import {
   forwardRef,
   NgModule,
   NgZone,
+  provideAppInitializer,
   provideZonelessChangeDetection,
   provideZoneChangeDetection,
   TestabilityRegistry,
@@ -23,7 +24,7 @@ import {
   ɵZONELESS_ENABLED,
 } from '../../src/core';
 import {bootstrapApplication, BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
+import {timeout, withBody} from '@angular/private/testing';
 
 describe('bootstrap', () => {
   beforeEach(destroyPlatform);
@@ -549,6 +550,194 @@ describe('bootstrap', () => {
             preserveWhitespaces: true,
           });
           ngModuleRefB.destroy();
+        }),
+      );
+    });
+
+    describe('destroying platform during async initializers', () => {
+      it(
+        'should settle bootstrapApplication cleanly without bootstrapping root component when platform is destroyed during APP_INITIALIZER',
+        withBody('<app-root></app-root>', async () => {
+          let resolveInit!: () => void;
+          let markInitStarted!: () => void;
+          const initStarted = new Promise<void>((resolve) => {
+            markInitStarted = resolve;
+          });
+          let componentCreated = false;
+
+          @Component({
+            selector: 'app-root',
+            template: 'rendered',
+          })
+          class App {
+            constructor() {
+              componentCreated = true;
+            }
+          }
+
+          const platformRef = platformBrowser();
+          const bootstrapPromise = bootstrapApplication(
+            App,
+            {
+              providers: [
+                provideAppInitializer(() => {
+                  markInitStarted();
+                  return new Promise<void>((resolve) => {
+                    resolveInit = resolve;
+                  });
+                }),
+              ],
+            },
+            {platformRef},
+          );
+
+          await initStarted;
+
+          await jasmine.spyOnGlobalErrorsAsync(async (globalErrorSpy) => {
+            platformRef.destroy();
+            const appRef = await bootstrapPromise;
+
+            expect(appRef.destroyed).toBeTrue();
+            expect(componentCreated).toBeFalse();
+            expect(document.body.textContent).toBe('');
+
+            resolveInit();
+            await timeout(10);
+            expect(globalErrorSpy).not.toHaveBeenCalled();
+          });
+        }),
+      );
+
+      it(
+        'should settle bootstrapModule cleanly without invoking error handler when platform is destroyed during APP_INITIALIZER',
+        withBody('<app-root></app-root>', async () => {
+          let rejectInit!: (reason?: unknown) => void;
+          let markInitStarted!: () => void;
+          const initStarted = new Promise<void>((resolve) => {
+            markInitStarted = resolve;
+          });
+          let componentCreated = false;
+
+          @Component({
+            selector: 'app-root',
+            template: 'rendered',
+            standalone: false,
+          })
+          class App {
+            constructor() {
+              componentCreated = true;
+            }
+          }
+
+          @NgModule({
+            imports: [BrowserModule],
+            declarations: [App],
+            bootstrap: [App],
+            providers: [
+              provideAppInitializer(() => {
+                markInitStarted();
+                return new Promise<void>((_, reject) => {
+                  rejectInit = reject;
+                });
+              }),
+            ],
+          })
+          class AppModule {}
+
+          const platformRef = platformBrowser();
+          const bootstrapPromise = platformRef.bootstrapModule(AppModule);
+
+          await initStarted;
+
+          await jasmine.spyOnGlobalErrorsAsync(async (globalErrorSpy) => {
+            platformRef.destroy();
+            const moduleRef = await bootstrapPromise;
+
+            expect(moduleRef.injector.destroyed).toBeTrue();
+            expect(componentCreated).toBeFalse();
+            expect(document.body.textContent).toBe('');
+
+            rejectInit(new Error('late initializer rejection'));
+            await timeout(10);
+            expect(globalErrorSpy).not.toHaveBeenCalled();
+          });
+        }),
+      );
+
+      it(
+        'should not run initializers or bootstrap when platformRef is destroyed before bootstrap starts',
+        withBody('<app-root></app-root>', async () => {
+          let initRan = false;
+          let componentCreated = false;
+
+          @Component({
+            selector: 'app-root',
+            template: 'rendered',
+          })
+          class App {
+            constructor() {
+              componentCreated = true;
+            }
+          }
+
+          const platformRef = platformBrowser();
+          const bootstrapPromise = bootstrapApplication(
+            App,
+            {
+              providers: [
+                provideAppInitializer(() => {
+                  initRan = true;
+                }),
+              ],
+            },
+            {platformRef},
+          );
+          platformRef.destroy();
+
+          const appRef = await bootstrapPromise;
+          expect(appRef.destroyed).toBeTrue();
+          expect(initRan).toBeFalse();
+          expect(componentCreated).toBeFalse();
+        }),
+      );
+
+      it(
+        'should not run initializers or bootstrap module when platformRef is destroyed before bootstrapModule starts',
+        withBody('<app-root></app-root>', async () => {
+          let initRan = false;
+          let componentCreated = false;
+
+          @Component({
+            selector: 'app-root',
+            template: 'rendered',
+            standalone: false,
+          })
+          class App {
+            constructor() {
+              componentCreated = true;
+            }
+          }
+
+          @NgModule({
+            imports: [BrowserModule],
+            declarations: [App],
+            bootstrap: [App],
+            providers: [
+              provideAppInitializer(() => {
+                initRan = true;
+              }),
+            ],
+          })
+          class AppModule {}
+
+          const platformRef = platformBrowser();
+          const bootstrapPromise = platformRef.bootstrapModule(AppModule);
+          platformRef.destroy();
+
+          const moduleRef = await bootstrapPromise;
+          expect(moduleRef.injector.destroyed).toBeTrue();
+          expect(initRan).toBeFalse();
+          expect(componentCreated).toBeFalse();
         }),
       );
     });
