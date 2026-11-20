@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, effect, Injector, untracked} from '@angular/core';
+import {APP_ID, DestroyRef, effect, Injector, untracked} from '@angular/core';
 import type {FormSubmitOptions} from '../api/types';
 import type {FieldNodeStructure} from './structure';
 
@@ -22,6 +22,12 @@ export class FormFieldManager {
   readonly rootName: string;
   readonly submitOptions: FormSubmitOptions<unknown, unknown> | undefined;
 
+  private destroyed = false;
+
+  get isDestroyed(): boolean {
+    return this.destroyed;
+  }
+
   constructor(
     injector: Injector,
     rootName: string | undefined,
@@ -30,11 +36,21 @@ export class FormFieldManager {
     this.injector = injector;
     this.rootName = rootName ?? `${this.injector.get(APP_ID)}.form${nextFormId++}`;
     this.submitOptions = submitOptions;
+
+    this.injector.get(DestroyRef).onDestroy(() => {
+      this.destroyed = true;
+      // Parents are registered before their children. Keep their injectors alive for child cleanup.
+      const structures = Array.from(this.structures).reverse();
+      this.structures.clear();
+      for (const structure of structures) {
+        structure.destroy();
+      }
+    });
   }
 
   /**
-   * Contains all child field structures that have been created as part of the current form.
-   * New child structures are automatically added when they are created.
+   * Contains all field structures that have been created as part of the current form.
+   * New structures are automatically added when they are created.
    * Structures are destroyed and removed when they are no longer reachable from the root.
    */
   readonly structures = new Set<FieldNodeStructure>();
@@ -55,6 +71,10 @@ export class FormFieldManager {
   createFieldManagementEffect(root: FieldNodeStructure): void {
     effect(
       () => {
+        if (this.destroyed) {
+          return;
+        }
+
         const liveStructures = new Set<FieldNodeStructure>();
         this.markStructuresLive(root, liveStructures);
 
