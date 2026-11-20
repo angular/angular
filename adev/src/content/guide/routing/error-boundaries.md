@@ -158,9 +158,8 @@ export class UserProfile {
 
 When a `RedirectCommand` is thrown:
 
-1. `RouterOutlet` catches the command and initiates navigation to the specified redirect destination.
-2. If nested outlets or template error boundaries exist, Angular deduplicates the command to ensure the navigation is only triggered once.
-3. The error component (if configured) renders during the transition.
+- `RouterOutlet` catches the command and initiates navigation to the specified redirect destination.
+- The error component (if configured) renders during the transition.
 
 NOTE: If a `RedirectCommand` is thrown and no `errorComponent` is configured, the router initiates the navigation and intentionally swallows the error to prevent it from being logged as a crash by the global `ErrorHandler`.
 
