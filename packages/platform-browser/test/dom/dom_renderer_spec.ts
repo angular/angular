@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {NgIf} from '@angular/common';
-import {Component, Renderer2, signal, ViewEncapsulation} from '@angular/core';
+import {Component, Renderer2, RendererFactory2, signal, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {createApplication} from '../../src/browser';
 import {By} from '../../src/dom/debug/by';
 import {
   addBaseHrefToCssSourceMap,
@@ -504,6 +505,118 @@ describe('DefaultDomRendererV2', () => {
     });
 
     describe('style property bindings namespacing', () => {
+      for (const namespace of ['', 'ns']) {
+        it(`should respect custom property precedence with namespace "${namespace}"`, async () => {
+          @Component({
+            selector: 'styled-child',
+            template: '',
+            host: {'[style.--x]': 'color()'},
+          })
+          class Child {
+            color = signal<string | undefined>('blue');
+          }
+
+          @Component({
+            imports: [Child],
+            template: `
+              <styled-child style="--x: red; --ns_x: green" />
+              <i style="--x: red; --ns_x: green" [style.--x]="color()"></i>
+              <b [style]="styles()" [style.--x]="color()"></b>
+            `,
+          })
+          class Parent {
+            color = signal<string | undefined>('blue');
+            styles = signal({'--x': 'red', '--ns_x': 'green'});
+          }
+
+          TestBed.configureTestingModule({
+            providers: namespace ? [provideCssVarNamespacing(namespace)] : [],
+          });
+          const fixture = TestBed.createComponent(Parent);
+          await fixture.whenStable();
+
+          const child = fixture.debugElement.query(By.directive(Child));
+          const prop = namespace ? '--ns_x' : '--x';
+          const other = namespace ? '--x' : '--ns_x';
+          const fallback = namespace ? 'green' : 'red';
+          const staticStyle = fixture.nativeElement.querySelector('i').style;
+          const mapStyle = fixture.nativeElement.querySelector('b').style;
+          expect(child.nativeElement.style.getPropertyValue(prop)).toBe(fallback);
+          expect(staticStyle.getPropertyValue(prop)).toBe('blue');
+          expect(staticStyle.getPropertyValue(other)).toBe(namespace ? 'red' : 'green');
+
+          fixture.componentInstance.styles.set({'--x': 'orange', '--ns_x': 'purple'});
+          await fixture.whenStable();
+          expect(mapStyle.getPropertyValue(prop)).toBe('blue');
+
+          fixture.componentInstance.color.set(undefined);
+          child.componentInstance.color.set(undefined);
+          await fixture.whenStable();
+          expect(child.nativeElement.style.getPropertyValue(prop)).toBe(fallback);
+          expect(staticStyle.getPropertyValue(prop)).toBe(fallback);
+          expect(mapStyle.getPropertyValue(prop)).toBe(namespace ? 'purple' : 'orange');
+          expect(staticStyle.getPropertyValue(other)).toBe(namespace ? 'red' : 'green');
+        });
+      }
+
+      it('should resolve the same binding independently for each application', async () => {
+        @Component({
+          template: '<i style="--x: red; --ns_x: green" [style.--x]="color()"></i>',
+        })
+        class Shared {
+          color = signal<string | undefined>('blue');
+        }
+
+        const plain = await createApplication();
+        const namespaced = await createApplication({providers: [provideCssVarNamespacing('ns')]});
+        try {
+          const plainHost = document.createElement('div');
+          const nsHost = document.createElement('div');
+          const first = plain.bootstrap(Shared, plainHost);
+          const second = namespaced.bootstrap(Shared, nsHost);
+          const firstStyle = plainHost.querySelector('i')!.style;
+          const secondStyle = nsHost.querySelector('i')!.style;
+          expect(firstStyle.getPropertyValue('--x')).toBe('blue');
+          expect(secondStyle.getPropertyValue('--ns_x')).toBe('blue');
+
+          first.instance.color.set(undefined);
+          second.instance.color.set(undefined);
+          await Promise.all([plain.whenStable(), namespaced.whenStable()]);
+          expect(firstStyle.getPropertyValue('--x')).toBe('red');
+          expect(secondStyle.getPropertyValue('--ns_x')).toBe('green');
+        } finally {
+          namespaced.destroy();
+          plain.destroy();
+        }
+      });
+
+      it('should restore a static property through a renderer with its own data', async () => {
+        @Component({template: '<i style="--ns_x: green" [style.--x]="color()"></i>'})
+        class Cmp {
+          color = signal<string | undefined>('blue');
+        }
+        TestBed.configureTestingModule({providers: [provideCssVarNamespacing('ns')]});
+        const factory = TestBed.inject(RendererFactory2);
+        const createRenderer = factory.createRenderer.bind(factory);
+        spyOn(factory, 'createRenderer').and.callFake((host, type) => {
+          const data = Object.create(null);
+          return new Proxy(createRenderer(host, type), {
+            get(delegate, name) {
+              if (name === 'data') return data;
+              const member = Reflect.get(delegate, name, delegate);
+              return typeof member === 'function' ? member.bind(delegate) : member;
+            },
+          });
+        });
+        const fixture = TestBed.createComponent(Cmp);
+        await fixture.whenStable();
+        const style = fixture.nativeElement.querySelector('i').style;
+        expect(style.getPropertyValue('--ns_x')).toBe('blue');
+        fixture.componentInstance.color.set(undefined);
+        await fixture.whenStable();
+        expect(style.getPropertyValue('--ns_x')).toBe('green');
+      });
+
       it('should namespace style property bindings starting with `--`', async () => {
         @Component({
           template: `<div [style.--foo]="'blue'"></div>`,

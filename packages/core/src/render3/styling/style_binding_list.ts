@@ -223,7 +223,7 @@ export function insertTStylingBinding(
     // We need to check if our key is present in the static so that we can mark it as duplicate.
     if (
       tStylingKey === null ||
-      keyValueArrayIndexOf(staticKeyValueArray, tStylingKey as string) > 0
+      matchesStaticKey(staticKeyValueArray, tStylingKey, isClassBinding)
     ) {
       // tStylingKey is present in the statics, need to mark it as duplicate.
       isKeyDuplicateOfStatic = true;
@@ -288,8 +288,8 @@ export function insertTStylingBinding(
   if (isKeyDuplicateOfStatic) {
     tData[index + 1] = setTStylingRangePrevDuplicate(tData[index + 1] as TStylingRange);
   }
-  markDuplicates(tData, tStylingKey, index, true);
-  markDuplicates(tData, tStylingKey, index, false);
+  markDuplicates(tData, tStylingKey, index, true, isClassBinding);
+  markDuplicates(tData, tStylingKey, index, false, isClassBinding);
   markDuplicateOfResidualStyling(tNode, tStylingKey, tData, index, isClassBinding);
 
   tBindings = toTStylingRange(tmplHead, tmplTail);
@@ -321,7 +321,7 @@ function markDuplicateOfResidualStyling(
   if (
     residual != null /* or undefined */ &&
     typeof tStylingKey == 'string' &&
-    keyValueArrayIndexOf(residual, tStylingKey) >= 0
+    matchesStaticKey(residual, tStylingKey, isClassBinding)
   ) {
     // We have duplicate in the residual so mark ourselves as duplicate.
     tData[index + 1] = setTStylingRangeNextDuplicate(tData[index + 1] as TStylingRange);
@@ -383,15 +383,19 @@ function markDuplicateOfResidualStyling(
  * @param isPrevDir Direction.
  *        - `true` for previous (lower priority);
  *        - `false` for next (higher priority).
+ * @param isClassBinding Whether the list contains classes or styles.
  */
 function markDuplicates(
   tData: TData,
   tStylingKey: TStylingKeyPrimitive,
   index: number,
   isPrevDir: boolean,
+  isClassBinding: boolean,
 ) {
   const tStylingAtIndex = tData[index + 1] as TStylingRange;
   const isMap = tStylingKey === null;
+  const canHaveAliases =
+    !isClassBinding && typeof tStylingKey === 'string' && tStylingKey.startsWith('--');
   let cursor = isPrevDir
     ? getTStylingRangePrev(tStylingAtIndex)
     : getTStylingRangeNext(tStylingAtIndex);
@@ -401,11 +405,12 @@ function markDuplicates(
   // - we found what we are looking for, OR
   // - we are a map in which case we have to continue searching even after we find what we were
   //   looking for since we are a wild card and everything needs to be flipped to duplicate.
-  while (cursor !== 0 && (foundDuplicate === false || isMap)) {
+  // Custom properties can have several potential aliases across application namespaces.
+  while (cursor !== 0 && (foundDuplicate === false || isMap || canHaveAliases)) {
     ngDevMode && assertIndexInRange(tData, cursor);
     const tStylingValueAtCursor = tData[cursor] as TStylingKey;
     const tStyleRangeAtCursor = tData[cursor + 1] as TStylingRange;
-    if (isStylingMatch(tStylingValueAtCursor, tStylingKey)) {
+    if (isStylingMatch(tStylingValueAtCursor, tStylingKey, isClassBinding)) {
       foundDuplicate = true;
       tData[cursor + 1] = isPrevDir
         ? setTStylingRangeNextDuplicate(tStyleRangeAtCursor)
@@ -441,25 +446,59 @@ function markDuplicates(
  * @param tStylingKeyCursor
  * @param tStylingKey
  */
-function isStylingMatch(tStylingKeyCursor: TStylingKey, tStylingKey: TStylingKeyPrimitive) {
+function isStylingMatch(
+  tStylingKeyCursor: TStylingKey,
+  tStylingKey: TStylingKeyPrimitive,
+  isClassBinding: boolean,
+) {
   ngDevMode &&
     assertNotEqual(
       Array.isArray(tStylingKey),
       true,
       "Expected that 'tStylingKey' has been unwrapped",
     );
-  if (
-    tStylingKeyCursor === null || // If the cursor is `null` it means that we have map at that
-    // location so we must assume that we have a match.
-    tStylingKey == null || // If `tStylingKey` is `null` then it is a map therefor assume that it
-    // contains a match.
-    (Array.isArray(tStylingKeyCursor) ? tStylingKeyCursor[1] : tStylingKeyCursor) === tStylingKey // If the keys match explicitly than we are a match.
-  ) {
+  const key = Array.isArray(tStylingKeyCursor) ? tStylingKeyCursor[1] : tStylingKeyCursor;
+  if (key === null || tStylingKey === null || key === tStylingKey) {
     return true;
-  } else if (Array.isArray(tStylingKeyCursor) && typeof tStylingKey === 'string') {
-    // if we did not find a match, but `tStylingKeyCursor` is `KeyValueArray` that means cursor has
-    // statics and we need to check those as well.
-    return keyValueArrayIndexOf(tStylingKeyCursor, tStylingKey) >= 0; // see if we are matching the key
+  }
+  if (!isClassBinding && cssVarKeysMayAlias(key, tStylingKey)) {
+    return true;
+  }
+  if (Array.isArray(tStylingKeyCursor)) {
+    return matchesStaticKey(tStylingKeyCursor, tStylingKey, isClassBinding);
+  }
+  return false;
+}
+
+// Duplicate flags are shared across applications. A compiled name can match a literal name
+// with the same suffix, but two different compiled names never resolve to the same property.
+function cssVarKeysMayAlias(a: TStylingKeyPrimitive, b: TStylingKeyPrimitive): boolean {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const compiledA = a.startsWith('--%NS%');
+  if (compiledA === b.startsWith('--%NS%')) return false;
+  return compiledA ? literalMayMatch(b, a.slice(6)) : literalMayMatch(a, b.slice(6));
+}
+
+function literalMayMatch(key: string, suffix: string): boolean {
+  return (
+    key.startsWith('--') &&
+    !key.startsWith('--%NS%') &&
+    (key.slice(2) === suffix || key.endsWith('_' + suffix))
+  );
+}
+
+function matchesStaticKey(
+  statics: KeyValueArray<any>,
+  key: TStylingKeyPrimitive,
+  isClass: boolean,
+): boolean {
+  if (typeof key !== 'string') return false;
+  if (keyValueArrayIndexOf(statics, key) >= 0) return true;
+  if (!isClass && key.startsWith('--%NS%')) {
+    const suffix = key.slice(6);
+    for (let i = 0; i < statics.length; i += 2) {
+      if (literalMayMatch(statics[i], suffix)) return true;
+    }
   }
   return false;
 }

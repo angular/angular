@@ -38,7 +38,7 @@ import {
   TStylingKey,
   TStylingRange,
 } from '../interfaces/styling';
-import {LView, RENDERER, TData, TView} from '../interfaces/view';
+import {ENVIRONMENT, LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
 import {
   getCurrentDirectiveDef,
@@ -895,16 +895,27 @@ function updateStyling(
   }
   const tData = tView.data;
   const tRange = tData[bindingIndex + 1] as TStylingRange;
-  const higherPriorityValue = getTStylingRangeNextDuplicate(tRange)
-    ? findStylingValue(tData, tNode, lView, prop, getTStylingRangeNext(tRange), isClassBased)
+  const hasNext = getTStylingRangeNextDuplicate(tRange);
+  const hasPrev = getTStylingRangePrevDuplicate(tRange);
+  let alias: string | undefined;
+  if ((hasNext || hasPrev) && !isClassBased && prop.startsWith('--')) {
+    const namespace = lView[ENVIRONMENT].cssVarNamespace;
+    if (prop.startsWith('--%NS%')) {
+      alias = prop.replace('%NS%', namespace);
+    } else if (prop.startsWith(namespace, 2)) {
+      alias = '--%NS%' + prop.slice(2 + namespace.length);
+    }
+  }
+  const higherPriorityValue = hasNext
+    ? findStylingValue(tData, tNode, lView, prop, getTStylingRangeNext(tRange), isClassBased, alias)
     : undefined;
   if (!isStylingValuePresent(higherPriorityValue)) {
     // We don't have a next duplicate, or we did not find a duplicate value.
     if (!isStylingValuePresent(value)) {
       // We should delete current value or restore to lower priority value.
-      if (getTStylingRangePrevDuplicate(tRange)) {
+      if (hasPrev) {
         // We have a possible prev duplicate, let's retrieve it.
-        value = findStylingValue(tData, null, lView, prop, bindingIndex, isClassBased);
+        value = findStylingValue(tData, null, lView, prop, bindingIndex, isClassBased, alias);
       }
     }
     const rNode = getNativeByIndex(getSelectedIndex(), lView) as RElement;
@@ -939,6 +950,7 @@ function updateStyling(
  * @param prop Property which we are interested in.
  * @param index Starting index in the linked list of styling bindings where the search should start.
  * @param isClassBased `true` if `class` (`false` if `style`)
+ * @param alias Alternate spelling of the same custom property in this view.
  */
 function findStylingValue(
   tData: TData,
@@ -947,6 +959,7 @@ function findStylingValue(
   prop: string,
   index: number,
   isClassBased: boolean,
+  alias: string | undefined,
 ): any {
   // `TNode` to use for resolving static styling. Also controls search direction.
   //   - `TNode` search next and quit as soon as `isStylingValuePresent(value)` is true.
@@ -973,12 +986,12 @@ function findStylingValue(
       valueAtLViewIndex = isStylingMap ? EMPTY_ARRAY : undefined;
     }
     let currentValue = isStylingMap
-      ? keyValueArrayGet(valueAtLViewIndex, prop)
-      : key === prop
+      ? getStylingValue(valueAtLViewIndex, prop, alias)
+      : key === prop || key === alias
         ? valueAtLViewIndex
         : undefined;
     if (containsStatics && !isStylingValuePresent(currentValue)) {
-      currentValue = keyValueArrayGet(rawKey as KeyValueArray<any>, prop);
+      currentValue = getStylingValue(rawKey as KeyValueArray<any>, prop, alias);
     }
     if (isStylingValuePresent(currentValue)) {
       value = currentValue;
@@ -994,10 +1007,18 @@ function findStylingValue(
     // consult residual styling
     let residual = isClassBased ? tNode.residualClasses : tNode.residualStyles;
     if (residual != null /** OR residual !=== undefined */) {
-      value = keyValueArrayGet(residual!, prop);
+      const residualValue = getStylingValue(residual, prop, alias);
+      if (alias === undefined || isStylingValuePresent(residualValue)) {
+        value = residualValue;
+      }
     }
   }
   return value;
+}
+
+function getStylingValue(values: KeyValueArray<any>, prop: string, alias: string | undefined): any {
+  const value = keyValueArrayGet(values, prop);
+  return value === undefined && alias !== undefined ? keyValueArrayGet(values, alias) : value;
 }
 
 /**
