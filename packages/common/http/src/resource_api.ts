@@ -40,7 +40,7 @@ export interface HttpResourceRequest {
   body?: unknown;
 
   /**
-   * Dictionary of query parameters which will be appeneded to the request URL.
+   * Dictionary of query parameters which will be appended to the request URL.
    */
   params?:
     | HttpParams
