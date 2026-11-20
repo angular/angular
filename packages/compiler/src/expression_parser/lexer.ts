@@ -670,37 +670,50 @@ class _Scanner {
   }
 
   private isStartOfRegex(): boolean {
-    if (this.tokens.length === 0) {
+    let i = this.tokens.length - 1;
+
+    // Skip `!`, `++`, and `--`, which can be either prefix or postfix. Whether `/` starts a regex
+    // after them depends on whether an expression could start immediately before the sequence
+    // (making them prefix operators) or an operand ended there (making them postfix).
+    while (
+      i >= 0 &&
+      (this.tokens[i].isOperator('!') ||
+        this.tokens[i].isOperator('++') ||
+        this.tokens[i].isOperator('--'))
+    ) {
+      i--;
+    }
+
+    if (i < 0) {
       return true;
     }
 
-    const prevToken = this.tokens[this.tokens.length - 1];
+    const prevToken = this.tokens[i];
 
-    // If a slash is preceded by a `!` operator, we need to distinguish whether it's a
-    // negation or a non-null assertion. Regexes can only be precded by negations.
-    if (prevToken.isOperator('!')) {
-      const beforePrevToken = this.tokens.length > 1 ? this.tokens[this.tokens.length - 2] : null;
-      const isNegation =
-        beforePrevToken === null ||
-        (beforePrevToken.type !== TokenType.Identifier &&
-          !beforePrevToken.isCharacter(chars.$RPAREN) &&
-          !beforePrevToken.isCharacter(chars.$RBRACKET));
-
-      return isNegation;
+    if (prevToken.type === TokenType.Keyword) {
+      const beforeKeyword = i > 0 ? this.tokens[i - 1] : null;
+      const isPropertyRead =
+        beforeKeyword !== null &&
+        (beforeKeyword.isCharacter(chars.$PERIOD) || beforeKeyword.isOperator('?.'));
+      if (isPropertyRead) {
+        return false;
+      }
+      return (
+        !prevToken.isKeywordThis() &&
+        !prevToken.isKeywordNull() &&
+        !prevToken.isKeywordUndefined() &&
+        !prevToken.isKeywordTrue() &&
+        !prevToken.isKeywordFalse()
+      );
     }
 
-    // Only consider the slash a regex if it's preceded either by:
-    // - Any operator, aside from `!` which is special-cased above.
-    // - Opening paren (e.g. `(/a/)`).
-    // - Opening bracket (e.g. `[/a/]`).
-    // - A comma (e.g. `[1, /a/]`).
-    // - A colon (e.g. `{foo: /a/}`).
     return (
-      prevToken.type === TokenType.Operator ||
+      (prevToken.type === TokenType.Operator && !prevToken.isOperator('?.')) ||
       prevToken.isCharacter(chars.$LPAREN) ||
       prevToken.isCharacter(chars.$LBRACKET) ||
       prevToken.isCharacter(chars.$COMMA) ||
-      prevToken.isCharacter(chars.$COLON)
+      prevToken.isCharacter(chars.$COLON) ||
+      prevToken.isCharacter(chars.$SEMICOLON)
     );
   }
 
