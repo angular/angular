@@ -127,6 +127,10 @@ pub struct ClassData {
     pub ng_decorator_spans: Vec<oxc_span::Span>,
     /// Spans of non-Angular decorators applied to the class.
     pub non_ng_decorator_spans: Vec<oxc_span::Span>,
+    /// True when any constructor parameter carries a surviving non-Angular decorator (which
+    /// TypeScript lowers into `Class = __decorate([__param(...)], Class)`). Kept separate from
+    /// `non_ng_decorator_spans` so `NG1005` diagnostics remain scoped to class decorators.
+    pub has_non_angular_ctor_param_decorators: bool,
     /// Spans the processor deletes to strip Angular class and member decorators, including
     /// trailing whitespace. Separate from `ng_decorator_spans`, which diagnostics use.
     pub decorator_removal_spans: Vec<oxc_span::Span>,
@@ -4555,7 +4559,8 @@ impl ClassData {
             uses_on_changes: self.uses_on_changes,
             is_exported: self.is_exported,
             has_non_exported_bounds: self.has_non_exported_bounds,
-            has_non_angular_class_decorators: !self.non_ng_decorator_spans.is_empty(),
+            has_non_angular_class_decorators: !self.non_ng_decorator_spans.is_empty()
+                || self.has_non_angular_ctor_param_decorators,
         };
         Ok(metadata)
     }

@@ -400,6 +400,7 @@ fn classify(
         reference_id,
         ng_decorator_spans: common.ng_decorator_spans,
         non_ng_decorator_spans: common.non_ng_decorator_spans,
+        has_non_angular_ctor_param_decorators: common.has_non_angular_ctor_param_decorators,
         decorator_removal_spans: common.decorator_removal_spans,
         nocollapse_insertions: common.nocollapse_insertions,
         span: common.span,
@@ -468,6 +469,7 @@ pub struct RegistrationInfo {
 struct ParsedCommon {
     ng_decorator_spans: Vec<oxc_span::Span>,
     non_ng_decorator_spans: Vec<oxc_span::Span>,
+    has_non_angular_ctor_param_decorators: bool,
     decorator_removal_spans: Vec<oxc_span::Span>,
     nocollapse_insertions: Vec<super::closure_nocollapse::NoCollapseInsertion>,
     span: oxc_span::Span,
@@ -754,10 +756,14 @@ fn process_class_common<'a>(
         class.span.end,
     );
 
+    let has_non_angular_ctor_param_decorators =
+        super::has_non_angular_ctor_param_decorators(class, semantic, angular_imports);
+
     Some(ParsedClass {
         common: ParsedCommon {
             ng_decorator_spans,
             non_ng_decorator_spans,
+            has_non_angular_ctor_param_decorators,
             decorator_removal_spans,
             nocollapse_insertions,
             span: class.span,

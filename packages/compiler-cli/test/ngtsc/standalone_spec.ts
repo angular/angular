@@ -269,10 +269,10 @@ runInEachFileSystem(() => {
         expect(jsCode).toContain('i0.ɵɵdomElement(0, "is-unknown");');
 
         // verify schemas are not included in the generated code
-        const jsCodeAoT = jsCode.slice(
-          0,
-          jsCode.indexOf('(() => { (typeof ngDevMode === "undefined" || ngDevMode)'),
+        const metadataMatch = jsCode.match(
+          /(?:\(\(\) => \{|static \{)\s*\(typeof ngDevMode === "undefined" \|\| ngDevMode\)/,
         );
+        const jsCodeAoT = jsCode.slice(0, metadataMatch?.index ?? jsCode.length);
         expect(jsCodeAoT).not.toContain('schemas: [NO_ERRORS_SCHEMA]');
       });
 

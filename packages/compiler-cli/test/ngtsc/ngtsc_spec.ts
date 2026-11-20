@@ -6375,6 +6375,94 @@ runInEachFileSystem((os: string) => {
       );
     });
 
+    it('should emit ɵsetClassMetadata inside a static block for member decorators and outside after __decorate for class or constructor-parameter decorators', () => {
+      env.tsconfig({}, {target: 'es2022', module: 'es2022'});
+      env.write(
+        'dep.ts',
+        `
+        import {Component} from '@angular/core';
+        @Component({selector: 'deferred-dep', template: ''})
+        export class DeferredDep {}
+      `,
+      );
+      env.write(
+        'test.ts',
+        `
+        import {Component, Inject, Injectable, InjectionToken} from '@angular/core';
+        import {DeferredDep} from './dep';
+
+        function Log(): MethodDecorator {
+          return (_t, _k, d) => d;
+        }
+        function CustomClassDec(): ClassDecorator {
+          return (t) => t;
+        }
+        function CustomParamDec(): ParameterDecorator {
+          return () => {};
+        }
+
+        @Component({selector: 'member-dec-cmp', template: '@defer { <deferred-dep /> }', imports: [DeferredDep]})
+        export class MemberDecCmp {
+          private static readonly PREFIX = 'p:';
+          #secret = 'ok';
+
+          constructor(
+            @Inject(
+              new InjectionToken<string>('TOK', {
+                factory: () => MemberDecCmp.PREFIX + new MemberDecCmp('').#secret,
+              }),
+            )
+            readonly tok: string,
+          ) {}
+
+          @Log()
+          run(@CustomParamDec() _x: number) {}
+        }
+
+        @CustomClassDec()
+        @Injectable()
+        export class ClassDecService {}
+
+        @Injectable()
+        export class CtorParamDecService {
+          constructor(@CustomParamDec() _dep: unknown) {}
+        }
+      `,
+      );
+
+      env.driveMain();
+      const rawJs = env.getContents('test.js');
+      const jsContents = rawJs.replace(/\s+/g, ' ');
+
+      // `MemberDecCmp` keeps `ɵsetClassMetadataAsync` inside `static {}` (before `MemberDecCmp.prototype`
+      // `__decorate`), so `#secret` remains lexically inside the class body and parses as valid JS.
+      expect(jsContents).toMatch(
+        /export class MemberDecCmp \{[\s\S]*?static \{ \(typeof ngDevMode === "undefined" \|\| ngDevMode\) && i0\.ɵsetClassMetadataAsync\(MemberDecCmp,[\s\S]*?\.#secret[\s\S]*?\}\s*\} __decorate\(\[ Log\(\), __param\(0, CustomParamDec\(\)\) \], MemberDecCmp\.prototype, "run"/,
+      );
+      expect(() => {
+        // Verify V8 parses the emitted JS without `SyntaxError: Private field '#secret' must be declared in an enclosing class`.
+        new Function(rawJs.replace(/^import .*$/gm, '').replace(/^export /gm, ''));
+      }).not.toThrow();
+
+      // Custom class and constructor-parameter decorators wrap the class via `Cls = __decorate([...], Cls)`,
+      // so `ɵsetClassMetadata` must be emitted after `__decorate`.
+      expect(jsContents).toMatch(
+        /ClassDecService = (?:ClassDecService_1 = )?__decorate\(\[ CustomClassDec\(\) \], ClassDecService\); (?:export \{ ClassDecService \}; )?\(\(\) => \{ \(typeof ngDevMode === "undefined" \|\| ngDevMode\) && i0\.ɵsetClassMetadata\(ClassDecService,/,
+      );
+      expect(jsContents).toMatch(
+        /CtorParamDecService = (?:CtorParamDecService_1 = )?__decorate\(\[ __param\(0, CustomParamDec\(\)\) \], CtorParamDecService\); (?:export \{ CtorParamDecService \}; )?\(\(\) => \{ \(typeof ngDevMode === "undefined" \|\| ngDevMode\) && i0\.ɵsetClassMetadata\(CtorParamDecService,/,
+      );
+
+      // When downleveling static blocks (pre-ES2022), the downleveled `ɵsetClassMetadataAsync` IIFE
+      // also precedes `MemberDecCmp.prototype` `__decorate` in both `ngtsc` and `ngp`.
+      env.tsconfig({}, {target: 'es2020', module: 'es2022'});
+      env.driveMain();
+      const es2020Js = env.getContents('test.js').replace(/\s+/g, ' ');
+      expect(es2020Js).toMatch(
+        /\(\(\) => \{ \(typeof ngDevMode === "undefined" \|\| ngDevMode\) && i0\.ɵsetClassMetadataAsync\(MemberDecCmp,[\s\S]*?\}\)\(\); __decorate\(\[ Log\(\), __param\(0, CustomParamDec\(\)\) \], MemberDecCmp\.prototype, "run"/,
+      );
+    });
+
     it('should not include `schemas` in component and module defs', () => {
       env.write(
         'test.ts',
@@ -9608,10 +9696,13 @@ runInEachFileSystem((os: string) => {
             }
             Child.ɵfac = function Child_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Child)(); };
             Child.ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Child, selectors: [["", "child", ""]] });
-            __decorate([
-                Log
-            ], Child.prototype, "value", void 0);
           `),
+        );
+        expect(jsContents.replace(/\s+/g, ' ')).toContain(
+          '(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Child, [{ type: Directive, args: [{ selector: \'[child]\' }] }], null, { value: [] }); })(); __decorate([ Log ], Child.prototype, "value", void 0);'.replace(
+            /'\[child\]'/,
+            jsContents.includes("'[child]'") ? "'[child]'" : '"[child]"',
+          ),
         );
       });
     });

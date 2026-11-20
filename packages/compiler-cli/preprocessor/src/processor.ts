@@ -2137,8 +2137,7 @@ function appendCompiledClass(
   }
 
   if (classMetadataStmt !== null) {
-    const emitOutsideClass =
-      !!ctx.complianceMode || !!compiled.classMeta.hasNonAngularClassDecorators;
+    const emitOutsideClass = !!compiled.classMeta.hasNonAngularClassDecorators;
     const metadata = printSetClassMetadata(classMetadataStmt, printer, emitOutsideClass);
     if (emitOutsideClass) {
       out.appendRight(span.end, '\n' + metadata);

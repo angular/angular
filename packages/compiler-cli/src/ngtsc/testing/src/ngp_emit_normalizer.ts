@@ -49,6 +49,10 @@ const OUTPUT_FILE_REPLACEMENTS: ReadonlyArray<readonly [RegExp, string]> = [
     '(typeof $1 === $2undefined$2 || $1) && $3;',
   ],
   [
+    /([ \t]*)static\s*\{\s*\n\s*\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\3\s*\|\|\s*\2\)\s*&&\s*([\s\S]*?)\);\s*\n\1\}/g,
+    '$1static { (typeof $2 === $3undefined$3 || $2) && $4; }',
+  ],
+  [
     /\(\(\)\s*=>\s*\{\s*\n\s*\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\s*\|\|\s*\1\)\s*&&\s*([\s\S]*?)\);\s*\n\s*\}\)\(\);/g,
     '(() => { (typeof $1 === $2undefined$2 || $1) && $3; })();',
   ],
