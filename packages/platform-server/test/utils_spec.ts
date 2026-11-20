@@ -240,4 +240,67 @@ describe('platform destruction during SSR', () => {
       }
     }
   });
+
+  it('should return empty string when destroyed during a never-settling BEFORE_APP_SERIALIZED hook', async () => {
+    @Component({
+      selector: 'app',
+      template: 'hello',
+    })
+    class App {}
+
+    const platformRef = platformServer([
+      {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+    ]);
+
+    try {
+      const appRef = await bootstrapApplication(
+        App,
+        {
+          providers: [
+            provideServerRendering(),
+            {
+              provide: BEFORE_APP_SERIALIZED,
+              multi: true,
+              useValue: () => new Promise<void>(() => {}),
+            },
+          ],
+        },
+        {platformRef},
+      );
+
+      const renderPromise = renderInternal(platformRef, appRef);
+      platformRef.destroy();
+
+      expect(await renderPromise).toBe('');
+    } finally {
+      if (!platformRef.destroyed) {
+        platformRef.destroy();
+      }
+    }
+  });
+
+  it('should reject renderApplication when platform destruction throws', async () => {
+    @Component({
+      selector: 'app',
+      template: 'hello',
+    })
+    class App {}
+
+    let shouldThrow = true;
+
+    await expectAsync(
+      renderApplication(
+        (context) => {
+          context.platformRef.onDestroy(() => {
+            if (shouldThrow) {
+              shouldThrow = false;
+              throw new Error('destroy failure');
+            }
+          });
+          return bootstrapApplication(App, {providers: [provideServerRendering()]}, context);
+        },
+        {document: '<app></app>'},
+      ),
+    ).toBeRejectedWithError('destroy failure');
+  });
 });

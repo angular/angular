@@ -228,7 +228,26 @@ export async function renderInternal(
     }
 
     if (asyncCallbacks.length) {
-      for (const result of await Promise.allSettled(asyncCallbacks)) {
+      if (platformRef.destroyed || applicationRef.destroyed) {
+        Promise.allSettled(asyncCallbacks);
+        return '';
+      }
+
+      const settled = await new Promise<PromiseSettledResult<void>[] | null>((resolve) => {
+        const unregisterDestroy = applicationRef.onDestroy(() => {
+          resolve(null);
+        });
+        Promise.allSettled(asyncCallbacks).then((results) => {
+          unregisterDestroy();
+          resolve(results);
+        });
+      });
+
+      if (settled === null) {
+        return '';
+      }
+
+      for (const result of settled) {
         if (result.status === 'rejected' && !environmentInjector.destroyed) {
           errorHandler(result.reason);
         }
@@ -252,14 +271,15 @@ function asyncDestroyPlatform(platformRef: PlatformRef): Promise<void> {
     return Promise.resolve();
   }
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     setTimeout(() => {
       try {
         if (!platformRef.destroyed) {
           platformRef.destroy();
         }
-      } finally {
         resolve();
+      } catch (error) {
+        reject(error);
       }
     }, 0);
   });
@@ -400,8 +420,11 @@ export async function renderApplication(
     stopMeasuring(_renderLabel);
     return rendered;
   } finally {
-    await asyncDestroyPlatform(platformRef);
-    stopMeasuring(renderAppLabel);
+    try {
+      await asyncDestroyPlatform(platformRef);
+    } finally {
+      stopMeasuring(renderAppLabel);
+    }
   }
 }
 
