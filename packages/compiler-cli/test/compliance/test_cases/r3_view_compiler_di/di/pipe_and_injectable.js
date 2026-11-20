@@ -5,20 +5,20 @@ class Service {
     return new (__ngFactoryType__ || Service)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: Service, factory: Service.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Service,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Service,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyPipe {
   constructor(service) {}
   transform(value, ...args) {
@@ -35,29 +35,29 @@ export class MyPipe {
     standalone: false
   });
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyPipe, factory: MyPipe.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyPipe,
+        [
+          {
+            type: Injectable
+          },
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "myPipe"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        () => [{ type: Service }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyPipe,
-      [
-        {
-          type: Injectable
-        },
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "myPipe",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      () => [{ type: Service }],
-      null
-    );
-})();
 export class MyOtherPipe {
   constructor(service) {}
   transform(value, ...args) {
@@ -77,29 +77,29 @@ export class MyOtherPipe {
     token: MyOtherPipe,
     factory: MyOtherPipe.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyOtherPipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "myOtherPipe"  ,
+                standalone: false
+              }
+            ]
+          },
+          {
+            type: Injectable
+          }
+        ],
+        () => [{ type: Service }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyOtherPipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "myOtherPipe",
-              standalone: false
-            }
-          ]
-        },
-        {
-          type: Injectable
-        }
-      ],
-      () => [{ type: Service }],
-      null
-    );
-})();
 export class MyApp {
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyApp)();
@@ -123,27 +123,27 @@ export class MyApp {
     dependencies: [MyPipe, MyOtherPipe],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: "{{0 | myPipe | myOtherPipe}}"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: "{{0 | myPipe | myOtherPipe}}",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -158,21 +158,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [Service] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyPipe, MyOtherPipe, MyApp], providers: [Service] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyPipe, MyOtherPipe, MyApp], providers: [Service] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyOtherPipe, MyApp] });

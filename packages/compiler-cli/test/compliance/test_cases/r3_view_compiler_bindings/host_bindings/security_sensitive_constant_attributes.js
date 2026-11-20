@@ -9,26 +9,26 @@ export class HostBindingDir {
     selectors: [["", "hostBindingDir", ""]],
     hostAttrs: ["src", "trusted", "srcdoc", "trusted"]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[hostBindingDir]"  ,
+                host: { "src"  : "trusted"  , "srcdoc"  : "trusted"   }
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[hostBindingDir]",
-              host: { "src": "trusted", "srcdoc": "trusted" }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class HostBindingDir2 {
   static ɵfac = function HostBindingDir2_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || HostBindingDir2)();
@@ -38,23 +38,23 @@ export class HostBindingDir2 {
     selectors: [["img"]],
     hostAttrs: ["src", "trusted", "srcdoc", "trusted"]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingDir2,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "img"  ,
+                host: { "src"  : "trusted"  , "srcdoc"  : "trusted"   }
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingDir2,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "img",
-              host: { "src": "trusted", "srcdoc": "trusted" }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

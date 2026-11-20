@@ -18,27 +18,27 @@ export class A1Component {
     dependencies: i0.ɵɵgetComponentDepsFactory(A1Component),
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        A1Component,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "a1"  ,
+                template: "A1"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      A1Component,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "a1",
-              template: "A1",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(A1Component, {
@@ -65,27 +65,27 @@ export class A2Component {
     dependencies: i0.ɵɵgetComponentDepsFactory(A2Component),
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        A2Component,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "a2"  ,
+                template: "A2"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      A2Component,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "a2",
-              template: "A2",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(A2Component, {
@@ -100,21 +100,21 @@ export class AModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [A1Component, A2Component] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [A1Component, A2Component], exports: [A1Component, A2Component] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [A1Component, A2Component], exports: [A1Component, A2Component] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AModule, {
@@ -140,27 +140,27 @@ export class B1Component {
     dependencies: i0.ɵɵgetComponentDepsFactory(B1Component),
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        B1Component,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "b1"  ,
+                template: "B1"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      B1Component,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "b1",
-              template: "B1",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(B1Component, {
@@ -187,27 +187,27 @@ export class B2Component {
     dependencies: i0.ɵɵgetComponentDepsFactory(B2Component),
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        B2Component,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "b2"  ,
+                template: "B2"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      B2Component,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "b2",
-              template: "B2",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(B2Component, {
@@ -222,21 +222,21 @@ export class BModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [AModule] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [B1Component, B2Component], exports: [AModule] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [B1Component, B2Component], exports: [AModule] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(BModule, {
@@ -250,21 +250,21 @@ export class AppModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [BModule] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppModule,
+        [
+          {
+            type: NgModule,
+            args: [{ imports: [BModule] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AppModule,
-      [
-        {
-          type: NgModule,
-          args: [{ imports: [BModule] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, { imports: [BModule] });

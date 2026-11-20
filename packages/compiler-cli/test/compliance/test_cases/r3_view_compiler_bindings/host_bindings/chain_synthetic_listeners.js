@@ -27,37 +27,37 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-comp"  ,
+                template: ""  ,
+                host: {
+                "(@animation.done)"  : "done()"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          start: [
             {
-              selector: "my-comp",
-              template: "",
-              host: {
-                "(@animation.done)": "done()"
-              },
-              standalone: false
+              type: HostListener,
+              args: ["@animation.start"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        start: [
-          {
-            type: HostListener,
-            args: ["@animation.start"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

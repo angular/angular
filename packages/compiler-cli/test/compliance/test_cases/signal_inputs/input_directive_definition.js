@@ -16,23 +16,23 @@ export class TestDir {
     type: TestDir,
     inputs: { counter: [1, "counter"], name: [1, "name"] }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      {
-        counter: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
         ],
-        name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }]
-      }
-    );
-})();
+        null,
+        {
+          counter: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "counter"  , required: false }] }
+          ],
+          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name"  , required: true }] }]
+        }
+      );
+  }
+}

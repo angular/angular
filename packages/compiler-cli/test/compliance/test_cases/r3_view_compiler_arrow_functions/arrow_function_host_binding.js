@@ -19,25 +19,25 @@ export class TestDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              host: {
-                "[attr.no-context]": "((a, b) => a / b)(5, 10)",
-                "[attr.with-context]": "((a, b) => a / b + componentProp)(6, 12)"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                host: {
+                "[attr.no-context]"  : "((a, b) => a / b)(5, 10)"  ,
+                "[attr.with-context]"  : "((a, b) => a / b + componentProp)(6, 12)"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}

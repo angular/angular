@@ -5,41 +5,41 @@ export class DirectiveA {
     return new (__ngFactoryType__ || DirectiveA)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: DirectiveA, hostAttrs: [1, "dir-a"] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveA,
+        [
+          {
+            type: Directive,
+            args: [{ host: { "class"  : "dir-a"   } }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveA,
-      [
-        {
-          type: Directive,
-          args: [{ host: { "class": "dir-a" } }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DirectiveB {
   static ɵfac = function DirectiveB_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || DirectiveB)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: DirectiveB, hostAttrs: [1, "dir-b"] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveB,
+        [
+          {
+            type: Directive,
+            args: [{ host: { "class"  : "dir-b"   } }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveB,
-      [
-        {
-          type: Directive,
-          args: [{ host: { "class": "dir-b" } }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -54,28 +54,28 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: ""  ,
+                hostDirectives: [DirectiveA, DirectiveB],
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "",
-              hostDirectives: [DirectiveA, DirectiveB],
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

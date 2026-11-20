@@ -5,21 +5,21 @@ export class DirectiveA {
     return new (__ngFactoryType__ || DirectiveA)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: DirectiveA });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveA,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveA,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DirectiveB {
   static ɵfac = function DirectiveB_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || DirectiveB)();
@@ -28,25 +28,25 @@ export class DirectiveB {
     type: DirectiveB,
     features: [i0.ɵɵHostDirectivesFeature([DirectiveA])]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveB,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                hostDirectives: [DirectiveA]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveB,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              hostDirectives: [DirectiveA]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DirectiveC {
   static ɵfac = function DirectiveC_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || DirectiveC)();
@@ -55,25 +55,25 @@ export class DirectiveC {
     type: DirectiveC,
     features: [i0.ɵɵHostDirectivesFeature([DirectiveB])]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveC,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                hostDirectives: [DirectiveB]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveC,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              hostDirectives: [DirectiveB]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -88,28 +88,28 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: ""  ,
+                hostDirectives: [DirectiveC],
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "",
-              hostDirectives: [DirectiveC],
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

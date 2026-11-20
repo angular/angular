@@ -18,38 +18,38 @@ export class SomeComp {
     template: function SomeComp_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SomeComp,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SomeComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "some-comp"  ,
+                template: ""  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          prop: [
             {
-              selector: "some-comp",
-              template: "",
-              standalone: false
+              type: Input
+            }
+          ],
+          otherProp: [
+            {
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        prop: [
-          {
-            type: Input
-          }
-        ],
-        otherProp: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(SomeComp, {
@@ -80,26 +80,26 @@ export class MyApp {
     dependencies: [SomeComp],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -114,21 +114,21 @@ export class MyMod {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyMod });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyMod,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyApp, SomeComp] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyMod,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyApp, SomeComp] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyMod, { declarations: [MyApp, SomeComp] });

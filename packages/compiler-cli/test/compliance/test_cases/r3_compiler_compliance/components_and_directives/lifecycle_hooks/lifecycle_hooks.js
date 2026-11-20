@@ -41,34 +41,34 @@ export class LifecycleComp {
     template: function LifecycleComp_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      LifecycleComp,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LifecycleComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "lifecycle-comp"  ,
+                template: ""  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          nameMin: [
             {
-              selector: "lifecycle-comp",
-              template: "",
-              standalone: false
+              type: Input,
+              args: ["name"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        nameMin: [
-          {
-            type: Input,
-            args: ["name"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(LifecycleComp, {
@@ -103,30 +103,30 @@ export class SimpleLayout {
     dependencies: [LifecycleComp],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SimpleLayout,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "simple-layout",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SimpleLayout,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "simple-layout"  ,
+                template: `
     <lifecycle-comp [name]="name1"></lifecycle-comp>
     <lifecycle-comp [name]="name2"></lifecycle-comp>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(SimpleLayout, {
@@ -141,21 +141,21 @@ export class LifecycleModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LifecycleModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LifecycleModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [LifecycleComp, SimpleLayout] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      LifecycleModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [LifecycleComp, SimpleLayout] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(LifecycleModule, { declarations: [LifecycleComp, SimpleLayout] });

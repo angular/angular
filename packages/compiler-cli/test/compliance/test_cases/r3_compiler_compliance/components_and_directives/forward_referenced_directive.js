@@ -18,29 +18,29 @@ export class HostBindingComp {
     dependencies: () => [MyForwardDirective],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostBindingComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "host-binding-comp",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostBindingComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "host-binding-comp"  ,
+                template: `
     <my-forward-directive></my-forward-directive>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(HostBindingComp, {
@@ -58,47 +58,47 @@ class MyForwardDirective {
     selectors: [["my-forward-directive"]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyForwardDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "my-forward-directive"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyForwardDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "my-forward-directive",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyModule {
   static ɵfac = function MyModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [HostBindingComp, MyForwardDirective] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [HostBindingComp, MyForwardDirective] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingComp, MyForwardDirective] });

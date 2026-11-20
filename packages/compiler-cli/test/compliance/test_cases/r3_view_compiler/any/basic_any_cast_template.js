@@ -21,26 +21,26 @@ class Comp {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Comp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: '<div [tabIndex]="$any(10)"></div>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Comp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: '<div [tabIndex]="$any(10)"></div>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Comp, {

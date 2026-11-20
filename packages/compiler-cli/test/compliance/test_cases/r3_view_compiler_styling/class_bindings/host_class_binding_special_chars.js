@@ -22,30 +22,30 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: ``,
-              host: {
-                "[class.text-primary/80]": "expr",
-                "[class.data-active:text-green-300/80]": "expr",
-                "[class.data-[size='large']:p-8]": "expr"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: ``  ,
+                host: {
+                "[class.text-primary/80]"  : "expr"  ,
+                "[class.data-active:text-green-300/80]"  : "expr"  ,
+                "[class.data-[size='large']:p-8]"  : "expr"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

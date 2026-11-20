@@ -26,25 +26,25 @@ export class Greeting {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Greeting,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `<span [title]="{one: 'Hello', two: 'Hola'}[type()]"></span>`
+              }
+            ]
+          }
+        ],
+        null,
+        { type: [{ type: i0.Input, args: [{ isSignal: true, alias: "type"  , required: false }] }] }
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Greeting,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `<span [title]="{one: 'Hello', two: 'Hola'}[type()]"></span>`
-            }
-          ]
-        }
-      ],
-      null,
-      { type: [{ type: i0.Input, args: [{ isSignal: true, alias: "type", required: false }] }] }
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Greeting, {

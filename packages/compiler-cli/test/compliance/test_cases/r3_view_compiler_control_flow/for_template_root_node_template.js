@@ -40,27 +40,27 @@ export class Binding {
     selectors: [["", "binding", ""]],
     inputs: { binding: "binding" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Binding,
-      [
-        {
-          type: Directive,
-          args: [{ selector: "[binding]" }]
-        }
-      ],
-      null,
-      {
-        binding: [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Binding,
+        [
           {
-            type: Input
+            type: Directive,
+            args: [{ selector: "[binding]"   }]
           }
-        ]
-      }
-    );
-})();
+        ],
+        null,
+        {
+          binding: [
+            {
+              type: Input
+            }
+          ]
+        }
+      );
+  }
+}
 export class MyApp {
   items = [1, 2, 3];
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
@@ -100,32 +100,32 @@ export class MyApp {
     dependencies: [Binding],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @for (item of items; track item) {
       <ng-template foo="1" bar="2" [binding]="3">{{item}}</ng-template>
     } @empty {
       <ng-template empty-foo="1" empty-bar="2" [binding]="3">Empty!</ng-template>
     }
-  `,
-              imports: [Binding]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [Binding]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

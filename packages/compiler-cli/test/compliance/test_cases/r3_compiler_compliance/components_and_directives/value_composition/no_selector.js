@@ -9,26 +9,26 @@ export class RouterOutlet {
     selectors: [["router-outlet"]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        RouterOutlet,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "router-outlet"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      RouterOutlet,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "router-outlet",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class EmptyOutletComponent {
   static ɵfac = function EmptyOutletComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || EmptyOutletComponent)();
@@ -47,26 +47,26 @@ export class EmptyOutletComponent {
     dependencies: [RouterOutlet],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        EmptyOutletComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "<router-outlet></router-outlet>"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      EmptyOutletComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: "<router-outlet></router-outlet>",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(EmptyOutletComponent, {
@@ -81,21 +81,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [EmptyOutletComponent, RouterOutlet] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [EmptyOutletComponent, RouterOutlet] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [EmptyOutletComponent, RouterOutlet] });

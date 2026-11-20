@@ -42,42 +42,42 @@ export class ContentQueryComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ContentQueryComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "content-query-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ContentQueryComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "content-query-component"  ,
+                template: `
     <div><ng-content></ng-content></div>
-  `,
-              standalone: false
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        {
+          someDir: [
+            {
+              type: ContentChild,
+              args: [forwardRef(() => SomeDirective)]
+            }
+          ],
+          someDirList: [
+            {
+              type: ContentChildren,
+              args: [forwardRef(() => SomeDirective)]
             }
           ]
         }
-      ],
-      null,
-      {
-        someDir: [
-          {
-            type: ContentChild,
-            args: [forwardRef(() => SomeDirective)]
-          }
-        ],
-        someDirList: [
-          {
-            type: ContentChildren,
-            args: [forwardRef(() => SomeDirective)]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ContentQueryComponent, {
@@ -107,31 +107,31 @@ export class MyApp {
     dependencies: () => [SomeDirective, ContentQueryComponent],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: `
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -149,47 +149,47 @@ export class SomeDirective {
     selectors: [["", "someDir", ""]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SomeDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[someDir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SomeDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[someDir]",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyModule {
   static ɵfac = function MyModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [SomeDirective, ContentQueryComponent, MyApp] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [SomeDirective, ContentQueryComponent, MyApp] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, {

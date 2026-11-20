@@ -26,34 +26,34 @@ export class TestComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "Works"
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
-            {
-              template: "Works"
-            }
+          counter: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "counter"  , required: false }] },
+            { type: i0.Output, args: ["counterChange"  ] }
+          ],
+          name: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "name"  , required: true }] },
+            { type: i0.Output, args: ["nameChange"  ] }
           ]
         }
-      ],
-      null,
-      {
-        counter: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] },
-          { type: i0.Output, args: ["counterChange"] }
-        ],
-        name: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] },
-          { type: i0.Output, args: ["nameChange"] }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

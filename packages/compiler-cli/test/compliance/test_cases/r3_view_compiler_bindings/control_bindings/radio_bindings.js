@@ -13,25 +13,25 @@ export class FormField {
     selectors: [["", "formField", ""]],
     inputs: { formField: [1, "formField"] }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      FormField,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        FormField,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "[formField]"   }]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{ selector: "[formField]" }]
+          formField: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "formField"  , required: false }] }
+          ]
         }
-      ],
-      null,
-      {
-        formField: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "formField", required: false }] }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 // Notice that we check that the binding order doesn't matter
 export class MyComponent {
   value = "foo";
@@ -67,17 +67,16 @@ export class MyComponent {
     dependencies: [FormField],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <input
         type="radio"
         [formField]="value"
@@ -91,16 +90,17 @@ export class MyComponent {
         [formField]="value"
         id="radio"
       />
-  `,
-              imports: [FormField]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [FormField]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

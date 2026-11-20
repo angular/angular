@@ -13,27 +13,27 @@ export class CustomEl {
     template: function CustomEl_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        CustomEl,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "custom-element"  ,
+                template: ""  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      CustomEl,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "custom-element",
-              template: "",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(CustomEl, {
@@ -69,30 +69,30 @@ export class MyComponent {
     dependencies: [CustomEl],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <button [attr.title]="myTitle" [attr.id]="buttonId" [attr.tabindex]="1"></button>
     <span [attr.id]="1" [attr.title]="'hello'" [attr.some-attr]="1 + 2"></span>
     <custom-element [attr.some-attr]="'one'" [attr.some-other-attr]="2"></custom-element>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -107,21 +107,21 @@ export class MyMod {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyMod });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyMod,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, CustomEl] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyMod,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, CustomEl] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyMod, { declarations: [MyComponent, CustomEl] });

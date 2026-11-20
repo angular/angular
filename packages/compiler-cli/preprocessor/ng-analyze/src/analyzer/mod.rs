@@ -752,6 +752,32 @@ pub fn get_constructor_params<'a>(
     })
 }
 
+/// Whether any parameter on `class`'s concrete constructor carries a surviving non-Angular
+/// decorator. TypeScript lowers constructor-parameter decorators into `Class = __decorate([__param(...)], Class)`,
+/// so `ɵsetClassMetadata` must execute after `__decorate` finishes wrapping `Class`.
+pub(crate) fn has_non_angular_ctor_param_decorators<'a>(
+    class: &'a oxc_ast::ast::Class<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+) -> bool {
+    let Some(ctor) = constructor_method(class, false) else {
+        return false;
+    };
+    ctor.value
+        .params
+        .items
+        .iter()
+        .flat_map(|p| p.decorators.iter())
+        .chain(
+            ctor.value
+                .params
+                .rest
+                .iter()
+                .flat_map(|r| r.decorators.iter()),
+        )
+        .any(|d| !is_angular_decorator(d, semantic, angular_imports))
+}
+
 /// Extract the decorated, non-static, non-(ES-private) members of a class, in source order, for
 /// the property-decorator map (4th argument) of `ɵsetClassMetadata`. Only members carrying at
 /// least one decorator are returned; whether each decorator is Angular is resolved through the

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {escapeRegExp} from '@angular/compiler';
+import ts from 'typescript';
 import {isNgpTestMode, normalizeNgpEmitForComparison} from '../../../src/ngtsc/testing';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
@@ -44,6 +45,102 @@ function transformOutsideStringsAndComments(
     last = match.index! + match[0].length;
   }
   return out + transform(code.slice(last));
+}
+
+const ELLIPSIS_PLACEHOLDER = '__NG_COMPLIANCE_ELLIPSIS__';
+
+function isPrototypeDecorateStatement(stmt: ts.Statement, className: string): boolean {
+  if (!ts.isExpressionStatement(stmt) || !ts.isCallExpression(stmt.expression)) {
+    return false;
+  }
+  const call = stmt.expression;
+  if (!ts.isIdentifier(call.expression) || call.expression.text !== '__decorate') {
+    return false;
+  }
+  const target = call.arguments[1];
+  return (
+    target !== undefined &&
+    ts.isPropertyAccessExpression(target) &&
+    ts.isIdentifier(target.expression) &&
+    target.expression.text === className &&
+    target.name.text === 'prototype'
+  );
+}
+
+function relocateStaticClassMetadataForLinked(code: string): string {
+  const validJs = transformOutsideStringsAndComments(code, (seg) =>
+    seg.replaceAll(ELLIPSIS, ELLIPSIS_PLACEHOLDER),
+  );
+  const sf = ts.createSourceFile('expected.js', validJs, ts.ScriptTarget.ES2022, true);
+  const edits: {start: number; end: number; replacement: string}[] = [];
+
+  const visitStatements = (statements: ts.NodeArray<ts.Statement>) => {
+    for (let i = 0; i < statements.length; i++) {
+      const stmt = statements[i];
+      if (ts.isClassDeclaration(stmt) && stmt.name && stmt.members.length > 0) {
+        const lastMember = stmt.members[stmt.members.length - 1];
+        if (ts.isClassStaticBlockDeclaration(lastMember)) {
+          const bodyText = validJs.slice(
+            lastMember.body.getStart(sf) + 1,
+            lastMember.body.getEnd() - 1,
+          );
+          if (
+            bodyText.includes('.ɵsetClassMetadata(') ||
+            bodyText.includes('.ɵsetClassMetadataAsync(')
+          ) {
+            let removeStart = lastMember.getStart(sf);
+            while (
+              removeStart > 0 &&
+              (validJs[removeStart - 1] === ' ' || validJs[removeStart - 1] === '\t')
+            ) {
+              removeStart--;
+            }
+            if (removeStart > 0 && validJs[removeStart - 1] === '\n') {
+              removeStart--;
+              if (removeStart > 0 && validJs[removeStart - 1] === '\r') {
+                removeStart--;
+              }
+            }
+            edits.push({start: removeStart, end: lastMember.getEnd(), replacement: ''});
+
+            let insertAfterStmt: ts.Statement = stmt;
+            let j = i + 1;
+            while (
+              j < statements.length &&
+              isPrototypeDecorateStatement(statements[j], stmt.name.text)
+            ) {
+              insertAfterStmt = statements[j];
+              j++;
+            }
+            edits.push({
+              start: insertAfterStmt.getEnd(),
+              end: insertAfterStmt.getEnd(),
+              replacement: `\n(() => {\n  ${bodyText.trim()}\n})();`,
+            });
+          }
+        }
+      }
+      ts.forEachChild(stmt, function walk(node) {
+        if (ts.isBlock(node)) {
+          visitStatements(node.statements);
+          return;
+        }
+        ts.forEachChild(node, walk);
+      });
+    }
+  };
+
+  visitStatements(sf.statements);
+
+  if (edits.length === 0) {
+    return code;
+  }
+  edits.sort((a, b) => b.start - a.start || b.end - a.end);
+  let out = validJs;
+  for (const edit of edits) {
+    out = out.slice(0, edit.start) + edit.replacement + out.slice(edit.end);
+  }
+  return out.replaceAll(ELLIPSIS_PLACEHOLDER, ELLIPSIS);
 }
 const TOKEN = new RegExp(
   `\\s*((${COMMENT_START.source})|(${COMMENT_END.source})|(${IDENTIFIER.source})|(${INLINE_BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
@@ -157,6 +254,10 @@ export function expectEmit(
     expected = normalizeNgpEmitForComparison(expected, {pruneUnusedImports: true});
   }
   if (options?.isLinkedCompilation) {
+    // Partial declarations (`GOLDEN_PARTIAL.js`) keep `ɵɵngDeclareClassMetadata` as a top-level
+    // statement after the class so the linker replaces it in place with a trailing IIFE, whereas
+    // full and local compilation emit `ɵsetClassMetadata` inside a `static {}` block on the class.
+    expected = relocateStaticClassMetadataForLinked(expected);
     // Partial declaration linking does not emit `ɵsetClassDebugInfo` or `ɵɵsetNgModuleScope`
     // side-effect calls, and generates Closure message constants from the linked `.js` path
     // rather than the original `.ts` path + external hash.

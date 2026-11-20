@@ -16,33 +16,33 @@ export class ClassDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ClassDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ClassDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[myClassDir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          myClassMap: [
             {
-              selector: "[myClassDir]",
-              standalone: false
+              type: HostBinding,
+              args: ["class"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        myClassMap: [
-          {
-            type: HostBinding,
-            args: ["class"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class WidthDirective {
   myWidth = 200;
   myFooClass = true;
@@ -61,39 +61,39 @@ export class WidthDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      WidthDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        WidthDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[myWidthDir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          myWidth: [
             {
-              selector: "[myWidthDir]",
-              standalone: false
+              type: HostBinding,
+              args: ["style.width"  ]
+            }
+          ],
+          myFooClass: [
+            {
+              type: HostBinding,
+              args: ["class.foo"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        myWidth: [
-          {
-            type: HostBinding,
-            args: ["style.width"]
-          }
-        ],
-        myFooClass: [
-          {
-            type: HostBinding,
-            args: ["class.foo"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class HeightDirective {
   myHeight = 200;
   myBarClass = true;
@@ -112,39 +112,39 @@ export class HeightDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HeightDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HeightDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[myHeightDir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          myHeight: [
             {
-              selector: "[myHeightDir]",
-              standalone: false
+              type: HostBinding,
+              args: ["style.height"  ]
+            }
+          ],
+          myBarClass: [
+            {
+              type: HostBinding,
+              args: ["class.bar"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        myHeight: [
-          {
-            type: HostBinding,
-            args: ["style.height"]
-          }
-        ],
-        myBarClass: [
-          {
-            type: HostBinding,
-            args: ["class.bar"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -164,27 +164,27 @@ export class MyComponent {
     dependencies: [WidthDirective, HeightDirective, ClassDirective],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: "<div myWidthDir myHeightDir myClassDir></div>"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "<div myWidthDir myHeightDir myClassDir></div>",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -199,21 +199,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, WidthDirective, HeightDirective, ClassDirective] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, WidthDirective, HeightDirective, ClassDirective] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, {

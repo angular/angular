@@ -13,18 +13,18 @@ export class PipeWithoutName {
     type: PipeWithoutName,
     pure: true
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        PipeWithoutName,
+        [
+          {
+            type: Pipe,
+            args: [null]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      PipeWithoutName,
-      [
-        {
-          type: Pipe,
-          args: [null]
-        }
-      ],
-      null,
-      null
-    );
-})();

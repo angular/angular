@@ -23,30 +23,30 @@ class Cmp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Cmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Cmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <ng-content></ng-content>
     <ng-content select="[spacer]"></ng-content>
     <ng-content></ng-content>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Cmp, {
@@ -61,21 +61,21 @@ class Module {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Module });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Module,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [Cmp] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Module,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [Cmp] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(Module, { declarations: [Cmp] });

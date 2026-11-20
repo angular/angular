@@ -33,27 +33,27 @@ export class TestDir {
       genericTransform2: [1, "genericTransform2"]
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      {
-        name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }],
-        name2: [{ type: i0.Input, args: [{ isSignal: true, alias: "name2", required: true }] }],
-        genericTransform: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "genericTransform", required: true }] }
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
         ],
-        genericTransform2: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "genericTransform2", required: true }] }
-        ]
-      }
-    );
-})();
+        null,
+        {
+          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name"  , required: true }] }],
+          name2: [{ type: i0.Input, args: [{ isSignal: true, alias: "name2"  , required: true }] }],
+          genericTransform: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "genericTransform"  , required: true }] }
+          ],
+          genericTransform2: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "genericTransform2"  , required: true }] }
+          ]
+        }
+      );
+  }
+}

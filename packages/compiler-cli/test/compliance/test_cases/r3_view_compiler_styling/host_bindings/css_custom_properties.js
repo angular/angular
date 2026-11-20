@@ -17,28 +17,28 @@ export class MyDirective {
     },
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "my-dir"  ,
+                host: {
+                "[style.--camelCase]"  : "value"  ,
+                "[style.--kebab-case]"  : "value"  ,
+                "style"  : "--camelCase: foo; --kebab-case: foo"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "my-dir",
-              host: {
-                "[style.--camelCase]": "value",
-                "[style.--kebab-case]": "value",
-                "style": "--camelCase: foo; --kebab-case: foo"
-              },
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

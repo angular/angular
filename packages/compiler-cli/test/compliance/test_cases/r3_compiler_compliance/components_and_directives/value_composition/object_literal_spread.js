@@ -46,17 +46,16 @@ export class ObjectComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ObjectComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ObjectComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @let simple = {...foo};
     @let otherProps = {a: 1, ...foo, b: 2};
     @let multipleSpreads = {...foo, a: 1, ...bar, ...baz, b: 2};
@@ -65,14 +64,15 @@ export class ObjectComp {
     <!-- Use the objects so they don't get flagged as unused. -->
     {{simple}} {{otherProps}} {{multipleSpreads}} {{objectLiteral}}
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ObjectComp, {

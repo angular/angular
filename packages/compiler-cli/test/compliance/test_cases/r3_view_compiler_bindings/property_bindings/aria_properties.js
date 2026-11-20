@@ -5,21 +5,21 @@ class MyDir {
     return new (__ngFactoryType__ || MyDir)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: MyDir, selectors: [["", "myDir", ""]] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDir,
+        [
+          {
+            type: Directive,
+            args: [{ selector: "[myDir]"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDir,
-      [
-        {
-          type: Directive,
-          args: [{ selector: "[myDir]" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyComponent {
   disabled = "";
   readonly = "";
@@ -46,28 +46,28 @@ export class MyComponent {
     dependencies: [MyDir],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <input myDir [attr.aria-disabled]="disabled" [aria-readonly]="readonly" [ariaLabel]="label">
-  `,
-              imports: [MyDir]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [MyDir]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

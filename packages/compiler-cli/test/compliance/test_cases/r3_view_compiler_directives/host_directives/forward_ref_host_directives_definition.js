@@ -18,28 +18,28 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: ""  ,
+                hostDirectives: [forwardRef(() => DirectiveB)],
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "",
-              hostDirectives: [forwardRef(() => DirectiveB)],
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -60,25 +60,25 @@ export class DirectiveB {
       })
     ]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveB,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                hostDirectives: [{ directive: forwardRef(() => DirectiveA), inputs: ["value"  ] }]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveB,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              hostDirectives: [{ directive: forwardRef(() => DirectiveA), inputs: ["value"] }]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DirectiveA {
   value;
   static ɵfac = function DirectiveA_Factory(__ngFactoryType__) {
@@ -88,24 +88,24 @@ export class DirectiveA {
     type: DirectiveA,
     inputs: { value: "value" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DirectiveA,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      {
-        value: [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DirectiveA,
+        [
           {
-            type: Input
+            type: Directive,
+            args: [{}]
           }
-        ]
-      }
-    );
-})();
+        ],
+        null,
+        {
+          value: [
+            {
+              type: Input
+            }
+          ]
+        }
+      );
+  }
+}

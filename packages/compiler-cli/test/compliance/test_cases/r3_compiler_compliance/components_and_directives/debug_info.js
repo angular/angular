@@ -16,25 +16,25 @@ export class Main {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Main,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "Hello Angular!"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Main,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: "Hello Angular!"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Main, { className: "Main", filePath: "debug_info.ts", lineNumber: 6 });
@@ -55,25 +55,25 @@ export class MainStandalone {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MainStandalone,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "Hello Angular!"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MainStandalone,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: "Hello Angular!"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MainStandalone, {

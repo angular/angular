@@ -20,29 +20,29 @@ export class TestCmp {
     template: function TestCmp_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "test-cmp",
-              template: "",
-              host: {
-                "[animate.enter]": "disabled ? undefined : 'enter-class'"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "test-cmp"  ,
+                template: ""  ,
+                host: {
+                "[animate.enter]"  : "disabled ? undefined : 'enter-class'"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {

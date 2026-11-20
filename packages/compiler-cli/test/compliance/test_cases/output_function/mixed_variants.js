@@ -26,39 +26,39 @@ export class TestDir {
       _blaDecorator: "decoratorPublicName3"
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive
+          }
+        ],
+        null,
         {
-          type: Directive
+          click1: [{ type: i0.Output, args: ["click1"  ] }],
+          click2: [{ type: i0.Output, args: ["click2"  ] }],
+          click3: [{ type: i0.Output, args: ["click3"  ] }],
+          _bla: [{ type: i0.Output, args: ["decoratorPublicName"  ] }],
+          _bla2: [{ type: i0.Output, args: ["decoratorPublicName2"  ] }],
+          clickDecorator1: [
+            {
+              type: Output
+            }
+          ],
+          clickDecorator2: [
+            {
+              type: Output
+            }
+          ],
+          _blaDecorator: [
+            {
+              type: Output,
+              args: ["decoratorPublicName3"  ]
+            }
+          ]
         }
-      ],
-      null,
-      {
-        click1: [{ type: i0.Output, args: ["click1"] }],
-        click2: [{ type: i0.Output, args: ["click2"] }],
-        click3: [{ type: i0.Output, args: ["click3"] }],
-        _bla: [{ type: i0.Output, args: ["decoratorPublicName"] }],
-        _bla2: [{ type: i0.Output, args: ["decoratorPublicName2"] }],
-        clickDecorator1: [
-          {
-            type: Output
-          }
-        ],
-        clickDecorator2: [
-          {
-            type: Output
-          }
-        ],
-        _blaDecorator: [
-          {
-            type: Output,
-            args: ["decoratorPublicName3"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

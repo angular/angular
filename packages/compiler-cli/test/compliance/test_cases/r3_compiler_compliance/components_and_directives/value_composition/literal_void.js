@@ -23,31 +23,31 @@ export class VoidComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      VoidComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        VoidComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @let array = [void 0, 1];
     @let object = {a: void 0, b: 2};
 
     <!-- Use the literals so they don't get flagged as unused. -->
     {{array}} {{object}}
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(VoidComp, {

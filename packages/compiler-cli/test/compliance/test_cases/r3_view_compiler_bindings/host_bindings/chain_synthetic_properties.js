@@ -20,24 +20,24 @@ export class MyDirective {
     },
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-dir]"  ,
+                host: { "[@expand]"  : "expandedState"  , "[@fadeOut]"  : "true"  , "[@shrink]"  : "isSmall"   },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDirective,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[my-dir]",
-              host: { "[@expand]": "expandedState", "[@fadeOut]": "true", "[@shrink]": "isSmall" },
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

@@ -224,7 +224,7 @@ export class MyComp {}
     expect(output).toContain('i0.ɵsetClassMetadata(MyComp');
   });
 
-  it('emits setClassMetadata trailing after the class when complianceMode is true', async () => {
+  it('emits setClassMetadata in a static block even when complianceMode is true', async () => {
     const files: TestFile[] = [
       {path: '/untypable_transform.ts', content: TEST_CMP},
       {path: '/tsconfig.json', content: TSCONFIG},
@@ -236,9 +236,33 @@ export class MyComp {}
     });
     const output = outputs.find((f) => f.path.endsWith('/untypable_transform.ts'))!.content;
 
+    expect(output).toContain('static {\n    (((typeof ngDevMode');
+    expect(output).toContain('i0.ɵsetClassMetadata(MyComp');
+  });
+
+  it('emits setClassMetadata trailing outside the class for non-Angular constructor-parameter decorators', async () => {
+    const src = `
+import {Injectable} from '@angular/core';
+
+function CustomParamDec(): ParameterDecorator {
+  return () => {};
+}
+
+@Injectable()
+export class CtorParamDecService {
+  constructor(@CustomParamDec() _dep: unknown) {}
+}
+`;
+    const files: TestFile[] = [
+      {path: '/untypable_transform.ts', content: src},
+      {path: '/tsconfig.json', content: TSCONFIG},
+    ];
+    const outputs = await runPipeline(files, {optimize: false, format: false});
+    const output = outputs.find((f) => f.path.endsWith('/untypable_transform.ts'))!.content;
+
     expect(output).not.toContain('static {\n    (((typeof ngDevMode');
     expect(output).toMatch(/\(\(\)(?:: any)? => \{\s*\(\(\(typeof ngDevMode/);
-    expect(output).toContain('i0.ɵsetClassMetadata(MyComp');
+    expect(output).toContain('i0.ɵsetClassMetadata(CtorParamDecService');
   });
 });
 

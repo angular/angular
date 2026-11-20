@@ -11,32 +11,32 @@ export class ButtonDir {
     inputs: { label: "label" },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ButtonDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ButtonDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "button"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          label: [
             {
-              selector: "button",
-              standalone: false
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        label: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -60,27 +60,27 @@ export class MyComponent {
     dependencies: [ButtonDir],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template:
+                '<button [title]="1" [attr.id]="2" [tabindex]="3" label="{{1 + 3}}"></button>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template:
-                '<button [title]="1" [attr.id]="2" [tabindex]="3" label="{{1 + 3}}"></button>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -95,21 +95,21 @@ export class MyMod {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyMod });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyMod,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [ButtonDir, MyComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyMod,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [ButtonDir, MyComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyMod, { declarations: [ButtonDir, MyComponent] });

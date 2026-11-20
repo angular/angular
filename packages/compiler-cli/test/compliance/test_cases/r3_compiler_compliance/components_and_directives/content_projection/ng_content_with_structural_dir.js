@@ -30,27 +30,27 @@ export class SimpleComponent {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SimpleComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "simple"  ,
+                template: '<ng-content *ngIf="showContent"></ng-content>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SimpleComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "simple",
-              template: '<ng-content *ngIf="showContent"></ng-content>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(SimpleComponent, {

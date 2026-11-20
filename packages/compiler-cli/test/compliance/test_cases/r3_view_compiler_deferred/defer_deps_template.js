@@ -25,26 +25,26 @@ export class LocalDep {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LocalDep,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "local-dep"  ,
+                template: "Local dependency"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      LocalDep,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "local-dep",
-              template: "Local dependency"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(LocalDep, {
@@ -71,38 +71,38 @@ export class TestCmp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadataAsync(
-      TestCmp,
-      () => [/* @ts-ignore */ import("./defer_deps_ext").then(m => m.CmpA)],
-      CmpA => {
-        i0.ɵsetClassMetadata(
-          TestCmp,
-          [
-            {
-              type: Component,
-              args: [
-                {
-                  selector: "test-cmp",
-                  imports: [CmpA, LocalDep],
-                  template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadataAsync(
+        TestCmp,
+        () => [/* @ts-ignore */   import("./defer_deps_ext"  ).then(m => m.CmpA)],
+        CmpA => {
+          i0.ɵsetClassMetadata(
+            TestCmp,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    selector: "test-cmp"  ,
+                    imports: [CmpA, LocalDep],
+                    template: `
 	@defer {
 	<cmp-a />
 	<local-dep />
 	}
 `
-                }
-              ]
-            }
-          ],
-          null,
-          null
-        );
-      }
-    );
-})();
+                  }
+                ]
+              }
+            ],
+            null,
+            null
+          );
+        }
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {

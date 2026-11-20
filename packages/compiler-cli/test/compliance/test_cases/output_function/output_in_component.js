@@ -23,31 +23,31 @@ export class TestComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "Works"
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
-            {
-              template: "Works"
-            }
-          ]
+          a: [{ type: i0.Output, args: ["a"  ] }],
+          b: [{ type: i0.Output, args: ["b"  ] }],
+          c: [{ type: i0.Output, args: ["cPublic"  ] }],
+          d: [{ type: i0.Output, args: ["d"  ] }],
+          e: [{ type: i0.Output, args: ["e"  ] }]
         }
-      ],
-      null,
-      {
-        a: [{ type: i0.Output, args: ["a"] }],
-        b: [{ type: i0.Output, args: ["b"] }],
-        c: [{ type: i0.Output, args: ["cPublic"] }],
-        d: [{ type: i0.Output, args: ["d"] }],
-        e: [{ type: i0.Output, args: ["e"] }]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

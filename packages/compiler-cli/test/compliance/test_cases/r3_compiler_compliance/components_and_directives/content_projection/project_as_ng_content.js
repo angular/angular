@@ -25,31 +25,31 @@ class Card {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Card,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "card",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Card,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "card"  ,
+                template: `
 		<ng-content select="[card-title]"></ng-content>
 		---
 		<ng-content select="[card-content]"></ng-content>
-	`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+	`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Card, {
@@ -84,32 +84,32 @@ class CardWithTitle {
     dependencies: [Card],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      CardWithTitle,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "card-with-title",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        CardWithTitle,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "card-with-title"  ,
+                template: `
 		<card>
 			<h1 ngProjectAs="[card-title]">Title</h1>
 			<ng-content ngProjectAs="[card-content]"></ng-content>
 		</card>
-	`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+	`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(CardWithTitle, {
@@ -138,29 +138,29 @@ class App {
     dependencies: [CardWithTitle],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      App,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "app",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        App,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "app"  ,
+                template: `
 		<card-with-title>content</card-with-title>
-	`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+	`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(App, {
@@ -175,21 +175,21 @@ class Module {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Module });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Module,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [Card, CardWithTitle, App] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Module,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [Card, CardWithTitle, App] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(Module, { declarations: [Card, CardWithTitle, App] });

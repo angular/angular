@@ -12,21 +12,21 @@ export class UppercasePipe {
     type: UppercasePipe,
     pure: true
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        UppercasePipe,
+        [
+          {
+            type: Pipe,
+            args: [{ name: "uppercase"   }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      UppercasePipe,
-      [
-        {
-          type: Pipe,
-          args: [{ name: "uppercase" }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyApp {
   name = "Frodo";
   timeOfDay = "morning";
@@ -67,31 +67,31 @@ export class MyApp {
     dependencies: [UppercasePipe],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: `
     <div>No interpolations: {{ tag\`hello world \` }}</div>
     <span>With interpolations: {{ tag\`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
     <p>With pipe: {{ tag\`hello \${name}\` | uppercase }}</p>
-  `,
-              imports: [UppercasePipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [UppercasePipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

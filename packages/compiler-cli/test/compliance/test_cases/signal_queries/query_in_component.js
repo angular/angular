@@ -52,30 +52,30 @@ export class TestComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: "Works"
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
-            {
-              template: "Works"
-            }
-          ]
+          query1: [{ type: i0.ViewChild, args: ["locatorA"  , { isSignal: true }] }],
+          query2: [{ type: i0.ViewChildren, args: ["locatorB"  , { isSignal: true }] }],
+          query3: [{ type: i0.ContentChild, args: ["locatorC"  , { isSignal: true }] }],
+          query4: [{ type: i0.ContentChildren, args: ["locatorD"  , { isSignal: true }] }]
         }
-      ],
-      null,
-      {
-        query1: [{ type: i0.ViewChild, args: ["locatorA", { isSignal: true }] }],
-        query2: [{ type: i0.ViewChildren, args: ["locatorB", { isSignal: true }] }],
-        query3: [{ type: i0.ContentChild, args: ["locatorC", { isSignal: true }] }],
-        query4: [{ type: i0.ContentChildren, args: ["locatorD", { isSignal: true }] }]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

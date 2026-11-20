@@ -17,25 +17,25 @@ class Dir {
     },
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Dir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                host: {
+                "(click)"  : "c(this.$event)"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Dir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              host: {
-                "(click)": "c(this.$event)"
-              },
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

@@ -13,42 +13,42 @@ export class HostDir {
     inputs: { value: "value", color: "color" },
     outputs: { opened: "opened", closed: "closed" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{}]
+          value: [
+            {
+              type: Input
+            }
+          ],
+          color: [
+            {
+              type: Input
+            }
+          ],
+          opened: [
+            {
+              type: Output
+            }
+          ],
+          closed: [
+            {
+              type: Output
+            }
+          ]
         }
-      ],
-      null,
-      {
-        value: [
-          {
-            type: Input
-          }
-        ],
-        color: [
-          {
-            type: Input
-          }
-        ],
-        opened: [
-          {
-            type: Output
-          }
-        ],
-        closed: [
-          {
-            type: Output
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -71,34 +71,34 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: ""  ,
+                hostDirectives: [
+                  {
+                    directive: HostDir,
+                    inputs: ["value"  , "color: colorAlias"  ],
+                    outputs: ["opened"  , "closed: closedAlias"  ]
+                  }
+                ],
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "",
-              hostDirectives: [
-                {
-                  directive: HostDir,
-                  inputs: ["value", "color: colorAlias"],
-                  outputs: ["opened", "closed: closedAlias"]
-                }
-              ],
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

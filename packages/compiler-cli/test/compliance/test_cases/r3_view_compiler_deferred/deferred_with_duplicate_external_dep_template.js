@@ -49,27 +49,26 @@ export class MyApp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadataAsync(
-      MyApp,
-      () => [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadataAsync(
+        MyApp,
+        () => [
         /* @ts-ignore */
-        import("./deferred_with_duplicate_external_dep_lazy").then(
-          m => m.DuplicateLazyDep
-        ) /* @ts-ignore */,
-        import("./deferred_with_duplicate_external_dep_other").then(m => m.OtherLazyDep)
-      ],
-      (DuplicateLazyDep, OtherLazyDep) => {
-        i0.ɵsetClassMetadata(
-          MyApp,
-          [
-            {
-              type: Component,
-              args: [
-                {
-                  template: `
+          import("./deferred_with_duplicate_external_dep_lazy"  ).then(
+            m => m.DuplicateLazyDep
+          ) /* @ts-ignore */  ,
+          import("./deferred_with_duplicate_external_dep_other"  ).then(m => m.OtherLazyDep)
+        ],
+        (DuplicateLazyDep, OtherLazyDep) => {
+          i0.ɵsetClassMetadata(
+            MyApp,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    template: `
     @defer {
       <duplicate-lazy-dep/>
     }
@@ -81,18 +80,19 @@ export class MyApp {
     @defer {
       <other-lazy-dep/>
     }
-  `,
-                  imports: [DuplicateLazyDep, OtherLazyDep]
-                }
-              ]
-            }
-          ],
-          null,
-          null
-        );
-      }
-    );
-})();
+  `  ,
+                    imports: [DuplicateLazyDep, OtherLazyDep]
+                  }
+                ]
+              }
+            ],
+            null,
+            null
+          );
+        }
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

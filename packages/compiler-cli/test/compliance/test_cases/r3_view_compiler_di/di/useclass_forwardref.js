@@ -9,21 +9,21 @@ class SomeProvider {
     factory: __ngFactoryType__ => SomeProviderImpl.ɵfac(__ngFactoryType__),
     providedIn: "root"
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SomeProvider,
+        [
+          {
+            type: Injectable,
+            args: [{ providedIn: "root"  , useClass: forwardRef(() => SomeProviderImpl) }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SomeProvider,
-      [
-        {
-          type: Injectable,
-          args: [{ providedIn: "root", useClass: forwardRef(() => SomeProviderImpl) }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 class SomeProviderImpl extends SomeProvider {
   static ɵfac = /*@__PURE__*/ (() => {
     let ɵSomeProviderImpl_BaseFactory;
@@ -38,17 +38,17 @@ class SomeProviderImpl extends SomeProvider {
     token: SomeProviderImpl,
     factory: SomeProviderImpl.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SomeProviderImpl,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SomeProviderImpl,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();

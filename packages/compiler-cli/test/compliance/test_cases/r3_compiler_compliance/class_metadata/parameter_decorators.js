@@ -102,40 +102,40 @@ export class NoCtor {
     return new (__ngFactoryType__ || NoCtor)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: NoCtor, factory: NoCtor.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NoCtor,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NoCtor,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class EmptyCtor {
   constructor() {}
   static ɵfac = function EmptyCtor_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || EmptyCtor)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: EmptyCtor, factory: EmptyCtor.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        EmptyCtor,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        () => [],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      EmptyCtor,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      () => [],
-      null
-    );
-})();
 export class NoDecorators {
   constructor(service) {}
   static ɵfac = function NoDecorators_Factory(__ngFactoryType__) {
@@ -146,20 +146,20 @@ export class NoDecorators {
     token: NoDecorators,
     factory: NoDecorators.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NoDecorators,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        () => [{ type: Service }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NoDecorators,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      () => [{ type: Service }],
-      null
-    );
-})();
 let CustomInjectable = class CustomInjectable {
   constructor(service) {}
   static ɵfac = function CustomInjectable_Factory(__ngFactoryType__) {
@@ -203,20 +203,20 @@ export class DerivedInjectable extends ParameterizedInjectable {
     token: DerivedInjectable,
     factory: DerivedInjectable.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DerivedInjectable,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DerivedInjectable,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DerivedInjectableWithCtor extends ParameterizedInjectable {
   constructor() {
     super(null, "", null, "");
@@ -228,17 +228,17 @@ export class DerivedInjectableWithCtor extends ParameterizedInjectable {
     token: DerivedInjectableWithCtor,
     factory: DerivedInjectableWithCtor.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DerivedInjectableWithCtor,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        () => [],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DerivedInjectableWithCtor,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      () => [],
-      null
-    );
-})();

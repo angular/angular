@@ -16,25 +16,25 @@ export class LazyDep {
     return new (__ngFactoryType__ || LazyDep)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LazyDep, selectors: [["lazy-dep"]] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LazyDep,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "lazy-dep"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      LazyDep,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "lazy-dep"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyApp {
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyApp)();
@@ -58,17 +58,16 @@ export class MyApp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <div>
       @defer {
         I'm so independent!
@@ -77,16 +76,17 @@ export class MyApp {
         <lazy-dep/>
       }
     </div>
-  `,
-              imports: [LazyDep]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [LazyDep]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

@@ -6,19 +6,19 @@ export class BasicModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BasicModule, id: "BasicModuleId" });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BasicModule,
+        [
+          {
+            type: NgModule,
+            args: [{ id: "BasicModuleId"  , schemas: [NO_ERRORS_SCHEMA] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BasicModule,
-      [
-        {
-          type: NgModule,
-          args: [{ id: "BasicModuleId", schemas: [NO_ERRORS_SCHEMA] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 i0.ɵɵregisterNgModuleType(BasicModule, "BasicModuleId");

@@ -47,55 +47,55 @@ export class ContentQueryComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ContentQueryComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "content-query-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ContentQueryComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "content-query-component"  ,
+                template: `
     <div someDir></div>
     <div #myRef></div>
-  `,
-              standalone: false
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        {
+          myRefs: [
+            {
+              type: ContentChildren,
+              args: ["myRef"  , { emitDistinctChangesOnly: true }]
+            }
+          ],
+          oldMyRefs: [
+            {
+              type: ContentChildren,
+              args: ["myRef"  , { emitDistinctChangesOnly: false }]
+            }
+          ],
+          someDirs: [
+            {
+              type: ViewChildren,
+              args: [SomeDirective, { emitDistinctChangesOnly: true }]
+            }
+          ],
+          oldSomeDirs: [
+            {
+              type: ViewChildren,
+              args: [SomeDirective, { emitDistinctChangesOnly: false }]
             }
           ]
         }
-      ],
-      null,
-      {
-        myRefs: [
-          {
-            type: ContentChildren,
-            args: ["myRef", { emitDistinctChangesOnly: true }]
-          }
-        ],
-        oldMyRefs: [
-          {
-            type: ContentChildren,
-            args: ["myRef", { emitDistinctChangesOnly: false }]
-          }
-        ],
-        someDirs: [
-          {
-            type: ViewChildren,
-            args: [SomeDirective, { emitDistinctChangesOnly: true }]
-          }
-        ],
-        oldSomeDirs: [
-          {
-            type: ViewChildren,
-            args: [SomeDirective, { emitDistinctChangesOnly: false }]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ContentQueryComponent, {
@@ -110,21 +110,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [ContentQueryComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [ContentQueryComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [ContentQueryComponent] });

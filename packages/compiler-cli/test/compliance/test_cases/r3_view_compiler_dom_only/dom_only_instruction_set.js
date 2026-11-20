@@ -26,26 +26,26 @@ export class DomOnlyCmp {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DomOnlyCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                standalone: true,
+                template: "<div><span>hi</span></div>"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DomOnlyCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              standalone: true,
-              template: "<div><span>hi</span></div>"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(DomOnlyCmp, {

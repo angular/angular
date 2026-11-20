@@ -54,26 +54,26 @@ export class OtherComponent {
     template: function OtherComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        OtherComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "other-component"  ,
+                template: ""
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      OtherComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "other-component",
-              template: ""
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(OtherComponent, {
@@ -175,19 +175,18 @@ export class MyComponent {
     dependencies: [OtherComponent],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              imports: [OtherComponent],
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                imports: [OtherComponent],
+                template: `
   <div i18n>
     <img *ngIf="flag" />
     <other-component *ngIf="flag" />
@@ -196,14 +195,15 @@ export class MyComponent {
     <ng-content *ngIf="flag" />
   </div>
 `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

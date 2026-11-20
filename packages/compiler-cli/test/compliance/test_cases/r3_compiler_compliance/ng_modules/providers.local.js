@@ -5,20 +5,20 @@ export class Thing {
     return new (__ngFactoryType__ || Thing)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: Thing, factory: Thing.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Thing,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Thing,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class BaseService {
   thing;
   constructor(thing) {
@@ -32,20 +32,20 @@ export class BaseService {
     token: BaseService,
     factory: BaseService.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BaseService,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        () => [{ type: Thing }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BaseService,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      () => [{ type: Thing }],
-      null
-    );
-})();
 export class ChildService extends BaseService {
   static ɵfac = /*@__PURE__*/ (() => {
     let ɵChildService_BaseFactory;
@@ -60,20 +60,20 @@ export class ChildService extends BaseService {
     token: ChildService,
     factory: ChildService.ɵfac
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ChildService,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ChildService,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 const MY_TOKEN = new InjectionToken("MY_TOKEN");
 export class FooModule {
   static ɵfac = function FooModule_Factory(__ngFactoryType__) {
@@ -88,27 +88,27 @@ export class FooModule {
       { provide: MY_TOKEN, useFactory: child => ({ child }), deps: [ChildService] }
     ]
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        FooModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                providers: [
+                  Thing,
+                  BaseService,
+                  ChildService,
+                  { provide: MY_TOKEN, useFactory: child => ({ child }), deps: [ChildService] }
+                ]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      FooModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              providers: [
-                Thing,
-                BaseService,
-                ChildService,
-                { provide: MY_TOKEN, useFactory: child => ({ child }), deps: [ChildService] }
-              ]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

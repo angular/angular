@@ -13,18 +13,18 @@ export class MyService {
     factory: () => alternateFactory(),
     providedIn: "root"
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Injectable,
+            args: [{ providedIn: "root"  , useFactory: alternateFactory }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Injectable,
-          args: [{ providedIn: "root", useFactory: alternateFactory }]
-        }
-      ],
-      null,
-      null
-    );
-})();

@@ -25,24 +25,24 @@ export class MyService {
     },
     providedIn: "root"
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Injectable,
+            args: [
+              {
+                providedIn: "root"  ,
+                useFactory: (dep, optional) => new MyAlternateService(dep, optional),
+                deps: [SomeDep, [new Optional(), SomeDep]]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Injectable,
-          args: [
-            {
-              providedIn: "root",
-              useFactory: (dep, optional) => new MyAlternateService(dep, optional),
-              deps: [SomeDep, [new Optional(), SomeDep]]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

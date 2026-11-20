@@ -9,47 +9,47 @@ export class MyDecl {
     selectors: [["", "my-decl", ""]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDecl,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-decl]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDecl,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[my-decl]",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyImport {
   static ɵfac = function MyImport_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyImport)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyImport });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyImport,
+        [
+          {
+            type: NgModule,
+            args: [{}]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyImport,
-      [
-        {
-          type: NgModule,
-          args: [{}]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyExport {
   static ɵfac = function MyExport_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyExport)();
@@ -59,26 +59,26 @@ export class MyExport {
     selectors: [["", "my-export", ""]],
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyExport,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-export]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyExport,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              selector: "[my-export]",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyBootstrap {
   static ɵfac = function MyBootstrap_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyBootstrap)();
@@ -93,27 +93,27 @@ export class MyBootstrap {
     dependencies: i0.ɵɵgetComponentDepsFactory(MyBootstrap),
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyBootstrap,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-bootstrap"  ,
+                template: ""  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyBootstrap,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-bootstrap",
-              template: "",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyBootstrap, {
@@ -128,30 +128,30 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule, id: "my-module-id" });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MyImport, MyExport] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                declarations: [MyDecl, MyExport],
+                imports: [MyImport],
+                exports: [MyExport],
+                bootstrap: [forwardRef(() => MyBootstrap)],
+                schemas: [NO_ERRORS_SCHEMA],
+                id: "my-module-id"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              declarations: [MyDecl, MyExport],
-              imports: [MyImport],
-              exports: [MyExport],
-              bootstrap: [forwardRef(() => MyBootstrap)],
-              schemas: [NO_ERRORS_SCHEMA],
-              id: "my-module-id"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, {
