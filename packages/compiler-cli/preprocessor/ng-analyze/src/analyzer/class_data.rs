@@ -290,6 +290,7 @@ pub struct DirectiveData {
     pub providers: Option<super::di_facts::ProvidersData>,
     pub args_span: Option<oxc_span::Span>,
     pub preserved_decorator_properties: Option<Vec<oxc_span::Span>>,
+    pub inline_template_index: Option<u32>,
 
     pub fields: Vec<AngularField>,
     /// Input/output declarations (`inputs`/`outputs` arrays, `@Input`/`@Output` arguments)
@@ -541,6 +542,7 @@ impl Default for DirectiveData {
             providers: None,
             args_span: None,
             preserved_decorator_properties: None,
+            inline_template_index: None,
             fields: Vec::new(),
             evaluated_io: None,
             io_issues: Vec::new(),
@@ -5256,6 +5258,7 @@ impl ClassData {
                         .map(|s| crate::types::metadata::SpanMetadata::new(*s, cx.converter))
                         .collect()
                 }),
+            inline_template_index: c.directive.inline_template_index,
             declaring_ng_module,
             is_jit: c.directive.is_jit,
             is_poisoned: c.is_poisoned,

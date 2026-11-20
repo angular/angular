@@ -75,14 +75,18 @@ pub fn extract_directive_metadata<'a>(
     angular_imports: &crate::analyzer::imports::AngularImports,
     eval: &EvalInput<'a, '_>,
 ) -> Option<DirectiveData> {
+    let is_plain_init_prop = |p: &oxc_ast::ast::ObjectProperty<'_>| {
+        !p.computed && !p.method && p.kind == oxc_ast::ast::PropertyKind::Init
+    };
+
     let has_jit = obj.properties.iter().any(|prop| {
         matches!(prop, ObjectPropertyKind::ObjectProperty(p)
-            if extract_property_key(&p.key).as_deref() == Some("jit"))
+            if is_plain_init_prop(p) && extract_property_key(&p.key).as_deref() == Some("jit"))
     });
 
     let has_template_url = obj.properties.iter().any(|prop| {
         matches!(prop, ObjectPropertyKind::ObjectProperty(p)
-            if extract_property_key(&p.key).as_deref() == Some("templateUrl"))
+            if is_plain_init_prop(p) && extract_property_key(&p.key).as_deref() == Some("templateUrl"))
     });
 
     let mut data = DirectiveData {
@@ -97,6 +101,10 @@ pub fn extract_directive_metadata<'a>(
         let ObjectPropertyKind::ObjectProperty(p) = prop else {
             continue;
         };
+        if !is_plain_init_prop(p) {
+            preserved_decorator_properties.push(p.span);
+            continue;
+        }
         let Some(key_name) = extract_property_key(&p.key) else {
             continue;
         };
@@ -108,7 +116,15 @@ pub fn extract_directive_metadata<'a>(
         // If `templateUrl` is present, `template` is also excluded as it is superseded by `templateUrl`.
         let is_resource = match key_name.as_ref() {
             "templateUrl" | "styleUrls" | "styleUrl" | "styles" => true,
-            "template" => has_template_url,
+            "template" if has_template_url => {
+                // TODO: Remove once ngp is the default compiler (recording the original `template`
+                // slot so `transformDecoratorResources`'s `Map.set('template', ...)` in-place key
+                // order is matched when both `template` and `templateUrl` are present is only
+                // needed for syntactic parity with ngtsc).
+                data.inline_template_index
+                    .get_or_insert(preserved_decorator_properties.len() as u32);
+                true
+            }
             _ => false,
         };
 
