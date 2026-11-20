@@ -662,14 +662,22 @@ export declare class BModule {
 /****************************************************************************************************
  * PARTIAL FILE: unique_template_function_names_ng_content.js
  ****************************************************************************************************/
-import { Component, NgModule } from '@angular/core';
+import { Component, Directive, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
+export class FakeNgIf {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FakeNgIf, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: FakeNgIf, isStandalone: false, selector: "[ngIf]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FakeNgIf, decorators: [{
+            type: Directive,
+            args: [{ selector: '[ngIf]', standalone: false }]
+        }] });
 export class AComponent {
     show = true;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AComponent, isStandalone: false, selector: "a-component", ngImport: i0, template: `
     <ng-content *ngIf="show"></ng-content>
-  `, isInline: true });
+  `, isInline: true, dependencies: [{ kind: "directive", type: FakeNgIf, selector: "[ngIf]" }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AComponent, decorators: [{
             type: Component,
@@ -686,7 +694,7 @@ export class BComponent {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: BComponent, isStandalone: false, selector: "b-component", ngImport: i0, template: `
     <ng-content *ngIf="show"></ng-content>
-  `, isInline: true });
+  `, isInline: true, dependencies: [{ kind: "directive", type: FakeNgIf, selector: "[ngIf]" }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BComponent, decorators: [{
             type: Component,
@@ -700,18 +708,22 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }] });
 export class AModule {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AModule, declarations: [AComponent, BComponent] });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AModule, declarations: [AComponent, BComponent, FakeNgIf] });
     static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AModule });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AModule, decorators: [{
             type: NgModule,
-            args: [{ declarations: [AComponent, BComponent] }]
+            args: [{ declarations: [AComponent, BComponent, FakeNgIf] }]
         }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: unique_template_function_names_ng_content.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class FakeNgIf {
+    static ɵfac: i0.ɵɵFactoryDeclaration<FakeNgIf, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FakeNgIf, "[ngIf]", never, {}, {}, never, never, false, never>;
+}
 export declare class AComponent {
     show: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<AComponent, never>;
@@ -724,7 +736,7 @@ export declare class BComponent {
 }
 export declare class AModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof AComponent, typeof BComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof AComponent, typeof BComponent, typeof FakeNgIf], never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<AModule>;
 }
 
@@ -966,38 +978,6 @@ export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
-}
-
-/****************************************************************************************************
- * PARTIAL FILE: ng_template_bindings.js
- ****************************************************************************************************/
-import { Component } from '@angular/core';
-import * as i0 from "@angular/core";
-export class MyComponent {
-    p1;
-    a1;
-    c1;
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: '<ng-template l="l1" [p]="p1" [attr.a]="a1" [class.c]="c1"></ng-template>', isInline: true });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
-            type: Component,
-            args: [{
-                    selector: 'my-component',
-                    template: '<ng-template l="l1" [p]="p1" [attr.a]="a1" [class.c]="c1"></ng-template>',
-                }]
-        }] });
-
-/****************************************************************************************************
- * PARTIAL FILE: ng_template_bindings.d.ts
- ****************************************************************************************************/
-import * as i0 from "@angular/core";
-export declare class MyComponent {
-    p1: any;
-    a1: any;
-    c1: any;
-    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************

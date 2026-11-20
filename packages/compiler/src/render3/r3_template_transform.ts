@@ -177,11 +177,11 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     let parsedElement: t.Content | t.Template | t.Element | undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
+      this.validateNgContentElement(boundEvents, parsedProperties, references);
       const selector = preparsedElement.selectAttr;
-      const attrs: t.TextAttribute[] = element.attrs.map((attr) => this.visitAttribute(attr));
       parsedElement = new t.Content(
         selector,
-        attrs,
+        attributes,
         children,
         element.isSelfClosing,
         element.sourceSpan,
@@ -197,6 +197,8 @@ class HtmlAstToIvyAst implements html.Visitor {
         parsedProperties,
         i18nAttrsMeta,
       );
+
+      this.validateNoAttributeBindings('ng-template', attrs.bound);
 
       parsedElement = new t.Template(
         element.name,
@@ -221,22 +223,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       );
 
       if (element.name === 'ng-container') {
-        for (const bound of attrs.bound) {
-          if (bound.type === BindingType.Attribute) {
-            this.reportError(
-              `Attribute bindings are not supported on ng-container. Use property bindings instead.`,
-              bound.sourceSpan,
-            );
-            // TODO(v23): Enable this breaking change
-            // g3-only-start
-            // } else if (
-            // bound.type === BindingType.Class ||
-            // (bound.type === BindingType.Property && bound.name === 'class')
-            // ) {
-            // this.reportError(`Class bindings are not supported on ng-container.`, bound.sourceSpan);
-            // g3-only-end
-          }
-        }
+        this.validateNoAttributeBindings('ng-container', attrs.bound);
       }
 
       parsedElement = new t.Element(
@@ -985,6 +972,54 @@ class HtmlAstToIvyAst implements html.Visitor {
       keySpan,
     );
     addEvents(events, boundEvents);
+  }
+
+  private validateNgContentElement(
+    boundEvents: t.BoundEvent[],
+    parsedProperties: ParsedProperty[],
+    references: t.Reference[],
+  ): void {
+    if (boundEvents.length > 0) {
+      this.reportError(
+        `Event bindings are not supported on ng-content.`,
+        boundEvents[0].sourceSpan,
+      );
+    }
+    if (parsedProperties.length > 0) {
+      this.reportError(
+        `Property bindings are not supported on ng-content.`,
+        parsedProperties[0].sourceSpan,
+      );
+    }
+    if (references.length > 0) {
+      this.reportError(
+        `Template references are not supported on ng-content.`,
+        references[0].sourceSpan,
+      );
+    }
+  }
+
+  private validateNoAttributeBindings(
+    elementName: 'ng-template' | 'ng-container',
+    boundAttributes: t.BoundAttribute[],
+  ): void {
+    for (const bound of boundAttributes) {
+      if (bound.type === BindingType.Attribute) {
+        this.reportError(
+          `Attribute bindings are not supported on ${elementName}. Use property bindings instead.`,
+          bound.sourceSpan,
+        );
+        // TODO(v23): Enable this breaking change
+        // g3-only-start
+        // } else if (
+        // elementName === 'ng-container' &&
+        // (bound.type === BindingType.Class ||
+        // (bound.type === BindingType.Property && bound.name === 'class'))
+        // ) {
+        // this.reportError(`Class bindings are not supported on ng-container.`, bound.sourceSpan);
+        // g3-only-end
+      }
+    }
   }
 
   private reportError(

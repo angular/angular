@@ -1562,6 +1562,115 @@ class TestComponent {
 
       expect(messages).toEqual([]);
     });
+
+    describe('ng-content attributes', () => {
+      it('should report an error for unsupported attributes on ng-content', () => {
+        const messages = diagnose(
+          `<ng-content id="test" class="foo"></ng-content>`,
+          `export class TestComponent {}`,
+        );
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 13): 'id' is not supported on ng-content.`,
+          `TestComponent.html(1, 23): 'class' is not supported on ng-content.`,
+        ]);
+      });
+
+      it('should report an error and suggestion when selection or selector is used on ng-content', () => {
+        const messages = diagnose(
+          `<ng-content selection="header"></ng-content><ng-content selector="footer"></ng-content>`,
+          `export class TestComponent {}`,
+        );
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 13): 'selection' is not supported on ng-content. Did you mean 'select'?`,
+          `TestComponent.html(1, 57): 'selector' is not supported on ng-content. Did you mean 'select'?`,
+        ]);
+      });
+
+      it('should allow valid attributes on ng-content', () => {
+        const messages = diagnose(
+          `
+            <ng-content
+              select="header"
+              ngProjectAs="[header]"
+              ngSkipHydration
+              ngPreserveWhitespaces>
+            </ng-content>
+          `,
+          `export class TestComponent {}`,
+        );
+
+        expect(messages).toEqual([]);
+      });
+
+      it('should allow static attributes on ng-content that match a parent projection slot', () => {
+        const messages = diagnose(
+          `<proj><ng-content card-header /><ng-content class="card-body" /></proj>`,
+          `
+            export class Proj {}
+            export class TestComponent {}
+          `,
+          [
+            {
+              type: 'directive',
+              name: 'Proj',
+              selector: 'proj',
+              isComponent: true,
+              ngContentSelectors: ['[card-header]', '.card-body', '*'],
+            },
+          ],
+        );
+
+        expect(messages).toEqual([]);
+      });
+
+      it('should report static attributes on ng-content that do not match a parent projection slot', () => {
+        const messages = diagnose(
+          `<proj><ng-content class="card-body" title="unused" /></proj>`,
+          `
+            export class Proj {}
+            export class TestComponent {}
+          `,
+          [
+            {
+              type: 'directive',
+              name: 'Proj',
+              selector: 'proj',
+              isComponent: true,
+              ngContentSelectors: ['[card-header]', '.card-body', '*'],
+            },
+          ],
+        );
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 37): 'title' is not supported on ng-content.`,
+        ]);
+      });
+
+      it('should report static attributes on ng-content projected into a catch-all slot', () => {
+        const messages = diagnose(
+          `<catch-all><ng-content class="foo" /></catch-all>`,
+          `
+            export class CatchAll {}
+            export class TestComponent {}
+          `,
+          [
+            {
+              type: 'directive',
+              name: 'CatchAll',
+              selector: 'catch-all',
+              isComponent: true,
+              ngContentSelectors: ['*'],
+            },
+          ],
+        );
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 24): 'class' is not supported on ng-content.`,
+        ]);
+      });
+    });
   });
 
   // https://github.com/angular/angular/issues/43970

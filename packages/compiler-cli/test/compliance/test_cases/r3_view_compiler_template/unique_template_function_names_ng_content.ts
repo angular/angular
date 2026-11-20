@@ -1,4 +1,7 @@
-import {Component, NgModule} from '@angular/core';
+import { Component, Directive, NgModule } from '@angular/core';
+
+@Directive({selector: '[ngIf]', standalone: false})
+export class FakeNgIf {}
 
 @Component({
     selector: 'a-component',
@@ -22,6 +25,6 @@ export class BComponent {
   show = true;
 }
 
-@NgModule({declarations: [AComponent, BComponent]})
+@NgModule({declarations: [AComponent, BComponent, FakeNgIf]})
 export class AModule {
 }
