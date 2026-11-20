@@ -41,7 +41,7 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  * ### Circular standalone reference import example
  * ```angular-ts
  * @Component({
- *   imports: [ChildComponent],
+ *   imports: [forwardRef(() => ChildComponent)],
  *   selector: 'app-parent',
  *   template: `<app-child [hideParent]="hideParent()"/>`,
  * })
@@ -49,9 +49,8 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  *    hideParent = input.required<boolean>();
  * }
  *
- *
  * @Component({
- *   imports: [forwardRef(() => ParentComponent)],
+ *   imports: [ParentComponent],
  *   selector: 'app-child',
  *   template: `
  *    @if(!hideParent()) {
