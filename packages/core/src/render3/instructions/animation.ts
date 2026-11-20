@@ -293,12 +293,11 @@ function runLeaveAnimations(
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
-  const renderer = lView[RENDERER];
-  allLeavingAnimations.add(lView[ID]);
-  (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
-
   const activeClasses = getClassListFromValue(value);
   if (activeClasses && activeClasses.length > 0) {
+    const renderer = lView[RENDERER];
+    allLeavingAnimations.add(lView[ID]);
+    (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
     animateLeaveClassRunner(
       nativeElement as HTMLElement,
       tNode,

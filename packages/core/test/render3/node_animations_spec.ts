@@ -9,6 +9,7 @@
 import {AnimationLViewData} from '../../src/animation/interfaces';
 import {allLeavingAnimations} from '../../src/animation/longest_animation';
 import {ANIMATION_QUEUE, AnimationQueue} from '../../src/animation/queue';
+import {leavingNodes, trackLeavingNodes} from '../../src/animation/utils';
 import {Injector} from '../../src/di/injector';
 import {TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
@@ -125,6 +126,49 @@ describe('node animations runtime switch', () => {
 
       clearViewDetachAnimations(lView);
       expect(lView[ANIMATIONS]!.detachedLeaveAnimationFns).toBeUndefined();
+    });
+
+    it('should clear tracked leavingNodes when resolving the animation queue fails', () => {
+      enableAnimationRuntimeSupport();
+      const el = {} as HTMLElement;
+      const lView = viewWith({leave: new Map([[tNode.index, {animateFns: []}]])});
+      (lView as unknown[])[tNode.index] = el;
+      trackLeavingNodes(tNode, el, lView);
+      expect(leavingNodes.get(tNode)?.length).toBe(1);
+
+      const brokenInjector = {
+        get() {
+          throw new Error('Injector destroyed');
+        },
+      } as unknown as Injector;
+      const callback = jasmine.createSpy('callback');
+
+      runLeaveAnimationsWithCallback(lView, tNode, brokenInjector, callback);
+
+      expect(callback).toHaveBeenCalledOnceWith(false);
+      expect(leavingNodes.get(tNode)).toBeUndefined();
+    });
+
+    it('should clear tracked leavingNodes after leave animations settle', async () => {
+      enableAnimationRuntimeSupport();
+      const el = {} as HTMLElement;
+      const animateFn = () => ({promise: Promise.resolve(), resolve: () => {}});
+      const lView = viewWith({leave: new Map([[tNode.index, {animateFns: [animateFn]}]])});
+      (lView as unknown[])[tNode.index] = el;
+      trackLeavingNodes(tNode, el, lView);
+      expect(leavingNodes.get(tNode)?.length).toBe(1);
+
+      const callback = jasmine.createSpy('callback');
+      runLeaveAnimationsWithCallback(lView, tNode, injector, callback);
+
+      for (const queuedFn of queue.queue) {
+        queuedFn();
+      }
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(callback).toHaveBeenCalledOnceWith(true);
+      expect(leavingNodes.get(tNode)).toBeUndefined();
     });
   });
 });
