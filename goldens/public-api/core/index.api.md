@@ -372,17 +372,17 @@ export interface ContentChildDecorator {
 
 // @public
 export interface ContentChildFunction {
-    <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
-        descendants?: boolean;
-        read?: undefined;
-        debugName?: string;
-    }): Signal<LocatorT | undefined>;
-    // (undocumented)
     <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
         descendants?: boolean;
         read: ProviderToken<ReadT>;
         debugName?: string;
     }): Signal<ReadT | undefined>;
+    // (undocumented)
+    <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+        descendants?: boolean;
+        read?: undefined;
+        debugName?: string;
+    }): Signal<LocatorT | undefined>;
     required: {
         <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
             descendants?: boolean;
@@ -403,7 +403,7 @@ export type ContentChildren = Query;
 // @public
 export const ContentChildren: ContentChildrenDecorator;
 
-// @public (undocumented)
+// @public
 export function contentChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
     descendants?: boolean;
     read?: undefined;
@@ -2082,7 +2082,7 @@ export type ViewChildren = Query;
 // @public
 export const ViewChildren: ViewChildrenDecorator;
 
-// @public (undocumented)
+// @public
 export function viewChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
     debugName?: string;
 }): Signal<ReadonlyArray<LocatorT>>;

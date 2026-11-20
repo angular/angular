@@ -7,6 +7,7 @@
  */
 
 import {assertInInjectionContext} from '../di';
+// g3-only import {InjectionToken} from '../di/injection_token';
 import {ProviderToken} from '../di/provider_token';
 import {
   createMultiResultQuerySignalFn,
@@ -47,6 +48,28 @@ export interface ViewChildFunction {
    *
    * @publicAPI
    */
+  // g3-only-start
+  // <LocatorT, ReadT = any>(
+  //   locator: ProviderToken<LocatorT> | string,
+  //   opts: {
+  //     read: abstract new (...args: any[]) => ReadT;
+  //     debugName?: string;
+  //   },
+  // ): Signal<ReadT | undefined>;
+  // <LocatorT, ReadT>(
+  //   locator: ProviderToken<LocatorT> | string,
+  //   opts: {
+  //     read: InjectionToken<ReadT>;
+  //     debugName?: string;
+  //   },
+  // ): Signal<ReadT | undefined>;
+  // <LocatorT = any>(
+  //   locator: abstract new (...args: any[]) => LocatorT,
+  //   opts?: {
+  //     debugName?: string;
+  //   },
+  // ): Signal<LocatorT | undefined>;
+  // g3-only-end
 
   <LocatorT, ReadT>(
     locator: ProviderToken<LocatorT> | string,
@@ -69,6 +92,29 @@ export interface ViewChildFunction {
    * @publicAPI
    */
   required: {
+    // g3-only-start
+    // <LocatorT, ReadT = any>(
+    //   locator: ProviderToken<LocatorT> | string,
+    //   opts: {
+    //     read: abstract new (...args: any[]) => ReadT;
+    //     debugName?: string;
+    //   },
+    // ): Signal<ReadT>;
+    // <LocatorT, ReadT>(
+    //   locator: ProviderToken<LocatorT> | string,
+    //   opts: {
+    //     read: InjectionToken<ReadT>;
+    //     debugName?: string;
+    //   },
+    // ): Signal<ReadT>;
+    // <LocatorT = any>(
+    //   locator: abstract new (...args: any[]) => LocatorT,
+    //   opts?: {
+    //     debugName?: string;
+    //   },
+    // ): Signal<LocatorT>;
+    // g3-only-end
+
     <LocatorT>(
       locator: ProviderToken<LocatorT> | string,
       opts?: {
@@ -118,6 +164,34 @@ export const viewChild: ViewChildFunction = (() => {
   return viewChildFn as typeof viewChildFn & {required: typeof viewChildRequiredFn};
 })();
 
+/**
+ * Initializes a view children query.
+ *
+ * Query results are represented as a signal of a read-only collection containing all matched
+ * elements.
+ *
+ * @publicAPI
+ */
+// g3-only-start
+// export function viewChildren<LocatorT, ReadT = any>(
+//   locator: ProviderToken<LocatorT> | string,
+//   opts: {
+//     read: abstract new (...args: any[]) => ReadT;
+//     debugName?: string;
+//   },
+// ): Signal<ReadonlyArray<ReadT>>;
+// export function viewChildren<LocatorT, ReadT>(
+//   locator: ProviderToken<LocatorT> | string,
+//   opts: {
+//     read: InjectionToken<ReadT>;
+//     debugName?: string;
+//   },
+// ): Signal<ReadonlyArray<ReadT>>;
+// export function viewChildren<LocatorT = any>(
+//   locator: abstract new (...args: any[]) => LocatorT,
+//   opts?: {debugName?: string},
+// ): Signal<ReadonlyArray<LocatorT>>;
+// g3-only-end
 export function viewChildren<LocatorT>(
   locator: ProviderToken<LocatorT> | string,
   opts?: {debugName?: string},
@@ -203,14 +277,32 @@ export interface ContentChildFunction {
    * Consider using `contentChild.required` for queries that should always match.
    * @publicAPI
    */
-  <LocatorT>(
-    locator: ProviderToken<LocatorT> | string,
-    opts?: {
-      descendants?: boolean;
-      read?: undefined;
-      debugName?: string;
-    },
-  ): Signal<LocatorT | undefined>;
+  // g3-only-start
+  // <LocatorT, ReadT = any>(
+  //   locator: ProviderToken<LocatorT> | string,
+  //   opts: {
+  //     descendants?: boolean;
+  //     read: abstract new (...args: any[]) => ReadT;
+  //     debugName?: string;
+  //   },
+  // ): Signal<ReadT | undefined>;
+  // <LocatorT, ReadT>(
+  //   locator: ProviderToken<LocatorT> | string,
+  //   opts: {
+  //     descendants?: boolean;
+  //     read: InjectionToken<ReadT>;
+  //     debugName?: string;
+  //   },
+  // ): Signal<ReadT | undefined>;
+  // <LocatorT = any>(
+  //   locator: abstract new (...args: any[]) => LocatorT,
+  //   opts?: {
+  //     descendants?: boolean;
+  //     read?: undefined;
+  //     debugName?: string;
+  //   },
+  // ): Signal<LocatorT | undefined>;
+  // g3-only-end
 
   <LocatorT, ReadT>(
     locator: ProviderToken<LocatorT> | string,
@@ -221,10 +313,46 @@ export interface ContentChildFunction {
     },
   ): Signal<ReadT | undefined>;
 
+  <LocatorT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts?: {
+      descendants?: boolean;
+      read?: undefined;
+      debugName?: string;
+    },
+  ): Signal<LocatorT | undefined>;
+
   /**
    * Initializes a content child query that is always expected to match.
    */
   required: {
+    // g3-only-start
+    // <LocatorT, ReadT = any>(
+    //   locator: ProviderToken<LocatorT> | string,
+    //   opts: {
+    //     descendants?: boolean;
+    //     read: abstract new (...args: any[]) => ReadT;
+    //     debugName?: string;
+    //   },
+    // ): Signal<ReadT>;
+    // <LocatorT, ReadT>(
+    //   locator: ProviderToken<LocatorT> | string,
+    //   opts: {
+    //     descendants?: boolean;
+    //     read: InjectionToken<ReadT>;
+    //     debugName?: string;
+    //   },
+    // ): Signal<ReadT>;
+    // <LocatorT = any>(
+    //   locator: abstract new (...args: any[]) => LocatorT,
+    //   opts?: {
+    //     descendants?: boolean;
+    //     read?: undefined;
+    //     debugName?: string;
+    //   },
+    // ): Signal<LocatorT>;
+    // g3-only-end
+
     <LocatorT>(
       locator: ProviderToken<LocatorT> | string,
       opts?: {
@@ -278,6 +406,40 @@ export const contentChild: ContentChildFunction = (() => {
   return contentChildFn as typeof contentChildFn & {required: typeof contentChildRequiredFn};
 })();
 
+/**
+ * Initializes a content children query.
+ *
+ * Query results are represented as a signal of a read-only collection containing all matched
+ * elements.
+ *
+ * @publicAPI
+ */
+// g3-only-start
+// export function contentChildren<LocatorT, ReadT = any>(
+//   locator: ProviderToken<LocatorT> | string,
+//   opts: {
+//     descendants?: boolean;
+//     read: abstract new (...args: any[]) => ReadT;
+//     debugName?: string;
+//   },
+// ): Signal<ReadonlyArray<ReadT>>;
+// export function contentChildren<LocatorT, ReadT>(
+//   locator: ProviderToken<LocatorT> | string,
+//   opts: {
+//     descendants?: boolean;
+//     read: InjectionToken<ReadT>;
+//     debugName?: string;
+//   },
+// ): Signal<ReadonlyArray<ReadT>>;
+// export function contentChildren<LocatorT = any>(
+//   locator: abstract new (...args: any[]) => LocatorT,
+//   opts?: {
+//     descendants?: boolean;
+//     read?: undefined;
+//     debugName?: string;
+//   },
+// ): Signal<ReadonlyArray<LocatorT>>;
+// g3-only-end
 export function contentChildren<LocatorT>(
   locator: ProviderToken<LocatorT> | string,
   opts?: {
