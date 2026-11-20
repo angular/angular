@@ -2378,29 +2378,98 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw if a complex `sizes` is used', async () => {
+      it('should throw if `sizes` contains only pixel values', async () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" width="100" height="50" sizes="500px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string that only includes pixel values. ' +
+            'For automatic `srcset` generation, `sizes` must include responsive values, such as `sizes="50vw"` or ' +
+            '`sizes="(min-width: 768px) 50vw, 100vw"`. Pixel values can be mixed with responsive values, ' +
+            'for example `sizes="(max-width: 768px) 100vw, 370px"`. ' +
+            'To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
+        );
+      });
+      it('should throw if `sizes` contains only pixel values with media queries', async () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 300px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG02952/);
+      });
+      it('should throw if `sizes` contains only a pixel value with leading whitespace', async () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" width="100" height="50" sizes="  500px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG02952/);
+      });
+      it('should not throw if `sizes` mixes pixel and responsive values', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw">';
         const fixture = createTestComponent(template);
-        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
-          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
-            'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
-            '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
-        );
+        await expectAsync(fixture.whenStable()).toBeResolved();
       });
-      it('should throw if a complex `sizes` is used with srcset', async () => {
+      it('should not throw if `sizes` has a pixel fallback after responsive media queries', async () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="100" height="50" ' +
+          'sizes="(max-width: 540px) 100vw, (max-width: 960px) 50vw, 370px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeResolved();
+      });
+      it('should throw if `sizes` contains only a decimal pixel value', async () => {
+        setupTestingModule();
+
+        const template = '<img ngSrc="path/img.png" width="100" height="50" sizes="500.5px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG02952/);
+      });
+      it('should throw if `sizes` only mixes pixel values with percentages', async () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="100" height="50" sizes="(max-width: 768px) 100%, 370px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG02952/);
+      });
+      it('should not throw if `sizes` uses modern viewport units with a pixel fallback', async () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="100" height="50" sizes="(max-width: 768px) 100dvw, 370px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeResolved();
+      });
+      it('should not throw if `sizes` uses container query units with a pixel fallback', async () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="100" height="50" sizes="(max-width: 768px) 50cqw, 370px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeResolved();
+      });
+      it('should not throw if `sizes` uses calc() with responsive values and a pixel fallback', async () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="100" height="50" ' +
+          'sizes="(min-width: 1024px) calc(33.33vw - 24px), 370px">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeResolved();
+      });
+      it('should not throw if `sizes` mixes pixel and responsive values with srcset', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
         const fixture = createTestComponent(template);
-        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
-          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
-            'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
-            '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
-        );
+        await expectAsync(fixture.whenStable()).toBeResolved();
       });
       it('should not throw if a complex `sizes` is used with ngSrcset', async () => {
         setupTestingModule();
