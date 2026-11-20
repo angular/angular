@@ -34,19 +34,19 @@ import {
 } from './zoneless_scheduling';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
-let consecutiveMicrotaskNotifications = 0;
-let stackFromLastFewNotifications: string[] = [];
+const consecutiveMicrotaskNotifications: [number] = [0];
+const stackFromLastFewNotifications: string[] = [];
 
 function trackMicrotaskNotificationForDebugging() {
-  consecutiveMicrotaskNotifications++;
-  if (CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT - consecutiveMicrotaskNotifications < 5) {
+  consecutiveMicrotaskNotifications[0]++;
+  if (CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT - consecutiveMicrotaskNotifications[0] < 5) {
     const stack = new Error().stack;
     if (stack) {
       stackFromLastFewNotifications.push(stack);
     }
   }
 
-  if (consecutiveMicrotaskNotifications === CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT) {
+  if (consecutiveMicrotaskNotifications[0] === CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT) {
     throw new RuntimeError(
       RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
       'Angular could not stabilize because there were endless change notifications within the browser event loop. ' +
@@ -206,7 +206,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
       if (this.useMicrotaskScheduler) {
         trackMicrotaskNotificationForDebugging();
       } else {
-        consecutiveMicrotaskNotifications = 0;
+        consecutiveMicrotaskNotifications[0] = 0;
         stackFromLastFewNotifications.length = 0;
       }
     }
