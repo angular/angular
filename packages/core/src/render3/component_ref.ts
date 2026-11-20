@@ -32,7 +32,8 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {
-  createDirectivesInstances,
+  instantiateAllDirectives,
+  invokeDirectivesHostBindings,
   locateHostElement,
   setAllInputsForProperty,
 } from './instructions/shared';
@@ -43,6 +44,7 @@ import {
   TElementContainerNode,
   TElementNode,
   TNode,
+  TNodeFlags,
   TNodeName,
   TNodeType,
 } from './interfaces/node';
@@ -50,6 +52,8 @@ import {RElement, RNode} from './interfaces/renderer_dom';
 import {
   CONTEXT,
   HEADER_OFFSET,
+  HYDRATION,
+  INJECTOR,
   LView,
   LViewEnvironment,
   LViewFlags,
@@ -411,15 +415,22 @@ export class ComponentFactory<T> {
       attachPatchData(hostElement, rootLView);
 
       // TODO(pk): this logic is similar to the instruction code where a node can have directives
-      createDirectivesInstances(rootTView, rootLView, hostTNode);
+      instantiateAllDirectives(rootTView, rootLView, hostTNode);
+      componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
+      if (rootSelectorOrNode) {
+        // Populate the root component view's hydration info before running host bindings
+        // so host instructions (such as `animate.enter`) know whether the host is hydrated.
+        componentView[HYDRATION] = retrieveHydrationInfo(hostElement, componentView[INJECTOR]);
+      }
+      if ((hostTNode.flags & TNodeFlags.hasHostBindings) === TNodeFlags.hasHostBindings) {
+        invokeDirectivesHostBindings(rootTView, rootLView, hostTNode);
+      }
       executeContentQueries(rootTView, hostTNode, rootLView);
       directiveHostEndFirstCreatePass(rootTView, hostTNode);
 
       if (projectableNodes !== undefined) {
         projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
       }
-
-      componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
 
       // TODO(pk): why do we need this logic?
       rootLView[CONTEXT] = componentView[CONTEXT] as T;

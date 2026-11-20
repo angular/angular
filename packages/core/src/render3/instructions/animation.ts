@@ -12,9 +12,15 @@ import {
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
 } from '../../animation/interfaces';
-import {getLView, getCurrentTNode} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, LView, ID} from '../interfaces/view';
-import {getNativeByTNode} from '../util/view_utils';
+import {
+  getLView,
+  getCurrentTNode,
+  isInSkipHydrationBlock,
+  isSkipHydrationRootTNode,
+} from '../state';
+import {RENDERER, INJECTOR, CONTEXT, LView, ID, HEADER_OFFSET, HYDRATION} from '../interfaces/view';
+import {isRootView} from '../interfaces/type_checks';
+import {getComponentLViewByIndex, getNativeByTNode} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
 import {Renderer} from '../interfaces/renderer';
 import {NgZone} from '../../zone';
@@ -50,6 +56,18 @@ import {
 import {initializeAnimationQueueScheduler, queueEnterAnimations} from '../../animation/queue';
 import {enableAnimationRuntimeSupport, enableViewDetachAnimationsSupport} from '../node_animations';
 
+function isHydratingNode(lView: LView, tNode: TNode): boolean {
+  if (isRootView(lView)) {
+    return getComponentLViewByIndex(tNode.index, lView)[HYDRATION] !== null;
+  }
+  const hydrationInfo = lView[HYDRATION];
+  return (
+    hydrationInfo !== null &&
+    (!isInSkipHydrationBlock() || isSkipHydrationRootTNode(tNode)) &&
+    !hydrationInfo.disconnectedNodes?.has(tNode.index - HEADER_OFFSET)
+  );
+}
+
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
  *
@@ -72,6 +90,9 @@ export function ɵɵanimateEnter(value: string | AnimationClassBindingFn): typeo
   }
 
   const tNode = getCurrentTNode()!;
+  if (isHydratingNode(lView, tNode)) {
+    return ɵɵanimateEnter;
+  }
 
   // Capture NgZone eagerly while the injector is still valid. The animation
   // function runs later from the queue, at which point the lView injector
@@ -209,6 +230,9 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
     return ɵɵanimateEnterListener;
   }
   const tNode = getCurrentTNode()!;
+  if (isHydratingNode(lView, tNode)) {
+    return ɵɵanimateEnterListener;
+  }
 
   enableAnimationRuntimeSupport();
 

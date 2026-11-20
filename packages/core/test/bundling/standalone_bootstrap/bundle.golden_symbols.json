@@ -276,7 +276,6 @@
       "convertToInjectOptions",
       "couldBeInjectableType",
       "createComponentLView",
-      "createDirectivesInstances",
       "createElementNode",
       "createElementRef",
       "createEnvironmentInjector",
