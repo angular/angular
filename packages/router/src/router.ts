@@ -179,14 +179,14 @@ export class Router {
   constructor() {
     this.resetConfig(this.config);
 
-    this.navigationTransitions.setupNavigations(this).subscribe({
-      error: (e) => {
-        // Note: This subscription is not unsubscribed when the `Router` is destroyed.
-        // This is intentional as the `Router` is generally never destroyed.
-        // If it is destroyed, the `events` subject is completed, which cleans up this subscription.
-      },
-    });
+    // Subscribe to navigation events before adding `setupNavigations` to `eventsSubscription`
+    // so `dispose()` unsubscribes the event listener before tearing down active transitions.
     this.subscribeToNavigationEvents();
+    this.eventsSubscription.add(
+      this.navigationTransitions.setupNavigations(this).subscribe({
+        error: () => {},
+      }),
+    );
   }
 
   private eventsSubscription = new Subscription();
