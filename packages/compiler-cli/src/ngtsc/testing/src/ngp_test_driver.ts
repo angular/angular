@@ -525,6 +525,10 @@ export function performNgpCompilationSync(params: {
           ? {baseUrl: toPosixPath(fs.resolve(basePath, options.baseUrl))}
           : {}),
         ...(options.paths ? {paths: options.paths} : {}),
+        ...(options.types !== undefined ? {types: options.types} : {}),
+        ...(options.typeRoots !== undefined
+          ? {typeRoots: options.typeRoots.map((d: string) => toPosixPath(fs.resolve(basePath, d)))}
+          : {}),
       },
       angularCompilerOptions: {
         generateExtraImportsInLocalMode: Boolean(

@@ -653,21 +653,30 @@ export class HybridCompiler {
       return this.knownCustomElementsPromise;
     }
     const generation = this.knownCustomElementsGeneration;
+    let settled = false;
     const load = (async () => {
-      const prev = this.knownCustomElements;
-      const tags = (await this.analyzer.getKnownCustomElements?.()) ?? [];
-      const next: ReadonlySet<string> = new Set(tags);
-      if (this.knownCustomElementsGeneration === generation) {
-        this.knownCustomElements = next;
-        this.knownCustomElementsDirty = false;
-        this.knownCustomElementsPromise = null;
-        if (prev !== null) {
-          this.dirtyCustomElementConsumers(prev, next);
+      try {
+        const prev = this.knownCustomElements;
+        const tags = (await this.analyzer.getKnownCustomElements?.()) ?? [];
+        const next: ReadonlySet<string> = new Set(tags);
+        if (this.knownCustomElementsGeneration === generation) {
+          this.knownCustomElements = next;
+          this.knownCustomElementsDirty = false;
+          if (prev !== null) {
+            this.dirtyCustomElementConsumers(prev, next);
+          }
+        }
+        return next;
+      } finally {
+        settled = true;
+        if (this.knownCustomElementsGeneration === generation) {
+          this.knownCustomElementsPromise = null;
         }
       }
-      return next;
     })();
-    this.knownCustomElementsPromise = load;
+    if (!settled) {
+      this.knownCustomElementsPromise = load;
+    }
     return load;
   }
 
@@ -879,22 +888,24 @@ export class HybridCompiler {
     if (updates.length === 0) {
       return;
     }
+    const affectsCustomElements = updates.some(({filePath}) => isSourceOrConfigFile(filePath));
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(
         updates.map(({filePath}) => ({filePath, updateType: nga.FileUpdateType.Changed})),
       );
       return this.analyzer.updateFileContent(updates);
-    });
+    }, affectsCustomElements);
   }
 
   async invalidateFiles(updates: nga.FileInvalidation[]): Promise<void> {
     if (updates.length === 0) {
       return;
     }
+    const affectsCustomElements = updates.some(({filePath}) => isSourceOrConfigFile(filePath));
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(updates);
       return this.analyzer.invalidateFiles(updates);
-    });
+    }, affectsCustomElements);
   }
 
   /**
@@ -907,7 +918,6 @@ export class HybridCompiler {
         throw new Error('Analyzer does not support clearResolutionCache');
       }
       const invalidated = await this.analyzer.clearResolutionCache();
-      this.markKnownCustomElementsDirty();
       // The flush also evicts declaration files that resolved their own re-exports. None of them
       // changed, and recording one would make the tracker start over and re-emit every file. The
       // source files that import them are in `invalidated` as well.
@@ -916,7 +926,7 @@ export class HybridCompiler {
         this.incremental.recordChanges(changed, []);
       }
       return invalidated;
-    });
+    }, true);
   }
 
   /**
@@ -931,6 +941,9 @@ export class HybridCompiler {
     this.recordCanonicalInvalidations(updates, canonicalPaths);
     for (const filePath of invalidatedTsFiles) {
       this.invalidateCachedFile(filePath);
+    }
+    if (updates.some(({filePath}) => isSourceOrConfigFile(filePath))) {
+      this.markKnownCustomElementsDirty();
     }
   }
 
@@ -979,9 +992,6 @@ export class HybridCompiler {
         changed.push(filePath);
       }
     });
-    if (updates.length > 0) {
-      this.markKnownCustomElementsDirty();
-    }
     if (this.incrementalEnabled) {
       this.incremental.recordChanges(changed, deleted);
     }
@@ -995,16 +1005,26 @@ export class HybridCompiler {
    * rejects: a rejected link would skip every later update and make `ensureReady` throw for the
    * rest of the session.
    */
-  private enqueueUpdate(applyUpdate: () => Promise<string[]>): Promise<void> {
-    const update = this.pendingCompilation.then(() => this.runUpdate(applyUpdate));
+  private enqueueUpdate(
+    applyUpdate: () => Promise<string[]>,
+    dirtyCustomElements = true,
+  ): Promise<void> {
+    const update = this.pendingCompilation.then(() =>
+      this.runUpdate(applyUpdate, dirtyCustomElements),
+    );
     this.pendingCompilation = update.catch(() => {});
     return update;
   }
 
-  private async runUpdate(applyUpdate: () => Promise<string[]>): Promise<void> {
+  private async runUpdate(
+    applyUpdate: () => Promise<string[]>,
+    dirtyCustomElements: boolean,
+  ): Promise<void> {
     try {
-      this.markKnownCustomElementsDirty();
       const invalidatedTsFiles = await applyUpdate();
+      if (dirtyCustomElements) {
+        this.markKnownCustomElementsDirty();
+      }
       for (const filePath of invalidatedTsFiles) {
         this.invalidateCachedFile(filePath);
       }
@@ -1023,11 +1043,17 @@ export class HybridCompiler {
         }
       }
     } catch (error) {
-      // A failed update may stop partway through, so there's no telling which cached analyses are
-      // stale. Drop them all.
+      // A failed update may stop partway through, so there's no telling which cached analyses or
+      // custom-element tag consumers are stale. Drop them all so the next build re-checks them.
       this.fileCache.clear();
       this.metadataByFile.clear();
       this.pendingDeltaChunks.length = 0;
+      for (const consumers of this.customElementTagConsumers.values()) {
+        for (const consumerFile of consumers) {
+          this.jsDirtyFiles.add(consumerFile);
+          this.processedFiles.delete(consumerFile);
+        }
+      }
       this.knownCustomElements = null;
       this.markKnownCustomElementsDirty();
       throw error;
@@ -1430,6 +1456,7 @@ export class HybridCompiler {
     }
 
     if (!this.optimize || !fileAnalysis.preparedTcbData) {
+      this.clearCustomElementCandidates(fileAnalysis.filePath);
       fileAnalysis.tcb = null;
       return fileAnalysis;
     }
@@ -1437,26 +1464,48 @@ export class HybridCompiler {
     const normPath = fileAnalysis.filePath;
     const result = await this.getCachedMetadata(normPath);
     if (!result) {
+      this.clearCustomElementCandidates(normPath);
       fileAnalysis.tcb = null;
       return fileAnalysis;
     }
 
-    const candidateCustomElementTags = collectCandidateCustomElementTags(
+    const hintTags = collectCandidateCustomElementTags(
       fileAnalysis.preparedTcbData,
       this.tcbConfig,
     );
-    this.recordCustomElementCandidates(normPath, candidateCustomElementTags);
-    const knownCustomElements =
-      candidateCustomElementTags.size > 0 ? await this.getKnownCustomElements() : undefined;
+    let knownCustomElements: ReadonlySet<string> | undefined;
+    let genAtFetch = this.knownCustomElementsGeneration;
+    if (hintTags.size > 0) {
+      knownCustomElements = await this.getKnownCustomElements();
+      genAtFetch = this.knownCustomElementsGeneration;
+    }
 
-    const tcbResult = generateTcbCode(
+    let tcbResult = generateTcbCode(
       normPath,
       fileAnalysis.preparedTcbData,
       this.tcbConfig,
       result.namespaceAliasConflicts,
       knownCustomElements,
     );
+    // Safety net: if the pre-fetch hint skipped an op that actually queried `isKnownCustomElement`,
+    // fetch the tags now and re-generate once so `ensureTcb` stays exact by construction.
+    if (
+      knownCustomElements === undefined &&
+      tcbResult &&
+      tcbResult.checkedCustomElements.size > 0
+    ) {
+      knownCustomElements = await this.getKnownCustomElements();
+      genAtFetch = this.knownCustomElementsGeneration;
+      tcbResult = generateTcbCode(
+        normPath,
+        fileAnalysis.preparedTcbData,
+        this.tcbConfig,
+        result.namespaceAliasConflicts,
+        knownCustomElements,
+      );
+    }
     if (!tcbResult) {
+      this.clearCustomElementCandidates(normPath);
       fileAnalysis.tcb = null;
       return fileAnalysis;
     }
@@ -1471,9 +1520,18 @@ export class HybridCompiler {
     }
 
     const tcbCode = combineTcbContent(tcbResult, normPath, inlineTcbInfo);
-    fileAnalysis.tcb = tcbCode;
-
-    return fileAnalysis;
+    const checkedTags =
+      tcbResult.checkedCustomElements.size > 0
+        ? new Set(tcbResult.checkedCustomElements.keys())
+        : undefined;
+    if (knownCustomElements === undefined || this.knownCustomElementsGeneration === genAtFetch) {
+      this.recordCustomElementCandidates(normPath, checkedTags);
+      fileAnalysis.tcb = tcbCode;
+      return fileAnalysis;
+    }
+    // Generation advanced while awaiting `getKnownCustomElements` (superseded mid-flight): return
+    // the computed result without caching stale custom-element state on `fileAnalysis`.
+    return {...fileAnalysis, tcb: tcbCode};
   }
 
   async getParsedTemplate(filePath: string, classKey: string): Promise<any | null> {
@@ -1513,22 +1571,18 @@ export class HybridCompiler {
       const boundFingerprint = result
         ? this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
         : undefined;
+      const cachedByBound = this.reuseProcessedFiles
+        ? this.processedFiles.getByBoundFingerprint(normPath, boundFingerprint)
+        : undefined;
       let candidateCustomElementTags: ReadonlySet<string> | undefined;
       let knownCustomElements: ReadonlySet<string> | undefined;
-      const mayReuse =
-        this.reuseProcessedFiles &&
-        this.processedFiles.hasBoundFingerprint(normPath, boundFingerprint);
-      if (mayReuse && this.optimize && !this.emitDeclarationOnly && result) {
-        candidateCustomElementTags = this.candidateCustomElementTagsForReuse(
-          normPath,
-          content,
-          boundFingerprint,
-        );
+      if (cachedByBound && this.optimize && !this.emitDeclarationOnly && result) {
+        candidateCustomElementTags = cachedByBound.candidateCustomElementTags;
         if (candidateCustomElementTags && candidateCustomElementTags.size > 0) {
           knownCustomElements = await this.getKnownCustomElements();
         }
       }
-      const fingerprint = mayReuse
+      const fingerprint = cachedByBound
         ? this.processingFingerprint(
             normPath,
             result,
@@ -1546,11 +1600,13 @@ export class HybridCompiler {
         processed = this.adoptReused(normPath, reused);
       } else {
         let usedKnownCustomElements: ReadonlySet<string> | undefined;
+        let genAtFetch = this.knownCustomElementsGeneration;
         const fresh = await processFile(
           {
             ...this,
             getKnownCustomElements: async () => {
               usedKnownCustomElements = await this.getKnownCustomElements();
+              genAtFetch = this.knownCustomElementsGeneration;
               return usedKnownCustomElements;
             },
           },
@@ -1560,21 +1616,27 @@ export class HybridCompiler {
           chunkContext,
           fileId,
         );
+        const superseded =
+          usedKnownCustomElements !== undefined &&
+          this.knownCustomElementsGeneration !== genAtFetch;
         this.recordCustomElementCandidates(normPath, fresh.candidateCustomElementTags);
-        const finalFingerprint = this.processingFingerprint(
-          normPath,
-          result,
-          chunkContext,
-          boundFingerprint,
-          fresh.candidateCustomElementTags,
-          usedKnownCustomElements,
-        );
+        const finalFingerprint = superseded
+          ? null
+          : this.processingFingerprint(
+              normPath,
+              result,
+              chunkContext,
+              boundFingerprint,
+              fresh.candidateCustomElementTags,
+              usedKnownCustomElements,
+            );
         processed = this.rememberProcessed(normPath, finalFingerprint, fresh, boundFingerprint);
       }
       this.recordProcessedDiagnostics(normPath, processed);
       return processed;
     } catch (e) {
       this.processedFiles.delete(normPath);
+      this.clearCustomElementCandidates(normPath);
       throw e;
     } finally {
       this.recordForIncrementalEmit(result, chunkContext, processed);
@@ -1631,22 +1693,6 @@ export class HybridCompiler {
       getOrCreateFileAnalysis(this.fileCache, filePath).tcb = reused.tcb.code;
     }
     return reused;
-  }
-
-  private candidateCustomElementTagsForReuse(
-    filePath: string,
-    content: string,
-    boundFingerprint: string | undefined,
-  ): ReadonlySet<string> | undefined {
-    const cached = this.fileCache.get(filePath);
-    if (
-      cached?.preparedTcbData &&
-      cached.sourceContent === content &&
-      (cached.boundFingerprint === undefined || cached.boundFingerprint === boundFingerprint)
-    ) {
-      return collectCandidateCustomElementTags(cached.preparedTcbData, this.tcbConfig);
-    }
-    return this.customElementCandidatesByFile.get(filePath);
   }
 
   private rememberProcessed(
@@ -1830,7 +1876,6 @@ export class HybridCompiler {
       {
         ...this,
         hmrUpdateTarget: className,
-        getKnownCustomElements: () => this.getKnownCustomElements(),
       },
       result.filePath,
       content,

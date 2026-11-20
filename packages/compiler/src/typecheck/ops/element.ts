@@ -42,12 +42,16 @@ export class TcbElementOp extends TcbOp {
     // Add the declaration of the element using document.createElement.
     // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace; strip the
     // prefix and lowercase known custom element tag names so `document.createElement` resolves the
-    // element type from `HTMLElementTagNameMap` (whose keys are lowercase).
+    // element type from `HTMLElementTagNameMap` (whose keys are lowercase). Short-circuit when the
+    // tag is already lowercase so `isKnownCustomElement` is not queried unnecessarily.
     const rawTagName = this.element.name.replace(/^:xhtml:/, '');
-    const tagName = this.tcb.domSchemaChecker.isKnownCustomElement?.(this.element.name)
-      ? rawTagName.toLowerCase()
-      : rawTagName;
-    const initializer = new TcbExpr(`document.createElement("${tagName}")`);
+    const lowerTagName = rawTagName.toLowerCase();
+    const tagName =
+      rawTagName !== lowerTagName &&
+      this.tcb.domSchemaChecker.isKnownCustomElement?.(this.element.name)
+        ? lowerTagName
+        : rawTagName;
+    const initializer = new TcbExpr(`document.createElement(${TcbExpr.quoteAndEscape(tagName)})`);
     initializer.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);
     const stmt = new TcbExpr(`var ${idNode.print()} = ${initializer.print()}`);
     stmt.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);

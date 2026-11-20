@@ -698,9 +698,10 @@ pub struct FileData {
     /// Resolved on-disk TS paths of dynamic `import()` calls and literal import types (included in
     /// the program closure, excluded from static cycle detection).
     pub(crate) dynamic_dependencies: Vec<PathBuf>,
-    /// Resolved `.d.ts` files imported by this file (static, type-only, or dynamic), used to
-    /// discover global `HTMLElementTagNameMap` augmentations in imported packages/declarations.
-    pub(crate) dts_dependencies: Vec<FileId>,
+    /// Resolved `.d.ts` files imported by this file (static, type-only, or dynamic), paired with
+    /// `ResolvedModule::external`, used to discover global `HTMLElementTagNameMap` augmentations
+    /// in imported packages/declarations.
+    pub(crate) dts_dependencies: Vec<(FileId, bool)>,
     /// Custom element tag contributions from global `HTMLElementTagNameMap` augmentations in this
     /// file.
     pub(crate) custom_element_contributions:

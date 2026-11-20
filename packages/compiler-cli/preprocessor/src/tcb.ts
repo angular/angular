@@ -12,7 +12,6 @@ import {
   core,
   CssSelector,
   CUSTOM_ELEMENTS_SCHEMA,
-  DomElementSchemaRegistry,
   generateTypeCheckBlock,
   isUnsafeObjectKey,
   NO_ERRORS_SCHEMA,
@@ -40,7 +39,12 @@ import {
 } from '@angular/compiler';
 import type {ExtendedDiagnosticsOptions, NgpCompilerOptions} from './compiler_options.js';
 import {Diagnostic} from './diagnostic.js';
-import {normalizeCustomElementTagName, RegistryDomSchemaChecker} from './dom_schema_checker.js';
+import {
+  normalizeCustomElementTagName,
+  REGISTRY as DOM_SCHEMA_REGISTRY,
+  RegistryDomSchemaChecker,
+  UNCLAIMED_EVENT_CANDIDATE_REGEX,
+} from './dom_schema_checker.js';
 import {runExtendedDiagnostics} from './extended_diagnostics.js';
 
 import MagicString from 'magic-string';
@@ -97,6 +101,11 @@ export interface TcbResult {
   templateSources: Record<string, TcbTemplateSource>;
   diagnostics: Diagnostic[];
   isInline: boolean;
+  /**
+   * Normalized custom element tag names actually queried via `isKnownCustomElement` during TCB
+   * generation, mapped to whether they were known in `HTMLElementTagNameMap`.
+   */
+  checkedCustomElements: ReadonlyMap<string, boolean>;
 }
 
 /**
@@ -670,9 +679,6 @@ export function prepareTcbTargets(
   return {targets, boundTargetMap, hostElementsMap, typeCheckIdMap, requiresInline};
 }
 
-const CUSTOM_ELEMENT_SCHEMA_REGISTRY = new DomElementSchemaRegistry();
-const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
-
 function matchesElementTagName(selector: string | null, tagName: string): boolean {
   if (selector === null) {
     return false;
@@ -687,6 +693,7 @@ function matchesElementTagName(selector: string | null, tagName: string): boolea
 
 class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
   private readonly hasCustomElementsSchema: boolean;
+  private readonly hasNoErrorsSchema: boolean;
 
   constructor(
     private readonly boundTarget: BoundTarget<TcbDirectiveMetadata>,
@@ -698,17 +705,25 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
     this.hasCustomElementsSchema = schemas.some(
       (schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name,
     );
+    this.hasNoErrorsSchema = schemas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name);
   }
 
   override visitElement(element: TmplAstElement): void {
     const tagName = normalizeCustomElementTagName(element.name);
     if (tagName !== null && this.boundTarget.getForeignComponent(element) === null) {
-      const directives = this.boundTarget.getDirectivesOfNode(element);
-      if (
-        !directives?.some((dir) => dir.isComponent) &&
-        this.elementMayDependOnCustomElement(element, directives)
-      ) {
+      // `TcbElementOp` queries `isKnownCustomElement` for any uppercase dashed tag (even under
+      // `NO_ERRORS_SCHEMA` or matched components/directives) to lowercase `document.createElement`.
+      const rawTagName = element.name.replace(/^:xhtml:/, '');
+      if (rawTagName !== tagName) {
         this.candidates.add(tagName);
+      } else if (!this.hasNoErrorsSchema) {
+        const directives = this.boundTarget.getDirectivesOfNode(element);
+        if (
+          !directives?.some((dir) => dir.isComponent) &&
+          this.elementMayDependOnCustomElement(element, directives)
+        ) {
+          this.candidates.add(tagName);
+        }
       }
     }
     super.visitElement(element);
@@ -750,17 +765,19 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
         ) {
           continue;
         }
-        const propertyName = CUSTOM_ELEMENT_SCHEMA_REGISTRY.getMappedPropName(binding.name);
-        if (CUSTOM_ELEMENT_SCHEMA_REGISTRY.validateProperty(propertyName).error) {
+        const propertyName = DOM_SCHEMA_REGISTRY.getMappedPropName(binding.name);
+        if (DOM_SCHEMA_REGISTRY.validateProperty(propertyName).error) {
           continue;
         }
+        const isAria = binding.name.startsWith('aria-') && binding.name.length > 5;
+        const isUnknownAriaAttr = propertyName.startsWith('aria-') && propertyName.length > 5;
         if (
           !this.hasCustomElementsSchema &&
-          !CUSTOM_ELEMENT_SCHEMA_REGISTRY.hasProperty(element.name, propertyName, this.schemas)
+          !isUnknownAriaAttr &&
+          !DOM_SCHEMA_REGISTRY.hasProperty(element.name, propertyName, this.schemas)
         ) {
           return true;
         }
-        const isAria = binding.name.startsWith('aria-') && binding.name.length > 5;
         if (
           this.config.checkTypeOfInputBindings &&
           !isAria &&
@@ -795,7 +812,7 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
         if (
           UNCLAIMED_EVENT_CANDIDATE_REGEX.test(output.name) &&
           /[A-Z]/.test(output.name) &&
-          !CUSTOM_ELEMENT_SCHEMA_REGISTRY.isKnownEventOfAnyElement(output.name)
+          !DOM_SCHEMA_REGISTRY.isKnownEventOfAnyElement(output.name)
         ) {
           return true;
         }
@@ -807,11 +824,14 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
 }
 
 /**
- * Collects normalized tag names of non-Angular dashed elements present in `prepared`'s templates
- * whose recognition or type-checking may depend on TypeScript's global `HTMLElementTagNameMap`.
- * Components without any such tags (including standard Angular apps using element-selector
- * directives such as `<router-outlet>`) return an empty set so the analyzer's `.d.ts` custom
- * element scan is never triggered.
+ * Fast pre-fetch hint predicting which non-Angular dashed elements in `prepared`'s templates may
+ * query `isKnownCustomElement`. Components without any such tags (including standard Angular apps
+ * using element-selector directives such as `<router-outlet>`) return an empty set so the
+ * analyzer's `.d.ts` custom element scan is skipped.
+ *
+ * Callers do not rely on this hint for correctness: `RegistryDomSchemaChecker.checkedCustomElements`
+ * records the exact set of tags queried by the compiler, and callers retry once with fetched tags
+ * if a skipped pre-fetch unexpectedly queries `isKnownCustomElement`.
  */
 export function collectCandidateCustomElementTags(
   prepared: PreparedTcbData,
@@ -819,10 +839,7 @@ export function collectCandidateCustomElementTags(
 ): Set<string> {
   const candidates = new Set<string>();
   for (const {comp, tcbMeta} of prepared.targets) {
-    if (
-      comp.templateNodes.length === 0 ||
-      comp.schemas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)
-    ) {
+    if (comp.templateNodes.length === 0) {
       continue;
     }
     const collector = new CustomElementCandidateCollector(
@@ -950,6 +967,7 @@ export function generateTcbCode(
       ...extendedDiagnostics,
     ],
     isInline: requiresInline,
+    checkedCustomElements: domSchemaChecker.checkedCustomElements,
   };
 }
 

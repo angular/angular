@@ -152,9 +152,10 @@ struct EffectiveConfig {
     /// The tsconfig's file list (root files and `.d.ts` files), empty without a tsconfig. Its
     /// `.d.ts` files are used even when `entry_points` replace its roots.
     tsconfig_files: Vec<PathBuf>,
-    /// Entry `.d.ts` files discovered from `typeRoots` / `node_modules/@types`, empty without a
-    /// tsconfig or when `compilerOptions.types` is `[]`.
-    type_root_dts_files: Vec<PathBuf>,
+    /// Effective `typeRoots` directories for the tsconfig (used by `/// <reference types />`).
+    type_roots: Vec<PathBuf>,
+    /// Whether the tsconfig includes a DOM lib (provides global `document`).
+    has_dom_lib: bool,
     r3_symbols_file: Option<PathBuf>,
     /// `angular_core_compilation` > `angularCompilerOptions._isAngularCoreCompilation` > `true`
     /// with an explicit `r3_symbols_file` > none (detected from `r3_symbols.ts` by the engine).
@@ -271,19 +272,28 @@ impl EffectiveConfig {
 
         let (
             tsconfig_files,
-            type_root_dts_files,
+            type_roots,
+            has_dom_lib,
             tsconfig_root_dirs,
             tsconfig_workspace_name,
             merged_compiler_options,
         ) = match resolved {
             Some(r) => (
                 r.files,
-                r.type_root_dts_files,
+                r.type_roots,
+                r.has_dom_lib,
                 r.compiler_options.root_dirs,
                 r.workspace_name,
                 r.merged_compiler_options,
             ),
-            None => (Vec::new(), Vec::new(), None, None, serde_json::Map::new()),
+            None => (
+                Vec::new(),
+                Vec::new(),
+                true,
+                None,
+                None,
+                serde_json::Map::new(),
+            ),
         };
 
         let mut merge_root_dirs = match default_host.root_dirs {
@@ -334,7 +344,8 @@ impl EffectiveConfig {
         Ok(Self {
             entry_points,
             tsconfig_files,
-            type_root_dts_files,
+            type_roots,
+            has_dom_lib,
             r3_symbols_file: options
                 .r3_symbols_file
                 .map(|path| absolutize(PathBuf::from(path)))
@@ -482,8 +493,25 @@ impl Analyzer {
             config.emit_declaration_only,
             config.experimental_local_compilation,
         );
+        // Discover `typeRoots` / `@types` entry `.d.ts` files *after* `preserve_symlinks` and
+        // `rootDirs` are configured on `fs` so merged root directories are visible on initial load.
+        let type_root_dts_files = config
+            .tsconfig_path
+            .as_deref()
+            .map(|p| {
+                let base_dir = p.parent().unwrap_or(Path::new("."));
+                tsconfig_resolution::discover_type_root_dts_files(
+                    base_dir,
+                    &config.merged_compiler_options,
+                    &fs,
+                )
+            })
+            .unwrap_or_default();
+
         *engine.tsconfig_dts_files.write().unwrap() = dts_files;
-        *engine.tsconfig_type_root_dts_files.write().unwrap() = config.type_root_dts_files;
+        *engine.tsconfig_type_root_dts_files.write().unwrap() = type_root_dts_files;
+        *engine.tsconfig_type_roots.write().unwrap() = config.type_roots;
+        *engine.has_dom_lib.write().unwrap() = config.has_dom_lib;
         for id in virtual_entry_ids {
             engine.intern_resolved(
                 &crate::host::ModuleId::from(id.as_str()),
@@ -931,16 +959,21 @@ impl Analyzer {
         };
         let files = resolved_config.files;
         let type_root_dts_files = resolved_config.type_root_dts_files;
+        let type_roots = resolved_config.type_roots;
+        let has_dom_lib = resolved_config.has_dom_lib;
         let (roots, dts_files) = if self.roots_from_tsconfig.load(Ordering::SeqCst) {
             let (roots, dts_files) = partition_tsconfig_files(files, &self.fs);
             (Some(roots), dts_files)
         } else {
             (None, tsconfig_dts_files(files))
         };
+        let type_roots_changed = replace_if_changed(&self.engine.tsconfig_type_roots, type_roots);
+        let has_dom_lib_changed = replace_if_changed(&self.engine.has_dom_lib, has_dom_lib);
         self.replace_program_files(
             roots,
             Some(dts_files),
             Some(type_root_dts_files),
+            type_roots_changed || has_dom_lib_changed,
             invalidated_paths,
         );
     }
@@ -997,7 +1030,7 @@ impl Analyzer {
                 }
             }
         }
-        self.replace_program_files(Some(roots), None, None, &mut invalidated_paths);
+        self.replace_program_files(Some(roots), None, None, false, &mut invalidated_paths);
         Ok(dedup_preserving_order(invalidated_paths))
     }
 
@@ -1019,6 +1052,7 @@ impl Analyzer {
         roots: Option<Vec<PathBuf>>,
         dts_files: Option<Vec<PathBuf>>,
         type_root_dts_files: Option<Vec<PathBuf>>,
+        custom_element_config_changed: bool,
         invalidated_paths: &mut Vec<String>,
     ) {
         let r3_symbols_file = self.engine.r3_symbols_file();
@@ -1029,14 +1063,16 @@ impl Analyzer {
         let type_root_dts_files_changed = type_root_dts_files.is_some_and(|files| {
             replace_if_changed(&self.engine.tsconfig_type_root_dts_files, files)
         });
-        if !roots_changed && !dts_files_changed && !type_root_dts_files_changed {
-            return;
+        if roots_changed || dts_files_changed {
+            let mut evicted = self.engine.invalidate_roots();
+            if self.engine.r3_symbols_file() != r3_symbols_file {
+                evicted.extend(self.engine.invalidate_r3_symbols_root());
+            }
+            self.push_evicted_paths(evicted, invalidated_paths);
+        } else if type_root_dts_files_changed || custom_element_config_changed {
+            let evicted = self.engine.invalidate_custom_element_config();
+            self.push_evicted_paths(evicted, invalidated_paths);
         }
-        let mut evicted = self.engine.invalidate_roots();
-        if self.engine.r3_symbols_file() != r3_symbols_file {
-            evicted.extend(self.engine.invalidate_r3_symbols_root());
-        }
-        self.push_evicted_paths(evicted, invalidated_paths);
     }
 
     fn resolve_metadata_target(&self, module_ref: crate::host::ModuleRef) -> Option<FileId> {

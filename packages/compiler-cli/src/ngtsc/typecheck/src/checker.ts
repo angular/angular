@@ -2255,9 +2255,16 @@ function isSymbolTypeMatch(
   return firstTypeNode === lastTypeNode && firstTypeNode !== undefined;
 }
 
+function isNullishType(type: ts.Type): boolean {
+  if ((type.flags & (ts.TypeFlags.Undefined | ts.TypeFlags.Null)) !== 0) {
+    return true;
+  }
+  return type.isUnion() && type.types.some(isNullishType);
+}
+
 /**
- * Extracts custom element tag names (containing `-`) declared on TypeScript's global
- * `HTMLElementTagNameMap` interface in the given program.
+ * Extracts custom element tag names (lowercase WHATWG names starting with `[a-z]` and containing
+ * `-`) declared on TypeScript's global `HTMLElementTagNameMap` interface in the given program.
  */
 function collectKnownCustomElements(program: ts.Program): ReadonlySet<string> {
   const tags = new Set<string>();
@@ -2268,7 +2275,11 @@ function collectKnownCustomElements(program: ts.Program): ReadonlySet<string> {
     ts.SymbolFlags.Value,
     /* excludeGlobals */ false,
   );
-  if (documentSymbol === undefined) {
+  if (
+    documentSymbol === undefined ||
+    checker.getPropertyOfType(checker.getTypeOfSymbol(documentSymbol), 'createElement') ===
+      undefined
+  ) {
     return tags;
   }
   const tagNameMapSymbol = checker.resolveName(
@@ -2282,9 +2293,17 @@ function collectKnownCustomElements(program: ts.Program): ReadonlySet<string> {
   }
   const tagNameMapType = checker.getDeclaredTypeOfSymbol(tagNameMapSymbol);
   for (const prop of checker.getPropertiesOfType(tagNameMapType)) {
-    if (prop.name.includes('-') && prop.name === prop.name.toLowerCase()) {
-      tags.add(prop.name);
+    if (
+      !/^[a-z].*-/.test(prop.name) ||
+      prop.name !== prop.name.toLowerCase() ||
+      (prop.flags & ts.SymbolFlags.Optional) !== 0
+    ) {
+      continue;
     }
+    if (isNullishType(checker.getTypeOfSymbol(prop))) {
+      continue;
+    }
+    tags.add(prop.name);
   }
   return tags;
 }

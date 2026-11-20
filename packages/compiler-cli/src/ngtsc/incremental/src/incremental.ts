@@ -193,14 +193,6 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
         physicallyChangedTsFiles.add(sfPath);
       }
 
-      // Bail out if a .d.ts file was deleted - the semantic dep graph cannot track ambient
-      // declarations removed by deleting an unimported declaration file.
-      for (const oldSf of oldFilesArray) {
-        if (oldSf.isDeclarationFile && deletedTsFiles.has(absoluteFromSourceFile(oldSf))) {
-          return IncrementalCompilation.fresh(newVersions);
-        }
-      }
-
       // Remove any files that have been deleted from the list of physical changes.
       for (const deletedFileName of deletedTsFiles) {
         physicallyChangedTsFiles.delete(resolve(deletedFileName));

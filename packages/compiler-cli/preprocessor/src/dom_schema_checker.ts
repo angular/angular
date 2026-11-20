@@ -20,9 +20,9 @@ import {
 import {ErrorCode} from './error_code.js';
 import {Diagnostic} from './diagnostic.js';
 
-const REGISTRY = new DomElementSchemaRegistry();
+export const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
-const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
+export const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
 
 /**
  * Normalizes a template element tag name into a candidate custom element tag name, or returns
@@ -31,8 +31,7 @@ const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
 export function normalizeCustomElementTagName(tagName: string): string | null {
   const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
   if (
-    name.startsWith(':') ||
-    !name.includes('-') ||
+    !/^[a-z].*-/.test(name) ||
     name === 'ng-container' ||
     name === 'ng-content' ||
     name === 'ng-template'
@@ -48,16 +47,30 @@ export function normalizeCustomElementTagName(tagName: string): string | null {
  */
 export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
   private _diagnostics: Diagnostic[] = [];
+  private _checkedCustomElements = new Map<string, boolean>();
 
   get diagnostics(): ReadonlyArray<Diagnostic> {
     return this._diagnostics;
+  }
+
+  /**
+   * Normalized candidate custom element tag names actually queried via `isKnownCustomElement`
+   * during this check pass, mapped to whether they were known in `HTMLElementTagNameMap`.
+   */
+  get checkedCustomElements(): ReadonlyMap<string, boolean> {
+    return this._checkedCustomElements;
   }
 
   constructor(private isCustomElement: (tagName: string) => boolean = () => false) {}
 
   isKnownCustomElement(tagName: string): boolean {
     const name = normalizeCustomElementTagName(tagName);
-    return name !== null && this.isCustomElement(name);
+    if (name === null) {
+      return false;
+    }
+    const known = this.isCustomElement(name);
+    this._checkedCustomElements.set(name, known);
+    return known;
   }
 
   checkElement(
@@ -120,9 +133,14 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       return;
     }
 
+    // Known WAI-ARIA attributes are mapped to camelCase (e.g. `aria-label` -> `ariaLabel`) before
+    // this check and accepted by `REGISTRY.hasProperty`. Any remaining `aria-*` name is an unknown
+    // ARIA attribute; do not exempt it as a custom element property since Angular compiles
+    // `[aria-*]` via `ɵɵariaProperty` and skips TCB property assignment for it.
+    const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
     if (
       !REGISTRY.hasProperty(tagName, name, schemas) &&
-      !(!hasComponent && this.isKnownCustomElement(tagName))
+      !(!hasComponent && !isUnknownAriaAttr && this.isKnownCustomElement(tagName))
     ) {
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemasStr = `'${decorator}.schemas'`;

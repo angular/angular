@@ -1039,6 +1039,7 @@ pub fn analyze_parsed(
         program,
         module_record,
         source_text,
+        crate::utils::is_module_by_extension(path),
     );
     let triple_slash_references =
         super::custom_elements::extract_triple_slash_references(source_text);

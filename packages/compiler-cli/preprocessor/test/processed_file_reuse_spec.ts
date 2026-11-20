@@ -645,4 +645,140 @@ describe('HybridCompiler processed output reuse', () => {
 
     analyzer.close();
   });
+
+  it('does not re-query known custom elements on external HTML/CSS resource edits', async () => {
+    const {analyzer, build, edit} = await createSession(
+      'custom_elements_resource_edit',
+      true,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['a.component.ts', 'b.component.ts', 'dir.ts', 'widget.component.ts', 'ce.d.ts'],
+        }),
+        'widget.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'app-widget-host',
+          template: '<my-widget [label]="title"></my-widget>',
+        })
+        export class WidgetHostComponent {
+          title = 'hello';
+        }
+      `,
+        'ce.d.ts': `
+        interface HTMLElementTagNameMap {
+          'my-widget': HTMLElement & {label: string};
+        }
+      `,
+      },
+    );
+
+    await build();
+
+    let calls = 0;
+    const orig = analyzer.getKnownCustomElements!.bind(analyzer);
+    analyzer.getKnownCustomElements = async () => {
+      calls++;
+      return orig();
+    };
+
+    await edit('b.component.html', '<p>b, edited template only</p>');
+    await build();
+    expect(calls).toBe(0);
+
+    analyzer.close();
+  });
+
+  it('recovers cleanly when getKnownCustomElements rejects once', async () => {
+    const {compiler, analyzer, root, build} = await createSession(
+      'custom_elements_reject_recovery',
+      false,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['a.component.ts', 'b.component.ts', 'dir.ts', 'widget.component.ts', 'ce.d.ts'],
+        }),
+        'widget.component.ts': `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'app-widget-host',
+            template: '<my-widget [label]="title"></my-widget>',
+          })
+          export class WidgetHostComponent {
+            title = 'hello';
+          }
+        `,
+        'ce.d.ts': `
+          interface HTMLElementTagNameMap {
+            'my-widget': HTMLElement & {label: string};
+          }
+        `,
+      },
+    );
+
+    const orig = analyzer.getKnownCustomElements!.bind(analyzer);
+    let attempts = 0;
+    analyzer.getKnownCustomElements = async () => {
+      attempts++;
+      if (attempts === 1) {
+        throw new Error('transient analyzer failure');
+      }
+      return orig();
+    };
+
+    const widgetPath = path.join(root, 'widget.component.ts');
+    await build();
+    expect(compiler.currentProcessErrors.get(widgetPath)).toBe('transient analyzer failure');
+
+    // Subsequent TCB lookup must retry rather than observing a poisoned rejected promise.
+    const tcb = await compiler.getTcbForFile(widgetPath);
+    expect(attempts).toBe(2);
+    expect(tcb).toMatch(/_t\d+\.label\b.*=/);
+
+    analyzer.close();
+  });
+
+  it('reprocesses uppercase custom element tag references under CUSTOM_ELEMENTS_SCHEMA when ce.d.ts changes', async () => {
+    const {analyzer, build, edit} = await createSession(
+      'custom_elements_uppercase_schema_ref',
+      true,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['a.component.ts', 'b.component.ts', 'dir.ts', 'widget.component.ts', 'ce.d.ts'],
+        }),
+        'widget.component.ts': `
+          import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+          @Component({
+            selector: 'app-widget-host',
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            template: '<MY-WIDGET #w></MY-WIDGET>{{ w.label }}',
+          })
+          export class WidgetHostComponent {}
+        `,
+        'ce.d.ts': `
+          interface HTMLElementTagNameMap {
+            'my-widget': HTMLElement & {label: string};
+          }
+        `,
+      },
+    );
+
+    const first = await build();
+    expect(first.get('widget.component.ts')!.tcb?.code).toContain(
+      'document.createElement("my-widget")',
+    );
+
+    await edit('ce.d.ts', `export {};`);
+    const second = await build();
+    expect(second.get('widget.component.ts')).not.toBe(first.get('widget.component.ts'));
+    expect(second.get('widget.component.ts')!.tcb?.code).toContain(
+      'document.createElement("MY-WIDGET")',
+    );
+
+    analyzer.close();
+  });
 });
