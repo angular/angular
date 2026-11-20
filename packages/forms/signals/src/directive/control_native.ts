@@ -41,6 +41,13 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
+  // Last DOM state we handled. Read from the DOM, since the browser may reject or truncate writes.
+  let lastDomValue = input.value;
+  let lastBadInput = false;
+  const recordDomState = () => {
+    lastDomValue = input.value;
+    lastBadInput = isInput(input) && validityMonitor.isBadInput(input);
+  };
 
   // TODO: (perf) ok to always create this?
   const parser = createParser(
@@ -54,30 +61,46 @@ export function nativeControlCreate(
   );
 
   parseErrorsSource.set(parser.errors);
+  const writeNativeControlValue = (value: unknown) => {
+    setNativeControlValue(input, value);
+    recordDomState();
+  };
+
   parent.onReset = () => {
     parser.reset();
     const value = parent.state().value();
     bindings['controlValue'] = value;
-    setNativeControlValue(input, value);
+    writeNativeControlValue(value);
   };
 
   // Use `addEventListener` so we only trigger ticks on signal changes.
   // See https://github.com/angular/angular/issues/61839.
   const nativeEl = host.nativeElement;
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  const onInput = () => parser.setRawValue(undefined);
-  nativeEl.addEventListener('input', onInput);
+  const onUserEdit = () => {
+    recordDomState();
+    // Dirty here: a value that fails to parse never reaches `controlValue`.
+    parent.state().markAsDirty();
+    parser.setRawValue(undefined);
+  };
+  nativeEl.addEventListener('input', onUserEdit);
   const onBlur = () => parent.state().markAsTouched();
   nativeEl.addEventListener('blur', onBlur);
 
   parent.destroyRef.onDestroy(() => {
-    nativeEl.removeEventListener('input', onInput);
+    nativeEl.removeEventListener('input', onUserEdit);
     nativeEl.removeEventListener('blur', onBlur);
   });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, () => {
+      // The validity animation also fires on render; only a changed DOM state is a user edit.
+      if (input.value === lastDomValue && validityMonitor.isBadInput(input) === lastBadInput) {
+        return;
+      }
+      onUserEdit();
+    });
   }
 
   parent.registerAsBinding();
@@ -133,7 +156,7 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      writeNativeControlValue(controlValue);
     }
 
     updateMode = true;
