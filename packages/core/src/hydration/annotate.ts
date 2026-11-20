@@ -709,21 +709,19 @@ function serializeLView(
         // thus it has no DOM elements associated with it, so the **next sibling**
         // node would not be able to find an anchor. In this case, use full path instead.
         let nextTNode = tNode.next;
-        // Skip over all `<ng-content>` slots and `@let` declarations in a row.
+        // Skip over all `<ng-content>` slots and `@let` declarations in a row, as well as
+        // content-projected nodes that are disconnected from the DOM (for example, content that
+        // is not projected): those are annotated as disconnected when processed, and the next
+        // connected node can't be located from them. Any other node missing from the DOM still
+        // fails with a serialization error.
         while (
           nextTNode !== null &&
-          nextTNode.type & (TNodeType.Projection | TNodeType.LetDeclaration)
+          (nextTNode.type & (TNodeType.Projection | TNodeType.LetDeclaration) ||
+            isDisconnectedContentProjectedNode(nextTNode, lView))
         ) {
           nextTNode = nextTNode.next;
         }
-        // Skip content-projected nodes that are disconnected from the DOM (for example, content
-        // that is not projected): they have no path, and are annotated as disconnected when
-        // processed. Any other node missing from the DOM still fails with a serialization error.
-        if (
-          nextTNode &&
-          !isInSkipHydrationBlock(nextTNode) &&
-          !isDisconnectedContentProjectedNode(nextTNode, lView)
-        ) {
+        if (nextTNode && !isInSkipHydrationBlock(nextTNode)) {
           // Handle a tNode after the `<ng-content>` slot.
           appendSerializedNodePath(ngh, nextTNode, lView, i18nChildren);
         }
