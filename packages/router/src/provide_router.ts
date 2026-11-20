@@ -400,13 +400,16 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
     {provide: IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, useValue: true},
     {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.EnabledBlocking},
     provideAppInitializer(() => {
-      const injector = inject(Injector);
+      const injector = inject(EnvironmentInjector);
       const locationInitialized: Promise<any> = injector.get(
         LOCATION_INITIALIZED,
         Promise.resolve(),
       );
 
       return locationInitialized.then(() => {
+        if (injector.destroyed) {
+          return undefined;
+        }
         return new Promise((resolve) => {
           const router = injector.get(Router);
           const bootstrapDone = injector.get(BOOTSTRAP_DONE);

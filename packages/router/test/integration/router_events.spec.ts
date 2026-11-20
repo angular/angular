@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {Observable} from 'rxjs';
 import {filter, tap, first} from 'rxjs/operators';
 import {Event} from '../../index';
 import {TestBed} from '@angular/core/testing';
@@ -147,6 +148,33 @@ export async function routerEventsIntegrationSuite() {
       router.navigate(['/user/bilbo']).then(callback);
       await advance(fixture);
       expect(result).toBe(false);
+    });
+
+    it('should unsubscribe active navigation guards when router is disposed', async () => {
+      const router: Router = TestBed.inject(Router);
+      const fixture = await createRoot(router, RootCmp);
+      let guardUnsubscribed = false;
+
+      router.resetConfig([
+        {
+          path: 'user/:name',
+          component: UserCmp,
+          canActivate: [
+            () =>
+              new Observable<boolean>(() => () => {
+                guardUnsubscribed = true;
+              }),
+          ],
+        },
+      ]);
+
+      router.navigateByUrl('/user/frodo');
+      await advance(fixture);
+      expect(guardUnsubscribed).toBe(false);
+
+      router.dispose();
+
+      expect(guardUnsubscribed).toBe(true);
     });
   });
 }
