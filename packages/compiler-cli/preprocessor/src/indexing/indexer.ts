@@ -14,13 +14,12 @@ import {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
-  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
   TmplAstTextAttribute,
-  TmplAstVariable,
   TcbDirectiveMetadata,
+  TemplateEntity,
 } from '@angular/compiler';
 import {
   ClassEntity,
@@ -83,7 +82,7 @@ export class IndexerBoundTemplate implements AbstractBoundTemplate<ClassEntity> 
     return this.toDirectiveRef(consumer);
   }
 
-  getExpressionTarget(ast: AST): TmplAstReference | TmplAstVariable | TmplAstLetDeclaration | null {
+  getExpressionTarget(ast: AST): TemplateEntity | null {
     return this.boundTarget?.getExpressionTarget(ast) ?? null;
   }
 

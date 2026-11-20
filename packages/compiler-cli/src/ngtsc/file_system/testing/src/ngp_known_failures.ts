@@ -132,6 +132,10 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
 
+  // TODO(crisbeto): ngp emits arrow functions inside `track` expressions with an unresolved
+  // `ctx` reference ("Cannot find name 'ctx'").
+  'ngtsc type checking arrow functions should allow arrow function parameters to be read inside a `track` expression',
+
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',
   'ngtsc class docs extraction should extract a method with a rest parameter',
