@@ -783,7 +783,12 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   }
 
   private setHostAttribute(name: string, value: string): void {
-    this.renderer.setAttribute(this.imgElement, name, value);
+    // The browser selects the image source again after a write, even with an identical value.
+    // An image that still has a placeholder keeps its writes, so that an image that failed before
+    // hydration fires `error` again and the placeholder is removed.
+    if (this.placeholder || this.imgElement.getAttribute(name) !== value) {
+      this.renderer.setAttribute(this.imgElement, name, value);
+    }
   }
 }
 
