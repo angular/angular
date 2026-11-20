@@ -705,6 +705,7 @@ fn process_class_common<'a>(
         angular_imports,
         semantic,
         eval,
+        &mut later_declaration_references,
         top_level_reads.as_mut(),
         &mut member_io.issues,
     ));

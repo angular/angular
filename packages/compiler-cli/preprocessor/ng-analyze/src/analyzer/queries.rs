@@ -405,6 +405,7 @@ pub fn extract_queries<'a>(
     angular_imports: &crate::analyzer::imports::AngularImports,
     semantic: &Semantic<'a>,
     eval: &crate::evaluator::EvalInput<'a, '_>,
+    later_references: &mut Vec<oxc_span::Span>,
     mut top_level_reads: Option<&mut super::TopLevelReads<'_, 'a, '_>>,
     issues: &mut Vec<ValueIssue>,
 ) -> Vec<AngularField> {
@@ -533,6 +534,15 @@ pub fn extract_queries<'a>(
         let predicate = extract_predicate(&call.arguments[0], PredicateKind::Signal, eval);
         let (descendants, emit_distinct_changes_only, read_span, is_static) =
             extract_query_options(&call.arguments, default_descendants, semantic);
+        let mut guards = Vec::new();
+        super::collect_argument_references(
+            &call.arguments,
+            semantic,
+            class.span.end,
+            Some(&mut guards),
+            top_level_reads.as_deref_mut(),
+            None,
+        );
         let options_arg = call.arguments.get(1);
         let options_span = options_arg
             .and_then(|arg| arg.as_expression())
@@ -541,19 +551,10 @@ pub fn extract_queries<'a>(
             super::strip_type_arguments_from_args(
                 std::slice::from_ref(arg),
                 semantic.source_text(),
-                &[],
+                &guards,
             )
         });
-        if let Some(reads) = top_level_reads.as_deref_mut() {
-            super::collect_argument_references(
-                &call.arguments,
-                semantic,
-                class.span.end,
-                None,
-                Some(reads),
-                None,
-            );
-        }
+        later_references.extend(guards);
 
         let meta = QueryData {
             property_name: prop_name_cow.into_owned(),
@@ -796,11 +797,13 @@ mod tests {
         let mut issues = Vec::new();
         for stmt in &ret.program.body {
             if let oxc_ast::ast::Statement::ClassDeclaration(class_decl) = stmt {
+                let mut later_refs = Vec::new();
                 let fields = extract_queries(
                     class_decl,
                     &angular_imports,
                     &semantic,
                     &eval,
+                    &mut later_refs,
                     None,
                     &mut issues,
                 );
