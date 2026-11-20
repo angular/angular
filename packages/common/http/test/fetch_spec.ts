@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ApplicationRef, createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {firstValueFrom, Observable, of, Subject} from 'rxjs';
-import {catchError, retry, scan, skip, take, toArray} from 'rxjs/operators';
+import {catchError, retry, scan, skip, take, tap, toArray} from 'rxjs/operators';
 import {HttpEvent, HttpEventType, HttpRequest, HttpResponse} from '../index';
 
 import {
@@ -19,6 +20,7 @@ import {
   HttpParams,
   HttpStatusCode,
   provideHttpClient,
+  withInterceptors,
 } from '../public_api';
 import {RuntimeErrorCode} from '../src/errors';
 import {FetchBackend, FetchFactory, HTTP_FETCH_MAX_RESPONSE_SIZE} from '../src/fetch';
@@ -902,6 +904,29 @@ describe('FetchBackend', () => {
       expect(streamCanceled).toBeTrue();
       expect(completed).toBeFalse();
       expect(errored).toBeFalse();
+    });
+
+    it('should release root PendingTasks when a child EnvironmentInjector with an interceptor is destroyed mid-request', async () => {
+      const parentInjector = TestBed.inject(EnvironmentInjector);
+      const appRef = TestBed.inject(ApplicationRef);
+      const childFetchMock = new MockFetchFactory();
+      const childInjector = createEnvironmentInjector(
+        [
+          provideHttpClient(withInterceptors([(req, next) => next(req).pipe(tap())])),
+          {provide: FetchFactory, useValue: childFetchMock},
+        ],
+        parentInjector,
+      );
+
+      const childClient = childInjector.get(HttpClient);
+      const sub = childClient.get('/test', {responseType: 'text'}).subscribe();
+      expect(childFetchMock.request.signal?.aborted).toBeFalse();
+
+      childInjector.destroy();
+
+      expect(childFetchMock.request.signal?.aborted).toBeTrue();
+      await appRef.whenStable();
+      sub.unsubscribe();
     });
   });
 });
