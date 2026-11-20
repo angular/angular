@@ -2137,6 +2137,10 @@ function appendCompiledClass(
   }
 
   if (classMetadataStmt !== null) {
+    // Emit `ɵsetClassMetadata` as a trailing IIFE after the class whenever any surviving decorator
+    // remains on the class, its members, or its parameters so TypeScript's `tslib.__decorate` calls
+    // execute first (preventing class/constructor-parameter `__decorate` from replacing the class
+    // after metadata is attached, and matching `ngtsc` statement ordering for member decorators).
     const emitOutsideClass =
       !!ctx.complianceMode || !!compiled.classMeta.hasNonAngularClassDecorators;
     const metadata = printSetClassMetadata(classMetadataStmt, printer, emitOutsideClass);
@@ -2362,6 +2366,7 @@ function buildDecoratorMetadataExpr(
 function buildCtorParametersExpr(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   s: MagicString,
+  guards: nga.SpanMetadata[] = [],
 ): R3ClassMetadataCtorParameter[] | null {
   if (constructorParams == null) {
     return null;
@@ -2372,7 +2377,7 @@ function buildCtorParametersExpr(
     if (param.decorators.length > 0) {
       const ngDecorators = param.decorators
         .filter((d) => d.isAngular)
-        .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
+        .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, guards));
       decorators = o.literalArr(ngDecorators);
     }
     return {
@@ -2554,7 +2559,9 @@ function buildPropDecoratorsExpr(
         ? R3Identifiers.contentChildDecorator
         : R3Identifiers.contentChildrenDecorator;
 
-    const predicateStr = s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
+    const predicateStr = classMeta.hasNonAngularClassDecorators
+      ? sliceGuarded(s.original, query.predicateSpan, guards)
+      : s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
     let predicateExpr: o.Expression = new o.WrappedNodeExpr(
       new RawSource(predicateStr, [query.predicateSpan]),
     );
@@ -2582,7 +2589,10 @@ function buildPropDecoratorsExpr(
       // block. Type arguments are pre-stripped (`optionsString`) since they may name class type
       // parameters (TS2302); they contain no value reads, so the span still describes it for HMR.
       const optionsStr =
-        query.optionsString ?? s.original.slice(query.optionsSpan.start, query.optionsSpan.end);
+        query.optionsString ??
+        (classMeta.hasNonAngularClassDecorators
+          ? sliceGuarded(s.original, query.optionsSpan, guards)
+          : s.original.slice(query.optionsSpan.start, query.optionsSpan.end));
       queryOptionsEntries.push(
         new o.LiteralMapSpreadAssignment(
           new o.WrappedNodeExpr(new RawSource(optionsStr, [query.optionsSpan])),
@@ -2658,7 +2668,12 @@ function buildSetClassMetadata(
   complianceMode: boolean = false,
   isClosureCompilerEnabled: boolean = false,
 ): o.Statement {
-  const guards = complianceMode ? [] : classMeta.laterDeclarationReferences;
+  const outsideGuards = complianceMode ? [] : (classMeta.outsideMetadataGuards ?? []);
+  const guards = complianceMode
+    ? []
+    : outsideGuards.length > 0
+      ? [...classMeta.laterDeclarationReferences, ...outsideGuards]
+      : classMeta.laterDeclarationReferences;
   const functionSpans = isClosureCompilerEnabled ? classMeta.decoratorFunctionSpans : undefined;
   const sortedDecorators =
     decorators.length > 1
@@ -2709,7 +2724,7 @@ function buildSetClassMetadata(
   const classMetadata = {
     type: o.variable(className),
     decorators: o.literalArr(decoratorObjs),
-    ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s),
+    ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s, outsideGuards),
     propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards, false),
   };
   return compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();

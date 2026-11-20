@@ -1047,6 +1047,8 @@ pub struct ClassMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_decorators: Option<Vec<DecoratedMemberMetadata>>,
     pub later_declaration_references: Vec<SpanMetadata>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub outside_metadata_guards: Vec<SpanMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub decorator_function_spans: Option<Vec<SpanMetadata>>,
     /// Root-scope value bindings read inside the class's Angular decorator metadata, for HMR's
@@ -1104,6 +1106,8 @@ pub struct ClassMetadata {
     pub uses_on_changes: bool,
     pub is_exported: bool,
     pub has_non_exported_bounds: bool,
+    /// True when the class, any of its members, or any constructor/method parameter carries a
+    /// surviving decorator that TypeScript compiles into `tslib.__decorate(...)`.
     #[serde(default)]
     pub has_non_angular_class_decorators: bool,
 }

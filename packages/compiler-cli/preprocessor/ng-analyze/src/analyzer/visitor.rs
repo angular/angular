@@ -400,6 +400,7 @@ fn classify(
         reference_id,
         ng_decorator_spans: common.ng_decorator_spans,
         non_ng_decorator_spans: common.non_ng_decorator_spans,
+        has_non_angular_decorators: common.has_non_angular_decorators,
         decorator_removal_spans: common.decorator_removal_spans,
         nocollapse_insertions: common.nocollapse_insertions,
         span: common.span,
@@ -414,6 +415,7 @@ fn classify(
         di_issues: Vec::new(),
         member_decorators: common.member_decorators,
         later_declaration_references: common.later_declaration_references,
+        outside_metadata_guards: common.outside_metadata_guards,
         decorator_function_spans: common.decorator_function_spans,
         top_level_references: common.top_level_references,
         type_parameters: common.type_parameters,
@@ -468,6 +470,7 @@ pub struct RegistrationInfo {
 struct ParsedCommon {
     ng_decorator_spans: Vec<oxc_span::Span>,
     non_ng_decorator_spans: Vec<oxc_span::Span>,
+    has_non_angular_decorators: bool,
     decorator_removal_spans: Vec<oxc_span::Span>,
     nocollapse_insertions: Vec<super::closure_nocollapse::NoCollapseInsertion>,
     span: oxc_span::Span,
@@ -481,6 +484,7 @@ struct ParsedCommon {
     decorator_issues: Vec<crate::analyzer::class_data::ValueIssue>,
     member_decorators: Vec<crate::DecoratedMemberMetadata>,
     later_declaration_references: Vec<oxc_span::Span>,
+    outside_metadata_guards: Vec<oxc_span::Span>,
     decorator_function_spans: Vec<oxc_span::Span>,
     top_level_references: Option<Vec<super::TopLevelReference>>,
     type_parameters: Option<Vec<TypeParameterData>>,
@@ -560,35 +564,6 @@ fn process_class_common<'a>(
         out: Vec::new(),
         eval,
     });
-    let mut jit_removal_spans = Vec::new();
-    let constructor_params_result = get_constructor_params(
-        class,
-        &ctor_params_di,
-        semantic,
-        converter,
-        import_map,
-        angular_imports,
-        &mut jit_removal_spans,
-        top_level_reads.as_mut(),
-    );
-    let (constructor_params, unexpected_param_decorators) = match constructor_params_result {
-        Some(result) => (Some(result.params), result.unexpected_decorators),
-        None => (None, Vec::new()),
-    };
-    let mut later_declaration_references = Vec::new();
-    let mut member_removal_spans = Vec::new();
-    let member_decorators = super::get_member_decorators(
-        class,
-        converter,
-        semantic,
-        angular_imports,
-        semantic.source_text(),
-        &mut later_declaration_references,
-        &mut member_removal_spans,
-        &mut jit_removal_spans,
-        top_level_reads.as_mut(),
-    );
-
     let mut injectable: Option<InjectableData> = None;
     let mut service: Option<ServiceData> = None;
     let mut component: Option<ComponentData> = None;
@@ -659,6 +634,47 @@ fn process_class_common<'a>(
         || directive.as_ref().is_some_and(|d| d.is_jit)
         || ng_module.as_ref().is_some_and(|m| m.is_jit);
 
+    let has_non_angular_decorators =
+        super::has_surviving_non_angular_decorators(class, semantic, angular_imports);
+    let mut outside_metadata_guards = Vec::new();
+    let mut outside_metadata = (!is_jit && has_non_angular_decorators).then(|| {
+        super::OutsideMetadataScope {
+            enclosing_class: class,
+            guards: &mut outside_metadata_guards,
+        }
+    });
+
+    let mut jit_removal_spans = Vec::new();
+    let constructor_params_result = get_constructor_params(
+        class,
+        &ctor_params_di,
+        semantic,
+        converter,
+        import_map,
+        angular_imports,
+        outside_metadata.as_mut(),
+        &mut jit_removal_spans,
+        top_level_reads.as_mut(),
+    );
+    let (constructor_params, unexpected_param_decorators) = match constructor_params_result {
+        Some(result) => (Some(result.params), result.unexpected_decorators),
+        None => (None, Vec::new()),
+    };
+    let mut later_declaration_references = Vec::new();
+    let mut member_removal_spans = Vec::new();
+    let member_decorators = super::get_member_decorators(
+        class,
+        converter,
+        semantic,
+        angular_imports,
+        semantic.source_text(),
+        outside_metadata.as_mut(),
+        &mut later_declaration_references,
+        &mut member_removal_spans,
+        &mut jit_removal_spans,
+        top_level_reads.as_mut(),
+    );
+
     // Class decorators lead the removal list, followed by the member decorators.
     // For JIT classes, class decorators are preserved on the class declaration while
     // Angular constructor parameter and identifier-named member decorators are downleveled
@@ -672,6 +688,7 @@ fn process_class_common<'a>(
                 decorator,
                 semantic,
                 class.span.end,
+                outside_metadata.as_mut(),
                 Some(&mut later_declaration_references),
                 top_level_reads.as_mut(),
                 Some(&mut decorator_function_spans),
@@ -705,6 +722,7 @@ fn process_class_common<'a>(
         angular_imports,
         semantic,
         eval,
+        outside_metadata.as_mut(),
         top_level_reads.as_mut(),
         &mut member_io.issues,
     ));
@@ -758,6 +776,7 @@ fn process_class_common<'a>(
         common: ParsedCommon {
             ng_decorator_spans,
             non_ng_decorator_spans,
+            has_non_angular_decorators,
             decorator_removal_spans,
             nocollapse_insertions,
             span: class.span,
@@ -771,6 +790,7 @@ fn process_class_common<'a>(
             decorator_issues,
             member_decorators,
             later_declaration_references,
+            outside_metadata_guards,
             decorator_function_spans,
             top_level_references: top_level_reads.map(|reads| reads.out),
             type_parameters,

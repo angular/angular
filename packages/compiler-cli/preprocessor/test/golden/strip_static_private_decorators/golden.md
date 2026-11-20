@@ -48,26 +48,26 @@ export class AppComp {
       template: function AppComp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        AppComp,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                selector: 'app-comp',
-                template: '',
-              },
-            ],
-          },
-        ],
-        null,
-        { COMPUTED_KEY: [{ type: Output }], normalInput: [{ type: Input }] },
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      AppComp,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: 'app-comp',
+              template: '',
+            },
+          ],
+        },
+      ],
+      null,
+      { COMPUTED_KEY: [{ type: Output }], normalInput: [{ type: Input }] },
+    );
+})();
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(AppComp, { className: 'AppComp', filePath: 'app.ts', lineNumber: 13 });
