@@ -198,6 +198,10 @@ export async function renderInternal(
   platformRef: PlatformRef,
   applicationRef: ApplicationRef,
 ): Promise<string> {
+  if (platformRef.destroyed || applicationRef.destroyed) {
+    return '';
+  }
+
   const platformState = platformRef.injector.get(PlatformState);
   prepareForHydration(platformState, applicationRef);
   appendServerContextInfo(applicationRef);
@@ -217,17 +221,23 @@ export async function renderInternal(
       } catch (e) {
         // Delegate to the application's ErrorHandler so custom handlers
         // (e.g. Sentry) are notified, rather than writing directly to console.
-        errorHandler(e);
+        if (!environmentInjector.destroyed) {
+          errorHandler(e);
+        }
       }
     }
 
     if (asyncCallbacks.length) {
       for (const result of await Promise.allSettled(asyncCallbacks)) {
-        if (result.status === 'rejected') {
+        if (result.status === 'rejected' && !environmentInjector.destroyed) {
           errorHandler(result.reason);
         }
       }
     }
+  }
+
+  if (platformRef.destroyed || applicationRef.destroyed) {
+    return '';
   }
 
   return platformState.renderToString();
@@ -238,10 +248,19 @@ export async function renderInternal(
  * to be surfaced to the users.
  */
 function asyncDestroyPlatform(platformRef: PlatformRef): Promise<void> {
+  if (platformRef.destroyed) {
+    return Promise.resolve();
+  }
+
   return new Promise<void>((resolve) => {
     setTimeout(() => {
-      platformRef.destroy();
-      resolve();
+      try {
+        if (!platformRef.destroyed) {
+          platformRef.destroy();
+        }
+      } finally {
+        resolve();
+      }
     }, 0);
   });
 }
@@ -294,6 +313,9 @@ export async function renderModule<T>(
   const platformRef = createServerPlatform({document, url, platformProviders});
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
+    if (platformRef.destroyed || moduleRef.injector.destroyed) {
+      return '';
+    }
     const applicationRef = moduleRef.injector.get(ApplicationRef);
 
     const measuringLabel = 'whenStable';
@@ -361,6 +383,10 @@ export async function renderApplication(
     startMeasuring(bootstrapLabel);
     const applicationRef = await bootstrap({platformRef});
     stopMeasuring(bootstrapLabel);
+
+    if (platformRef.destroyed || applicationRef.destroyed) {
+      return '';
+    }
 
     startMeasuring(_renderLabel);
 
