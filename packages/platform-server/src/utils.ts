@@ -198,6 +198,10 @@ export async function renderInternal(
   platformRef: PlatformRef,
   applicationRef: ApplicationRef,
 ): Promise<string> {
+  if (platformRef.destroyed || applicationRef.destroyed) {
+    return '';
+  }
+
   const platformState = platformRef.injector.get(PlatformState);
   prepareForHydration(platformState, applicationRef);
   appendServerContextInfo(applicationRef);
@@ -217,17 +221,42 @@ export async function renderInternal(
       } catch (e) {
         // Delegate to the application's ErrorHandler so custom handlers
         // (e.g. Sentry) are notified, rather than writing directly to console.
-        errorHandler(e);
+        if (!environmentInjector.destroyed) {
+          errorHandler(e);
+        }
       }
     }
 
     if (asyncCallbacks.length) {
-      for (const result of await Promise.allSettled(asyncCallbacks)) {
-        if (result.status === 'rejected') {
+      if (platformRef.destroyed || applicationRef.destroyed) {
+        void Promise.allSettled(asyncCallbacks);
+        return '';
+      }
+
+      const settled = await new Promise<PromiseSettledResult<void>[] | null>((resolve) => {
+        const unregisterDestroy = applicationRef.onDestroy(() => {
+          resolve(null);
+        });
+        Promise.allSettled(asyncCallbacks).then((results) => {
+          unregisterDestroy();
+          resolve(results);
+        });
+      });
+
+      if (settled === null) {
+        return '';
+      }
+
+      for (const result of settled) {
+        if (result.status === 'rejected' && !environmentInjector.destroyed) {
           errorHandler(result.reason);
         }
       }
     }
+  }
+
+  if (platformRef.destroyed || applicationRef.destroyed) {
+    return '';
   }
 
   return platformState.renderToString();
@@ -238,10 +267,20 @@ export async function renderInternal(
  * to be surfaced to the users.
  */
 function asyncDestroyPlatform(platformRef: PlatformRef): Promise<void> {
-  return new Promise<void>((resolve) => {
+  if (platformRef.destroyed) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>((resolve, reject) => {
     setTimeout(() => {
-      platformRef.destroy();
-      resolve();
+      try {
+        if (!platformRef.destroyed) {
+          platformRef.destroy();
+        }
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
     }, 0);
   });
 }
@@ -294,6 +333,9 @@ export async function renderModule<T>(
   const platformRef = createServerPlatform({document, url, platformProviders});
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
+    if (platformRef.destroyed || moduleRef.injector.destroyed) {
+      return '';
+    }
     const applicationRef = moduleRef.injector.get(ApplicationRef);
 
     const measuringLabel = 'whenStable';
@@ -362,6 +404,10 @@ export async function renderApplication(
     const applicationRef = await bootstrap({platformRef});
     stopMeasuring(bootstrapLabel);
 
+    if (platformRef.destroyed || applicationRef.destroyed) {
+      return '';
+    }
+
     startMeasuring(_renderLabel);
 
     const measuringLabel = 'whenStable';
@@ -374,8 +420,11 @@ export async function renderApplication(
     stopMeasuring(_renderLabel);
     return rendered;
   } finally {
-    await asyncDestroyPlatform(platformRef);
-    stopMeasuring(renderAppLabel);
+    try {
+      await asyncDestroyPlatform(platformRef);
+    } finally {
+      stopMeasuring(renderAppLabel);
+    }
   }
 }
 

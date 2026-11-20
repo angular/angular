@@ -6,9 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, destroyPlatform, NgModule} from '@angular/core';
-import {renderApplication, renderModule, ServerModule} from '@angular/platform-server';
-import {isHostAllowed} from '../src/utils';
+import {Component, destroyPlatform, ErrorHandler, NgModule} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {
+  BEFORE_APP_SERIALIZED,
+  INITIAL_CONFIG,
+  platformServer,
+  provideServerRendering,
+  renderApplication,
+  renderModule,
+  ServerModule,
+} from '@angular/platform-server';
+import {isHostAllowed, renderInternal} from '../src/utils';
 
 @Component({
   selector: 'app',
@@ -172,5 +181,126 @@ describe('allowedHosts validation in renderModule', () => {
         .withContext(`URL: ${url}`)
         .toBeRejectedWithError(new RegExp(/Invalid URL:.+/));
     }
+  });
+});
+
+describe('platform destruction during SSR', () => {
+  beforeEach(() => {
+    destroyPlatform();
+  });
+
+  afterEach(() => {
+    destroyPlatform();
+  });
+
+  it('should return empty string without invoking ErrorHandler when destroyed during async BEFORE_APP_SERIALIZED hook', async () => {
+    let rejectHook!: (reason?: unknown) => void;
+    const errorHandlerSpy = jasmine.createSpy('handleError');
+
+    @Component({
+      selector: 'app',
+      template: 'hello',
+    })
+    class App {}
+
+    const platformRef = platformServer([
+      {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+    ]);
+
+    try {
+      const appRef = await bootstrapApplication(
+        App,
+        {
+          providers: [
+            provideServerRendering(),
+            {provide: ErrorHandler, useValue: {handleError: errorHandlerSpy}},
+            {
+              provide: BEFORE_APP_SERIALIZED,
+              multi: true,
+              useValue: () =>
+                new Promise<void>((_, reject) => {
+                  rejectHook = reject;
+                }),
+            },
+          ],
+        },
+        {platformRef},
+      );
+
+      const renderPromise = renderInternal(platformRef, appRef);
+      platformRef.destroy();
+      rejectHook(new Error('late serialization hook error'));
+
+      const html = await renderPromise;
+      expect(html).toBe('');
+      expect(errorHandlerSpy).not.toHaveBeenCalled();
+    } finally {
+      if (!platformRef.destroyed) {
+        platformRef.destroy();
+      }
+    }
+  });
+
+  it('should return empty string when destroyed during a never-settling BEFORE_APP_SERIALIZED hook', async () => {
+    @Component({
+      selector: 'app',
+      template: 'hello',
+    })
+    class App {}
+
+    const platformRef = platformServer([
+      {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+    ]);
+
+    try {
+      const appRef = await bootstrapApplication(
+        App,
+        {
+          providers: [
+            provideServerRendering(),
+            {
+              provide: BEFORE_APP_SERIALIZED,
+              multi: true,
+              useValue: () => new Promise<void>(() => {}),
+            },
+          ],
+        },
+        {platformRef},
+      );
+
+      const renderPromise = renderInternal(platformRef, appRef);
+      platformRef.destroy();
+
+      expect(await renderPromise).toBe('');
+    } finally {
+      if (!platformRef.destroyed) {
+        platformRef.destroy();
+      }
+    }
+  });
+
+  it('should reject renderApplication when platform destruction throws', async () => {
+    @Component({
+      selector: 'app',
+      template: 'hello',
+    })
+    class App {}
+
+    let shouldThrow = true;
+
+    await expectAsync(
+      renderApplication(
+        (context) => {
+          context.platformRef.onDestroy(() => {
+            if (shouldThrow) {
+              shouldThrow = false;
+              throw new Error('destroy failure');
+            }
+          });
+          return bootstrapApplication(App, {providers: [provideServerRendering()]}, context);
+        },
+        {document: '<app></app>'},
+      ),
+    ).toBeRejectedWithError('destroy failure');
   });
 });
