@@ -31,14 +31,23 @@ export function patchBluebird(Zone: ZoneType): void {
                 args[i] = function () {
                   const argSelf: any = this;
                   const argArgs: any = arguments;
+                  // Bluebird runs this callback in the async context it was registered in, which
+                  // the shared microtask queue would otherwise lose; capture it here.
+                  const asyncContext = api.captureAsyncContext();
                   return new Bluebird((res: any, rej: any) => {
-                    zone.scheduleMicroTask('Promise.then', () => {
-                      try {
-                        res(func.apply(argSelf, argArgs));
-                      } catch (error) {
-                        rej(error);
-                      }
-                    });
+                    zone.scheduleMicroTask(
+                      'Promise.then',
+                      () => {
+                        try {
+                          res(func.apply(argSelf, argArgs));
+                        } catch (error) {
+                          rej(error);
+                        }
+                      },
+                      undefined,
+                      undefined,
+                      asyncContext,
+                    );
                   });
                 };
               }

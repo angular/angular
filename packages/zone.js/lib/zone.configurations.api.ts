@@ -153,6 +153,38 @@ declare global {
     __Zone_disable_crypto?: boolean;
 
     /**
+     * Disable the restoration of the `Node.js` async context in promise reactions and
+     * `queueMicrotask()` callbacks.
+     *
+     * `Node.js` keeps a context of its own for every asynchronous operation — the stores of the
+     * active `AsyncLocalStorage` instances and the chain of async resources — and propagates it
+     * through promise reactions, which is what loggers, tracers and request-context libraries use
+     * to tell concurrent operations apart.
+     *
+     * Because `zone.js` replaces the global `Promise` and runs the reactions of unrelated
+     * operations from a single shared microtask, `Node.js` cannot propagate that context on its
+     * own; by default `zone.js` captures it with an `AsyncResource` and runs the reaction inside
+     * it.
+     *
+     * Consider the following example:
+     *
+     * ```ts
+     * const {AsyncLocalStorage} = require('async_hooks');
+     *
+     * const store = new AsyncLocalStorage();
+     * store.run('first', () => Promise.resolve().then(() => console.log(store.getStore())));
+     * store.run('second', () => Promise.resolve().then(() => console.log(store.getStore())));
+     * // Both reactions run from the same microtask, and each one reads the store it was
+     * // registered in, so the output is 'first' and 'second'.
+     * ```
+     *
+     * If you set `__Zone_disable_asyncContext = true` before importing `zone.js`,
+     * `zone.js` does not capture the async context and both reactions run in the context of
+     * whichever one was registered first, so the above code outputs 'first' twice.
+     */
+    __Zone_disable_asyncContext?: boolean;
+
+    /**
      * Disable the monkey patch of the browser `timer` APIs.
      *
      * By default, `zone.js` monkey patches browser timer

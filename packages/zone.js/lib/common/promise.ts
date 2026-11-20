@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ZoneType} from '../zone-impl';
+import {AsyncContextRunner, ZoneType} from '../zone-impl';
 
 import {patchMethod} from './utils';
 
@@ -55,15 +55,26 @@ export function patchPromise(Zone: ZoneType): void {
     api.microtaskDrainDone = () => {
       while (_uncaughtPromiseErrors.length) {
         const uncaughtPromiseError: UncaughtPromiseError = _uncaughtPromiseErrors.shift()!;
-        try {
-          uncaughtPromiseError.zone.runGuarded(() => {
-            if (uncaughtPromiseError.throwOriginal) {
-              throw uncaughtPromiseError.rejection;
-            }
-            throw uncaughtPromiseError;
-          });
-        } catch (error) {
-          handleUnhandledRejection(error);
+        const report = () => {
+          try {
+            uncaughtPromiseError.zone.runGuarded(() => {
+              if (uncaughtPromiseError.throwOriginal) {
+                throw uncaughtPromiseError.rejection;
+              }
+              throw uncaughtPromiseError;
+            });
+          } catch (error) {
+            handleUnhandledRejection(error);
+          }
+        };
+        // This runs after the microtask queue has been drained, so the host is no longer in the
+        // async context of the operation whose promise was rejected. Restore the one captured
+        // where the rejection happened, which is where the host would report it.
+        const asyncContext = uncaughtPromiseError.asyncContext;
+        if (asyncContext) {
+          asyncContext(report);
+        } else {
+          report();
         }
       }
     };
@@ -213,7 +224,14 @@ export function patchPromise(Zone: ZoneType): void {
           }
 
           for (let i = 0; i < queue.length;) {
-            scheduleResolveOrReject(promise, queue[i++], queue[i++], queue[i++], queue[i++]);
+            scheduleResolveOrReject(
+              promise,
+              queue[i++],
+              queue[i++],
+              queue[i++],
+              queue[i++],
+              queue[i++],
+            );
           }
           if (queue.length == 0 && state == REJECTED) {
             (promise as any)[symbolState] = REJECTED_NO_CATCH;
@@ -239,6 +257,11 @@ export function patchPromise(Zone: ZoneType): void {
             uncaughtPromiseError.promise = promise;
             uncaughtPromiseError.zone = Zone.current;
             uncaughtPromiseError.task = Zone.currentTask!;
+            // The host attributes an unhandled rejection to the context the promise was created
+            // in. This uses the one it was rejected in, which only differs for a promise shared
+            // between operations; capturing at construction would cost an async resource for
+            // every promise.
+            uncaughtPromiseError.asyncContext = api.captureAsyncContext();
             _uncaughtPromiseErrors.push(uncaughtPromiseError);
             api.scheduleMicroTask(); // to make sure that it is running
           }
@@ -277,6 +300,7 @@ export function patchPromise(Zone: ZoneType): void {
       chainPromise: ZoneAwarePromise<any>,
       onFulfilled?: ((value: R) => U1) | null | undefined,
       onRejected?: ((error: any) => U2) | null | undefined,
+      asyncContext?: AsyncContextRunner | null,
     ): void {
       clearRejectedNoCatch(promise);
       const promiseState = (promise as any)[symbolState];
@@ -314,6 +338,8 @@ export function patchPromise(Zone: ZoneType): void {
           }
         },
         chainPromise as TaskData,
+        undefined,
+        asyncContext,
       );
     }
 
@@ -543,10 +569,27 @@ export function patchPromise(Zone: ZoneType): void {
         }
         const chainPromise: Promise<TResult1 | TResult2> = new (C as typeof ZoneAwarePromise)(noop);
         const zone = Zone.current;
+        // The host runs a reaction in the async context in which it was registered, not in the one
+        // in which the promise happened to settle. Capture it here, because the reactions of every
+        // promise in the process are run from a shared microtask queue.
+        const asyncContext = api.captureAsyncContext();
         if ((this as any)[symbolState] == UNRESOLVED) {
-          (<any[]>(this as any)[symbolValue]).push(zone, chainPromise, onFulfilled, onRejected);
+          (<any[]>(this as any)[symbolValue]).push(
+            zone,
+            chainPromise,
+            onFulfilled,
+            onRejected,
+            asyncContext,
+          );
         } else {
-          scheduleResolveOrReject(this, zone, chainPromise as any, onFulfilled, onRejected);
+          scheduleResolveOrReject(
+            this,
+            zone,
+            chainPromise as any,
+            onFulfilled,
+            onRejected,
+            asyncContext,
+          );
         }
         return chainPromise;
       }
@@ -566,10 +609,25 @@ export function patchPromise(Zone: ZoneType): void {
         const chainPromise: Promise<R | never> = new (C as typeof ZoneAwarePromise)(noop);
         (chainPromise as any)[symbolFinally] = symbolFinally;
         const zone = Zone.current;
+        // See the comment on the call to `captureAsyncContext` in `then`.
+        const asyncContext = api.captureAsyncContext();
         if ((this as any)[symbolState] == UNRESOLVED) {
-          (<any[]>(this as any)[symbolValue]).push(zone, chainPromise, onFinally, onFinally);
+          (<any[]>(this as any)[symbolValue]).push(
+            zone,
+            chainPromise,
+            onFinally,
+            onFinally,
+            asyncContext,
+          );
         } else {
-          scheduleResolveOrReject(this, zone, chainPromise as any, onFinally, onFinally);
+          scheduleResolveOrReject(
+            this,
+            zone,
+            chainPromise as any,
+            onFinally,
+            onFinally,
+            asyncContext,
+          );
         }
         return chainPromise;
       }
