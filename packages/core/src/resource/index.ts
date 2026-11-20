@@ -9,6 +9,7 @@
 export * from './api';
 export {debounced} from './debounce';
 export {resourceFromSnapshots} from './from_snapshots';
+export {settledResourceValue} from './settled_value';
 export {
   isInParamsFunction as ɵisInParamsFunction,
   resource,
