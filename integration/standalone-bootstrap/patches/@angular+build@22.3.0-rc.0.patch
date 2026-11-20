@@ -1,0 +1,225 @@
+diff --git a/src/tools/oxc/oxc-transform.js b/src/tools/oxc/oxc-transform.js
+index eb2224aa95..63136b182a 100644
+--- a/src/tools/oxc/oxc-transform.js
++++ b/src/tools/oxc/oxc-transform.js
+@@ -90,6 +90,79 @@ const angularMetadataFunctions = new Set([
+     'ɵsetClassMetadataAsync',
+     'ɵsetClassDebugInfo',
+ ]);
++const internalAngularMetadataFunctions = new Set([
++    'setClassMetadata',
++    'setClassMetadataAsync',
++    'setClassDebugInfo',
++]);
++function stripBundlerSuffix(name) {
++    const dollarIndex = name.indexOf('$');
++    if (dollarIndex === -1) {
++        return name;
++    }
++    const suffix = name.slice(dollarIndex + 1);
++    return /^\d+$/.test(suffix) ? name.slice(0, dollarIndex) : name;
++}
++function isAngularMetadataCall(node, allowInternalName = false) {
++    const expr = unwrapParentheses(node);
++    if (expr.type !== 'CallExpression') {
++        return false;
++    }
++    const callee = unwrapParentheses(expr.callee);
++    let calleeName;
++    if (callee.type === 'Identifier') {
++        calleeName = callee.name;
++    }
++    else if (callee.type === 'MemberExpression' && !callee.computed && callee.property.type === 'Identifier') {
++        calleeName = callee.property.name;
++    }
++    if (!calleeName) {
++        return false;
++    }
++    const baseName = stripBundlerSuffix(calleeName);
++    return (angularMetadataFunctions.has(baseName) ||
++        (allowInternalName && internalAngularMetadataFunctions.has(baseName)));
++}
++function isAngularModeGuard(node) {
++    const expr = unwrapParentheses(node);
++    if (expr.type !== 'LogicalExpression' || expr.operator !== '||') {
++        return false;
++    }
++    const right = unwrapParentheses(expr.right);
++    if (right.type !== 'Identifier' || (right.name !== 'ngDevMode' && right.name !== 'ngJitMode')) {
++        return false;
++    }
++    const left = unwrapParentheses(expr.left);
++    if (left.type !== 'BinaryExpression' || (left.operator !== '===' && left.operator !== '==')) {
++        return false;
++    }
++    const binLeft = unwrapParentheses(left.left);
++    const binRight = unwrapParentheses(left.right);
++    const isTypeofGuard = (typeofSide, literalSide) => {
++        if (typeofSide.type !== 'UnaryExpression' || typeofSide.operator !== 'typeof') {
++            return false;
++        }
++        const arg = unwrapParentheses(typeofSide.argument);
++        return (arg.type === 'Identifier' &&
++            arg.name === right.name &&
++            literalSide.type === 'Literal' &&
++            literalSide.value === 'undefined');
++    };
++    return isTypeofGuard(binLeft, binRight) || isTypeofGuard(binRight, binLeft);
++}
++function isAngularMetadataStatement(node) {
++    if (node.type !== 'ExpressionStatement') {
++        return false;
++    }
++    const expr = unwrapParentheses(node.expression);
++    if (isAngularMetadataCall(expr)) {
++        return true;
++    }
++    return (expr.type === 'LogicalExpression' &&
++        expr.operator === '&&' &&
++        isAngularModeGuard(expr.left) &&
++        isAngularMetadataCall(expr.right, true));
++}
+ /**
+  * A map of static properties and their matcher predicate functions to check if they
+  * can be safely elided from class declarations.
+@@ -190,31 +263,31 @@ function analyzeClassStaticProperties(classNode, code) {
+             }
+         }
+         else if (element.type === 'StaticBlock') {
+-            const blockBody = element.body;
+-            if (blockBody.length === 0) {
+-                continue;
+-            }
+-            if (blockBody.length > 1) {
+-                shouldWrap = false;
+-                break;
+-            }
+-            const expressionStatement = blockBody[0];
+-            if (expressionStatement && expressionStatement.type === 'ExpressionStatement') {
+-                const assignment = expressionStatement.expression;
+-                if (assignment &&
+-                    assignment.type === 'AssignmentExpression' &&
+-                    assignment.left.type === 'MemberExpression') {
+-                    const left = assignment.left;
+-                    if (left.object.type === 'ThisExpression' && left.property.type === 'Identifier') {
+-                        if (canWrapProperty(left.property.name, assignment.right, code)) {
+-                            shouldWrap = true;
+-                            continue;
++            let hasInvalidStatement = false;
++            for (const stmt of element.body) {
++                if (stmt.type === 'EmptyStatement' || isAngularMetadataStatement(stmt)) {
++                    continue;
++                }
++                if (stmt.type === 'ExpressionStatement') {
++                    const assignment = unwrapParentheses(stmt.expression);
++                    if (assignment.type === 'AssignmentExpression' &&
++                        assignment.left.type === 'MemberExpression') {
++                        const left = assignment.left;
++                        if (left.object.type === 'ThisExpression' && left.property.type === 'Identifier') {
++                            if (canWrapProperty(left.property.name, assignment.right, code)) {
++                                shouldWrap = true;
++                                continue;
++                            }
+                         }
+                     }
+                 }
++                hasInvalidStatement = true;
++                break;
++            }
++            if (hasInvalidStatement) {
++                shouldWrap = false;
++                break;
+             }
+-            shouldWrap = false;
+-            break;
+         }
+     }
+     return shouldWrap;
+@@ -529,7 +602,7 @@ function transform(filename, code, options) {
+             }
+         }
+     }
+-    (0, traversal_1.traversePostOrder)(program, (node, { functionDepth, classDepth, parentFunc }) => {
++    (0, traversal_1.traversePostOrder)(program, (node, { functionDepth, classDepth, staticBlockDepth, parentFunc }) => {
+         switch (node.type) {
+             case 'Program':
+             case 'BlockStatement':
+@@ -538,6 +611,26 @@ function transform(filename, code, options) {
+                     adjustStaticMembersInStatements(node.body);
+                 }
+                 break;
++            case 'StaticBlock': {
++                if (!advancedOptimizations || node.body.length === 0) {
++                    break;
++                }
++                if (node.body.every((stmt) => stmt.type === 'EmptyStatement' || isAngularMetadataStatement(stmt))) {
++                    if (node.body.some(isAngularMetadataStatement)) {
++                        source.remove(node.start, node.end);
++                        markEdited(node.start, node.end);
++                    }
++                }
++                else {
++                    for (const stmt of node.body) {
++                        if (isAngularMetadataStatement(stmt)) {
++                            source.remove(stmt.start, stmt.end);
++                            markEdited(stmt.start, stmt.end);
++                        }
++                    }
++                }
++                break;
++            }
+             case 'CallExpression': {
+                 if (isAlreadyEdited(node.start, node.end)) {
+                     return;
+@@ -562,10 +655,11 @@ function transform(filename, code, options) {
+                     node.callee.property.type === 'Identifier') {
+                     calleeName = node.callee.property.name;
+                 }
+-                if (calleeName && angularMetadataFunctions.has(calleeName)) {
+-                    if (parentFunc &&
+-                        (parentFunc.type === 'FunctionExpression' ||
+-                            parentFunc.type === 'ArrowFunctionExpression')) {
++                if (calleeName && angularMetadataFunctions.has(stripBundlerSuffix(calleeName))) {
++                    if (staticBlockDepth > 0 ||
++                        (parentFunc &&
++                            (parentFunc.type === 'FunctionExpression' ||
++                                parentFunc.type === 'ArrowFunctionExpression'))) {
+                         source.overwrite(node.start, node.end, 'void 0');
+                         markEdited(node.start, node.end);
+                         return;
+diff --git a/src/tools/oxc/traversal.js b/src/tools/oxc/traversal.js
+index 785d0b05a0..8a827a02d7 100644
+--- a/src/tools/oxc/traversal.js
++++ b/src/tools/oxc/traversal.js
+@@ -257,6 +257,7 @@ function traversePostOrder(root, visit) {
+     const stack = [root];
+     let functionDepth = 0;
+     let classDepth = 0;
++    let staticBlockDepth = 0;
+     const functionStack = [];
+     while (stack.length > 0) {
+         const current = stack.pop();
+@@ -276,9 +277,13 @@ function traversePostOrder(root, visit) {
+             else if (isClass(type)) {
+                 classDepth--;
+             }
++            else if (type === 'StaticBlock') {
++                staticBlockDepth--;
++            }
+             visit(node, {
+                 functionDepth,
+                 classDepth,
++                staticBlockDepth,
+                 parentFunc: functionStack[functionStack.length - 1],
+             });
+             continue;
+@@ -293,6 +298,9 @@ function traversePostOrder(root, visit) {
+         else if (isClass(type)) {
+             classDepth++;
+         }
++        else if (type === 'StaticBlock') {
++            staticBlockDepth++;
++        }
+         pushChildNodes(current, stack);
+     }
+ }

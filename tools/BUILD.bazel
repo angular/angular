@@ -2,6 +2,10 @@ load("//tools:defaults.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files([
+    "pnpm-patches/@angular+build@22.3.0-rc.0.patch",
+])
+
 ts_config(
     name = "tsconfig_build",
     src = "tsconfig.json",

@@ -115,6 +115,7 @@ npm.npm_translate_lock(
         "//packages/router:package.json",
         "//packages/service-worker:package.json",
         "//packages/upgrade:package.json",
+        "//tools:pnpm-patches/@angular+build@22.3.0-rc.0.patch",
         "//tools/bazel/rules_angular_store:package.json",
         "//vscode-ng-language-service/integration/project:package.json",
     ],

@@ -171,6 +171,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@angular/build@22.3.0-rc.0': a84f1713ce057b4b57b307bba48d82f799d899ff576a2e1441b86c22a295008e
+
 importers:
 
   .:
@@ -214,7 +217,7 @@ importers:
         version: 22.3.0-rc.0(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(chokidar@6.0.0)(jiti@2.7.0)(lightningcss@1.33.0)(sass-embedded@1.108.2)(sass@1.108.2)(supports-color@10.2.2)(typescript@6.0.3)
       '@angular/build':
         specifier: 22.3.0-rc.0
-        version: 22.3.0-rc.0(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(postcss@8.5.32)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.9.1)(typescript@6.0.3)
+        version: 22.3.0-rc.0(patch_hash=a84f1713ce057b4b57b307bba48d82f799d899ff576a2e1441b86c22a295008e)(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(postcss@8.5.32)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.9.1)(typescript@6.0.3)
       '@angular/cli':
         specifier: 22.3.0-rc.0
         version: 22.3.0-rc.0(@types/node@20.19.43)(chokidar@6.0.0)
@@ -4453,7 +4456,7 @@ snapshots:
       '@angular-devkit/architect': 0.2203.0-rc.0(chokidar@6.0.0)
       '@angular-devkit/build-webpack': 0.2203.0-rc.0(chokidar@6.0.0)(webpack-dev-server@6.1.0(supports-color@10.2.2)(webpack@5.112.2(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32)))(webpack@5.112.2(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32))
       '@angular-devkit/core': 22.3.0-rc.0(chokidar@6.0.0)
-      '@angular/build': 22.3.0-rc.0(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(postcss@8.5.32)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.9.1)(typescript@6.0.3)
+      '@angular/build': 22.3.0-rc.0(patch_hash=a84f1713ce057b4b57b307bba48d82f799d899ff576a2e1441b86c22a295008e)(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(postcss@8.5.32)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.9.1)(typescript@6.0.3)
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       '@babel/core': 8.1.0
       '@babel/generator': 8.1.0
@@ -4581,7 +4584,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@22.3.0-rc.0(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(postcss@8.5.32)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.9.1)(typescript@6.0.3)':
+  '@angular/build@22.3.0-rc.0(patch_hash=a84f1713ce057b4b57b307bba48d82f799d899ff576a2e1441b86c22a295008e)(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/ssr@22.3.0-rc.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-server@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(postcss@8.5.32)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.9.1)(typescript@6.0.3)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2203.0-rc.0(chokidar@6.0.0)
