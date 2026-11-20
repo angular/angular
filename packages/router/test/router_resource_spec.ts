@@ -32,6 +32,7 @@ import {
   nonBlocking,
   provideRouter,
   RedirectCommand,
+  ResolveStart,
   ResourceResult,
   Route,
   Router,
@@ -2128,6 +2129,56 @@ describe('Router resources integration', () => {
 
         expect(injectorDestroyed).toBe(true);
       });
+    });
+
+    it('should not update router.routerState.root.firstChild to unactivated route before activation', async () => {
+      const resolverDeferred = promiseWithResolvers<string>();
+      const observedSnapshotsDuringResolveStart: Array<{
+        url: string;
+        snapshotDefined: boolean;
+        data: Record<string, any> | undefined;
+      }> = [];
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'a',
+          component: TargetCmp,
+          data: {page: 'A'},
+        },
+        {
+          path: 'b',
+          component: TargetCmp,
+          data: {page: 'B'},
+          resolve: {asyncVal: () => resolverDeferred.promise},
+        },
+      ]);
+
+      await harness.navigateByUrl('/a');
+      const rootRoute = router.routerState.root;
+      expect(rootRoute.firstChild?.snapshot?.data).toEqual({page: 'A'});
+
+      router.events.subscribe((e) => {
+        if (e instanceof ResolveStart) {
+          const child = rootRoute.firstChild;
+          observedSnapshotsDuringResolveStart.push({
+            url: router.url,
+            snapshotDefined: child?.snapshot !== undefined,
+            data: child?.snapshot?.data,
+          });
+        }
+      });
+
+      const navPromise = harness.navigateByUrl('/b');
+      await timeout();
+
+      expect(rootRoute.firstChild?.snapshot?.data).toEqual({page: 'A'});
+      resolverDeferred.resolve('done');
+      await navPromise;
+
+      expect(observedSnapshotsDuringResolveStart).toEqual([
+        {url: '/a', snapshotDefined: true, data: {page: 'A'}},
+      ]);
+      expect(rootRoute.firstChild?.snapshot?.data).toEqual({page: 'B', asyncVal: 'done'});
     });
   });
 });

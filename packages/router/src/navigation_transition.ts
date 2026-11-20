@@ -458,6 +458,19 @@ export class NavigationTransitions {
         const shouldContinueNavigation = () => {
           return !completedOrAborted && this.currentTransition?.id === overallTransitionState.id;
         };
+        const createAndSetRouterState = (t: NavigationTransition): NavigationTransition => {
+          const {newlyCreatedRoutes, state} = createRouterState(
+            router.routeReuseStrategy,
+            t.targetSnapshot!,
+            t.currentRouterState,
+          );
+          this.currentTransition = overallTransitionState = {
+            ...t,
+            targetRouterState: state,
+            newlyCreatedRoutes,
+          };
+          return overallTransitionState;
+        };
         return of(overallTransitionState).pipe(
           switchMap((t) => {
             // It is possible that `switchMap` fails to cancel previous navigations if a new one happens synchronously while the operator
@@ -679,6 +692,9 @@ export class NavigationTransitions {
               return EMPTY;
             }
 
+            // TODO(v23): Run createRouterState before resolveData in 3p as well.
+            // g3-only t = createAndSetRouterState(t);
+
             if (t.guards.canActivateChecks.length === 0) {
               return of(t);
             }
@@ -724,21 +740,9 @@ export class NavigationTransitions {
           }),
 
           switchMap((t: NavigationTransition) => {
-            const {newlyCreatedRoutes, state} = createRouterState(
-              router.routeReuseStrategy,
-              t.targetSnapshot!,
-              t.currentRouterState,
-            );
-            this.currentTransition =
-              overallTransitionState =
-              t =
-                {
-                  ...t,
-                  targetRouterState: state,
-                  newlyCreatedRoutes,
-                };
+            t = createAndSetRouterState(t); // 3p-only
             this.currentNavigation.update((nav) => {
-              nav!.targetRouterState = state;
+              nav!.targetRouterState = t.targetRouterState!;
               return nav;
             });
             return of(t);
