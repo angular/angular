@@ -412,4 +412,212 @@ describe('HybridCompiler processed output reuse', () => {
     incremental.analyzer.close();
     oneShot.analyzer.close();
   });
+
+  it('shares boundFingerprint from prepareChunk to processFile', async () => {
+    const {compiler, analyzer, root} = await createSession('share_bound_fingerprint');
+    try {
+      const computeSpy = spyOn<any>(compiler, 'computeBoundFingerprint').and.callThrough();
+      const runAsyncPass = async () => {
+        const outputs: BuildOutputs = new Map();
+        for await (const chunk of compiler.analyzeOptimized()) {
+          const chunkContext = await compiler.prepareChunk(chunk);
+          for (const file of chunk.files) {
+            const content = await fs.readFile(file.filePath, 'utf-8');
+            outputs.set(
+              path.basename(file.filePath),
+              await compiler.processFile(file.filePath, content, file, chunkContext),
+            );
+          }
+        }
+        return outputs;
+      };
+
+      const cold = await runAsyncPass();
+      const callsFor = (fileName: string) =>
+        computeSpy.calls.allArgs().filter((args) => path.basename(args[0] as string) === fileName)
+          .length;
+      // Component files compute `boundFingerprint` once in `prepareChunk` and reuse it in
+      // `processFile`; non-TCB files (`dir.ts`) skip it in `prepareChunk` and compute once in `processFile`.
+      expect(callsFor('a.component.ts')).toBe(1);
+      expect(callsFor('b.component.ts')).toBe(1);
+      expect(callsFor('dir.ts')).toBe(1);
+
+      computeSpy.calls.reset();
+      const warmAsync = await runAsyncPass();
+      expect(callsFor('a.component.ts')).toBe(1);
+      expect(callsFor('b.component.ts')).toBe(1);
+      expect(callsFor('dir.ts')).toBe(1);
+      expect(warmAsync.get('a.component.ts')).toBe(cold.get('a.component.ts')!);
+      expect(warmAsync.get('b.component.ts')).toBe(cold.get('b.component.ts')!);
+
+      // An out-of-band content edit still invalidates rather than trusting a stale chunk entry.
+      const aPath = path.join(root, 'a.component.ts');
+      const aMeta = (await compiler.getCachedMetadata(aPath))!;
+      const editedContent = FILES['a.component.ts'].replace("v = 'a';", "v = 'edited';");
+      const reprocessed = await compiler.processFile(aPath, editedContent, aMeta);
+      expect(reprocessed).not.toBe(cold.get('a.component.ts')!);
+      expect(reprocessed.magicString.toString()).toContain("v = 'edited'");
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('does not reuse stale cached output for out-of-band processFile after an <ng-content> dependency update', async () => {
+    const childTemplate = (slot: string) => `${slot}<ng-content></ng-content>`;
+    const parentSource = `
+      import {Component} from '@angular/core';
+      import {ChildComponent} from './child.component';
+      @Component({
+        selector: 'app-parent',
+        imports: [ChildComponent],
+        template: '<app-child>@if (show) {<span>a</span><b>b</b>}</app-child>',
+      })
+      export class ParentComponent {
+        show = true;
+      }
+    `;
+    const {compiler, analyzer, root, build, edit} = await createSession(
+      'out_of_band_ng_content_invalidation',
+      false,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['parent.component.ts', 'child.component.ts'],
+        }),
+        'child.component.ts': `
+          import {Component} from '@angular/core';
+          @Component({selector: 'app-child', templateUrl: './child.component.html'})
+          export class ChildComponent {}
+        `,
+        'child.component.html': childTemplate(''),
+        'parent.component.ts': parentSource,
+      },
+    );
+    try {
+      const parentPath = path.join(root, 'parent.component.ts');
+      const first = await build();
+      const parentMetaV1 = (await compiler.getCachedMetadata(parentPath))!;
+      expect(compiler.getDiagnostics().filter((diag) => diag.code === 8011)).toEqual([]);
+
+      await edit('child.component.html', childTemplate('<ng-content select="span"></ng-content>'));
+
+      const reprocessed = await compiler.processFile(parentPath, parentSource, parentMetaV1);
+      expect(reprocessed).not.toBe(first.get('parent.component.ts')!);
+      expect(
+        compiler
+          .getDiagnostics()
+          .filter((diag) => diag.code === 8011)
+          .map((diag) => diag.messageText),
+      ).toEqual([jasmine.stringContaining('"span"')]);
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('reuses non-remotely-scoped NgModule output when declared component templates change', async () => {
+    const compATemplate = (tpl: string) => `
+      import {Component} from '@angular/core';
+      @Component({selector: 'comp-a', template: '${tpl}', standalone: false})
+      export class CompA {}
+    `;
+    const {analyzer, build, edit} = await createSession('non_remote_scope_reuse', false, true, {
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {strict: true},
+        files: [
+          'app.module.ts',
+          'comp-a.component.ts',
+          'comp-b.component.ts',
+          'comp-c.component.ts',
+        ],
+      }),
+      'app.module.ts': `
+        import {NgModule} from '@angular/core';
+        import {CompA} from './comp-a.component';
+        import {CompB} from './comp-b.component';
+        import {CompC} from './comp-c.component';
+        @NgModule({declarations: [CompA, CompB, CompC], exports: [CompA, CompB, CompC]})
+        export class AppModule {}
+      `,
+      'comp-a.component.ts': compATemplate('<comp-b></comp-b>'),
+      'comp-b.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'comp-b', template: 'plain', standalone: false})
+        export class CompB {}
+      `,
+      'comp-c.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'comp-c', template: 'plain', standalone: false})
+        export class CompC {}
+      `,
+    });
+    try {
+      const first = await build();
+      const firstModule = first.get('app.module.ts')!;
+      expect(firstModule.magicString.toString()).not.toContain('ɵɵsetComponentScope');
+
+      await edit('comp-a.component.ts', compATemplate('<comp-c></comp-c>'));
+      const second = await build();
+      expect(second.get('app.module.ts')).toBe(firstModule);
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('invalidates a declaring NgModule when a remotely-scoped component changes its template dependencies', async () => {
+    const compBTemplate = (tpl: string) => `
+      import {Component} from '@angular/core';
+      @Component({selector: 'comp-b', template: '${tpl}', standalone: false})
+      export class CompB {}
+    `;
+    const {analyzer, build, edit} = await createSession('remote_scope_invalidation', false, true, {
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {strict: true},
+        files: [
+          'app.module.ts',
+          'comp-a.component.ts',
+          'comp-b.component.ts',
+          'comp-c.component.ts',
+        ],
+      }),
+      'app.module.ts': `
+        import {NgModule} from '@angular/core';
+        import {CompA} from './comp-a.component';
+        import {CompB} from './comp-b.component';
+        import {CompC} from './comp-c.component';
+        @NgModule({declarations: [CompA, CompB, CompC], exports: [CompA, CompB, CompC]})
+        export class AppModule {}
+      `,
+      'comp-a.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'comp-a', template: '<comp-b></comp-b>', standalone: false})
+        export class CompA {}
+      `,
+      'comp-b.component.ts': compBTemplate('<comp-a></comp-a>'),
+      'comp-c.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'comp-c', template: 'plain', standalone: false})
+        export class CompC {}
+      `,
+    });
+    try {
+      const first = await build();
+      const firstModule = first.get('app.module.ts')!;
+      const firstCode = firstModule.magicString.toString();
+      expect(firstCode.slice(firstCode.indexOf('ɵɵsetNgModuleScope'))).toMatch(
+        /ɵɵsetComponentScope\([\s\S]*\bCompB\b[\s\S]*\bCompA\b/,
+      );
+
+      await edit('comp-b.component.ts', compBTemplate('<comp-a></comp-a><comp-c></comp-c>'));
+      const second = await build();
+      const secondModule = second.get('app.module.ts')!;
+      expect(secondModule).not.toBe(firstModule);
+      const secondCode = secondModule.magicString.toString();
+      expect(secondCode.slice(secondCode.indexOf('ɵɵsetNgModuleScope'))).toMatch(
+        /ɵɵsetComponentScope\([\s\S]*\bCompB\b[\s\S]*\bCompA\b[\s\S]*\bCompC\b/,
+      );
+    } finally {
+      analyzer.close();
+    }
+  });
 });
