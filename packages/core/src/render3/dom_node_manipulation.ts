@@ -116,6 +116,7 @@ export function setElementAttribute(
   name: string,
   value: any,
   sanitizer: SanitizerFn | null | undefined,
+  skipIfUnchanged = false,
 ) {
   if (value == null) {
     if (sanitizer != null) {
@@ -127,7 +128,9 @@ export function setElementAttribute(
     const strValue =
       sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
 
-    renderer.setAttribute(element, name, strValue as string, namespace);
+    if (!skipIfUnchanged || element.getAttribute(name) !== String(strValue)) {
+      renderer.setAttribute(element, name, strValue as string, namespace);
+    }
   }
 }
 
@@ -166,12 +169,22 @@ function writeDirectClass(renderer: Renderer, element: RElement, newValue: strin
   }
 }
 
-/** Sets up the static DOM attributes on an `RNode`. */
-export function setupStaticAttributes(renderer: Renderer, element: RElement, tNode: TNode) {
+/**
+ * Sets up the static DOM attributes on an `RNode`.
+ *
+ * @param isHydrated Whether the element was reused during hydration. Its resource URL is then left
+ *     alone if it already has the value, because the browser would load the resource again.
+ */
+export function setupStaticAttributes(
+  renderer: Renderer,
+  element: RElement,
+  tNode: TNode,
+  isHydrated = false,
+) {
   const {mergedAttrs, classes, styles} = tNode;
 
   if (mergedAttrs !== null) {
-    setUpAttributes(renderer, element, mergedAttrs);
+    setUpAttributes(renderer, element, mergedAttrs, isHydrated ? tNode.value : null);
   }
 
   if (classes !== null) {

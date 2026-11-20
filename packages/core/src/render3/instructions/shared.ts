@@ -46,6 +46,7 @@ import {
   ENVIRONMENT,
   FLAGS,
   HEADER_OFFSET,
+  HYDRATION,
   INJECTOR,
   LView,
   LViewFlags,
@@ -72,6 +73,7 @@ import {
   wasLastNodeCreated,
 } from '../state';
 import {NO_CHANGE} from '../tokens';
+import {isResourceAttribute} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapLView} from '../util/view_utils';
 
@@ -318,7 +320,12 @@ export function setDomProperty<T>(
     // TODO(v23): Remove this workaround once we can introduce a breaking change
     value = unwrapImgVideoSrcValue(propName, element as RElement, value);
 
-    renderer.setProperty(element as RElement, propName, value);
+    if (
+      !isFirstWriteOfRenderedResource(tNode, lView, propName) ||
+      (element as RElement).getAttribute(propName) !== String(value)
+    ) {
+      renderer.setProperty(element as RElement, propName, value);
+    }
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
@@ -326,6 +333,19 @@ export function setDomProperty<T>(
       handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
     }
   }
+}
+
+/**
+ * Whether a binding is about to write the resource URL of an element for the first time in a
+ * hydrated view. Setting that URL makes the browser load the resource again, even if the value
+ * doesn't change: an `<iframe>` reloads and a `<video>` restarts.
+ */
+function isFirstWriteOfRenderedResource(tNode: TNode, lView: LView, name: string): boolean {
+  return (
+    lView[HYDRATION] !== null &&
+    (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0 &&
+    isResourceAttribute(tNode.value, name)
+  );
 }
 
 /**
@@ -557,7 +577,16 @@ export function elementAttributeInternal(
   const element = getNativeByTNode(tNode, lView) as RElement;
   // TODO(v23): Remove this workaround once we can introduce a breaking change
   value = unwrapImgVideoSrcValue(name, element, value, true);
-  setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
+  setElementAttribute(
+    lView[RENDERER],
+    element,
+    namespace,
+    tNode.value,
+    name,
+    value,
+    sanitizer,
+    namespace == null && isFirstWriteOfRenderedResource(tNode, lView, name),
+  );
 }
 
 /**
@@ -615,7 +644,7 @@ export function elementLikeStartShared(
   // It's important that this runs before we've instantiated the directives.
   const isElement = tNode.type === TNodeType.Element;
   if (isElement) {
-    setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
+    setupStaticAttributes(lView[RENDERER], native as RElement, tNode, !wasLastNodeCreated());
 
     // any immediate children of a component or template container must be pre-emptively
     // monkey-patched with the component view data so that the element can be inspected

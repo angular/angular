@@ -37,9 +37,16 @@ import {RElement} from '../interfaces/renderer_dom';
  * @param renderer The renderer to be used
  * @param native The element that the attributes will be assigned to
  * @param attrs The attribute array of values that will be assigned to the element
+ * @param hydratedTagName The tag name of an element reused during hydration, whose resource URL
+ *     is left alone if it already has the value (see `isResourceAttribute`).
  * @returns the index value that was last accessed in the attributes array
  */
-export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAttributes): number {
+export function setUpAttributes(
+  renderer: Renderer,
+  native: RElement,
+  attrs: TAttributes,
+  hydratedTagName: string | null = null,
+): number {
   let i = 0;
   while (i < attrs.length) {
     const value = attrs[i];
@@ -62,10 +69,14 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
       // attrName is string;
       const attrName = value as string;
       const attrVal = attrs[++i];
-      // Standard attributes
+      // Standard attributes. `attrVal` can be a `TrustedScriptURL`, hence `String` below.
       if (isAnimationProp(attrName)) {
         renderer.setProperty(native, attrName, attrVal);
-      } else {
+      } else if (
+        hydratedTagName === null ||
+        !isResourceAttribute(hydratedTagName, attrName) ||
+        native.getAttribute(attrName) !== String(attrVal)
+      ) {
         renderer.setAttribute(native, attrName, attrVal as string);
       }
       i++;
@@ -77,6 +88,16 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
   // whether by running into an unsupported marker or if all the static values were
   // iterated over.
   return i;
+}
+
+/**
+ * Whether setting the attribute `name` makes a `tagName` element load its resource again, even
+ * if the value doesn't change: an `<iframe>` reloads and a `<video>` restarts.
+ */
+export function isResourceAttribute(tagName: string | null, name: string): boolean {
+  return name === 'src'
+    ? tagName === 'iframe' || tagName === 'embed' || tagName === 'video' || tagName === 'audio'
+    : name === 'data' && tagName === 'object';
 }
 
 /**
