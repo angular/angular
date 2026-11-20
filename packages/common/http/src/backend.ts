@@ -9,6 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {
+  DestroyRef,
   EnvironmentInjector,
   inject,
   Injectable,
@@ -59,6 +60,7 @@ export class HttpInterceptorHandler implements HttpHandler {
   private chain: ChainedInterceptorFn<unknown> | null = null;
   private readonly pendingTasks = inject(PendingTasks);
   private readonly contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private backend: HttpBackend,
@@ -122,14 +124,19 @@ export class HttpInterceptorHandler implements HttpHandler {
     }
 
     const chain = this.chain;
-    if (this.contributeToStability) {
+    if (this.contributeToStability && !this.destroyRef.destroyed) {
       const removeTask = this.pendingTasks.add();
+      const unregisterDestroy = this.destroyRef.onDestroy(removeTask);
+      const cleanup = () => {
+        unregisterDestroy();
+        removeTask();
+      };
       try {
         return untracked(() =>
           chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
-        ).pipe(finalize(removeTask));
+        ).pipe(finalize(cleanup));
       } catch (error) {
-        removeTask();
+        cleanup();
         throw error;
       }
     } else {

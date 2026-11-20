@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ApplicationRef, createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Observable, of, Subject} from 'rxjs';
-import {catchError, retry, scan, skip, take, toArray} from 'rxjs/operators';
+import {firstValueFrom, Observable, of, Subject} from 'rxjs';
+import {catchError, retry, scan, skip, take, tap, toArray} from 'rxjs/operators';
 import {HttpEvent, HttpEventType, HttpRequest, HttpResponse} from '../index';
 
 import {
@@ -19,6 +20,7 @@ import {
   HttpParams,
   HttpStatusCode,
   provideHttpClient,
+  withInterceptors,
 } from '../public_api';
 import {RuntimeErrorCode} from '../src/errors';
 import {FetchBackend, FetchFactory, HTTP_FETCH_MAX_RESPONSE_SIZE} from '../src/fetch';
@@ -760,6 +762,171 @@ describe('FetchBackend', () => {
 
       sub.unsubscribe();
       expect(fetchMock.request.signal?.aborted).toBeTrue();
+    });
+
+    it('should abort in-flight request without emitting error or complete when DestroyRef is destroyed', async () => {
+      const client = TestBed.inject(HttpClient);
+      let errored = false;
+      let completed = false;
+      let nexted = false;
+
+      const sub = client.get('/test', {responseType: 'text'}).subscribe({
+        next: () => {
+          nexted = true;
+        },
+        error: () => {
+          errored = true;
+        },
+        complete: () => {
+          completed = true;
+        },
+      });
+      expect(fetchMock.request.signal?.aborted).toBeFalse();
+
+      TestBed.resetTestingModule();
+
+      expect(fetchMock.request.signal?.aborted).toBeTrue();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(nexted).toBeFalse();
+      expect(errored).toBeFalse();
+      expect(completed).toBeFalse();
+      sub.unsubscribe();
+    });
+
+    it('should not cause firstValueFrom to reject with EmptyError when DestroyRef is destroyed', async () => {
+      const client = TestBed.inject(HttpClient);
+      let firstValueRejected = false;
+      const pendingFirstValue = firstValueFrom(client.get('/test', {responseType: 'text'})).catch(
+        () => {
+          firstValueRejected = true;
+        },
+      );
+      expect(fetchMock.request.signal?.aborted).toBeFalse();
+
+      TestBed.resetTestingModule();
+
+      expect(fetchMock.request.signal?.aborted).toBeTrue();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(firstValueRejected).toBeFalse();
+      void pendingFirstValue;
+    });
+
+    it('should not initiate fetch when DestroyRef is already destroyed', () => {
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      TestBed.resetTestingModule();
+
+      let nexted = false;
+      let errored = false;
+      let completed = false;
+      const sub = backend.handle(req).subscribe({
+        next: () => {
+          nexted = true;
+        },
+        error: () => {
+          errored = true;
+        },
+        complete: () => {
+          completed = true;
+        },
+      });
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(sub.closed).toBeTrue();
+      expect(nexted).toBeFalse();
+      expect(errored).toBeFalse();
+      expect(completed).toBeFalse();
+    });
+
+    it('should cancel streaming response without completing or erroring when DestroyRef is destroyed', async () => {
+      let streamCanceled = false;
+      let resolveCanceled!: () => void;
+      const canceledPromise = new Promise<void>((resolve) => {
+        resolveCanceled = resolve;
+      });
+      let resolveFirstChunk!: () => void;
+      const firstChunkReceived = new Promise<void>((resolve) => {
+        resolveFirstChunk = resolve;
+      });
+      let streamController!: ReadableStreamDefaultController<Uint8Array>;
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: FetchFactory,
+            useValue: {
+              fetch: async () =>
+                new Response(
+                  new ReadableStream<Uint8Array>({
+                    start: (controller) => {
+                      streamController = controller;
+                      controller.enqueue(new TextEncoder().encode('chunk1'));
+                    },
+                    cancel: () => {
+                      streamCanceled = true;
+                      resolveCanceled();
+                    },
+                  }),
+                  {status: HttpStatusCode.Ok, statusText: 'OK'},
+                ),
+            },
+          },
+          FetchBackend,
+        ],
+      });
+
+      const localBackend = TestBed.inject(FetchBackend);
+      let completed = false;
+      let errored = false;
+      localBackend
+        .handle(new HttpRequest('GET', '/stream', {responseType: 'text', reportProgress: true}))
+        .subscribe({
+          next: (event) => {
+            if (event.type === HttpEventType.DownloadProgress) {
+              resolveFirstChunk();
+            }
+          },
+          error: () => {
+            errored = true;
+          },
+          complete: () => {
+            completed = true;
+          },
+        });
+
+      await firstChunkReceived;
+      TestBed.resetTestingModule();
+      streamController.enqueue(new TextEncoder().encode('chunk2'));
+      await canceledPromise;
+
+      expect(streamCanceled).toBeTrue();
+      expect(completed).toBeFalse();
+      expect(errored).toBeFalse();
+    });
+
+    it('should release root PendingTasks when a child EnvironmentInjector with an interceptor is destroyed mid-request', async () => {
+      const parentInjector = TestBed.inject(EnvironmentInjector);
+      const appRef = TestBed.inject(ApplicationRef);
+      const childFetchMock = new MockFetchFactory();
+      const childInjector = createEnvironmentInjector(
+        [
+          provideHttpClient(withInterceptors([(req, next) => next(req).pipe(tap())])),
+          {provide: FetchFactory, useValue: childFetchMock},
+        ],
+        parentInjector,
+      );
+
+      const childClient = childInjector.get(HttpClient);
+      const sub = childClient.get('/test', {responseType: 'text'}).subscribe();
+      expect(childFetchMock.request.signal?.aborted).toBeFalse();
+
+      childInjector.destroy();
+
+      expect(childFetchMock.request.signal?.aborted).toBeTrue();
+      await appRef.whenStable();
+      sub.unsubscribe();
     });
   });
 });
