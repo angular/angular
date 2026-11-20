@@ -792,6 +792,7 @@
       "isRootView",
       "isSchedulerTick",
       "isSchemaOrSchemaFn",
+      "isSelect",
       "isSkipHydrationRootTNode",
       "isSubscribable",
       "isSubscriber",
