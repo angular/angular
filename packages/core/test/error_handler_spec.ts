@@ -7,10 +7,14 @@
  */
 
 import {TestBed} from '../testing';
-import {ErrorHandler, provideBrowserGlobalErrorListeners} from '../src/error_handler';
+import {
+  ErrorHandler,
+  INTERNAL_APPLICATION_ERROR_HANDLER,
+  provideBrowserGlobalErrorListeners,
+} from '../src/error_handler';
 import {isNode, timeout, withBody} from '@angular/private/testing';
 import {ApplicationRef, Component, destroyPlatform, inject} from '../src/core';
-import {bootstrapApplication} from '@angular/platform-browser';
+import {bootstrapApplication, createApplication, platformBrowser} from '@angular/platform-browser';
 
 class MockConsole {
   res: any[][] = [];
@@ -144,4 +148,34 @@ describe('ErrorHandler', () => {
       destroyPlatform();
     }),
   );
+
+  it('should log to console.error instead of throwing asynchronously when destroyed on the server', async () => {
+    const prevServerMode = (globalThis as any).ngServerMode;
+    let platformRef: ReturnType<typeof platformBrowser> | undefined;
+
+    try {
+      (globalThis as any).ngServerMode = true;
+      platformRef = platformBrowser();
+      const consoleErrorSpy = spyOn(console, 'error');
+      const appRef = await createApplication({providers: []}, {platformRef});
+      const internalHandler = appRef.injector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
+
+      // Destroy injector before any error is handled so `userErrorHandler` is not cached.
+      appRef.destroy();
+
+      const err = new Error('post-destroy server error');
+      await jasmine.spyOnGlobalErrorsAsync(async (globalErrorSpy) => {
+        internalHandler(err);
+        await timeout(10);
+        expect(globalErrorSpy).not.toHaveBeenCalled();
+      });
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('ERROR', err);
+    } finally {
+      if (platformRef && !platformRef.destroyed) {
+        platformRef.destroy();
+      }
+      (globalThis as any).ngServerMode = prevServerMode;
+    }
+  });
 });

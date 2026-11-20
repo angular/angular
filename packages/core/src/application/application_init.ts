@@ -18,6 +18,7 @@ import {
   Service,
 } from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {DestroyRef} from '../linker/destroy_ref';
 import {isPromise, isSubscribable} from '../util/lang';
 
 /**
@@ -222,6 +223,7 @@ export class ApplicationInitStatus {
 
   private readonly appInits = inject(APP_INITIALIZER, {optional: true}) ?? [];
   private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(this.appInits)) {
@@ -243,12 +245,44 @@ export class ApplicationInitStatus {
 
     const asyncInitPromises = [];
     for (const appInits of this.appInits) {
+      if (this.destroyRef.destroyed) {
+        break;
+      }
       const initResult = runInInjectionContext(this.injector, appInits);
       if (isPromise(initResult)) {
         asyncInitPromises.push(initResult);
       } else if (isSubscribable(initResult)) {
         const observableAsPromise = new Promise<void>((resolve, reject) => {
-          initResult.subscribe({complete: resolve, error: reject});
+          let settled = false;
+          let unregisterDestroy: (() => void) | undefined;
+          const cleanup = () => {
+            settled = true;
+            unregisterDestroy?.();
+            unregisterDestroy = undefined;
+          };
+          const subscription = initResult.subscribe({
+            complete: () => {
+              cleanup();
+              resolve();
+            },
+            error: (err) => {
+              cleanup();
+              reject(err);
+            },
+          });
+          if (!settled) {
+            if (this.destroyRef.destroyed) {
+              subscription?.unsubscribe?.();
+              cleanup();
+              resolve();
+            } else {
+              unregisterDestroy = this.destroyRef.onDestroy(() => {
+                subscription?.unsubscribe?.();
+                cleanup();
+                resolve();
+              });
+            }
+          }
         });
         asyncInitPromises.push(observableAsPromise);
       }
@@ -260,16 +294,31 @@ export class ApplicationInitStatus {
       this.resolve();
     };
 
-    Promise.all(asyncInitPromises)
-      .then(() => {
-        complete();
-      })
-      .catch((e) => {
-        this.reject(e);
+    if (this.destroyRef.destroyed) {
+      if (asyncInitPromises.length > 0) {
+        Promise.all(asyncInitPromises).catch(() => {});
+      }
+      this.resolve();
+    } else if (asyncInitPromises.length === 0) {
+      complete();
+    } else {
+      const unregisterDestroy = this.destroyRef.onDestroy(() => {
+        this.resolve();
       });
 
-    if (asyncInitPromises.length === 0) {
-      complete();
+      Promise.all(asyncInitPromises)
+        .then(() => {
+          unregisterDestroy();
+          if (!this.destroyRef.destroyed) {
+            complete();
+          }
+        })
+        .catch((e) => {
+          unregisterDestroy();
+          if (!this.destroyRef.destroyed) {
+            this.reject(e);
+          }
+        });
     }
     this.initialized = true;
   }

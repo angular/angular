@@ -134,6 +134,27 @@ describe('public PendingTasks', () => {
     expect(spy).toHaveBeenCalled();
     expect(spy.calls.mostRecent().args[0].message).toContain('Sync error');
   });
+
+  it('should not report errors if run promise rejects after application is destroyed', async () => {
+    const pendingTasks = TestBed.inject(PendingTasks);
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError');
+
+    let rejectFn!: (reason?: unknown) => void;
+    pendingTasks.run(
+      () =>
+        new Promise<void>((_, reject) => {
+          rejectFn = reject;
+        }),
+    );
+
+    TestBed.resetTestingModule();
+    rejectFn(new Error('late rejection'));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
 
 function applicationRefIsStable(applicationRef: ApplicationRef) {

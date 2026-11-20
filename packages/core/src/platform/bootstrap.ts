@@ -8,7 +8,7 @@
 import {Subscription} from 'rxjs';
 
 import {PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
-import {R3Injector} from '../di/r3_injector';
+import {EnvironmentInjector, R3Injector} from '../di/r3_injector';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {ImagePerformanceWarning} from '../image_performance_warning';
@@ -131,42 +131,55 @@ export function bootstrap<M>(
       });
     }
 
-    return _callAndReportToErrorHandler(exceptionHandler, ngZone, () => {
+    const completeBootstrap = (onBootstrap: () => void, onSkipBootstrap?: () => void): void => {
+      if (envInjector.destroyed) {
+        return;
+      }
+
+      if (!envInjector.get(ENABLE_ROOT_COMPONENT_BOOTSTRAP, true)) {
+        onSkipBootstrap?.();
+        return;
+      }
+
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
+        imagePerformanceService.start();
+      }
+
+      onBootstrap();
+    };
+
+    return _callAndReportToErrorHandler(exceptionHandler, ngZone, envInjector, () => {
       const pendingTasks = envInjector.get(PendingTasksInternal);
       const taskId = pendingTasks.add();
       const initStatus = envInjector.get(ApplicationInitStatus);
-      initStatus.runInitializers();
 
+      if (isApplicationBootstrapConfig(config)) {
+        // Resolve eagerly before initializers run so that if the injector is destroyed
+        // mid-initialization, `appRef` is already tracked for destruction and can be returned
+        // without triggering `NG0205`.
+        const appRef = envInjector.get(ApplicationRef);
+        initStatus.runInitializers();
+        return initStatus.donePromise
+          .then(() => {
+            completeBootstrap(() => {
+              if (config.rootComponent !== undefined) {
+                appRef.bootstrap(config.rootComponent);
+              }
+            });
+            return appRef;
+          })
+          .finally(() => void pendingTasks.remove(taskId));
+      }
+
+      initStatus.runInitializers();
       return initStatus.donePromise
         .then(() => {
-          const enableRootComponentbootstrap = envInjector.get(
-            ENABLE_ROOT_COMPONENT_BOOTSTRAP,
-            true,
+          completeBootstrap(
+            () => moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules),
+            () => config.allPlatformModules.push(config.moduleRef),
           );
-          if (!enableRootComponentbootstrap) {
-            if (isApplicationBootstrapConfig(config)) {
-              return envInjector.get(ApplicationRef);
-            }
-
-            config.allPlatformModules.push(config.moduleRef);
-            return config.moduleRef;
-          }
-
-          if (typeof ngDevMode === 'undefined' || ngDevMode) {
-            const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
-            imagePerformanceService.start();
-          }
-
-          if (isApplicationBootstrapConfig(config)) {
-            const appRef = envInjector.get(ApplicationRef);
-            if (config.rootComponent !== undefined) {
-              appRef.bootstrap(config.rootComponent);
-            }
-            return appRef;
-          } else {
-            moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules);
-            return config.moduleRef;
-          }
+          return config.moduleRef;
         })
         .finally(() => void pendingTasks.remove(taskId));
     });
@@ -210,13 +223,16 @@ function _moduleDoBootstrap(
 function _callAndReportToErrorHandler(
   errorHandler: (e: unknown) => void,
   ngZone: NgZone,
+  envInjector: EnvironmentInjector,
   callback: () => any,
 ): any {
   try {
     const result = callback();
     if (isPromise(result)) {
       return result.catch((e: any) => {
-        ngZone.runOutsideAngular(() => errorHandler(e));
+        if (!envInjector.destroyed) {
+          ngZone.runOutsideAngular(() => errorHandler(e));
+        }
         // rethrow as the exception handler might not do it
         throw e;
       });
@@ -224,7 +240,9 @@ function _callAndReportToErrorHandler(
 
     return result;
   } catch (e) {
-    ngZone.runOutsideAngular(() => errorHandler(e));
+    if (!envInjector.destroyed) {
+      ngZone.runOutsideAngular(() => errorHandler(e));
+    }
     // rethrow as the exception handler might not do it
     throw e;
   }
