@@ -7,8 +7,9 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {TNode, TNodeType} from '../render3/interfaces/node';
-import {getCurrentTNode} from '../render3/state';
+import {TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
+import {getCurrentTNode, getLView} from '../render3/state';
+import {getElementTagName} from '../render3/util/view_utils';
 
 import {InjectionToken} from './injection_token';
 import {InternalInjectFlags} from './interface/injector';
@@ -61,7 +62,7 @@ export const HOST_TAG_NAME: InjectionToken<string> = /* @__PURE__ */ (() => {
       );
     }
     if (tNode.type & TNodeType.Element) {
-      return tNode.value;
+      return getElementTagName(tNode as TElementNode, getLView());
     }
     if (flags & InternalInjectFlags.Optional) {
       return null;
