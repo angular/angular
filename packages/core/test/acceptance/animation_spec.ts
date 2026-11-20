@@ -40,7 +40,10 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isNode, nextAnimationFrame, timeout} from '@angular/private/testing';
-import {reusedNodes} from '../../src/animation/utils';
+import {leavingNodes, reusedNodes} from '../../src/animation/utils';
+import {getLContext} from '../../src/render3/context_discovery';
+import {TNode} from '../../src/render3/interfaces/node';
+import {ANIMATIONS, TVIEW} from '../../src/render3/interfaces/view';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -910,6 +913,176 @@ describe('Animation', () => {
       await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('duplicate-animation-name');
       expect(fixture.debugElement.query(By.css('p'))).toBeNull();
+    });
+
+    it('should release leavingNodes and resolvers when animate.leave resolves to an empty class list', async () => {
+      @Component({
+        template: `
+          @for (item of items(); track item) {
+            <div class="row" [animate.leave]="leave()">{{ item }}</div>
+          }
+        `,
+      })
+      class EmptyLeaveListComponent {
+        items = signal<number[]>([]);
+        leave = signal<string | string[] | null | undefined>('');
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(EmptyLeaveListComponent);
+      const cmp = fixture.componentInstance;
+      await fixture.whenStable();
+
+      const emptyValues: Array<string | string[] | null | undefined> = [
+        '',
+        '   ',
+        [],
+        null,
+        undefined,
+      ];
+
+      let nextId = 0;
+      for (const emptyValue of emptyValues) {
+        cmp.leave.set(emptyValue);
+        cmp.items.set([nextId++, nextId++]);
+        await fixture.whenStable();
+
+        const rows = fixture.debugElement.queryAll(By.css('.row'));
+        expect(rows.length).toBe(2);
+
+        const contexts = rows.map((row) => getLContext(row.nativeElement)!);
+        const lViews = contexts.map((ctx) => ctx.lView!);
+        const tNode = lViews[0][TVIEW].data[contexts[0].nodeIndex] as TNode;
+
+        cmp.items.set([]);
+        await fixture.whenStable();
+        await timeout();
+
+        expect(fixture.debugElement.queryAll(By.css('.row')).length).toBe(0);
+        expect(leavingNodes.get(tNode)).toBeUndefined();
+        for (const lView of lViews) {
+          expect(lView[ANIMATIONS]?.leave?.get(tNode.index)?.resolvers).toBeUndefined();
+        }
+      }
+    });
+
+    it('should keep leavingNodes tracked until a composed active animate.leave completes when combined with an empty class list', async () => {
+      @Directive({
+        selector: '[hostFadeLeave]',
+        host: {'animate.leave': 'fade'},
+      })
+      class HostFadeLeaveDirective {}
+
+      @Directive({
+        selector: '[hostEmptyLeave]',
+        host: {'[animate.leave]': '""'},
+      })
+      class HostEmptyLeaveDirective {}
+
+      @Component({
+        styles: styles,
+        imports: [HostFadeLeaveDirective, HostEmptyLeaveDirective],
+        template: `
+          @if (showHostActive()) {
+            <p class="host-active" hostFadeLeave [animate.leave]="''">Host active</p>
+          }
+          @if (showTemplateActive()) {
+            <p class="template-active" hostEmptyLeave animate.leave="fade">Template active</p>
+          }
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ComposedEmptyLeaveComponent {
+        showHostActive = signal(true);
+        showTemplateActive = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(ComposedEmptyLeaveComponent);
+      const cmp = fixture.componentInstance;
+      await fixture.whenStable();
+
+      const hostActiveEl = fixture.debugElement.query(By.css('.host-active'))
+        .nativeElement as HTMLElement;
+      const hostActiveCtx = getLContext(hostActiveEl)!;
+      const hostActiveTNode = hostActiveCtx.lView![TVIEW].data[hostActiveCtx.nodeIndex] as TNode;
+
+      const templateActiveEl = fixture.debugElement.query(By.css('.template-active'))
+        .nativeElement as HTMLElement;
+      const templateActiveCtx = getLContext(templateActiveEl)!;
+      const templateActiveTNode = templateActiveCtx.lView![TVIEW].data[
+        templateActiveCtx.nodeIndex
+      ] as TNode;
+
+      cmp.showHostActive.set(false);
+      cmp.showTemplateActive.set(false);
+      await fixture.whenStable();
+      await nextAnimationFrame();
+
+      // Both elements should still be animating and tracked in leavingNodes with their declarationView preserved.
+      expect(hostActiveEl.isConnected).toBeTrue();
+      expect(templateActiveEl.isConnected).toBeTrue();
+      expect(leavingNodes.get(hostActiveTNode)?.length).toBe(1);
+      expect(leavingNodes.get(hostActiveTNode)?.[0].el).toBe(hostActiveEl);
+      expect(leavingNodes.get(hostActiveTNode)?.[0].declarationView).not.toBeNull();
+      expect(leavingNodes.get(templateActiveTNode)?.length).toBe(1);
+      expect(leavingNodes.get(templateActiveTNode)?.[0].el).toBe(templateActiveEl);
+      expect(leavingNodes.get(templateActiveTNode)?.[0].declarationView).not.toBeNull();
+
+      hostActiveEl.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade-out'}));
+      templateActiveEl.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out'}),
+      );
+      await timeout();
+
+      expect(hostActiveEl.isConnected).toBeFalse();
+      expect(templateActiveEl.isConnected).toBeFalse();
+      expect(leavingNodes.get(hostActiveTNode)).toBeUndefined();
+      expect(leavingNodes.get(templateActiveTNode)).toBeUndefined();
+    });
+
+    it('should keep leavingNodes tracked until a descendant leave animation completes when the host has an empty animate.leave', async () => {
+      @Component({
+        styles: styles,
+        template: `
+          @if (show()) {
+            <div class="outer" [animate.leave]="''">
+              <span class="inner" animate.leave="fade">Inner</span>
+            </div>
+          }
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class EmptyHostWithAnimatedDescendantComponent {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(EmptyHostWithAnimatedDescendantComponent);
+      const cmp = fixture.componentInstance;
+      await fixture.whenStable();
+
+      const outerEl = fixture.debugElement.query(By.css('.outer')).nativeElement as HTMLElement;
+      const innerEl = fixture.debugElement.query(By.css('.inner')).nativeElement as HTMLElement;
+      const outerCtx = getLContext(outerEl)!;
+      const outerTNode = outerCtx.lView![TVIEW].data[outerCtx.nodeIndex] as TNode;
+      const innerCtx = getLContext(innerEl)!;
+      const innerTNode = innerCtx.lView![TVIEW].data[innerCtx.nodeIndex] as TNode;
+
+      cmp.show.set(false);
+      await fixture.whenStable();
+      await nextAnimationFrame();
+
+      expect(outerEl.isConnected).toBeTrue();
+      expect(leavingNodes.get(outerTNode)?.map((n) => n.el)).toEqual([outerEl]);
+      expect(leavingNodes.get(innerTNode)?.map((n) => n.el)).toEqual([innerEl]);
+
+      innerEl.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade-out'}));
+      await timeout();
+
+      expect(outerEl.isConnected).toBeFalse();
+      expect(leavingNodes.get(outerTNode)).toBeUndefined();
+      expect(leavingNodes.get(innerTNode)).toBeUndefined();
     });
 
     describe('legacy animations compatibility', () => {
@@ -2886,7 +3059,12 @@ describe('Animation', () => {
       appRef.attachView(compRef.hostView);
       await appRef.whenStable();
 
+      const panelEl = overlay.querySelector('.panel') as HTMLElement;
+      const panelCtx = getLContext(panelEl)!;
+      const panelTNode = panelCtx.lView![TVIEW].data[panelCtx.nodeIndex] as TNode;
+
       expect(() => TestBed.resetTestingModule()).not.toThrow();
+      expect(leavingNodes.get(panelTNode)).toBeUndefined();
       hostEl.remove();
       overlay.remove();
     });
