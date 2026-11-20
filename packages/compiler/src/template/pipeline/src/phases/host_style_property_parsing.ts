@@ -13,9 +13,6 @@ import {namespaceCssVariable} from '../../../../util';
 
 const STYLE_DOT = 'style.';
 const CLASS_DOT = 'class.';
-
-const STYLE_BANG = 'style!';
-const CLASS_BANG = 'class!';
 const BANG_IMPORTANT = '!important';
 
 /**
@@ -28,11 +25,6 @@ export function parseHostStyleProperties(job: CompilationJob): void {
   for (const op of job.root.update) {
     if (!(op.kind === ir.OpKind.Binding && op.bindingKind === ir.BindingKind.Property)) {
       continue;
-    }
-
-    if (op.name.endsWith(BANG_IMPORTANT)) {
-      // Delete any `!important` suffixes from the binding name.
-      op.name = op.name.substring(0, op.name.length - BANG_IMPORTANT.length);
     }
 
     if (op.name.startsWith(STYLE_DOT)) {
@@ -48,16 +40,10 @@ export function parseHostStyleProperties(job: CompilationJob): void {
       const {property, suffix} = parseProperty(op.name);
       op.name = property;
       op.unit = suffix;
-    } else if (op.name.startsWith(STYLE_BANG)) {
-      op.bindingKind = ir.BindingKind.StyleProperty;
-      op.name = 'style';
     } else if (op.name.startsWith(CLASS_DOT)) {
       op.bindingKind = ir.BindingKind.ClassName;
       // Class names can contain dots (e.g. `px-3.5`), so there is no suffix to split off.
       op.name = stripImportant(op.name.substring(CLASS_DOT.length));
-    } else if (op.name.startsWith(CLASS_BANG)) {
-      op.bindingKind = ir.BindingKind.ClassName;
-      op.name = stripImportant(op.name.substring(CLASS_BANG.length));
     }
   }
 }
@@ -79,9 +65,9 @@ function hyphenate(value: string): string {
 }
 
 function stripImportant(name: string): string {
-  const overrideIndex = name.indexOf(BANG_IMPORTANT);
-  if (overrideIndex !== -1) {
-    name = overrideIndex > 0 ? name.substring(0, overrideIndex) : '';
+  const importantIndex = name.indexOf(BANG_IMPORTANT);
+  if (importantIndex > -1) {
+    return name.substring(0, importantIndex);
   }
   return name;
 }
