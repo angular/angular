@@ -238,6 +238,301 @@ runInEachFileSystem(() => {
       expect(extractMessage(diags[0])).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
+    it('should allow a string field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal('a'));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a string literal union field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<'a' | 'b'>('a'));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a string enum field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          enum Color {
+            Red = 'red',
+            Blue = 'blue',
+          }
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<Color>(Color.Red));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a generic string-constrained field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input} from '@angular/core';
+          import {Field, FormField} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f()"></select>',
+            imports: [FormField]
+          })
+          export class Comp<T extends string> {
+            readonly f = input.required<Field<T>>();
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a number|null field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<number | null>(1));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a number field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(1));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a numeric literal union field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<1 | 2 | null>(1));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a numeric enum field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          enum Priority {
+            Low = 1,
+            High = 2,
+          }
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<Priority>(Priority.Low));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a generic number-constrained field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input} from '@angular/core';
+          import {Field, FormField} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f()"></select>',
+            imports: [FormField]
+          })
+          export class Comp<T extends number | null> {
+            readonly f = input.required<Field<T>>();
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should reject a string|null field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<string | null>(null));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '(() => string) | (() => number | null)'`,
+      );
+    });
+
+    it('should reject a string|number field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<string | number>('1'));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '(() => string) | (() => number | null)'`,
+      );
+    });
+
+    it('should reject a string|number|null field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<string | number | null>(null));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '(() => string) | (() => number | null)'`,
+      );
+    });
+
+    it('should reject a boolean field on a select', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<select [formField]="f"></select>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(true));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '(() => string) | (() => number | null)'`,
+      );
+    });
+
     it('should infer the type of the field from the input `type`', () => {
       env.write(
         'test.ts',

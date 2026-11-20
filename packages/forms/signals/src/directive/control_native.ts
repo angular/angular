@@ -26,6 +26,7 @@ import {
   getNativeControlValue,
   inputRequiresValidityTracking,
   isInput,
+  isSelect,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -89,9 +90,9 @@ export function nativeControlCreate(
   // This means that we need to know when an `<option>` is created, destroyed, or has its `value`
   // changed so that we can re-sync the `<select>` to the field state's value. We implement this
   // using a `MutationObserver` that we create to observe `<option>` changes.
-  if (input.tagName === 'SELECT') {
+  if (isSelect(input)) {
     observeSelectMutations(
-      input as HTMLSelectElement,
+      input,
       () => {
         // It's not legal to access `parent.state()` until update mode has run, but
         // `observeSelectMutations` may fire earlier. It's okay to ignore these early notifications
@@ -99,7 +100,7 @@ export function nativeControlCreate(
         if (!updateMode) {
           return;
         }
-        input.value = parent.state().controlValue() as string;
+        setNativeControlValue(input, parent.state().controlValue());
       },
       parent.destroyRef,
     );
