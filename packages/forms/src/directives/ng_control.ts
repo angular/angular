@@ -83,21 +83,35 @@ export abstract class NgControl extends AbstractControlDirective {
 
   protected isCustomControlBased = false;
 
+  private customControlHost?: ControlDirectiveHost;
   private userOnReset?: (value?: unknown) => void;
   private resetSubscription?: Subscription;
 
   /** @internal */
   set onReset(callback: (value?: unknown) => void) {
     this.userOnReset = callback;
+    this.subscribeToReset(this.control);
+  }
 
+  private subscribeToReset(control: AbstractControl | null): void {
     this.resetSubscription?.unsubscribe();
     this.resetSubscription = undefined;
 
-    if (this.control) {
-      this.resetSubscription = this.control.events.subscribe((event) => {
-        if (event instanceof FormResetEvent && this.control) {
-          this.userOnReset?.(this.control.value);
+    if (control && this.userOnReset) {
+      this.resetSubscription = control.events.subscribe((event) => {
+        if (!(event instanceof FormResetEvent) || this.control !== control) {
+          return;
         }
+
+        const value = control.value;
+        if (this.customControlBindings && this.customControlHost) {
+          // Apply the reset to the model before the callback resets the raw value. A later write
+          // of the previous value must update the model even if both happen before rendering.
+          this.discardPendingCustomValue(control);
+          this.customControlBindings.value = value;
+          this.customControlHost.setCustomControlModelInput(value);
+        }
+        this.userOnReset?.(value);
       });
       this.subscription?.add(this.resetSubscription);
     }
@@ -221,16 +235,7 @@ export abstract class NgControl extends AbstractControlDirective {
     this.subscription.add(control.valueChanges.subscribe(markForCheck));
     this.subscription.add(control.statusChanges.subscribe(markForCheck));
 
-    this.resetSubscription?.unsubscribe();
-    this.resetSubscription = undefined;
-    if (this.userOnReset) {
-      this.resetSubscription = control.events.subscribe((event) => {
-        if (event instanceof FormResetEvent && this.control) {
-          this.userOnReset?.(this.control.value);
-        }
-      });
-      this.subscription.add(this.resetSubscription);
-    }
+    this.subscribeToReset(control);
 
     // Add parseErrors validator if present
     if (this.parseErrorsValidator) {
@@ -260,6 +265,7 @@ export abstract class NgControl extends AbstractControlDirective {
     }
 
     this.isCustomControlBased = true;
+    this.customControlHost = host;
 
     // Listen to custom control value changes -> update FormControl
     // Note: We access this.control dynamically because it may not be set yet
