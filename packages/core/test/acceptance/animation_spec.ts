@@ -36,10 +36,10 @@ import {
 } from '@angular/core';
 import {ComponentRef} from '@angular/core/src/render3';
 import {TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
+import {By, provideClientHydration} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
-import {isNode, nextAnimationFrame, timeout} from '@angular/private/testing';
+import {isNode, nextAnimationFrame, timeout, withBody} from '@angular/private/testing';
 import {leavingNodes, reusedNodes} from '../../src/animation/utils';
 import {getLContext} from '../../src/render3/context_discovery';
 import {TNode} from '../../src/render3/interfaces/node';
@@ -3427,5 +3427,245 @@ describe('Animation', () => {
       paragraph = fixture.debugElement.query(By.css('p'));
       expect(paragraph.nativeElement.classList.contains('infinite-anim')).toBe(false);
     });
+  });
+
+  describe('animate.enter during hydration', () => {
+    const hydrationStyles = `
+      .fade-in {
+        animation: fade-in 500ms;
+      }
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    `;
+
+    function ssrBody(hostHtml: string, nghData: unknown[] = [{}]): string {
+      const state = JSON.stringify({__nghData__: nghData});
+      return `<!--nghm-->${hostHtml}<script id="a-state" type="application/json">${state}</script>`;
+    }
+
+    it(
+      'should skip animate.enter class and listener on hydrated template elements but run on dynamic @if views',
+      withBody(
+        ssrBody(
+          '<test-app ngh="0"><p id="static-class">Static</p><p id="static-fn">Fn</p><!--container--></test-app>',
+          [{c: {'4': []}}],
+        ),
+        async () => {
+          const show = signal(false);
+          const entered: string[] = [];
+
+          @Component({
+            selector: 'test-app',
+            styles: hydrationStyles,
+            encapsulation: ViewEncapsulation.None,
+            template: `
+              <p id="static-class" animate.enter="fade-in">Static</p>
+              <p id="static-fn" (animate.enter)="onEnter($event)">Fn</p>
+              @if (show()) {
+                <p id="dynamic-el" animate.enter="fade-in" (animate.enter)="onEnter($event)">
+                  Dynamic
+                </p>
+              }
+            `,
+          })
+          class TestApp {
+            readonly show = show;
+            onEnter(event: AnimationCallbackEvent) {
+              entered.push(event.target.id);
+              event.animationComplete();
+            }
+          }
+
+          TestBed.configureTestingModule({
+            animationsEnabled: true,
+            providers: [provideClientHydration()],
+          });
+          const appRef = TestBed.inject(ApplicationRef);
+          const ssrEl = document.getElementById('static-class')!;
+          appRef.bootstrap(TestApp);
+          await appRef.whenStable();
+          await nextAnimationFrame();
+
+          expect(document.getElementById('static-class')).toBe(ssrEl);
+          expect(ssrEl.classList.contains('fade-in')).toBe(false);
+          expect(entered).toEqual([]);
+
+          show.set(true);
+          await appRef.whenStable();
+          await nextAnimationFrame();
+
+          const dynamicEl = document.getElementById('dynamic-el')!;
+          expect(dynamicEl.classList.contains('fade-in')).toBe(true);
+          expect(entered).toEqual(['dynamic-el']);
+        },
+      ),
+    );
+
+    it(
+      'should skip host animate.enter on hydrated root and child components but run on dynamically created components',
+      withBody(
+        ssrBody(
+          '<test-root ngh="0"><test-child id="hydrated-child" ngh="1"><span>Child</span></test-child></test-root>',
+          [{}, {}],
+        ),
+        async () => {
+          const entered: string[] = [];
+
+          @Component({
+            selector: 'test-child',
+            styles: hydrationStyles,
+            encapsulation: ViewEncapsulation.None,
+            host: {'animate.enter': 'fade-in', '(animate.enter)': 'onEnter($event)'},
+            template: '<span>Child</span>',
+          })
+          class TestChild {
+            onEnter(event: AnimationCallbackEvent) {
+              entered.push(event.target.id || event.target.tagName.toLowerCase());
+              event.animationComplete();
+            }
+          }
+
+          @Component({
+            selector: 'test-root',
+            imports: [TestChild],
+            styles: hydrationStyles,
+            encapsulation: ViewEncapsulation.None,
+            host: {'animate.enter': 'fade-in', '(animate.enter)': 'onEnter($event)'},
+            template: '<test-child id="hydrated-child" />',
+          })
+          class TestRoot {
+            onEnter(event: AnimationCallbackEvent) {
+              entered.push(event.target.tagName.toLowerCase());
+              event.animationComplete();
+            }
+          }
+
+          TestBed.configureTestingModule({
+            animationsEnabled: true,
+            providers: [provideClientHydration()],
+          });
+          const appRef = TestBed.inject(ApplicationRef);
+          const ssrRoot = document.querySelector('test-root')!;
+          const ssrChild = document.getElementById('hydrated-child')!;
+          appRef.bootstrap(TestRoot);
+          await appRef.whenStable();
+          await nextAnimationFrame();
+
+          expect(document.querySelector('test-root')).toBe(ssrRoot);
+          expect(document.getElementById('hydrated-child')).toBe(ssrChild);
+          expect(ssrRoot.classList.contains('fade-in')).toBe(false);
+          expect(ssrChild.classList.contains('fade-in')).toBe(false);
+          expect(entered).toEqual([]);
+
+          const dynamicHost = document.createElement('test-child');
+          dynamicHost.id = 'dynamic-child';
+          document.body.appendChild(dynamicHost);
+          const compRef = createComponentFn(TestChild, {
+            environmentInjector: appRef.injector,
+            hostElement: dynamicHost,
+          });
+          compRef.changeDetectorRef.detectChanges();
+          await appRef.whenStable();
+          await nextAnimationFrame();
+
+          expect(dynamicHost.classList.contains('fade-in')).toBe(true);
+          expect(entered).toEqual(['dynamic-child']);
+          compRef.destroy();
+          dynamicHost.remove();
+        },
+      ),
+    );
+
+    it(
+      'should skip animate.enter on a reused ngSkipHydration host while running it on recreated children',
+      withBody(
+        ssrBody(
+          '<test-skip-root ngh="0"><skip-child id="skip-host" ngskiphydration=""><p id="skip-inner">Old</p></skip-child></test-skip-root>',
+          [{}],
+        ),
+        async () => {
+          const entered: string[] = [];
+
+          @Component({
+            selector: 'skip-child',
+            styles: hydrationStyles,
+            encapsulation: ViewEncapsulation.None,
+            host: {'animate.enter': 'fade-in', '(animate.enter)': 'onHost($event)'},
+            template:
+              '<p id="skip-inner" animate.enter="fade-in" (animate.enter)="onInner($event)">New</p>',
+          })
+          class SkipChild {
+            onHost(event: AnimationCallbackEvent) {
+              entered.push(`host:${event.target.id}`);
+              event.animationComplete();
+            }
+            onInner(event: AnimationCallbackEvent) {
+              entered.push(`inner:${event.target.id}`);
+              event.animationComplete();
+            }
+          }
+
+          @Component({
+            selector: 'test-skip-root',
+            imports: [SkipChild],
+            template: '<skip-child id="skip-host" ngSkipHydration />',
+          })
+          class TestSkipRoot {}
+
+          TestBed.configureTestingModule({
+            animationsEnabled: true,
+            providers: [provideClientHydration()],
+          });
+          const appRef = TestBed.inject(ApplicationRef);
+          const ssrHost = document.getElementById('skip-host')!;
+          appRef.bootstrap(TestSkipRoot);
+          await appRef.whenStable();
+          await nextAnimationFrame();
+
+          expect(document.getElementById('skip-host')).toBe(ssrHost);
+          expect(ssrHost.classList.contains('fade-in')).toBe(false);
+          expect(document.getElementById('skip-inner')!.classList.contains('fade-in')).toBe(true);
+          expect(entered).toEqual(['inner:skip-inner']);
+        },
+      ),
+    );
+
+    it(
+      'should run animate.enter on nodes marked in DISCONNECTED_NODES during hydration',
+      withBody(ssrBody('<test-disc ngh="0"></test-disc>', [{d: [0, 1]}]), async () => {
+        const entered: string[] = [];
+
+        @Component({
+          selector: 'test-disc',
+          styles: hydrationStyles,
+          encapsulation: ViewEncapsulation.None,
+          template:
+            '<p id="disc-el" animate.enter="fade-in" (animate.enter)="onEnter($event)">New</p>',
+        })
+        class TestDisc {
+          onEnter(event: AnimationCallbackEvent) {
+            entered.push(event.target.id);
+            event.animationComplete();
+          }
+        }
+
+        TestBed.configureTestingModule({
+          animationsEnabled: true,
+          providers: [provideClientHydration()],
+        });
+        const appRef = TestBed.inject(ApplicationRef);
+        const ssrRoot = document.querySelector('test-disc')!;
+        appRef.bootstrap(TestDisc);
+        await appRef.whenStable();
+        await nextAnimationFrame();
+
+        expect(document.querySelector('test-disc')).toBe(ssrRoot);
+        const el = document.getElementById('disc-el')!;
+        expect(el.classList.contains('fade-in')).toBe(true);
+        expect(entered).toEqual(['disc-el']);
+      }),
+    );
   });
 });
