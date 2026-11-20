@@ -50,7 +50,7 @@ export class AdminMenu {}
 By explicitly specifying the inputs and outputs, consumers of the component with `hostDirectives` can bind them in a template:
 
 ```angular-html
-<admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()"></admin-menu>
+<admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()" />
 ```
 
 Furthermore, you can alias inputs and outputs from a host directive to customize the API of your component:
@@ -71,7 +71,7 @@ export class AdminMenu {}
 ```
 
 ```angular-html
-<admin-menu id="top-menu" (closed)="logMenuClosed()"></admin-menu>
+<admin-menu id="top-menu" (closed)="logMenuClosed()" />
 ```
 
 ## Adding directives to another directive
@@ -191,7 +191,7 @@ export class Button {}
 ```angular-html
 <!-- Hoverable is matched by selector AND as a host directive of Button. -->
 <!-- Angular keeps only the selector match, which has the full public API. -->
-<app-button hoverable></app-button>
+<app-button hoverable />
 ```
 
 #### Multiple host directive matches are merged

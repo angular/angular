@@ -149,7 +149,7 @@ The following example declares a template fragment and renders that fragment to 
   <p>This is a fragment</p>
 </ng-template>
 
-<ng-container *ngTemplateOutlet="myFragment"></ng-container>
+<ng-container *ngTemplateOutlet="myFragment" />
 ```
 
 This example produces the following rendered DOM:
