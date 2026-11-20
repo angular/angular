@@ -605,6 +605,8 @@ export function performNgpCompilationSync(params: {
         legacyOptionalChaining: Boolean(rawOpts['legacyOptionalChaining']),
         isClosureCompilerEnabled,
         emitDeclarationOnly,
+        emitDecoratorMetadata: Boolean(options.emitDecoratorMetadata),
+        verbatimModuleSyntax: Boolean(options.verbatimModuleSyntax),
         externalRuntimeStyles: Boolean(rawOpts['externalRuntimeStyles']),
         onlyExplicitDeferDependencyImports: Boolean(rawOpts['onlyExplicitDeferDependencyImports']),
         enableTemplateSourceLocations: Boolean(rawOpts['enableTemplateSourceLocations']),

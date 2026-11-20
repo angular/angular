@@ -8,10 +8,10 @@
 
 import {runPipeline, TestFile} from './utils.js';
 
-function tsconfig(files: string[]): TestFile {
+function tsconfig(files: string[], compilerOptions: object = {}): TestFile {
   return {
     path: '/tsconfig.json',
-    content: JSON.stringify({compilerOptions: {strict: true}, files}),
+    content: JSON.stringify({compilerOptions: {strict: true, ...compilerOptions}, files}),
   };
 }
 
@@ -186,7 +186,7 @@ describe('constructor DI tokens imported via named imports', () => {
         expect(out).toContain('i0.ɵɵdirectiveInject(DeferredComp)');
       });
 
-      it('still converts a @defer dependency import to type-only when constructor parameter uses @Inject override', async () => {
+      it('still elides a @defer dependency import when constructor parameter uses @Inject override', async () => {
         const deferredFile: TestFile = {
           path: '/deferred.ts',
           content: `
@@ -220,9 +220,58 @@ describe('constructor DI tokens imported via named imports', () => {
           optimize,
         );
 
+        // Kept as written: nothing references `DeferredComp` as a value any more, so `tsc` elides
+        // the declaration from JavaScript while the `.d.ts` keeps the user's import clause.
         expect(out).not.toContain("import * as i1 from './deferred'");
-        expect(out).toContain("import { type DeferredComp } from './deferred';");
+        expect(out).toContain("import { DeferredComp } from './deferred';");
+        expect(out).not.toContain('type DeferredComp');
         expect(out).toContain('i0.ɵɵdirectiveInject(DEFERRED_TOKEN)');
+      });
+
+      it('converts a @defer dependency import to type-only under emitDecoratorMetadata', async () => {
+        const deferredFile: TestFile = {
+          path: '/deferred.ts',
+          content: `
+            import {Component} from '@angular/core';
+            @Component({selector: 'deferred-comp', template: 'Deferred'})
+            export class DeferredComp {}
+          `,
+        };
+        const appFile: TestFile = {
+          path: '/app.ts',
+          content: `
+            import {Component} from '@angular/core';
+            import {DeferredComp} from './deferred';
+
+            declare function Track(): PropertyDecorator;
+
+            @Component({
+              selector: 'app-comp',
+              deferredImports: [DeferredComp],
+              template: '@defer { <deferred-comp /> }',
+            })
+            export class AppComponent {
+              @Track() d?: DeferredComp;
+            }
+          `,
+        };
+
+        const out = await compile(
+          [
+            tsconfig(['app.ts', 'deferred.ts'], {
+              experimentalDecorators: true,
+              emitDecoratorMetadata: true,
+            }),
+            deferredFile,
+            appFile,
+          ],
+          '/out/app.ts',
+          optimize,
+        );
+
+        // `tsc` would serialize `DeferredComp` as a value in the `@Track()` metadata and keep a
+        // plain import alive; a `type` specifier is serialized as `Function` instead.
+        expect(out).toContain("import { type DeferredComp } from './deferred';");
       });
     });
   }

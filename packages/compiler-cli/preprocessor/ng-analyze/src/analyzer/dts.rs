@@ -279,6 +279,7 @@ pub fn analyze_dts(
             semantic,
             source_text,
             &std::collections::HashSet::new(),
+            &std::collections::HashSet::new(),
         ),
     }
 }

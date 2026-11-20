@@ -561,6 +561,7 @@ fn process_class_common<'a>(
         eval,
     });
     let mut jit_removal_spans = Vec::new();
+    let mut di_removal_spans = Vec::new();
     let constructor_params_result = get_constructor_params(
         class,
         &ctor_params_di,
@@ -569,6 +570,7 @@ fn process_class_common<'a>(
         import_map,
         angular_imports,
         &mut jit_removal_spans,
+        &mut di_removal_spans,
         top_level_reads.as_mut(),
     );
     let (constructor_params, unexpected_param_decorators) = match constructor_params_result {
@@ -659,7 +661,8 @@ fn process_class_common<'a>(
         || directive.as_ref().is_some_and(|d| d.is_jit)
         || ng_module.as_ref().is_some_and(|m| m.is_jit);
 
-    // Class decorators lead the removal list, followed by the member decorators.
+    // Class decorators lead the removal list, followed by the member decorators and the
+    // constructor parameter DI decorators.
     // For JIT classes, class decorators are preserved on the class declaration while
     // Angular constructor parameter and identifier-named member decorators are downleveled
     // into `static ctorParameters` and `static propDecorators`.
@@ -690,6 +693,10 @@ fn process_class_common<'a>(
         decorator_removal_spans.extend(jit_removal_spans);
     } else {
         decorator_removal_spans.extend(member_removal_spans);
+        // The emitter builds no factory for an unnamed class, so its DI decorators stay.
+        if class.id.is_some() {
+            decorator_removal_spans.extend(di_removal_spans);
+        }
     }
     let nocollapse_insertions = super::closure_nocollapse::collect_nocollapse_insertions(
         class,
@@ -1007,11 +1014,17 @@ pub fn analyze_parsed(
         );
     }
 
+    let stripped_decorators: HashSet<u32> = output
+        .classes
+        .iter()
+        .flat_map(|class| class.decorator_removal_spans.iter().map(|span| span.start))
+        .collect();
     let import_declarations = super::imports::collect_import_declarations(
         program,
         semantic,
         source_text,
         &dependency_array_references(&output.classes),
+        &stripped_decorators,
     );
     let import_equals_declarations =
         super::imports::collect_import_equals_declarations(program, source_text);
