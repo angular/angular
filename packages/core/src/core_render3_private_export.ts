@@ -110,6 +110,7 @@ export {
   ɵɵControlFeature,
   ɵɵdeclareLet,
   ɵɵdefer,
+  ɵɵdeferEnableRetry,
   ɵɵdeferEnableTimerScheduling,
   ɵɵdeferHydrateNever,
   ɵɵdeferHydrateOnHover,

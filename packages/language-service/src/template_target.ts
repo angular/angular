@@ -561,6 +561,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitDeferredBlockError(block: TmplAstDeferredBlockError) {
+    this.visitAll(block.contextVariables);
     this.visitAll(block.children);
   }
 
