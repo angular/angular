@@ -404,6 +404,7 @@ export class NavigationTransitions {
   }
 
   complete() {
+    this.destroyed = true;
     this.transitions?.complete();
   }
 
@@ -887,7 +888,7 @@ export class NavigationTransitions {
             // If the application is already destroyed, the catch block should not
             // execute anything in practice because other resources have already
             // been released and destroyed.
-            if (this.destroyed) {
+            if (this.destroyed || this.environmentInjector.destroyed) {
               overallTransitionState.resolve(false);
               return EMPTY;
             }
@@ -987,13 +988,15 @@ export class NavigationTransitions {
     code: NavigationCancellationCode,
   ) {
     rollbackState(t);
-    const navCancel = new NavigationCancel(
-      t.id,
-      this.urlSerializer.serialize(t.extractedUrl),
-      reason,
-      code,
-    );
-    this.events.next(navCancel);
+    if (!this.destroyed && !this.environmentInjector.destroyed) {
+      const navCancel = new NavigationCancel(
+        t.id,
+        this.urlSerializer.serialize(t.extractedUrl),
+        reason,
+        code,
+      );
+      this.events.next(navCancel);
+    }
     t.resolve(false);
   }
 
