@@ -18,7 +18,7 @@ import {HousingLocationInfo} from '../housinglocation';
       }
     </section>
   `,
-  styleUrls: ['./home.css'],
+  styleUrl: './home.css',
 })
 export class Home {
   readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';

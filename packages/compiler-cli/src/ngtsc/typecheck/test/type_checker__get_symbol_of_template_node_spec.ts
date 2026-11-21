@@ -23,7 +23,6 @@ import {
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundText,
-  TmplAstComponent,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstIfBlock,
@@ -48,8 +47,6 @@ import {
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   SymbolReference,
@@ -2534,383 +2531,42 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('selectorless', () => {
-      function getDep(name: string, path: string, isComponent = false) {
-        const depFile = absoluteFrom(path);
+    it('should get symbol for a selector attribute when there are multiple directives', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const matListItem = {
+        name: 'MatListItem',
+        selector: '[mat-list-item]',
+        file: absoluteFrom('/list.ts'),
+        type: 'directive' as const,
+      };
+      const routerLink = {
+        name: 'RouterLink',
+        selector: '[routerLink]',
+        file: absoluteFrom('/router.ts'),
+        type: 'directive' as const,
+        inputs: {routerLink: 'routerLink'},
+      };
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {'Cmp': '<a mat-list-item routerLink="path"></a>'},
+          declarations: [matListItem, routerLink],
+        },
+        {fileName: matListItem.file, source: 'export class MatListItem {}'},
+        {fileName: routerLink.file, source: 'export class RouterLink { routerLink!: string; }'},
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const cmp = getClass(sf, 'Cmp');
+      const elements = getAstElements(templateTypeChecker, cmp);
+      const element = elements[0];
+      const matListItemAttr = element.attributes.find((a) => a.name === 'mat-list-item')!;
 
-        return {
-          name,
-          file: depFile,
-          selector: null,
-          type: 'directive' as const,
-          isStandalone: true,
-          isComponent,
-        } as TestDirective & {isStandalone: true; file: AbsoluteFsPath};
-      }
+      const symbol = templateTypeChecker.getSymbolOfNode(matListItemAttr, cmp);
 
-      it('should get symbol of a selectorless component', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = getDep('Dep', '/dep.ts', true);
-        const {program, templateTypeChecker} = setup(
-          [
-            {fileName, templates: {'Cmp': '<Dep/>'}, declarations: [dep]},
-            {fileName: dep.file, source: 'export class Dep {}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const symbol = templateTypeChecker.getSymbolOfNode(nodes[0] as TmplAstComponent, cmp)!;
-        assertSelectorlessComponentSymbol(symbol);
-        expect(symbol.directives.map((d) => d.ref.name)).toEqual(['Dep']);
-      });
-
-      it('should get symbol for a selector attribute when there are multiple directives', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const matListItem = {
-          name: 'MatListItem',
-          selector: '[mat-list-item]',
-          file: absoluteFrom('/list.ts'),
-          type: 'directive' as const,
-        };
-        const routerLink = {
-          name: 'RouterLink',
-          selector: '[routerLink]',
-          file: absoluteFrom('/router.ts'),
-          type: 'directive' as const,
-          inputs: {routerLink: 'routerLink'},
-        };
-        const {program, templateTypeChecker} = setup([
-          {
-            fileName,
-            templates: {'Cmp': '<a mat-list-item routerLink="path"></a>'},
-            declarations: [matListItem, routerLink],
-          },
-          {fileName: matListItem.file, source: 'export class MatListItem {}'},
-          {fileName: routerLink.file, source: 'export class RouterLink { routerLink!: string; }'},
-        ]);
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const elements = getAstElements(templateTypeChecker, cmp);
-        const element = elements[0];
-        const matListItemAttr = element.attributes.find((a) => a.name === 'mat-list-item')!;
-
-        const symbol = templateTypeChecker.getSymbolOfNode(matListItemAttr, cmp);
-
-        expect(symbol).toBeTruthy();
-        assertDomBindingSymbol(symbol!);
-        assertElementSymbol(symbol!.host);
-        expect(symbol!.host.directives.map((d) => d.ref.name)).toContain('MatListItem');
-      });
-      it('should get symbol of a selectorless directive', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = getDep('Dep', '/dep.ts');
-        const {program, templateTypeChecker} = setup(
-          [
-            {fileName, templates: {'Cmp': '<div @Dep></div>'}, declarations: [dep]},
-            {fileName: dep.file, source: 'export class Dep {}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const element = nodes[0] as TmplAstElement;
-        const symbol = templateTypeChecker.getSymbolOfNode(element.directives[0], cmp)!;
-        assertSelectorlessDirectiveSymbol(symbol);
-        expect(symbol.directives.map((d) => d.ref.name)).toEqual(['Dep']);
-      });
-
-      it('should get symbol on a node that has both selectorless components and directives', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const depComp = getDep('DepComp', '/dep-comp.ts', true);
-        const depDir = getDep('DepDir', '/dep-dir.ts');
-        const {program, templateTypeChecker} = setup(
-          [
-            {fileName, templates: {'Cmp': '<DepComp @DepDir/>'}, declarations: [depComp, depDir]},
-            {fileName: depComp.file, source: 'export class DepComp {}'},
-            {fileName: depDir.file, source: 'export class DepDir {}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const component = nodes[0] as TmplAstComponent;
-        const componentSymbol = templateTypeChecker.getSymbolOfNode(component, cmp)!;
-        const directiveSymbol = templateTypeChecker.getSymbolOfNode(component.directives[0], cmp)!;
-
-        assertSelectorlessComponentSymbol(componentSymbol);
-        expect(componentSymbol.directives.map((d) => d.ref.name)).toEqual(['DepComp']);
-
-        assertSelectorlessDirectiveSymbol(directiveSymbol);
-        expect(directiveSymbol.directives.map((d) => d.ref.name)).toEqual(['DepDir']);
-      });
-
-      it('should get symbol of selectorless directives with host directives', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const depComp = {
-          ...getDep('DepComp', '/dep-comp.ts', true),
-          hostDirectives: [
-            {
-              directive: {
-                ...getDep('DepCompHost', '/dep-comp-host.ts'),
-                matchSource: MatchSource.HostDirective,
-              },
-            },
-          ],
-        };
-        const depDir = {
-          ...getDep('DepDir', '/dep-dir.ts'),
-          hostDirectives: [
-            {
-              directive: {
-                ...getDep('DepDirHost', '/dep-dir-host.ts'),
-                matchSource: MatchSource.HostDirective,
-              },
-            },
-          ],
-        };
-        const {program, templateTypeChecker} = setup(
-          [
-            {fileName, templates: {'Cmp': '<DepComp @DepDir/>'}, declarations: [depComp, depDir]},
-            {fileName: depComp.file, source: 'export class DepComp {}'},
-            {fileName: depDir.file, source: 'export class DepDir {}'},
-            {
-              fileName: depComp.hostDirectives[0].directive.file,
-              source: 'export class DepCompHost {}',
-            },
-            {
-              fileName: depDir.hostDirectives[0].directive.file,
-              source: 'export class DepDirHost {}',
-            },
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const component = nodes[0] as TmplAstComponent;
-        const componentSymbol = templateTypeChecker.getSymbolOfNode(component, cmp)!;
-        const directiveSymbol = templateTypeChecker.getSymbolOfNode(component.directives[0], cmp)!;
-
-        assertSelectorlessComponentSymbol(componentSymbol);
-        expect(componentSymbol.directives.map((d) => d.ref.name)).toEqual([
-          'DepCompHost',
-          'DepComp',
-        ]);
-
-        assertSelectorlessDirectiveSymbol(directiveSymbol);
-        expect(directiveSymbol.directives.map((d) => d.ref.name)).toEqual(['DepDirHost', 'DepDir']);
-      });
-
-      it('should get symbol of a selectorless component input', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = {
-          ...getDep('Dep', '/dep.ts', true),
-          inputs: {'someInput': 'someInput'},
-        };
-        const {program, templateTypeChecker} = setup(
-          [
-            {
-              fileName,
-              source: 'export class Cmp {value: any;}',
-              templates: {'Cmp': '<Dep [someInput]="value"/>'},
-              declarations: [dep],
-            },
-            {fileName: dep.file, source: 'export class Dep {someInput: any}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const component = nodes[0] as TmplAstComponent;
-        const symbol = templateTypeChecker.getSymbolOfNode(component.inputs[0], cmp)!;
-        assertInputBindingSymbol(symbol);
-        expect(
-          (
-            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
-              .declarations![0] as ts.PropertyDeclaration
-          ).name.getText(),
-        ).toEqual('someInput');
-      });
-
-      it('should get symbol of a selectorless component output', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = {
-          ...getDep('Dep', '/dep.ts', true),
-          outputs: {'event': 'event'},
-        };
-        const {program, templateTypeChecker} = setup(
-          [
-            {
-              fileName,
-              source: 'export class Cmp {handle() {}}',
-              templates: {'Cmp': '<Dep (event)="handle()"/>'},
-              declarations: [dep],
-            },
-            {
-              fileName: dep.file,
-              source: 'export class Dep {event: EventEmitter<any>;}',
-            },
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const component = nodes[0] as TmplAstComponent;
-        const symbol = templateTypeChecker.getSymbolOfNode(component.outputs[0], cmp)!;
-        assertOutputBindingSymbol(symbol);
-        expect(
-          (
-            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
-              .declarations![0] as ts.PropertyDeclaration
-          ).name.getText(),
-        ).toEqual('event');
-      });
-
-      it('should get symbol of a selectorless directive input', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = {
-          ...getDep('Dep', '/dep.ts'),
-          inputs: {'someInput': 'someInput'},
-        };
-        const {program, templateTypeChecker} = setup(
-          [
-            {
-              fileName,
-              source: 'export class Cmp {value: any;}',
-              templates: {'Cmp': '<div @Dep([someInput]="value")></div>'},
-              declarations: [dep],
-            },
-            {fileName: dep.file, source: 'export class Dep {someInput: any}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const directive = (nodes[0] as TmplAstElement).directives[0];
-        const symbol = templateTypeChecker.getSymbolOfNode(directive.inputs[0], cmp)!;
-        assertInputBindingSymbol(symbol);
-        expect(
-          (
-            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
-              .declarations![0] as ts.PropertyDeclaration
-          ).name.getText(),
-        ).toEqual('someInput');
-      });
-
-      it('should get symbol of a selectorless directive output', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = {
-          ...getDep('Dep', '/dep.ts'),
-          outputs: {'event': 'event'},
-        };
-        const {program, templateTypeChecker} = setup(
-          [
-            {
-              fileName,
-              source: 'export class Cmp {handle() {}}',
-              templates: {'Cmp': '<div @Dep((event)="handle()")></div>'},
-              declarations: [dep],
-            },
-            {
-              fileName: dep.file,
-              source: 'export class Dep {event: EventEmitter<any>;}',
-            },
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const directive = (nodes[0] as TmplAstElement).directives[0];
-        const symbol = templateTypeChecker.getSymbolOfNode(directive.outputs[0], cmp)!;
-        assertOutputBindingSymbol(symbol);
-        expect(
-          (
-            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
-              .declarations![0] as ts.PropertyDeclaration
-          ).name.getText(),
-        ).toEqual('event');
-      });
-
-      it('should get symbol of a reference to selectorless component', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = getDep('Dep', '/dep.ts', true);
-        const {program, templateTypeChecker} = setup(
-          [
-            {fileName, templates: {'Cmp': '<Dep #ref/>'}, declarations: [dep]},
-            {fileName: dep.file, source: 'export class Dep {}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const component = nodes[0] as TmplAstComponent;
-        const symbol = templateTypeChecker.getSymbolOfNode(component.references[0], cmp)!;
-        assertReferenceSymbol(symbol);
-        expect((symbol.target as any).filePath).toContain('dep.ts');
-        assertTargetClassName(program, symbol.target, 'Dep');
-        expect(symbol.declaration.name).toBe('ref');
-      });
-
-      it('should get symbol of a reference to selectorless directive', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dep = getDep('Dep', '/dep.ts');
-        const {program, templateTypeChecker} = setup(
-          [
-            {fileName, templates: {'Cmp': '<div @Dep(#ref)></div>'}, declarations: [dep]},
-            {fileName: dep.file, source: 'export class Dep {}'},
-          ],
-          undefined,
-          {
-            enableSelectorless: true,
-          },
-        );
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
-        const directive = (nodes[0] as TmplAstElement).directives[0];
-        const symbol = templateTypeChecker.getSymbolOfNode(directive.references[0], cmp)!;
-        assertReferenceSymbol(symbol);
-        expect((symbol.target as SymbolReference).filePath).toContain('dep.ts');
-        assertTargetClassName(program, symbol.target, 'Dep');
-        expect(symbol.declaration.name).toBe('ref');
-      });
+      expect(symbol).toBeTruthy();
+      assertDomBindingSymbol(symbol!);
+      assertElementSymbol(symbol!.host);
+      expect(symbol!.host.directives.map((d) => d.ref.name)).toContain('MatListItem');
     });
 
     it('elements with generic directives', () => {
@@ -3342,18 +2998,6 @@ function assertDomBindingSymbol(tSymbol: Symbol): asserts tSymbol is DomBindingS
 
 function assertLetDeclarationSymbol(tSymbol: Symbol): asserts tSymbol is LetDeclarationSymbol {
   expect(tSymbol.kind).toEqual(SymbolKind.LetDeclaration);
-}
-
-function assertSelectorlessComponentSymbol(
-  tSymbol: Symbol,
-): asserts tSymbol is SelectorlessComponentSymbol {
-  expect(tSymbol.kind).toEqual(SymbolKind.SelectorlessComponent);
-}
-
-function assertSelectorlessDirectiveSymbol(
-  tSymbol: Symbol,
-): asserts tSymbol is SelectorlessDirectiveSymbol {
-  expect(tSymbol.kind).toEqual(SymbolKind.SelectorlessDirective);
 }
 
 function assertTargetClassName(program: ts.Program, target: any, expectedName: string) {

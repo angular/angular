@@ -130,13 +130,13 @@ export class AppComponent {
                       blockA: [CompA, CompB, CompC, CompD],
                     },
                     template: `
-        @defer (when isReady; name blockA) {
-          <comp-a #compA />
-          <comp-b #compB />
-          <comp-c />
-          <comp-d #compD />
-        }
-      `,
+    @defer (when isReady; name blockA) {
+      <comp-a #compA />
+      <comp-b #compB />
+      <comp-c />
+      <comp-d #compD />
+    }
+  `,
                   },
                 ],
               },

@@ -335,7 +335,7 @@ export class CompletionBuilder {
     }
 
     if (this.setup.parsedTemplate.nodes) {
-      const boundTarget = this.hybridCompiler.getBoundTarget(
+      const boundTarget = await this.hybridCompiler.getBoundTarget(
         this.setup.tsFilePath,
         this.setup.meta.classKey,
       );
@@ -416,7 +416,7 @@ export class CompletionBuilder {
     );
   }
 
-  private getElementAttributeCompletions(): CompletionList | null {
+  private async getElementAttributeCompletions(): Promise<CompletionList | null> {
     let element = (
       this.node instanceof TmplAstElement || this.node instanceof TmplAstTemplate
         ? this.node
@@ -474,7 +474,7 @@ export class CompletionBuilder {
     const table = buildAttributeCompletionTable(
       element,
       this.setup.meta,
-      this.hybridCompiler.getBoundTarget(this.setup.tsFilePath, this.setup.meta.classKey),
+      await this.hybridCompiler.getBoundTarget(this.setup.tsFilePath, this.setup.meta.classKey),
     );
 
     const items: CompletionItem[] = [];
@@ -912,7 +912,7 @@ export async function getCompletionsAtPosition(
   hybridCompiler: HybridCompiler,
   facade: TsGoFacade,
 ): Promise<CompletionList | null> {
-  const setup = getSetup(hybridCompiler, filePath, position);
+  const setup = await getSetup(hybridCompiler, filePath, position);
   if (!setup) {
     return null;
   }
@@ -985,7 +985,7 @@ export async function getCompletionEntryDetails(
   facade: TsGoFacade,
   item: CompletionItem | string,
 ): Promise<CompletionItem | null> {
-  const setup = getSetup(hybridCompiler, filePath, position);
+  const setup = await getSetup(hybridCompiler, filePath, position);
   if (!setup) {
     return null;
   }

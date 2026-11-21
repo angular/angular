@@ -124,10 +124,12 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  * A `url` sanitizer which only lets trusted `url`s through.
  *
  * This passes only `url`s marked trusted by calling {@link bypassSanitizationTrustResourceUrl}.
+ * `null` and `undefined` are not considered unsafe and are mapped to an empty string, so that a
+ * resource URL binding can be cleared without having to provide a trusted placeholder value.
  *
  * @param unsafeResourceUrl untrusted `url`, typically from the user.
- * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
- * only trusted `url`s have been allowed to pass.
+ * @returns `url` string which is safe to bind to the `src` properties such as `<iframe src>`,
+ * because only trusted `url`s have been allowed to pass.
  *
  * @codeGenApi
  */
@@ -137,6 +139,11 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
     return trustedScriptURLFromStringBypass(
       sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '',
     );
+  }
+  if (unsafeResourceUrl == null) {
+    // Consistent with `DomSanitizer.sanitize`, which returns `null` for nullish values: there is
+    // nothing to sanitize, and setting the property to `''` avoids a request to `'undefined'`.
+    return trustedScriptURLFromStringBypass('');
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
@@ -265,10 +272,16 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
 }
 
 export function validateAgainstEventProperties(name: string) {
-  if (name.toLowerCase().startsWith('on')) {
+  if (name.startsWith(':')) {
+    const errorMessage = `Invalid property name '${name}'. Property names cannot start with a colon.`;
+    throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
+  }
+  const colonIdx = name.lastIndexOf(':');
+  const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+  if (localName.toLowerCase().startsWith('on')) {
     const errorMessage =
       `Binding to event property '${name}' is disallowed for security reasons, ` +
-      `please use (${name.slice(2)})=...` +
+      `please use (${localName.slice(2)})=...` +
       `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
       ` current module.`;
     throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);

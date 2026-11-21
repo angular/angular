@@ -205,6 +205,7 @@ fn parse_ng_module_args<'a>(
         service: None,
         decorator_name,
         is_jit: false,
+        analysis_failed: false,
     })
 }
 
@@ -498,8 +499,7 @@ fn try_expand_local_const_array<'a>(
             }
             return None;
         }
-        let AstKind::VariableDeclarator(declarator) =
-            semantic.symbol_declaration(symbol_id).kind()
+        let AstKind::VariableDeclarator(declarator) = semantic.symbol_declaration(symbol_id).kind()
         else {
             for sym in visited_chain {
                 visited.remove(&sym);

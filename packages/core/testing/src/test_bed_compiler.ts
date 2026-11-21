@@ -9,6 +9,7 @@
 import {ResourceLoader} from '@angular/compiler';
 import {
   ɵANIMATIONS_DISABLED as ANIMATIONS_DISABLED,
+  ɵIS_TESTING as IS_TESTING,
   ApplicationInitStatus,
   ɵcompileComponent as compileComponent,
   ɵcompileDirective as compileDirective,
@@ -995,6 +996,7 @@ export class TestBedCompiler {
         provide: ANIMATIONS_DISABLED,
         useValue: !this.animationsEnabled,
       },
+      {provide: IS_TESTING, useValue: true},
       {
         provide: INTERNAL_APPLICATION_ERROR_HANDLER,
         useFactory: () => {

@@ -152,14 +152,15 @@ export interface LinkEntryRenderable {
   target?: string;
 }
 
-export type CliOptionRenderable = CliOption & {
+export type CliOptionRenderable = Omit<CliOption, 'deprecated'> & {
   deprecated: {version: string | undefined} | undefined;
+  deprecationMessage: string | null;
 };
 
 export type CliCardItemRenderable = CliOptionRenderable;
 
 export interface CliCardRenderable {
-  type: 'Options' | 'Arguments';
+  type: 'Options' | 'Arguments' | `${string} builder options`;
   items: CliCardItemRenderable[];
 }
 

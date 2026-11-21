@@ -103,9 +103,9 @@ export class MyComp {
               {
                 selector: 'my-comp',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
                 standalone: false,
               },
             ],

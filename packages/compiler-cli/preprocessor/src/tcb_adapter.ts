@@ -8,7 +8,6 @@
 
 import {
   SelectorMatcher,
-  SelectorlessMatcher,
   CssSelector,
   R3TargetBinder,
   TmplAstHostElement,
@@ -32,6 +31,7 @@ import {
 import type {TcbTargetInput, NgpTypeCheckingConfig} from './tcb.js';
 import * as nga from './types.js';
 import {createForeignComponentMatcher, createSpan, isStaticSourceNode} from './compiler-utils.js';
+import {NOOP_TRACER, SpanKind, type Tracer} from './perf.js';
 
 export function createInputPropertyMapping(
   metadata: nga.InputMetadata[] | null | undefined,
@@ -217,18 +217,13 @@ export function adaptTcbInput(
   config: NgpTypeCheckingConfig,
   requiresInline: boolean = false,
   content?: string,
+  tracer: Tracer = NOOP_TRACER,
 ): {
   tcbMeta: TcbTypeCheckBlockMetadata;
   targetMeta: TcbComponentMetadata;
   hostElement: TmplAstHostElement | null;
 } {
   const isStandalone = target.isStandalone ?? target.ownDeclaration.isStandalone ?? false;
-  const isSelectorless =
-    target.ownDeclaration.declarationType === 'component' &&
-    isStandalone &&
-    (target.selectorlessEnabled ?? false);
-  let matcher: SelectorMatcher<TcbDirectiveMetadata[]> | SelectorlessMatcher<TcbDirectiveMetadata>;
-
   const declarations =
     isStandalone && target.ownDeclaration
       ? [
@@ -244,14 +239,13 @@ export function adaptTcbInput(
         ]
       : target.declarations;
 
-  if (isSelectorless) {
-    const registry = new Map<string, TcbDirectiveMetadata[]>();
-    for (const decl of declarations) {
-      if (decl.declarationType !== 'directive' && decl.declarationType !== 'component') {
-        continue;
-      }
+  const matcher = new SelectorMatcher<TcbDirectiveMetadata[]>();
+  for (const decl of declarations) {
+    if (decl.declarationType !== 'directive' && decl.declarationType !== 'component') {
+      continue;
+    }
+    if (decl.selector) {
       const declPath = decl.filePath || filePath;
-      const meta = declarationToMetadata(decl, declPath, requiresInline, content, filePath);
       const hostDirectives = resolveHostDirectives(
         decl.resolvedHostDirectives,
         declPath,
@@ -259,32 +253,11 @@ export function adaptTcbInput(
         content,
         filePath,
       );
-      const existing = registry.get(decl.name) || [];
-      registry.set(decl.name, [...existing, ...hostDirectives, meta]);
+      matcher.addSelectables(CssSelector.parse(decl.selector), [
+        ...hostDirectives,
+        declarationToMetadata(decl, declPath, requiresInline, content, filePath),
+      ]);
     }
-    matcher = new SelectorlessMatcher<TcbDirectiveMetadata>(registry);
-  } else {
-    const selectorMatcher = new SelectorMatcher<TcbDirectiveMetadata[]>();
-    for (const decl of declarations) {
-      if (decl.declarationType !== 'directive' && decl.declarationType !== 'component') {
-        continue;
-      }
-      if (decl.selector) {
-        const declPath = decl.filePath || filePath;
-        const hostDirectives = resolveHostDirectives(
-          decl.resolvedHostDirectives,
-          declPath,
-          requiresInline,
-          content,
-          filePath,
-        );
-        selectorMatcher.addSelectables(CssSelector.parse(decl.selector), [
-          ...hostDirectives,
-          declarationToMetadata(decl, declPath, requiresInline, content, filePath),
-        ]);
-      }
-    }
-    matcher = selectorMatcher;
   }
 
   const hostDirectivesOnTarget = target.ownDeclaration
@@ -305,15 +278,17 @@ export function adaptTcbInput(
   const ownHostDirective = host
     ? declarationToMetadata(target.ownDeclaration, filePath, requiresInline, content, filePath)
     : null;
-  const boundTarget = binder.bind({
-    template: target.templateNodes,
-    host: host
-      ? {
-          node: host,
-          directives: [...hostDirectivesOnTarget, ownHostDirective!],
-        }
-      : undefined,
-  });
+  const boundTarget = tracer.slice(SpanKind.TemplateBind, () =>
+    binder.bind({
+      template: target.templateNodes,
+      host: host
+        ? {
+            node: host,
+            directives: [...hostDirectivesOnTarget, ownHostDirective!],
+          }
+        : undefined,
+    }),
+  );
   // Monkey-patch missing method in reference compiler
   boundTarget.getConflictingHostDirectiveBindings ??= () => null;
   (

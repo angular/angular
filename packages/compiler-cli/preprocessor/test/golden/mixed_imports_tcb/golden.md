@@ -51,9 +51,9 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [LocalComp, ExternalComp],
                 template: `
-        <local-comp></local-comp>
-        <external-comp></external-comp>
-      `,
+    <local-comp></local-comp>
+    <external-comp></external-comp>
+  `,
               },
             ],
           },

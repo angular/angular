@@ -358,7 +358,6 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     isStructural: false,
     animationTriggerNames: null,
     isStandalone: false,
-    isSignal: false,
     imports: null,
     foreignImports: null,
     rawImports: null,
@@ -373,8 +372,6 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     deferredImports: null,
     deferredImportsByBlock: null,
     inputFieldNamesFromMetadataArray: null,
-    selectorlessEnabled: false,
-    localReferencedSymbols: null,
   };
 }
 

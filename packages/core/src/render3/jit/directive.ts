@@ -244,8 +244,6 @@ function getStandaloneDefFunctions(
   directiveDefs: () => DirectiveDefList;
   pipeDefs: () => PipeDefList;
 } {
-  let cachedDirectiveDefs: DirectiveDefList | null = null;
-  let cachedPipeDefs: PipeDefList | null = null;
   const directiveDefs = () => {
     if (ngDevMode) {
       for (const rawDep of imports) {
@@ -403,7 +401,6 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: metadata.standalone === undefined ? true : !!metadata.standalone,
-    isSignal: !!metadata.signals,
     hostDirectives:
       metadata.hostDirectives?.map((directive) =>
         typeof directive === 'function' ? {directive} : directive,

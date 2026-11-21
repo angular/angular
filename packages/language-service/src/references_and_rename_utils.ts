@@ -14,16 +14,12 @@ import {
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
-  TmplAstRecursiveVisitor,
   TmplAstReference,
   TmplAstTextAttribute,
   TmplAstVariable,
-  tmplAstVisitAll,
 } from '@angular/compiler';
 import {
   absoluteFrom,
@@ -31,8 +27,6 @@ import {
   DirectiveSymbol,
   NgCompiler,
   PipeMeta,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -240,17 +234,6 @@ export function getTargetDetailsAtTemplatePosition(
         });
         break;
       }
-      case SymbolKind.SelectorlessDirective:
-      case SymbolKind.SelectorlessComponent:
-        const dirPosition = getPositionForDirective(symbol, templateTypeChecker);
-        if (dirPosition !== null) {
-          details.push({
-            typescriptLocations: [dirPosition],
-            templateTarget,
-            symbol,
-          });
-        }
-        break;
     }
   }
 
@@ -276,7 +259,7 @@ function getPositionsForDirectives(
 
 /** Gets the `FilePosition` for a single directive symbol. */
 function getPositionForDirective(
-  directive: DirectiveSymbol | SelectorlessComponentSymbol | SelectorlessDirectiveSymbol,
+  directive: DirectiveSymbol,
   ttc: import('@angular/compiler-cli/src/ngtsc/typecheck/api').TemplateTypeChecker,
 ): FilePosition | null {
   const declaration = ttc.getTsSymbolOfSymbol(directive)?.valueDeclaration;
@@ -415,10 +398,8 @@ export function getRenameTextAndSpanAtPosition(
       span.length -= 2;
     }
     return {text: `${node.value}`, span};
-  } else if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
+  } else if (node instanceof TmplAstElement) {
     return {text: node.name, span: toTextSpan(node.startSourceSpan)};
-  } else if (node instanceof TmplAstComponent) {
-    return {text: node.componentName, span: toTextSpan(node.startSourceSpan)};
   }
 
   return null;
@@ -438,22 +419,4 @@ export function getParentClassMeta(
     return null;
   }
   return compiler.getMeta(parentClass);
-}
-
-/** Visitor that collects all selectorless AST nodes from a template. */
-export class SelectorlessCollector extends TmplAstRecursiveVisitor {
-  private nodes: (TmplAstComponent | TmplAstDirective)[] = [];
-
-  static getSelectorlessNodes(nodes: TmplAstNode[]): (TmplAstComponent | TmplAstDirective)[] {
-    const visitor = new SelectorlessCollector();
-    tmplAstVisitAll(visitor, nodes);
-    return visitor.nodes;
-  }
-
-  visit(node: TmplAstNode) {
-    if (node instanceof TmplAstComponent || node instanceof TmplAstDirective) {
-      this.nodes.push(node);
-    }
-    node.visit(this);
-  }
 }

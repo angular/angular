@@ -22,8 +22,6 @@ import {
   TemplateEntity,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstHostElement,
   TmplAstNode,
@@ -90,8 +88,6 @@ import {
   PotentialImportMode,
   PotentialPipe,
   ProgramTypeCheckAdapter,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   SymbolReference,
@@ -1114,14 +1110,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
   getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol | null;
   getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol | null;
-  getSymbolOfNode(
-    node: TmplAstComponent,
-    component: ts.ClassDeclaration,
-  ): SelectorlessComponentSymbol | null;
-  getSymbolOfNode(
-    node: TmplAstDirective,
-    component: ts.ClassDeclaration,
-  ): SelectorlessDirectiveSymbol | null;
   getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null {
     const builder = this.getOrCreateSymbolBuilder(component);
     if (builder === null) {
@@ -1172,13 +1160,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     tsLs: ts.LanguageService,
     options: GetPotentialAngularMetaOptions,
   ): PotentialDirective[] {
-    const scope = this.getComponentScope(component);
-
-    // Don't resolve directives for selectorless components since they're already in the file.
-    if (scope?.kind === ComponentScopeKind.Selectorless) {
-      return [];
-    }
-
     const resultingDirectives = new Map<string, PotentialDirective>();
     const directivesInScope = this.getTemplateDirectiveInScope(component);
     const directiveInGlobal = this.getElementsInGlobal(component, tsLs, options);
@@ -1194,11 +1175,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialPipes(component: ts.ClassDeclaration): PotentialPipe[] {
     const scope = this.getComponentScope(component);
-
-    // Don't resolve pipes for selectorless components since they're already in the file.
-    if (scope?.kind === ComponentScopeKind.Selectorless) {
-      return [];
-    }
 
     // Very similar to the above `getPotentialTemplateDirectives`, but on pipes.
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
@@ -1245,11 +1221,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const resultingDirectives = new Map<string, PotentialDirective>();
 
     const scope = this.getComponentScope(component);
-
-    // Don't resolve directives for selectorless components since they're already in the file.
-    if (scope?.kind === ComponentScopeKind.Selectorless) {
-      return [];
-    }
 
     if (scope !== null) {
       const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];

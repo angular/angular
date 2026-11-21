@@ -83,7 +83,6 @@ import {
   TView,
   TViewType,
   INJECTOR,
-  ID,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';

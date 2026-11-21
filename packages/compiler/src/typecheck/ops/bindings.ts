@@ -9,15 +9,7 @@
 import {AST, BindingType, LiteralArray, LiteralMap} from '../../expression_parser/ast';
 import {ClassPropertyName} from '../../property_mapping';
 import {ParseSourceSpan} from '../../parse_util';
-import {
-  BoundAttribute,
-  BoundEvent,
-  Component,
-  Directive,
-  Element,
-  Template,
-  TextAttribute,
-} from '../../render3/r3_ast';
+import {BoundAttribute, BoundEvent, Element, Template, TextAttribute} from '../../render3/r3_ast';
 import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {Context} from './context';
 import {TcbExpr} from './codegen';
@@ -84,7 +76,7 @@ export type TcbDirectiveInput = TcbDirectiveBoundInput | TcbDirectiveUnsetInput;
 
 export function getBoundAttributes(
   directive: TcbDirectiveMetadata,
-  node: Template | Element | Component | Directive,
+  node: Template | Element,
 ): TcbBoundAttribute[] {
   const boundInputs: TcbBoundAttribute[] = [];
 

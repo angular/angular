@@ -8,16 +8,17 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "out",
-    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node"],
     "paths": {
       "@angular/compiler-cli/private/*": ["../packages/compiler-cli/private/*"],
       "@angular/compiler-cli": ["../packages/compiler-cli/index.ts"],
       "@angular/compiler": ["../packages/compiler/index.ts"],
       "@angular/compiler/indexing": ["../packages/compiler/indexing/index.ts"],
       "@angular/language-service/private": ["../packages/language-service/private.ts"],
-      "vscode-languageserver": ["node_modules/vscode-languageserver/lib/common/api.d.ts"],
-      "vscode-languageserver/*": ["node_modules/vscode-languageserver/*"],
-      "vscode-uri": ["node_modules/vscode-uri"]
+      "vscode-languageserver": ["./node_modules/vscode-languageserver/lib/common/api.d.ts"],
+      "vscode-languageserver/*": ["./node_modules/vscode-languageserver/*"],
+      "vscode-uri": ["./node_modules/vscode-uri"]
     }
   }
 }

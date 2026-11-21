@@ -26,7 +26,6 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(element.attributes);
     this.visitAllTemplateNodes(element.inputs);
     this.visitAllTemplateNodes(element.outputs);
-    this.visitAllTemplateNodes(element.directives);
     this.visitAllTemplateNodes(element.references);
     this.visitAllTemplateNodes(element.children);
   }
@@ -35,7 +34,6 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(template.attributes);
     this.visitAllTemplateNodes(template.inputs);
     this.visitAllTemplateNodes(template.outputs);
-    this.visitAllTemplateNodes(template.directives);
     this.visitAllTemplateNodes(template.templateAttrs);
     this.visitAllTemplateNodes(template.variables);
     this.visitAllTemplateNodes(template.references);
@@ -143,22 +141,6 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
 
   visitLetDeclaration(decl: t.LetDeclaration): void {
     this.visit(decl.value);
-  }
-
-  visitComponent(component: t.Component): void {
-    this.visitAllTemplateNodes(component.attributes);
-    this.visitAllTemplateNodes(component.inputs);
-    this.visitAllTemplateNodes(component.outputs);
-    this.visitAllTemplateNodes(component.directives);
-    this.visitAllTemplateNodes(component.references);
-    this.visitAllTemplateNodes(component.children);
-  }
-
-  visitDirective(directive: t.Directive): void {
-    this.visitAllTemplateNodes(directive.attributes);
-    this.visitAllTemplateNodes(directive.inputs);
-    this.visitAllTemplateNodes(directive.outputs);
-    this.visitAllTemplateNodes(directive.references);
   }
 
   visitVariable(variable: t.Variable): void {}

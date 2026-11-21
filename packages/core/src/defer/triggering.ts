@@ -391,12 +391,6 @@ export async function triggerHydrationFromBlockName(
   const {parentBlockPromise, hydrationQueue} = getParentBlockHydrationQueue(blockName, injector);
   if (hydrationQueue.length === 0) return;
 
-  // It's possible that the hydrationQueue topmost item is actually in the process of hydrating and has
-  // a promise already. In that case, we don't want to destroy that promise and queue it again.
-  if (parentBlockPromise !== null) {
-    hydrationQueue.shift();
-  }
-
   // The hydrating map in the registry prevents re-triggering hydration for a block that's already in
   // the hydration queue. Here we generate promises for each of the blocks about to be hydrated
   populateHydratingStateForQueue(dehydratedBlockRegistry, hydrationQueue);
@@ -447,51 +441,55 @@ export async function triggerHydrationForBlockQueue(
   // Indicate that we have some pending async work.
   const pendingTasks = injector.get(PendingTasksInternal);
   const taskId = pendingTasks.add();
+  const lastBlockName = hydrationQueue[hydrationQueue.length - 1];
 
-  // Actually do the triggering and hydration of the queue of blocks
-  for (let blockQueueIdx = 0; blockQueueIdx < hydrationQueue.length; blockQueueIdx++) {
-    const dehydratedBlockId = hydrationQueue[blockQueueIdx];
-    const dehydratedDeferBlock = dehydratedBlockRegistry.get(dehydratedBlockId);
+  try {
+    // Actually do the triggering and hydration of the queue of blocks
+    for (let blockQueueIdx = 0; blockQueueIdx < hydrationQueue.length; blockQueueIdx++) {
+      const dehydratedBlockId = hydrationQueue[blockQueueIdx];
+      const dehydratedDeferBlock = dehydratedBlockRegistry.get(dehydratedBlockId);
 
-    if (dehydratedDeferBlock != null) {
-      // trigger the block resources and await next render for hydration. This should result
-      // in the next block ɵɵdefer instruction being called and that block being added to the dehydrated registry.
-      await triggerResourceLoadingForHydration(dehydratedDeferBlock);
-      await nextRender(injector);
+      if (dehydratedDeferBlock != null) {
+        // trigger the block resources and await next render for hydration. This should result
+        // in the next block ɵɵdefer instruction being called and that block being added to the dehydrated registry.
+        await triggerResourceLoadingForHydration(dehydratedDeferBlock);
+        await nextRender(injector);
 
-      // if the content has changed since server rendering, we need to check for the expected block
-      // being in the registry or if errors occurred. In that case, we need to clean up the remaining expected
-      // content that won't be rendered or fetched.
-      if (deferBlockHasErrored(dehydratedDeferBlock)) {
-        // Either the expected block has not yet had its ɵɵdefer instruction called or the block errored out when fetching
-        // resources. In the former case, either we're hydrating too soon or the client and server differ. In both cases,
-        // we need to clean up child content and promises.
-        removeDehydratedViewList(dehydratedDeferBlock);
+        // if the content has changed since server rendering, we need to check for the expected block
+        // being in the registry or if errors occurred. In that case, we need to clean up the remaining expected
+        // content that won't be rendered or fetched.
+        if (deferBlockHasErrored(dehydratedDeferBlock)) {
+          // Either the expected block has not yet had its ɵɵdefer instruction called or the block errored out when fetching
+          // resources. In the former case, either we're hydrating too soon or the client and server differ. In both cases,
+          // we need to clean up child content and promises.
+          removeDehydratedViewList(dehydratedDeferBlock);
+          cleanupRemainingHydrationQueue(
+            hydrationQueue.slice(blockQueueIdx),
+            dehydratedBlockRegistry,
+          );
+          break;
+        }
+        // The defer block has not errored and we've finished fetching resources and rendering.
+        // At this point it is safe to resolve the hydration promise.
+        blocksBeingHydrated.get(dehydratedBlockId)?.resolve();
+      } else {
+        // The expected block has not yet had its ɵɵdefer instruction called. This is likely due to content changing between
+        // client and server. We need to clean up the dehydrated DOM in the container since it no longer is valid.
+        cleanupParentContainer(blockQueueIdx, hydrationQueue, dehydratedBlockRegistry);
         cleanupRemainingHydrationQueue(
           hydrationQueue.slice(blockQueueIdx),
           dehydratedBlockRegistry,
         );
         break;
       }
-      // The defer block has not errored and we've finished fetching resources and rendering.
-      // At this point it is safe to resolve the hydration promise.
-      blocksBeingHydrated.get(dehydratedBlockId)!.resolve();
-    } else {
-      // The expected block has not yet had its ɵɵdefer instruction called. This is likely due to content changing between
-      // client and server. We need to clean up the dehydrated DOM in the container since it no longer is valid.
-      cleanupParentContainer(blockQueueIdx, hydrationQueue, dehydratedBlockRegistry);
-      cleanupRemainingHydrationQueue(hydrationQueue.slice(blockQueueIdx), dehydratedBlockRegistry);
-      break;
     }
+
+    // Await hydration completion for the last block.
+    await blocksBeingHydrated.get(lastBlockName)?.promise;
+  } finally {
+    // All async work is done, remove the taskId from the registry.
+    pendingTasks.remove(taskId);
   }
-
-  const lastBlockName = hydrationQueue[hydrationQueue.length - 1];
-
-  // Await hydration completion for the last block.
-  await blocksBeingHydrated.get(lastBlockName)?.promise;
-
-  // All async work is done, remove the taskId from the registry.
-  pendingTasks.remove(taskId);
 
   // Replay any queued events, if any exist and the replay operation was requested.
   if (replayQueuedEventsFn) {
@@ -721,36 +719,36 @@ export function processAndInitTriggers(
 }
 
 function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
+  for (const {blockName} of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, blockName);
     const cleanupFn = onIdle(onInvoke, injector);
-    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    registry.addCleanupFn(blockName, cleanupFn);
   }
 }
 
 function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   if (elementTriggers.length > 0) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    for (let elementTrigger of elementTriggers) {
+    for (const {el, blockName, intersectionObserverOptions} of elementTriggers) {
       const cleanupFn = onViewportWrapper(
-        elementTrigger.el,
-        () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
+        el,
+        () => triggerHydrationFromBlockName(injector, blockName),
         injector,
-        elementTrigger.intersectionObserverOptions,
+        intersectionObserverOptions,
       );
-      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+      registry.addCleanupFn(blockName, cleanupFn);
     }
   }
 }
 
 function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
+  for (const {blockName, delay} of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
-    const timerFn = onTimer(elementTrigger.delay!);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, blockName);
+    const timerFn = onTimer(delay!);
     const cleanupFn = timerFn(onInvoke, injector);
-    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    registry.addCleanupFn(blockName, cleanupFn);
   }
 }
 

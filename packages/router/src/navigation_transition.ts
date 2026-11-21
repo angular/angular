@@ -19,7 +19,7 @@ import {
   untracked,
   ɵWritable as Writable,
 } from '@angular/core';
-import {BehaviorSubject, EMPTY, from, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, take, takeUntil, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
@@ -61,6 +61,7 @@ import {
 } from './navigation_canceling_error';
 import {ActivateRoutes} from './operators/activate_routes';
 import {checkGuards} from './operators/check_guards';
+import {loadComponents} from './operators/load_components';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
@@ -722,31 +723,6 @@ export class NavigationTransitions {
             );
           }),
 
-          // --- LOAD COMPONENTS ---
-          switchTap((t: NavigationTransition) => {
-            const loadComponents = (route: ActivatedRouteSnapshot): Array<Promise<void>> => {
-              const loaders: Array<Promise<void>> = [];
-              if (route.routeConfig?._loadedComponent) {
-                route.component = route.routeConfig?._loadedComponent;
-              } else if (route.routeConfig?.loadComponent) {
-                const injector = route._environmentInjector;
-                loaders.push(
-                  this.configLoader
-                    .loadComponent(injector, route.routeConfig)
-                    .then((loadedComponent) => {
-                      route.component = loadedComponent;
-                    }),
-                );
-              }
-              for (const child of route.children) {
-                loaders.push(...loadComponents(child));
-              }
-              return loaders;
-            };
-            const loaders = loadComponents(t.targetSnapshot!.root);
-            return loaders.length === 0 ? of(t) : from(Promise.all(loaders).then(() => t));
-          }),
-
           switchMap((t: NavigationTransition) => {
             const {newlyCreatedRoutes, state} = createRouterState(
               router.routeReuseStrategy,
@@ -768,10 +744,17 @@ export class NavigationTransitions {
             return of(t);
           }),
 
-          // TODO(atscott): Consider running `setupAndRunResources` in parallel with `loadComponents`
-          // (and potentially `resolveData` when independent) rather than waiting for `loadComponents`
-          // to finish, so that route resources can start fetching while component chunks download.
-          this.routerResourcesFeature?.setupAndRunResources(abortController.signal) ?? ((t) => t),
+          // --- LOAD COMPONENTS AND RESOURCES ---
+          switchMap((t: NavigationTransition) => {
+            const loadComponents$ = of(t).pipe(loadComponents(this.configLoader));
+            if (!this.routerResourcesFeature) {
+              return loadComponents$;
+            }
+            const setupResources$ = of(t).pipe(
+              this.routerResourcesFeature.setupAndRunResources(abortController.signal),
+            );
+            return combineLatest([loadComponents$, setupResources$]).pipe(map(() => t));
+          }),
           switchTap(() => this.afterPreactivation()),
 
           switchMap(() => {

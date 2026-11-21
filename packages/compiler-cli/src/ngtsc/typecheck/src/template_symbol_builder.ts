@@ -22,8 +22,6 @@ import {
   TemplateEntity,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
@@ -53,8 +51,6 @@ import {
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   SymbolReference,
@@ -108,8 +104,6 @@ export class SymbolBuilder {
   getSymbol(
     node: TmplAstReference | TmplAstVariable | TmplAstLetDeclaration,
   ): ReferenceSymbol | VariableSymbol | LetDeclarationSymbol | null;
-  getSymbol(node: TmplAstComponent): SelectorlessComponentSymbol | null;
-  getSymbol(node: TmplAstDirective): SelectorlessDirectiveSymbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null {
     if (this.symbolCache.has(node)) {
@@ -125,10 +119,6 @@ export class SymbolBuilder {
       symbol = this.getSymbolOfBoundEvent(node);
     } else if (node instanceof TmplAstElement) {
       symbol = this.getSymbolOfElement(node);
-    } else if (node instanceof TmplAstComponent) {
-      symbol = this.getSymbolOfSelectorlessComponent(node);
-    } else if (node instanceof TmplAstDirective) {
-      symbol = this.getSymbolOfSelectorlessDirective(node);
     } else if (node instanceof TmplAstTemplate) {
       symbol = this.getSymbolOfAstTemplate(node);
     } else if (node instanceof TmplAstVariable) {
@@ -179,48 +169,7 @@ export class SymbolBuilder {
     };
   }
 
-  private getSymbolOfSelectorlessComponent(
-    node: TmplAstComponent,
-  ): SelectorlessComponentSymbol | null {
-    const directives = this.getDirectivesOfNode(node);
-    const primaryDirective =
-      directives.find((dir) => dir.matchSource === MatchSource.Selector && dir.isComponent) ?? null;
-
-    if (primaryDirective === null) {
-      return null;
-    }
-
-    return {
-      tcbLocation: primaryDirective.tcbLocation,
-      kind: SymbolKind.SelectorlessComponent,
-      directives,
-      templateNode: node,
-    };
-  }
-
-  private getSymbolOfSelectorlessDirective(
-    node: TmplAstDirective,
-  ): SelectorlessDirectiveSymbol | null {
-    const directives = this.getDirectivesOfNode(node);
-    const primaryDirective =
-      directives.find((dir) => dir.matchSource === MatchSource.Selector && !dir.isComponent) ??
-      null;
-
-    if (primaryDirective === null) {
-      return null;
-    }
-
-    return {
-      tcbLocation: primaryDirective.tcbLocation,
-      kind: SymbolKind.SelectorlessDirective,
-      directives,
-      templateNode: node,
-    };
-  }
-
-  private getDirectivesOfNode(
-    templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-  ): DirectiveSymbol[] {
+  private getDirectivesOfNode(templateNode: TmplAstElement | TmplAstTemplate): DirectiveSymbol[] {
     const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
     const boundDirectives = this.boundTarget.getDirectivesOfNode(templateNode) ?? [];
     let symbols = this.getDirectiveSymbolsForDirectives(boundDirectives, elementSourceSpan);
@@ -228,30 +177,28 @@ export class SymbolBuilder {
     // 'getDirectivesOfNode' will not return the directives intended for an element
     // on a microsyntax template, for example '<div *ngFor="let user of users;" dir>',
     // the 'dir' will be skipped, but it's needed in language service.
-    if (!(templateNode instanceof TmplAstDirective)) {
-      const firstChild = templateNode.children.find(
-        (c): c is TmplAstElement => c instanceof TmplAstElement,
-      );
-      if (firstChild !== undefined) {
-        const isMicrosyntaxTemplate =
-          templateNode instanceof TmplAstTemplate &&
-          sourceSpanEqual(firstChild.sourceSpan, templateNode.sourceSpan);
-        if (isMicrosyntaxTemplate) {
-          const firstChildDirectives = this.boundTarget.getDirectivesOfNode(firstChild);
-          if (firstChildDirectives !== null) {
-            const childSymbols = this.getDirectiveSymbolsForDirectives(
-              firstChildDirectives,
-              elementSourceSpan,
-            );
-            // Merge symbols, avoiding duplicates
-            for (const symbol of childSymbols) {
-              if (
-                !symbols.some(
-                  (s) => s.ref.name === symbol.ref.name && s.ref.filePath === symbol.ref.filePath,
-                )
-              ) {
-                symbols.push(symbol);
-              }
+    const firstChild = templateNode.children.find(
+      (c): c is TmplAstElement => c instanceof TmplAstElement,
+    );
+    if (firstChild !== undefined) {
+      const isMicrosyntaxTemplate =
+        templateNode instanceof TmplAstTemplate &&
+        sourceSpanEqual(firstChild.sourceSpan, templateNode.sourceSpan);
+      if (isMicrosyntaxTemplate) {
+        const firstChildDirectives = this.boundTarget.getDirectivesOfNode(firstChild);
+        if (firstChildDirectives !== null) {
+          const childSymbols = this.getDirectiveSymbolsForDirectives(
+            firstChildDirectives,
+            elementSourceSpan,
+          );
+          // Merge symbols, avoiding duplicates
+          for (const symbol of childSymbols) {
+            if (
+              !symbols.some(
+                (s) => s.ref.name === symbol.ref.name && s.ref.filePath === symbol.ref.filePath,
+              )
+            ) {
+              symbols.push(symbol);
             }
           }
         }

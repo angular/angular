@@ -26,7 +26,9 @@ All route guards share the same possible return types. This gives you flexibilit
 | `UrlTree` or `RedirectCommand`  | Redirects to another route instead of blocking                                    |
 | `Promise<T>` or `Observable<T>` | Router uses the first emitted value and then unsubscribes                         |
 
-NOTE: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
+NOTE: A route guard must emit a value. An `Observable` that completes without emitting, such as `EMPTY` or any `Observable<never>`, leaves the router without a result, so the navigation fails with an RxJS `EmptyError`. This often comes from a request that an interceptor cancels. If your source can complete empty, give it a value with `defaultIfEmpty(false)`.
+
+NOTE: `CanMatch` is different. When it returns `false`, Angular tries other matching routes instead of blocking navigation.
 
 ## Types of route guards
 
@@ -48,7 +50,7 @@ The `CanActivate` guard determines whether a user can access a route. It is most
 It has access to the following default arguments:
 
 - `route`: `ActivatedRouteSnapshot` - Contains information about the route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `state`: `RouterStateSnapshot` - Contains the state the router is navigating to, not the current state (use `Router.routerState` for that)
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -73,7 +75,7 @@ The `CanActivateChild` guard determines whether a user can access child routes o
 It has access to the following default arguments:
 
 - `childRoute`: `ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `state`: `RouterStateSnapshot` - Contains the state the router is navigating to, not the current state (use `Router.routerState` for that)
 
 It can return the [standard return guard types](#route-guard-return-types).
 

@@ -11,13 +11,14 @@ pub mod file_id;
 pub mod keys;
 pub mod module_scope;
 pub mod reference_id;
+mod resolution_cache;
 mod scope;
 pub(crate) use scope::propagate_owning_reference_validated;
 pub(crate) use scope::resolve_reference_async;
 
 pub use context::QueryContext;
 pub use engine::QueryEngine;
-pub type QueryCtx<Fs> = QueryContext<Fs>;
+pub type QueryCtx = QueryContext;
 pub use file_id::{FileId, FileIdInterner};
 pub use keys::{QueryKey, QueryValue};
 pub use module_scope::{NgModuleScopeOutcome, NgModuleScopeRegistry};

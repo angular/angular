@@ -76,7 +76,7 @@ const formControlBinding: Provider = {
  * - this is just one extra run no matter how many `ngModel`s have been changed.
  * - this is a general problem when using `exportAs` for directives!
  */
-const resolvedPromise = (() => Promise.resolve())();
+const resolvedPromise = /* @__PURE__ */ (() => Promise.resolve())();
 
 /**
  * @description
@@ -325,17 +325,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * @internal
    */
   ɵngControlUpdate(host: ControlDirectiveHost): void {
-    super.ngControlUpdate(host, false);
-  }
-
-  /**
-   * Template-driven forms handle `required` via the `RequiredValidator` directive.
-   *
-   * This directive has a `required` input and a host binding to `[attr.required]`. It defines the
-   * source of truth for required-ness, so disable the normal control binding for it.
-   */
-  protected override get shouldBindRequired() {
-    return false;
+    super.ngControlUpdate(host);
   }
 
   /**

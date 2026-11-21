@@ -152,8 +152,6 @@ class TemplateVisitor<Code extends ErrorCode> extends CombinedRecursiveAstVisito
       this.visitAllTemplateNodes(template.outputs);
     }
 
-    this.visitAllTemplateNodes(template.directives);
-
     // `templateAttrs` aren't transferred over to the inner element so we always have to visit them.
     this.visitAllTemplateNodes(template.templateAttrs);
 

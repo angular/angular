@@ -10,7 +10,7 @@
 
 # /globals.d.ts
 ```ts
-declare const PRODUCTION: boolean;
+declare function isProd(): boolean;
 ```
 
 # /router.ts
@@ -44,7 +44,7 @@ export class DevToolsModule {
 }
 
 const extraModules = [
-  PRODUCTION ? [] : DevToolsModule.instrument(),
+  isProd() ? [] : DevToolsModule.instrument(),
 ];
 
 @Component({

@@ -201,11 +201,25 @@ export class C3 {
     return new (__ngFactoryType__ || C3)();
   };
   // @ts-ignore
-  static ɵcmp: i0.ɵɵComponentDeclaration<C3, 'c3', never, {}, {}, never, never, true, never> =
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    C3,
+    'c3',
+    never,
+    {},
+    {},
+    never,
+    never,
+    true,
+    [
+      { directive: typeof i1.DepA; inputs: {}; outputs: {} },
+      { directive: typeof i1.DepB; inputs: { 'x': 'y' }; outputs: {} },
+    ]
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C3,
       selectors: [['c3']],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA, { directive: i1.DepB, inputs: ['x', 'y'] }])],
       decls: 0,
       vars: 0,
       template: function C3_Template(rf: number, ctx: any): any {},

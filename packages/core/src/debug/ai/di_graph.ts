@@ -48,6 +48,8 @@ Returns:
     - \`token\`: The DI token.
     - \`value\`: The resolved value of that provider if it was instantiated.
   - \`children\`: Array of child environment injectors.
+
+Note: Every element injector has a corresponding environment injector which it uses as a fallback during dependency resolution when a dependency cannot be resolved in the element injector tree. This edge is currently omitted from this graph.
   `.trim(),
   inputSchema: {
     type: 'object',

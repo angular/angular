@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {timeout} from '@angular/private/testing';
+
 import {
   ApplicationRef,
   ɵCACHE_ACTIVE as CACHE_ACTIVE,
@@ -462,6 +464,72 @@ describe('resource', () => {
     expect(aborted).toEqual([{counter: 0}]);
   });
 
+  it('should cancel a pending load and release stability when params becomes undefined', async () => {
+    const params = signal<number | undefined>(1);
+    let abortSignal: AbortSignal | undefined;
+    const res = resource({
+      params,
+      loader: (options) => {
+        abortSignal = options.abortSignal;
+        // Aborting a loader does not require its promise to settle.
+        return new Promise<number>(() => {});
+      },
+      injector: TestBed.inject(Injector),
+    });
+    const appRef = TestBed.inject(ApplicationRef);
+
+    await timeout();
+    expect(abortSignal?.aborted).toBeFalse();
+
+    params.set(undefined);
+    await appRef.whenStable();
+
+    expect(abortSignal?.aborted).toBeTrue();
+    expect(res.snapshot()).toEqual({status: 'idle', value: undefined});
+  });
+
+  for (const settlement of ['resolve', 'reject'] as const) {
+    it(`should discard a cancelled load's late ${settlement} without releasing a newer load's pending task`, async () => {
+      const params = signal<number | undefined>(1);
+      const first = promiseWithResolvers<number>();
+      const second = promiseWithResolvers<number>();
+      const abortSignals: AbortSignal[] = [];
+      const res = resource({
+        params,
+        loader: ({params, abortSignal}) => {
+          abortSignals.push(abortSignal);
+          return params === 1 ? first.promise : second.promise;
+        },
+        injector: TestBed.inject(Injector),
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+
+      await timeout();
+      params.set(undefined);
+      await appRef.whenStable();
+
+      params.set(2);
+      await timeout();
+
+      let stable = false;
+      const whenStable = appRef.whenStable().then(() => (stable = true));
+      if (settlement === 'resolve') {
+        first.resolve(1);
+      } else {
+        first.reject(new Error('cancelled load'));
+      }
+      await timeout();
+
+      expect(res.snapshot()).toEqual({status: 'loading', value: undefined});
+      expect(abortSignals.map((signal) => signal.aborted)).toEqual([true, false]);
+      expect(stable).toBeFalse();
+
+      second.resolve(2);
+      await whenStable;
+      expect(res.snapshot()).toEqual({status: 'resolved', value: 2});
+    });
+  }
+
   it('should cancel pending requests when the resource is destroyed via injector', async () => {
     const counter = signal(0);
     const backend = new MockEchoBackend<{counter: number}>();
@@ -525,6 +593,79 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
 
     expect(aborted).toEqual([{counter: 0}]);
+  });
+
+  it('should reuse the same abort reason when aborting in-progress resource loads', async () => {
+    const signals: AbortSignal[] = [];
+    const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+    const resources = [0, 1].map((id) =>
+      resource({
+        params: () => id,
+        loader: ({abortSignal}) => {
+          signals.push(abortSignal);
+          return new Promise(() => {}); // never resolves
+        },
+        injector,
+      }),
+    );
+
+    TestBed.tick();
+    await Promise.resolve();
+
+    resources.forEach((res) => res.destroy());
+
+    expect(signals.length).toBe(2);
+    expect(signals[0].aborted).toBeTrue();
+    expect(signals[0].reason).toEqual(jasmine.any(DOMException));
+    expect(signals[0].reason.name).toBe('AbortError');
+    expect(signals[1].reason).toBe(signals[0].reason);
+  });
+
+  it('should not abort completed non-streaming resources on destroy', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    const res = resource({
+      loader: async ({abortSignal}) => {
+        capturedSignal = abortSignal;
+        return 'loaded';
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.tick();
+    await flushMicrotasks();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('loaded');
+    expect(capturedSignal!.aborted).toBeFalse();
+
+    res.destroy();
+
+    // The load was already completed, so destroying the resource should not trigger abort
+    expect(capturedSignal!.aborted).toBeFalse();
+  });
+
+  it('should abort streaming resources on destroy using the shared abort reason', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    const streamSignal = signal<any>({value: 42});
+    const res = resource({
+      stream: ({abortSignal}) => {
+        capturedSignal = abortSignal;
+        return streamSignal;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.tick();
+    await flushMicrotasks();
+
+    expect(res.status()).toBe('resolved');
+    expect(capturedSignal!.aborted).toBeFalse();
+
+    res.destroy();
+
+    expect(capturedSignal!.aborted).toBeTrue();
+    expect(capturedSignal!.reason).toEqual(jasmine.any(DOMException));
+    expect(capturedSignal!.reason.name).toBe('AbortError');
   });
 
   it('should not respond to reactive state changes in a loader', async () => {

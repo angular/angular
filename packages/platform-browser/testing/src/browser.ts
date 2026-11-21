@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
-import {APP_ID, createPlatformFactory, NgModule, StaticProvider, PlatformRef} from '@angular/core';
+import {
+  APP_ID,
+  createPlatformFactory,
+  NgModule,
+  StaticProvider,
+  PlatformRef,
+  ɵIS_TESTING as IS_TESTING,
+} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 // g3-only import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {BrowserModule, platformBrowser} from '../../index'; // 3p-only
@@ -29,6 +36,7 @@ export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => Plat
   exports: [BrowserModule],
   providers: [
     {provide: APP_ID, useValue: 'a'},
+    {provide: IS_TESTING, useValue: true},
     ɵprovideFakePlatformNavigation(),
     {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],

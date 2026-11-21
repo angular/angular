@@ -2675,6 +2675,17 @@ describe('acceptance integration tests', () => {
     expect(fixture.componentInstance.e!.defaultPrevented).toBe(false);
   });
 
+  it('should support void expressions in constant literals', () => {
+    @Component({
+      template: '{{ [void 0, 1][1] }}:{{ {a: void 0, b: 2}.b }}',
+    })
+    class TestComponent {}
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('1:2');
+  });
+
   it('should support object spread assigments in templates', () => {
     @Component({
       template: '@let obj = {a: {...foo}}; Hello, {{obj.a.b}}',

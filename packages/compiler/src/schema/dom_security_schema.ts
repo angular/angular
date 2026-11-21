@@ -184,7 +184,8 @@ export function checkSecurityContext(
   namespace?: string | null,
 ): SecurityContext {
   const securitySchema = SECURITY_SCHEMA();
-  const attrSchema = securitySchema[propName.toLowerCase()];
+  const normalizedPropName = propName.replace(/^:+/, '').toLowerCase();
+  const attrSchema = securitySchema[normalizedPropName];
   if (!attrSchema) {
     return SecurityContext.NONE;
   }

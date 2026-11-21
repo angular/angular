@@ -101,7 +101,6 @@ import {
   CompoundComponentScopeReader,
   LocalModuleScopeRegistry,
   MetadataDtsModuleScopeResolver,
-  SelectorlessComponentScopeReader,
   TypeCheckScopeRegistry,
 } from '../../scope';
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
@@ -400,7 +399,6 @@ export class NgCompiler {
   private readonly angularCoreVersion: string | null;
   private readonly enableHmr: boolean;
   private readonly implicitStandaloneValue: boolean;
-  private readonly enableSelectorless: boolean;
   private readonly emitDeclarationOnly: boolean;
   private readonly enableTemplateSourceLocations: boolean;
 
@@ -477,7 +475,6 @@ export class NgCompiler {
     this.enableLetSyntax =
       this.angularCoreVersion === null ||
       coreVersionSupportsFeature(this.angularCoreVersion, '>= 18.1.0');
-    this.enableSelectorless = options['_enableSelectorless'] ?? false;
     this.enableTemplateSourceLocations = options['enableTemplateSourceLocations'] ?? false;
     this.emitDeclarationOnly =
       !!options.emitDeclarationOnly && !!options._experimentalAllowEmitDeclarationOnly;
@@ -1134,6 +1131,8 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkTypeOfNgTemplateBindings: false, // 3p-only
+        // g3-only checkTypeOfNgTemplateBindings: true,
       };
     } else {
       typeCheckingConfig = {
@@ -1167,6 +1166,8 @@ export class NgCompiler {
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
         checkUnknownElements: false,
+        checkTypeOfNgTemplateBindings: false, // 3p-only
+        // g3-only checkTypeOfNgTemplateBindings: true,
       };
     }
 
@@ -1207,6 +1208,9 @@ export class NgCompiler {
     }
     if (this.options.strictLiteralTypes !== undefined) {
       typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
+    }
+    if (this.options.strictNgTemplateTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfNgTemplateBindings = this.options.strictNgTemplateTypes;
     }
     if (
       this.options.extendedDiagnostics?.checks?.controlFlowPreventingContentProjection !== undefined
@@ -1435,10 +1439,8 @@ export class NgCompiler {
       ngModuleScopeRegistry,
       depScopeReader,
     );
-    const selectorlessScopeReader = new SelectorlessComponentScopeReader(metaReader, reflector);
     const scopeReader: ComponentScopeReader = new CompoundComponentScopeReader([
       ngModuleScopeRegistry,
-      selectorlessScopeReader,
       standaloneScopeReader,
     ]);
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
@@ -1566,7 +1568,6 @@ export class NgCompiler {
         this.enableHmr,
         this.implicitStandaloneValue,
         typeCheckHostBindings,
-        this.enableSelectorless,
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
         this.enableTemplateSourceLocations,

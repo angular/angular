@@ -210,7 +210,6 @@ export function adaptTypeCheckBlockMetadata(
     isDeferred: (node) => meta.boundTarget.isDeferred(node),
     getDeferBlocksOfNode: (node) => meta.boundTarget.getDeferBlocksOfNode(node),
     getDeferBlocksOfPipe: (ast) => meta.boundTarget.getDeferBlocksOfPipe(ast),
-    referencedDirectiveExists: (name) => meta.boundTarget.referencedDirectiveExists(name),
     getConsumerOfBinding: (binding) => {
       const consumer = meta.boundTarget.getConsumerOfBinding(binding);
       if (consumer && (consumer as TypeCheckableDirectiveMeta).isComponent !== undefined) {

@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// THIS CODE IS GENERATED - DO NOT EDIT.
+// Source of truth: packages/compiler-cli/preprocessor/ng-analyze/src/types/error_code.rs
+// Regenerate with: pnpm bazel run //packages/compiler-cli/src/ngtsc/diagnostics:sync_error_code
+
 /**
  * @publicApi
  */
@@ -22,7 +26,6 @@ export enum ErrorCode {
 
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
-
   DUPLICATE_DECORATED_PROPERTIES = 1012,
 
   /**
@@ -68,7 +71,9 @@ export enum ErrorCode {
   PARAM_MISSING_TOKEN = -2003,
   DIRECTIVE_MISSING_SELECTOR = 2004,
 
-  /** Raised when an undecorated class is passed in as a provider to a module or a directive. */
+  /**
+   * Raised when an undecorated class is passed in as a provider to a module or a directive.
+   */
   UNDECORATED_PROVIDER = 2005,
 
   /**
@@ -132,7 +137,9 @@ export enum ErrorCode {
    */
   INJECTABLE_INHERITS_INVALID_CONSTRUCTOR = 2016,
 
-  /** Raised when a host tries to alias a host directive binding that does not exist. */
+  /**
+   * Raised when a host tries to alias a host directive binding that does not exist.
+   */
   HOST_DIRECTIVE_UNDEFINED_BINDING = 2017,
 
   /**
@@ -153,7 +160,9 @@ export enum ErrorCode {
    */
   CONFLICTING_INPUT_TRANSFORM = 2020,
 
-  /** Raised when a component has both `styleUrls` and `styleUrl`. */
+  /**
+   * Raised when a component has both `styleUrls` and `styleUrl`.
+   */
   COMPONENT_INVALID_STYLE_URLS = 2021,
 
   /**
@@ -168,22 +177,6 @@ export enum ErrorCode {
   NON_STANDALONE_NOT_ALLOWED = 2023,
 
   /**
-   * Raised when a named template dependency isn't defined in the component's source file.
-   */
-  MISSING_NAMED_TEMPLATE_DEPENDENCY = 2024,
-
-  /**
-   * Raised if an incorrect type is used for a named template dependency (e.g. directive
-   * class used as a component).
-   */
-  INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE = 2025,
-
-  /**
-   * Raised for `@Component` fields that aren't supported in a selectorless context.
-   */
-  UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD = 2026,
-
-  /**
    * A component is using both the `animations` property and `animate.enter` or `animate.leave`
    * in the template.
    */
@@ -195,6 +188,7 @@ export enum ErrorCode {
   SERVICE_CONSTRUCTOR_DI = 2028,
 
   SYMBOL_NOT_EXPORTED = 3001,
+
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
    * created that cannot be handled, such as in partial compilation mode.
@@ -278,11 +272,6 @@ export enum ErrorCode {
    * `NgModule.id`.
    */
   WARN_NGMODULE_ID_UNNECESSARY = -6100,
-
-  /**
-   * 6999 was previously assigned to NGMODULE_VE_DEPENDENCY_ON_IVY_LIB
-   * To prevent any confusion, let's not reassign it.
-   */
 
   /**
    * An element name failed validation against the DOM schema.
@@ -398,25 +387,25 @@ export enum ErrorCode {
    */
   DEFERRED_DEPENDENCY_IMPORTED_EAGERLY = 8014,
 
-  /** An expression is trying to write to an `@let` declaration. */
+  /**
+   * An expression is trying to write to an `@let` declaration.
+   */
   ILLEGAL_LET_WRITE = 8015,
 
-  /** An expression is trying to read an `@let` before it has been defined. */
+  /**
+   * An expression is trying to read an `@let` before it has been defined.
+   */
   LET_USED_BEFORE_DEFINITION = 8016,
 
-  /** A `@let` declaration conflicts with another symbol in the same scope. */
-  CONFLICTING_LET_DECLARATION = 8017,
-
   /**
-   * A binding inside selectorless directive syntax did
-   * not match any inputs/outputs of the directive.
+   * A `@let` declaration conflicts with another symbol in the same scope.
    */
-  UNCLAIMED_DIRECTIVE_BINDING = 8018,
+  CONFLICTING_LET_DECLARATION = 8017,
 
   /**
    * An `@defer` block with an implicit trigger does not have a placeholder, for example:
    *
-   * ```
+   * ```angular-html
    * @defer(on viewport) {
    *   Hello
    * }
@@ -427,7 +416,7 @@ export enum ErrorCode {
   /**
    * The `@placeholder` for an implicit `@defer` trigger is not set up correctly, for example:
    *
-   * ```
+   * ```angular-html
    * @defer(on viewport) {
    *   Hello
    * } @placeholder {
@@ -446,8 +435,10 @@ export enum ErrorCode {
    */
   DEFER_TRIGGER_MISCONFIGURATION = 8021,
 
-  /** Raised when the user has an unsupported binding on a `FormField` directive. */
-  FORM_FIELD_UNSUPPORTED_BINDING = 8022,
+  /**
+   * Raised when the user has an unsupported binding on a `FormField` directive.
+   */
+  FORM_FIELD_UNSUPPORTED_BINDING = -8022,
 
   /**
    * Raised when multiple components in the compilation scope match a given element in a template.
@@ -550,6 +541,7 @@ export enum ErrorCode {
    * ```
    */
   MISSING_NGFOROF_LET = 8105,
+
   /**
    * Indicates that the binding suffix is not supported
    *
@@ -698,6 +690,8 @@ export enum ErrorCode {
    *  constructor() {
    *    this.myInput(); // Error
    *  }
+   * }
+   * ```
    */
   FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
 
@@ -735,10 +729,6 @@ export enum ErrorCode {
    * An injectable already has a `ɵprov` property.
    */
   INJECTABLE_DUPLICATE_PROV = 9001,
-
-  // 10XXX error codes are reserved for diagnostics with categories other than
-  // `ts.DiagnosticCategory.Error`. These diagnostics are generated by the compiler when configured
-  // to do so by a tool such as the Language Service, or by the Language Service itself.
 
   /**
    * Suggest users to enable `strictTemplates` to make use of full capabilities

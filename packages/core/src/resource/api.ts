@@ -33,10 +33,10 @@ export class ResourceParamsStatus extends Error {
   }
 
   /** Status code that transitions the resource to `idle` status. */
-  static readonly IDLE = new ResourceParamsStatus('IDLE');
+  static readonly IDLE = /* @__PURE__ */ new ResourceParamsStatus('IDLE');
 
   /** Status code that transitions the resource to `loading` status. */
-  static readonly LOADING = new ResourceParamsStatus('LOADING');
+  static readonly LOADING = /* @__PURE__ */ new ResourceParamsStatus('LOADING');
 }
 
 /**

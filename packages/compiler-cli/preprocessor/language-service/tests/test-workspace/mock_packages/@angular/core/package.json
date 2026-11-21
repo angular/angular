@@ -46,12 +46,10 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@mcp-b/webmcp-polyfill": "^5.0.0",
-    "@mcp-b/webmcp-types": "^5.0.0",
     "@modelcontextprotocol/server": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/compiler": "22.3.0-next.2",
+    "@angular/compiler": "22.3.0-rc.0",
     "rxjs": "^6.5.3 || ^7.4.0",
     "zone.js": "~0.15.0 || ~0.16.0"
   },

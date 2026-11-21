@@ -413,6 +413,10 @@ export class NavigationStateManager extends StateManager {
 
     const routerInfo = (event?.info as NavigationInfo | undefined)?.ɵrouterInfo;
     if (routerInfo && !routerInfo.intercept) {
+      // The router is restoring the URL after a cancelled or failed navigation. This must not
+      // start a router navigation, but it still has to be intercepted: otherwise the browser
+      // loads the URL as a new document and the whole app reloads.
+      event.intercept({focusReset: 'manual', scroll: 'manual'});
       return;
     }
     const isTriggeredByRouterTransition = !!routerInfo;

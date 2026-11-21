@@ -713,9 +713,6 @@ function collectPropertyBindings(
   }
 }
 
-// Need to keep the nodes in a global Map so that multiple angular apps are supported.
-const _nativeNodeToDebugNode = new Map<any, DebugNode>();
-
 const NG_DEBUG_PROPERTY = '__ng_debug__';
 
 /**
@@ -732,18 +729,6 @@ export function getDebugNode(nativeNode: any): DebugNode | null {
     return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }
   return null;
-}
-
-export function getAllDebugNodes(): DebugNode[] {
-  return Array.from(_nativeNodeToDebugNode.values());
-}
-
-export function indexDebugNode(node: DebugNode) {
-  _nativeNodeToDebugNode.set(node.nativeNode, node);
-}
-
-export function removeDebugNodeFromIndex(node: DebugNode) {
-  _nativeNodeToDebugNode.delete(node.nativeNode);
 }
 
 /**

@@ -7,13 +7,13 @@
  */
 
 import {BindingType} from '../../expression_parser/ast';
-import {Component, Element, HostElement} from '../../render3/r3_ast';
+import {splitNsName} from '../../ml_parser/tags';
+import {Element, HostElement, Template} from '../../render3/r3_ast';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-const REGISTRY = new DomElementSchemaRegistry();
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';
-import {getComponentTagName} from './selectorless';
+const REGISTRY = new DomElementSchemaRegistry();
 
 /**
  * A `TcbOp` which feeds elements and unclaimed properties to the `DomSchemaChecker`.
@@ -28,7 +28,7 @@ import {getComponentTagName} from './selectorless';
 export class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
     private tcb: Context,
-    private element: Element | Component | HostElement,
+    private element: Element | Template | HostElement,
     private checkElement: boolean,
     private claimedInputs: Set<string> | null,
   ) {
@@ -41,7 +41,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
 
   override execute(): TcbExpr | null {
     const element = this.element;
-    const isTemplateElement = element instanceof Element || element instanceof Component;
+    const isTemplateElement = element instanceof Element || element instanceof Template;
     const bindings = isTemplateElement ? element.inputs : element.bindings;
 
     if (this.checkElement && isTemplateElement) {
@@ -91,7 +91,11 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     return null;
   }
 
-  private getTagName(node: Element | Component): string {
-    return node instanceof Element ? node.name : getComponentTagName(node);
+  private getTagName(node: Element | Template): string {
+    if (node instanceof Element) {
+      return node.name;
+    }
+
+    return splitNsName(node.tagName!)[1];
   }
 }

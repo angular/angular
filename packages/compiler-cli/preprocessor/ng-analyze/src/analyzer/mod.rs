@@ -26,21 +26,22 @@ pub mod resolver;
 pub mod resolvers;
 mod service;
 pub mod signal_debug_name;
+pub(crate) mod signal_facts;
 pub mod transforms;
 pub mod utils;
 mod visitor;
 
 pub use class_data::*;
-pub(crate) use component::load_syntax_resources;
+pub(crate) use component::{load_syntax_resources, resolve_and_load_resource};
 pub use dts::analyze_dts;
 pub use import_emit::{
     strip_extension_str, ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
 };
 pub use imports::{
-    detect_is_core, extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportKind,
-    ImportedSymbol,
+    extract_import_map, ExtractedDependency, FileExportInfo, ImportDeclarationInfo,
+    ImportEqualsDeclarationInfo, ImportKind, ImportedSymbol,
 };
-pub use resolver::{flatten_class_info, resolve_declaration_async, resolve_to_dts};
+pub use resolver::{flatten_class_info, resolve_declaration_async};
 pub use visitor::{analyze_parsed, ParsedFileAnalysis, RegistrationInfo};
 
 /// Span covering a decorator's argument list (first arg start..last arg end), or `None` when the
@@ -117,8 +118,22 @@ fn extract_decorator_args_string<'a>(
     source_text: &str,
     guards: &[oxc_span::Span],
 ) -> Option<String> {
+    strip_type_arguments_from_args(get_decorator_args(decorator)?, source_text, guards)
+}
+
+/// The source text of `args` (first argument start..last argument end) with every generic type
+/// argument list removed (`TemplateRef<Ctx<T>>` -> `TemplateRef`), and a
+/// [`FORWARD_REFERENCE_GUARD`] before each of `guards`. Expressions re-emitted into static class
+/// members must not keep type arguments, which may name class type parameters (TS2302).
+///
+/// Returns `None` when `args` contain no type arguments, so the caller can slice the source
+/// directly.
+pub(crate) fn strip_type_arguments_from_args<'a>(
+    args: &[oxc_ast::ast::Argument<'a>],
+    source_text: &str,
+    guards: &[oxc_span::Span],
+) -> Option<String> {
     use oxc_span::GetSpan;
-    let args = get_decorator_args(decorator)?;
     let first = args.first()?;
     let last = args.last()?;
     let first_start = first.span().start;
@@ -1376,11 +1391,32 @@ mod tests {
             .iter()
             .find(|c| c.class_name.as_deref() == Some("TestCmp"))
             .expect("TestCmp metadata");
-        let params = class.constructor_params.as_ref().expect("constructor_params");
+        let params = class
+            .constructor_params
+            .as_ref()
+            .expect("constructor_params");
 
         let summary: Vec<(&str, Option<&str>, Option<&str>, bool)> = [
-            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
-            "untyped", "untypedOptional", "rest",
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "untyped",
+            "untypedOptional",
+            "rest",
         ]
         .into_iter()
         .zip(params.iter())

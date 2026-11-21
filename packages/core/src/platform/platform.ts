@@ -11,14 +11,7 @@ import {
   publishSignalConfiguration,
 } from '../application/application_ref';
 import {PLATFORM_INITIALIZER} from '../application/application_tokens';
-import {
-  EnvironmentProviders,
-  InjectionToken,
-  Injector,
-  makeEnvironmentProviders,
-  runInInjectionContext,
-  StaticProvider,
-} from '../di';
+import {InjectionToken, Injector, runInInjectionContext, StaticProvider} from '../di';
 import {INJECTOR_SCOPE} from '../di/scope';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 

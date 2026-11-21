@@ -1,13 +1,13 @@
 # /out/app.ts
 ```ts
 import { Component } from '@angular/core';
+import AliasVal = MyNs.VAL;
 // @ts-ignore
 import * as i0 from '@angular/core';
 
 export namespace MyNs {
   export const VAL = 42;
 }
-import AliasVal = MyNs.VAL;
 
 export class AppComp {
   val = AliasVal;

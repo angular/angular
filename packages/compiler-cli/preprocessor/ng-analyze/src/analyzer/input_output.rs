@@ -1261,7 +1261,7 @@ mod tests {
             vec!["fine"]
         );
         assert!(ext.outputs.is_empty());
-        let issues: Vec<(&str, &str, &str)> = ext
+        let issues: Vec<(crate::ErrorCode, &str, &str)> = ext
             .issues
             .iter()
             .map(|i| {
@@ -1276,17 +1276,17 @@ mod tests {
             issues,
             vec![
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@Input can have at most one argument, got 2 argument(s)",
                     "@Input('name', 'invalid-extra-arg')"
                 ),
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@NgInput can have at most one argument, got 3 argument(s)",
                     "@NgInput('a', 'b', 'c')"
                 ),
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@Output can have at most one argument, got 2 argument(s)",
                     "@Output('name', 'invalid-extra-arg')"
                 ),
@@ -1316,7 +1316,7 @@ mod tests {
             vec!["fine"]
         );
         assert!(ext.outputs.is_empty());
-        let issues: Vec<(&str, &str, &str)> = ext
+        let issues: Vec<(crate::ErrorCode, &str, &str)> = ext
             .issues
             .iter()
             .map(|i| {
@@ -1331,27 +1331,27 @@ mod tests {
             issues,
             vec![
                 (
-                    "1100",
+                    crate::ErrorCode::INCORRECTLY_DECLARED_ON_STATIC_MEMBER,
                     "Input \"someInput\" is incorrectly declared as static member of \"TestDir\".",
                     "@Input() static someInput: string = '';"
                 ),
                 (
-                    "1100",
+                    crate::ErrorCode::INCORRECTLY_DECLARED_ON_STATIC_MEMBER,
                     "Input \"signalInput\" is incorrectly declared as static member of \"TestDir\".",
                     "static signalInput = input<string>();"
                 ),
                 (
-                    "1100",
+                    crate::ErrorCode::INCORRECTLY_DECLARED_ON_STATIC_MEMBER,
                     "Output is incorrectly declared on a static class member.",
                     "@Output()"
                 ),
                 (
-                    "1100",
+                    crate::ErrorCode::INCORRECTLY_DECLARED_ON_STATIC_MEMBER,
                     "Output is incorrectly declared on a static class member.",
                     "output<string>()"
                 ),
                 (
-                    "1100",
+                    crate::ErrorCode::INCORRECTLY_DECLARED_ON_STATIC_MEMBER,
                     "Input \"someModel\" is incorrectly declared as static member of \"TestDir\".",
                     "static someModel = model(0);"
                 ),

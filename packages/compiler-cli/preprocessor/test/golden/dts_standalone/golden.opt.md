@@ -94,10 +94,10 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MyDtsDirective, MyDtsComponent],
                 template: `
-        <div my-dir #ref1="myDir1" [myProp]="'test'"></div>
-        <my-cmp #ref2="myCmp" [myProp]="'test'"></my-cmp>
-        {{ref1.myProp}} - {{ref2.myProp}}
-      `,
+    <div my-dir #ref1="myDir1" [myProp]="'test'"></div>
+    <my-cmp #ref2="myCmp" [myProp]="'test'"></my-cmp>
+    {{ref1.myProp}} - {{ref2.myProp}}
+  `,
               },
             ],
           },

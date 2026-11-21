@@ -7,7 +7,7 @@
  */
 
 import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
-import {getAppRoots} from '../../directive-forest/component-tree/get-roots';
+import {getAppRoots} from '../../directive-forest/utils/app-roots';
 import {Framework} from '../../directive-forest/core-enums';
 import {AngularDevtoolsError} from '../utils/error';
 

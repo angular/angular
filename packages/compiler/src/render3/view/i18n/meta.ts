@@ -99,11 +99,6 @@ export class I18nMetaVisitor implements html.Visitor {
     return element;
   }
 
-  visitComponent(component: html.Component, context: any) {
-    this._visitElementLike(component);
-    return component;
-  }
-
   visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message | null): any {
     let message;
     const meta = expansion.i18n;
@@ -156,11 +151,7 @@ export class I18nMetaVisitor implements html.Visitor {
     return decl;
   }
 
-  visitDirective(directive: html.Directive, context: any) {
-    return directive;
-  }
-
-  private _visitElementLike(node: html.Element | html.Component): void {
+  private _visitElementLike(node: html.Element): void {
     let message: i18n.Message | undefined = undefined;
 
     if (hasI18nAttrs(node)) {
@@ -201,14 +192,7 @@ export class I18nMetaVisitor implements html.Visitor {
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes
           const name = attr.name.slice(I18N_ATTR_PREFIX.length);
-          let isTrustedType: boolean;
-          if (node instanceof html.Component) {
-            isTrustedType = node.tagName === null ? false : isTrustedTypesSink(node.tagName, name);
-          } else {
-            isTrustedType = isTrustedTypesSink(node.name, name);
-          }
-
-          if (isTrustedType || isPossibleEventHandler(name)) {
+          if (isTrustedTypesSink(node.name, name) || isPossibleEventHandler(name)) {
             this._reportError(
               attr,
               `Translating attribute '${name}' is disallowed for security reasons.`,

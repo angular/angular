@@ -170,6 +170,7 @@ impl fmt::Display for HoleKey {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             HoleKey::Reference(unresolved) => write!(f, "import of {}", unresolved),
+            HoleKey::AmbientGlobal { name, .. } => write!(f, "ambient global `{}`", name),
             HoleKey::Member { base, member } => {
                 write!(f, "member `{}` of `{}`", member, base.name)
             }
@@ -185,6 +186,7 @@ impl fmt::Display for IncompleteValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let kind = match &self.dep {
             IncompleteDep::Reference(_) => "unresolved import",
+            IncompleteDep::AmbientGlobal { .. } => "unresolved ambient global",
             IncompleteDep::Member { .. } => "unresolved member access",
             IncompleteDep::Call { .. } => "unresolved call",
         };

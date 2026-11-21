@@ -12,7 +12,6 @@ import {
   ArrowFunction,
   ASTWithSource,
   BindingPipe,
-  BindingPipeType,
   Call,
   EmptyExpr,
   Interpolation,
@@ -1174,24 +1173,6 @@ describe('parser', () => {
           // The nameSpan should be positioned at the end of the input.
           expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
         });
-
-        it('should parse pipes with the correct type when supportsDirectPipeReferences is enabled', () => {
-          expect((parseBinding('0 | Foo', true).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedDirectly,
-          );
-          expect((parseBinding('0 | foo', true).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedByName,
-          );
-        });
-
-        it('should parse pipes with the correct type when supportsDirectPipeReferences is disabled', () => {
-          expect((parseBinding('0 | Foo', false).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedByName,
-          );
-          expect((parseBinding('0 | foo', false).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedByName,
-          );
-        });
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -1338,6 +1319,28 @@ describe('parser', () => {
           expect(getSource(arrowFn.parameters[0].span)).toBe('foo');
           expect(getSource(arrowFn.parameters[1].span)).toBe('bar');
           expect(getSource(arrowFn.parameters[2].span)).toBe('baz');
+        });
+
+        it('should produce spans for the arrow function parameters inside an interpolation', () => {
+          const ast = parseInterpolation('{{(foo, bar) => foo + bar}}')!;
+          const arrowFn = (ast.ast as Interpolation).expressions[0] as ArrowFunction;
+          const getSource = (span: ParseSpan | AbsoluteSourceSpan) =>
+            ast.source?.substring(span.start, span.end);
+
+          expect(getSource(arrowFn.parameters[0].span)).toBe('foo');
+          expect(getSource(arrowFn.parameters[0].sourceSpan)).toBe('foo');
+          expect(getSource(arrowFn.parameters[1].span)).toBe('bar');
+          expect(getSource(arrowFn.parameters[1].sourceSpan)).toBe('bar');
+        });
+
+        it('should produce spans for an unparenthesized parameter inside an interpolation', () => {
+          const template = '{{foo => foo}}';
+          const ast = createParser().parseInterpolation(template, getFakeSpan(), 100, null)!;
+          const arrowFn = (ast.ast as Interpolation).expressions[0] as ArrowFunction;
+
+          expect(ast.errors).toEqual([]);
+          expect(arrowFn.parameters[0].span).toEqual(new ParseSpan(2, 5));
+          expect(arrowFn.parameters[0].sourceSpan).toEqual(new AbsoluteSourceSpan(102, 105));
         });
       });
 
@@ -1996,16 +1999,16 @@ describe('parser', () => {
   });
 });
 
-function createParser(supportsDirectPipeReferences = false) {
-  return new Parser(new Lexer(), supportsDirectPipeReferences);
+function createParser() {
+  return new Parser(new Lexer());
 }
 
 function parseAction(text: string): ASTWithSource {
   return createParser().parseAction(text, getFakeSpan(), 0);
 }
 
-function parseBinding(text: string, supportsDirectPipeReferences?: boolean): ASTWithSource {
-  return createParser(supportsDirectPipeReferences).parseBinding(text, getFakeSpan(), 0);
+function parseBinding(text: string): ASTWithSource {
+  return createParser().parseBinding(text, getFakeSpan(), 0);
 }
 
 function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {

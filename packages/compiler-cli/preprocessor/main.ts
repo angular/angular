@@ -12,12 +12,17 @@
 import {fileURLToPath} from 'url';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
-import {resolveWorkspaceConfig, stripJsonComments} from './src/workspace.js';
-import {readConfiguration} from '@angular/compiler-cli';
-import {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
-import {HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
-import {buildTypeCheckingConfig} from './src/tcb.js';
+import {resolveWorkspaceConfig} from './src/workspace.js';
+import {createHybridCompiler, HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
 import {SidecarAnalyzer} from './src/analyzer_sidecar.js';
+import {
+  createTracer,
+  NOOP_TRACER,
+  processStartMicros,
+  SpanKind,
+  writeSummaryFile,
+  writeTraceFile,
+} from './src/perf.js';
 import {run} from './ngp.js';
 
 (async () => {
@@ -45,11 +50,30 @@ import {run} from './ngp.js';
       outDir = args[outIndex + 1];
     }
 
+    // Parse --perf-trace <path> and --perf-summary <path> arguments
+    let perfTracePath: string | undefined;
+    const perfTraceIndex = args.indexOf('--perf-trace');
+    if (perfTraceIndex !== -1 && args[perfTraceIndex + 1]) {
+      perfTracePath = args[perfTraceIndex + 1];
+    }
+    let perfSummaryPath: string | undefined;
+    const perfSummaryIndex = args.indexOf('--perf-summary');
+    if (perfSummaryIndex !== -1 && args[perfSummaryIndex + 1]) {
+      perfSummaryPath = args[perfSummaryIndex + 1];
+    }
+    const perfTraceDetail = args.includes('--perf-trace-detail');
+
     let targetArg: string | undefined;
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
       if (arg.startsWith('--')) {
-        if (arg === '--out' || arg === '--root' || arg === '--sidecar') {
+        if (
+          arg === '--out' ||
+          arg === '--root' ||
+          arg === '--sidecar' ||
+          arg === '--perf-trace' ||
+          arg === '--perf-summary'
+        ) {
           i++;
         }
       } else {
@@ -59,7 +83,7 @@ import {run} from './ngp.js';
     }
     if (!targetArg) {
       console.error(
-        'Usage: ngp <project-dir|angular.json|tsconfig.json> [--optimize] [--wasm] [--out <dir>] [--in-place] [--root <dir>] [--sidecar <path>]',
+        'Usage: ngp <project-dir|angular.json|tsconfig.json> [--optimize] [--wasm] [--out <dir>] [--in-place] [--root <dir>] [--sidecar <path>] [--perf-trace <path>] [--perf-summary <path>] [--perf-trace-detail]',
       );
       process.exit(1);
     }
@@ -67,20 +91,16 @@ import {run} from './ngp.js';
     const targetPath = path.resolve(targetArg);
     let rootDir: string;
     let tsconfigPath: string;
-    let angularCompilerOptions: NgpCompilerOptions | undefined;
 
     // If we're resolving a tsconfig, we shouldn't consult the workspace for tsconfig path,
     // but we should still try to locate the workspaceRoot to prevent sibling library files from escaping outDir.
+    const workspaceConfig = await resolveWorkspaceConfig(targetPath);
     if (path.basename(targetPath).includes('tsconfig') && targetPath.endsWith('.json')) {
-      const workspaceConfig = await resolveWorkspaceConfig(targetPath);
       rootDir = workspaceConfig ? workspaceConfig.workspaceRoot : path.dirname(targetPath);
       tsconfigPath = targetPath;
-      angularCompilerOptions = readConfiguration(tsconfigPath).options;
     } else {
-      const workspaceConfig = await resolveWorkspaceConfig(targetPath);
       tsconfigPath = workspaceConfig ? workspaceConfig.tsConfig : targetPath;
       rootDir = workspaceConfig ? workspaceConfig.workspaceRoot : path.dirname(tsconfigPath);
-      angularCompilerOptions = workspaceConfig?.angularCompilerOptions;
     }
 
     // Parse --root <dir> argument
@@ -89,58 +109,25 @@ import {run} from './ngp.js';
       rootDir = path.resolve(args[rootIndex + 1]);
     }
 
+    const tracer = perfTracePath || perfSummaryPath ? createTracer() : NOOP_TRACER;
+    if (tracer.enabled) {
+      tracer.record(SpanKind.Startup, processStartMicros());
+    }
+
     console.log(
       `Running ngp...${useWasm ? ' (wasm)' : ''}${optimize ? ' (optimize mode)' : ''}${outDir ? ` (output: ${outDir})` : ''} (root: ${rootDir})`,
     );
 
-    const tcbConfig = buildTypeCheckingConfig(angularCompilerOptions, enableTemplateTypeCheckerArg);
-
-    let bazelOptions: any;
-    try {
-      const rawContent = await fs.readFile(tsconfigPath, 'utf8');
-      const rawTsconfig = JSON.parse(stripJsonComments(rawContent)) as any;
-      bazelOptions = rawTsconfig?.bazelOptions || rawTsconfig?.bazelOpts;
-    } catch {
-      // Fallback if tsconfig cannot be read as raw JSON
-    }
-    const isClosureCompilerEnabled =
-      angularCompilerOptions?.annotateForClosureCompiler === true ||
-      bazelOptions?.annotateForClosureCompiler === true ||
-      bazelOptions?.tsickle === true;
-
-    const emitDeclarationOnly =
-      angularCompilerOptions?.emitDeclarationOnly === true &&
-      angularCompilerOptions?._experimentalAllowEmitDeclarationOnly === true;
-
-    const onlyPublishPublicTypingsForNgModules =
-      angularCompilerOptions?.onlyPublishPublicTypingsForNgModules === true;
-
-    const workspaceName = angularCompilerOptions?.workspaceName || bazelOptions?.workspaceName;
-    // `readConfiguration` already makes `compilerOptions.rootDirs` absolute, so this only affects
-    // the raw `bazelOptions.rootDirs` fallback. Relative entries resolve against the tsconfig
-    // directory, as they do for TypeScript and the analyzer.
-    const rawRootDirs: string[] | undefined =
-      angularCompilerOptions?.rootDirs || bazelOptions?.rootDirs;
-    const tsconfigDir = path.dirname(tsconfigPath);
-    const rootDirs = rawRootDirs?.map((d) => path.resolve(tsconfigDir, d));
-    const enableHmr = angularCompilerOptions?._enableHmr;
-    // Left undefined when unset so the analyzer falls back to the tsconfig's own value.
-    const useHostForImportGeneration =
-      angularCompilerOptions?._useHostForImportGeneration ||
-      angularCompilerOptions?._useHostForImportAndAliasGeneration
-        ? true
-        : undefined;
-
     let innerAnalyzer: IAnalyzer;
     if (sidecarPath) {
-      const sidecar = new SidecarAnalyzer(sidecarPath);
-      await sidecar.initialize(tsconfigPath, optimize, undefined, undefined, {
-        workspaceName,
-        rootDirs,
-        enableHmr,
-        usePoisonedData: tcbConfig.usePoisonedData,
-        useHostForImportGeneration,
-      });
+      const sidecar = new SidecarAnalyzer(sidecarPath, tracer);
+      await sidecar.initialize(
+        tsconfigPath,
+        optimize,
+        undefined,
+        undefined,
+        tracer.enabled ? {perfTrace: true, perfTraceDetail} : undefined,
+      );
       innerAnalyzer = sidecar;
     } else {
       const {NapiAnalyzer} = await import('./src/analyzer_napi.js');
@@ -156,42 +143,30 @@ import {run} from './ngp.js';
         optimize,
         useWasm,
         ngAnalyzeDir,
-        workspaceName,
-        rootDirs,
-        enableHmr,
-        usePoisonedData: tcbConfig.usePoisonedData,
-        useHostForImportGeneration,
       });
     }
-    const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
-    const compiler = new HybridCompiler(innerAnalyzer, {
+    const compiler = createHybridCompiler(innerAnalyzer, {
       optimize,
-      tcbConfig,
-      optionDiagnostics,
-      legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
-      isClosureCompilerEnabled,
-      onlyExplicitDeferDependencyImports:
-        angularCompilerOptions?.onlyExplicitDeferDependencyImports,
-      enableTemplateSourceLocations: angularCompilerOptions?.enableTemplateSourceLocations,
-      emitDeclarationOnly,
-      onlyPublishPublicTypingsForNgModules,
-      forbidOrphanComponents: angularCompilerOptions?.forbidOrphanComponents,
-      supportJitMode: angularCompilerOptions?.supportJitMode !== false,
-      preserveWhitespaces: angularCompilerOptions?.preserveWhitespaces,
-      supportTestBed: angularCompilerOptions?.supportTestBed,
-      enableI18nLegacyMessageIdFormat: angularCompilerOptions?.enableI18nLegacyMessageIdFormat,
-      i18nUseExternalIds: angularCompilerOptions?.i18nUseExternalIds,
-      i18nNormalizeLineEndingsInICUs: angularCompilerOptions?.i18nNormalizeLineEndingsInICUs,
-      i18nPreserveWhitespaceForLegacyExtraction:
-        angularCompilerOptions?.i18nPreserveWhitespaceForLegacyExtraction,
-      enableHmr,
       rootDir,
-      workspaceName,
-      rootDirs,
+      enableTemplateTypeChecker: enableTemplateTypeCheckerArg,
+      incremental: false,
+      tracer,
     });
 
     console.log('Processing files...');
-    await run(compiler, {outDir, rootDir, inPlace, tsconfigPath});
+    try {
+      await run(compiler, {outDir, rootDir, inPlace, tsconfigPath});
+    } finally {
+      if (tracer.enabled) {
+        const {events, summary} = tracer.take();
+        if (perfTracePath) {
+          await writeTraceFile(perfTracePath, events);
+        }
+        if (perfSummaryPath) {
+          await writeSummaryFile(perfSummaryPath, summary);
+        }
+      }
+    }
   } catch (e) {
     console.error('Fatal Execution Error:', e);
     process.exit(1);

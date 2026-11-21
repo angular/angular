@@ -22,7 +22,7 @@ The tutorial walks you through the following steps:
 1. Develop a component to create form controls dynamically.
 
 The form you create uses input validation and styling to improve the user experience.
-It has a Submit button that is only enabled when all user input is valid, and flags invalid input with color coding and error messages.
+It has a Save button that is only enabled when all user input is valid, and flags invalid input with color coding and error messages.
 
 The basic version can evolve to support a richer variety of questions, more graceful rendering, and superior user experience.
 
@@ -65,7 +65,7 @@ The `DropdownQuestion` control type presents a list of choices in a select box.
 ### Compose form groups
 
 A dynamic form uses a service to create grouped sets of input controls, based on the form model.
-The following `QuestionControlService` collects a set of `FormGroup` instances that consume the metadata from the question model.
+The following `QuestionControlService` builds a `FormGroup` of `FormControl` instances from the metadata in the question model.
 You can specify default values and validation rules.
 
 <docs-code header="question-control.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question-control.service.ts"/>
@@ -77,7 +77,7 @@ Each question is represented in the form component's template by an `<app-questi
 
 The `DynamicFormQuestionComponent` is responsible for rendering the details of an individual question based on values in the data-bound question object.
 The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective 'API reference') to connect the template HTML to the underlying control objects.
-The `DynamicFormQuestionComponent` creates form groups and populates them with controls defined in the question model, specifying display and validation rules.
+The `DynamicFormQuestionComponent` receives the form group built by `QuestionControlService` and renders the control for its question, displaying validation state based on the rules set there.
 
 <docs-code-multifile>
   <docs-code header="dynamic-form-question.component.html" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.html"/>

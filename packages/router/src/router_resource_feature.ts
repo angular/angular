@@ -19,6 +19,7 @@ export interface RouterResourcesFeatureImplementation {
   createResourceOutletBindingEffects?: (
     componentRef: ComponentRef<unknown>,
     route: ActivatedRoute,
+    isErrorComponentActive?: boolean,
   ) => {createdEffects: EffectRef[]; handledKeys: string[]};
 }
 

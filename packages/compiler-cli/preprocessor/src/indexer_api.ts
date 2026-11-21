@@ -19,8 +19,6 @@ import {
   type ElementIdentifier as NgElementIdentifier,
   type TemplateNodeIdentifier as NgTemplateNodeIdentifier,
   type ReferenceIdentifier as NgReferenceIdentifier,
-  type ComponentNodeIdentifier as NgComponentNodeIdentifier,
-  type DirectiveNodeIdentifier as NgDirectiveNodeIdentifier,
   type DirectiveHostIdentifier as NgDirectiveHostIdentifier,
   type BoundAttributeIdentifier as NgBoundAttributeIdentifier,
   type PipeIdentifier as NgPipeIdentifier,
@@ -44,8 +42,6 @@ export type PropertyIdentifier = NgPropertyIdentifier<ClassEntity>;
 export type ElementIdentifier = NgElementIdentifier<ClassEntity>;
 export type TemplateNodeIdentifier = NgTemplateNodeIdentifier<ClassEntity>;
 export type ReferenceIdentifier = NgReferenceIdentifier<ClassEntity>;
-export type ComponentNodeIdentifier = NgComponentNodeIdentifier<ClassEntity>;
-export type DirectiveNodeIdentifier = NgDirectiveNodeIdentifier<ClassEntity>;
 export type BoundAttributeIdentifier = NgBoundAttributeIdentifier<ClassEntity>;
 export type PipeIdentifier = NgPipeIdentifier<ClassEntity>;
 export type TopLevelIdentifier = NgTopLevelIdentifier<ClassEntity>;

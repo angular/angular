@@ -13,7 +13,7 @@ export async function onCompletion(
   params: CompletionParams,
   context: HandlerContext,
 ): Promise<CompletionList | CompletionItem[] | null> {
-  const docContext = getDocumentContext(context, params.textDocument.uri, params.position);
+  const docContext = await getDocumentContext(context, params.textDocument.uri, params.position);
   if (!docContext) {
     return null;
   }
@@ -36,7 +36,7 @@ export async function onCompletionResolve(
   if (data?.filePath && data?.position) {
     let fileContent: string;
     try {
-      fileContent = context.languageService.hybridCompiler.getFileContent(data.filePath);
+      fileContent = await context.languageService.hybridCompiler.getFileContent(data.filePath);
     } catch {
       return item;
     }

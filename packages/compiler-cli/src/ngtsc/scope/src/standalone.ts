@@ -32,12 +32,7 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
       const clazzRef = new Reference(clazz);
       const clazzMeta = this.metaReader.getDirectiveMetadata(clazzRef);
 
-      if (
-        clazzMeta === null ||
-        !clazzMeta.isComponent ||
-        !clazzMeta.isStandalone ||
-        clazzMeta.selectorlessEnabled
-      ) {
+      if (clazzMeta === null || !clazzMeta.isComponent || !clazzMeta.isStandalone) {
         this.cache.set(clazz, null);
         return null;
       }

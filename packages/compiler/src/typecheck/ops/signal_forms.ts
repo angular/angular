@@ -8,15 +8,7 @@
 
 import {AST, BindingType, Call, PropertyRead, SafeCall} from '../../expression_parser/ast';
 import {DirectiveOwner} from '../../render3/view/t2_api';
-import {
-  BoundAttribute,
-  Component,
-  Directive,
-  Element,
-  HostElement,
-  Node,
-  Template,
-} from '../../render3/r3_ast';
+import {BoundAttribute, Element, HostElement, Node, Template} from '../../render3/r3_ast';
 
 import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {TcbOp} from './base';
@@ -248,7 +240,7 @@ export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
 /** Expands the set of bound inputs with the ones from custom field directives. */
 export function expandBoundAttributesForField(
   directive: TcbDirectiveMetadata,
-  node: Template | Element | Component | Directive,
+  node: Template | Element,
   customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(

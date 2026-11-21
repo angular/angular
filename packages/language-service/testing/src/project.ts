@@ -75,11 +75,7 @@ function writeTsconfig(
   );
 }
 
-export type TestableOptions = TypeCheckingOptions &
-  InternalOptions & {
-    // This already exists in `InternalOptions`, but it's `internal` so it's stripped away.
-    _enableSelectorless?: boolean;
-  };
+export type TestableOptions = TypeCheckingOptions & InternalOptions;
 
 export class Project {
   private tsProject: ts.server.Project;

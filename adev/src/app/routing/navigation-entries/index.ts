@@ -359,6 +359,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Routing',
+        status: 'updated',
         children: [
           {
             label: 'Overview',
@@ -409,6 +410,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Data fetching with resources',
             path: 'guide/routing/data-fetching-with-resources',
             contentPath: 'guide/routing/data-fetching-with-resources',
+            status: 'new',
+          },
+          {
+            label: 'Error boundaries',
+            path: 'guide/routing/error-boundaries',
+            contentPath: 'guide/routing/error-boundaries',
             status: 'new',
           },
           {
@@ -1557,6 +1564,10 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
           {
             label: 'directive',
             path: 'cli/generate/directive',
+          },
+          {
+            label: 'entry-point',
+            path: 'cli/generate/entry-point',
           },
           {
             label: 'enum',

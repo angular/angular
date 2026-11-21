@@ -29,22 +29,22 @@
     "zone.js": "0.16.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "22.3.0-next.4",
-    "@angular/build": "22.3.0-next.4",
-    "@angular/cli": "22.3.0-next.4",
+    "@angular-devkit/build-angular": "22.3.0-rc.0",
+    "@angular/build": "22.3.0-rc.0",
+    "@angular/cli": "22.3.0-rc.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^7.0.0",
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
-    "concurrently": "10.0.6",
+    "concurrently": "10.0.7",
     "jasmine": "7.0.0",
     "jasmine-core": "7.0.2",
     "jasmine-spec-reporter": "~7.0.0",
     "npm-run-all": "4.1.5",
     "selenium-webdriver": "3.5.0",
-    "serve": "14.2.6",
+    "serve": "14.2.8",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
   },
-  "packageManager": "pnpm@12.16.1"
+  "packageManager": "pnpm@12.21.0"
 }

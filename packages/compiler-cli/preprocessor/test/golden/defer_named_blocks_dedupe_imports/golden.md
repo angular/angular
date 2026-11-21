@@ -71,13 +71,13 @@ export class AppComponent {
                   blockB: [SharedDep],
                 },
                 template: `
-        @defer (name blockA) {
-          <shared-dep />
-        }
-        @defer (name blockB) {
-          <shared-dep />
-        }
-      `,
+    @defer (name blockA) {
+      <shared-dep />
+    }
+    @defer (name blockB) {
+      <shared-dep />
+    }
+  `,
               },
             ],
           },

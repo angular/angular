@@ -5556,9 +5556,9 @@ class LocalModule {}
         assert_eq!(analyzed_class_names(&results).len(), 6);
     }
 
-    /// A slice of `@angular/core`'s own layout: `package.json` names the package, decorators are
-    /// imported through relative paths, and `src/r3_symbols.ts` is one of the sources.
-    const CORE_PACKAGE_JSON: &str = r#"{"name": "@angular/core"}"#;
+    /// A slice of `@angular/core`'s own layout: decorators are imported through relative paths, and
+    /// `src/r3_symbols.ts`, whose `ITS_JUST_ANGULAR` marks the compilation as core, is one of the
+    /// sources.
     const CORE_INJECTABLE_DECORATOR: &str = "export function Injectable(opts?: unknown): any {}";
     const CORE_R3_SYMBOLS: &str = "export const ITS_JUST_ANGULAR = true;";
     const CORE_SERVICE: &str = r#"
@@ -5566,6 +5566,13 @@ import {Injectable} from '../di/injectable';
 
 @Injectable({providedIn: 'root'})
 export class ApplicationRef {}
+"#;
+    /// An application service, which imports its decorators from `@angular/core`.
+    const APP_SERVICE: &str = r#"
+import {Injectable} from '@angular/core';
+
+@Injectable({providedIn: 'root'})
+export class MyService {}
 "#;
 
     fn r3_symbols_specifier_of(
@@ -5586,7 +5593,6 @@ export class ApplicationRef {}
     #[test]
     fn r3_symbols_specifier_is_set_for_core_files_when_r3_symbols_is_a_root_file() {
         let fs = create_test_fs(&[
-            ("/core/package.json", CORE_PACKAGE_JSON),
             (
                 "/core/tsconfig.json",
                 r#"{"compilerOptions": {}, "files": ["src/r3_symbols.ts", "src/di/injectable.ts", "src/application/application_ref.ts"]}"#,
@@ -5609,16 +5615,15 @@ export class ApplicationRef {}
         );
     }
 
-    /// A compilation that lives under core's `package.json` but does not include `r3_symbols.ts`
-    /// (a secondary entry point such as `@angular/core/testing`) keeps importing `@angular/core`,
+    /// A core compilation (`_isAngularCoreCompilation`) that does not include `r3_symbols.ts` (a
+    /// secondary entry point such as `@angular/core/testing`) keeps importing `@angular/core`,
     /// exactly as ngtsc falls back to `NoopImportRewriter` when `getR3SymbolsFile` finds nothing.
     #[test]
     fn r3_symbols_specifier_is_absent_without_r3_symbols_root_file() {
         let fs = create_test_fs(&[
-            ("/core/package.json", CORE_PACKAGE_JSON),
             (
                 "/core/testing/tsconfig.json",
-                r#"{"compilerOptions": {}, "files": ["src/test_bed.ts"]}"#,
+                r#"{"compilerOptions": {}, "angularCompilerOptions": {"_isAngularCoreCompilation": true}, "files": ["src/test_bed.ts"]}"#,
             ),
             ("/core/src/di/injectable.ts", CORE_INJECTABLE_DECORATOR),
             (
@@ -5642,26 +5647,40 @@ export class TestBedImpl {}
         );
     }
 
-    /// A file named `r3_symbols.ts` in a package that is not `@angular/core` means nothing: the
-    /// rewrite is gated on the compilation being core (`isCore`), not on the file name alone.
+    /// A root file named `r3_symbols.ts` that does not export `ITS_JUST_ANGULAR = true` means
+    /// nothing: the rewrite is gated on the compilation being core (`isCore`), not on the file name
+    /// alone.
     #[test]
     fn r3_symbols_specifier_is_absent_outside_core() {
         let fs = create_test_fs(&[
-            ("/app/package.json", r#"{"name": "my-app"}"#),
             (
                 "/app/tsconfig.json",
                 r#"{"compilerOptions": {}, "files": ["src/r3_symbols.ts", "src/service.ts"]}"#,
             ),
-            ("/app/src/r3_symbols.ts", CORE_R3_SYMBOLS),
-            (
-                "/app/src/service.ts",
-                r#"
-import {Injectable} from '@angular/core';
+            ("/app/src/r3_symbols.ts", "export const SOME_SYMBOL = true;"),
+            ("/app/src/service.ts", APP_SERVICE),
+        ]);
 
-@Injectable({providedIn: 'root'})
-export class MyService {}
-"#,
+        let results = run_analyzer(fs, "/app/tsconfig.json", false);
+
+        assert!(find_class(&results, "MyService").is_some());
+        assert_eq!(
+            r3_symbols_specifier_of(&results, "/app/src/service.ts"),
+            None
+        );
+    }
+
+    /// An explicit `_isAngularCoreCompilation: false` wins over the `ITS_JUST_ANGULAR` marker, as
+    /// it does in ngtsc.
+    #[test]
+    fn r3_symbols_specifier_is_absent_when_core_compilation_is_disabled() {
+        let fs = create_test_fs(&[
+            (
+                "/app/tsconfig.json",
+                r#"{"compilerOptions": {}, "angularCompilerOptions": {"_isAngularCoreCompilation": false}, "files": ["src/r3_symbols.ts", "src/service.ts"]}"#,
             ),
+            ("/app/src/r3_symbols.ts", CORE_R3_SYMBOLS),
+            ("/app/src/service.ts", APP_SERVICE),
         ]);
 
         let results = run_analyzer(fs, "/app/tsconfig.json", false);

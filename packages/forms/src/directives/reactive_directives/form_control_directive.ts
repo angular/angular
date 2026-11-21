@@ -238,6 +238,6 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
    * @internal
    */
   ɵngControlUpdate(host: ControlDirectiveHost): void {
-    super.ngControlUpdate(host, true);
+    super.ngControlUpdate(host);
   }
 }

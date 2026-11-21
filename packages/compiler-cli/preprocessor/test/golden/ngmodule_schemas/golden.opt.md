@@ -104,9 +104,9 @@ export class MyCompCustomElements {
               {
                 selector: 'my-comp-custom-elements',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
                 standalone: false,
               },
             ],
@@ -219,9 +219,9 @@ export class MyCompNoErrors {
               {
                 selector: 'my-comp-no-errors',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
                 standalone: false,
               },
             ],
@@ -329,9 +329,9 @@ export class MyCompStandaloneImportingModule {
               {
                 selector: 'my-comp-standalone-importing-module',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
                 imports: [MyNoErrorsModule],
               },
             ],
@@ -400,9 +400,9 @@ export class MyCompNoSchemas {
               {
                 selector: 'my-comp-no-schemas',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
                 standalone: false,
               },
             ],

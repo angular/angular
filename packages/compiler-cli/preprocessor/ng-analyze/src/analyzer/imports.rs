@@ -1,8 +1,7 @@
 use crate::analyzer::utils::unwrap_forward_ref_evaluated;
-use crate::resource_loader::ResourceResolverFs;
 use oxc_ast::ast::{
-    ArrayExpression, ArrayExpressionElement, BindingPattern, Expression, ImportDeclaration,
-    ImportDeclarationSpecifier, Program, Statement,
+    ArrayExpression, ArrayExpressionElement, BindingPattern, Declaration, Expression,
+    ImportDeclaration, ImportDeclarationSpecifier, Program, Statement,
 };
 use oxc_ast::AstKind;
 use oxc_semantic::{Semantic, SymbolId};
@@ -85,6 +84,13 @@ fn is_type_only_import_declaration(decl: &ImportDeclaration<'_>) -> bool {
     if specifiers.is_empty() {
         return true;
     }
+    // ngtsc only inspects the named bindings, so a default or namespace binding next to all-`type`
+    // named bindings (`import Def, { type T } from './x'`) still counts as type-only here. That is
+    // wrong in general: `Def` is a runtime binding, TypeScript keeps the import, and a real cycle
+    // through it goes undetected. The static import graph deliberately reproduces it anyway,
+    // because the graph decides which components are remote-scoped and the emitted output has to
+    // match ngtsc's for now. Hosts are told the truth separately; see
+    // [`import_declaration_binds_at_runtime`].
     let mut has_named_specifier = false;
     for spec in specifiers {
         match spec {
@@ -101,50 +107,140 @@ fn is_type_only_import_declaration(decl: &ImportDeclaration<'_>) -> bool {
     has_named_specifier
 }
 
+/// Whether an `ImportDeclaration` keeps a runtime binding or side effect, which is what a host
+/// needs to know about a resolve request. Unlike [`is_type_only_import_declaration`], a default
+/// or namespace binding counts, so `import Def, { type T } from './x'` is a runtime import.
+fn import_declaration_binds_at_runtime(decl: &ImportDeclaration<'_>) -> bool {
+    if decl.import_kind.is_type() {
+        return false;
+    }
+    let Some(specifiers) = &decl.specifiers else {
+        return true;
+    };
+    specifiers.iter().any(|spec| match spec {
+        ImportDeclarationSpecifier::ImportSpecifier(named) => !named.import_kind.is_type(),
+        ImportDeclarationSpecifier::ImportDefaultSpecifier(_)
+        | ImportDeclarationSpecifier::ImportNamespaceSpecifier(_) => true,
+    })
+}
+
+/// Module specifier dependency extracted syntactically from a file, carrying its
+/// [`crate::host::ImportKind`] and whether it only appears in type-only positions.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ExtractedDependency {
+    pub specifier: String,
+    pub kind: crate::host::ImportKind,
+    pub type_only: bool,
+}
+
 /// Extracts static import specifiers from a module record and program, partitioned into
 /// `(value_static_imports, type_only_static_imports)`.
 ///
 /// Mirrors ngtsc's `ImportGraph.scanImports`: a module specifier is an edge of the static import
 /// graph iff at least one runtime `export ... from` declaration or non-type-only `import`
-/// declaration requests it. Purely type-only `import` declarations still bring the target file into
-/// the program closure, so they are returned in the second vector.
+/// declaration requests it. Purely type-only `import` and `export type ... from` declarations
+/// still bring the target file into the program closure, so they are returned in the second vector.
+/// `type_only` there is what the host is told: `true`, except for an import ngtsc's graph leaves
+/// out although it binds at runtime (see [`is_type_only_import_declaration`]).
 pub fn extract_imports(
     module_record: &ModuleRecord<'_>,
     program: &Program<'_>,
-) -> (Vec<String>, Vec<String>) {
-    let mut runtime_specifiers = HashSet::new();
+) -> (Vec<ExtractedDependency>, Vec<ExtractedDependency>) {
+    let requested: HashSet<&str> = module_record
+        .requested_modules
+        .keys()
+        .map(|atom| atom.as_str())
+        .collect();
+    let mut ordered_specifiers = Vec::with_capacity(requested.len());
+    let mut seen_specifiers = HashSet::with_capacity(requested.len());
+    let mut runtime_imports = HashSet::new();
+    let mut runtime_reexports = HashSet::new();
+    let mut type_only_imports = HashSet::new();
+    let mut type_only_reexports = HashSet::new();
+    // Specifiers with an import that binds at runtime, whichever way the graph classifies it.
+    let mut runtime_bound_imports = HashSet::new();
     for stmt in &program.body {
         match stmt {
             Statement::ImportDeclaration(decl) => {
-                if !is_type_only_import_declaration(decl) {
-                    runtime_specifiers.insert(decl.source.value.as_str());
+                let spec = decl.source.value.as_str();
+                if requested.contains(spec) && seen_specifiers.insert(spec) {
+                    ordered_specifiers.push(spec);
+                }
+                if import_declaration_binds_at_runtime(decl) {
+                    runtime_bound_imports.insert(spec);
+                }
+                if is_type_only_import_declaration(decl) {
+                    type_only_imports.insert(spec);
+                } else {
+                    runtime_imports.insert(spec);
                 }
             }
-            Statement::ExportFromDeclaration(decl) if !decl.export_kind.is_type() => {
-                let has_runtime_export = decl.specifiers.is_empty()
-                    || decl.specifiers.iter().any(|s| !s.export_kind.is_type());
+            Statement::ExportFromDeclaration(decl) => {
+                let spec = decl.source.value.as_str();
+                if requested.contains(spec) && seen_specifiers.insert(spec) {
+                    ordered_specifiers.push(spec);
+                }
+                let has_runtime_export = !decl.export_kind.is_type()
+                    && (decl.specifiers.is_empty()
+                        || decl.specifiers.iter().any(|s| !s.export_kind.is_type()));
                 if has_runtime_export {
-                    runtime_specifiers.insert(decl.source.value.as_str());
+                    runtime_reexports.insert(spec);
+                } else {
+                    type_only_reexports.insert(spec);
                 }
             }
-            Statement::ExportAllDeclaration(decl) if !decl.export_kind.is_type() => {
-                runtime_specifiers.insert(decl.source.value.as_str());
+            Statement::ExportAllDeclaration(decl) => {
+                let spec = decl.source.value.as_str();
+                if requested.contains(spec) && seen_specifiers.insert(spec) {
+                    ordered_specifiers.push(spec);
+                }
+                if decl.export_kind.is_type() {
+                    type_only_reexports.insert(spec);
+                } else {
+                    runtime_reexports.insert(spec);
+                }
             }
             _ => {}
         }
     }
+    if seen_specifiers.len() < requested.len() {
+        let mut remaining: Vec<&str> = requested
+            .iter()
+            .copied()
+            .filter(|s| !seen_specifiers.contains(s))
+            .collect();
+        remaining.sort_unstable();
+        ordered_specifiers.extend(remaining);
+    }
 
     let mut static_imports = Vec::new();
-    let mut type_only_imports = Vec::new();
-    for atom in module_record.requested_modules.keys() {
-        let s = atom.as_str();
-        if runtime_specifiers.contains(s) {
-            static_imports.push(s.to_string());
+    let mut type_only_static = Vec::new();
+    for s in ordered_specifiers {
+        if runtime_imports.contains(s) || runtime_reexports.contains(s) {
+            let kind = if runtime_imports.contains(s) {
+                crate::host::ImportKind::Static
+            } else {
+                crate::host::ImportKind::ReExport
+            };
+            static_imports.push(ExtractedDependency {
+                specifier: s.to_string(),
+                kind,
+                type_only: false,
+            });
         } else {
-            type_only_imports.push(s.to_string());
+            let kind = if !type_only_imports.contains(s) && type_only_reexports.contains(s) {
+                crate::host::ImportKind::ReExport
+            } else {
+                crate::host::ImportKind::Static
+            };
+            type_only_static.push(ExtractedDependency {
+                specifier: s.to_string(),
+                kind,
+                type_only: !runtime_bound_imports.contains(s),
+            });
         }
     }
-    (static_imports, type_only_imports)
+    (static_imports, type_only_static)
 }
 
 /// The module specifiers of the file's dynamic imports, in source order: `import()` calls and
@@ -161,18 +257,67 @@ pub fn extract_imports(
 ///
 /// The module record lists `import()` calls but not import types, so every file's node list is
 /// scanned. The pass costs under 1% of parsing the file and building its semantic model.
-pub fn extract_dynamic_imports(semantic: &Semantic<'_>) -> Vec<String> {
+pub fn extract_dynamic_imports(semantic: &Semantic<'_>) -> Vec<ExtractedDependency> {
     semantic
         .nodes()
         .iter()
         .filter_map(|node| match node.kind() {
             AstKind::ImportExpression(import) => {
-                crate::analyzer::utils::extract_literal_string(&import.source)
+                let specifier = crate::analyzer::utils::extract_literal_string(&import.source)?;
+                Some(ExtractedDependency {
+                    specifier,
+                    kind: crate::host::ImportKind::Dynamic,
+                    type_only: false,
+                })
             }
-            AstKind::TSImportType(import_type) => Some(import_type.source.value.to_string()),
+            AstKind::TSImportType(import_type) => Some(ExtractedDependency {
+                specifier: import_type.source.value.to_string(),
+                kind: crate::host::ImportKind::TypeImport,
+                type_only: true,
+            }),
             _ => None,
         })
         .collect()
+}
+
+/// Generated-alias-shaped names (`i0`, `i0_1`, …) bound or referenced as globals in the file, which
+/// generated namespace imports must avoid (ngtsc's `createGenerateUniqueIdentifierHelper`).
+///
+/// TODO(parity): ngtsc also avoids non-binding identifiers (e.g. property names), which can't
+/// capture a generated reference.
+pub fn namespace_alias_conflicts(semantic: &Semantic<'_>) -> Vec<String> {
+    let scoping = semantic.scoping();
+    let unresolved = scoping
+        .root_unresolved_references()
+        .keys()
+        .map(|name| name.as_str());
+    let mut names: Vec<String> = scoping
+        .symbol_names()
+        .chain(unresolved)
+        .filter(|name| has_generated_namespace_alias_shape(name))
+        .map(str::to_string)
+        .collect();
+    names.sort_unstable();
+    names.dedup();
+    names
+}
+
+/// Whether `name` could be a namespace alias the emitter generates: `i<digits>`, optionally
+/// followed by the `_<digits>` suffix ngtsc's unique-name helper appends.
+fn has_generated_namespace_alias_shape(name: &str) -> bool {
+    // Most names fail on the first or second byte.
+    let [b'i', first, rest @ ..] = name.as_bytes() else {
+        return false;
+    };
+    if !first.is_ascii_digit() {
+        return false;
+    }
+    let index_len = rest.iter().take_while(|b| b.is_ascii_digit()).count();
+    match &rest[index_len..] {
+        [] => true,
+        [b'_', suffix @ ..] => !suffix.is_empty() && suffix.iter().all(u8::is_ascii_digit),
+        _ => false,
+    }
 }
 
 /// Resolve an `imports`-shaped value (`imports`, `deferredImports` or one of its blocks) to the
@@ -437,6 +582,50 @@ pub fn collect_import_declarations(
         .collect()
 }
 
+/// A top-level `import X = …` statement (`import X = ns.Y`, `import x = require('…')`), including
+/// its `export import X = …` form.
+///
+/// ngtsc's `ImportManager` rebuilds every file it adds imports to as its existing import
+/// statements, then the generated imports, then the rest of the file, and `isImportStatement`
+/// counts these as import statements. The emitter hoists the ones written after another statement
+/// alongside the `import` declarations.
+/// https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/translator/src/import_manager/import_typescript_transform.ts#L114-L148
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ImportEqualsDeclarationInfo {
+    /// The statement's span, including a leading `export`.
+    pub span: Span,
+    /// [`Self::span`] extended like [`ImportDeclarationInfo::removal_span`].
+    pub removal_span: Span,
+}
+
+/// The file's top-level `import X = …` statements, in source order.
+pub fn collect_import_equals_declarations(
+    program: &Program<'_>,
+    source_text: &str,
+) -> Vec<ImportEqualsDeclarationInfo> {
+    program
+        .body
+        .iter()
+        .filter_map(import_equals_statement_span)
+        .map(|span| ImportEqualsDeclarationInfo {
+            span,
+            removal_span: Span::new(span.start, extend_past_line_end(source_text, span.end)),
+        })
+        .collect()
+}
+
+/// The span of `stmt` when it is `import X = …` or `export import X = …`.
+fn import_equals_statement_span(stmt: &Statement<'_>) -> Option<Span> {
+    match stmt {
+        Statement::TSImportEqualsDeclaration(decl) => Some(decl.span),
+        Statement::ExportDeclaration(export) => match &export.declaration {
+            Declaration::TSImportEqualsDeclaration(_) => Some(export.span),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
 fn collect_import_bindings(
     decl: &ImportDeclaration<'_>,
     semantic: &Semantic<'_>,
@@ -576,9 +765,10 @@ pub struct FileExportInfo {
 /// Byte position the preprocessor splices its generated (and hoisted) imports into: the end of
 /// the file's *leading* run of `import` declarations.
 ///
-/// The scan stops at the first top-level statement that is not an `ImportDeclaration`, so nothing
-/// is ever spliced below one. Imports written *after* such a statement are hoisted up to this
-/// point by the emitter instead.
+/// The scan stops at the first top-level statement that is not an import statement (an
+/// `ImportDeclaration` or an [`ImportEqualsDeclarationInfo`]), so nothing is ever spliced below
+/// one. Imports written *after* such a statement are hoisted up to this point by the emitter
+/// instead.
 ///
 /// Falls back to [`find_leading_comments_end`] when no import leads the file, which keeps
 /// file-level directives (`@fileoverview`, `/// <reference … />`, `// @ts-nocheck`) above the
@@ -588,15 +778,14 @@ pub fn find_imports_end(program: &Program<'_>, source_text: &str) -> u32 {
     let mut imports_end: u32 = 0;
 
     for stmt in &program.body {
-        match stmt {
-            Statement::ImportDeclaration(decl) => {
-                imports_end = decl.span.end;
-            }
-            Statement::TSImportEqualsDeclaration(decl) => {
-                imports_end = decl.span.end;
-            }
-            _ => break,
+        if let Statement::ImportDeclaration(decl) = stmt {
+            imports_end = decl.span.end;
+            continue;
         }
+        let Some(span) = import_equals_statement_span(stmt) else {
+            break;
+        };
+        imports_end = span.end;
     }
 
     if imports_end > 0 {
@@ -1009,81 +1198,6 @@ pub fn extract_angular_imports(
         core_bindings,
         is_core,
     }
-}
-
-#[derive(serde::Deserialize)]
-struct PackageManifest<'a> {
-    #[serde(borrow)]
-    name: Option<&'a str>,
-}
-
-fn parse_package_is_core(contents: &str) -> bool {
-    serde_json::from_str::<PackageManifest>(contents)
-        .ok()
-        .and_then(|m| m.name)
-        .map(|name| name == "@angular/core")
-        .unwrap_or(false)
-}
-
-/// Detect whether the file being analyzed belongs to `@angular/core` (`isCore` compilation mode).
-///
-/// Unlike ngtsc which searches an in-memory whole-program `ts.Program` for `r3_symbols.ts`'s
-/// `ITS_JUST_ANGULAR` constant (`isAngularCorePackage`), this analyzer operates in a stateless,
-/// per-file/delta model. Walking up to the nearest `package.json` manifest (`name === "@angular/core"`)
-/// provides an accurate, stateless equivalent that is immune to `rootDirs`/path aliasing. Findings
-/// and intermediate directories are memoized on [`ResourceResolverFs`].
-/// https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1724-L1758
-pub fn detect_is_core<Fs: ResourceResolverFs>(path: &std::path::Path, fs: &Fs) -> bool {
-    let Some(start_dir) = path.parent() else {
-        return false;
-    };
-
-    if let Some(&cached) = fs.is_core_cache().read().unwrap().get(start_dir) {
-        return cached;
-    }
-
-    let mut visited = Vec::new();
-    let mut current = Some(start_dir);
-    let mut result = false;
-
-    while let Some(dir) = current {
-        visited.push(dir);
-        let manifest = dir.join("package.json");
-        let Ok(contents) = fs.read_to_string(&manifest) else {
-            current = dir.parent();
-            if let Some(parent_dir) = current {
-                if let Some(&cached) = fs.is_core_cache().read().unwrap().get(parent_dir) {
-                    result = cached;
-                    break;
-                }
-            }
-            continue;
-        };
-        result = parse_package_is_core(&contents);
-        break;
-    }
-
-    let mut cache = fs.is_core_cache().write().unwrap();
-    for dir in visited {
-        cache.insert(dir.to_path_buf(), result);
-    }
-    result
-}
-
-/// The uncached directory walk backing [`detect_is_core`]. Split out so the cache lookup in
-/// `detect_is_core` stays trivial and this remains directly unit-testable.
-#[cfg(test)]
-fn detect_is_core_uncached<Fs: oxc_resolver::FileSystem>(path: &std::path::Path, fs: &Fs) -> bool {
-    let mut dir = path.parent();
-    while let Some(current) = dir {
-        let manifest = current.join("package.json");
-        let Ok(contents) = fs.read_to_string(&manifest) else {
-            dir = current.parent();
-            continue;
-        };
-        return parse_package_is_core(&contents);
-    }
-    false
 }
 
 pub fn resolved_value_to_super_class(
@@ -1742,6 +1856,113 @@ mod tests {
         find_imports_end(&ret.program, source)
     }
 
+    fn namespace_alias_conflicts_of(source: &str) -> Vec<String> {
+        let allocator = Allocator::default();
+        let ret = Parser::new(&allocator, source, SourceType::tsx()).parse();
+        assert!(ret.diagnostics.is_empty(), "{:?}", ret.diagnostics);
+        let semantic = SemanticBuilder::new()
+            .with_build_nodes(true)
+            .build(&ret.program)
+            .semantic;
+        namespace_alias_conflicts(&semantic)
+    }
+
+    /// `i0` through `i<last>`, sorted as strings.
+    fn alias_names_through(last: usize) -> Vec<String> {
+        let mut names: Vec<String> = (0..=last).map(|n| format!("i{n}")).collect();
+        names.sort_unstable();
+        names
+    }
+
+    /// Every symbol the file declares counts, whatever its kind, depth or space.
+    #[test]
+    fn namespace_alias_conflicts_include_every_binding() {
+        let source = r#"
+            import i0 from 'a';
+            import {x as i1} from 'b';
+            import * as i2 from 'c';
+            import i3 = require('d');
+            const i4 = 1;
+            let i5;
+            var i6;
+            function i7(i8: number, ...i9: number[]) {
+                const i10 = (i11: number) => { let i12 = i11; return i12; };
+                try {} catch (i13) {}
+                for (const i14 of []) {}
+                const {a: i15, ...i16} = {a: 1};
+                const [i17] = [1];
+            }
+            class i18 { m(i19 = 1) {} }
+            const c = class i20 {};
+            const f = function i21() {};
+            enum i22 { i23, 'i24' }
+            type i25<i26> = i26;
+            interface i27<i28> {}
+            namespace i29 { export const i30 = 1; }
+            declare module 'm' { const i31: number; }
+            declare global { var i32: number; }
+            type M = { [i33 in string]: 1 };
+            type N<T> = T extends infer i34 ? i34 : never;
+            const el = <div ref={(i35: unknown) => i35} />;
+        "#;
+        assert_eq!(
+            namespace_alias_conflicts_of(source),
+            alias_names_through(35)
+        );
+    }
+
+    /// A reference that resolves to no declaration in the file (a global) counts, in value or
+    /// type position.
+    #[test]
+    fn namespace_alias_conflicts_include_unresolved_references() {
+        let source = r#"
+            i0.foo();
+            let x: i1.T;
+            let y: i2;
+            type Q = typeof i3;
+            function f() { return () => i4; }
+        "#;
+        assert_eq!(namespace_alias_conflicts_of(source), alias_names_through(4));
+    }
+
+    /// Names that are not bindings do not count, although TypeScript's `identifiers` table holds
+    /// them; see the `TODO(parity)` on [`namespace_alias_conflicts`]. Nor do comments and other
+    /// strings.
+    #[test]
+    fn namespace_alias_conflicts_ignore_names_that_are_not_bindings() {
+        let source = r#"
+            import {i0 as a} from 'i1';
+            export {a as i2};
+            declare module 'i3' {}
+            const o = {i4: 1, 'i5': 2, ['i6']: 3};
+            o.i4; o['i5']; o[`i7`];
+            class C { i8 = 0; i9() {} #i10 = 1; m() { return this.i8; } }
+            interface I { i11: string; i12(): void; [i13: string]: unknown; }
+            i14: for (;;) { break i14; }
+            const el = <i15 i16="" />;
+            /** @param i17 {@link i18} */
+            function g(p: number) {}
+            // i19
+            const s = 'i20', t = `i21`;
+        "#;
+        assert!(namespace_alias_conflicts_of(source).is_empty());
+    }
+
+    /// Only names of the generated alias shape are returned, each once and sorted.
+    #[test]
+    fn namespace_alias_conflicts_only_list_the_generated_alias_shape() {
+        let source = r#"
+            const i0_1 = 1, i0_ = 2, i = 3, ix = 4, I0 = 5, i0x = 6, i_1 = 7, i0_1_2 = 8;
+            const i12_34 = 9, i0_x = 10, ii0 = 11, i٠ = 12;
+            function f(i3: number) { return i3; }
+            function g(i3: number) { return i3; }
+        "#;
+        assert_eq!(
+            namespace_alias_conflicts_of(source),
+            ["i0_1", "i12_34", "i3"]
+        );
+    }
+
     #[test]
     fn test_find_imports_end() {
         let source = "import { A } from 'a';\nimport { B } from 'b';\n\nconsole.log('hello');\n";
@@ -1751,6 +1972,57 @@ mod tests {
         assert!(imported_part.contains("import { A } from 'a';"));
         assert!(imported_part.contains("import { B } from 'b';"));
         assert!(!imported_part.contains("console.log"));
+    }
+
+    /// `import X = …` counts as an import statement in the leading run, `export import X = …`
+    /// included, as in ngtsc's `isImportStatement`.
+    #[test]
+    fn test_find_imports_end_includes_import_equals_declarations() {
+        let source = "import { A } from 'a';\n\
+                      import B = A.B;\n\
+                      export import C = A.C;\n\
+                      const d = 1;\n";
+        assert_eq!(
+            &source[..imports_end_of(source) as usize],
+            "import { A } from 'a';\nimport B = A.B;\nexport import C = A.C;"
+        );
+    }
+
+    #[test]
+    fn import_equals_declarations_cover_export_and_require_forms() {
+        let source = "import { a } from './a';\n\
+                      const k = 1;\n\
+                      import B = ns.B;\n\
+                      export import C = ns.C; // trailing\n\
+                      import req = require('./x');\n\
+                      import type T = require('./t');\n\
+                      export const e = 1;\n\
+                      namespace Inner { import D = ns.D; }\n";
+        let allocator = Allocator::default();
+        let ret = Parser::new(&allocator, source, SourceType::ts()).parse();
+        let declarations = collect_import_equals_declarations(&ret.program, source);
+        let text = |span: Span| &source[span.start as usize..span.end as usize];
+        assert_eq!(
+            declarations
+                .iter()
+                .map(|d| (text(d.span), text(d.removal_span)))
+                .collect::<Vec<_>>(),
+            [
+                ("import B = ns.B;", "import B = ns.B;\n"),
+                // A trailing comment stays put, so the removal stops at the statement.
+                ("export import C = ns.C;", "export import C = ns.C;"),
+                (
+                    "import req = require('./x');",
+                    "import req = require('./x');\n"
+                ),
+                (
+                    "import type T = require('./t');",
+                    "import type T = require('./t');\n"
+                ),
+            ],
+            "top-level statements only; the `import` declaration, other exports, and a namespace's own \
+             `import D = …` are not collected"
+        );
     }
 
     #[test]
@@ -2007,50 +2279,5 @@ mod tests {
         let source = "import { A } from 'a';\nnamespace Ns {\n  export class Foo {}\n}\nimport { B } from 'b';\n";
         let end = imports_end_of(source);
         assert_eq!(&source[..end as usize], "import { A } from 'a';");
-    }
-
-    #[test]
-    fn test_detect_is_core_nested_dirs_and_cache() {
-        use crate::fs::OverlayFileSystem;
-        // Uniquely-namespaced paths so this test does not collide with the process-global
-        // cache entries of any other (potentially concurrent) test.
-        let core_pkg = std::path::PathBuf::from("/detect_is_core_test/core/package.json");
-        let other_pkg = std::path::PathBuf::from("/detect_is_core_test/other/package.json");
-
-        let fs = OverlayFileSystem::new_with_overlay();
-        fs.upsert_file(
-            core_pkg.clone(),
-            r#"{ "name": "@angular/core" }"#.to_string(),
-        );
-        fs.upsert_file(other_pkg, r#"{ "name": "@angular/common" }"#.to_string());
-
-        // Files inside the `@angular/core` package resolve to is_core = true, including from a
-        // nested subdirectory that must walk up to the same manifest.
-        assert!(detect_is_core(
-            std::path::Path::new("/detect_is_core_test/core/src/a.ts"),
-            &fs
-        ));
-        assert!(detect_is_core(
-            std::path::Path::new("/detect_is_core_test/core/src/nested/c.ts"),
-            &fs
-        ));
-        // A sibling non-core package resolves to false.
-        assert!(!detect_is_core(
-            std::path::Path::new("/detect_is_core_test/other/src/d.ts"),
-            &fs
-        ));
-
-        // Prove memoization: after the "/detect_is_core_test/core/src" directory has been resolved
-        // once, deleting the manifest does NOT change the cached answer (no second read happens),
-        // while the uncached walker — which re-reads — now correctly sees no manifest.
-        fs.remove_virtual_file(&core_pkg);
-        assert!(detect_is_core(
-            std::path::Path::new("/detect_is_core_test/core/src/b.ts"),
-            &fs
-        ));
-        assert!(!detect_is_core_uncached(
-            std::path::Path::new("/detect_is_core_test/core/src/b.ts"),
-            &fs
-        ));
     }
 }

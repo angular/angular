@@ -247,11 +247,6 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   isStandalone: boolean;
 
   /**
-   * Whether the directive is a signal entity.
-   */
-  isSignal: boolean;
-
-  /**
    * For standalone components, the list of imported types.
    */
   imports: Reference<ClassDeclaration>[] | null;
@@ -311,14 +306,6 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * if `deferredImports` was configured as an object literal. `null` if flat array.
    */
   deferredBlocks?: Set<string> | null;
-
-  /** Whether selectorless is enabled for the specific component. */
-  selectorlessEnabled: boolean;
-
-  /**
-   * Names of the symbols within the source file that are referenced directly inside the template.
-   */
-  localReferencedSymbols: Set<string> | null;
 }
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */

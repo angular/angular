@@ -254,10 +254,10 @@ export class ExplicitComponent {
                       blockB: [CompB],
                     },
                     template: `
-        @defer (name blockB) {
-          <comp-b />
-        }
-      `,
+    @defer (name blockB) {
+      <comp-b />
+    }
+  `,
                   },
                 ],
               },
@@ -360,10 +360,10 @@ export class ImplicitComponent {
                 selector: 'implicit-comp',
                 imports: [CompA],
                 template: `
-        @defer {
-          <comp-a />
-        }
-      `,
+    @defer {
+      <comp-a />
+    }
+  `,
               },
             ],
           },

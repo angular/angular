@@ -77,9 +77,9 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <child-cmp [(counter)]="myCount" />
-        <setting-cmp [(value)]="myValue" />
-      `,
+    <child-cmp [(counter)]="myCount" />
+    <setting-cmp [(value)]="myValue" />
+  `,
                 imports: [ChildComponent, SettingComponent],
               },
             ],

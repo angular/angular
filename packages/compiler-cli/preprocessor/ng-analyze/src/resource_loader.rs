@@ -5,14 +5,6 @@ use std::path::{Path, PathBuf};
 pub trait ResourceResolverFs: FileSystem {
     fn root_dirs(&self) -> Vec<PathBuf>;
 
-    /// Per-instance cache backing `detect_is_core` (directory -> is-`@angular/core`), keeping
-    /// separate analyzer runs isolated. The process-global default is only used by mock filesystems.
-    fn is_core_cache(&self) -> &std::sync::RwLock<std::collections::HashMap<PathBuf, bool>> {
-        use std::sync::{OnceLock, RwLock};
-        static GLOBAL: OnceLock<RwLock<std::collections::HashMap<PathBuf, bool>>> = OnceLock::new();
-        GLOBAL.get_or_init(|| RwLock::new(std::collections::HashMap::new()))
-    }
-
     /// The file that actually backs `path` when `path` itself does not exist and only appears to
     /// through `rootDirs` merging (e.g. `<root0>/pkg/index.d.ts` backed by
     /// `<root1>/pkg/index.d.ts`). `None` when `path` exists as is or no other root backs it.
@@ -55,7 +47,11 @@ impl<'a, Fs: ResourceResolverFs> ResourceResolver<'a, Fs> {
         url: &str,
     ) -> Result<LoadedResource, String> {
         let resolved_path = self.resolve_resource(containing_file, url)?;
-        let content = self.fs.read_to_string(&resolved_path).ok();
+        let content = self
+            .fs
+            .read_to_string(&resolved_path)
+            .ok()
+            .map(|s| s.strip_prefix('\u{feff}').map(str::to_owned).unwrap_or(s));
         // A file that does not exist cannot be canonicalized; still report a clean path for it.
         let canonical = self
             .fs

@@ -12,6 +12,7 @@ import {effect, EffectRef} from '../render3/reactivity/effect';
 import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
 import {
+  PromiseResourceOptions,
   Resource,
   ResourceDependencyError,
   ResourceOptions,
@@ -74,14 +75,17 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
   ).request;
   const params = options.params ?? oldNameForParams ?? (() => null!);
+  const isStreaming = isStreamingResourceOptions(options);
   return new ResourceImpl<T | undefined, R>(
     params,
-    getLoader(options),
+    isStreaming ? options.stream : createLoader(options),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.debugName,
     options.injector ?? inject(Injector),
     options.id as StateKey<T>,
+    undefined,
+    isStreaming,
   );
 }
 
@@ -210,6 +214,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     injector: Injector,
     private transferCacheKey: StateKey<T> | undefined,
     getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
+    private readonly isStreaming = false,
   ) {
     if (isInParamsFunction()) {
       throw invalidResourceCreationInParams();
@@ -301,7 +306,6 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
             const transferState = this.transferState;
             const cacheKey = this.transferCacheKey;
             if (cacheState.isActive && cacheKey && transferState && request !== undefined) {
-              const key = this.transferCacheKey;
               if (transferState.hasKey(cacheKey)) {
                 stream = signal(
                   {value: transferState.get(cacheKey, defaultValue)},
@@ -430,6 +434,10 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     // we do not want the effect to depend on the state of the resource, only on the request.
     const {status: currentStatus, previousStatus} = untracked(this.state);
 
+    // A changed request invalidates the previous load even when the new params are unavailable
+    // or errored. Cancel it before returning so its pending task cannot keep the app unstable.
+    this.abortInProgressLoad();
+
     if (extRequest.request === undefined) {
       // Nothing to load (and we should already be in a non-loading state).
       return;
@@ -437,9 +445,6 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // We're not in a loading or reloading state, so this loading request is stale.
       return;
     }
-
-    // Cancel any previous loading attempts.
-    this.abortInProgressLoad();
 
     // Capturing _this_ load's pending task in a local variable is important here. We may attempt to
     // resolve it twice:
@@ -527,17 +532,33 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // Resolve the pending task now that the resource has a value.
       resolvePendingTask?.();
       resolvePendingTask = undefined;
+
+      // For non-streaming resources, once the load is complete (settled),
+      // there is no longer an in-progress operation to abort.
+      if (!this.isStreaming && this.pendingController?.signal === abortSignal) {
+        this.pendingController = undefined;
+      }
     }
   }
 
   private abortInProgressLoad(): void {
-    untracked(() => this.pendingController?.abort());
+    untracked(() => this.pendingController?.abort(getAbortReason()));
     this.pendingController = undefined;
 
     // Once the load is aborted, we no longer want to block stability on its resolution.
     this.resolvePendingTask?.();
     this.resolvePendingTask = undefined;
   }
+}
+
+let abortReason: DOMException | undefined;
+
+/**
+ * Returns a shared `AbortError` reason, since `abort()` without a reason creates a new one (with a
+ * stack trace) on every call, causing performance degradation on deep component trees.
+ */
+function getAbortReason(): DOMException {
+  return (abortReason ??= new DOMException('The operation was aborted.', 'AbortError'));
 }
 
 function saveToTransferState<R, T>(
@@ -557,11 +578,9 @@ function wrapEqualityFn<T>(equal: ValueEqualityFn<T>): ValueEqualityFn<T | undef
   return (a, b) => (a === undefined || b === undefined ? a === b : equal(a, b));
 }
 
-function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoader<T, R> {
-  if (isStreamingResourceOptions(options)) {
-    return options.stream;
-  }
-
+function createLoader<T, R>(
+  options: PromiseResourceOptions<T, R> & {debugName?: string},
+): ResourceStreamingLoader<T, R> {
   return async (params) => {
     try {
       return signal(

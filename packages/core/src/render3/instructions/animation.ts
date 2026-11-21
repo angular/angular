@@ -293,12 +293,11 @@ function runLeaveAnimations(
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
-  const renderer = lView[RENDERER];
-  allLeavingAnimations.add(lView[ID]);
-  (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
-
   const activeClasses = getClassListFromValue(value);
   if (activeClasses && activeClasses.length > 0) {
+    const renderer = lView[RENDERER];
+    allLeavingAnimations.add(lView[ID]);
+    (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
     animateLeaveClassRunner(
       nativeElement as HTMLElement,
       tNode,
@@ -422,8 +421,6 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  allLeavingAnimations.add(lView[ID]);
-
   // Capture NgZone and MAX_ANIMATION_TIMEOUT eagerly while the injector is
   // still valid. The animation function runs later from the queue, at which
   // point the lView injector may have been destroyed.
@@ -461,6 +458,7 @@ function runLeaveAnimationFunction(
   const renderer = lView[RENDERER];
   const animationsDisabled = areAnimationsDisabled(lView);
 
+  allLeavingAnimations.add(lView[ID]);
   (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
   const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
 

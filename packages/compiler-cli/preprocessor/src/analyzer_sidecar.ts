@@ -7,19 +7,31 @@
  */
 
 import * as child_process from 'child_process';
-import * as readline from 'readline';
-import type {
-  AnalysisResult,
-  AnalyzerOptions,
-  FileInvalidation,
-  CompilationChunk,
-  ResolvedResource,
-  TemplateUsage,
+import type {Readable} from 'stream';
+import {
+  FileUpdateType,
+  type AnalysisResult,
+  type AnalyzerOptions,
+  type CompilationChunk,
+  type FileInvalidation,
+  type ResolvedResource,
+  type TemplateUsage,
 } from './types.js';
+import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
+import {
+  Counter,
+  NOOP_TRACER,
+  nowMicros,
+  SpanKind,
+  type AnalyzerPerfTake,
+  type RustPerfTake,
+  type Tracer,
+} from './perf.js';
 
 export class SidecarAnalyzer implements IAnalyzer {
   private sidecarProcess: child_process.ChildProcess;
+  private compilerOptions: NgpCompilerOptions = {};
   private pendingRequests = new Map<
     number,
     {method: string; resolve: (val: any) => void; reject: (err: any) => void}
@@ -36,42 +48,16 @@ export class SidecarAnalyzer implements IAnalyzer {
    */
   private terminationReason: string | null = null;
 
-  constructor(sidecarPath: string) {
-    this.sidecarProcess = child_process.spawn(sidecarPath);
+  constructor(
+    sidecarPath: string,
+    private tracer: Tracer = NOOP_TRACER,
+  ) {
+    this.sidecarProcess = tracer.slice(SpanKind.SpawnSidecar, () =>
+      child_process.spawn(sidecarPath),
+    );
 
     if (this.sidecarProcess.stdout) {
-      const rl = readline.createInterface({
-        input: this.sidecarProcess.stdout,
-        crlfDelay: Infinity,
-      });
-
-      rl.on('line', (line: string) => {
-        if (line.trim() === '') return;
-        try {
-          const parsed = JSON.parse(line) as Record<string, any>;
-          if (parsed && typeof parsed === 'object') {
-            if ('id' in parsed && parsed['id'] !== undefined && parsed['id'] !== null) {
-              const req = this.pendingRequests.get(parsed['id'] as number);
-              if (req) {
-                if (parsed['error']) {
-                  req.reject(new Error(parsed['error'] as string));
-                } else {
-                  req.resolve(parsed['result']);
-                }
-                this.pendingRequests.delete(parsed['id'] as number);
-              }
-            } else if (parsed['method'] === 'analysisResult') {
-              this.handleAnalysisResult(parsed['params'] as CompilationChunk);
-            } else if (parsed['method'] === 'analysisError') {
-              this.handleAnalysisError(parsed['params'] as string);
-            } else if (parsed['method'] === 'analysisComplete') {
-              this.handleAnalysisComplete();
-            }
-          }
-        } catch (e) {
-          console.error(`Failed to parse sidecar output line: ${line}`);
-        }
-      });
+      this.readMessages(this.sidecarProcess.stdout);
     }
 
     this.sidecarProcess.stderr?.on('data', (data) => {
@@ -134,6 +120,81 @@ export class SidecarAnalyzer implements IAnalyzer {
     }
   }
 
+  /**
+   * Splits `stdout` into newline-delimited JSON-RPC messages and dispatches each one.
+   *
+   * Messages are framed strictly on `\n` (0x0A) bytes, as the sidecar writes them. Node's
+   * `readline` is not usable here: it also treats U+2028 and U+2029 as line terminators, and
+   * `serde_json` leaves those characters unescaped inside JSON strings (RFC 8259 permits it), so a
+   * template containing one would be split into unparseable fragments. Splitting the raw bytes is
+   * safe for UTF-8, where 0x0A never occurs inside a multi-byte sequence.
+   */
+  private readMessages(stdout: Readable): void {
+    let partial: Buffer[] = [];
+    stdout.on('data', (chunk: Buffer) => {
+      let start = 0;
+      let newline: number;
+      while ((newline = chunk.indexOf(0x0a, start)) !== -1) {
+        partial.push(chunk.subarray(start, newline));
+        this.handleMessage(Buffer.concat(partial).toString('utf8'));
+        partial = [];
+        start = newline + 1;
+      }
+      if (start < chunk.length) {
+        partial.push(chunk.subarray(start));
+      }
+    });
+    stdout.on('end', () => {
+      if (partial.length > 0) {
+        this.handleMessage(Buffer.concat(partial).toString('utf8'));
+        partial = [];
+      }
+    });
+  }
+
+  private handleMessage(line: string): void {
+    if (this.terminationReason !== null || line.trim() === '') return;
+    let parsed: unknown;
+    const parseStartUs = this.tracer.enabled ? nowMicros() : 0;
+    try {
+      parsed = JSON.parse(line);
+    } catch (e) {
+      // Each message is one complete line, so one that does not parse means the channel can no
+      // longer be trusted: it may have been an `analysisResult` (a dropped compilation chunk) or
+      // the response to a pending request, which would otherwise never settle.
+      console.error(`Failed to parse sidecar output line: ${line}`);
+      this.terminate(`Sidecar emitted an unparseable message (${(e as Error).message})`);
+      this.sidecarProcess.kill();
+      return;
+    }
+    if (!parsed || typeof parsed !== 'object') {
+      return;
+    }
+    const message = parsed as Record<string, any>;
+    if (this.tracer.enabled && message['method'] === 'analysisResult') {
+      // This runs while the driver waits in `AwaitAnalysis`, so it gets its own slice.
+      this.tracer.record(SpanKind.ParseAnalysisResult, parseStartUs);
+      this.tracer.count(Counter.AnalysisResultBytes, Buffer.byteLength(line));
+    }
+    if ('id' in message && message['id'] !== undefined && message['id'] !== null) {
+      const req = this.pendingRequests.get(message['id'] as number);
+      if (req) {
+        if (message['error']) {
+          req.reject(new Error(message['error'] as string));
+        } else {
+          req.resolve(message['result']);
+        }
+        this.pendingRequests.delete(message['id'] as number);
+      }
+    } else if (message['method'] === 'analysisResult') {
+      this.handleAnalysisResult(message['params'] as CompilationChunk);
+    } else if (message['method'] === 'analysisError') {
+      this.handleAnalysisError(message['params'] as string);
+    } else if (message['method'] === 'analysisComplete') {
+      this.handleAnalysisComplete();
+    }
+  }
+
   private onExit?: () => void;
 
   public async wait(): Promise<void> {
@@ -177,14 +238,30 @@ export class SidecarAnalyzer implements IAnalyzer {
       AnalyzerOptions,
       'tsconfigPath' | 'optimize' | 'virtualFiles' | 'nodeModulesPathOverride'
     >,
-  ): Promise<void> {
-    await this.callRpc('initialize', {
-      ...options,
-      tsconfigPath,
-      optimize,
-      virtualFiles,
-      nodeModulesPathOverride,
-    });
+  ): Promise<NgpCompilerOptions> {
+    const res = await this.tracer.sliceAsync(SpanKind.InitializeRpc, () =>
+      this.callRpc<NgpCompilerOptions | null>('initialize', {
+        ...options,
+        tsconfigPath,
+        optimize,
+        virtualFiles,
+        nodeModulesPathOverride,
+      }),
+    );
+    this.compilerOptions = {
+      workspaceName: options?.workspaceName,
+      ...res,
+    };
+    return this.compilerOptions;
+  }
+
+  /** Records later RPCs and message parsing on `tracer`, for a long-lived sidecar. */
+  setTracer(tracer: Tracer): void {
+    this.tracer = tracer;
+  }
+
+  getCompilerOptions(): NgpCompilerOptions {
+    return this.compilerOptions;
   }
 
   private async *runAnalysisStream(
@@ -282,11 +359,21 @@ export class SidecarAnalyzer implements IAnalyzer {
   }
 
   async invalidateFiles(updates: FileInvalidation[]): Promise<string[]> {
-    return this.callRpc('invalidateFiles', updates);
+    return this.callRpc(
+      'invalidateFiles',
+      updates.map((u) => ({
+        filePath: u.filePath,
+        updateType: typeof u.updateType === 'number' ? FileUpdateType[u.updateType] : u.updateType,
+      })),
+    );
   }
 
   async setEntryPoints(entryPoints: string[]): Promise<string[]> {
     return this.callRpc('setEntryPoints', entryPoints);
+  }
+
+  async clearResolutionCache(): Promise<string[]> {
+    return this.callRpc('clearResolutionCache', null);
   }
 
   async getTsFileForTemplate(templatePath: string): Promise<TemplateUsage[] | null> {
@@ -305,15 +392,14 @@ export class SidecarAnalyzer implements IAnalyzer {
     return this.callRpc<string[]>('canonicalPaths', paths);
   }
 
-  getMetadataForFileSync(filePath: string): AnalysisResult | null {
-    throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
-  }
-
-  getFileContentSync(filePath: string): string {
-    throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
-  }
-
-  getTsFileForTemplateSync(templatePath: string): TemplateUsage[] | null {
-    throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
+  async takePerf(): Promise<AnalyzerPerfTake> {
+    // The clocks are aligned on `now`, whose round trip is symmetric. `takePerf` isn't: its reply
+    // can be megabytes to serialize, pipe and parse, which would put `nowUs` well before the
+    // midpoint and the Rust events too late.
+    const requestUs = nowMicros();
+    const {nowUs} = await this.callRpc<{nowUs: number}>('now', {});
+    const responseUs = nowMicros();
+    const take = await this.callRpc<RustPerfTake>('takePerf', {});
+    return {...take, requestUs, nowUs, responseUs};
   }
 }

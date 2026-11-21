@@ -94,13 +94,13 @@ export class AppComponent {
                   MatDtsList,
                 ],
                 template: `
-        <mat-selection-list [value]="selection"></mat-selection-list>
-        <div [filterDir]="selection"></div>
-        <local-item-comp [item]="selection"></local-item-comp>
-        <tree-comp [tree]="selection"></tree-comp>
-        <legacy-generic-comp [legacyValue]="selection"></legacy-generic-comp>
-        <mat-dts-list [value]="selection"></mat-dts-list>
-      `,
+    <mat-selection-list [value]="selection"></mat-selection-list>
+    <div [filterDir]="selection"></div>
+    <local-item-comp [item]="selection"></local-item-comp>
+    <tree-comp [tree]="selection"></tree-comp>
+    <legacy-generic-comp [legacyValue]="selection"></legacy-generic-comp>
+    <mat-dts-list [value]="selection"></mat-dts-list>
+  `,
               },
             ],
           },

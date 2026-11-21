@@ -21,7 +21,7 @@ import {
 } from '../../util/assert';
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {setPropertyAndInputs, setElementAttribute} from '../instructions/shared';
+import {setPropertyAndInputs} from '../instructions/shared';
 import {
   ELEMENT_MARKER,
   I18nCreateOpCode,
@@ -45,6 +45,7 @@ import {
   createTextNode,
   nativeInsertBefore,
   nativeRemoveNode,
+  setElementAttribute,
   updateTextNode,
 } from '../dom_node_manipulation';
 import {

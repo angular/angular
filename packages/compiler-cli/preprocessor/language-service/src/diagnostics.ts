@@ -33,7 +33,7 @@ export async function handleDiagnostics(
   }
 
   const tsFilePath = filePath.replace(/\.ngtypecheck\.ts$/, '.ts');
-  const tcbCode = hybridCompiler.getTcbForFile(tsFilePath);
+  const tcbCode = await hybridCompiler.getTcbForFile(tsFilePath);
 
   if (!tcbCode) {
     return null;

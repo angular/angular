@@ -10,6 +10,8 @@ OnPush is the default change detection strategy in Angular (since v22). It instr
 
 - The root component of the subtree receives new inputs as the result of a template binding. Angular compares the current and past value of the input with `Object.is`.
 - Angular handles an event _(for example using event binding, output binding, or `@HostListener` )_ in the subtree's root component or any of its children whether they are using OnPush change detection or not.
+- A component in the subtree is marked for check, for example with `ChangeDetectorRef.markForCheck` or by `AsyncPipe`.
+- A signal read in the template of a component in the subtree changes. Angular then refreshes only the components that read the signal.
 
 ## Common change detection scenarios
 

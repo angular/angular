@@ -73,11 +73,14 @@ import {
 } from '../state';
 import {NO_CHANGE} from '../tokens';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
-import {renderStringify} from '../util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapLView} from '../util/view_utils';
 
 import {isDetachedByI18n} from '../../i18n/utils';
-import {clearElementContents, setupStaticAttributes} from '../dom_node_manipulation';
+import {
+  clearElementContents,
+  setElementAttribute,
+  setupStaticAttributes,
+} from '../dom_node_manipulation';
 import {appendChild} from '../node_manipulation';
 import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
@@ -333,13 +336,18 @@ export function setDomProperty<T>(
  *
  * This workaround is intended to be dropped in v23 when the breaking change window opens.
  */
-function unwrapImgVideoSrcValue(propName: string, element: RElement, value: unknown): any {
+function unwrapImgVideoSrcValue(
+  propName: string,
+  element: RElement,
+  value: unknown,
+  isAttribute = false,
+): any {
   if (
     propName === 'src' &&
     ((element as RElement).tagName === 'IMG' || (element as RElement).tagName === 'VIDEO')
   ) {
     if (value == null) {
-      return '';
+      return isAttribute ? value : '';
     }
 
     return unwrapSafeValue(value);
@@ -548,31 +556,8 @@ export function elementAttributeInternal(
 
   const element = getNativeByTNode(tNode, lView) as RElement;
   // TODO(v23): Remove this workaround once we can introduce a breaking change
-  value = unwrapImgVideoSrcValue(name, element, value);
+  value = unwrapImgVideoSrcValue(name, element, value, true);
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
-}
-
-export function setElementAttribute(
-  renderer: Renderer,
-  element: RElement,
-  namespace: string | null | undefined,
-  tagName: string | null,
-  name: string,
-  value: any,
-  sanitizer: SanitizerFn | null | undefined,
-) {
-  if (value == null) {
-    if (sanitizer != null) {
-      // Execute sanitizer to enforce security controls (e.g., neutralizing iframe)
-      sanitizer(value, tagName || '', name);
-    }
-    renderer.removeAttribute(element, name, namespace);
-  } else {
-    const strValue =
-      sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
-
-    renderer.setAttribute(element, name, strValue as string, namespace);
-  }
 }
 
 /**

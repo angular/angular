@@ -150,7 +150,7 @@ pub(crate) fn extract_query_options<'a>(
                 }
             }
             "read" => {
-                read_span = Some(p.value.span());
+                read_span = Some(get_runtime_expression(&p.value).span());
             }
             _ => {}
         }
@@ -189,7 +189,8 @@ fn evaluate_boolean_option(
     expr: &Expression<'_>,
     eval: &EvalInput<'_, '_>,
 ) -> Result<Option<bool>, Box<crate::evaluator::ResolvedValue>> {
-    let value = evaluate_expression(expr, eval);
+    let value =
+        crate::evaluator::value::demote_ambient_global_holes(evaluate_expression(expr, eval));
     match value.unwrap_named() {
         crate::evaluator::ResolvedValue::Boolean(b) => Ok(Some(*b)),
         other if other.contains_incomplete() => Ok(None),
@@ -233,7 +234,7 @@ fn decorator_query_options<'a>(
         };
         let (slot, option, anchor) = match key.as_ref() {
             "read" => {
-                options.read_span = Some(p.value.span());
+                options.read_span = Some(get_runtime_expression(&p.value).span());
                 continue;
             }
             "descendants" => (&mut options.descendants, "descendants", p.value.span()),
@@ -325,6 +326,7 @@ fn extract_decorator_query_metadata<'a>(
         emit_distinct_changes_only: options.emit_distinct_changes_only,
         read_span: options.read_span,
         options_span: None,
+        options_string: None,
         is_static: options.is_static,
         is_signal: false,
         decorator_span: Some(site.decorator_span),
@@ -531,11 +533,17 @@ pub fn extract_queries<'a>(
         let predicate = extract_predicate(&call.arguments[0], PredicateKind::Signal, eval);
         let (descendants, emit_distinct_changes_only, read_span, is_static) =
             extract_query_options(&call.arguments, default_descendants, semantic);
-        let options_span = call
-            .arguments
-            .get(1)
+        let options_arg = call.arguments.get(1);
+        let options_span = options_arg
             .and_then(|arg| arg.as_expression())
             .map(GetSpan::span);
+        let options_string = options_arg.and_then(|arg| {
+            super::strip_type_arguments_from_args(
+                std::slice::from_ref(arg),
+                semantic.source_text(),
+                &[],
+            )
+        });
         if let Some(reads) = top_level_reads.as_deref_mut() {
             super::collect_argument_references(
                 &call.arguments,
@@ -557,6 +565,7 @@ pub fn extract_queries<'a>(
             emit_distinct_changes_only,
             read_span,
             options_span,
+            options_string,
             is_static,
             is_signal: true,
             decorator_span: None,
@@ -624,7 +633,8 @@ pub(crate) fn validate_decorator_query_predicate(query: &QueryData) -> Option<Va
     let QueryPredicate::Evaluated(resolved) = &query.predicate else {
         return None;
     };
-    let value = resolved.raw();
+    let demoted = crate::evaluator::value::demote_ambient_global_holes(resolved.raw().clone());
+    let value = &demoted;
     if value.contains_incomplete() {
         return None;
     }
@@ -734,9 +744,10 @@ mod tests {
         emit_distinct_changes_only: bool,
         read: Option<String>,
         options: Option<String>,
+        options_string: Option<String>,
         is_static: bool,
         is_signal: bool,
-        predicate_issue: Option<(&'static str, String, String)>,
+        predicate_issue: Option<(crate::ErrorCode, String, String)>,
     }
 
     fn parse_class(source_text: &str) -> (Vec<QueryTestResult>, Vec<QueryTestResult>) {
@@ -752,7 +763,7 @@ mod tests {
     ) -> (
         Vec<QueryTestResult>,
         Vec<QueryTestResult>,
-        Vec<(&'static str, String, String)>,
+        Vec<(crate::ErrorCode, String, String)>,
     ) {
         let allocator = Allocator::default();
         let source_type = SourceType::default().with_typescript(true);
@@ -823,6 +834,7 @@ mod tests {
                             emit_distinct_changes_only: q.emit_distinct_changes_only,
                             read,
                             options,
+                            options_string: q.options_string,
                             is_static: q.is_static,
                             is_signal: q.is_signal,
                             predicate_issue,
@@ -1029,6 +1041,51 @@ mod tests {
         assert!(view_queries[5].is_signal);
     }
 
+    #[test]
+    fn test_query_read_and_options_strip_type_arguments() {
+        let source = r#"
+        import { ContentChild, contentChild, viewChild, TemplateRef } from '@angular/core';
+
+        class CellDef {}
+        interface CellContext<T> { $implicit: T; }
+
+        class TreeColumn<T> {
+            signalRead = contentChild(CellDef, { read: TemplateRef<CellContext<T>> });
+            signalWrapped = viewChild('tpl', { read: (TemplateRef<CellContext<T>> as any) });
+            signalPlain = viewChild('plain', { read: TemplateRef });
+            @ContentChild(CellDef, { read: TemplateRef<CellContext<T>> }) decoratorRead: any;
+        }
+        "#;
+
+        let (content, view) = parse_class(source);
+
+        assert_eq!(content.len(), 2);
+        assert_eq!(content[0].property_name, "signalRead");
+        assert_eq!(content[0].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(
+            content[0].options.as_deref(),
+            Some("{ read: TemplateRef<CellContext<T>> }")
+        );
+        assert_eq!(
+            content[0].options_string.as_deref(),
+            Some("{ read: TemplateRef }")
+        );
+        assert_eq!(content[1].property_name, "decoratorRead");
+        assert_eq!(content[1].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(content[1].options_string, None);
+
+        assert_eq!(view.len(), 2);
+        assert_eq!(view[0].property_name, "signalWrapped");
+        assert_eq!(view[0].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(
+            view[0].options_string.as_deref(),
+            Some("{ read: (TemplateRef as any) }")
+        );
+        assert_eq!(view[1].property_name, "signalPlain");
+        assert_eq!(view[1].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(view[1].options_string, None);
+    }
+
     /// Regression: when Angular symbols are imported through a package-internal relative path
     /// (ngtsc's `isCore` mode, e.g. `@angular/core`'s own test files) they must still be
     /// recognized as queries.
@@ -1178,18 +1235,18 @@ mod tests {
             issues,
             vec![
                 (
-                    "1006",
+                    crate::ErrorCode::DECORATOR_COLLISION,
                     "Cannot combine multiple query decorators.".to_string(),
                     "@ContentChild('bar', {static: true})\n            @ContentChild('foo')\n            multiple: any;"
                         .to_string()
                 ),
                 (
-                    "1006",
+                    crate::ErrorCode::DECORATOR_COLLISION,
                     "Cannot combine @Input decorators with query decorators".to_string(),
                     "@Input() @ViewChild('foo') withInput: any;".to_string()
                 ),
                 (
-                    "1005",
+                    crate::ErrorCode::DECORATOR_UNEXPECTED,
                     "Query decorator must go on a property-type member".to_string(),
                     "@ContentChildren('foo')\n            private someFn() {}".to_string()
                 ),
@@ -1216,17 +1273,17 @@ mod tests {
             issues,
             vec![
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@ViewChild must have arguments".to_string(),
                     "@ViewChild() none: any;".to_string()
                 ),
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@ViewChildren must have arguments".to_string(),
                     "@ViewChildren bare: any;".to_string()
                 ),
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@ContentChild has too many arguments".to_string(),
                     "'foo'".to_string()
                 ),
@@ -1263,35 +1320,35 @@ mod tests {
             issues,
             vec![
                 (
-                    "1001",
+                    crate::ErrorCode::DECORATOR_ARG_NOT_LITERAL,
                     "@ViewChild options must be an object literal".to_string(),
                     "'invalidOptionsArgumentType'".to_string()
                 ),
                 (
-                    "1001",
+                    crate::ErrorCode::DECORATOR_ARG_NOT_LITERAL,
                     "@ViewChild options must be an object literal".to_string(),
                     "OPTIONS".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ContentChild options.descendants must be a boolean\n  Value is of type 'string'."
                         .to_string(),
                     "'invalid'".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ContentChildren options.descendants must be a boolean\n  Value is of type 'string'."
                         .to_string(),
                     "DESCENDANTS".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild options.emitDistinctChangesOnly must be a boolean\n  Value is of type 'number'."
                         .to_string(),
                     "1".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild options.static must be a boolean\n  Value is of type 'null'."
                         .to_string(),
                     "'foo'".to_string()
@@ -1328,19 +1385,19 @@ mod tests {
             predicate_issues,
             vec![
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "Failed to resolve @ContentChildren predicate at position 1 to a string\n  Value is of type '{ 'invalid-predicate-type': boolean }'."
                         .to_string(),
                     "['predicate-a', {'invalid-predicate-type': true}]".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild predicate cannot be interpreted\n  Value is of type '{ 'invalid-predicate-type': boolean }'."
                         .to_string(),
                     "{'invalid-predicate-type': true}".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild predicate cannot be interpreted\n  Value is of type 'number'."
                         .to_string(),
                     "42".to_string()

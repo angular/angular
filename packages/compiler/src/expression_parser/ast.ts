@@ -152,21 +152,6 @@ export class SafeKeyedRead extends AST {
   }
 }
 
-/** Possible types for a pipe. */
-export enum BindingPipeType {
-  /**
-   * Pipe is being referenced by its name, for example:
-   * `@Pipe({name: 'foo'}) class FooPipe` and `{{123 | foo}}`.
-   */
-  ReferencedByName,
-
-  /**
-   * Pipe is being referenced by its class name, for example:
-   * `@Pipe() class FooPipe` and `{{123 | FooPipe}}`.
-   */
-  ReferencedDirectly,
-}
-
 export class BindingPipe extends ASTWithName {
   constructor(
     span: ParseSpan,
@@ -174,7 +159,6 @@ export class BindingPipe extends ASTWithName {
     public exp: AST,
     public name: string,
     public args: AST[],
-    readonly type: BindingPipeType,
     nameSpan: AbsoluteSourceSpan,
   ) {
     super(span, sourceSpan, nameSpan);

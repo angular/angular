@@ -207,11 +207,6 @@ interface DirectiveDefinition<T> {
    * Whether this directive/component is standalone.
    */
   standalone?: boolean;
-
-  /**
-   * Whether this directive/component is signal-based.
-   */
-  signals?: boolean;
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
@@ -359,7 +354,6 @@ export function ɵɵdefineComponent<T>(
           }
         : null,
       getExternalStyles: null,
-      signals: componentDefinition.signals ?? false,
       data: componentDefinition.data || {},
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
       styles: componentDefinition.styles || EMPTY_ARRAY,
@@ -631,7 +625,6 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
     standalone: directiveDefinition.standalone ?? true,
-    signals: directiveDefinition.signals === true,
     selectors: directiveDefinition.selectors || EMPTY_ARRAY,
     viewQuery: directiveDefinition.viewQuery || null,
     features: directiveDefinition.features || null,
@@ -712,7 +705,6 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
     componentDef.decls,
     componentDef.encapsulation,
     componentDef.standalone,
-    componentDef.signals,
     componentDef.exportAs,
     JSON.stringify(componentDef.inputs),
     JSON.stringify(componentDef.outputs),

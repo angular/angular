@@ -139,7 +139,7 @@ req.flush('Failed!', {status: 500, statusText: 'Internal Server Error'});
 
 ### Network errors
 
-Requests can also fail due to network errors, which surface as `ProgressEvent` errors. These can be delivered with the `error()` method:
+Requests can also fail due to network errors, which `HttpClient` reports as an `HttpErrorResponse` with a `status` of `0`. These can be simulated with the `error()` method, which wraps the given `ProgressEvent` in such a response:
 
 ```ts
 const req = httpTesting.expectOne('/api/config');

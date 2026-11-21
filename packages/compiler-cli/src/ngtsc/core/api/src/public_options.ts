@@ -18,12 +18,6 @@ import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics';
  */
 export interface LegacyNgcOptions {
   /**
-   * generate all possible generated files
-   *  @deprecated This option is not used anymore.
-   */
-  allowEmptyCodegenFiles?: boolean;
-
-  /**
    * Whether to generate a flat module index of the given name and the corresponding
    * flat module metadata. This option is intended to be used when creating flat
    * modules similar to how `@angular/core` and `@angular/common` are packaged.
@@ -235,6 +229,15 @@ export interface TypeCheckingOptions {
    * Defaults to `false`.
    */
   strictUnknownElements?: boolean;
+
+  /**
+   * Whether to check if unknown properties are bound to `<ng-template>`.
+   *
+   * If this is `true`, an error will be reported for unknown properties bound to an `<ng-template>`.
+   *
+   * Defaults to `false`.
+   */
+  strictNgTemplateTypes?: boolean;
 }
 
 /**

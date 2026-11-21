@@ -39,20 +39,21 @@ export class FieldMetadataState {
     const wasInParams = ɵisInParamsFunction();
     if (wasInParams) ɵsetInParamsFunction(false);
     try {
-      untracked(() =>
-        runInInjectionContext(this.node.structure.injector, () => {
-          for (const key of this.node.logicNode.logic.getMetadataKeys()) {
-            if (key.create) {
+      untracked(() => {
+        for (const key of this.node.logicNode.logic.getMetadataKeys()) {
+          if (key.create) {
+            // Accessing structure.injector creates the field injector, so only do it for managed keys.
+            runInInjectionContext(this.node.structure.injector, () => {
               const logic = this.node.logicNode.logic.getMetadata(key);
               const result = key.create!(
                 this.node,
                 computed(() => logic.compute(this.node.context)),
               );
               this.metadata.set(key, result);
-            }
+            });
           }
-        }),
-      );
+        }
+      });
     } finally {
       if (wasInParams) ɵsetInParamsFunction(true);
     }

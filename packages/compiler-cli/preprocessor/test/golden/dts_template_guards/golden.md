@@ -94,13 +94,13 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MyIf, MyDirWithInvalidGuards],
                 template: `
-        <div *myIf="authService.user as user; invocation: authService.user">
-          {{user.name}}
-        </div>
-        <div *invalidGuards="authService.user as user">
-          {{user.name}}
-        </div>
-      `,
+    <div *myIf="authService.user as user; invocation: authService.user">
+      {{user.name}}
+    </div>
+    <div *invalidGuards="authService.user as user">
+      {{user.name}}
+    </div>
+  `,
               },
             ],
           },

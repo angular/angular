@@ -3,7 +3,6 @@ use crate::analyzer::{
 };
 use crate::query::{QueryCtx, ReferenceId};
 use crate::types::analysis::{DeclarationData, OwningReference};
-use crate::ResourceResolverFs;
 use crate::{types::analysis::ResolvedHostDirective, ClassType, DeclarationTuple};
 use std::path::Path;
 
@@ -15,8 +14,8 @@ use std::path::Path;
 ///
 /// Never invent an identifier: a name that isn't a real binding emits a dangling reference (the
 /// bug in the old generated-alias scheme once the emitter moved to namespace imports).
-async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn contextualize_declaration(
+    ctx: &QueryCtx,
     decl: &DeclarationData,
     consumer: crate::query::FileId,
     file_path: &Path,
@@ -29,15 +28,26 @@ async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
     contextual.ref_meta = ref_meta;
 
     // Rebase relative specifiers in generic type parameter bounds from the declaring file to the
-    // consumer file (or to workspace-prefixed paths under `PrefixImportStrategy`).
+    // consumer: relative to a path consumer (or workspace-prefixed under `PrefixImportStrategy`),
+    // and absolute for a virtual consumer, which has no directory to be relative to.
+    //
+    // TODO: a virtual declaring file's relative specifiers are left as written, which is only
+    // right for a consumer that is that same file. Only the host knows what they resolve to, so
+    // rebasing them means resolving each one through the host from the declaring module and
+    // emitting the resolved ID the way other references are emitted.
     if let Some(type_parameters) = &mut contextual.type_parameters {
-        let declaring_path = ctx.engine.lookup_path(decl.reference.file);
-        for param in type_parameters {
-            param.resolve_specifiers(
-                ctx.engine.reference_strategy.as_ref(),
-                &declaring_path,
-                file_path,
-            );
+        if ctx.engine.lookup_kind(decl.reference.file) == crate::host::IdKind::Path {
+            let declaring_path = ctx.engine.lookup_path(decl.reference.file);
+            let consumer_path =
+                (ctx.engine.lookup_kind(consumer) == crate::host::IdKind::Path)
+                    .then_some(file_path);
+            for param in type_parameters {
+                param.resolve_specifiers(
+                    ctx.engine.reference_strategy.as_ref(),
+                    &declaring_path,
+                    consumer_path,
+                );
+            }
         }
     }
 
@@ -45,19 +55,21 @@ async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// Project one reference into `consumer`'s frame.
-async fn project_reference<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn project_reference(
+    ctx: &QueryCtx,
     reference: &crate::types::analysis::Reference,
     consumer: crate::query::FileId,
     consumer_path: &Path,
 ) -> crate::types::metadata::ReferenceMetadata {
     let target_path = ctx.engine.lookup_path(reference.file);
     let declaring_export_name = ctx.declaring_export_name(reference).await;
-    ctx.engine.reference_strategy.emit(
+    ctx.engine.reference_strategy.emit_with_kinds(
         reference,
         consumer,
         consumer_path,
+        ctx.engine.lookup_kind(consumer),
         &target_path,
+        ctx.engine.lookup_kind(reference.file),
         declaring_export_name.as_deref(),
     )
 }
@@ -68,8 +80,8 @@ async fn project_reference<Fs: ResourceResolverFs + Clone + 'static>(
 /// Host directives attach to the hosting declaration rather than the consumer's template scope
 /// (`createMatcherFromScope` registers only direct scope dependencies). `ancestors` tracks the
 /// active host chain to break cycles.
-async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directives_for_class(
+    ctx: &QueryCtx,
     class_info: &crate::ClassInfo,
     parent_owning: Option<&OwningReference>,
     consumer_file: crate::query::FileId,
@@ -77,7 +89,8 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
     ancestors: &mut Vec<ReferenceId>,
 ) -> Option<Vec<ResolvedHostDirective>> {
     let host_dirs = class_info.host_directives.as_ref()?;
-    let declaring_file_path = ctx.engine.lookup_path(class_info.reference_id.file);
+    let declaring_file_id = class_info.reference_id.file;
+    let declaring_file_path = ctx.engine.lookup_path(declaring_file_id);
 
     ancestors.push(class_info.reference_id);
     let mut resolved = Vec::with_capacity(host_dirs.len());
@@ -85,6 +98,7 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
         let Some(entry) = resolve_host_directive(
             ctx,
             hd,
+            declaring_file_id,
             &declaring_file_path,
             parent_owning,
             consumer_file,
@@ -104,7 +118,7 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
 
 /// The class a `hostDirectives` entry names, looked up in its declaring file.
 struct HostDirectiveClass {
-    decl: crate::evaluator::cross_file::DeclaredSymbol,
+    reference: crate::types::analysis::Reference,
     decl_file_id: crate::query::FileId,
     symbol_name: String,
     class_info: Option<crate::ClassInfo>,
@@ -112,16 +126,39 @@ struct HostDirectiveClass {
 
 /// Chase a `hostDirectives` entry written in `declaring_file_path` to its declaration. `None`
 /// when the symbol itself cannot be resolved (e.g. a package without typings).
-async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directive_class(
+    ctx: &QueryCtx,
     hd: &crate::types::analysis::HostDirectiveEntry,
+    declaring_file_id: crate::query::FileId,
     declaring_file_path: &Path,
 ) -> Option<HostDirectiveClass> {
-    let declaring_file_id = ctx.engine.intern_path(declaring_file_path);
+    // `hd.directive` usually already points at its declaring file (resolved during evaluation).
+    // Reading it directly avoids re-resolving through `relative_specifier_between`, which
+    // synthesizes paths that custom `AnalysisHost` implementations and symlinked files cannot resolve.
+    let direct_file_id = hd.directive.file;
+    let direct_evaluated = ctx.analyze_file_evaluated(direct_file_id).await;
+    if let Some(class_info) = direct_evaluated.class_index.get(&hd.directive.name).cloned() {
+        return Some(HostDirectiveClass {
+            reference: hd.directive.clone(),
+            decl_file_id: direct_file_id,
+            symbol_name: hd.directive.name.clone(),
+            class_info: Some(class_info),
+        });
+    }
+    if hd.directive.owning_reference.is_none() {
+        return Some(HostDirectiveClass {
+            reference: hd.directive.clone(),
+            decl_file_id: direct_file_id,
+            symbol_name: hd.directive.name.clone(),
+            class_info: None,
+        });
+    }
+
     let specifier = hd.directive.specifier_for(
         declaring_file_id,
         Some(declaring_file_path),
         Some(&|id| ctx.engine.lookup_path(id)),
+        Some(&|id| ctx.engine.lookup_kind(id)),
     );
     let export_name = hd.directive.export_name().to_string();
 
@@ -153,7 +190,13 @@ async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
     let class_info = evaluated.class_index.get(&symbol_name).cloned();
 
     Some(HostDirectiveClass {
-        decl,
+        reference: crate::types::analysis::Reference {
+            file: decl_file_id,
+            name: symbol_name.clone(),
+            owning_reference: decl.owning_reference.clone(),
+            aliases: decl.aliases.into_iter().collect(),
+            is_default_export: decl.exported_as_default,
+        },
         decl_file_id,
         symbol_name,
         class_info,
@@ -162,9 +205,10 @@ async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
 
 /// Resolve one `hostDirectives` entry written in `declaring_file_path`, including the host
 /// directives it declares in turn.
-async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directive(
+    ctx: &QueryCtx,
     hd: &crate::types::analysis::HostDirectiveEntry,
+    declaring_file_id: crate::query::FileId,
     declaring_file_path: &Path,
     parent_owning: Option<&OwningReference>,
     consumer_file: crate::query::FileId,
@@ -172,49 +216,49 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     ancestors: &mut Vec<ReferenceId>,
 ) -> Option<ResolvedHostDirective> {
     let HostDirectiveClass {
-        decl,
+        mut reference,
         decl_file_id,
-        symbol_name,
         class_info,
-    } = resolve_host_directive_class(ctx, hd, declaring_file_path).await?;
+        ..
+    } = resolve_host_directive_class(ctx, hd, declaring_file_id, declaring_file_path).await?;
     let hd_class_info = class_info?;
     if ancestors.contains(&hd_class_info.reference_id) {
         return None;
     }
 
-    let mut reference = crate::types::analysis::Reference {
-        file: decl_file_id,
-        name: symbol_name,
-        owning_reference: decl.owning_reference.clone(),
-        aliases: decl.aliases.into_iter().collect(),
-        is_default_export: decl.exported_as_default,
-    };
-
     let mut invalid_reason = None;
-    if reference.owning_reference.is_none() && crate::utils::is_dts(declaring_file_path) {
+    if ctx.engine.reference_strategy.uses_owning_reference()
+        && reference.owning_reference.is_none()
+        && (crate::utils::is_dts(declaring_file_path)
+            || ctx.engine.lookup_external(declaring_file_id))
+    {
         if let Some(owning) = parent_owning {
-            let package_entry_path = crate::evaluator::cross_file::resolve_specifier(
-                ctx.engine.resolver.as_ref(),
-                consumer_path,
-                owning.specifier(),
-            )
-            .or_else(|| {
-                crate::evaluator::cross_file::resolve_specifier(
-                    ctx.engine.resolver.as_ref(),
-                    declaring_file_path,
+            let resolve_base = owning.resolution_context().unwrap_or(consumer_file);
+            let package_entry_resolved = match ctx
+                .resolve_from_id(
+                    resolve_base,
                     owning.specifier(),
+                    crate::host::ImportKind::Static,
                 )
-            });
-            if let Some(entry_path) = package_entry_path {
-                let package_entry = ctx.engine.intern_path(&entry_path);
+                .await
+            {
+                Some((id, _)) => Some(id),
+                None => ctx
+                    .resolve_from_id(
+                        declaring_file_id,
+                        owning.specifier(),
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                    .map(|(id, _)| id),
+            };
+            if let Some(package_entry) = package_entry_resolved {
                 let exports = ctx.module_export_map(package_entry).await;
                 let decl_key = (decl_file_id, reference.name.clone());
                 if let Some(export_name) = exports.get(&decl_key) {
-                    reference.owning_reference = Some(OwningReference::from_source_specifier(
-                        owning.specifier(),
-                        export_name.clone(),
-                    ));
+                    reference.owning_reference = Some(owning.with_export_name(export_name.clone()));
                 } else {
+                    let entry_path = ctx.engine.lookup_path(package_entry);
                     invalid_reason = Some(format!(
                         "The symbol is not exported from {} (module '{}').",
                         entry_path.display(),
@@ -232,11 +276,9 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     let mut directive =
         contextualize_declaration(ctx, &decl_data, consumer_file, consumer_path).await;
     if let Some(reason) = invalid_reason {
-        if ctx.engine.reference_strategy.uses_owning_reference() {
-            directive.ref_meta.consumer_import = None;
-            directive.ref_meta.typecheck_import = None;
-            directive.ref_meta.invalid_reason = Some(reason);
-        }
+        directive.ref_meta.consumer_import = None;
+        directive.ref_meta.typecheck_import = None;
+        directive.ref_meta.invalid_reason = Some(reason);
     }
     directive.resolved_host_directives = Box::pin(resolve_host_directives_for_class(
         ctx,
@@ -286,7 +328,7 @@ fn validate_host_directive_mappings(
     mappings: Option<&[crate::types::metadata::HostDirectiveBinding]>,
     existing: &[HostBinding],
     class_name: &str,
-    push: &mut dyn FnMut(u32, String),
+    push: &mut dyn FnMut(crate::ErrorCode, String),
 ) {
     let required: Vec<&HostBinding> = existing.iter().filter(|b| b.required).collect();
     let mut exposed_required = std::collections::HashSet::new();
@@ -300,7 +342,7 @@ fn validate_host_directive_mappings(
             .collect();
         if bindings.is_empty() {
             push(
-                2017, // HOST_DIRECTIVE_UNDEFINED_BINDING
+                crate::ErrorCode::HOST_DIRECTIVE_UNDEFINED_BINDING,
                 format!(
                     "Directive {class_name} does not have an {kind} with a public name of {public_name}."
                 ),
@@ -319,7 +361,7 @@ fn validate_host_directive_mappings(
         if remapped != public_name {
             for _ in existing.iter().filter(|b| &b.public_name == remapped) {
                 push(
-                    2018, // HOST_DIRECTIVE_CONFLICTING_ALIAS
+                    crate::ErrorCode::HOST_DIRECTIVE_CONFLICTING_ALIAS,
                     format!(
                         "Cannot alias {kind} {public_name} of host directive {class_name} to {remapped}, \
                          because it already has a different {kind} with the same public name."
@@ -336,7 +378,7 @@ fn validate_host_directive_mappings(
             .map(|r| format!("'{}'", r.public_name))
             .collect();
         push(
-            2019, // HOST_DIRECTIVE_MISSING_REQUIRED_BINDING
+            crate::ErrorCode::HOST_DIRECTIVE_MISSING_REQUIRED_BINDING,
             format!(
                 "Required {kind}{} {} from host directive {class_name} must be exposed.",
                 if missing.len() == 1 { "" } else { "s" },
@@ -347,8 +389,8 @@ fn validate_host_directive_mappings(
 }
 
 // TODO(parity): ngtsc poisons the class when any of these fire, suppressing its emit.
-async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn validate_own_host_directives(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     directive: &DirectiveData,
@@ -378,7 +420,7 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
             .copied()
             .unwrap_or(container);
         let span = crate::types::metadata::SpanMetadata::new(span, &syntax.converter);
-        let mut push = |code: u32, message: String| {
+        let mut push = |code: crate::ErrorCode, message: String| {
             diagnostics.push(crate::NgDiagnostic::error(
                 code,
                 file_path_text.clone(),
@@ -387,12 +429,14 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
             ));
         };
 
-        let Some(resolved) = resolve_host_directive_class(ctx, entry, file_path).await else {
+        let Some(resolved) =
+            resolve_host_directive_class(ctx, entry, reference_id.file, file_path).await
+        else {
             continue;
         };
         let Some(class_info) = resolved.class_info else {
             push(
-                2013, // HOST_DIRECTIVE_INVALID
+                crate::ErrorCode::HOST_DIRECTIVE_INVALID,
                 format!(
                     "{} must be a standalone directive to be used as a host directive",
                     resolved.symbol_name
@@ -405,7 +449,7 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
             ClassType::Directive | ClassType::Component
         ) {
             push(
-                2013, // HOST_DIRECTIVE_INVALID
+                crate::ErrorCode::HOST_DIRECTIVE_INVALID,
                 format!(
                     "{} must be a standalone directive to be used as a host directive",
                     class_info.class_name
@@ -419,13 +463,13 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
         let is_dts = crate::utils::is_dts(&ctx.engine.lookup_path(resolved.decl_file_id));
         if !crate::query::module_scope::is_standalone_class(&host_meta, is_dts) {
             push(
-                2014, // HOST_DIRECTIVE_NOT_STANDALONE
+                crate::ErrorCode::HOST_DIRECTIVE_NOT_STANDALONE,
                 format!("Host directive {class_name} must be standalone"),
             );
         }
         if host_meta.class_type == ClassType::Component {
             push(
-                2015, // HOST_DIRECTIVE_COMPONENT
+                crate::ErrorCode::HOST_DIRECTIVE_COMPONENT,
                 format!("Host directive {class_name} cannot be a component"),
             );
         }
@@ -452,8 +496,8 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
 /// Resolve the `hostDirectives` a class declares on itself, in its own file's frame — what
 /// ngtsc's `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the class itself when
 /// type-checking its host bindings. Shared by components and directives.
-async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_own_host_directives(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -475,8 +519,8 @@ async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
 /// Stage 2 for a directive: resolve its own `hostDirectives` for the host binding type-check
 /// block, and validate them. The directive's template scope does not exist, so this is all it
 /// needs cross-file.
-pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn optimize_directive(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -499,8 +543,8 @@ pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// Resolve the `hostDirectives` of a scope entry, looking its class up in its declaring file.
-async fn resolve_host_directives_for_declaration<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directives_for_declaration(
+    ctx: &QueryCtx,
     decl: &DeclarationData,
     consumer_file: crate::query::FileId,
     consumer_path: &Path,
@@ -568,8 +612,8 @@ fn collect_declaration_tuples(
 ///   (`(false, Some(span))`).
 /// - All other references (same-file declarations in a variable, exported variable arrays, or
 ///   imported shared arrays) are treated as potentially shared (`(true, None)`).
-async fn resolve_import_usage<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_import_usage(
+    ctx: &QueryCtx,
     component_file: crate::query::FileId,
     reference_file: crate::query::FileId,
     raw_imports_span: Option<oxc_span::Span>,
@@ -628,14 +672,34 @@ async fn resolve_import_usage<Fs: ResourceResolverFs + Clone + 'static>(
 
 /// The reference for a resolved entry of the legacy identifier-rooted `imports` list.
 fn legacy_import_reference(
+    ctx: &QueryCtx,
     tuple: &DeclarationTuple,
     class_info: &crate::ClassInfo,
     consumer_file: crate::query::FileId,
+    consumer_path: &Path,
 ) -> crate::types::analysis::Reference {
     let owning_reference = tuple.import_source.as_ref().and_then(|source| {
-        OwningReference::is_absolute_specifier(source).then(|| {
-            OwningReference::from_source_specifier(source.clone(), tuple.export_name().to_owned())
-        })
+        if OwningReference::is_absolute_specifier(source) {
+            let bare = OwningReference::from_source_specifier(
+                source.clone(),
+                tuple.export_name().to_owned(),
+            );
+            Some(bare.with_resolution_context(consumer_file))
+        } else if !ctx.engine.lookup_external(consumer_file)
+            && ctx.engine.lookup_external(class_info.reference_id.file)
+        {
+            let importer_path =
+                (ctx.engine.lookup_kind(consumer_file) == crate::host::IdKind::Path)
+                    .then_some(consumer_path);
+            Some(OwningReference::from_external_specifier(
+                source.clone(),
+                tuple.export_name().to_owned(),
+                Some(consumer_file),
+                importer_path,
+            ))
+        } else {
+            None
+        }
     });
     let mut aliases = std::collections::HashMap::new();
     aliases.insert(class_info.reference_id.file, class_info.class_name.clone());
@@ -653,8 +717,8 @@ fn legacy_import_reference(
 /// `ref_in_declaring_module`, `is_forward_ref`, `cycle_prone`, and `resolved_host_directives`.
 /// Shared by `optimize_component` and `populate_local_component_extra_imports`.
 #[allow(clippy::too_many_arguments)]
-async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn contextualize_ngmodule_scope_declarations(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     declarations: &[DeclarationData],
@@ -717,8 +781,8 @@ async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clon
 /// `component.imports` is completed in place so no `Incomplete` survives into the semantic result.
 /// Invalidation needs no explicit bookkeeping: every awaited sub-query records the files it touched
 /// on the `QueryContext`, and they flow into this semantic query's reverse-index entry.
-pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn optimize_component(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -756,8 +820,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
     }
 }
 
-async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn optimize_component_scope(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -975,9 +1039,13 @@ async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
 
                 let reference = match entry {
                     Entry::Evaluated(r, _) => r.clone(),
-                    Entry::Parsed(tuple) => {
-                        legacy_import_reference(tuple, &class_info, reference_id.file)
-                    }
+                    Entry::Parsed(tuple) => legacy_import_reference(
+                        ctx,
+                        tuple,
+                        &class_info,
+                        reference_id.file,
+                        file_path,
+                    ),
                 };
 
                 let (is_potential_shared, usage_span) = match entry {
@@ -1221,9 +1289,13 @@ async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
                 let flattened = flatten_class_info(class_info.clone(), ctx).await;
                 let reference = match entry {
                     DefEntry::Evaluated(r) => r.clone(),
-                    DefEntry::Parsed(tuple) => {
-                        legacy_import_reference(tuple, &class_info, reference_id.file)
-                    }
+                    DefEntry::Parsed(tuple) => legacy_import_reference(
+                        ctx,
+                        tuple,
+                        &class_info,
+                        reference_id.file,
+                        file_path,
+                    ),
                 };
 
                 let same_file = reference.file == reference_id.file;
@@ -1335,8 +1407,8 @@ fn rebase_relative_specifier(
 ///
 /// Local mode omits static `ɵcmp` dependency lists, stripping module-graph edges needed by
 /// JsTrimmer/Closure for topological sorting. Bare `import '<spec>';` statements restore them.
-pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn populate_local_component_extra_imports(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,

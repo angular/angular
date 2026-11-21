@@ -12,7 +12,6 @@ import {
   EmitterVisitorContext,
   ParseSourceSpan,
 } from '@angular/compiler';
-import {validateAndRewriteCoreSymbol} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {SpanMetadata} from './types.js';
 
 /** A location in a source file that some printed text originates from. */
@@ -56,6 +55,27 @@ const EQUALITY_OPERATORS = new Set([
   o.BinaryOperator.NotEquals,
   o.BinaryOperator.Identical,
   o.BinaryOperator.NotIdentical,
+]);
+
+/**
+ * A mapping of supported symbols that can be imported from within @angular/core, and the names by
+ * which they're exported from r3_symbols.
+ */
+const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
+  ['ɵɵdefineInjectable', 'ɵɵdefineInjectable'],
+  ['ɵɵdefineService', 'ɵɵdefineService'],
+  ['ɵɵdefineInjector', 'ɵɵdefineInjector'],
+  ['ɵɵdefineNgModule', 'ɵɵdefineNgModule'],
+  ['ɵɵsetNgModuleScope', 'ɵɵsetNgModuleScope'],
+  ['ɵɵinject', 'ɵɵinject'],
+  ['ɵɵFactoryDeclaration', 'ɵɵFactoryDeclaration'],
+  ['ɵsetClassMetadata', 'setClassMetadata'],
+  ['ɵsetClassMetadataAsync', 'setClassMetadataAsync'],
+  ['ɵɵInjectableDeclaration', 'ɵɵInjectableDeclaration'],
+  ['ɵɵInjectorDeclaration', 'ɵɵInjectorDeclaration'],
+  ['ɵɵNgModuleDeclaration', 'ɵɵNgModuleDeclaration'],
+  ['ɵNgModuleFactory', 'NgModuleFactory'],
+  ['ɵnoSideEffects', 'ɵnoSideEffects'],
 ]);
 
 const VALID_TYPEOF_VALUES = new Set([
@@ -129,9 +149,30 @@ export class RawSource {
   ) {}
 }
 
+/**
+ * Names namespace import `index` as `i<index>`, moved to the first free `i<index>_<k>` when
+ * `conflicts` already uses that name, like ngtsc's `ImportManager` does with the helper from
+ * `createGenerateUniqueIdentifierHelper` (`translator/src/import_manager/`).
+ */
+export function allocateNamespaceAlias(index: number, conflicts: ReadonlySet<string>): string {
+  const baseName = `i${index}`;
+  let name = baseName;
+  for (let counter = 1; conflicts.has(name); counter++) {
+    name = `${baseName}_${counter}`;
+  }
+  return name;
+}
+
+/**
+ * Escapes `specifier` for a single-quoted string literal. A host-provided module ID is written
+ * verbatim, so it can contain a backslash or a quote.
+ */
+export function escapeModuleSpecifier(specifier: string): string {
+  return specifier.replace(/[\\']/g, '\\$&').replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+}
+
 export class ExpressionPrinter {
   private moduleToNamespace = new Map<string, string>();
-  private existingNamespaces = new Set<string>();
   /**
    * Modules to emit as bare `import '<specifier>';` statements. Used by local compilation mode
    * to preserve the module-graph edges that the optimized pipeline expresses through the
@@ -146,25 +187,29 @@ export class ExpressionPrinter {
   /** Printed snippets that carry source mappings and haven't been claimed by an insertion yet. */
   private pendingSnippets: PrintedSnippet[] = [];
 
+  /**
+   * @param namespaceAliasConflicts Names bound in the file that a generated namespace alias
+   *     must avoid (`AnalysisResult.namespaceAliasConflicts`).
+   */
   constructor(
     filePath: string,
     private readonly r3SymbolsSpecifier: string | null = null,
+    private readonly namespaceAliasConflicts: ReadonlySet<string> = new Set(),
   ) {
     this.emitTypes = filePath.endsWith('.ts') || filePath.endsWith('.mts');
-    this.moduleToNamespace.set(CORE_MODULE, 'i0');
-    this.generatedNamespaceCount = 1;
+    this.moduleToNamespace.set(CORE_MODULE, this.generateNamespaceAlias());
     this.exprVisitor = new EmitterVisitor(this);
     this.typeVisitor = new EmitterVisitor(this, true);
   }
 
   print(expr: o.Expression): string {
-    const context = new MappingContext();
+    const context = new MappingContext(0);
     expr.visitExpression(this.exprVisitor, context);
     return this.finishPrint(context);
   }
 
-  printStatement(stmt: o.Statement): string {
-    const context = new MappingContext();
+  printStatement(stmt: o.Statement, indent: number): string {
+    const context = new MappingContext(indent);
     stmt.visitStatement(this.exprVisitor, context);
     return this.finishPrint(context);
   }
@@ -201,16 +246,25 @@ export class ExpressionPrinter {
     if (this.moduleToNamespace.has(moduleName)) {
       return this.moduleToNamespace.get(moduleName)!;
     }
-    const namespace = `i${this.generatedNamespaceCount++}`;
+    const namespace = this.generateNamespaceAlias();
     this.moduleToNamespace.set(moduleName, namespace);
     return namespace;
+  }
+
+  private generateNamespaceAlias(): string {
+    return allocateNamespaceAlias(this.generatedNamespaceCount++, this.namespaceAliasConflicts);
   }
 
   rewriteSymbol(symbolName: string, moduleName: string): string {
     if (this.r3SymbolsSpecifier === null || moduleName !== CORE_MODULE) {
       return symbolName;
     }
-    return validateAndRewriteCoreSymbol(symbolName);
+
+    if (!CORE_SUPPORTED_SYMBOLS.has(symbolName)) {
+      throw new Error(`Importing unexpected symbol ${symbolName} while compiling ${CORE_MODULE}`);
+    }
+
+    return CORE_SUPPORTED_SYMBOLS.get(symbolName)!;
   }
 
   private rewriteSpecifier(moduleName: string): string {
@@ -220,15 +274,9 @@ export class ExpressionPrinter {
     return this.r3SymbolsSpecifier;
   }
 
+  /** Registers a pre-bound namespace alias for printing (e.g. HMR `ɵhmr*` locals). */
   addNamespaceImport(moduleSpecifier: string, namespaceAlias: string): void {
-    // A pre-existing namespace import of `r3_symbols.ts` is this file's `@angular/core` import,
-    // already rewritten; register it under the module name requests arrive with.
-    const moduleName =
-      this.r3SymbolsSpecifier !== null && moduleSpecifier === this.r3SymbolsSpecifier
-        ? CORE_MODULE
-        : moduleSpecifier;
-    this.moduleToNamespace.set(moduleName, namespaceAlias);
-    this.existingNamespaces.add(moduleName);
+    this.moduleToNamespace.set(moduleSpecifier, namespaceAlias);
   }
 
   addSideEffectImport(moduleSpecifier: string): void {
@@ -244,20 +292,19 @@ export class ExpressionPrinter {
         continue;
       }
 
-      if (!this.existingNamespaces.has(moduleName)) {
-        const specifier = this.rewriteSpecifier(moduleName);
-        statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
-      }
+      const specifier = escapeModuleSpecifier(this.rewriteSpecifier(moduleName));
+      statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
     }
 
     for (const moduleName of this.sideEffectImports) {
-      // A module already bound as a namespace import (generated or pre-existing) carries the
-      // same edge, so a bare import on top of it would be redundant.
-      if (this.usedNamespaces.has(moduleName) || this.existingNamespaces.has(moduleName)) {
+      // A module already bound as a namespace import carries the same edge, so a bare import on
+      // top of it would be redundant.
+      if (this.usedNamespaces.has(moduleName)) {
         continue;
       }
 
-      statements.push(`// @ts-ignore\nimport '${this.rewriteSpecifier(moduleName)}';`);
+      const specifier = escapeModuleSpecifier(this.rewriteSpecifier(moduleName));
+      statements.push(`// @ts-ignore\nimport '${specifier}';`);
     }
 
     return statements.length > 0 ? statements.join('\n') : null;
@@ -265,11 +312,10 @@ export class ExpressionPrinter {
 
   reset(): void {
     this.moduleToNamespace.clear();
-    this.existingNamespaces.clear();
     this.sideEffectImports.clear();
     this.usedNamespaces.clear();
-    this.generatedNamespaceCount = 1;
-    this.moduleToNamespace.set(CORE_MODULE, 'i0');
+    this.generatedNamespaceCount = 0;
+    this.moduleToNamespace.set(CORE_MODULE, this.generateNamespaceAlias());
   }
 }
 
@@ -300,8 +346,8 @@ class MappingContext extends EmitterVisitorContext {
   private inComment = false;
   private readonly points: Array<{line: number; column: number; span: ParseSourceSpan}> = [];
 
-  constructor() {
-    super(0);
+  constructor(indent: number) {
+    super(indent);
   }
 
   override print(

@@ -8,7 +8,6 @@
 
 import semver from 'semver';
 
-import {Type} from '@angular/core';
 import {
   ComponentInstanceType,
   ComponentTreeNode,
@@ -16,6 +15,7 @@ import {
 } from '../../shared/interfaces';
 import {isCustomElement} from '../../shared/utils/general';
 import {VERSION} from '../../version';
+import {getDirectiveName} from '../utils/directive';
 
 let HEADER_OFFSET = 19;
 
@@ -160,9 +160,4 @@ export class LTreeStrategy {
     const rootLView = ctx.lView ?? ctx;
     return this.extract(rootLView);
   }
-}
-
-// Note(hawkgs): Duplicate due to cyclic dependency.
-function getDirectiveName(dir: Type<unknown> | undefined | null): string {
-  return dir ? dir.constructor.name : 'unknown';
 }

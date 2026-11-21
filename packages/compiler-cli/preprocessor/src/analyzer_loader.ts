@@ -211,33 +211,31 @@ async function wasmCandidates(options: LoadAnalyzerOptions): Promise<Candidate[]
     }
   };
 
-  const [ngAnalyzeWasmDirIndex, bundledWasm, bazelBinWasm, inRepoWasm] = await Promise.all([
-    options.ngAnalyzeDir
-      ? existingPath(path.join(options.ngAnalyzeDir, '..', 'ng-analyze-wasm', 'ng_analyze.js'))
-      : null,
-    existingPath(path.resolve(SELF_DIR, '../ng-analyze/ng_analyze_wasm/ng_analyze_wasm.js')),
-    !IS_INSTALLED
-      ? walkUpFor(
-          path.join(
-            'dist',
-            'bin',
-            'packages',
-            'compiler-cli',
-            'preprocessor',
-            'ng-analyze',
-            'ng_analyze_wasm',
-            'ng_analyze_wasm.js',
-          ),
-        )
-      : null,
-    !IS_INSTALLED ? walkUpFor(path.join('ng-analyze-wasm', 'ng_analyze.js')) : null,
-  ]);
+  const wasmBinRel = path.join(
+    'packages',
+    'compiler-cli',
+    'preprocessor',
+    'ng-analyze',
+    'ng_analyze_wasm',
+    'ng_analyze_wasm.js',
+  );
+  const [ngAnalyzeWasmDirIndex, bundledWasm, bazelBinWasm, bazelOutWasm, inRepoWasm] =
+    await Promise.all([
+      options.ngAnalyzeDir
+        ? existingPath(path.join(options.ngAnalyzeDir, '..', 'ng-analyze-wasm', 'ng_analyze.js'))
+        : null,
+      existingPath(path.resolve(SELF_DIR, '../ng-analyze/ng_analyze_wasm/ng_analyze_wasm.js')),
+      !IS_INSTALLED ? walkUpFor(path.join('dist', 'bin', wasmBinRel)) : null,
+      !IS_INSTALLED ? walkUpFor(wasmBinRel) : null,
+      !IS_INSTALLED ? walkUpFor(path.join('ng-analyze-wasm', 'ng_analyze.js')) : null,
+    ]);
 
   push(options.wasmBinding, 'wasmBinding option');
   push(process.env['NG_EXP_COMPILER_WASM_BINDING'], 'NG_EXP_COMPILER_WASM_BINDING');
   push(ngAnalyzeWasmDirIndex, 'ngAnalyzeDir option');
   push(bundledWasm, 'bundled ng_analyze_wasm');
   push(bazelBinWasm, 'bazel-bin ng_analyze_wasm');
+  push(bazelOutWasm, 'bazel-out ng_analyze_wasm');
   push('ng-exp-compiler-arch-wasm', 'ng-exp-compiler-arch-wasm package');
   push(inRepoWasm, 'in-repo ng-analyze-wasm/');
 

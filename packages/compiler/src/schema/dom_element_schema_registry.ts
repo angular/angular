@@ -7,7 +7,7 @@
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '../core';
-import {isNgContainer, isNgContent, splitNsName} from '../ml_parser/tags';
+import {isNgContainer, isNgContent, isNgTemplate, splitNsName} from '../ml_parser/tags';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
 import {checkSecurityContext} from './dom_security_schema';
@@ -401,7 +401,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
     const normalizedTag = normalizeTagName(tagName);
     if (normalizedTag.includes('-')) {
-      if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
+      if (
+        isNgContainer(normalizedTag) ||
+        isNgContent(normalizedTag) ||
+        isNgTemplate(normalizedTag)
+      ) {
         return false;
       }
 
@@ -423,7 +427,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
     const normalizedTag = normalizeTagName(tagName);
     if (normalizedTag.includes('-')) {
-      if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
+      if (
+        isNgContainer(normalizedTag) ||
+        isNgContent(normalizedTag) ||
+        isNgTemplate(normalizedTag)
+      ) {
         return true;
       }
 
@@ -469,10 +477,18 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override validateProperty(name: string): {error: boolean; msg?: string} {
-    if (name.toLowerCase().startsWith('on')) {
+    if (name.startsWith(':')) {
+      return {
+        error: true,
+        msg: `Invalid property name '${name}'. Property names cannot start with a colon.`,
+      };
+    }
+    const colonIdx = name.lastIndexOf(':');
+    const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+    if (localName.toLowerCase().startsWith('on')) {
       const msg =
         `Binding to event property '${name}' is disallowed for security reasons, ` +
-        `please use (${name.slice(2)})=...` +
+        `please use (${localName.slice(2)})=...` +
         `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
         ` current module.`;
       return {error: true, msg: msg};
@@ -482,10 +498,18 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override validateAttribute(name: string): {error: boolean; msg?: string} {
-    if (name.toLowerCase().startsWith('on')) {
+    if (name.startsWith(':')) {
+      return {
+        error: true,
+        msg: `Invalid attribute name '${name}'. Attribute names cannot start with a colon.`,
+      };
+    }
+    const colonIdx = name.lastIndexOf(':');
+    const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+    if (localName.toLowerCase().startsWith('on')) {
       const msg =
         `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-        `please use (${name.slice(2)})=...`;
+        `please use (${localName.slice(2)})=...`;
       return {error: true, msg: msg};
     } else {
       return {error: false};

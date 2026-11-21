@@ -204,6 +204,7 @@
     {
       "name": "test-runner",
       "type": "string",
+      "deprecated": "New projects will only be configured with Vitest in a future version.",
       "default": "vitest",
       "enum": [
         "karma",

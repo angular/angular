@@ -198,22 +198,22 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [GreetingComponent],
                 template: `
-        <app-greeting
-          [count]="1"
-          [userName]="'User'"
-          [title]="'Hello'"
-          [name]="'Signal'"
-          [greetingText]="'Hi'"
-          [id]="123"
-          (clicked)="handleClick()"
-          (valueChanged)="handleChange($event)"
-          (submitted)="handleSubmit($event)"
-          (onCancel)="handleCancel()"
-          [(value)]="value"
-          [(isChecked)]="isChecked"
-          [(selectedId)]="selectedId"
-        ></app-greeting>
-      `,
+    <app-greeting
+      [count]="1"
+      [userName]="'User'"
+      [title]="'Hello'"
+      [name]="'Signal'"
+      [greetingText]="'Hi'"
+      [id]="123"
+      (clicked)="handleClick()"
+      (valueChanged)="handleChange($event)"
+      (submitted)="handleSubmit($event)"
+      (onCancel)="handleCancel()"
+      [(value)]="value"
+      [(isChecked)]="isChecked"
+      [(selectedId)]="selectedId"
+    ></app-greeting>
+  `,
               },
             ],
           },

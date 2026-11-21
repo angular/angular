@@ -12,6 +12,7 @@ import {
   AnimationLViewData,
 } from '../animation/interfaces';
 import {allLeavingAnimations} from '../animation/longest_animation';
+import {clearLeavingNodes} from '../animation/utils';
 import {
   queueEnterAnimations,
   addToAnimationQueue,
@@ -33,6 +34,7 @@ import {
   TVIEW,
   TViewType,
 } from './interfaces/view';
+import {unwrapRNode} from './util/view_utils';
 
 /**
  * The entry points of the animation runtime, as called from `node_manipulation.ts` and the
@@ -143,6 +145,7 @@ function runLeaveAnimationsWithCallbackImpl(
   try {
     animationQueue = injector.get(ANIMATION_QUEUE);
   } catch {
+    clearTrackedLeavingNode(lView, tNode);
     return callback(false);
   }
 
@@ -236,17 +239,19 @@ function executeLeaveAnimations(
   // to be safe here.
   const runningAnimations: Promise<unknown>[] = [];
 
-  if (animations && animations.leave) {
-    for (const [index] of nodesWithExitAnimations) {
-      if (!animations.leave.has(index)) continue;
+  if (animations) {
+    if (animations.leave) {
+      for (const [index] of nodesWithExitAnimations) {
+        if (!animations.leave.has(index)) continue;
 
-      const currentAnimationData = animations.leave.get(index)!;
-      for (const animationFn of currentAnimationData.animateFns) {
-        const {promise} = animationFn() as ReturnType<RunLeaveAnimationFn>;
-        runningAnimations.push(promise);
+        const currentAnimationData = animations.leave.get(index)!;
+        for (const animationFn of currentAnimationData.animateFns) {
+          const {promise} = animationFn() as ReturnType<RunLeaveAnimationFn>;
+          runningAnimations.push(promise);
+        }
       }
-      animations.detachedLeaveAnimationFns = undefined;
     }
+    animations.detachedLeaveAnimationFns = undefined;
   }
 
   // Also add nested view animations
@@ -262,15 +267,17 @@ function executeLeaveAnimations(
         runningAnimations.push(prevRunning);
       }
       currentAnimations.running = Promise.allSettled(runningAnimations);
-      runAfterLeaveAnimations(lView!, currentAnimations.running, callback);
+      runAfterLeaveAnimations(lView!, tNode, currentAnimations.running, callback);
     } else {
       Promise.allSettled(runningAnimations).then(() => {
         if (lView) allLeavingAnimations.delete(lView[ID]);
+        clearTrackedLeavingNode(lView, tNode);
         callback(true);
       });
     }
   } else {
     if (lView) allLeavingAnimations.delete(lView[ID]);
+    clearTrackedLeavingNode(lView, tNode);
     callback(false);
   }
 }
@@ -374,8 +381,18 @@ function collectAllViewLeaveAnimations(view: LView, collectedPromises: Promise<u
   }
 }
 
+function clearTrackedLeavingNode(lView: LView | undefined, tNode: TNode): void {
+  if (lView) {
+    const rawSlot = lView[tNode.index];
+    if (rawSlot != null) {
+      clearLeavingNodes(tNode, unwrapRNode(rawSlot) as HTMLElement);
+    }
+  }
+}
+
 function runAfterLeaveAnimations(
   lView: LView,
+  tNode: TNode,
   runningAnimations: Promise<unknown>,
   callback: Function,
 ) {
@@ -388,6 +405,7 @@ function runAfterLeaveAnimations(
       lView[ANIMATIONS]!.running = undefined;
       allLeavingAnimations.delete(lView[ID]);
     }
+    clearTrackedLeavingNode(lView, tNode);
     callback(true);
   });
 }

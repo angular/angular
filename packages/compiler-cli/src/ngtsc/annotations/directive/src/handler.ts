@@ -324,7 +324,6 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       isStructural: analysis.isStructural,
       animationTriggerNames: null,
       isStandalone: analysis.meta.isStandalone,
-      isSignal: analysis.meta.isSignal,
       imports: null,
       foreignImports: null,
       rawImports: null,
@@ -339,8 +338,6 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       assumedToExportProviders: false,
       isExplicitlyDeferred: false,
       deferredBlocks: null,
-      selectorlessEnabled: false,
-      localReferencedSymbols: null,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

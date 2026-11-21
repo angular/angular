@@ -19,13 +19,11 @@ import {RouterTestingHarness} from '@angular/router/testing';
 
 @Component({
   template: 'home',
-  standalone: true,
 })
 class HomeCmp {}
 
 @Component({
   template: 'child',
-  standalone: true,
 })
 class ChildCmp {}
 
@@ -87,7 +85,6 @@ describe('Trailing Slash Integration', () => {
       @Component({
         template: '<a routerLink="/a">link</a>',
         imports: [RouterLink],
-        standalone: true,
       })
       class LinkCmp {}
 

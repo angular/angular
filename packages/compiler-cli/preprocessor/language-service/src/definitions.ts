@@ -9,15 +9,18 @@
 import {TemplateTypeChecker} from './type_checker.js';
 import {getSetup} from './type_checker_setup.js';
 import {HybridCompiler} from '../../src/hybrid_compiler.js';
+import {UrlMetadata} from '../../src/types.js';
 import {TsGoFacade} from './facade.js';
 import {SymbolKind} from './symbols.js';
 import {getTargetAtPosition} from '@angular/language-service/private';
-import {getDirectiveMatchesForAttribute} from './utils.js';
+import {getDirectiveMatchesForAttribute, isWithin} from './utils.js';
 import {
   getTemplateLocationFromTcbLocation,
   positionToOffset,
   offsetToPosition,
 } from './tcb_ls_util.js';
+import {LocationLink} from 'vscode-languageserver';
+import {URI} from 'vscode-uri';
 import {
   PropertyRead,
   TmplAstVariable,
@@ -42,9 +45,20 @@ export class DefinitionBuilder {
     position: {line: number; character: number},
     fileContent: string,
   ): Promise<unknown> {
-    const setup = getSetup(this.hybridCompiler, filePath, position);
+    const setup = await getSetup(this.hybridCompiler, filePath, position);
     if (!setup) {
-      return null;
+      // We were unable to get a template at the given position. If we are in a TS file, instead
+      // attempt to get an Angular definition at the location inside a TS file (examples of this
+      // would be templateUrl or a url in styleUrls).
+      if (filePath.endsWith('.html')) {
+        return null;
+      }
+      return getDefinitionForExpressionAtPosition(
+        filePath,
+        offset,
+        fileContent,
+        this.hybridCompiler,
+      );
     }
     const {parsedTemplate, isHostBinding, hostElement} = setup;
 
@@ -80,12 +94,12 @@ export class DefinitionBuilder {
       templateName = node.name;
     }
 
-    const tcbResult = this.templateTypeChecker.getTcb(filePath, position);
+    const tcbResult = await this.templateTypeChecker.getTcb(filePath, position);
     if (!tcbResult) {
       return null;
     }
 
-    const ngSymbol = this.templateTypeChecker.getSymbolOfNode(filePath, position);
+    const ngSymbol = await this.templateTypeChecker.getSymbolOfNode(filePath, position);
     if (!ngSymbol) {
       return null;
     }
@@ -94,9 +108,7 @@ export class DefinitionBuilder {
     await this.facade.ensureDocument(tcbUri, tcbResult.code);
 
     switch (ngSymbol.kind) {
-      case SymbolKind.Directive:
-      case SymbolKind.SelectorlessComponent:
-      case SymbolKind.SelectorlessDirective: {
+      case SymbolKind.Directive: {
         if (!ngSymbol.tcbLocation) return null;
         const pos = offsetToPosition(tcbResult.code, ngSymbol.tcbLocation.positionInFile);
 
@@ -248,4 +260,67 @@ export async function getDefinition(
 ): Promise<unknown> {
   const builder = new DefinitionBuilder(facade, hybridCompiler, templateTypeChecker);
   return builder.getDefinition(filePath, offset, position, fileContent);
+}
+
+/**
+ * Gets an Angular-specific definition in a TypeScript source file.
+ */
+async function getDefinitionForExpressionAtPosition(
+  fileName: string,
+  position: number,
+  fileContent: string,
+  compiler: HybridCompiler,
+): Promise<LocationLink[] | null> {
+  const fileResult = await compiler.getClassMetadata(fileName);
+  if (!fileResult) {
+    return null;
+  }
+
+  for (const cls of fileResult.classes) {
+    const component = cls.component;
+    if (!component) {
+      continue;
+    }
+
+    let resourceForExpression: UrlMetadata | null = null;
+
+    if (
+      component.templateUrl?.stringLiteralSpan !== undefined &&
+      isWithin(position, component.templateUrl.stringLiteralSpan)
+    ) {
+      resourceForExpression = component.templateUrl;
+    }
+
+    if (resourceForExpression === null && component.styleUrls !== undefined) {
+      for (const style of component.styleUrls) {
+        if (style.stringLiteralSpan !== undefined && isWithin(position, style.stringLiteralSpan)) {
+          resourceForExpression = style;
+          break;
+        }
+      }
+    }
+
+    if (resourceForExpression === null || resourceForExpression.stringLiteralSpan === undefined) {
+      continue;
+    }
+
+    const originSelectionRange = {
+      start: offsetToPosition(fileContent, resourceForExpression.stringLiteralSpan.start + 1),
+      end: offsetToPosition(fileContent, resourceForExpression.stringLiteralSpan.end - 1),
+    };
+    const emptyRange = {
+      start: {line: 0, character: 0},
+      end: {line: 0, character: 0},
+    };
+    return [
+      {
+        originSelectionRange,
+        targetUri: URI.file(resourceForExpression.resolvedPath).toString(),
+        targetRange: emptyRange,
+        targetSelectionRange: emptyRange,
+      },
+    ];
+  }
+
+  return null;
 }

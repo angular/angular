@@ -119,7 +119,7 @@ provideRouter(routes, withRouterConfig({urlUpdateStrategy: 'eager'}));
 
 ### Choose default query parameter handling
 
-`defaultQueryParamsHandling` sets the fallback behavior for `Router.createUrlTree` when the call does not specify `queryParamsHandling`. `'replace'` is the default and swaps out the existing query string. `'merge'` combines the provided values with the current ones, and `'preserve'` keeps the existing query parameters unless you explicitly supply new ones.
+`defaultQueryParamsHandling` sets the fallback behavior for `Router.createUrlTree` when the call does not specify `queryParamsHandling`. `'replace'` is the default and swaps out the existing query string. `'merge'` combines the provided values with the current ones, and `'preserve'` keeps the existing query parameters and ignores any `queryParams` you pass to the call.
 
 ```ts
 provideRouter(routes, withRouterConfig({defaultQueryParamsHandling: 'merge'}));
@@ -556,7 +556,7 @@ export const routes: Routes = [
 ];
 ```
 
-The component receives the extracted parameters through route inputs:
+If you enable [`withComponentInputBinding`](api/router/withComponentInputBinding), the component receives the extracted parameters through route inputs:
 
 ```angular-ts
 import {Component, input, inject, resource} from '@angular/core';
@@ -574,7 +574,7 @@ import {Component, input, inject, resource} from '@angular/core';
   `,
 })
 export class Documentation {
-  // Route parameters are automatically bound to signal inputs
+  // The router sets these inputs from the route parameters
   version = input.required<string>(); // Receives the version parameter
   section = input.required<string>(); // Receives the section parameter
 

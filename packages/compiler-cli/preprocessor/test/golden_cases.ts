@@ -55,7 +55,6 @@ export type GoldenMode = 'standard' | 'optimize';
 
 export interface GoldenPipelineOptions {
   readonly optimize: boolean;
-  readonly enableSelectorless: boolean;
 }
 
 /**
@@ -83,13 +82,12 @@ export function collectGoldenCasesSync(dir: string = resolveGoldenRoot()): strin
 }
 
 /**
- * How to compile `testCase` for `mode`. Two fixtures need something other than the defaults:
+ * How to compile `testCase` for `mode`. One fixture needs something other than the defaults:
  * `duplicate_import_already_present` only reproduces under optimization, so its `golden.md` holds
- * optimized output, and `selectorless` needs the selectorless template parser.
+ * optimized output.
  */
 export function pipelineOptionsFor(testCase: string, mode: GoldenMode): GoldenPipelineOptions {
   return {
     optimize: mode === 'optimize' || testCase === 'duplicate_import_already_present',
-    enableSelectorless: testCase === 'selectorless',
   };
 }

@@ -262,9 +262,7 @@ export function createComponentLView<T>(
  */
 export function getInitialLViewFlagsFromDef(def: ComponentDef<unknown>): LViewFlags {
   let flags = LViewFlags.CheckAlways;
-  if (def.signals) {
-    flags = LViewFlags.SignalView;
-  } else if (def.onPush) {
+  if (def.onPush) {
     flags = LViewFlags.Dirty;
   }
   return flags;

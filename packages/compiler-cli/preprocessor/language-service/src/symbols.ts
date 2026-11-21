@@ -19,6 +19,4 @@ export enum SymbolKind {
   DomBinding,
   Pipe,
   LetDeclaration,
-  SelectorlessComponent,
-  SelectorlessDirective,
 }

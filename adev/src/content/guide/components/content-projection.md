@@ -143,6 +143,9 @@ export class App {}
 The `<ng-content>` placeholder supports the same CSS selectors
 as [component selectors](guide/components/selectors).
 
+IMPORTANT: if using an attribute or class selector, it must be set statically, i.e `class="within"`.
+Dynamic bindings such as `[class.within]="isWithin()"` will not be seen by the `select` selector.
+
 If you include one or more `<ng-content>` placeholders with a `select` attribute and
 one `<ng-content>` placeholder without a `select` attribute, the latter captures all elements that
 did not match a `select` attribute:

@@ -7,6 +7,7 @@
  */
 
 import {BoundTarget, TcbDirectiveMetadata, TypeCheckId} from '@angular/compiler';
+import {ErrorCode} from '../error_code.js';
 import type {
   DiagnosticCategoryLabel,
   ExtendedDiagnosticsOptions,
@@ -24,6 +25,7 @@ import {
   TemplateContext,
 } from './api.js';
 import {factory as deferTriggerMisconfigurationFactory} from './checks/defer_trigger_misconfiguration.js';
+import {factory as interpolatedSignalNotInvokedFactory} from './checks/interpolated_signal_not_invoked.js';
 import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_box.js';
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive.js';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let.js';
@@ -57,10 +59,10 @@ export {
 };
 
 // TODO: Add factories for `nullishCoalescingNotNullable` (NG8102), `optionalChainNotNullable`
-// (NG8107), `interpolatedSignalNotInvoked` (NG8109), `uninvokedTrackFunction` (NG8115), and
-// `uninvokedFunctionInTextInterpolation` (NG8117) when `ts.TypeChecker` integration is available.
+// (NG8107), `uninvokedTrackFunction` (NG8115), and `uninvokedFunctionInTextInterpolation` (NG8117)
+// when `ts.TypeChecker` integration is available.
 export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
-  number,
+  ErrorCode,
   ExtendedTemplateDiagnosticName
 >[] = [
   invalidBananaInBoxFactory,
@@ -69,6 +71,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   missingNgForOfLetFactory,
   missingStructuralDirectiveFactory,
   suffixNotSupportedFactory,
+  interpolatedSignalNotInvokedFactory,
   uninvokedFunctionInEventBindingFactory,
   unusedLetDeclarationFactory,
   skipHydrationNotStaticFactory,
@@ -91,7 +94,7 @@ export function runExtendedDiagnostics(
   filePath: string,
   options?: ExtendedDiagnosticsOptions,
   templateCheckFactories: readonly TemplateCheckFactory<
-    number,
+    ErrorCode,
     ExtendedTemplateDiagnosticName
   >[] = ALL_DIAGNOSTIC_FACTORIES,
   strictTemplates: boolean = true,

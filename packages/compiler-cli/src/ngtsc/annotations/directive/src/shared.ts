@@ -398,15 +398,6 @@ export function extractDirectiveMetadata(
       ];
     }
   }
-  let isSignal = false;
-  if (directive.has('signals')) {
-    const expr = directive.get('signals')!;
-    const resolved = evaluator.evaluate(expr);
-    if (typeof resolved !== 'boolean') {
-      throw createValueHasWrongTypeError(expr, resolved, `signals flag must be a boolean`);
-    }
-    isSignal = resolved;
-  }
 
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
@@ -465,7 +456,6 @@ export function extractDirectiveMetadata(
     exportAs,
     providers,
     isStandalone,
-    isSignal,
     hostDirectives:
       hostDirectives?.map((hostDir) => toHostDirectiveMetadata(hostDir, sourceFile, refEmitter)) ||
       null,
@@ -697,7 +687,24 @@ function extractHostBindings(
         // through `this` so that further down the line it can't be confused for a literal value
         // (e.g. if there's a property called `true`). There is no size penalty, because all
         // values (except literals) are converted to `ctx.propName` eventually.
-        bindings.properties[hostPropertyName] = getSafePropertyAccessString('this', member.name);
+        const hostPropertyValue = getSafePropertyAccessString('this', member.name);
+        const errors = verifyHostBindings(
+          {
+            attributes: {},
+            listeners: {},
+            properties: {[hostPropertyName]: hostPropertyValue},
+            specialAttributes: {},
+          },
+          createSourceSpan(decorator.node),
+        );
+        if (errors.length > 0) {
+          throw new FatalDiagnosticError(
+            ErrorCode.HOST_BINDING_PARSE_ERROR,
+            decorator.node,
+            errors.map((error: ParseError) => error.msg).join('\n'),
+          );
+        }
+        bindings.properties[hostPropertyName] = hostPropertyValue;
       });
     },
   );

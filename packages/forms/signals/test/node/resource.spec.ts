@@ -441,6 +441,35 @@ describe('resources', () => {
     expect(usernameForm().valid()).toBe(false);
   });
 
+  it('should cancel async HTTP validation when its field is removed', async () => {
+    const model = signal([{username: 'alice'}]);
+    const f = form(
+      model,
+      (p) => {
+        applyEach(p, (item) => {
+          required(item.username);
+          validateHttp(item.username, {
+            request: ({value}) => `/api/check?username=${value()}`,
+            onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+            onError: () => null,
+          });
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    const request = backend.expectOne('/api/check?username=alice');
+    expect(f[0].username().pending()).toBe(true);
+    expect(request.cancelled).toBe(false);
+
+    model.set([]);
+    await appRef.whenStable();
+
+    expect(request.cancelled).toBe(true);
+    backend.verify();
+  });
+
   describe('reloadValidation', () => {
     it('should trigger a reload of async http validation', async () => {
       const usernameForm = form(

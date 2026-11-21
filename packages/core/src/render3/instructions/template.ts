@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
@@ -401,6 +402,16 @@ function locateOrCreateContainerAnchorImpl(
   if (ngDevMode) {
     validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
     markRNodeAsClaimedByHydration(comment);
+  }
+
+  // `validateMatchingNode` above only runs in dev mode. Without this check,
+  // production throws a raw TypeError when the caller uses the missing comment.
+  if (comment == null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.HYDRATION_MISSING_NODE,
+      ngDevMode &&
+        'During hydration Angular expected a comment node at this location, but no matching DOM node was found. This usually means the client-rendered DOM no longer matches the server-rendered HTML.',
+    );
   }
 
   return comment;

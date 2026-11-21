@@ -14,6 +14,8 @@ import {
   Component,
   Injectable,
   PLATFORM_ID,
+  ɵIS_TESTING as IS_TESTING,
+  ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -171,6 +173,56 @@ describe('provideClientHydration', () => {
       expect(() => {
         provideClientHydration(withIncrementalHydration(), withNoIncrementalHydration());
       }).toThrowError(/Configuration error: found both withIncrementalHydration/);
+    });
+  });
+
+  describe('in TestBed', () => {
+    beforeEach(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+
+    it('should not log NG0505 warning when provideClientHydration is used in TestBed', () => {
+      const consoleSpy = spyOn(console, 'warn');
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [provideClientHydration()],
+      });
+      TestBed.createComponent(SomeComponent);
+      expect(consoleSpy).not.toHaveBeenCalledWith(
+        jasmine.stringMatching('NG0505: Angular hydration was requested on the client'),
+      );
+    });
+
+    it('should not log NG0508 warning when defer block with hydrate triggers is used in TestBed without hydration providers', () => {
+      resetIncrementalHydrationEnabledWarnedForTests();
+      @Component({
+        template: `
+          @defer (hydrate on idle) {
+            <p>Defer hydrated</p>
+          }
+        `,
+      })
+      class DeferHydrateComponent {}
+
+      const consoleSpy = spyOn(console, 'warn');
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [DeferHydrateComponent],
+      });
+      TestBed.createComponent(DeferHydrateComponent);
+      expect(consoleSpy).not.toHaveBeenCalledWith(jasmine.stringMatching('NG0508'));
+    });
+
+    it('should log NG0505 warning if IS_TESTING is explicitly false and no serialized info is present', () => {
+      const consoleSpy = spyOn(console, 'warn');
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [provideClientHydration(), {provide: IS_TESTING, useValue: false}],
+      });
+      TestBed.createComponent(SomeComponent);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        jasmine.stringMatching('NG0505: Angular hydration was requested on the client'),
+      );
     });
   });
 });

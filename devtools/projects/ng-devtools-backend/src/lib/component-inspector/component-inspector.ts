@@ -8,15 +8,13 @@
 
 import {ElementPosition} from '../../../../protocol';
 
-import {
-  findDirectiveAndHost,
-  findNodeInForest,
-  getDirectiveName,
-} from '../directive-forest/component-tree/component-tree';
+import {findNodeInForest} from '../directive-forest';
 import {getDirectiveForestManager} from '../directive-forest/manager';
-import {Highlight, inspectElementHighlightTemplate} from '../shared/highlighter/highlights';
+import {findDirectiveAndHost, getDirectiveName} from '../directive-forest/utils/directive';
+import {inspectElementHighlightTemplate} from '../shared/highlighter/templates';
 import {highlightElement} from '../shared/highlighter';
 import {ComponentTreeNode} from '../shared/interfaces';
+import {Highlight} from '../shared/highlighter/types';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;

@@ -1,14 +1,13 @@
 use crate::fs::OverlayFileSystem;
 use crate::query::keys::QueryKey;
 use crate::query::{FileId, QueryContext};
-use crate::resource_loader::ResourceResolverFs;
 use crate::resource_registry::ResourceRegistry;
 use crate::tsconfig_resolution;
 use crate::utils::{create_resolver_with_fs, is_compilation_root, is_ts_file, is_ts_source};
 use crate::{
     AnalysisResult, AnalyzerOptions, CompilationChunk, FileData, FileInvalidation, FileUpdate,
 };
-use futures::channel::mpsc;
+use futures::channel::{mpsc, oneshot};
 use futures::prelude::*;
 use futures::stream::FuturesUnordered;
 use futures::task::{Spawn, SpawnExt};
@@ -22,6 +21,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 use std::sync::{Arc, Mutex, RwLock};
 use std::task::Waker;
+use tracing::Instrument;
 
 #[cfg(not(target_arch = "wasm32"))]
 static GLOBAL_POOL: OnceLock<futures::executor::ThreadPool> = OnceLock::new();
@@ -31,6 +31,8 @@ pub fn get_global_pool() -> &'static futures::executor::ThreadPool {
     GLOBAL_POOL.get_or_init(|| {
         futures::executor::ThreadPool::builder()
             .pool_size(std::thread::available_parallelism().unwrap().get())
+            .name_prefix("ng-analyze-worker-")
+            .after_start(crate::perf::set_pool_thread_index)
             .create()
             .expect("Failed to create Global ThreadPool")
     })
@@ -116,7 +118,7 @@ use napi_derive::napi;
 pub struct Analyzer {
     resource_registry: Arc<ResourceRegistry>,
     fs: OverlayFileSystem,
-    engine: Arc<crate::query::QueryEngine<OverlayFileSystem>>,
+    engine: Arc<crate::query::QueryEngine>,
     #[cfg(not(target_arch = "wasm32"))]
     active_handles: Arc<RwLock<Vec<futures::future::RemoteHandle<()>>>>,
 
@@ -128,6 +130,13 @@ pub struct Analyzer {
     roots_from_tsconfig: AtomicBool,
     entrypoints: Arc<RwLock<Vec<PathBuf>>>,
     current_cancel_token: RwLock<Option<CancellationToken>>,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum ResolvedEntryPoint {
+    Path(PathBuf),
+    Virtual(String),
 }
 
 /// Every setting an [`Analyzer`] is built from, after merging explicit [`AnalyzerOptions`] over
@@ -139,11 +148,14 @@ struct EffectiveConfig {
     tsconfig_path: Option<PathBuf>,
     /// Explicit `entry_points`, which replace the tsconfig's root files. Not yet canonicalized
     /// (that needs the configured `fs`).
-    entry_points: Option<Vec<PathBuf>>,
+    entry_points: Option<Vec<ResolvedEntryPoint>>,
     /// The tsconfig's file list (root files and `.d.ts` files), empty without a tsconfig. Its
     /// `.d.ts` files are used even when `entry_points` replace its roots.
     tsconfig_files: Vec<PathBuf>,
     r3_symbols_file: Option<PathBuf>,
+    /// `angular_core_compilation` > `angularCompilerOptions._isAngularCoreCompilation` > `true`
+    /// with an explicit `r3_symbols_file` > none (detected from `r3_symbols.ts` by the engine).
+    angular_core_compilation: Option<bool>,
     /// `default_host.preserve_symlinks` > `compilerOptions.preserveSymlinks` > `false`.
     preserve_symlinks: bool,
     /// `default_host.root_dirs` > `compilerOptions.rootDirs` > `[tsconfig dir]` > none.
@@ -164,14 +176,24 @@ struct EffectiveConfig {
     implicit_standalone: bool,
     emit_declaration_only: bool,
     experimental_local_compilation: bool,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 impl EffectiveConfig {
     fn resolve(options: AnalyzerOptions, fs: &OverlayFileSystem) -> Result<Self, String> {
+        Self::resolve_with_entry_refs(options, None, fs)
+    }
+
+    fn resolve_with_entry_refs(
+        options: AnalyzerOptions,
+        entry_refs: Option<Vec<crate::host::ModuleRef>>,
+        fs: &OverlayFileSystem,
+    ) -> Result<Self, String> {
         let tsconfig_path = options.tsconfig_path.map(PathBuf::from);
         let resolved = match &tsconfig_path {
             Some(path) => Some(
-                tsconfig_resolution::load_and_resolve_tsconfig(path, fs)
+                tracing::info_span!("ResolveTsconfig")
+                    .in_scope(|| tsconfig_resolution::load_and_resolve_tsconfig(path, fs))
                     .map_err(|e| e.to_string())?,
             ),
             None => None,
@@ -193,7 +215,11 @@ impl EffectiveConfig {
             }
         };
         let absolutize_all = |paths: Vec<String>| -> Result<Vec<PathBuf>, String> {
-            paths.into_iter().map(PathBuf::from).map(absolutize).collect()
+            paths
+                .into_iter()
+                .map(PathBuf::from)
+                .map(absolutize)
+                .collect()
         };
 
         // A tsconfig-provided flag, or its default without a tsconfig.
@@ -231,11 +257,25 @@ impl EffectiveConfig {
         let emit_declaration_only = tsconfig_flag(|r| r.emit_declaration_only, false);
         let experimental_local_compilation =
             tsconfig_flag(|r| r.experimental_local_compilation, false);
+        let angular_core_compilation = options
+            .angular_core_compilation
+            .or_else(|| {
+                resolved
+                    .as_ref()
+                    .and_then(|r| r.is_angular_core_compilation)
+            })
+            .or_else(|| options.r3_symbols_file.is_some().then_some(true));
 
-        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name) = match resolved {
-            Some(r) => (r.files, r.compiler_options.root_dirs, r.workspace_name),
-            None => (Vec::new(), None, None),
-        };
+        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name, merged_compiler_options) =
+            match resolved {
+                Some(r) => (
+                    r.files,
+                    r.compiler_options.root_dirs,
+                    r.workspace_name,
+                    r.merged_compiler_options,
+                ),
+                None => (Vec::new(), None, None, serde_json::Map::new()),
+            };
 
         let mut merge_root_dirs = match default_host.root_dirs {
             Some(dirs) => absolutize_all(dirs)?,
@@ -254,7 +294,33 @@ impl EffectiveConfig {
             None => merge_root_dirs.clone(),
         };
 
-        let entry_points = options.entry_points.map(absolutize_all).transpose()?;
+        let entry_points = match entry_refs {
+            Some(refs) => {
+                let mut out = Vec::with_capacity(refs.len());
+                for entry in refs {
+                    match entry.into_parts() {
+                        (id, crate::host::IdKind::Path) => {
+                            let abs = absolutize(PathBuf::from(id))?;
+                            out.push(ResolvedEntryPoint::Path(abs));
+                        }
+                        (id, crate::host::IdKind::Virtual) => {
+                            out.push(ResolvedEntryPoint::Virtual(id));
+                        }
+                    }
+                }
+                Some(out)
+            }
+            None => match options.entry_points {
+                Some(paths) => {
+                    let mut out = Vec::with_capacity(paths.len());
+                    for path in absolutize_all(paths)? {
+                        out.push(ResolvedEntryPoint::Path(path));
+                    }
+                    Some(out)
+                }
+                None => None,
+            },
+        };
 
         Ok(Self {
             entry_points,
@@ -263,6 +329,7 @@ impl EffectiveConfig {
                 .r3_symbols_file
                 .map(|path| absolutize(PathBuf::from(path)))
                 .transpose()?,
+            angular_core_compilation,
             preserve_symlinks,
             merge_root_dirs,
             node_modules_path_override: default_host
@@ -281,6 +348,7 @@ impl EffectiveConfig {
             emit_declaration_only,
             experimental_local_compilation,
             tsconfig_path,
+            merged_compiler_options,
         })
     }
 }
@@ -297,6 +365,18 @@ impl Analyzer {
         options: AnalyzerOptions,
         physical: std::sync::Arc<dyn crate::physical_fs::PhysicalFs>,
     ) -> Result<Self, String> {
+        Self::new_core_with_physical_fs_and_entry_refs(options, None, physical)
+    }
+
+    /// Like [`Self::new_core_with_physical_fs`], accepting [`crate::host::ModuleRef`] entry points
+    /// so [`crate::host::IdKind::Virtual`] roots bypass path validation while path roots still
+    /// resolve against `tsconfig_path`.
+    pub fn new_core_with_physical_fs_and_entry_refs(
+        options: AnalyzerOptions,
+        entry_refs: Option<Vec<crate::host::ModuleRef>>,
+        physical: std::sync::Arc<dyn crate::physical_fs::PhysicalFs>,
+    ) -> Result<Self, String> {
+        let _span = tracing::info_span!("Initialize").entered();
         let allowed = options
             .allowed_sources
             .clone()
@@ -309,7 +389,10 @@ impl Analyzer {
             }
         }
 
-        Self::new_core_with_fs(options, fs)
+        match entry_refs {
+            Some(refs) => Self::new_core_with_fs_and_entry_refs(options, Some(refs), fs),
+            None => Self::new_core_with_fs(options, fs),
+        }
     }
 
     pub fn new_core_with_fs(
@@ -317,7 +400,16 @@ impl Analyzer {
         fs: OverlayFileSystem,
     ) -> Result<Self, String> {
         let config = EffectiveConfig::resolve(options, &fs)?;
-        Ok(Self::construct(config, fs))
+        Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
+    }
+
+    pub fn new_core_with_fs_and_entry_refs(
+        options: AnalyzerOptions,
+        entry_refs: Option<Vec<crate::host::ModuleRef>>,
+        fs: OverlayFileSystem,
+    ) -> Result<Self, String> {
+        let config = EffectiveConfig::resolve_with_entry_refs(options, entry_refs, &fs)?;
+        Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
     }
 
     /// Build the analyzer from fully merged settings. Order matters: the symlink mode and the
@@ -327,12 +419,16 @@ impl Analyzer {
         fs.set_root_dirs(config.merge_root_dirs);
 
         let roots_from_tsconfig = config.entry_points.is_none();
-        let (entrypoints, dts_files) = match config.entry_points {
-            Some(entry_points) => (
-                compilation_roots(entry_points, &fs),
-                tsconfig_dts_files(config.tsconfig_files),
-            ),
-            None => partition_tsconfig_files(config.tsconfig_files, &fs),
+        let (entrypoints, virtual_entry_ids, dts_files) = match config.entry_points {
+            Some(entry_points) => {
+                let (roots, virtual_ids) = compilation_roots(entry_points, &fs);
+                let dts = tsconfig_dts_files(config.tsconfig_files);
+                (roots, virtual_ids, dts)
+            }
+            None => {
+                let (roots, dts) = partition_tsconfig_files(config.tsconfig_files, &fs);
+                (roots, Vec::new(), dts)
+            }
         };
         let r3_symbols_file = config
             .r3_symbols_file
@@ -365,6 +461,7 @@ impl Analyzer {
             entrypoints_lock.clone(),
             reference_strategy,
             r3_symbols_file,
+            config.angular_core_compilation,
             config.generate_extra_imports_in_local_mode,
             config.compile_non_exported_classes,
             config.enable_hmr,
@@ -376,6 +473,12 @@ impl Analyzer {
             config.experimental_local_compilation,
         );
         *engine.tsconfig_dts_files.write().unwrap() = dts_files;
+        for id in virtual_entry_ids {
+            engine.intern_resolved(
+                &crate::host::ModuleId::from(id.as_str()),
+                crate::host::IdKind::Virtual,
+            );
+        }
 
         Analyzer {
             resource_registry,
@@ -387,7 +490,17 @@ impl Analyzer {
             roots_from_tsconfig: AtomicBool::new(roots_from_tsconfig),
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
+            merged_compiler_options: config.merged_compiler_options,
         }
+    }
+
+    pub fn merged_compiler_options(&self) -> &serde_json::Map<String, serde_json::Value> {
+        &self.merged_compiler_options
+    }
+
+    /// Path of an interned file, for perf reports.
+    pub fn file_path(&self, id: crate::query::FileId) -> Option<String> {
+        self.engine.file_path(id)
     }
 
     pub fn analyze_core<S: Spawner>(
@@ -519,21 +632,67 @@ impl Analyzer {
         self.push_evicted_paths(evicted, invalidated_paths);
     }
 
-    /// Append the wire path of every file whose cached query was evicted.
+    /// Append the wire path or virtual module ID of every file whose cached query was evicted.
     fn push_evicted_paths(&self, evicted: Vec<QueryKey>, invalidated_paths: &mut Vec<String>) {
         let mut evicted: Vec<String> = evicted
             .into_iter()
             .filter_map(|key| key.file_id())
-            .map(|file_id| crate::fs::path_to_string(self.engine.lookup_path(file_id)))
+            .map(|file_id| match self.engine.lookup_module(file_id) {
+                (id, crate::host::IdKind::Virtual) => id.as_str().to_owned(),
+                (_, crate::host::IdKind::Path) => {
+                    crate::fs::path_to_string(self.engine.lookup_path(file_id))
+                }
+            })
             .collect();
         evicted.sort_unstable();
         evicted.dedup();
         invalidated_paths.extend(evicted);
     }
 
+    /// Whether the configured [`crate::host::AnalysisHost`] answers every request synchronously.
+    pub fn is_synchronous_host(&self) -> bool {
+        self.engine.is_synchronous_host()
+    }
+
+    /// Fail with [`crate::host::SYNC_HOST_REQUIRED_MSG`] unless the host is synchronous.
+    ///
+    /// Fallible entry points call this before reaching a `*_blocking` engine API, which panics on
+    /// an asynchronous host instead of returning an error.
+    pub fn ensure_synchronous_host(&self) -> Result<(), String> {
+        if self.is_synchronous_host() {
+            Ok(())
+        } else {
+            Err(crate::host::SYNC_HOST_REQUIRED_MSG.to_string())
+        }
+    }
+
+    /// Read `file_path` from the analyzer's filesystem.
+    ///
+    /// This never calls the host, but it is still gated on a synchronous host: under an
+    /// asynchronous host, module text comes from [`crate::host::AnalysisHost::load`] and the
+    /// filesystem is not authoritative, so it could return text that differs from what was
+    /// analyzed or miss virtual modules entirely.
+    ///
+    /// TODO: add pump-driven equivalents of this and [`Self::read_resource_checked`] that go
+    /// through the host (as `request_metadata_core` does for metadata) so asynchronous hosts can
+    /// serve file content and resources.
     pub fn get_file_content_core(&self, file_path: String) -> Result<String, String> {
+        self.ensure_synchronous_host()?;
         let path = PathBuf::from(&file_path);
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
+    }
+
+    /// Fallible form of [`Self::get_metadata_for_file`]: an asynchronous host is reported as an
+    /// `Err` instead of a panic.
+    pub fn get_metadata_for_file_checked(
+        &self,
+        file_path: String,
+    ) -> Result<Option<AnalysisResult>, String> {
+        self.ensure_synchronous_host()?;
+        let Some(file_id) = self.resolve_metadata_target(crate::ModuleRef::Path(file_path)) else {
+            return Ok(None);
+        };
+        Ok(self.engine.get_metadata_for_file_id_blocking(file_id))
     }
 
     /// Resolve `url` the way a component's `templateUrl`/`styleUrls` are resolved from
@@ -541,26 +700,42 @@ impl Analyzer {
     /// after parsing a template (`<link rel="stylesheet">`), which ngtsc also resolves from the
     /// component file rather than from the template.
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L883
+    ///
+    /// An asynchronous host is reported as an `Err` instead of a panic.
+    pub fn read_resource_checked(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Result<Option<crate::ResolvedResource>, String> {
+        self.ensure_synchronous_host()?;
+        Ok(self.engine.read_resource_blocking(
+            &containing_file,
+            &url,
+            crate::host::ResourceKind::Style,
+        ))
+    }
+
+    /// Panicking form of [`Self::read_resource_checked`], for callers with no error channel.
     pub fn read_resource_core(
         &self,
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
-        let resource_resolver =
-            crate::ResourceResolver::new(&self.fs, self.engine.resolver.as_ref());
-        let resource = resource_resolver
-            .load_resource(Path::new(&containing_file), &url)
-            .ok()?;
-        Some(crate::ResolvedResource {
-            resolved_path: crate::fs::path_to_string(resource.resolved_path),
-            content: resource.content,
-        })
+        self.read_resource_checked(containing_file, url)
+            .unwrap_or_else(|msg| panic!("{msg}"))
     }
 
     pub fn canonical_paths_core(&self, paths: Vec<String>) -> Vec<String> {
         paths
             .into_iter()
-            .map(|path| crate::fs::path_to_string(self.canonical_host_path(PathBuf::from(path))))
+            .map(|path| {
+                if self.engine.get_virtual_if_interned(&path).is_some()
+                    || !self.engine.is_synchronous_host()
+                {
+                    return path;
+                }
+                crate::fs::path_to_string(self.canonical_host_path(PathBuf::from(path)))
+            })
             .collect()
     }
 
@@ -577,7 +752,22 @@ impl Analyzer {
         }
     }
 
-    /// Apply content updates and return every path whose cached results are now stale.
+    fn resolve_update_kind(
+        &self,
+        id: &str,
+        explicit: Option<crate::host::IdKind>,
+    ) -> crate::host::IdKind {
+        explicit.unwrap_or_else(|| {
+            if self.engine.get_virtual_if_interned(id).is_some() {
+                crate::host::IdKind::Virtual
+            } else {
+                crate::host::IdKind::Path
+            }
+        })
+    }
+
+    /// Apply content updates and return every path or virtual module ID whose cached results are
+    /// now stale.
     pub fn update_file_content_core(
         &self,
         updates: Vec<FileUpdate>,
@@ -588,6 +778,26 @@ impl Analyzer {
         let mut config_changed = false;
 
         for update in updates {
+            let kind = self.resolve_update_kind(&update.file_path, update.id_kind);
+            if kind == crate::host::IdKind::Virtual {
+                let path = PathBuf::from(&update.file_path);
+                let existed = self.engine.get_virtual_if_interned(&update.file_path).is_some()
+                    && (!self.engine.is_synchronous_host() || self.fs.metadata(&path).is_ok());
+                files_created |= !existed;
+                let file_id = self.engine.intern_resolved(
+                    &crate::host::ModuleId::from(update.file_path.as_str()),
+                    crate::host::IdKind::Virtual,
+                );
+                if self.engine.is_synchronous_host() {
+                    self.fs.upsert_file(path.clone(), update.content.clone());
+                }
+                paths_to_invalidate.push(update.file_path.clone());
+                self.handle_template_change(&path, &mut paths_to_invalidate);
+                let evicted = self.engine.invalidate_file_id(file_id);
+                self.push_evicted_paths(evicted, &mut paths_to_invalidate);
+                continue;
+            }
+
             let raw_path = PathBuf::from(&update.file_path);
             let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
             files_created |= self.fs.metadata(&path).is_err();
@@ -603,7 +813,8 @@ impl Analyzer {
         self.finalize_file_updates(paths_to_invalidate, files_created, config_changed)
     }
 
-    /// Drop the virtual overlay of each changed or deleted file and return every stale TS path.
+    /// Drop the virtual overlay of each changed or deleted file and return every stale TS path or
+    /// virtual module ID.
     pub fn invalidate_files_core(
         &self,
         updates: Vec<FileInvalidation>,
@@ -614,13 +825,42 @@ impl Analyzer {
         let mut config_changed = false;
 
         for update in updates {
-            let raw_path = PathBuf::from(&update.file_path);
-            let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
-            self.fs.remove_virtual_file(&path);
             files_created_or_deleted |= matches!(
                 update.update_type,
                 crate::FileUpdateType::Created | crate::FileUpdateType::Deleted
             );
+            let kind = self.resolve_update_kind(&update.file_path, update.id_kind);
+            if kind == crate::host::IdKind::Virtual {
+                let path = PathBuf::from(&update.file_path);
+                self.fs.remove_virtual_file(&path);
+                self.resource_registry.unregister_ts_file(&path);
+                ts_paths_to_invalidate.push(update.file_path.clone());
+                let should_intern = update.id_kind == Some(crate::host::IdKind::Virtual)
+                    && (!matches!(update.update_type, crate::FileUpdateType::Deleted)
+                        || self.engine.has_exact_interned(&update.file_path));
+                let file_id = if should_intern {
+                    Some(self.engine.intern_resolved(
+                        &crate::host::ModuleId::from(update.file_path.as_str()),
+                        crate::host::IdKind::Virtual,
+                    ))
+                } else {
+                    self.engine.get_virtual_if_interned(&update.file_path)
+                };
+                if let Some(file_id) = file_id {
+                    if matches!(update.update_type, crate::FileUpdateType::Deleted) {
+                        let evicted = self.engine.invalidate_deleted_file_id(file_id);
+                        self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
+                    }
+                    let evicted = self.engine.invalidate_file_id(file_id);
+                    self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
+                }
+                self.handle_template_change(&path, &mut ts_paths_to_invalidate);
+                continue;
+            }
+
+            let raw_path = PathBuf::from(&update.file_path);
+            let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
+            self.fs.remove_virtual_file(&path);
             config_changed |= path
                 .extension()
                 .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
@@ -628,6 +868,10 @@ impl Analyzer {
             if is_ts_file(&path) {
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(path.to_string_lossy().into_owned());
+            }
+            if matches!(update.update_type, crate::FileUpdateType::Deleted) {
+                let evicted = self.engine.invalidate_deleted_file(&path);
+                self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
             }
             self.invalidate_changed_path(&path, &mut ts_paths_to_invalidate);
         }
@@ -684,30 +928,75 @@ impl Analyzer {
     /// Setting the same roots again evicts nothing. From then on the roots are no longer re-read
     /// from the tsconfig.
     pub fn set_entry_points_core(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
-        let paths: Vec<PathBuf> = entry_points.into_iter().map(PathBuf::from).collect();
-        if let Some(relative) = paths.iter().find(|p| !crate::fs::is_absolute_path(p)) {
-            return Err(format!(
-                "Entry points must be absolute paths, got '{}'",
-                relative.display()
-            ));
+        let refs = entry_points
+            .into_iter()
+            .map(crate::host::ModuleRef::Path)
+            .collect();
+        self.set_entry_points_refs_core(refs)
+    }
+
+    /// [`Self::set_entry_points_core`] accepting [`crate::host::ModuleRef`] entries.
+    ///
+    /// [`crate::host::IdKind::Path`] entries must be absolute paths and are filtered to compilation
+    /// roots; [`crate::host::IdKind::Virtual`] entries are interned verbatim without path checks.
+    pub fn set_entry_points_refs_core(
+        &self,
+        entry_points: Vec<crate::host::ModuleRef>,
+    ) -> Result<Vec<String>, String> {
+        let mut validated = Vec::with_capacity(entry_points.len());
+        for entry in entry_points {
+            let (id, kind) = entry.into_parts();
+            if kind == crate::host::IdKind::Path && !crate::fs::is_absolute_path(Path::new(&id)) {
+                return Err(format!("Entry points must be absolute paths, got '{id}'"));
+            }
+            validated.push((id, kind));
         }
 
         self.cancel_current_analysis();
         self.roots_from_tsconfig.store(false, Ordering::SeqCst);
         let mut invalidated_paths = Vec::new();
-        let roots = compilation_roots(paths, &self.fs);
+        let mut roots = Vec::new();
+        for (id, kind) in validated {
+            match kind {
+                crate::host::IdKind::Path => {
+                    let path = PathBuf::from(id);
+                    if is_compilation_root(&path) {
+                        roots.push(canonical_root(&path, &self.fs));
+                    }
+                }
+                crate::host::IdKind::Virtual => {
+                    self.engine.intern_resolved(
+                        &crate::host::ModuleId::from(id.as_str()),
+                        crate::host::IdKind::Virtual,
+                    );
+                    roots.push(PathBuf::from(id));
+                }
+            }
+        }
         self.replace_program_files(Some(roots), None, &mut invalidated_paths);
         Ok(dedup_preserving_order(invalidated_paths))
     }
 
+    /// Flush every cached module resolution and return every module ID whose cached analysis was
+    /// evicted.
+    pub fn clear_resolution_cache_core(&self) -> Result<Vec<String>, String> {
+        self.cancel_current_analysis();
+        let mut invalidated_paths = Vec::new();
+        let evicted = self.engine.clear_resolution_cache();
+        self.push_evicted_paths(evicted, &mut invalidated_paths);
+        Ok(dedup_preserving_order(invalidated_paths))
+    }
+
     /// Install the given compilation roots and the tsconfig's `.d.ts` files (`None` keeps the
-    /// current list), evicting every query that read the previous lists when either differs.
+    /// current list), evicting every query that read the previous lists when either differs, and
+    /// every query that read which root is `r3_symbols.ts` when that changes too.
     fn replace_program_files(
         &self,
         roots: Option<Vec<PathBuf>>,
         dts_files: Option<Vec<PathBuf>>,
         invalidated_paths: &mut Vec<String>,
     ) {
+        let r3_symbols_file = self.engine.r3_symbols_file();
         let roots_changed = roots.is_some_and(|roots| replace_if_changed(&self.entrypoints, roots));
         let dts_files_changed = dts_files.is_some_and(|dts_files| {
             replace_if_changed(&self.engine.tsconfig_dts_files, dts_files)
@@ -715,8 +1004,60 @@ impl Analyzer {
         if !roots_changed && !dts_files_changed {
             return;
         }
-        let evicted = self.engine.invalidate_roots();
+        let mut evicted = self.engine.invalidate_roots();
+        if self.engine.r3_symbols_file() != r3_symbols_file {
+            evicted.extend(self.engine.invalidate_r3_symbols_root());
+        }
         self.push_evicted_paths(evicted, invalidated_paths);
+    }
+
+    fn resolve_metadata_target(&self, module_ref: crate::host::ModuleRef) -> Option<FileId> {
+        let (id, id_kind) = module_ref.into_parts();
+        if id_kind == crate::host::IdKind::Path {
+            if let Some(file_id) = self.engine.get_virtual_if_interned(&id) {
+                return Some(file_id);
+            }
+            let path = PathBuf::from(&id);
+            // Non-TS files (templates, stylesheets, JSON) and missing files return `None`, like
+            // ngtsc's `TraitCompiler.recordFor`, rather than failing (the language service asks
+            // about every open document, and a panic over N-API aborts the host) or degrading to
+            // an empty `AnalysisResult` indistinguishable from a classless file.
+            if !is_ts_file(&path) {
+                return None;
+            }
+            if self.engine.is_synchronous_host()
+                && !self.fs.metadata(&path).is_ok_and(|m| m.is_file())
+            {
+                return None;
+            }
+            return Some(self.engine.intern_module(&id, crate::host::IdKind::Path));
+        }
+        Some(self.engine.intern_resolved(
+            &crate::host::ModuleId::from(id.as_str()),
+            crate::host::IdKind::Virtual,
+        ))
+    }
+
+    /// Spawn a wire-metadata query for `module_ref` onto `spawner` and return a oneshot receiver
+    /// for its outcome.
+    pub fn request_metadata_core<S: Spawner>(
+        &self,
+        module_ref: crate::host::ModuleRef,
+        spawner: S,
+    ) -> Result<oneshot::Receiver<Result<Option<AnalysisResult>, String>>, String> {
+        let (tx, rx) = oneshot::channel();
+        let Some(file_id) = self.resolve_metadata_target(module_ref) else {
+            let _ = tx.send(Ok(None));
+            return Ok(rx);
+        };
+        let engine = self.engine.clone();
+        spawner
+            .spawn(async move {
+                let res = engine.get_metadata_for_file_id(file_id).await;
+                let _ = tx.send(Ok(res));
+            })
+            .map_err(|e| e.to_string())?;
+        Ok(rx)
     }
 }
 
@@ -732,9 +1073,9 @@ fn replace_if_changed<T: PartialEq>(lock: &RwLock<T>, value: T) -> bool {
 
 /// Split the tsconfig's file list into the compilation roots, canonicalized through `fs`, and the
 /// `.d.ts` files it also lists, only normalized structurally. Bazel targets can list thousands of
-/// transitive `.d.ts` files, so they never cost a canonicalize call here: the ambient module index
-/// canonicalizes them lazily, once an import actually needs it (`QueryKey::AmbientModuleFiles`).
-/// Other files are filtered out.
+/// transitive `.d.ts` files, so they never cost a canonicalize call here: the engine canonicalizes
+/// them lazily, as the ambient module index and ambient global lookups first read them
+/// (`QueryEngine::tsconfig_dts_file_id`). Other files are filtered out.
 fn partition_tsconfig_files(
     files: Vec<PathBuf>,
     fs: &OverlayFileSystem,
@@ -751,14 +1092,28 @@ fn partition_tsconfig_files(
     (roots, dts_files)
 }
 
-/// The compilation roots among `files`, canonicalized through `fs`, for roots that replace the
-/// tsconfig's.
-fn compilation_roots(files: Vec<PathBuf>, fs: &OverlayFileSystem) -> Vec<PathBuf> {
-    files
-        .into_iter()
-        .filter(|path| is_compilation_root(path))
-        .map(|path| canonical_root(&path, fs))
-        .collect()
+/// The compilation roots among `entries`, canonicalizing [`ResolvedEntryPoint::Path`] entries
+/// through `fs` and passing [`ResolvedEntryPoint::Virtual`] IDs through verbatim.
+fn compilation_roots(
+    entries: Vec<ResolvedEntryPoint>,
+    fs: &OverlayFileSystem,
+) -> (Vec<PathBuf>, Vec<String>) {
+    let mut roots = Vec::new();
+    let mut virtual_ids = Vec::new();
+    for entry in entries {
+        match entry {
+            ResolvedEntryPoint::Path(path) => {
+                if is_compilation_root(&path) {
+                    roots.push(canonical_root(&path, fs));
+                }
+            }
+            ResolvedEntryPoint::Virtual(id) => {
+                roots.push(PathBuf::from(&id));
+                virtual_ids.push(id);
+            }
+        }
+    }
+    (roots, virtual_ids)
 }
 
 /// The `.d.ts` files among the tsconfig's `files`, when its roots are replaced. See
@@ -833,6 +1188,20 @@ impl Analyzer {
     #[cfg(not(feature = "napi"))]
     pub fn set_entry_points(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
         self.set_entry_points_core(entry_points)
+    }
+
+    /// Flush every cached module resolution and return every module ID whose cached analysis was
+    /// evicted.
+    #[cfg(feature = "napi")]
+    #[napi]
+    pub fn clear_resolution_cache(&self) -> napi::Result<Vec<String>> {
+        self.clear_resolution_cache_core()
+            .map_err(napi::Error::from_reason)
+    }
+
+    #[cfg(not(feature = "napi"))]
+    pub fn clear_resolution_cache(&self) -> Result<Vec<String>, String> {
+        self.clear_resolution_cache_core()
     }
 
     #[cfg(feature = "napi")]
@@ -935,31 +1304,23 @@ impl Analyzer {
         Ok(crate::AnalysisIterator::new(rx))
     }
 
-    #[cfg_attr(feature = "napi", napi)]
+    /// Panicking form of [`Self::get_metadata_for_file_checked`], for Rust callers with no error
+    /// channel. N-API is served by `get_metadata_for_file_napi` instead.
     pub fn get_metadata_for_file(&self, file_path: String) -> Option<AnalysisResult> {
-        let path = PathBuf::from(&file_path);
-        // Non-TS files (templates, stylesheets, JSON) and missing files return `None`, like ngtsc's
-        // `TraitCompiler.recordFor`, rather than failing (the language service asks about every
-        // open document, and a panic over N-API aborts the host) or degrading to an empty
-        // `AnalysisResult` indistinguishable from a classless file.
-        if !is_ts_file(&path) || !self.fs.metadata(&path).is_ok_and(|m| m.is_file()) {
-            return None;
-        }
+        self.get_metadata_for_file_checked(file_path)
+            .unwrap_or_else(|msg| panic!("{msg}"))
+    }
 
-        // Synchronously drive `AnalyzeFileWire` to completion.
-        let wire_res = self.engine.analyze_file_wire_blocking(path, true);
-        match &wire_res.0 {
-            Ok(result) => Some(result.clone()),
-            Err(err) => {
-                // TODO(diagnostics): surface WireError via a diagnostics channel instead of
-                // logging to stderr and returning None.
-                #[allow(clippy::print_stderr)]
-                {
-                    eprintln!("ERROR: {err}; skipping metadata for this file");
-                }
-                None
-            }
-        }
+    /// N-API `getMetadataForFile`: an asynchronous host is thrown as a JS error, since a panic
+    /// over N-API aborts the host process.
+    #[cfg(feature = "napi")]
+    #[napi(js_name = "getMetadataForFile")]
+    pub fn get_metadata_for_file_napi(
+        &self,
+        file_path: String,
+    ) -> napi::Result<Option<AnalysisResult>> {
+        self.get_metadata_for_file_checked(file_path)
+            .map_err(napi::Error::from_reason)
     }
 
     #[cfg(feature = "napi")]
@@ -974,7 +1335,8 @@ impl Analyzer {
         self.get_file_content_core(file_path)
     }
 
-    #[cfg_attr(feature = "napi", napi)]
+    /// Panicking form of [`Self::read_resource_checked`], for Rust callers with no error channel.
+    /// N-API is served by `read_resource_napi` instead.
     pub fn read_resource(
         &self,
         containing_file: String,
@@ -983,9 +1345,27 @@ impl Analyzer {
         self.read_resource_core(containing_file, url)
     }
 
+    /// N-API `readResource`: an asynchronous host is thrown as a JS error, since a panic over
+    /// N-API aborts the host process.
+    #[cfg(feature = "napi")]
+    #[napi(js_name = "readResource")]
+    pub fn read_resource_napi(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> napi::Result<Option<crate::ResolvedResource>> {
+        self.read_resource_checked(containing_file, url)
+            .map_err(napi::Error::from_reason)
+    }
+
     #[cfg_attr(feature = "napi", napi)]
     pub fn canonical_paths(&self, paths: Vec<String>) -> Vec<String> {
         self.canonical_paths_core(paths)
+    }
+
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn get_compiler_options(&self) -> String {
+        serde_json::to_string(&self.merged_compiler_options).unwrap_or_else(|_| "{}".to_string())
     }
 
     fn run_coordinator_helper<S: Spawner>(
@@ -1008,7 +1388,7 @@ impl Analyzer {
         let local_analyzer = move |file_path: PathBuf| {
             let engine = engine_clone.clone();
             async move {
-                let file_id = engine.intern_path(file_path);
+                let file_id = engine.intern_entry_or_dep(&file_path);
                 QueryContext::new(engine.clone())
                     .analyze_file_syntax(file_id)
                     .await
@@ -1045,6 +1425,11 @@ impl Analyzer {
         // cycle detection across an NgModule's declarations).
         let group_chunks_by_ng_module =
             is_optimized || self.engine.generate_extra_imports_in_local_mode;
+        let span = if is_optimized {
+            tracing::info_span!(target: crate::perf::ASYNC_TARGET, "AnalyzeOptimized")
+        } else {
+            tracing::info_span!(target: crate::perf::ASYNC_TARGET, "Analyze")
+        };
 
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -1061,7 +1446,8 @@ impl Analyzer {
                 group_chunks_by_ng_module,
                 is_optimized,
                 is_delta,
-            );
+            )
+            .instrument(span);
 
             let handle = spawner.spawn_with_handle(fut).unwrap();
             self.active_handles.write().unwrap().push(handle);
@@ -1083,7 +1469,8 @@ impl Analyzer {
                 group_chunks_by_ng_module,
                 is_optimized,
                 is_delta,
-            );
+            )
+            .instrument(span);
             spawner.spawn_local(fut).unwrap();
         }
     }
@@ -1099,8 +1486,8 @@ pub trait Spawner: Spawn + futures::task::LocalSpawn + Clone + 'static {}
 #[cfg(target_arch = "wasm32")]
 impl<T: Spawn + futures::task::LocalSpawn + Clone + 'static> Spawner for T {}
 
-async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
-    engine: Arc<crate::QueryEngine<Fs>>,
+async fn run_coordinator<S, LA, FutLA, P, FutP>(
+    engine: Arc<crate::QueryEngine>,
     entrypoints: Vec<PathBuf>,
     spawner: S,
     event_receiver: mpsc::Receiver<CoordinatorEvent>,
@@ -1115,7 +1502,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
     is_optimized: bool,
     is_delta: bool,
 ) where
-    Fs: FileSystem + Clone + 'static + ResourceResolverFs,
     S: Spawner,
     LA: Fn(PathBuf) -> FutLA + Send + Sync + 'static + Clone,
     FutLA: std::future::Future<Output = Arc<FileData>> + Send + 'static,
@@ -1133,7 +1519,13 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         return;
     }
 
-    engine.ensure_singletons_fresh(is_optimized).await;
+    engine
+        .ensure_singletons_fresh(is_optimized)
+        .instrument(tracing::info_span!(
+            target: crate::perf::ASYNC_TARGET,
+            "EnsureSingletonsFresh"
+        ))
+        .await;
 
     if cancel_token.is_cancelled() {
         return;
@@ -1192,7 +1584,9 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
                     }
                     None => true,
                 };
-                if !is_dirty && (!group_chunks_by_ng_module || !local_res.may_have_non_standalone_class()) {
+                if !is_dirty
+                    && (!group_chunks_by_ng_module || !local_res.may_have_non_standalone_class())
+                {
                     return;
                 }
                 let (result, chunk_info) = processor(path, local_res).await;
@@ -1211,6 +1605,15 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
 
     let mut valid_entrypoints = Vec::new();
     for entry in entrypoints {
+        let virtual_fid = entry
+            .to_str()
+            .and_then(|s| engine.get_virtual_if_interned(s));
+        if let Some(file_id) = virtual_fid {
+            if !engine.lookup_external(file_id) && visited_file_ids.insert(file_id) {
+                valid_entrypoints.push(entry);
+            }
+            continue;
+        }
         if !is_compilation_root(&entry) {
             continue;
         }
@@ -1219,8 +1622,9 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
             // Intern `FileId`s synchronously in entrypoint order before spawning async workers so
             // `FileId` ordering is deterministic and reflects `tsconfig` root order.
             let file_id = engine.intern_path(&entry);
-            visited_file_ids.insert(file_id);
-            valid_entrypoints.push(entry);
+            if !engine.lookup_external(file_id) && visited_file_ids.insert(file_id) {
+                valid_entrypoints.push(entry);
+            }
         }
     }
 
@@ -1301,7 +1705,12 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         if let Some(snd) = &final_sender {
             let mut removed: Vec<String> = prev_program_files
                 .difference(&visited_file_ids)
-                .map(|&fid| crate::fs::path_to_string(engine.lookup_path(fid)))
+                .map(|&fid| match engine.lookup_module(fid) {
+                    (id, crate::host::IdKind::Virtual) => id.as_str().to_owned(),
+                    (_, crate::host::IdKind::Path) => {
+                        crate::fs::path_to_string(engine.lookup_path(fid))
+                    }
+                })
                 .collect();
             removed.sort_unstable();
             if !removed.is_empty() {
@@ -1326,14 +1735,14 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
 /// snapshot and consumes it. A run that does not complete (every update cancels the in-flight
 /// stream) puts the snapshot back when dropped, so the next delta pass still re-streams those
 /// files, and still knows a baseline exists against which to report `removed_files`.
-struct DirtyFilesSnapshot<Fs: ResourceResolverFs + Clone + 'static> {
-    engine: Arc<crate::QueryEngine<Fs>>,
+struct DirtyFilesSnapshot {
+    engine: Arc<crate::QueryEngine>,
     files: Option<Arc<HashSet<FileId>>>,
     consumed: bool,
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> DirtyFilesSnapshot<Fs> {
-    fn take(engine: &Arc<crate::QueryEngine<Fs>>) -> Self {
+impl DirtyFilesSnapshot {
+    fn take(engine: &Arc<crate::QueryEngine>) -> Self {
         let files = engine
             .dirty_wire_files
             .lock()
@@ -1362,7 +1771,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> DirtyFilesSnapshot<Fs> {
     }
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> Drop for DirtyFilesSnapshot<Fs> {
+impl Drop for DirtyFilesSnapshot {
     fn drop(&mut self) {
         if self.consumed {
             return;
@@ -1392,9 +1801,9 @@ pub enum CoordinatorEvent {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn handle_coordinator_event<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
+fn handle_coordinator_event(
     event: CoordinatorEvent,
-    engine: &Arc<crate::QueryEngine<Fs>>,
+    engine: &Arc<crate::QueryEngine>,
     cancel_token: &CancellationToken,
     seen: &mut HashSet<PathBuf>,
     visited_file_ids: &mut HashSet<FileId>,
@@ -1412,9 +1821,20 @@ fn handle_coordinator_event<Fs: FileSystem + Clone + 'static + ResourceResolverF
                 if cancel_token.is_cancelled() {
                     break;
                 }
+                if let Some(file_id) = dep
+                    .to_str()
+                    .and_then(|s| engine.get_virtual_if_interned(s))
+                {
+                    if !engine.lookup_external(file_id) && visited_file_ids.insert(file_id) {
+                        pending_tasks.push(spawn_file_task(dep));
+                    }
+                    continue;
+                }
                 if is_ts_file(&dep) && seen.insert(crate::fs::normalize_path(&dep).into_owned()) {
-                    visited_file_ids.insert(engine.intern_path(&dep));
-                    pending_tasks.push(spawn_file_task(dep));
+                    let file_id = engine.intern_path(&dep);
+                    if !engine.lookup_external(file_id) && visited_file_ids.insert(file_id) {
+                        pending_tasks.push(spawn_file_task(dep));
+                    }
                 }
             }
         }
@@ -1512,8 +1932,8 @@ impl UnionFind {
     }
 }
 
-fn compute_intra_chunk_static_edges<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
-    engine: &Arc<crate::QueryEngine<Fs>>,
+fn compute_intra_chunk_static_edges(
+    engine: &Arc<crate::QueryEngine>,
     chunk_files: &[crate::AnalysisResult],
 ) -> Option<HashMap<String, Vec<FileId>>> {
     if chunk_files.len() <= 1 {
@@ -1569,10 +1989,10 @@ pub struct FileChunkInfo {
 
 /// Summarize what a completed file contributes to chunk grouping: whether it holds anything that
 /// needs an `@NgModule` scope at all, and which files the `@NgModule`s it declares pull in.
-pub(crate) async fn extract_chunk_info<Fs: ResourceResolverFs + Clone + 'static>(
+pub(crate) async fn extract_chunk_info(
     file_data: &FileData,
-    engine: &crate::QueryEngine<Fs>,
-    ctx: &QueryContext<Fs>,
+    engine: &crate::QueryEngine,
+    ctx: &QueryContext,
 ) -> FileChunkInfo {
     let mut has_non_standalone = false;
     let mut declared_file_ids = Vec::new();
@@ -1600,8 +2020,19 @@ pub(crate) async fn extract_chunk_info<Fs: ResourceResolverFs + Clone + 'static>
                     {
                         continue;
                     }
-                    let target_path = engine.lookup_path(r.file);
-                    if is_ts_source(&target_path) {
+                    if engine.lookup_external(r.file) {
+                        continue;
+                    }
+                    let is_source = match engine.lookup_kind(r.file) {
+                        crate::host::IdKind::Path => is_ts_source(&engine.lookup_path(r.file)),
+                        crate::host::IdKind::Virtual => {
+                            let parsed = ctx.parse_file(r.file).await;
+                            let guard = parsed.lock().unwrap();
+                            let st = guard.borrow_dependent().program.source_type;
+                            st.is_typescript() && !st.is_typescript_definition()
+                        }
+                    };
+                    if is_source {
                         declared_file_ids.push(r.file);
                     }
                 }
@@ -1636,9 +2067,9 @@ pub(crate) async fn extract_chunk_info<Fs: ResourceResolverFs + Clone + 'static>
 /// Semantic results are already hole-free; syntactic results (used when
 /// `generateExtraImportsInLocalMode` groups chunks) still contain `Incomplete` holes for imported
 /// declarations that must be completed to find their declaring files.
-async fn resolved_ng_module_declarations<Fs: ResourceResolverFs + Clone + 'static>(
+async fn resolved_ng_module_declarations(
     declarations: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
-    ctx: &QueryContext<Fs>,
+    ctx: &QueryContext,
 ) -> Option<Vec<crate::types::analysis::Reference>> {
     if !declarations.contains_incomplete() {
         return declarations.get_optional();
@@ -1650,8 +2081,8 @@ async fn resolved_ng_module_declarations<Fs: ResourceResolverFs + Clone + 'stati
     completed.get_optional()
 }
 
-fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
-    engine: &Arc<crate::QueryEngine<Fs>>,
+fn handle_completed_file(
+    engine: &Arc<crate::QueryEngine>,
     file_id: FileId,
     result: Result<crate::AnalysisResult, String>,
     chunk_info: FileChunkInfo,
@@ -1715,7 +2146,7 @@ fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
                     let ClassOwner::HasNgModule(ref owner_path) = get_class_owner(class) else {
                         continue;
                     };
-                    let owner_id = engine.intern_path(Path::new(owner_path));
+                    let owner_id = engine.intern_entry_or_dep(Path::new(owner_path));
                     if !state.completed.contains_key(&owner_id) {
                         chunk_valid = false;
                         break 'outer;
@@ -1799,7 +2230,7 @@ mod chunk_order_tests {
     use super::*;
 
     fn optimized_result(
-        engine: &Arc<crate::QueryEngine<OverlayFileSystem>>,
+        engine: &Arc<crate::QueryEngine>,
         path: &str,
     ) -> (AnalysisResult, FileChunkInfo) {
         futures::executor::block_on(async {
@@ -1811,6 +2242,7 @@ mod chunk_order_tests {
             let chunk_info = extract_chunk_info(&semantic, engine, &ctx).await;
             let declaring_exports = ctx.declaring_export_names(&semantic).await;
             let path_lookup = |id| engine.lookup_path(id);
+            let kind_lookup = |id| engine.lookup_kind(id);
             let r3_symbols_path = engine.r3_symbols_file();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
@@ -1820,6 +2252,7 @@ mod chunk_order_tests {
                 converter: &semantic.converter,
                 reference_strategy: &*engine.reference_strategy,
                 path_lookup: Some(&path_lookup),
+                kind_lookup: Some(&kind_lookup),
                 declaring_exports: &declaring_exports,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
@@ -1936,6 +2369,7 @@ mod effective_config_tests {
             "generateExtraImportsInLocalMode": true,
             "_enableHmr": true,
             "_compilePoisonedComponents": true,
+            "_isAngularCoreCompilation": true,
             "_angularCoreVersion": "18.2.0"
         }
     }"#;
@@ -1944,7 +2378,10 @@ mod effective_config_tests {
         let physical: Arc<dyn crate::physical_fs::PhysicalFs> =
             Arc::new(crate::physical_fs::default_physical_fs());
         let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, physical);
-        fs.upsert_file(PathBuf::from("/project/tsconfig.json"), TSCONFIG.to_string());
+        fs.upsert_file(
+            PathBuf::from("/project/tsconfig.json"),
+            TSCONFIG.to_string(),
+        );
         fs.upsert_file(PathBuf::from("/project/main.ts"), "export {};".to_string());
         EffectiveConfig::resolve(
             AnalyzerOptions {
@@ -1958,6 +2395,13 @@ mod effective_config_tests {
 
     fn paths(items: &[&str]) -> Vec<PathBuf> {
         items.iter().map(PathBuf::from).collect()
+    }
+
+    fn path_entries(items: &[&str]) -> Vec<ResolvedEntryPoint> {
+        items
+            .iter()
+            .map(|p| ResolvedEntryPoint::Path(PathBuf::from(p)))
+            .collect()
     }
 
     #[test]
@@ -1974,6 +2418,7 @@ mod effective_config_tests {
         assert!(config.enable_hmr);
         assert!(config.use_poisoned_data);
         assert!(!config.implicit_standalone);
+        assert_eq!(config.angular_core_compilation, Some(true));
         assert_eq!(config.node_modules_path_override, None);
     }
 
@@ -1989,6 +2434,7 @@ mod effective_config_tests {
             enable_hmr: Some(false),
             use_poisoned_data: Some(false),
             implicit_standalone: Some(true),
+            angular_core_compilation: Some(false),
             default_host: Some(crate::DefaultHostConfig {
                 root_dirs: Some(vec!["./gen".to_string()]),
                 preserve_symlinks: Some(false),
@@ -1998,7 +2444,10 @@ mod effective_config_tests {
         });
         assert!(!config.preserve_symlinks);
         assert_eq!(config.merge_root_dirs, paths(&["/project/gen"]));
-        assert_eq!(config.import_prefix_roots, paths(&["/project/prefix", "/abs"]));
+        assert_eq!(
+            config.import_prefix_roots,
+            paths(&["/project/prefix", "/abs"])
+        );
         assert_eq!(config.workspace_name.as_deref(), Some("explicit"));
         assert!(!config.strict_standalone);
         assert!(!config.strict_injection_parameters);
@@ -2007,6 +2456,7 @@ mod effective_config_tests {
         assert!(!config.enable_hmr);
         assert!(!config.use_poisoned_data);
         assert!(config.implicit_standalone);
+        assert_eq!(config.angular_core_compilation, Some(false));
         assert_eq!(config.node_modules_path_override.as_deref(), Some("/nm"));
     }
 
@@ -2018,10 +2468,16 @@ mod effective_config_tests {
             ..Default::default()
         });
         assert_eq!(alias_only.import_prefix_roots, paths(&["/project/legacy"]));
-        assert_eq!(alias_only.node_modules_path_override.as_deref(), Some("/legacy_nm"));
+        assert_eq!(
+            alias_only.node_modules_path_override.as_deref(),
+            Some("/legacy_nm")
+        );
         // The deprecated `root_dirs` alias only feeds the import prefix roots, never the merging
         // directories.
-        assert_eq!(alias_only.merge_root_dirs, paths(&["/project/a", "/project/b"]));
+        assert_eq!(
+            alias_only.merge_root_dirs,
+            paths(&["/project/a", "/project/b"])
+        );
 
         let both = resolve(AnalyzerOptions {
             root_dirs: Some(vec!["./legacy".to_string()]),
@@ -2077,6 +2533,7 @@ mod effective_config_tests {
         assert!(!config.strict_standalone);
         assert!(config.implicit_standalone);
         assert_eq!(config.r3_symbols_file, None);
+        assert_eq!(config.angular_core_compilation, None);
     }
 
     #[test]
@@ -2090,12 +2547,28 @@ mod effective_config_tests {
             ..Default::default()
         })
         .unwrap();
-        assert_eq!(config.entry_points, Some(paths(&["/app/main.ts"])));
+        assert_eq!(config.entry_points, Some(path_entries(&["/app/main.ts"])));
         assert!(config.tsconfig_files.is_empty());
-        assert_eq!(config.r3_symbols_file, Some(PathBuf::from("/core/r3_symbols.ts")));
+        assert_eq!(
+            config.r3_symbols_file,
+            Some(PathBuf::from("/core/r3_symbols.ts"))
+        );
+        // Naming the `r3_symbols.ts` file only makes sense when compiling `@angular/core`.
+        assert_eq!(config.angular_core_compilation, Some(true));
         assert!(config.strict_standalone);
         assert!(!config.implicit_standalone);
         assert_eq!(config.import_prefix_roots, paths(&["/app"]));
+    }
+
+    #[test]
+    fn explicit_angular_core_compilation_wins_over_r3_symbols_file() {
+        let config = resolve_without_tsconfig(AnalyzerOptions {
+            r3_symbols_file: Some("/core/r3_symbols.ts".to_string()),
+            angular_core_compilation: Some(false),
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(config.angular_core_compilation, Some(false));
     }
 
     #[test]
@@ -2121,7 +2594,9 @@ mod effective_config_tests {
                 ..Default::default()
             },
         ] {
-            let err = resolve_without_tsconfig(options).err().expect("relative path rejected");
+            let err = resolve_without_tsconfig(options)
+                .err()
+                .expect("relative path rejected");
             assert!(err.contains("must be an absolute path"), "{err}");
         }
     }
@@ -2132,8 +2607,54 @@ mod effective_config_tests {
             entry_points: Some(vec!["main.ts".to_string()]),
             ..Default::default()
         });
-        assert_eq!(config.entry_points, Some(paths(&["/project/main.ts"])));
-        assert_eq!(config.tsconfig_path, Some(PathBuf::from("/project/tsconfig.json")));
+        assert_eq!(
+            config.entry_points,
+            Some(path_entries(&["/project/main.ts"]))
+        );
+        assert_eq!(
+            config.tsconfig_path,
+            Some(PathBuf::from("/project/tsconfig.json"))
+        );
+    }
+
+    #[test]
+    fn entry_refs_validate_paths_and_preserve_virtual_ids() {
+        let physical: Arc<dyn crate::physical_fs::PhysicalFs> =
+            Arc::new(crate::physical_fs::default_physical_fs());
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, physical);
+
+        let rel_ref = crate::host::ModuleRef::Path("src/my_comp.ts".to_string());
+        let err = EffectiveConfig::resolve_with_entry_refs(
+            AnalyzerOptions::default(),
+            Some(vec![rel_ref]),
+            &fs,
+        )
+        .err()
+        .expect("relative path entry ref without tsconfig rejected");
+        assert!(
+            err.contains("must be an absolute path when no tsconfig is given"),
+            "{err}"
+        );
+
+        let config = EffectiveConfig::resolve_with_entry_refs(
+            AnalyzerOptions::default(),
+            Some(vec![
+                crate::host::ModuleRef::Explicit {
+                    id: "\0virtual:app".to_string(),
+                    id_kind: crate::host::IdKind::Virtual,
+                },
+                crate::host::ModuleRef::Path("/app/main.ts".to_string()),
+            ]),
+            &fs,
+        )
+        .unwrap();
+        assert_eq!(
+            config.entry_points,
+            Some(vec![
+                ResolvedEntryPoint::Virtual("\0virtual:app".to_string()),
+                ResolvedEntryPoint::Path(PathBuf::from("/app/main.ts")),
+            ])
+        );
     }
 }
 
@@ -2180,7 +2701,10 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_evicts_program_queries() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
             ("/project/m.module.ts", MODULE),
         ]);
@@ -2199,10 +2723,15 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_with_unchanged_roots_evicts_nothing() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
         ]);
-        analyzer.engine.analyze_file_semantic_blocking("/project/c1.component.ts");
+        analyzer
+            .engine
+            .analyze_file_semantic_blocking("/project/c1.component.ts");
 
         let stale = analyzer
             .set_entry_points_core(vec!["/project/c1.component.ts".to_string()])
@@ -2213,11 +2742,114 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_rejects_relative_paths() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
         ]);
-        let err = analyzer.set_entry_points_core(vec!["c1.component.ts".to_string()]).unwrap_err();
+        let err = analyzer
+            .set_entry_points_core(vec!["c1.component.ts".to_string()])
+            .unwrap_err();
         assert!(err.contains("c1.component.ts"), "{err}");
+    }
+
+    /// A virtual ID shaped like a path, as bundlers hand out (`/@id/...`).
+    const VIRTUAL_ID: &str = "/@id/virtual-entry";
+
+    /// An ID interned as a path before its kind was known becomes virtual once it is set as an
+    /// explicit virtual entry point, and is then analyzed under that kind.
+    #[test]
+    fn virtual_entry_point_promotes_a_path_interned_id() {
+        use crate::host::IdKind;
+
+        let analyzer = analyzer(&[
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        let engine = &analyzer.engine;
+        let file_id = engine.intern_path(VIRTUAL_ID);
+        assert_eq!(engine.lookup_kind(file_id), IdKind::Path);
+
+        analyzer
+            .set_entry_points_refs_core(vec![crate::host::ModuleRef::Explicit {
+                id: VIRTUAL_ID.to_string(),
+                id_kind: IdKind::Virtual,
+            }])
+            .unwrap();
+        assert_eq!(engine.lookup_kind(file_id), IdKind::Virtual);
+        assert_eq!(engine.get_virtual_if_interned(VIRTUAL_ID), Some(file_id));
+
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: VIRTUAL_ID.to_string(),
+                content: COMPONENT.to_string(),
+                id_kind: Some(IdKind::Virtual),
+            }])
+            .unwrap();
+        let meta = engine
+            .get_metadata_for_file_id_blocking(file_id)
+            .expect("metadata for the promoted virtual entry point");
+        assert_eq!(meta.file_path, VIRTUAL_ID);
+        assert_eq!(meta.id_kind, Some(IdKind::Virtual));
+        assert_eq!(meta.classes[0].class_name.as_deref(), Some("C1"));
+    }
+
+    /// An invalidation naming a path-interned ID as virtual promotes it as well, rather than
+    /// missing the entry because it is not virtual yet.
+    #[test]
+    fn virtual_invalidation_promotes_a_path_interned_id() {
+        use crate::host::IdKind;
+
+        let analyzer = analyzer(&[
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        let engine = &analyzer.engine;
+        let file_id = engine.intern_path(VIRTUAL_ID);
+        assert_eq!(engine.lookup_kind(file_id), IdKind::Path);
+
+        let stale = analyzer
+            .invalidate_files_core(vec![FileInvalidation {
+                file_path: VIRTUAL_ID.to_string(),
+                update_type: crate::FileUpdateType::Changed,
+                id_kind: Some(IdKind::Virtual),
+            }])
+            .unwrap();
+        assert_eq!(engine.lookup_kind(file_id), IdKind::Virtual);
+        assert_eq!(engine.get_virtual_if_interned(VIRTUAL_ID), Some(file_id));
+        assert!(stale.contains(&VIRTUAL_ID.to_string()), "{stale:?}");
+
+        // A `Created` invalidation on an unseen virtual ID interns it as `IdKind::Virtual` up front
+        // so subsequent bare-string calls (`canonical_paths_core`, `get_metadata_for_file`) treat it
+        // as virtual, while `Deleted` on an unseen virtual ID avoids allocating a dead `FileId`.
+        let created_virtual = "/@id/created\\virtual.ts";
+        analyzer
+            .invalidate_files_core(vec![
+                FileInvalidation {
+                    file_path: "/@id/never-seen".to_string(),
+                    update_type: crate::FileUpdateType::Deleted,
+                    id_kind: Some(IdKind::Virtual),
+                },
+                FileInvalidation {
+                    file_path: created_virtual.to_string(),
+                    update_type: crate::FileUpdateType::Created,
+                    id_kind: Some(IdKind::Virtual),
+                },
+            ])
+            .unwrap();
+        assert!(!engine.has_exact_interned("/@id/never-seen"));
+        assert!(engine.get_virtual_if_interned(created_virtual).is_some());
+        assert_eq!(
+            analyzer.canonical_paths_core(vec![created_virtual.to_string()]),
+            vec![created_virtual.to_string()]
+        );
     }
 
     /// Entry points replace only the roots: the `.d.ts` files searched for ambient modules still
@@ -2225,7 +2857,10 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_keeps_tsconfig_declaration_files() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts", "a.d.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "a.d.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
             ("/project/m.module.ts", MODULE),
             ("/project/a.d.ts", "declare module 'a' {}"),
@@ -2241,16 +2876,23 @@ mod entry_point_tests {
                 "/project/b.d.ts".to_string(),
             ])
             .unwrap();
-        assert_eq!(*analyzer.entrypoints.read().unwrap(), paths(&["/project/m.module.ts"]));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            paths(&["/project/m.module.ts"])
+        );
         assert_eq!(dts_files(&analyzer), paths(&["/project/a.d.ts"]));
 
         analyzer
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/tsconfig.json".to_string(),
                 content: r#"{"files": ["c1.component.ts", "b.d.ts"]}"#.to_string(),
+                id_kind: None,
             }])
             .unwrap();
-        assert_eq!(*analyzer.entrypoints.read().unwrap(), paths(&["/project/m.module.ts"]));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            paths(&["/project/m.module.ts"])
+        );
         assert_eq!(dts_files(&analyzer), paths(&["/project/b.d.ts"]));
     }
 
@@ -2267,12 +2909,15 @@ mod entry_point_tests {
             ("/project/c1.component.ts", COMPONENT),
         ]);
         // A non-standalone component's semantic analysis reads the program-wide NgModule mapping.
-        analyzer.engine.analyze_file_semantic_blocking("/project/c1.component.ts");
+        analyzer
+            .engine
+            .analyze_file_semantic_blocking("/project/c1.component.ts");
 
         let stale = analyzer
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert!(
@@ -2295,6 +2940,7 @@ mod entry_point_tests {
             .invalidate_files_core(vec![FileInvalidation {
                 file_path: "/project/m.module.ts".to_string(),
                 update_type: crate::types::FileUpdateType::Deleted,
+                id_kind: None,
             }])
             .unwrap();
         assert!(!c1_has_module(&analyzer));
@@ -2318,6 +2964,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert!(c1_has_module(&analyzer));
@@ -2377,6 +3024,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert!(!c1_has_module(&analyzer));
@@ -2402,6 +3050,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert!(!c1_has_module(&analyzer));
@@ -2444,7 +3093,93 @@ mod entry_point_tests {
         .unwrap();
         assert_eq!(
             explicit.engine.r3_symbols_file(),
-            Some(PathBuf::from("/core/r3_symbols.ts")))
+            Some(PathBuf::from("/core/r3_symbols.ts")),
+        );
+    }
+
+    const R3_SYMBOLS: &str = "export const ITS_JUST_ANGULAR = true;";
+
+    /// Whether `path` is analyzed as part of `@angular/core` itself.
+    fn is_core(analyzer: &Analyzer, path: &str) -> bool {
+        let engine = analyzer.engine.clone();
+        let file_id = engine.intern_path(path);
+        let syntax =
+            futures::executor::block_on(QueryContext::new(engine).analyze_file_syntax(file_id));
+        syntax.is_core
+    }
+
+    /// Without `_isAngularCoreCompilation`, a root `r3_symbols.ts` exporting `ITS_JUST_ANGULAR`
+    /// makes the compilation `@angular/core`, so roots that add or remove it re-analyze the files
+    /// analyzed before, while unrelated root changes leave them cached.
+    #[test]
+    fn root_change_redetects_angular_core_compilation() {
+        let analyzer = analyzer(&[
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/c2.component.ts", COMPONENT),
+            ("/project/r3_symbols.ts", R3_SYMBOLS),
+        ]);
+        assert!(!is_core(&analyzer, "/project/c1.component.ts"));
+
+        let unrelated_stale = analyzer
+            .set_entry_points_core(vec![
+                "/project/c1.component.ts".to_string(),
+                "/project/c2.component.ts".to_string(),
+            ])
+            .unwrap();
+        assert!(
+            !unrelated_stale.contains(&"/project/c1.component.ts".to_string()),
+            "unrelated root change should not invalidate c1.component.ts: {unrelated_stale:?}"
+        );
+
+        let stale = analyzer
+            .set_entry_points_core(vec![
+                "/project/c1.component.ts".to_string(),
+                "/project/c2.component.ts".to_string(),
+                "/project/r3_symbols.ts".to_string(),
+            ])
+            .unwrap();
+        assert!(
+            stale.contains(&"/project/c1.component.ts".to_string()),
+            "stale paths: {stale:?}"
+        );
+        assert!(is_core(&analyzer, "/project/c1.component.ts"));
+
+        analyzer
+            .set_entry_points_core(vec!["/project/c1.component.ts".to_string()])
+            .unwrap();
+        assert!(!is_core(&analyzer, "/project/c1.component.ts"));
+    }
+
+    /// Detecting `@angular/core` reads `r3_symbols.ts`, so editing its `ITS_JUST_ANGULAR` marker
+    /// re-analyzes the files analyzed before.
+    #[test]
+    fn r3_symbols_edit_redetects_angular_core_compilation() {
+        let analyzer = analyzer(&[
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "r3_symbols.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/r3_symbols.ts", R3_SYMBOLS),
+        ]);
+        assert!(is_core(&analyzer, "/project/c1.component.ts"));
+
+        let stale = analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/r3_symbols.ts".to_string(),
+                content: "export const ITS_JUST_ANGULAR = false;".to_string(),
+                id_kind: None,
+            }])
+            .unwrap();
+        assert!(
+            stale.contains(&"/project/c1.component.ts".to_string()),
+            "stale paths: {stale:?}"
+        );
+        assert!(!is_core(&analyzer, "/project/c1.component.ts"));
     }
 
     #[test]
@@ -2476,6 +3211,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/c2.component.html".to_string(),
                 content: "<p>v2</p>".to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert!(
@@ -2528,17 +3264,19 @@ mod entry_point_tests {
             ("/project/c3.component.ts", c3),
         ]);
 
-        let collect_chunks = |rx: futures::channel::mpsc::UnboundedReceiver<
-            Result<CompilationChunk, String>,
-        >| {
-            futures::executor::block_on(rx.collect::<Vec<_>>())
-                .into_iter()
-                .map(|c| c.expect("chunk"))
-                .collect::<Vec<_>>()
-        };
+        let collect_chunks =
+            |rx: futures::channel::mpsc::UnboundedReceiver<Result<CompilationChunk, String>>| {
+                futures::executor::block_on(rx.collect::<Vec<_>>())
+                    .into_iter()
+                    .map(|c| c.expect("chunk"))
+                    .collect::<Vec<_>>()
+            };
 
-        let initial_chunks =
-            collect_chunks(analyzer.analyze_optimized_core(get_global_pool().clone()).unwrap());
+        let initial_chunks = collect_chunks(
+            analyzer
+                .analyze_optimized_core(get_global_pool().clone())
+                .unwrap(),
+        );
         let initial_files: HashSet<String> = initial_chunks
             .iter()
             .flat_map(|c| c.files.iter().map(|f| f.file_path.clone()))
@@ -2551,6 +3289,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/c2.component.html".to_string(),
                 content: "<p>v2</p>".to_string(),
+                id_kind: None,
             }])
             .unwrap();
         let delta_chunks = collect_chunks(
@@ -2620,14 +3359,13 @@ mod entry_point_tests {
         })
         .unwrap();
 
-        let collect_chunks = |rx: futures::channel::mpsc::UnboundedReceiver<
-            Result<CompilationChunk, String>,
-        >| {
-            futures::executor::block_on(rx.collect::<Vec<_>>())
-                .into_iter()
-                .map(|c| c.expect("chunk"))
-                .collect::<Vec<_>>()
-        };
+        let collect_chunks =
+            |rx: futures::channel::mpsc::UnboundedReceiver<Result<CompilationChunk, String>>| {
+                futures::executor::block_on(rx.collect::<Vec<_>>())
+                    .into_iter()
+                    .map(|c| c.expect("chunk"))
+                    .collect::<Vec<_>>()
+            };
         let extra_imports_of_cmp = |chunks: &[CompilationChunk]| {
             chunks
                 .iter()
@@ -2651,6 +3389,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/other.ts".to_string(),
                 content: OTHER_WITH_IMPORTS.to_string(),
+                id_kind: None,
             }])
             .unwrap();
         let delta = collect_chunks(
@@ -2689,7 +3428,15 @@ mod entry_point_tests {
     /// The file declaring the first component of a wire result's NgModule, if any.
     fn declaring_module(wire: &crate::query::keys::WireFileResult) -> Option<String> {
         wire.0.as_ref().ok()?.classes.iter().find_map(|class| {
-            Some(class.component.as_ref()?.declaring_ng_module.as_ref()?.file_path.clone())
+            Some(
+                class
+                    .component
+                    .as_ref()?
+                    .declaring_ng_module
+                    .as_ref()?
+                    .file_path
+                    .clone(),
+            )
         })
     }
 
@@ -2731,6 +3478,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/util.ts".to_string(),
                 content: "export const answer = 43;".to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert_eq!(stale, vec!["/project/util.ts".to_string()]);
@@ -2781,6 +3529,7 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
+                id_kind: None,
             }])
             .unwrap();
         assert!(!stale.contains(&"/project/c1.component.ts".to_string()));
@@ -2790,7 +3539,10 @@ mod entry_point_tests {
             !Arc::ptr_eq(&before, &after),
             "c1's wire result must be recomputed once an NgModule declares it"
         );
-        assert_eq!(declaring_module(&after).as_deref(), Some("/project/m.module.ts"));
+        assert_eq!(
+            declaring_module(&after).as_deref(),
+            Some("/project/m.module.ts")
+        );
     }
 
     /// A delta run that is cancelled after taking the dirty files must give them back: the next
@@ -2805,7 +3557,10 @@ mod entry_point_tests {
             export class C2 {}
         "#;
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts", "c2.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "c2.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
             ("/project/c2.component.ts", c2),
             ("/project/c2.component.html", "<p>v1</p>"),
@@ -2825,7 +3580,11 @@ mod entry_point_tests {
         };
 
         // Baseline: a completed full stream.
-        let initial = collect_chunks(analyzer.analyze_optimized_core(get_global_pool().clone()).unwrap());
+        let initial = collect_chunks(
+            analyzer
+                .analyze_optimized_core(get_global_pool().clone())
+                .unwrap(),
+        );
         assert_eq!(streamed(&initial).len(), 2);
         let c1 = engine.intern_path("/project/c1.component.ts");
         let c2_id = engine.intern_path("/project/c2.component.ts");
@@ -2835,10 +3594,18 @@ mod entry_point_tests {
             .update_file_content_core(vec![FileUpdate {
                 file_path: "/project/c2.component.html".to_string(),
                 content: "<p>v2</p>".to_string(),
+                id_kind: None,
             }])
             .unwrap();
-        analyzer.set_entry_points_core(vec!["/project/c2.component.ts".to_string()]).unwrap();
-        let dirty_before = engine.dirty_wire_files.lock().unwrap().clone().expect("baseline");
+        analyzer
+            .set_entry_points_core(vec!["/project/c2.component.ts".to_string()])
+            .unwrap();
+        let dirty_before = engine
+            .dirty_wire_files
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("baseline");
         assert!(dirty_before.contains(&c2_id));
 
         // A delta run that cancels itself as soon as it processes a file.
@@ -2861,7 +3628,9 @@ mod entry_point_tests {
             let token = processor_token.clone();
             async move {
                 token.cancel();
-                let wire = QueryContext::new(engine).analyze_file_wire(local.file_id, true).await;
+                let wire = QueryContext::new(engine)
+                    .analyze_file_wire(local.file_id, true)
+                    .await;
                 (*wire).clone()
             }
             .boxed()
@@ -2900,13 +3669,88 @@ mod entry_point_tests {
                 .analyze_optimized_delta_core(get_global_pool().clone())
                 .unwrap(),
         );
-        assert_eq!(streamed(&delta), vec!["/project/c2.component.ts".to_string()]);
+        assert_eq!(
+            streamed(&delta),
+            vec!["/project/c2.component.ts".to_string()]
+        );
         let removed: Vec<String> = delta
             .iter()
             .filter_map(|c| c.removed_files.clone())
             .flatten()
             .collect();
         assert_eq!(removed, vec!["/project/c1.component.ts".to_string()]);
-        assert_eq!(*engine.dirty_wire_files.lock().unwrap(), Some(HashSet::new()));
+        assert_eq!(
+            *engine.dirty_wire_files.lock().unwrap(),
+            Some(HashSet::new())
+        );
+    }
+
+    #[test]
+    fn test_checked_synchronous_apis_reject_async_host() {
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, LoadKind, LoadedModule, ModuleId, ResolveRequest,
+            ResolvedModule, ResolvedResourceId, ResourceKind, SYNC_HOST_REQUIRED_MSG,
+        };
+
+        struct AsyncStubHost;
+
+        impl AnalysisHost for AsyncStubHost {
+            fn resolve(
+                &self,
+                _req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                futures::future::pending().boxed()
+            }
+
+            fn load(
+                &self,
+                _id: &ModuleId,
+                _kind: LoadKind,
+                _external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                futures::future::pending().boxed()
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                futures::future::pending().boxed()
+            }
+        }
+
+        let mut analyzer = Analyzer::new_core(AnalyzerOptions::default()).unwrap();
+        let entrypoints = Arc::new(RwLock::new(Vec::new()));
+        analyzer.engine = crate::query::QueryEngine::new_default_with_host(
+            Arc::new(AsyncStubHost),
+            analyzer.resource_registry.clone(),
+            entrypoints,
+        );
+
+        assert!(!analyzer.is_synchronous_host());
+        assert_eq!(
+            analyzer.ensure_synchronous_host().unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
+        assert_eq!(
+            analyzer
+                .get_file_content_core("/project/app.ts".to_string())
+                .unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
+        assert_eq!(
+            analyzer
+                .get_metadata_for_file_checked("/project/app.ts".to_string())
+                .unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
+        assert_eq!(
+            analyzer
+                .read_resource_checked("/project/app.ts".to_string(), "./app.css".to_string())
+                .unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
     }
 }

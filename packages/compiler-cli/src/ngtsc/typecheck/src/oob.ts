@@ -19,8 +19,6 @@ import {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundaryBlock,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -371,7 +369,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   missingRequiredInputs(
     id: TypeCheckId,
-    element: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    element: TmplAstElement | TmplAstTemplate,
     directiveName: string,
     isComponent: boolean,
     inputAliases: string[],
@@ -472,8 +470,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const blockName = controlFlowNode.nameSpan.toString().trim();
     const lines = [
       `Node matches the "${slotSelector}" slot of the "${componentName}" component, but will not be projected into the specific slot because the surrounding ${blockName} has more than one node at its root. To project the node in the right slot, you can:\n`,
-      `1. Wrap the content of the ${blockName} block in an <ng-container/> that matches the "${slotSelector}" selector.`,
-      `2. Split the content of the ${blockName} block across multiple ${blockName} blocks such that each one only has a single projectable node at its root.`,
+      `1. Wrap the content of the ${blockName} block in an <ng-container ngProjectAs="${slotSelector}"> to explicitly target the "${slotSelector}" slot. Use this when all nodes in the block should be projected into the same slot.`,
+      `2. Split the content of the ${blockName} block across multiple ${blockName} blocks such that each one only has a single projectable node at its root. Use this when nodes in the block target different slots.`,
       `3. Remove all content from the ${blockName} block, except for the node being projected.`,
     ];
 
@@ -553,59 +551,6 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         decl.sourceSpan,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.CONFLICTING_LET_DECLARATION),
-        errorMsg,
-      ),
-    );
-  }
-
-  missingNamedTemplateDependency(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective): void {
-    this._diagnostics.push(
-      makeTemplateDiagnostic(
-        id,
-        this.resolver.getTemplateSourceMapping(id),
-        node.startSourceSpan,
-        ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.MISSING_NAMED_TEMPLATE_DEPENDENCY),
-        // Wording is meant to mimic the wording TS uses in their diagnostic for missing symbols.
-        `Cannot find name "${node instanceof TmplAstDirective ? node.name : node.componentName}". ` +
-          `Selectorless references are only supported to classes or non-type import statements.`,
-      ),
-    );
-  }
-
-  incorrectTemplateDependencyType(
-    id: TypeCheckId,
-    node: TmplAstComponent | TmplAstDirective,
-  ): void {
-    this._diagnostics.push(
-      makeTemplateDiagnostic(
-        id,
-        this.resolver.getTemplateSourceMapping(id),
-        node.startSourceSpan,
-        ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE),
-        `Incorrect reference type. Type must be a standalone ${node instanceof TmplAstComponent ? '@Component' : '@Directive'}.`,
-      ),
-    );
-  }
-
-  unclaimedDirectiveBinding(
-    id: TypeCheckId,
-    directive: TmplAstDirective,
-    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
-  ): void {
-    const errorMsg =
-      `Directive ${directive.name} does not have an ` +
-      `${node instanceof TmplAstBoundEvent ? 'output' : 'input'} named "${node.name}". ` +
-      `Bindings to directives must target existing inputs or outputs.`;
-
-    this._diagnostics.push(
-      makeTemplateDiagnostic(
-        id,
-        this.resolver.getTemplateSourceMapping(id),
-        node.keySpan || node.sourceSpan,
-        ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.UNCLAIMED_DIRECTIVE_BINDING),
         errorMsg,
       ),
     );
@@ -713,7 +658,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   conflictingHostDirectiveBinding(
     id: TypeCheckId,
-    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    node: TmplAstElement | TmplAstTemplate,
     directiveName: string,
     kind: 'input' | 'output',
     classPropertyName: string,
@@ -736,19 +681,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  private getTagNameSpan(
-    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-  ) {
+  private getTagNameSpan(node: TmplAstElement | TmplAstTemplate) {
     let span: ParseSourceSpan;
-    let name: string | null;
-
-    if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
-      name = node.name;
-    } else if (node instanceof TmplAstComponent) {
-      name = node.componentName;
-    } else {
-      name = null;
-    }
+    const name = node instanceof TmplAstElement ? node.name : null;
 
     if (name === null) {
       span = node.startSourceSpan;

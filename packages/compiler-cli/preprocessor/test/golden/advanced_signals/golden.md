@@ -78,8 +78,7 @@ export class AdvancedComp {
     ['directContentChild', 'directRequiredContentChild', 'directContentChildren'],
     never,
     true,
-    never,
-    true
+    never
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
@@ -134,7 +133,6 @@ export class AdvancedComp {
         nsOutput: 'nsOutput',
         nsOutputObs: 'nsOutputObs',
       },
-      signals: true,
       decls: 2,
       vars: 0,
       template: function AdvancedComp_Template(rf: number, ctx: any): any {
@@ -157,7 +155,6 @@ export class AdvancedComp {
               {
                 selector: 'advanced-comp',
                 template: '<div>Advanced Component</div>',
-                signals: true,
               },
             ],
           },
@@ -225,7 +222,7 @@ export class AdvancedComp {
     i0.ɵsetClassDebugInfo(AdvancedComp, {
       className: 'AdvancedComp',
       filePath: 'test.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

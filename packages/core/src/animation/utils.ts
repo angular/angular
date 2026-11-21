@@ -227,6 +227,9 @@ export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement, newLVi
       }
     }
   }
+  if (nodes.length === 0) {
+    leavingNodes.delete(tNode);
+  }
 }
 
 /**

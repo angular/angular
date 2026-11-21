@@ -22,6 +22,7 @@ import {
   TemplateRef,
   ViewContainerRef,
 } from '../../src/core';
+import {global} from '../../src/util/global';
 import {TestBed} from '../../testing';
 
 describe('control flow - for', () => {
@@ -194,6 +195,82 @@ describe('control flow - for', () => {
     fixture.componentInstance.items.set([1, 3]);
     await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0/0)|3(1/1)|');
+  });
+
+  describe('invalid collections', () => {
+    const _global: {ngDevMode: any} = global;
+    let saveNgDevMode!: typeof ngDevMode;
+    beforeEach(() => (saveNgDevMode = ngDevMode));
+    afterEach(() => (_global.ngDevMode = saveNgDevMode));
+
+    function createFixture(initial: unknown) {
+      @Component({
+        template: '@for (item of items(); track $index) {{{item}}|}',
+      })
+      class TestComponent {
+        items = signal<any>(initial);
+      }
+
+      return TestBed.createComponent(TestComponent);
+    }
+
+    it('should throw a coded error when the collection is a plain object', async () => {
+      const fixture = createFixture({0: 'a'});
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /NG0957: @for expected an array or an iterable, but got object/,
+      );
+    });
+
+    it('should throw a coded error when a valid collection is replaced by a plain object', async () => {
+      const fixture = createFixture(['a', 'b']);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+
+      fixture.componentInstance.items.set({0: 'a'});
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG0957/);
+    });
+
+    it('should render a Set', async () => {
+      const fixture = createFixture(new Set(['a', 'b']));
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+    });
+
+    it('should render a Map', async () => {
+      const fixture = createFixture(new Map([['a', 1]]));
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a,1|');
+    });
+
+    it('should render a custom iterable', async () => {
+      const iterable = {
+        *[Symbol.iterator]() {
+          yield 'a';
+          yield 'b';
+        },
+      };
+      const fixture = createFixture(iterable);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+    });
+
+    it('should render a string as its characters', async () => {
+      const fixture = createFixture('ab');
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+    });
+
+    it('should render nothing for null and undefined', async () => {
+      const fixture = createFixture(null);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      fixture.componentInstance.items.set(undefined);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
   });
 
   describe('trackBy', () => {

@@ -9,15 +9,9 @@
 import {readFile, writeFile} from 'fs/promises';
 import path from 'path';
 import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
-import {ApiEntries} from '../shared/linking.mjs';
+import {type ApiManifest, mapManifestToEntries} from '../shared/linking.mjs';
 import {initHighlighter} from '../shared/shiki.mjs';
 import {hasUnknownAnchors} from './helpers.mjs';
-
-type ApiManifest = ApiManifestPackage[];
-interface ApiManifestPackage {
-  moduleName: string;
-  entries: {name: string; type?: string; aliases?: string[]}[];
-}
 
 async function main() {
   const [paramFilePath] = process.argv.slice(2);
@@ -90,35 +84,3 @@ async function main() {
 }
 
 main();
-
-function mapManifestToEntries(apiManifest: ApiManifest): ApiEntries {
-  const duplicateEntries = new Set<string>();
-
-  const entryToModuleMap: ApiEntries = {};
-  for (const pkg of apiManifest) {
-    for (const entry of pkg.entries) {
-      if (duplicateEntries.has(entry.name)) {
-        continue;
-      } else if (entryToModuleMap[entry.name]) {
-        delete entryToModuleMap[entry.name];
-        duplicateEntries.add(entry.name);
-      } else {
-        const normalizedModuleName = pkg.moduleName.replace(/^@angular\//, '');
-
-        entryToModuleMap[entry.name] = {moduleName: normalizedModuleName, entryType: entry.type};
-
-        // If there are aliases, create entries for each alias
-        if (entry.aliases) {
-          for (const alias of entry.aliases) {
-            entryToModuleMap[alias] = {
-              moduleName: normalizedModuleName,
-              targetSymbol: entry.name,
-              entryType: entry.type,
-            };
-          }
-        }
-      }
-    }
-  }
-  return entryToModuleMap;
-}

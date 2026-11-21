@@ -168,7 +168,9 @@ export class HttpParams {
         const value = (options.fromObject as any)[key];
         // convert the values to strings
         const values = Array.isArray(value) ? value.map(valueToString) : [valueToString(value)];
-        this.map!.set(key, values);
+        if (values.length > 0) {
+          this.map!.set(key, values);
+        }
       });
     } else {
       this.map = null;

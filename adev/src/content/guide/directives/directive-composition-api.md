@@ -177,10 +177,10 @@ If a directive matches an element once through a **template selector** and also 
 
 The mental model is that a host directive match represents `Partial<YourDirective>`, a partial application where only the inputs and outputs explicitly listed in `hostDirectives` are exposed, while a template match represents the full directive with its complete public API.
 
+```ts
 @Directive({selector: '[hoverable]'})
 export class Hoverable {}
 
-```ts
 @Component({
   selector: 'app-button',
   hostDirectives: [Hoverable],

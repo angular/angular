@@ -10,9 +10,9 @@ import {
   ChangeDetectorRef,
   ComponentRef,
   Directive,
-  effect,
   EffectRef,
   EnvironmentInjector,
+  ErrorDetails,
   EventEmitter,
   inject,
   Injectable,
@@ -27,18 +27,26 @@ import {
   ɵRuntimeError as RuntimeError,
   Signal,
   SimpleChanges,
+  Type,
   ViewContainerRef,
 } from '@angular/core';
 import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
-import type {RouterResourcesFeatureImplementation} from '../router_resource_feature';
-import {Data} from '../models';
+import type {Data} from '../models';
+import type {ComponentInputBindingOptions} from '../router_config';
+import {ROUTER_ERROR_BOUNDARY_HANDLER} from '../router_error_boundary_feature';
 import {ChildrenOutletContexts} from '../router_outlet_context';
+import type {RouterResourcesFeatureImplementation} from '../router_resource_feature';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
-import {ComponentInputBindingOptions} from '../router_config';
+
+let warnedAboutMissingErrorBoundaries = false;
+
+export function resetMissingErrorBoundariesWarning(): void {
+  warnedAboutMissingErrorBoundaries = false;
+}
 
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
@@ -85,6 +93,13 @@ export interface RouterOutletContract {
    * An outlet is considered "activated" if it has an active component.
    */
   isActivated: boolean;
+
+  /**
+   * Whether the given outlet is currently rendering an error component instead of the primary component.
+   *
+   * @developerPreview 22.3
+   */
+  isErrorComponentActive?: boolean;
 
   /** The instance of the activated component or `null` if the outlet is not activated. */
   component: Object | null;
@@ -164,7 +179,9 @@ export interface RouterOutletContract {
  * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
  * Each outlet can have a unique name, determined by the optional `name` attribute.
- * The name cannot be set or changed dynamically. If not set, default value is "primary".
+ * You can bind the name to a value. When the value changes, the outlet destroys its current
+ * component and renders the route for the new name, if one matches. If not set, default value is
+ * "primary".
  *
  * ```html
  * <router-outlet></router-outlet>
@@ -219,6 +236,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     return this.activated;
   }
   private _activatedRoute: ActivatedRoute | null = null;
+  // TODO: Consider whether the error boundary feature should offer a way to recover from an error
+  // without a full navigation, and what that should look like.
+
+  /** @internal */
+  isErrorComponentActive = false;
   /**
    * The name of the outlet
    *
@@ -249,6 +271,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private location = inject(ViewContainerRef);
   private changeDetector = inject(ChangeDetectorRef);
   private inputBinder = inject(INPUT_BINDER, {optional: true});
+  private errorBoundaryHandler = inject(ROUTER_ERROR_BOUNDARY_HANDLER, {optional: true});
   /** @docs-private */
   readonly supportsBindingToComponentInputs = true;
 
@@ -352,6 +375,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
         RuntimeErrorCode.OUTLET_NOT_ACTIVATED,
         (typeof ngDevMode === 'undefined' || ngDevMode) && 'Outlet is not activated',
       );
+    this.isErrorComponentActive = false;
     this.location.detach();
     const cmp = this.activated;
     this.activated = null;
@@ -366,20 +390,17 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
+    this.isErrorComponentActive = false;
     this.location.insert(ref.hostView);
     this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
     this.attachEvents.emit(ref.instance);
   }
 
   deactivate(): void {
-    if (this.activated) {
-      const c = this.component;
-      this.inputBinder?.unsubscribeFromRouteData(this);
-      this.activated.destroy();
-      this.activated = null;
-      this._activatedRoute = null;
-      this.deactivateEvents.emit(c);
-    }
+    // The outlet is no longer associated with the route at all, unlike `destroyActivatedComponent`
+    // which only swaps out the component rendered for the current route.
+    this._activatedRoute = null;
+    this.destroyActivatedComponent();
   }
 
   activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector): void {
@@ -391,27 +412,119 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       );
     }
     this._activatedRoute = activatedRoute;
-    const location = this.location;
+    this.isErrorComponentActive = false;
     const snapshot = activatedRoute.snapshot;
     const component = snapshot.component!;
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
-    const injector = new OutletInjector(
-      activatedRoute,
-      childContexts,
-      location.injector,
-      this.routerOutletData,
-    );
 
-    this.activated = location.createComponent(component, {
-      index: location.length,
-      injector,
-      environmentInjector: environmentInjector,
-    });
+    // The error handling implementation only exists when the application opts in to the error
+    // boundary feature via `withErrorBoundaries`. Without it, errors propagate as usual.
+    const errorBoundaryHandler = this.errorBoundaryHandler;
+    if (
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      !errorBoundaryHandler &&
+      snapshot.routeConfig?.errorComponent &&
+      !warnedAboutMissingErrorBoundaries
+    ) {
+      console.warn(
+        `The route '${snapshot.routeConfig.path ?? ''}' defines an 'errorComponent', but router ` +
+          `error boundaries are not enabled. Add 'withErrorBoundaries()' to 'provideRouter' ` +
+          `for it to take effect.`,
+      );
+      warnedAboutMissingErrorBoundaries = true;
+    }
+    const onErrorHandler = errorBoundaryHandler
+      ? (error: Error, details?: ErrorDetails) => {
+          errorBoundaryHandler.handleError(
+            error,
+            details,
+            this,
+            activatedRoute,
+            environmentInjector,
+            childContexts,
+          );
+        }
+      : undefined;
+
+    let componentRef: ComponentRef<any>;
+    try {
+      componentRef = this.activateComponent(
+        component,
+        activatedRoute,
+        environmentInjector,
+        childContexts,
+        onErrorHandler,
+      );
+    } catch (error: any) {
+      if (onErrorHandler) {
+        onErrorHandler(error);
+        return;
+      }
+      throw error;
+    }
+
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
+    this.activateEvents.emit(componentRef.instance);
+  }
+
+  /**
+   * Destroys the currently activated component, if any, and emits the deactivate event.
+   *
+   * This leaves the outlet's association with the `ActivatedRoute` intact so that a replacement
+   * component can be rendered for the same route. `deactivate` is implemented in terms of this,
+   * and the error boundary feature uses it to tear down the component that failed.
+   * @internal
+   */
+  destroyActivatedComponent(): void {
+    if (!this.activated) {
+      return;
+    }
+    const c = this.component;
+    const wasErrorComponentActive = this.isErrorComponentActive;
+    this.inputBinder?.unsubscribeFromRouteData(this);
+    this.activated.destroy();
+    this.activated = null;
+    this.isErrorComponentActive = false;
+
+    // The error component is an internal implementation detail and is never emitted
+    // via `activateEvents` (which only emit the primary component). Therefore, we
+    // must not emit it via `deactivateEvents` either, to maintain symmetry.
+    if (!wasErrorComponentActive) {
+      this.deactivateEvents.emit(c);
+    }
+  }
+
+  /**
+   * Creates `component` for `activatedRoute` and makes it the component rendered by this outlet,
+   * binding the route data to its inputs.
+   *
+   * Shared by the regular activation path and by the error boundary feature, which uses it to
+   * render the route's `errorComponent` in place of the component that failed.
+   * @internal
+   */
+  activateComponent(
+    component: Type<unknown>,
+    activatedRoute: ActivatedRoute,
+    environmentInjector: EnvironmentInjector,
+    childContexts: ChildrenOutletContexts,
+    onError?: (error: Error, details?: ErrorDetails) => void,
+  ): ComponentRef<any> {
+    const componentRef = this.location.createComponent(component, {
+      index: this.location.length,
+      injector: new OutletInjector(
+        activatedRoute,
+        childContexts,
+        this.location.injector,
+        this.routerOutletData,
+      ),
+      environmentInjector,
+      onError,
+    });
+    this.activated = componentRef;
     this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
-    this.activateEvents.emit(this.activated.instance);
+    return componentRef;
   }
 }
 
@@ -495,6 +608,7 @@ export class RoutedComponentInputBinder {
       const {handledKeys, createdEffects} = this.feature.createResourceOutletBindingEffects(
         outlet.activatedComponentRef,
         activatedRoute,
+        outlet.isErrorComponentActive,
       );
       effects.push(...createdEffects);
       keysBoundToBlockingResources = handledKeys;
@@ -536,14 +650,14 @@ export class RoutedComponentInputBinder {
         if (
           !outlet.isActivated ||
           !outlet.activatedComponentRef ||
-          outlet.activatedRoute !== activatedRoute ||
-          activatedRoute.component === null
+          outlet.activatedRoute !== activatedRoute
         ) {
           this.unsubscribeFromRouteData(outlet);
           return;
         }
 
-        const currentMirror = reflectComponentType(activatedRoute.component);
+        const componentType = outlet.activatedComponentRef.componentType;
+        const currentMirror = reflectComponentType(componentType);
         if (!currentMirror) {
           this.unsubscribeFromRouteData(outlet);
           return;
@@ -563,6 +677,11 @@ export class RoutedComponentInputBinder {
 
         for (const {templateName} of currentMirror.inputs) {
           if (keysBoundToBlockingResources.includes(templateName)) {
+            continue;
+          }
+          // Skip binding 'error' to error component because we bind it separately
+          // to the caught error.
+          if (outlet.isErrorComponentActive && templateName === 'error') {
             continue;
           }
           const value = data[templateName];

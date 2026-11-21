@@ -65,7 +65,6 @@ export async function declareExperimentalWebMcpTool<const InputSchema extends ob
   const wrappedTool: ModelContextTool = {
     ...tool,
     execute: (args, client) => {
-      // TODO: `@mcp-b/webmcp-polyfill` currently lacks `AbortSignal` in its mock client.
       // Remove the optional chaining when it is updated to match Chrome 153 spec.
       const signal = client?.signal
         ? AbortSignal.any([abortCtrl.signal, client.signal])

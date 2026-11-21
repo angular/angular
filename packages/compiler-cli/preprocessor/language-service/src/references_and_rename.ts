@@ -48,13 +48,13 @@ export async function ensureAllTcbs(
   if (currentFilePath) {
     let currentTsPath = currentFilePath;
     if (currentFilePath.endsWith('.html')) {
-      const usage = hybridCompiler.getTsFileForTemplate(currentFilePath);
+      const usage = await hybridCompiler.getTsFileForTemplate(currentFilePath);
       if (usage) {
         currentTsPath = usage.tsFilePath;
       }
     }
     if (currentTsPath.endsWith('.ts') && !currentTsPath.endsWith('.ngtypecheck.ts')) {
-      const tcb = hybridCompiler.getTcbForFile(currentTsPath);
+      const tcb = await hybridCompiler.getTcbForFile(currentTsPath);
       if (tcb) {
         await facade.ensureDocument(getTcbPath(currentTsPath), tcb);
       }
@@ -77,7 +77,7 @@ export class ReferencesBuilder {
   ): Promise<Location[] | null> {
     await ensureAllTcbs(this.hybridCompiler, this.facade, filePath);
 
-    const info = getSetup(this.hybridCompiler, filePath, position);
+    const info = await getSetup(this.hybridCompiler, filePath, position);
     if (info && (info.parsedTemplate || info.isHostBinding)) {
       return this.getReferencesAtTemplatePosition(info, offset, fileContent);
     }
@@ -90,7 +90,7 @@ export class ReferencesBuilder {
     offset: number,
     _fileContent: string,
   ): Promise<Location[] | null> {
-    const details = getTargetDetailsAtTemplatePosition(
+    const details = await getTargetDetailsAtTemplatePosition(
       info,
       offset,
       this.templateTypeChecker,
@@ -129,8 +129,8 @@ export class ReferencesBuilder {
         let fileText: string;
         try {
           fileText = isTcb
-            ? (this.hybridCompiler.getTcbForFile(tsFilePath) ?? '')
-            : this.hybridCompiler.getFileContent(loc.fileName);
+            ? ((await this.hybridCompiler.getTcbForFile(tsFilePath)) ?? '')
+            : await this.hybridCompiler.getFileContent(loc.fileName);
         } catch {
           continue;
         }
@@ -235,7 +235,7 @@ export class ReferencesBuilder {
     if (!pipeLoc) return null;
 
     const pipeName = symbol.pipeName || symbol.name || (detail.templateTarget as any)?.name;
-    const tcbCode = this.hybridCompiler.getTcbForFile(info.tsFilePath);
+    const tcbCode = await this.hybridCompiler.getTcbForFile(info.tsFilePath);
     if (!tcbCode) return null;
 
     const targetFileName = getTcbPath(info.tsFilePath);
@@ -354,7 +354,7 @@ export class ReferencesBuilder {
   ): Promise<Location | null> {
     let content: string;
     try {
-      content = this.hybridCompiler.getFileContent(filePath);
+      content = await this.hybridCompiler.getFileContent(filePath);
     } catch {
       return null;
     }
@@ -402,9 +402,9 @@ export class RenameBuilder {
     position: {line: number; character: number},
     fileContent: string,
   ): Promise<RenameInfo | null> {
-    const info = getSetup(this.hybridCompiler, filePath, position);
+    const info = await getSetup(this.hybridCompiler, filePath, position);
     if (info && info.parsedTemplate) {
-      const details = getTargetDetailsAtTemplatePosition(
+      const details = await getTargetDetailsAtTemplatePosition(
         info,
         offset,
         this.templateTypeChecker,
@@ -505,7 +505,7 @@ export class RenameBuilder {
   ): Promise<Location[] | null> {
     await ensureAllTcbs(this.hybridCompiler, this.facade, filePath);
 
-    const info = getSetup(this.hybridCompiler, filePath, position);
+    const info = await getSetup(this.hybridCompiler, filePath, position);
     if (info && info.parsedTemplate) {
       return this.findRenameLocationsFromTemplate(info, offset, fileContent);
     }
@@ -518,7 +518,7 @@ export class RenameBuilder {
     offset: number,
     _fileContent: string,
   ): Promise<Location[] | null> {
-    const details = getTargetDetailsAtTemplatePosition(
+    const details = await getTargetDetailsAtTemplatePosition(
       info,
       offset,
       this.templateTypeChecker,
@@ -559,8 +559,8 @@ export class RenameBuilder {
         let fileText: string;
         try {
           fileText = isTcb
-            ? (this.hybridCompiler.getTcbForFile(tsFilePath) ?? '')
-            : this.hybridCompiler.getFileContent(loc.fileName);
+            ? ((await this.hybridCompiler.getTcbForFile(tsFilePath)) ?? '')
+            : await this.hybridCompiler.getFileContent(loc.fileName);
         } catch {
           return null;
         }

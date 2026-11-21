@@ -6,7 +6,7 @@ This tutorial lesson demonstrates how to add the `HousingLocation` component to 
 
 ## What you'll learn
 
-- Your app has a new component: `HousingLocation` and it displays a message confirming that the component was added to your application.
+Your app will have a new component, `HousingLocation`, and it will display a message confirming that the component was added to your application.
 
 <docs-workflow>
 

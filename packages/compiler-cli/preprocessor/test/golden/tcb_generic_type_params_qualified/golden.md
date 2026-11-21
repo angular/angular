@@ -76,11 +76,11 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MatSelectionList, MatLocalList, GenericDir, MatDtsList],
                 template: `
-        <mat-selection-list [value]="selection"></mat-selection-list>
-        <mat-local-list [value]="selection"></mat-local-list>
-        <div [genericDir]="selection"></div>
-        <mat-dts-list [value]="selection"></mat-dts-list>
-      `,
+    <mat-selection-list [value]="selection"></mat-selection-list>
+    <mat-local-list [value]="selection"></mat-local-list>
+    <div [genericDir]="selection"></div>
+    <mat-dts-list [value]="selection"></mat-dts-list>
+  `,
               },
             ],
           },

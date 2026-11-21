@@ -132,7 +132,6 @@ pub fn extract_directive_metadata<'a>(
                     }
                 }
             }
-            "signals" => data.signals = extract_bool(&p.value, semantic).unwrap_or(false),
             "exportAs" => {
                 data.export_as_span = Some(p.value.span());
                 data.export_as = Some(Resolved::from_syntax(
@@ -157,6 +156,8 @@ pub fn extract_directive_metadata<'a>(
                 let evaluated = evaluate_expression(&p.value, eval);
                 data.unsupported_host_directives =
                     extract_unsupported_host_directives(&evaluated, semantic, eval.file);
+                data.host_directive_expressions =
+                    host_directive_wrappable_expressions(&p.value, semantic.source_text());
                 data.host_directives = Some(Resolved::from_syntax(evaluated, eval.file));
                 data.host_directives_span = Some(p.value.span());
             }
@@ -240,6 +241,64 @@ fn extract_unsupported_host_directives(
         .collect()
 }
 
+/// The `hostDirectives` array elements (or their `directive` property) that are an identifier or
+/// a non-computed property access chain, with their source text.
+///
+/// In local and `emitDeclarationOnly` compilation, ngtsc's `extractHostDirectives` keeps an entry
+/// that evaluates to a `DynamicValue` as `WrappedNodeExpr(node)` when that node is an `Identifier`
+/// or `PropertyAccessExpression`. Since `visitExpression` re-anchors every `DynamicValue` on the
+/// outermost expression evaluated, the node is the array element itself, so the check is purely
+/// syntactic on the decorator's own array literal.
+/// https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2152-L2171
+fn host_directive_wrappable_expressions(
+    expr: &Expression<'_>,
+    source_text: &str,
+) -> Vec<(oxc_span::Span, String)> {
+    let Expression::ArrayExpression(array) = expr.without_parentheses() else {
+        return Vec::new();
+    };
+    array
+        .elements
+        .iter()
+        .filter_map(|element| {
+            let element = element.as_expression()?;
+            let directive = match element.without_parentheses() {
+                Expression::ObjectExpression(object) => object_property_value(object, "directive")?,
+                other => other,
+            };
+            is_identifier_or_property_access(directive).then(|| {
+                let span = directive.span();
+                (span, span.source_text(source_text).to_string())
+            })
+        })
+        .collect()
+}
+
+fn object_property_value<'r, 'a>(
+    object: &'r oxc_ast::ast::ObjectExpression<'a>,
+    name: &str,
+) -> Option<&'r Expression<'a>> {
+    object.properties.iter().find_map(|property| {
+        let ObjectPropertyKind::ObjectProperty(property) = property else {
+            return None;
+        };
+        if property.computed || extract_property_key(&property.key).as_deref() != Some(name) {
+            return None;
+        }
+        Some(&property.value)
+    })
+}
+
+fn is_identifier_or_property_access(expr: &Expression<'_>) -> bool {
+    match expr {
+        Expression::Identifier(_) => true,
+        Expression::StaticMemberExpression(member) => {
+            is_identifier_or_property_access(&member.object)
+        }
+        _ => false,
+    }
+}
+
 fn unsupported_host_directive_entry(
     item: &ResolvedValue,
     semantic: &Semantic<'_>,
@@ -252,7 +311,10 @@ fn unsupported_host_directive_entry(
     let ResolvedValue::Incomplete(hole) = dir_val.unwrap_named() else {
         return None;
     };
+    // A spread hole's node is its argument, but ngtsc sees the spread element itself
+    // (`[...IMPORTED]`), which is never an identifier.
     let is_supported = !hole.synthetic
+        && hole.spread.is_none()
         && hole.node_id.is_some_and(|id| {
             matches!(
                 semantic.nodes().kind(id),
@@ -520,64 +582,6 @@ mod tests {
         let backtick_end = source_text.rfind('`').unwrap() as u32;
         assert_eq!(properties[0].value.span.start, backtick_start + 1);
         assert_eq!(properties[0].value.span.end, backtick_end);
-    }
-
-    #[test]
-    fn test_extract_directive_metadata_signals() {
-        let source_text = r#"
-            let x = {
-                selector: '[signalDir]',
-                standalone: false,
-                signals: true
-            };
-        "#;
-
-        let allocator = Allocator::default();
-        let source_type = SourceType::default();
-        let ret = Parser::new(&allocator, source_text, source_type).parse();
-
-        let semantic_ret = SemanticBuilder::new()
-            .with_build_nodes(true)
-            .build(&ret.program);
-
-        let mut object_expr = None;
-        if let oxc_ast::ast::Statement::VariableDeclaration(decl) = &ret.program.body[0] {
-            if let Some(init) = &decl.declarations[0].init {
-                object_expr = Some(init);
-            }
-        }
-
-        let expr = object_expr.expect("Expected object expression");
-        let oxc_ast::ast::Expression::ObjectExpression(obj) = expr else {
-            panic!("Expected object expression");
-        };
-
-        let import_map = crate::analyzer::extract_import_map(&ret.module_record);
-        let angular_imports = crate::analyzer::imports::extract_angular_imports(
-            &ret.module_record,
-            &semantic_ret.semantic,
-            false,
-        );
-        let env = crate::evaluator::ResolvedEnv::new();
-        let interner = crate::query::FileIdInterner::new();
-        let eval = EvalInput {
-            semantic: &semantic_ret.semantic,
-            file: interner.intern_path("/test/file.ts"),
-            import_map: &import_map,
-            mode: crate::evaluator::EvalMode::Syntax,
-            env: &env,
-            foreign: crate::analyzer::resolvers::angular_foreign_resolvers(),
-        };
-        let meta =
-            extract_directive_metadata(obj, None, &semantic_ret.semantic, &angular_imports, &eval)
-                .expect("non-jit metadata should be extracted");
-
-        assert_eq!(
-            meta.selector.as_ref().and_then(Resolved::get_optional),
-            Some("[signalDir]".to_string())
-        );
-        assert!(!meta.standalone);
-        assert!(meta.signals);
     }
 
     #[test]

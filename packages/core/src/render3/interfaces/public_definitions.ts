@@ -21,7 +21,7 @@ export type ɵɵDirectiveDeclaration<
   ExportAs extends string[],
   // `string` keys are for backwards compatibility with pre-16 versions.
   InputMap extends {
-    [key: string]: string | {alias: string | null; required: boolean; isSignal?: boolean};
+    [key: string]: string | {'alias': string | null; 'required': boolean; 'isSignal'?: boolean};
   },
   OutputMap extends {[key: string]: string},
   QueryFields extends string[],
@@ -32,7 +32,6 @@ export type ɵɵDirectiveDeclaration<
   // are not standalone.
   IsStandalone extends boolean = false,
   HostDirectives = never,
-  IsSignal extends boolean = false,
 > = unknown;
 
 /**
@@ -44,7 +43,7 @@ export type ɵɵComponentDeclaration<
   ExportAs extends string[],
   // `string` keys are for backwards compatibility with pre-16 versions.
   InputMap extends {
-    [key: string]: string | {alias: string | null; required: boolean; isSignal?: boolean};
+    [key: string]: string | {'alias': string | null; 'required': boolean; 'isSignal'?: boolean};
   },
   OutputMap extends {[key: string]: string},
   QueryFields extends string[],
@@ -53,7 +52,6 @@ export type ɵɵComponentDeclaration<
   // are not standalone.
   IsStandalone extends boolean = false,
   HostDirectives = never,
-  IsSignal extends boolean = false,
 > = unknown;
 
 /**

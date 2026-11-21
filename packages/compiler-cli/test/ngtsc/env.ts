@@ -36,6 +36,7 @@ import {
   NgtscTestCompilerHost,
   normalizeNgpOutputFile,
   performNgpCompilationSync,
+  runNgpSync,
   toPosixPath,
 } from '../../src/ngtsc/testing';
 import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
@@ -457,7 +458,10 @@ export class NgtscTestEnvironment {
         closeAnalyzer: false,
       });
       try {
-        const rawIndexed = result.compiler.getIndexedComponentsSync();
+        const rawIndexed = runNgpSync(
+          result.compiler.getIndexedComponents(),
+          result.compiler.analyzer,
+        );
         const out = new Map<DeclarationNode, IndexedComponent<DeclarationNode>>();
         for (const [, comp] of rawIndexed.entries()) {
           const fsFileUrl = this.fs.resolve(comp.fileUrl);
@@ -543,7 +547,10 @@ export class NgtscTestEnvironment {
       });
       try {
         const filePath = toPosixPath(this.fs.resolve(this.basePath, fileName));
-        const source = result.compiler.emitHmrUpdateModuleSync(filePath, className);
+        const source = runNgpSync(
+          result.compiler.emitHmrUpdateModule(filePath, className),
+          result.compiler.analyzer,
+        );
         if (source === null) {
           return null;
         }

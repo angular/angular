@@ -7,6 +7,7 @@
  */
 
 import type * as nga from './types.js';
+import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
 export class NapiAnalyzer implements IAnalyzer {
@@ -67,23 +68,19 @@ export class NapiAnalyzer implements IAnalyzer {
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
-    return this.updateFileContentSync(updates);
-  }
-
-  updateFileContentSync(updates: {filePath: string; content: string}[]): string[] {
     return this.analyzer.updateFileContent(updates);
   }
 
   async invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]> {
-    return this.invalidateFilesSync(updates);
-  }
-
-  invalidateFilesSync(updates: nga.FileInvalidation[]): string[] {
     return this.analyzer.invalidateFiles(updates);
   }
 
   async setEntryPoints(entryPoints: string[]): Promise<string[]> {
     return this.analyzer.setEntryPoints(entryPoints);
+  }
+
+  async clearResolutionCache(): Promise<string[]> {
+    return this.analyzer.clearResolutionCache();
   }
 
   async getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null> {
@@ -95,31 +92,16 @@ export class NapiAnalyzer implements IAnalyzer {
   }
 
   async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
-    return this.readResourceSync(containingFile, url);
-  }
-
-  readResourceSync(containingFile: string, url: string): nga.ResolvedResource | null {
     return this.analyzer.readResource(containingFile, url) ?? null;
   }
 
   async canonicalPaths(paths: string[]): Promise<string[]> {
-    return this.canonicalPathsSync(paths);
-  }
-
-  canonicalPathsSync(paths: string[]): string[] {
     return this.analyzer.canonicalPaths(paths);
   }
 
-  getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {
-    return this.analyzer.getMetadataForFile(filePath) ?? null;
-  }
-
-  getFileContentSync(filePath: string): string {
-    return this.analyzer.getFileContent(filePath);
-  }
-
-  getTsFileForTemplateSync(templatePath: string): nga.TemplateUsage[] | null {
-    return this.analyzer.getTsFileForTemplate(templatePath);
+  getCompilerOptions(): NgpCompilerOptions {
+    const raw = this.analyzer.getCompilerOptions?.();
+    return raw ? (JSON.parse(raw) as NgpCompilerOptions) : {};
   }
 
   close(): void {}

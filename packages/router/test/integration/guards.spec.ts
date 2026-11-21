@@ -1191,15 +1191,14 @@ export async function guardsIntegrationSuite() {
         @Component({
           selector: 'outer',
           template: '<router-outlet name="inner"></router-outlet>',
-          standalone: true,
           imports: [RouterOutlet],
         })
         class OuterCmp {}
 
-        @Component({template: '', standalone: true})
+        @Component({template: ''})
         class Inner1Cmp {}
 
-        @Component({template: '', standalone: true})
+        @Component({template: ''})
         class Inner2Cmp {}
 
         const router: Router = TestBed.inject(Router);

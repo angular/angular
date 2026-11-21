@@ -70,10 +70,10 @@ export class ParentCmp {
                       block: [SharedDep],
                     },
                     template: `
-        @defer (name block) {
-          <shared-dep />
-        }
-      `,
+    @defer (name block) {
+      <shared-dep />
+    }
+  `,
                   },
                 ],
               },

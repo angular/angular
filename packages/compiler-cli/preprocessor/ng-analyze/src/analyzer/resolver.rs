@@ -1,31 +1,17 @@
-use crate::{ClassInfo, DeclarationTuple, ResourceResolverFs};
+use crate::{ClassInfo, DeclarationTuple};
 use futures::future::{BoxFuture, FutureExt};
-use oxc_resolver::ResolverGeneric;
 use std::collections::HashSet;
-use std::path::{Path, PathBuf};
-
-/// Try to resolve a specifier to a .d.ts file.
-/// Handles cases where imports reference .js files but actual files are .d.ts.
-pub fn resolve_to_dts<Fs: ResourceResolverFs>(
-    resolver: &ResolverGeneric<Fs>,
-    file_path: &Path,
-    source: &str,
-) -> Option<PathBuf> {
-    resolver
-        .resolve_dts(file_path, source)
-        .ok()
-        .map(|res| res.into_path_buf())
-}
+use std::path::Path;
 
 /// Asynchronously resolves a component, directive, or pipe declaration from its import specifier.
 ///
 /// This is the main entry point for cross-file symbol resolution. It resolves the import path, ensures
 /// the target file has been parsed (running lazy Stage 1 analysis for TS files or definition loading for DTS
 /// files), and traces the symbol through re-exports and wildcard chains recursively to find its origin.
-pub async fn resolve_declaration_async<Fs: ResourceResolverFs + Clone + 'static>(
+pub async fn resolve_declaration_async(
     decl: &DeclarationTuple,
     module_file: &Path,
-    ctx: &crate::QueryCtx<Fs>,
+    ctx: &crate::QueryCtx,
 ) -> Option<ClassInfo> {
     let mut visited = HashSet::new();
     let Ok(Some(resolved)) = crate::evaluator::cross_file::cross_file_resolve(
@@ -100,9 +86,9 @@ fn merge_class_info(info: &mut ClassInfo, super_info: &ClassInfo) {
     }
 }
 
-pub fn flatten_class_info<'a, Fs: ResourceResolverFs + Clone + 'static>(
+pub fn flatten_class_info<'a>(
     mut info: ClassInfo,
-    ctx: &'a crate::QueryCtx<Fs>,
+    ctx: &'a crate::QueryCtx,
 ) -> BoxFuture<'a, ClassInfo> {
     async move {
         let mut current_super = info.super_class.clone();

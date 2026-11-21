@@ -338,13 +338,6 @@ export interface Directive {
   standalone?: boolean;
 
   /**
-   * // TODO(signals): Remove internal and add public documentation
-   *
-   * @internal
-   */
-  signals?: boolean;
-
-  /**
    * Standalone directives that should be applied to the host whenever the directive is matched.
    * By default, none of the inputs or outputs of the host directives will be available on the host,
    * unless they are specified in the `inputs` or `outputs` properties.
@@ -679,7 +672,8 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
   'Component',
-  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}),
+  // g3-only (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.OnPush, ...c}),
+  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}), // 3p-only
   Directive,
   undefined,
   (type: Type<any>, meta: Component) => compileComponent(type, meta),

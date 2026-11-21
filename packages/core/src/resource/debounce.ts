@@ -10,7 +10,6 @@ import {assertInInjectionContext, inject, Injector} from '../di';
 import {DestroyRef} from '../linker';
 import {effect} from '../render3/reactivity/effect';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
-import {signal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
 import {Resource, ResourceSnapshot, type DebounceTimer, type DebouncedOptions} from './api';
 import {resourceFromSnapshots} from './from_snapshots';

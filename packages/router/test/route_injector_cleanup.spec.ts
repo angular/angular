@@ -26,21 +26,20 @@ import {
 describe('Route Injector Destruction', () => {
   @Component({
     template: '<router-outlet></router-outlet>',
-    standalone: true,
     imports: [RouterOutlet],
   })
   class AppComponent {}
 
-  @Component({template: 'home', standalone: true})
+  @Component({template: 'home'})
   class HomeComponent {}
 
-  @Component({template: 'away', standalone: true})
+  @Component({template: 'away'})
   class AwayComponent {}
 
-  @Component({template: 'child', standalone: true})
+  @Component({template: 'child'})
   class ChildComponent {}
 
-  @Component({template: 'lazy', standalone: true})
+  @Component({template: 'lazy'})
   class LazyComponent {}
 
   @NgModule({
@@ -48,7 +47,7 @@ describe('Route Injector Destruction', () => {
   })
   class LazyModule {}
 
-  @Component({template: 'check', standalone: true})
+  @Component({template: 'check'})
   class DestroyCheckComponent {
     destroyRefCalled = false;
     destroyRef = inject(DestroyRef);

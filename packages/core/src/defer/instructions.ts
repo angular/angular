@@ -7,6 +7,7 @@
  */
 
 import {setActiveConsumer} from '../../primitives/signals';
+import {IS_TESTING} from '../application/application_tokens';
 
 import {
   DEFER_BLOCK_ID,
@@ -148,7 +149,11 @@ export function ɵɵdefer(
       if (typeof ngHmrMode !== 'undefined' && ngHmrMode) {
         logHmrWarning(injector);
       }
-      if (hasHydrateTriggers(flags) && !incrementalHydrationEnabled) {
+      if (
+        hasHydrateTriggers(flags) &&
+        !incrementalHydrationEnabled &&
+        !injector.get(IS_TESTING, false)
+      ) {
         warnIncrementalHydrationNotConfigured();
       }
     }

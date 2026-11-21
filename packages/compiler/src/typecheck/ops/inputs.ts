@@ -9,7 +9,7 @@
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
-import {BoundAttribute, Component, Directive, Element, Template} from '../../render3/r3_ast';
+import {BoundAttribute, Element, Template} from '../../render3/r3_ast';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../api';
@@ -51,7 +51,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private node: Template | Element | Component | Directive,
+    private node: Template | Element,
     private dir: TcbDirectiveMetadata,
     private isFormControl: boolean = false,
     private customFormControlType: CustomFormControlType | null,

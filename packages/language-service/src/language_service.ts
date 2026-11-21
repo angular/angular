@@ -995,9 +995,6 @@ function parseNgCompilerOptions(
   if (config['forceStrictTemplates'] === true) {
     options.strictTemplates = true;
   }
-  if (config['enableSelectorless'] === true) {
-    options['_enableSelectorless'] = true;
-  }
 
   options['_angularCoreVersion'] = config['angularCoreVersion'];
 

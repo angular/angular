@@ -106,13 +106,6 @@ export interface InternalOptions {
   _enableHmr?: boolean;
 
   /**
-   * Whether selectorless is enabled.
-   *
-   * @internal
-   */
-  _enableSelectorless?: boolean;
-
-  /**
    * Whether this is a compilation of Angular core itself.
    *
    * By default, we detect this automatically based on the existence of `r3_symbols.ts`

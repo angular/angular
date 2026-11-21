@@ -12,8 +12,6 @@ import {
   BoundAttribute,
   BoundEvent,
   BoundaryBlock,
-  Component,
-  Directive,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -127,7 +125,7 @@ export interface OutOfBandDiagnosticRecorder<T> {
   /** Reports required inputs that haven't been bound. */
   missingRequiredInputs(
     id: TypeCheckId,
-    element: Element | Template | Component | Directive,
+    element: Element | Template,
     directiveName: string,
     isComponent: boolean,
     inputAliases: string[],
@@ -175,34 +173,6 @@ export interface OutOfBandDiagnosticRecorder<T> {
   conflictingDeclaration(id: TypeCheckId, current: LetDeclaration): void;
 
   /**
-   * Reports that a named template dependency (e.g. `<Missing/>`) is not available.
-   * @param id Type checking ID of the template in which the dependency is declared.
-   * @param node Node that declares the dependency.
-   */
-  missingNamedTemplateDependency(id: TypeCheckId, node: Component | Directive): void;
-
-  /**
-   * Reports that a templace dependency of the wrong kind has been referenced at a specific position
-   * (e.g. `<SomeDirective/>`).
-   * @param id Type checking ID of the template in which the dependency is declared.
-   * @param node Node that declares the dependency.
-   */
-  incorrectTemplateDependencyType(id: TypeCheckId, node: Component | Directive): void;
-
-  /**
-   * Reports a binding inside directive syntax that does not match any of the inputs/outputs of
-   * the directive.
-   * @param id Type checking ID of the template in which the directive was defined.
-   * @param directive Directive that contains the binding.
-   * @param node Node declaring the binding.
-   */
-  unclaimedDirectiveBinding(
-    id: TypeCheckId,
-    directive: Directive,
-    node: BoundAttribute | TextAttribute | BoundEvent,
-  ): void;
-
-  /**
    * Reports that an implicit deferred trigger is set on a block that does not have a placeholder.
    */
   deferImplicitTriggerMissingPlaceholder(
@@ -240,7 +210,7 @@ export interface OutOfBandDiagnosticRecorder<T> {
    */
   conflictingHostDirectiveBinding(
     id: TypeCheckId,
-    node: Element | Template | Component | Directive,
+    node: Element | Template,
     directiveName: string,
     kind: 'input' | 'output',
     classPropertyName: string,

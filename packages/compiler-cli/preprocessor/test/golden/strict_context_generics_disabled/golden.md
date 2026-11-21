@@ -53,8 +53,8 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <app-generic [value]="'string'"></app-generic>
-      `,
+    <app-generic [value]="'string'"></app-generic>
+  `,
                 imports: [GenericComponent],
               },
             ],

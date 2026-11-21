@@ -3,5 +3,5 @@
   "type": "local",
   "answerSrc": "../13-search/src",
   "answerRootDir": "../13-search/",
-  "openFiles": ["src/app/housing.service.ts", "src/app/details/details.ts"]
+  "openFiles": ["src/app/housing-service.ts", "src/app/details/details.ts"]
 }

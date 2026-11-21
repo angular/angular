@@ -13,9 +13,9 @@ import {
   NgModuleFactory,
   Provider,
   ProviderToken,
+  Resource,
   Signal,
   Type,
-  Resource,
   WritableResource,
 } from '@angular/core';
 import {Observable} from 'rxjs';
@@ -59,12 +59,15 @@ export interface ResourceContext {
    * @developerPreview 22.2
    */
   fragment: Signal<string | null>;
+  // TODO(v23): Remove data from ResourceContext (or restrict to static data) in 3p.
+  // 3p-only-start
   /**
    * Data provided in the route configuration.
    *
    * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
+  // 3p-only-end
   /**
    * Resources inherited from ancestor routes, keyed by name.
    *
@@ -72,7 +75,7 @@ export interface ResourceContext {
    * with `chain(ctx.resources()['user'])`) rather than synchronously in the `resources` function
    * body, as ancestor `resources` functions may still be initializing asynchronously.
    *
-   * @developerPreview 22.2
+   * @developerPreview 22.3
    */
   resources: Signal<ResourceResult>;
 }
@@ -661,6 +664,16 @@ export interface Route {
    * Can be empty if child routes specify components.
    */
   component?: Type<any>;
+
+  /**
+   * The component to instantiate when an error occurs in this route.
+   *
+   * Requires the error boundary feature to be enabled with `withErrorBoundaries`.
+   *
+   * @see [Error boundaries](guide/routing/error-boundaries)
+   * @developerPreview 22.3
+   */
+  errorComponent?: Type<unknown>;
 
   /**
    * An object specifying a lazy-loaded component.

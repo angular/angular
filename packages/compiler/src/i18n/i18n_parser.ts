@@ -101,14 +101,6 @@ class _I18nVisitor implements html.Visitor {
     return this._visitElementLike(el, context);
   }
 
-  visitComponent(component: html.Component, context: I18nMessageVisitorContext) {
-    return this._visitElementLike(component, context);
-  }
-
-  visitDirective(directive: html.Directive, context: any) {
-    throw new Error('Unreachable code');
-  }
-
   visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
     const node =
       attribute.valueTokens === undefined || attribute.valueTokens.length === 1
@@ -218,10 +210,7 @@ class _I18nVisitor implements html.Visitor {
     return null;
   }
 
-  private _visitElementLike(
-    node: html.Element | html.Component,
-    context: I18nMessageVisitorContext,
-  ): i18n.Node {
+  private _visitElementLike(node: html.Element, context: I18nMessageVisitorContext): i18n.Node {
     const children = html.visitAll(this, node.children, context);
     const attrs: {[k: string]: string} = {};
     const visitAttribute = (attr: html.Attribute) => {
@@ -229,19 +218,10 @@ class _I18nVisitor implements html.Visitor {
       attrs[attr.name] = attr.value;
     };
 
-    let nodeName: string;
-    let isVoid: boolean;
-
-    if (node instanceof html.Element) {
-      nodeName = node.name;
-      isVoid = getHtmlTagDefinition(node.name).isVoid;
-    } else {
-      nodeName = node.fullName;
-      isVoid = node.tagName ? getHtmlTagDefinition(node.tagName).isVoid : false;
-    }
+    const nodeName = node.name;
+    const isVoid = getHtmlTagDefinition(node.name).isVoid;
 
     node.attrs.forEach(visitAttribute);
-    node.directives.forEach((dir) => dir.attrs.forEach(visitAttribute));
 
     const startPhName = context.placeholderRegistry.getStartTagPlaceholderName(
       nodeName,

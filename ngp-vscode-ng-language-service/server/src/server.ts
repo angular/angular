@@ -36,7 +36,7 @@ import {HandlerContext} from './handlers/utils';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
 
-import {API} from '@typescript/native-preview/unstable/async';
+import {API} from '@typescript/native-preview/async';
 import {TsGoFacade} from '../../../packages/compiler-cli/preprocessor/language-service/src/facade';
 import {fileURLToPath} from 'node:url';
 import {getTcbPath} from '../../../packages/compiler-cli/preprocessor/language-service/src/tcb_ls_util.js';
@@ -141,7 +141,7 @@ connection.onDidChangeWatchedFiles((params: DidChangeWatchedFilesParams) => {
 connection.onInitialize(async (params: InitializeParams) => {
   connection.console.log(`Initializing Angular Hybrid Language Server`);
 
-  let api: API | undefined;
+  let api: API<true> | undefined;
   if (params.initializationOptions?.tsApiPipe) {
     try {
       api = await API.fromLSPConnection({pipe: params.initializationOptions.tsApiPipe});
@@ -175,6 +175,18 @@ connection.onInitialize(async (params: InitializeParams) => {
       if (projectManager) {
         projectManager.setApi(dynamicApi);
         connection.console.log(`[SERVER] Connected to dynamic TS7 API pipe: ${params.pipe}`);
+        const openUpdates = documents
+          .all()
+          .map((doc) => ({filePath: fileURLToPath(doc.uri), content: doc.getText()}))
+          .filter(
+            ({filePath}) =>
+              !filePath.endsWith('.ngtypecheck.ts') &&
+              (filePath.endsWith('.html') || filePath.endsWith('.ts')),
+          );
+        if (openUpdates.length > 0) {
+          await projectManager.updateFileContent(openUpdates);
+          connection.languages.diagnostics.refresh().catch(() => {});
+        }
       }
     } catch (err) {
       connection.console.error(`[SERVER] Failed to connect to dynamic TS7 API pipe: ${err}`);
@@ -278,7 +290,7 @@ connection.onRequest('textDocument/diagnostic', async (params: DocumentDiagnosti
 
   let tsFilePath = filePath;
   if (filePath.endsWith('.html')) {
-    const templateUsage = project.hybridCompiler.getTsFileForTemplate(filePath);
+    const templateUsage = await project.hybridCompiler.getTsFileForTemplate(filePath);
     if (!templateUsage) {
       connection.console.log(`[SERVER] No component found for template ${filePath}`);
       await diagnosticPublisher.clearAllFor(uri);
@@ -293,7 +305,7 @@ connection.onRequest('textDocument/diagnostic', async (params: DocumentDiagnosti
   await project.hybridCompiler.ensureReady();
 
   const tcbFilePath = getTcbPath(tsFilePath);
-  const tcbContent = project.hybridCompiler.getTcbForFile(tsFilePath);
+  const tcbContent = await project.hybridCompiler.getTcbForFile(tsFilePath);
   if (!tcbContent) {
     await diagnosticPublisher.clearAllFor(uri);
     return {kind: 'full', items: []};
@@ -370,7 +382,7 @@ async function computeWorkspaceDiagnostics(): Promise<WorkspaceDiagnosticReport>
 
     for (const filePath of validCandidateFiles) {
       try {
-        const tcbContent = project.hybridCompiler.getTcbForFile(filePath);
+        const tcbContent = await project.hybridCompiler.getTcbForFile(filePath);
         if (!tcbContent) {
           continue;
         }

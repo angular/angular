@@ -96,12 +96,12 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <div>{{ obj?.foo?.bar }}</div>
-        <div>{{ arr?.[index]?.name }}</div>
-        <div>{{ svc?.lookup()?.value }}</div>
-        <div>{{ obj?.foo?.bar ?? fallback }}</div>
-        <div>{{ matrix?.[row]?.[col] }}</div>
-      `,
+    <div>{{ obj?.foo?.bar }}</div>
+    <div>{{ arr?.[index]?.name }}</div>
+    <div>{{ svc?.lookup()?.value }}</div>
+    <div>{{ obj?.foo?.bar ?? fallback }}</div>
+    <div>{{ matrix?.[row]?.[col] }}</div>
+  `,
                 standalone: true,
               },
             ],

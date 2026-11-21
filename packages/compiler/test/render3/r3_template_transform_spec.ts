@@ -26,7 +26,6 @@ class R3AstHumanizer implements t.Visitor<void> {
       element.attributes,
       element.inputs,
       element.outputs,
-      element.directives,
       element.references,
       element.children,
     ]);
@@ -42,7 +41,6 @@ class R3AstHumanizer implements t.Visitor<void> {
       template.attributes,
       template.inputs,
       template.outputs,
-      template.directives,
       template.templateAttrs,
       template.references,
       template.variables,
@@ -223,39 +221,13 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.result.push(['LetDeclaration', decl.name, unparse(decl.value)]);
   }
 
-  visitComponent(component: t.Component) {
-    const res = ['Component', component.componentName, component.tagName, component.fullName];
-    if (component.isSelfClosing) {
-      res.push('#selfClosing');
-    }
-    this.result.push(res);
-    this.visitAll([
-      component.attributes,
-      component.inputs,
-      component.outputs,
-      component.directives,
-      component.references,
-      component.children,
-    ]);
-  }
-
-  visitDirective(directive: t.Directive): void {
-    this.result.push(['Directive', directive.name]);
-    this.visitAll([
-      directive.attributes,
-      directive.inputs,
-      directive.outputs,
-      directive.references,
-    ]);
-  }
-
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach((node) => t.visitAll(this, node));
   }
 }
 
-function expectFromHtml(html: string, ignoreError = false, selectorlessEnabled = false) {
-  const res = parse(html, {ignoreError, selectorlessEnabled});
+function expectFromHtml(html: string, ignoreError = false) {
+  const res = parse(html, {ignoreError});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -462,6 +434,27 @@ describe('R3 template transform', () => {
         ['BoundAttribute', BindingType.Class, 'data-active:text-green-300/80', 'expr2'],
         ['BoundAttribute', BindingType.Class, `data-[size='large']:p-8`, 'expr3'],
       ]);
+    });
+
+    it('should parse interpolated namespaced attributes without error', () => {
+      expectFromHtml('<svg><a xlink:href="{{v}}"></a></svg>').toEqual([
+        ['Element', ':svg:svg'],
+        ['Element', ':svg:a'],
+        ['BoundAttribute', BindingType.Attribute, ':xlink:href', '{{ v }}'],
+      ]);
+    });
+
+    it('should reject interpolated namespaced event attributes', () => {
+      expect(() => parse('<svg><a svg:onclick="{{v}}"></a></svg>')).toThrowError(
+        /Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use \(click\)=\.\.\./,
+      );
+    });
+
+    it('should ignore raw attributes starting with a colon', () => {
+      expectFromHtml(
+        '<div :xlink:href="val" :onclick="handler"></div>',
+        true /* ignoreError */,
+      ).toEqual([['Element', 'div']]);
     });
 
     it('should not attach i18n metadata for bound properties named after Object.prototype members', () => {
@@ -1080,6 +1073,16 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['TextAttribute', 'ngNonBindable', ''],
         ['Text', 'a'],
+      ]);
+    });
+
+    it('should convert &ngsp; to a space inside elements with ngNonBindable', () => {
+      expectFromR3Nodes(
+        parse('<pre ngNonBindable>a&ngsp;b</pre>', {preserveWhitespaces: true}).nodes,
+      ).toEqual([
+        ['Element', 'pre'],
+        ['TextAttribute', 'ngNonBindable', ''],
+        ['Text', 'a b'],
       ]);
     });
 
@@ -2854,241 +2857,6 @@ describe('R3 template transform', () => {
     });
   });
 
-  describe('component nodes', () => {
-    function expectSelectorless(html: string, ignoreError?: boolean) {
-      return expectFromHtml(html, ignoreError, true);
-    }
-
-    function parseSelectorless(html: string) {
-      return parse(html, {selectorlessEnabled: true});
-    }
-
-    it('should parse a simple component node', () => {
-      expectSelectorless('<MyComp>Hello</MyComp>').toEqual([
-        ['Component', 'MyComp', null, 'MyComp'],
-        ['Text', 'Hello'],
-      ]);
-    });
-
-    it('should parse a component node with a tag name', () => {
-      expectSelectorless('<MyComp:button>Hello</MyComp:button>').toEqual([
-        ['Component', 'MyComp', 'button', 'MyComp:button'],
-        ['Text', 'Hello'],
-      ]);
-    });
-
-    it('should parse a component tag nested within other markup', () => {
-      expectSelectorless(
-        '@if (expr) {<div>Hello: <MyComp><span><OtherComp/></span></MyComp></div>}',
-      ).toEqual([
-        ['IfBlock'],
-        ['IfBlockBranch', 'expr'],
-        ['Element', 'div'],
-        ['Text', 'Hello: '],
-        ['Component', 'MyComp', null, 'MyComp'],
-        ['Element', 'span'],
-        ['Component', 'OtherComp', null, 'OtherComp', '#selfClosing'],
-      ]);
-    });
-
-    it('should parse a component node with attributes and directives', () => {
-      expectSelectorless(
-        '<MyComp before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123">Hello</MyComp>',
-      ).toEqual([
-        ['Component', 'MyComp', null, 'MyComp'],
-        ['TextAttribute', 'before', 'foo'],
-        ['TextAttribute', 'middle', ''],
-        ['TextAttribute', 'after', '123'],
-        ['Directive', 'Dir'],
-        ['Directive', 'OtherDir'],
-        ['BoundAttribute', 0, 'a', 'a'],
-        ['BoundEvent', 0, 'b', null, 'b()'],
-        ['Text', 'Hello'],
-      ]);
-    });
-
-    it('should parse a component node with * directives', () => {
-      expectSelectorless('<MyComp *ngIf="expr">Hello</MyComp>').toEqual([
-        ['Template'],
-        ['BoundAttribute', 0, 'ngIf', 'expr'],
-        ['Component', 'MyComp', null, 'MyComp'],
-        ['Text', 'Hello'],
-      ]);
-    });
-
-    it('should not pick up attributes from directives when using * syntax', () => {
-      expectSelectorless(
-        '<MyComp *ngIf="true" @Dir(static="1" [bound]="expr" (event)="fn()")/>',
-      ).toEqual([
-        ['Template'],
-        ['BoundAttribute', 0, 'ngIf', 'true'],
-        ['Component', 'MyComp', null, 'MyComp', '#selfClosing'],
-        ['Directive', 'Dir'],
-        ['TextAttribute', 'static', '1'],
-        ['BoundAttribute', 0, 'bound', 'expr'],
-        ['BoundEvent', 0, 'event', null, 'fn()'],
-      ]);
-    });
-
-    it('should treat components as elements inside ngNonBindable', () => {
-      expectSelectorless(
-        '<div ngNonBindable><MyComp foo="bar" @Dir(some="attr")></MyComp></div>',
-      ).toEqual([
-        ['Element', 'div'],
-        ['TextAttribute', 'ngNonBindable', ''],
-        ['Element', 'MyComp'],
-        ['TextAttribute', 'foo', 'bar'],
-      ]);
-    });
-
-    it('should not allow a selectorless component with an unsupported tag name', () => {
-      const unsupportedTags = [
-        'link',
-        'style',
-        'script',
-        'ng-template',
-        'ng-container',
-        'ng-content',
-      ];
-
-      for (const name of unsupportedTags) {
-        expect(() => parseSelectorless(`<MyComp:${name}></MyComp:${name}>`)).toThrowError(
-          new RegExp(`Tag name "${name}" cannot be used as a component tag`),
-        );
-      }
-    });
-  });
-
-  describe('directives', () => {
-    function expectSelectorless(html: string, ignoreError?: boolean) {
-      return expectFromHtml(html, ignoreError, true);
-    }
-
-    function parseSelectorless(html: string) {
-      return parse(html, {selectorlessEnabled: true});
-    }
-
-    it('should parse a directive with no attributes', () => {
-      expectSelectorless('<div @Dir></div>').toEqual([
-        ['Element', 'div'],
-        ['Directive', 'Dir'],
-      ]);
-    });
-
-    it('should parse a directive with attributes', () => {
-      expectSelectorless('<div @Dir(a="1" [b]="two" (c)="c()" [(d)]="d")></div>').toEqual([
-        ['Element', 'div'],
-        ['Directive', 'Dir'],
-        ['TextAttribute', 'a', '1'],
-        ['BoundAttribute', 0, 'b', 'two'],
-        ['BoundAttribute', BindingType.TwoWay, 'd', 'd'],
-        ['BoundEvent', 0, 'c', null, 'c()'],
-        ['BoundEvent', 2, 'dChange', null, 'd'],
-      ]);
-    });
-
-    it('should parse a directive mixed with other attributes', () => {
-      expectSelectorless(
-        '<div before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123"></div>',
-      ).toEqual([
-        ['Element', 'div'],
-        ['TextAttribute', 'before', 'foo'],
-        ['TextAttribute', 'middle', ''],
-        ['TextAttribute', 'after', '123'],
-        ['Directive', 'Dir'],
-        ['Directive', 'OtherDir'],
-        ['BoundAttribute', 0, 'a', 'a'],
-        ['BoundEvent', 0, 'b', null, 'b()'],
-      ]);
-    });
-
-    it('should remove directives inside ngNonBindable', () => {
-      expectSelectorless(
-        '<div ngNonBindable><span @EmptyDir @WithAttrs(foo="123" [bar]="321")></span></div>',
-      ).toEqual([
-        ['Element', 'div'],
-        ['TextAttribute', 'ngNonBindable', ''],
-        ['Element', 'span'],
-      ]);
-    });
-
-    it('should pick up attributes from selectorless directives when using * syntax', () => {
-      expectSelectorless(
-        '<div *ngIf="true" @Dir(static="1" [bound]="expr" (event)="fn()")></div>',
-      ).toEqual([
-        ['Template'],
-        ['BoundAttribute', 0, 'ngIf', 'true'],
-        ['Element', 'div'],
-        ['Directive', 'Dir'],
-        ['TextAttribute', 'static', '1'],
-        ['BoundAttribute', 0, 'bound', 'expr'],
-        ['BoundEvent', 0, 'event', null, 'fn()'],
-      ]);
-    });
-
-    describe('validations', () => {
-      it('should not allow * syntax inside directives', () => {
-        expect(() => parseSelectorless(`<div @Dir(*ngIf="true")></div>`)).toThrowError(
-          /Shorthand template syntax "\*ngIf" is not supported inside a directive context/,
-        );
-      });
-
-      it('should not allow ngProjectAs inside directive syntax', () => {
-        expect(() => parseSelectorless(`<div @Dir(ngProjectAs="foo")></div>`)).toThrowError(
-          /Attribute "ngProjectAs" is not supported in a directive context/,
-        );
-      });
-
-      it('should not allow ngNonBindable inside directive syntax', () => {
-        expect(() => parseSelectorless(`<div @Dir(ngNonBindable)></div>`)).toThrowError(
-          /Attribute "ngNonBindable" is not supported in a directive context/,
-        );
-      });
-
-      it('should not allow the same directive to be applied multiple times', () => {
-        expect(() => parseSelectorless(`<div @One @Two @One(input="123")></div>`)).toThrowError(
-          /Cannot apply directive "One" multiple times on the same element/,
-        );
-      });
-
-      it('should not allow class bindings inside directives', () => {
-        expect(() => parseSelectorless(`<div @Dir([class.foo]="expr")></div>`)).toThrowError(
-          /Binding is not supported in a directive context/,
-        );
-      });
-
-      it('should not allow style bindings inside directives', () => {
-        expect(() => parseSelectorless(`<div @Dir([style.foo]="expr")></div>`)).toThrowError(
-          /Binding is not supported in a directive context/,
-        );
-      });
-
-      it('should not allow attribute bindings inside directives', () => {
-        expect(() => parseSelectorless(`<div @Dir([attr.foo]="expr")></div>`)).toThrowError(
-          /Binding is not supported in a directive context/,
-        );
-      });
-
-      it('should not allow animation bindings inside directives', () => {
-        expect(() => parseSelectorless(`<div @Dir([@animation]="expr")></div>`)).toThrowError(
-          /Binding is not supported in a directive context/,
-        );
-      });
-
-      it('should not allow named references', () => {
-        const pattern = /Cannot specify a value for a local reference in this context/;
-        expect(() => parseSelectorless('<MyComp #foo="bar"/>')).toThrowError(pattern);
-        expect(() => parseSelectorless('<div @Dir(#foo="bar")></div>')).toThrowError(pattern);
-      });
-
-      it('should not allow duplicate references', () => {
-        const pattern = /Duplicate reference names are not allowed/;
-        expect(() => parseSelectorless('<MyComp #foo #foo/>')).toThrowError(pattern);
-        expect(() => parseSelectorless('<div @Dir(#foo #foo)></div>')).toThrowError(pattern);
-      });
-    });
-  });
-
   it('should report an error for attribute bindings on ng-container', () => {
     const template = `<ng-container [attr.title]="'test'"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
@@ -3098,10 +2866,34 @@ describe('R3 template transform', () => {
     );
   });
 
+  // TODO(v23): Enable this breaking change
+  xit('should report an error for class bindings on ng-container', () => {
+    const template = `<ng-container [class.foo]="true"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
+  });
+
+  // TODO(v23): Enable this breaking change
+  xit('should report an error for [class] property bindings on ng-container', () => {
+    const template = `<ng-container [class]="'my-class'"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
+  });
+
   it('should not report an error on non-attr bindings on ng-container', () => {
     const template = `<ng-container *ngIf"test" [ngTemplateOutlet]="foo"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(0);
+  });
+
+  // TODO(v23): Enable this breaking change
+  xit('should report an error for class interpolation on ng-container', () => {
+    const template = `<ng-container class="{{foo}}"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
   });
 
   describe('@content blocks', () => {

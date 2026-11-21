@@ -94,10 +94,10 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MatButtonModule, TrimPipeModule],
                 template: `
-        @defer (on immediate) {
-          <button matButton>{{ '  hello  ' | trim }}</button>
-        }
-      `,
+    @defer (on immediate) {
+      <button matButton>{{ '  hello  ' | trim }}</button>
+    }
+  `,
               },
             ],
           },

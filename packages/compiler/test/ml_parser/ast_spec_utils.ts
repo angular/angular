@@ -50,7 +50,6 @@ class _Humanizer implements html.Visitor {
     }
     this.result.push(res);
     html.visitAll(this, element.attrs);
-    html.visitAll(this, element.directives);
     html.visitAll(this, element.children);
     this.elDepth--;
   }
@@ -127,36 +126,6 @@ class _Humanizer implements html.Visitor {
     }
 
     this.result.push(res);
-  }
-
-  visitComponent(node: html.Component): any {
-    const res = this._appendContext(node, [
-      html.Component,
-      node.componentName,
-      node.tagName,
-      node.fullName,
-      this.elDepth++,
-    ]);
-    if (node.isSelfClosing) {
-      res.push('#selfClosing');
-    }
-    if (this.includeSourceSpan) {
-      res.push(node.startSourceSpan.toString() ?? null, node.endSourceSpan?.toString() ?? null);
-    }
-    this.result.push(res);
-    html.visitAll(this, node.attrs);
-    html.visitAll(this, node.directives);
-    html.visitAll(this, node.children);
-    this.elDepth--;
-  }
-
-  visitDirective(directive: html.Directive) {
-    const res = this._appendContext(directive, [html.Directive, directive.name]);
-    if (this.includeSourceSpan) {
-      res.push(directive.startSourceSpan.toString(), directive.endSourceSpan?.toString() ?? null);
-    }
-    this.result.push(res);
-    html.visitAll(this, directive.attrs);
   }
 
   private _appendContext(ast: html.Node, input: any[]): any[] {

@@ -21,14 +21,12 @@ import {
   ON_ERROR,
   TVIEW,
 } from '../interfaces/view';
-import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor} from '../interfaces/node';
 import {getLView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {markViewForRefresh} from '../util/view_utils';
 import {addLViewToLContainer, removeLViewFromLContainer} from '../view/container';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
-import {createControlFlowBranch, getExistingTNode, getLContainer} from './control_flow';
+import {getExistingTNode, getLContainer} from './control_flow';
 
 /**
  * Error thrown when an error falls through an @boundary without matching any @error block.
@@ -120,7 +118,7 @@ export function ɵɵboundaryUpdate(
           const context =
             matchingTemplateIndex === primaryTemplateIndex
               ? undefined
-              : {$error: boundary.error, $reset: () => boundary.reset()};
+              : {$error: boundary.error, $reset: createBoundaryResetFn(boundary)};
           embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, context, {
             dehydratedView,
           });
@@ -136,7 +134,7 @@ export function ɵɵboundaryUpdate(
                 const boundaryType: Type<unknown> = boundaryComponentView.constructor;
                 (details as Writable<ErrorDetails>).boundary = {
                   type: boundaryType,
-                  reset: () => boundary.reset(),
+                  reset: createBoundaryResetFn(boundary),
                 };
 
                 if (errorHandler.onViewError) {
@@ -168,7 +166,7 @@ export function ɵɵboundaryUpdate(
                 declarationType,
                 boundary: {
                   type: declarationType,
-                  reset: () => boundary.reset(),
+                  reset: createBoundaryResetFn(boundary),
                 },
               };
               if (errorHandler.onViewError) {
@@ -205,4 +203,13 @@ export function ɵɵboundaryUpdate(
       setActiveConsumer(prevConsumer);
     }
   }
+}
+
+/**
+ * Creates a reset callback for an `LBoundary` outside `ɵɵboundaryUpdate` so that
+ * `$reset` and `details.boundary.reset` do not share a closure context with
+ * `nextContainer` or `embeddedLView`.
+ */
+function createBoundaryResetFn(boundary: LBoundary): () => void {
+  return () => boundary.reset();
 }

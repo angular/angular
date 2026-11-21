@@ -570,7 +570,7 @@ export class BindingParser {
     if (parts.length > 1) {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts.slice(1).join(PROPERTY_PARTS_SEPARATOR);
-        if (!skipValidation) {
+        if (!skipValidation || boundPropertyName.startsWith(':')) {
           this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
         }
         securityContexts = calcPossibleSecurityContexts(
@@ -618,15 +618,24 @@ export class BindingParser {
     if (boundPropertyName === null) {
       const mappedPropName = this._schemaRegistry.getMappedPropName(boundProp.name);
       boundPropertyName = mapPropertyName ? mappedPropName : boundProp.name;
+      const [ns, name] = splitNsName(boundPropertyName, false);
+      if (ns !== null) {
+        bindingType = BindingType.Attribute;
+      } else {
+        bindingType =
+          boundProp.type === ParsedPropertyType.TWO_WAY ? BindingType.TwoWay : BindingType.Property;
+      }
       securityContexts = calcPossibleSecurityContexts(
         this._schemaRegistry,
         elementSelector,
         mappedPropName,
-        false,
+        bindingType === BindingType.Attribute,
       );
-      bindingType =
-        boundProp.type === ParsedPropertyType.TWO_WAY ? BindingType.TwoWay : BindingType.Property;
-      if (!skipValidation) {
+      if (ns !== null) {
+        if (!skipValidation || name.toLowerCase().startsWith('on')) {
+          this._validatePropertyOrAttributeName(`${ns}:${name}`, boundProp.sourceSpan, true);
+        }
+      } else if (!skipValidation || boundPropertyName.startsWith(':')) {
         this._validatePropertyOrAttributeName(mappedPropName, boundProp.sourceSpan, false);
       }
     }

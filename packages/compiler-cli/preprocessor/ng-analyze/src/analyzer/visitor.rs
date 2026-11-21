@@ -43,6 +43,7 @@ pub struct ClassVisitor<'a> {
     results: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
     di_facts: Vec<super::di_facts::ClassDiFacts>,
+    signal_facts: Vec<super::signal_facts::ClassSignalFacts>,
     fallback_symbol_id: usize,
     diagnostics: Vec<crate::NgDiagnostic>,
 }
@@ -79,6 +80,7 @@ impl<'a> ClassVisitor<'a> {
             results: Vec::new(),
             registrations: Vec::new(),
             di_facts: Vec::new(),
+            signal_facts: Vec::new(),
             fallback_symbol_id: 1000000,
             diagnostics: Vec::new(),
         }
@@ -91,6 +93,7 @@ impl<'a> ClassVisitor<'a> {
             classes: self.results,
             registrations: self.registrations,
             di_facts: self.di_facts,
+            signal_facts: self.signal_facts,
             file_exports: self.file_exports,
             diagnostics: self.diagnostics,
         }
@@ -150,6 +153,21 @@ impl<'a> ClassVisitor<'a> {
             super_class.clone(),
             ctor_params_di.as_deref(),
         ));
+        let own_signal_facts = super::signal_facts::extract_own_signal_facts(
+            class,
+            self.semantic,
+            self.import_map,
+            self.angular_imports.is_core,
+            false,
+        );
+        let own_signal_members = own_signal_facts.signal_members.clone();
+        self.signal_facts
+            .extend(super::signal_facts::ts_class_signal_facts(
+                class,
+                reference_id,
+                own_signal_facts,
+                super_class.clone(),
+            ));
 
         if class.decorators.is_empty() {
             if !self.angular_imports.is_core
@@ -179,6 +197,7 @@ impl<'a> ClassVisitor<'a> {
             self.enable_hmr,
             super_class,
             ctor_params_di.unwrap_or_default(),
+            own_signal_members,
         ) else {
             return;
         };
@@ -402,6 +421,7 @@ fn classify(
         ng_template_guards: common.ng_template_guards,
         has_ng_field_directive: common.has_ng_field_directive,
         public_methods: common.public_methods,
+        signal_members: common.signal_members,
         uses_inheritance: common.uses_inheritance,
         uses_on_changes: common.uses_on_changes,
         is_exported: common.is_exported,
@@ -468,6 +488,7 @@ struct ParsedCommon {
     ng_template_guards: Vec<TemplateGuardMetadata>,
     has_ng_field_directive: bool,
     public_methods: Vec<String>,
+    signal_members: Vec<String>,
     uses_inheritance: bool,
     uses_on_changes: bool,
     is_exported: bool,
@@ -531,6 +552,7 @@ fn process_class_common<'a>(
     enable_hmr: bool,
     super_class: Option<crate::DeclarationTuple>,
     ctor_params_di: Vec<super::CtorParamDi>,
+    signal_members: Vec<String>,
 ) -> Option<ParsedClass> {
     let class_name = class.id.as_ref().map(|id| id.name.to_string());
     let name_span = class.id.as_ref().map(|id| id.span);
@@ -756,6 +778,7 @@ fn process_class_common<'a>(
             ng_template_guards: type_check_meta.ng_template_guards,
             has_ng_field_directive: type_check_meta.has_ng_field_directive,
             public_methods: type_check_meta.public_methods,
+            signal_members,
             uses_inheritance,
             uses_on_changes,
             is_exported,
@@ -874,21 +897,26 @@ pub struct ParsedFileAnalysis {
     pub registrations: Vec<RegistrationInfo>,
     /// Constructor facts for every class in the file, decorated or not.
     pub di_facts: Vec<super::di_facts::ClassDiFacts>,
+    /// Signal member facts for every class in the file, decorated or not.
+    pub signal_facts: Vec<super::signal_facts::ClassSignalFacts>,
     /// Facts for the top-level function declarations, by name.
     pub function_facts: std::collections::HashMap<String, super::transforms::FunctionFacts>,
     pub file_exports: FileExportInfo,
     pub imports_end: u32,
     /// The file's static `import` declarations, in source order. Drives import removal for
-    /// `@defer` and namespace-alias discovery — both need the exact declaration text, so both
-    /// would otherwise have to re-parse the source downstream.
+    /// `@defer`, which needs the exact declaration text and would otherwise have to re-parse the
+    /// source downstream.
     pub import_declarations: Vec<ImportDeclarationInfo>,
+    /// The file's top-level `import X = …` statements, in source order, which the emitter hoists
+    /// alongside [`Self::import_declarations`].
+    pub import_equals_declarations: Vec<super::imports::ImportEqualsDeclarationInfo>,
     pub type_only_exports: Vec<String>,
-    pub static_dependencies: Vec<String>,
-    /// The specifiers of the file's dynamic imports, `import()` calls and literal import types
+    pub static_dependencies: Vec<super::imports::ExtractedDependency>,
+    /// Type-only static imports/re-exports, `import()` calls, and literal import types
     /// ([`super::imports::extract_dynamic_imports`]). Kept apart from
-    /// [`Self::static_dependencies`]: both bring a file into the program, but only a static import
-    /// is an edge for cycle detection.
-    pub dynamic_dependencies: Vec<String>,
+    /// [`Self::static_dependencies`]: both bring a file into the program, but only a runtime static
+    /// import is an edge for cycle detection.
+    pub dynamic_dependencies: Vec<super::imports::ExtractedDependency>,
     pub diagnostics: Vec<crate::NgDiagnostic>,
     pub source_file_validator_diagnostics: Vec<crate::NgDiagnostic>,
     /// Where ngtsc's `signalMetadataTransform` would add a `debugName` to a signal-creating
@@ -899,6 +927,10 @@ pub struct ParsedFileAnalysis {
     /// Root-scope runtime binding names for HMR ([`super::top_level_value_bindings`]); `None`
     /// unless analyzed with `enable_hmr`.
     pub top_level_value_bindings: Option<Vec<String>>,
+    /// Names in the file a generated namespace import alias must avoid
+    /// ([`super::imports::namespace_alias_conflicts`]); empty when `classes` is, as nothing then
+    /// generates an import.
+    pub namespace_alias_conflicts: Vec<String>,
 }
 
 /// Raw output of [`ClassVisitor`] before the file-level fields (`imports_end`, …) are attached.
@@ -906,6 +938,7 @@ struct ClassVisitorOutput {
     classes: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
     di_facts: Vec<super::di_facts::ClassDiFacts>,
+    signal_facts: Vec<super::signal_facts::ClassSignalFacts>,
     file_exports: FileExportInfo,
     diagnostics: Vec<crate::NgDiagnostic>,
 }
@@ -914,11 +947,11 @@ struct ClassVisitorOutput {
 /// symbol/registration tables, re-exports, and the raw static/dynamic import specifiers.
 ///
 /// This is deliberately a pure AST/semantic walk — it performs no module resolution and no
-/// filesystem reads beyond what `is_core` already captured — so the caller can run it while
-/// holding the `ParsedFile` lock and release that lock before any I/O. Component `templateUrl`
-/// and `styleUrl(s)` expressions are only *recorded* (on `pending_template_url` /
-/// `pending_style_urls`); the caller must follow up with [`super::load_syntax_resources`] to
-/// complete Stage 1, otherwise `template`, `template_url` and `style_urls` stay unset.
+/// filesystem reads — so the caller can run it while holding the `ParsedFile` lock and release
+/// that lock before any I/O. Component `templateUrl` and `styleUrl(s)` expressions are only
+/// *recorded* (on `pending_template_url` / `pending_style_urls`); the caller must follow up with
+/// [`super::load_syntax_resources`] to complete Stage 1, otherwise `template`, `template_url` and
+/// `style_urls` stay unset.
 #[allow(clippy::too_many_arguments)]
 pub fn analyze_parsed(
     path: &Path,
@@ -980,6 +1013,8 @@ pub fn analyze_parsed(
         source_text,
         &dependency_array_references(&output.classes),
     );
+    let import_equals_declarations =
+        super::imports::collect_import_equals_declarations(program, source_text);
     let type_only_exports = get_type_only_exports(module_record, semantic);
     let (static_dependencies, type_only_static_dependencies) =
         super::imports::extract_imports(module_record, program);
@@ -988,15 +1023,24 @@ pub fn analyze_parsed(
     let signal_debug_names =
         super::signal_debug_name::collect_signal_debug_names(program, semantic, source_text);
     let top_level_value_bindings = enable_hmr.then(|| super::top_level_value_bindings(semantic));
+    // The emitter generates namespace imports only for code it compiles from these classes, so a
+    // file without any has no alias to keep clear.
+    let namespace_alias_conflicts = if output.classes.is_empty() {
+        Vec::new()
+    } else {
+        super::imports::namespace_alias_conflicts(semantic)
+    };
 
     ParsedFileAnalysis {
         classes: output.classes,
         registrations: output.registrations,
         di_facts: output.di_facts,
+        signal_facts: output.signal_facts,
         function_facts: super::transforms::collect_function_facts(program, semantic),
         file_exports: output.file_exports,
         imports_end,
         import_declarations,
+        import_equals_declarations,
         type_only_exports,
         static_dependencies,
         dynamic_dependencies,
@@ -1005,6 +1049,7 @@ pub fn analyze_parsed(
         signal_debug_names,
         is_core,
         top_level_value_bindings,
+        namespace_alias_conflicts,
     }
 }
 
@@ -2926,8 +2971,12 @@ export enum Empty {}
         );
         assert!(!reads.iter().find(|r| r.name == "ns").unwrap().is_const_enum);
 
+        let app = results
+            .iter()
+            .find(|r| r.file_path.ends_with("/app.ts"))
+            .unwrap();
         assert_eq!(
-            results[0].top_level_value_bindings.as_deref().unwrap(),
+            app.top_level_value_bindings.as_deref().unwrap(),
             [
                 "Component",
                 "Directive",
@@ -3289,12 +3338,8 @@ export class MyService {
     fn test_core_reports_any_unrecognized_param_decorator() {
         let fs = create_test_fs(&[
             (
-                "/test/package.json",
-                r#"{"name": "@angular/core", "version": "0.0.0"}"#,
-            ),
-            (
                 "/test/tsconfig.json",
-                r#"{"compilerOptions": {}, "files": ["app.ts"]}"#,
+                r#"{"compilerOptions": {}, "angularCompilerOptions": {"_isAngularCoreCompilation": true}, "files": ["app.ts"]}"#,
             ),
             (
                 "/test/di.ts",
@@ -3555,8 +3600,12 @@ export class Cmp {
         let source = r#"
 import { Component } from '@angular/core';
 import { EXTRA_CSS } from './styles';
+import DefaultHelper, { type InlineHelperType } from './mixed-default';
+export { helper } from './reexport';
 import type { Foo } from './foo';
+export type { Bar } from './bar-types';
 
+export type InlineType = import('./ts-import-type').Quux;
 export const loadLazy = (): Promise<Foo> => import('./lazy').then(m => m.foo);
 
 @Component({
@@ -3592,13 +3641,58 @@ export class Cmp {}
             true,
         );
 
+        use crate::analyzer::ExtractedDependency;
+        use crate::host::ImportKind as HostImportKind;
         assert_eq!(
             analysis.static_dependencies,
-            vec!["@angular/core".to_string(), "./styles".to_string()]
+            vec![
+                ExtractedDependency {
+                    specifier: "@angular/core".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: false,
+                },
+                ExtractedDependency {
+                    specifier: "./styles".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: false,
+                },
+                ExtractedDependency {
+                    specifier: "./reexport".to_string(),
+                    kind: HostImportKind::ReExport,
+                    type_only: false,
+                },
+            ]
         );
         assert_eq!(
             analysis.dynamic_dependencies,
-            vec!["./foo".to_string(), "./lazy".to_string()]
+            vec![
+                // Outside the static import graph, as in ngtsc, yet a runtime import to the host.
+                ExtractedDependency {
+                    specifier: "./mixed-default".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: false,
+                },
+                ExtractedDependency {
+                    specifier: "./foo".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: true,
+                },
+                ExtractedDependency {
+                    specifier: "./bar-types".to_string(),
+                    kind: HostImportKind::ReExport,
+                    type_only: true,
+                },
+                ExtractedDependency {
+                    specifier: "./ts-import-type".to_string(),
+                    kind: HostImportKind::TypeImport,
+                    type_only: true,
+                },
+                ExtractedDependency {
+                    specifier: "./lazy".to_string(),
+                    kind: HostImportKind::Dynamic,
+                    type_only: false,
+                },
+            ]
         );
 
         let comp = analysis.classes[0]
@@ -3617,14 +3711,13 @@ export class Cmp {}
             ("/test/base.css", ".base {}"),
             ("/test/extra.css", ".extra {}"),
         ]);
-        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
-        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
-        crate::analyzer::load_syntax_resources(
+        let host = crate::host::DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        futures::executor::block_on(crate::analyzer::load_syntax_resources(
             &mut analysis.classes,
-            &resource_resolver,
-            file_path,
+            &host,
+            &crate::host::ModuleId::from_path(file_path),
             0,
-        );
+        ));
 
         let comp = analysis.classes[0]
             .as_component()
@@ -3647,6 +3740,45 @@ export class Cmp {}
         );
         // `EXTRA_CSS` is an imported constant, so `pending_style_urls` stays parked for Stage 2.
         assert_eq!(comp.pending_style_urls.as_ref().unwrap().len(), 3);
+    }
+
+    /// Generated namespace imports only come with a compiled class, so a file without one reports
+    /// no names for their aliases to avoid.
+    #[test]
+    fn test_analyze_parsed_reports_namespace_alias_conflicts_only_with_classes() {
+        let conflicts_of = |source: &str| {
+            let allocator = oxc_allocator::Allocator::default();
+            let ret =
+                oxc_parser::Parser::new(&allocator, source, oxc_span::SourceType::ts()).parse();
+            let semantic_ret = oxc_semantic::SemanticBuilder::new()
+                .with_build_nodes(true)
+                .with_class_table(true)
+                .build(&ret.program);
+            let converter = Utf8ToUtf16::new(source);
+            analyze_parsed(
+                Path::new("/test/app.ts"),
+                0,
+                source,
+                &ret.program,
+                &ret.module_record,
+                &semantic_ret.semantic,
+                &converter,
+                false,
+                false,
+                false,
+                true,
+            )
+            .namespace_alias_conflicts
+        };
+
+        assert!(conflicts_of("const i0 = 1;\nexport class Plain {}\n").is_empty());
+        assert_eq!(
+            conflicts_of(
+                "import { Injectable } from '@angular/core';\nconst i0 = 1;\n\
+                 @Injectable()\nexport class Svc {}\n"
+            ),
+            ["i0"]
+        );
     }
 
     #[test]
@@ -3701,14 +3833,13 @@ export class LiteralCmp {}
         }
 
         let fs = create_test_fs(&[("/test/literal.html", "<b>lit</b>")]);
-        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
-        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
-        crate::analyzer::load_syntax_resources(
+        let host = crate::host::DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        futures::executor::block_on(crate::analyzer::load_syntax_resources(
             &mut analysis.classes,
-            &resource_resolver,
-            file_path,
+            &host,
+            &crate::host::ModuleId::from_path(file_path),
             0,
-        );
+        ));
 
         // The cross-file `templateUrl` is left parked for Stage 2 and nothing is loaded for it.
         let cross_file = analysis.classes[0].as_component().expect("component");

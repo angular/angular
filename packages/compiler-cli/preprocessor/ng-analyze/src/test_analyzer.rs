@@ -82,6 +82,11 @@ impl TestAnalyzer {
         self.analyzer.get_metadata_for_file(file_path)
     }
 
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn get_compiler_options(&self) -> String {
+        self.analyzer.get_compiler_options()
+    }
+
     #[cfg(feature = "napi")]
     #[napi]
     pub fn get_file_content(&self, file_path: String) -> napi::Result<String> {
@@ -146,6 +151,17 @@ impl TestAnalyzer {
     #[cfg(not(feature = "napi"))]
     pub fn set_entry_points(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
         self.analyzer.set_entry_points(entry_points)
+    }
+
+    #[cfg(feature = "napi")]
+    #[napi]
+    pub fn clear_resolution_cache(&self) -> napi::Result<Vec<String>> {
+        self.analyzer.clear_resolution_cache()
+    }
+
+    #[cfg(not(feature = "napi"))]
+    pub fn clear_resolution_cache(&self) -> Result<Vec<String>, String> {
+        self.analyzer.clear_resolution_cache()
     }
 
     #[cfg(feature = "napi")]

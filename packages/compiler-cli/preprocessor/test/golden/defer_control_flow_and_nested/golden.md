@@ -114,19 +114,19 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        @defer {
-          @if (show | pipeA) {
-            <cmp-a/>
-          }
-          @for (item of items | pipeB; track item) {
-            <cmp-b/>
-          }
-          @defer {
-            <cmp-nested/>
-            <span>{{ 'inner' | pipeNested }}</span>
-          }
-        }
-      `,
+    @defer {
+      @if (show | pipeA) {
+        <cmp-a/>
+      }
+      @for (item of items | pipeB; track item) {
+        <cmp-b/>
+      }
+      @defer {
+        <cmp-nested/>
+        <span>{{ 'inner' | pipeNested }}</span>
+      }
+    }
+  `,
                 imports: [CmpA, CmpB, CmpNested, PipeA, PipeB, PipeNested],
               },
             ],

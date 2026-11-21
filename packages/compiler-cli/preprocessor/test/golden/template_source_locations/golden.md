@@ -150,14 +150,14 @@ export class InlineCmp {
               {
                 selector: 'inline-cmp',
                 template: `
-        <section>
-          <h1>Title</h1>
-          <p>Body <span>text</span></p>
-        </section>
-        @if (show) {
-          <button>Go</button>
-        }
-      `,
+    <section>
+      <h1>Title</h1>
+      <p>Body <span>text</span></p>
+    </section>
+    @if (show) {
+      <button>Go</button>
+    }
+  `,
               },
             ],
           },

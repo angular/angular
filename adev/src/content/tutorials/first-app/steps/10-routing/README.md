@@ -44,11 +44,11 @@ In this lesson, you will enable routing in your application to navigate to the d
           <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[6,8]"/>
 
 3.  In `src/app/app.ts`, update the component to use routing:
-    1.  Add file level imports for the router directives `RouterOutlet` and `RouterLink`:
+    1.  Add file level imports for the router directives `RouterLink` and `RouterOutlet`:
 
-          <docs-code language="angular-ts" header="Import router directives in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[3]"/>
+          <docs-code language="angular-ts" header="Import router directives in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[2]"/>
 
-    1.  Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
+    1.  In the `@Component` metadata imports, replace `Home` with `RouterLink` and `RouterOutlet`:
 
           <docs-code language="angular-ts" header="Add router directives to component imports in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[6]"/>
 

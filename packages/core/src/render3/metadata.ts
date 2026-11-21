@@ -41,15 +41,6 @@ export function getAsyncClassMetadataFn(
 }
 
 /**
- * Checks if a given component has async metadata.
- * Independent of whether the metadata is already loaded or not.
- */
-export function hasAsyncClassMetadata(type: Type<unknown>): boolean {
-  const componentClass = type as any; // cast to `any`, so that we can monkey-patch it
-  return !!componentClass[ASYNC_COMPONENT_METADATA_FN];
-}
-
-/**
  * Handles the process of applying metadata info to a component class in case
  * component template has defer blocks (thus some dependencies became deferrable).
  *

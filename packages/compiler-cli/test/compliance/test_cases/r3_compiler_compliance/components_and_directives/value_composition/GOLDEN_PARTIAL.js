@@ -683,6 +683,43 @@ export declare class ObjectComp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: literal_void.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class VoidComp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: VoidComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: VoidComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @let array = [void 0, 1];
+    @let object = {a: void 0, b: 2};
+
+    <!-- Use the literals so they don't get flagged as unused. -->
+    {{array}} {{object}}
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: VoidComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @let array = [void 0, 1];
+    @let object = {a: void 0, b: 2};
+
+    <!-- Use the literals so they don't get flagged as unused. -->
+    {{array}} {{object}}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: literal_void.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class VoidComp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoidComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoidComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: literal_nested_expression.js
  ****************************************************************************************************/
 import { Component, Input, NgModule } from '@angular/core';

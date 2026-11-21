@@ -463,20 +463,17 @@ export const enum LViewFlags {
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
   HasEmbeddedViewInjector = 1 << 11,
 
-  /** Indicates that the view was created with `signals: true`. */
-  SignalView = 1 << 12,
-
   /**
    * Indicates that this LView has a view underneath it that needs to be refreshed during change
    * detection. This flag indicates that even if this view is not dirty itself, we still need to
    * traverse its children during change detection.
    */
-  HasChildViewsToRefresh = 1 << 13,
+  HasChildViewsToRefresh = 1 << 12,
 
   /**
    * This is the count of the bits the 1 was shifted above (base 10)
    */
-  IndexWithinInitPhaseShift = 14,
+  IndexWithinInitPhaseShift = 13,
 
   /**
    * Index of the current init phase on last 21 bits

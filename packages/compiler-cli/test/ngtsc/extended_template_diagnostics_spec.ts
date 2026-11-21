@@ -76,29 +76,6 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('([notARealThing])="bar"');
     });
 
-    it(`should produce nullish coalescing not nullable warning`, () => {
-      env.tsconfig({strictTemplates: true}, {strict: true}); // TODO: remove when #70090 is merged
-      env.write(
-        'test.ts',
-        `
-              import {Component} from '@angular/core';
-              @Component({
-                selector: 'test',
-                template: '{{ bar ?? "foo" }}',
-              })
-              export class TestCmp {
-                bar: string = "text";
-              }
-            `,
-      );
-
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
-      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.NULLISH_COALESCING_NOT_NULLABLE));
-      expect(getSourceCodeForDiagnostic(diags[0])).toBe('bar ?? "foo"');
-    });
-
     describe('handles diagnostic configuration', () => {
       // Component definition which emits one warning.
       const warningComponent = `

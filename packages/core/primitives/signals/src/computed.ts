@@ -153,6 +153,7 @@ const COMPUTED_NODE: Omit<ComputedNode<unknown>, 'computation'> = /* @__PURE__ *
           oldValue !== ERRORED &&
           newValue !== ERRORED &&
           node.equal(oldValue, newValue);
+        node.error = null;
       } catch (err) {
         newValue = ERRORED;
         node.error = err;

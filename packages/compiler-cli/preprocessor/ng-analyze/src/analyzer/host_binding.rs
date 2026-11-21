@@ -247,7 +247,9 @@ fn evaluate_host_listener_runtime_args(
         );
     };
 
-    let resolved = crate::evaluator::evaluate_expression(expr, eval);
+    let resolved = crate::evaluator::value::demote_ambient_global_holes(
+        crate::evaluator::evaluate_expression(expr, eval),
+    );
 
     // Avoid false NG1010 diagnostics when the expression contains unresolved cross-file holes;
     // leave `runtime_args` as `None` so downstream code falls back to the identifier text.

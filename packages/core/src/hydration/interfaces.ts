@@ -46,7 +46,6 @@ export const DEFER_BLOCK_ID = 'di';
 export const DEFER_BLOCK_STATE = 's';
 export const DEFER_PARENT_BLOCK_ID = 'p';
 export const DEFER_HYDRATE_TRIGGERS = 't';
-export const DEFER_PREFETCH_TRIGGERS = 'pt';
 
 /**
  * Represents element containers within this view, stored as key-value pairs

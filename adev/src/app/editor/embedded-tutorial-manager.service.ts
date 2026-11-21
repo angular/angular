@@ -32,6 +32,13 @@ export class EmbeddedTutorialManager {
   readonly openFiles = signal<TutorialMetadata['openFiles']>([]);
 
   readonly answerFiles = signal<NonNullable<TutorialMetadata['answerFiles']>>({});
+  private readonly workInProgressTutorialFiles = signal<TutorialMetadata['tutorialFiles'] | null>(
+    null,
+  );
+  private readonly workInProgressOpenFiles = signal<NonNullable<
+    TutorialMetadata['openFiles']
+  > | null>(null);
+  private readonly workInProgressAllFiles = signal<TutorialMetadata['allFiles'] | null>(null);
 
   readonly dependencies = signal<TutorialMetadata['dependencies'] | undefined>(undefined);
   private _shouldReInstallDependencies = signal<boolean>(false);
@@ -79,6 +86,7 @@ export class EmbeddedTutorialManager {
       this.openFiles.set(metadata.openFiles);
       this.hiddenFiles.set(metadata.hiddenFiles);
       this.allFiles.set(metadata.allFiles);
+      this.resetRevealAnswerState();
 
       // set common only once
       if (!this.commonFilesystemTree()) this.commonFilesystemTree.set(commonSourceCode);
@@ -88,7 +96,27 @@ export class EmbeddedTutorialManager {
   }
 
   revealAnswer() {
+    if (!this.workInProgressTutorialFiles()) {
+      const metadata = this.metadata();
+      const tutorialFiles = this.tutorialFiles();
+      const openFiles = this.openFiles();
+      const allFiles = this.allFiles();
+
+      this.workInProgressTutorialFiles.set(
+        Object.keys(tutorialFiles).length > 0
+          ? {...tutorialFiles}
+          : {...(metadata?.tutorialFiles ?? {})},
+      );
+      this.workInProgressOpenFiles.set(
+        openFiles.length > 0 ? [...openFiles] : [...(metadata?.openFiles ?? [])],
+      );
+      this.workInProgressAllFiles.set(
+        allFiles.length > 0 ? [...allFiles] : [...(metadata?.allFiles ?? [])],
+      );
+    }
+
     const answerFilenames = Object.keys(this.answerFiles());
+    const currentTutorialFiles = this.tutorialFiles();
 
     const openFilesAndAnswer = Array.from(
       // use Set to remove duplicates, spread openFiles first to keep files order
@@ -96,7 +124,10 @@ export class EmbeddedTutorialManager {
     ).filter((filename) => !this.hiddenFiles()?.includes(filename));
 
     const tutorialFiles = Object.fromEntries(
-      openFilesAndAnswer.map((file) => [file, this.answerFiles()[file]]),
+      openFilesAndAnswer.map((file) => [
+        file,
+        this.answerFiles()[file] ?? currentTutorialFiles[file],
+      ]),
     );
 
     const allFilesWithAnswer = [...this.allFiles(), ...answerFilenames];
@@ -114,15 +145,44 @@ export class EmbeddedTutorialManager {
   }
 
   resetRevealAnswer() {
-    const allFilesWithoutAnswer = this.metadata()!.allFiles;
+    const metadata = this.metadata();
+    if (!metadata) {
+      return;
+    }
+
+    const allFilesWithoutAnswer = metadata.allFiles;
     const filesToDelete = this.computeFilesToRemove(allFilesWithoutAnswer, this.allFiles());
 
     if (filesToDelete) {
       this._filesToDeleteFromPreviousProject.set(filesToDelete);
     }
 
-    this.tutorialFiles.set(this.metadata()!.tutorialFiles);
-    this.openFiles.set(this.metadata()!.openFiles);
+    this.tutorialFiles.set(metadata.tutorialFiles);
+    this.openFiles.set(metadata.openFiles);
+    this.allFiles.set(allFilesWithoutAnswer);
+    this.resetRevealAnswerState();
+    this._shouldChangeTutorial$.next(true);
+  }
+
+  restoreWorkInProgress() {
+    const workInProgressTutorialFiles = this.workInProgressTutorialFiles();
+    const workInProgressOpenFiles = this.workInProgressOpenFiles();
+    const workInProgressAllFiles = this.workInProgressAllFiles();
+
+    if (!workInProgressTutorialFiles || !workInProgressOpenFiles || !workInProgressAllFiles) {
+      return;
+    }
+
+    const filesToDelete = this.computeFilesToRemove(workInProgressAllFiles, this.allFiles());
+
+    if (filesToDelete) {
+      this._filesToDeleteFromPreviousProject.set(filesToDelete);
+    }
+
+    this.tutorialFiles.set(workInProgressTutorialFiles);
+    this.openFiles.set(workInProgressOpenFiles);
+    this.allFiles.set(workInProgressAllFiles);
+    this.resetRevealAnswerState();
     this._shouldChangeTutorial$.next(true);
   }
 
@@ -186,5 +246,11 @@ export class EmbeddedTutorialManager {
     }
 
     return filesToDelete;
+  }
+
+  private resetRevealAnswerState(): void {
+    this.workInProgressTutorialFiles.set(null);
+    this.workInProgressOpenFiles.set(null);
+    this.workInProgressAllFiles.set(null);
   }
 }

@@ -48,8 +48,6 @@ export interface I18nOptions {
 
 // @public
 export interface LegacyNgcOptions {
-    // @deprecated
-    allowEmptyCodegenFiles?: boolean;
     flatModuleId?: string;
     flatModuleOutFile?: string;
     preserveWhitespaces?: boolean;
@@ -77,6 +75,7 @@ export interface TypeCheckingOptions {
     strictInputAccessModifiers?: boolean;
     strictInputTypes?: boolean;
     strictLiteralTypes?: boolean;
+    strictNgTemplateTypes?: boolean;
     strictNullInputTypes?: boolean;
     strictOutputEventTypes?: boolean;
     strictSafeNavigationTypes?: boolean;

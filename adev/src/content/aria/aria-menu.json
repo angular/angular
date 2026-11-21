@@ -135,6 +135,16 @@
           "isRequiredInput": false
         },
         {
+          "name": "tabIndex",
+          "type": "Signal<0 | -1>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Tab index of the menu trigger.",
+          "jsdocTags": []
+        },
+        {
           "name": "open",
           "signatures": [
             {
@@ -230,7 +240,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-trigger.ts",
         "startLine": 41,
-        "endLine": 109
+        "endLine": 112
       }
     },
     {
@@ -533,7 +543,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
         "startLine": 43,
-        "endLine": 140
+        "endLine": 141
       }
     },
     {
@@ -984,7 +994,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 57,
-        "endLine": 215
+        "endLine": 213
       }
     }
   ],
@@ -1127,6 +1137,10 @@
     ],
     [
       "MenuTrigger.softDisabled",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.tabIndex",
       "@angular/aria/menu"
     ],
     [

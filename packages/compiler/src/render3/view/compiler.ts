@@ -95,9 +95,6 @@ function baseDirectiveFields(
   if (meta.isStandalone === false) {
     definitionMap.set('standalone', o.literal(false));
   }
-  if (meta.isSignal) {
-    definitionMap.set('signals', o.literal(true));
-  }
 
   return definitionMap;
 }
@@ -341,12 +338,6 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
-  // TODO(signals): Always include this metadata starting with v17. Right
-  // now Angular v16.0.x does not support this field and library distributions
-  // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
-    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
-  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -443,12 +434,6 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
-  // TODO(signals): Always include this metadata starting with v17. Right
-  // now Angular v16.0.x does not support this field and library distributions
-  // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
-    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
-  }
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
@@ -612,12 +597,32 @@ function validateNoEventBindings(
   sourceSpan: ParseSourceSpan,
 ): void {
   for (const prop in bindings.properties) {
+    if (
+      prop.startsWith('class.') ||
+      prop.startsWith('style.') ||
+      prop.startsWith('class!') ||
+      prop.startsWith('style!')
+    ) {
+      continue;
+    }
     const isAttr = prop.startsWith('attr.');
     const boundName = isAttr ? prop.slice(5) : prop;
+    if (boundName.startsWith(':')) {
+      const type = isAttr ? 'attribute' : 'property';
+      bindingParser.errors.push(
+        new ParseError(
+          sourceSpan,
+          `Invalid ${type} name '${boundName}'. ${type === 'attribute' ? 'Attribute' : 'Property'} names cannot start with a colon.`,
+        ),
+      );
+      continue;
+    }
+    const colonIdx = boundName.lastIndexOf(':');
+    const localName = colonIdx > -1 ? boundName.substring(colonIdx + 1) : boundName;
 
-    if (boundName.toLowerCase().startsWith('on')) {
+    if (localName.toLowerCase().startsWith('on')) {
       const errorType = isAttr ? 'attribute' : 'property';
-      const suggestion = `(${boundName.slice(2)})=...`;
+      const suggestion = `(${localName.slice(2)})=...`;
 
       let msg = `Binding to event ${errorType} '${boundName}' is disallowed for security reasons, please use ${suggestion}`;
       if (!isAttr) {

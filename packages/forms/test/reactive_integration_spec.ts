@@ -4219,7 +4219,6 @@ describe('reactive forms integration tests', () => {
     it('reports a coded error (not an opaque TypeError) when an async-loaded form has not arrived yet in a production build', async () => {
       @Component({
         selector: 'async-form-app',
-        standalone: true,
         imports: [ReactiveFormsModule],
         template: `
           <form [formGroup]="form">

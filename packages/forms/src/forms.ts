@@ -83,6 +83,7 @@ export {
   FormControlStatus,
   FormResetEvent,
   FormSubmittedEvent,
+  isAbstractControl as ɵisAbstractControl,
   PristineChangeEvent,
   StatusChangeEvent,
   TouchedChangeEvent,

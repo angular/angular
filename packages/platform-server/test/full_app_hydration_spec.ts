@@ -6013,8 +6013,8 @@ describe('platform-server full application hydration integration', () => {
         let h2 = clientRootNode.querySelector('h2');
         let span = clientRootNode.querySelector('span');
 
-        expect(h1).not.toBeDefined();
-        expect(h2).not.toBeDefined();
+        expect(h1).toBeNull();
+        expect(h2).toBeNull();
         expect(span.textContent).toBe('no');
 
         // Flip the flag to enable content projection.
@@ -6088,8 +6088,8 @@ describe('platform-server full application hydration integration', () => {
         h2 = clientRootNode.querySelector('h2');
         span = clientRootNode.querySelector('span');
 
-        expect(h1).not.toBeDefined();
-        expect(h2).not.toBeDefined();
+        expect(h1).toBeNull();
+        expect(h2).toBeNull();
         expect(span.textContent).toBe('no');
       });
 
@@ -6514,6 +6514,57 @@ describe('platform-server full application hydration integration', () => {
           }
         },
       );
+
+      describe('stripped anchor comment in production mode', () => {
+        async function getHydrationError(template: string) {
+          @Component({selector: 'app', template})
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const htmlWithoutAnchor = html.replace(
+            /(<main[^>]*>)(.*?)(<\/main>)/s,
+            (_, start, content, end) => start + content.replace(/<!--.*?-->/gs, '') + end,
+          );
+          expect(htmlWithoutAnchor).not.toBe(html);
+
+          resetTViewsFor(SimpleComponent);
+
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            return await prepareEnvironmentAndHydrate(doc, htmlWithoutAnchor, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            }).then(
+              () => null,
+              (e: Error) => e,
+            );
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        }
+
+        it('should throw NG0502 for an @if with a rendered view', async () => {
+          const error = await getHydrationError('<main>@if (true) {<span>text</span>}</main>');
+          expect(error?.message).toBe('NG0502');
+        });
+
+        it('should throw NG0502 for an @if with no rendered view', async () => {
+          const error = await getHydrationError('<main>@if (false) {<span>text</span>}</main>');
+          expect(error?.message).toBe('NG0502');
+        });
+
+        it('should throw NG0502 for an <ng-container> with a child', async () => {
+          const error = await getHydrationError(
+            '<main><ng-container><span>text</span></ng-container></main>',
+          );
+          expect(error?.message).toBe('NG0502');
+        });
+
+        it('should throw NG0502 for an empty <ng-container>', async () => {
+          const error = await getHydrationError('<main><ng-container></ng-container></main>');
+          expect(error?.message).toBe('NG0502');
+        });
+      });
 
       it(
         'should throw a coded RuntimeError, not a raw TypeError, when an @if branch is ' +

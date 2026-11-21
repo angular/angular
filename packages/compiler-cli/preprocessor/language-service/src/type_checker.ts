@@ -135,8 +135,11 @@ export interface TcbResult {
 export class TemplateTypeChecker {
   constructor(private hybridCompiler: HybridCompiler) {}
 
-  public getTcb(filePath: string, position: {line: number; character: number}): TcbResult | null {
-    const setup = getSetup(this.hybridCompiler, filePath, position);
+  public async getTcb(
+    filePath: string,
+    position: {line: number; character: number},
+  ): Promise<TcbResult | null> {
+    const setup = await getSetup(this.hybridCompiler, filePath, position);
     if (!setup) return null;
 
     const {parsedTemplate, offset, tcbSf, tcbCode, tsFilePath, isHostBinding, hostElement} = setup;
@@ -214,11 +217,11 @@ export class TemplateTypeChecker {
     };
   }
 
-  public getSymbolOfNode(
+  public async getSymbolOfNode(
     filePath: string,
     position: {line: number; character: number},
-  ): any | null {
-    const setup = getSetup(this.hybridCompiler, filePath, position);
+  ): Promise<any | null> {
+    const setup = await getSetup(this.hybridCompiler, filePath, position);
     if (!setup) return null;
 
     const {tsFilePath, meta, parsedTemplate, offset, tcbSf, isHostBinding, hostElement} = setup;
@@ -241,16 +244,16 @@ export class TemplateTypeChecker {
     return this.getSymbolForNode(node, tsFilePath, meta.classKey, tcbSf);
   }
 
-  public getSymbolForNode(
+  public async getSymbolForNode(
     node: compiler.TmplAstNode | compiler.AST,
     tsFilePath: string,
     classKey: string,
     tcbSf: ts.SourceFile,
-  ): any | null {
-    const boundTarget = this.hybridCompiler.getBoundTarget(tsFilePath, classKey);
+  ): Promise<any | null> {
+    const boundTarget = await this.hybridCompiler.getBoundTarget(tsFilePath, classKey);
     if (!boundTarget) return null;
 
-    const typeCheckIdMap = this.hybridCompiler.getTypeCheckIdMap(tsFilePath);
+    const typeCheckIdMap = await this.hybridCompiler.getTypeCheckIdMap(tsFilePath);
     const typeCheckId = typeCheckIdMap?.get(classKey);
     if (!typeCheckId) return null;
 

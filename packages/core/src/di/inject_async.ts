@@ -64,24 +64,33 @@ export function injectAsync<T>(
   }
 
   const injector = inject(Injector);
-
-  let loadedPromise: Promise<InjectAsyncLoaderResult<T>> | null = null;
-  const load = () => {
-    if (!loadedPromise) {
-      loadedPromise = loader();
-    }
-    return loadedPromise;
-  };
+  const load = createLoader(loader);
 
   if (options?.prefetch) {
     options
       .prefetch()
-      .then(() => load())
+      .then(load)
       .catch(() => {});
   }
 
   // We can't use `inject` later on because of the async nature of the loader
   return () => load().then((loadedToken) => injector.get(maybeUnwrapDefaultExport(loadedToken))!);
+}
+
+/**
+ * Creates the memoized loader function in its own lexical scope so that the
+ * prefetch callback does not share a closure context with `injector`.
+ */
+function createLoader<T>(
+  loader: () => Promise<InjectAsyncLoaderResult<T>>,
+): () => Promise<InjectAsyncLoaderResult<T>> {
+  let loadedPromise: Promise<InjectAsyncLoaderResult<T>> | null = null;
+  return () => {
+    if (!loadedPromise) {
+      loadedPromise = loader();
+    }
+    return loadedPromise;
+  };
 }
 
 /**

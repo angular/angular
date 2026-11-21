@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ts_project")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -12,5 +12,50 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
         "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "app-roots",
+    srcs = [
+        "app-roots.ts",
+    ],
+)
+
+ts_project(
+    name = "directive",
+    srcs = [
+        "directive.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:core-enums",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "app-roots.spec.ts",
+        "directive.spec.ts",
+    ],
+    deps = [
+        ":app-roots",
+        ":directive",
+        "//:node_modules/@angular/core",
+        "//:node_modules/jasmine",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:core-enums",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
     ],
 )

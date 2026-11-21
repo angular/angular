@@ -40,7 +40,7 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   return (
     NGP_REQUIRES_TYPE_CHECKER.has(normalized) ||
     NGP_KNOWN_NGTSC_FAILURES.has(normalized) ||
-    NGP_POTENTIAL_BREAKING_CHANGES.has(normalized)
+    NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES.has(normalized)
   );
 }
 
@@ -54,154 +54,12 @@ const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
   // `WritableSignal` variables (since `[(dir)]="signalVar"` is valid).
   'ngtsc type checking @let declarations should not be able to write to let declaration in a two-way binding',
   'ngtsc type checking for loop blocks should not be able to write to loop template variables in a two-way binding',
-
-  // TypeChecker-backed extended template diagnostics (#673, #677) in
-  // `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp` and `ngtsc_spec`.
-  'ngtsc extended template checks should produce nullish coalescing not nullable warning',
-  '@let declarations should produce a warning when a signal aliased via @let is not invoked in interpolation',
-  '@let declarations should produce a warning when a signal aliased via @let is used in @if',
-  '@let declarations should produce a warning when a signal aliased via @let is used in a bound attribute',
-  '@let declarations should produce a warning when an instance property of a signal aliased via @let is accessed in interpolation',
-  'NullishCoalescingNotNullableCheck does not warn for pipe arguments when parens are used',
-  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning',
-  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning for classes with inline TCBs',
-  'NullishCoalescingNotNullableCheck should respect configured diagnostic category',
-  'NullishCoalescingNotNullableCheck warns for pipe arguments which are likely configured incorrectly (?? operates on "format" here)',
-  'OptionalChainNotNullableCheck should produce optional chain warning for classes with inline TCBs',
-  'OptionalChainNotNullableCheck should produce optional chain warning for indexed access',
-  'OptionalChainNotNullableCheck should produce optional chain warning for method call',
-  'OptionalChainNotNullableCheck should produce optional chain warning for property access',
-  'OptionalChainNotNullableCheck should respect configured diagnostic category',
-  'Uninvoked function in text interpolation compiler check should produce a warning when a function is not invoked in text interpolation',
-  'Uninvoked function in text interpolation compiler check should produce a warning when a property method is not invoked in text interpolation (with and without safe navigation)',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function is not',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function that returns a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
-  'UninvokedTrackFunctionCheck should produce a diagnostic when a track function in a @for block is not invoked',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a regular function on an object',
-  'UninvokedTrackFunctionCheck should produce a warning when track is an arrow function property on component',
-  'should produce a warning if the template contains a directive with the same input name, but on a different node',
-  'should produce a warning when a computed signal is not invoked',
-  'should produce a warning when a model signal is not invoked',
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in interpolation",
-  'should produce a warning when a readonly signal is not invoked',
-  'should produce a warning when a required input signal is not invoked',
-  'should produce a warning when a required model signal is not invoked',
-  'should produce a warning when a signal in a nested property read is not invoked',
-  'should produce a warning when a signal is not invoked',
-  'should produce a warning when a signal is not invoked in a conditional style binding branch',
-  'should produce a warning when a signal is not invoked in a non-null asserted style binding expression',
-  'should produce a warning when a signal is not invoked in a parenthesized style binding expression',
-  'should produce a warning when a signal is not invoked in a prefixed-not property binding expression',
-  'should produce a warning when a signal is not invoked in an svg:ng-template',
-  'should produce a warning when an input signal is not invoked',
-  'should produce a warning when nested signal is not invoked on interpolated binding',
-  'should produce a warning when signal is invoked in attribute binding interpolation',
-  'should produce a warning when signal is not invoked on interpolated binding',
-  "should produce a warning when signal isn't invoked on animation binding",
-  "should produce a warning when signal isn't invoked on attribute binding",
-  "should produce a warning when signal isn't invoked on class binding",
-  "should produce a warning when signal isn't invoked on dom property binding",
-  "should produce a warning when signal isn't invoked on style binding",
-  'should produce optional chain warning for chained property access',
 ]);
 
 /**
- * Addressing these failures will likely cause breaking changes. Proceed with caution.
+ * Includes behaviors that are intentionally different with ngp, or functionality we have decided not to support.
  */
-const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
-  // Aligning the debug info shape can cause a different overload to
-  // match for signal inputs which in turn causes breakages.
-  'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function if imported from angular core',
-  'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function in a property assignment',
-  'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function with a phase spec',
-  'Debug Info Typescript tranformation afterRenderEffect should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation afterRenderEffect should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation computed Property Assignment Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation computed Property Assignment Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation computed Property Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation computed Property Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation computed Variable Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation computed Variable Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation computed should insert debug info into computed function if imported from angular core',
-  'Debug Info Typescript tranformation contentChild .required should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation contentChild should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation contentChild should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation contentChildren should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation contentChildren should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation effect should insert debug info into effect function if imported from angular core',
-  'Debug Info Typescript tranformation effect should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation effect should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation httpResource Property Assignment Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation httpResource Property Assignment Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation httpResource Property Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation httpResource Property Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation httpResource Variable Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation httpResource Variable Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation input .required should insert debug info into .required',
-  'Debug Info Typescript tranformation input .required should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation input should insert debug info into input function if imported from angular core',
-  'Debug Info Typescript tranformation linkedSignal Property Assignment Case should insert debug info into linkedSignal with a computation object',
-  'Debug Info Typescript tranformation linkedSignal Property Assignment Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation linkedSignal Property Assignment Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation linkedSignal Property Declaration Case should insert debug info into linkedSignal with a computation object',
-  'Debug Info Typescript tranformation linkedSignal Property Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation linkedSignal Property Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation linkedSignal Variable Declaration Case should insert debug info into linkedSignal with a computation object',
-  'Debug Info Typescript tranformation linkedSignal Variable Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation linkedSignal Variable Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation linkedSignal should insert debug info into linkedSignal function if imported from angular core',
-  'Debug Info Typescript tranformation model .required should insert debug info into .required',
-  'Debug Info Typescript tranformation model .required should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation model should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation signal Property Assignment Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation signal Property Assignment Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation signal Property Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation signal Property Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation signal Variable Declaration Case should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation signal Variable Declaration Case should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation viewChild .required should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation viewChild should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation viewChild should tree-shake away debug info if in prod mode',
-  'Debug Info Typescript tranformation viewChildren should not tree-shake away debug info if in dev mode',
-  'Debug Info Typescript tranformation viewChildren should tree-shake away debug info if in prod mode',
-
+const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   // Design difference, not a bug: when an imported transform function's parameter type references
   // another symbol imported in the external declaration file (rather than a self-contained type),
   // ngp emits `Parameters<typeof i1.transformFn>[0]` instead of re-importing the external symbol.
@@ -244,42 +102,6 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests aliasing re-exports should re-export a directive from a different file under a private symbol name',
   'ngtsc behavioral tests aliasing re-exports should re-export a directive from an exported NgModule under a private symbol name',
 
-  // For the time being we aren't implementing selectorless in ngp. Also some of the analysis depends on
-  // the parsed template which hasn't been ported to Rust at the time of writing.
-  'selectorless should be able to alias imports of selectorless dependencies',
-  'selectorless should be able to use default imports as selectorless dependencies',
-  'selectorless should check input bindings coming from host directives on component nodes',
-  'selectorless should check input bindings coming from host directives on directive nodes',
-  'selectorless should check output bindings coming from host directives on component nodes',
-  'selectorless should check output bindings coming from host directives on directive nodes',
-  'selectorless should check required inputs of selectorless components',
-  'selectorless should check required inputs of selectorless directives',
-  'selectorless should check that selectorless component reference is a component class',
-  'selectorless should check that selectorless component references are standalone',
-  'selectorless should check that selectorless directive reference is a directive class',
-  'selectorless should check that selectorless directive references are standalone',
-  'selectorless should check that the component using selectorless syntax is standalone',
-  'selectorless should check the input bindings of selectorless components',
-  'selectorless should check the input bindings of selectorless directives',
-  'selectorless should check the input bindings of selectorless directives imported from an external library',
-  'selectorless should check the output bindings of selectorless components',
-  'selectorless should check the output bindings of selectorless directives',
-  'selectorless should defer selectorless symbols',
-  'selectorless should emit references to selectorless dependencies defined in the same function',
-  'selectorless should emit references to selectorless symbols',
-  'selectorless should generate metadata for a pipe without a name',
-  'selectorless should import capitalized pipes from external modules implicitly',
-  'selectorless should import capitalized pipes implicitly',
-  'selectorless should not allow a `deferredImports` object in a selectorless component',
-  'selectorless should not allow an `imports` array in a selectorless component',
-  'selectorless should pick the dependency closest to the class',
-  'selectorless should report unclaimed inputs on directive nodes as errors',
-  'selectorless should report unclaimed outputs on directive nodes as errors',
-  'selectorless should resolve local reference to selectorless component',
-  'selectorless should resolve local reference to selectorless directive',
-  'selectorless should treat unclaimed inputs as DOM property bindings on component nodes',
-  'selectorless should treat unclaimed outputs as DOM events on component nodes',
-
   // The two tests check behavior specific to the TS6 source
   // file construction so we don't need to support them.
   'template parse failures should handle TypeScript parse failures gracefully',
@@ -287,6 +109,17 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 
   // Tests TypeScript `structureIsReused` across in-memory ngtsc incremental compilations.
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
+
+  // Extended diagnostics that won't be ported to the new compilation model
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a function is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in an event binding is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function is not',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function that returns a function is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
 ]);
 
 /**
@@ -296,8 +129,6 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
  * and diagnostic/TCB gaps #677-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
-  'model inputs type-check diagnostics allows access to protected output',
-  'model inputs type-check diagnostics with `--strict` allows access to protected output',
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
 

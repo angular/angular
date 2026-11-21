@@ -26,9 +26,13 @@ export function formatExtendedError(code: ErrorCode, message: null | false | str
   // Note: Runtime error codes are prefixed with 0 (e.g., NG0100-999) while compiler errors
   // use plain numbers (e.g., NG1001), keeping them distinct despite numerical overlap.
   const fullCode = `NG${Math.abs(code)}`;
-  const errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
-  const addPeriodSeparator = !errorMessage.match(/[.,;!?\n]$/);
-  const separator = addPeriodSeparator ? '.' : '';
+  const details = `Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
 
-  return `${errorMessage}${separator} Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
+  // The code isn't repeated in the message, because tools already print it from `Diagnostic.code`.
+  if (!message) {
+    return details;
+  }
+
+  const separator = /[.,;!?\n]$/.test(message) ? '' : '.';
+  return `${message}${separator} ${details}`;
 }

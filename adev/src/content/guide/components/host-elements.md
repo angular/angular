@@ -110,29 +110,29 @@ decorators exist exclusively for backwards compatibility.
 
 ## Binding collisions
 
-When you use a component in a template, you can add bindings to that component instance's element.
-The component may _also_ define host bindings for the same properties or attributes.
+When using a component in a template, you can apply bindings to that component's element. The component (or directives applied to it) may also define host bindings for the same properties, attributes, classes, or styles.
 
-```angular-ts
-@Component({
-  ...,
-  host: {
-    'role': 'presentation',
-    '[id]': 'id',
-  }
-})
-export class ProfilePhoto { /* ... */ }
-```
+How Angular handles these collisions depends on the type of binding:
 
-```angular-html
-<profile-photo role="group" [id]="otherId" />
-```
+### Class and style bindings
 
-In cases like this, the following rules determine which value wins:
+Class and style bindings have a defined precedence order. Bindings defined in the template take priority over host bindings defined on directives or components:
 
-- If both values are static, the instance binding wins.
-- If one value is static and the other dynamic, the dynamic value wins.
-- If both values are dynamic, the component's host binding wins.
+1. **Template bindings** (e.g., `[class.active]` or `[style.color]`)
+2. **Static template values** (e.g., `class="..."` or `style="..."` in the template)
+3. **Directive host bindings**
+4. **Component host bindings**
+5. **Static host values** (e.g., `host: {class: '...'}`)
+
+If a binding's value is `undefined`, Angular falls back to the next level. A `null` value removes the class or style without falling back.
+
+### Property and attribute collisions
+
+For non-styling properties and attributes (such as `id`, `role`, or `[attr.aria-*]`):
+
+- **Static attributes:** If both the template and the component declare a static attribute (e.g., `<my-cmp id="parent">` and `host: {id: 'child'}`), the attribute set in the template wins.
+- **Static and dynamic:** If one value is static and the other is dynamic, the dynamic value wins.
+- **Dynamic bindings:** Avoid binding to the same DOM property or attribute both in the template and via host bindings. Angular does not reconcile duplicate property bindings; overlapping dynamic bindings can lead to unexpected overwrites based on change detection execution order.
 
 ## Styling with CSS custom properties
 

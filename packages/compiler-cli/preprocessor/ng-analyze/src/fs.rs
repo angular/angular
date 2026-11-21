@@ -1,6 +1,7 @@
 //! Virtual filesystem overlay that checks in-memory files first and falls back to
 //! [`crate::physical_fs::PhysicalFs`].
 
+use crate::perf::Counter;
 use crate::physical_fs::{default_physical_fs, PhysicalFs};
 use oxc_resolver::{FileMetadata, FileSystem, ResolveError};
 use std::collections::{HashMap, HashSet};
@@ -37,9 +38,6 @@ pub struct OverlayFileSystem {
     pub allowed_sources: Arc<Option<HashSet<PathBuf>>>,
     /// Cache for is_allowed results to avoid repeated canonicalization and normalization.
     is_allowed_cache: Arc<RwLock<HashMap<PathBuf, bool>>>,
-    /// Per-run cache for `detect_is_core` (directory -> is-`@angular/core`); see
-    /// `ResourceResolverFs::is_core_cache`.
-    is_core_cache: Arc<RwLock<HashMap<PathBuf, bool>>>,
     /// The non-virtual filesystem underneath this overlay.
     physical: Arc<dyn PhysicalFs>,
     #[cfg(test)]
@@ -56,7 +54,6 @@ impl Clone for OverlayFileSystem {
             preserve_symlinks: Arc::clone(&self.preserve_symlinks),
             allowed_sources: Arc::clone(&self.allowed_sources),
             is_allowed_cache: Arc::clone(&self.is_allowed_cache),
-            is_core_cache: Arc::clone(&self.is_core_cache),
             physical: Arc::clone(&self.physical),
             #[cfg(test)]
             delays: Arc::clone(&self.delays),
@@ -69,6 +66,12 @@ pub fn path_to_string(path: PathBuf) -> String {
     path.into_os_string()
         .into_string()
         .unwrap_or_else(|os_str| os_str.to_string_lossy().into_owned())
+}
+
+/// `path` spelled as an import specifier: always with `/` separators, as
+/// `relative_specifier_between` spells relative ones.
+pub fn path_to_import_specifier(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
 }
 
 /// Whether `path` is absolute. `Path::is_absolute` is always `false` on `wasm32-unknown-unknown`,
@@ -164,6 +167,7 @@ impl OverlayFileSystem {
                 set.insert(path.clone());
                 let normalized = normalize_path(&path).into_owned();
                 set.insert(normalized);
+                crate::perf::count(Counter::FsCanonicalizeCalls, 1);
                 if let Ok(canon) = physical.canonicalize(&path) {
                     set.insert(canon.clone());
                     let canon_normalized = normalize_path(&canon).into_owned();
@@ -181,7 +185,6 @@ impl OverlayFileSystem {
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
             allowed_sources: Arc::new(allowed),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
-            is_core_cache: Arc::new(RwLock::new(HashMap::new())),
             #[cfg(test)]
             delays: Arc::new(RwLock::new(HashMap::new())),
         }
@@ -219,7 +222,11 @@ impl OverlayFileSystem {
             let files = self.virtual_files.read().unwrap();
             self.get_virtual_file(path, &files).is_some()
         };
-        in_virtual || self.physical.exists(path)
+        if in_virtual {
+            return true;
+        }
+        crate::perf::count(Counter::FsStatCalls, 1);
+        self.physical.exists(path)
     }
 
     /// Attempt to resolve a file across configured `rootDirs`.
@@ -291,10 +298,12 @@ impl OverlayFileSystem {
         {
             let cache = self.is_allowed_cache.read().unwrap();
             if let Some(&allowed) = cache.get(path) {
+                crate::perf::count(Counter::IsAllowedCacheHits, 1);
                 return allowed;
             }
         }
 
+        crate::perf::count(Counter::IsAllowedCacheMisses, 1);
         let is_allowed = self.is_allowed_uncached(path, allowed);
 
         let mut cache = self.is_allowed_cache.write().unwrap();
@@ -315,6 +324,7 @@ impl OverlayFileSystem {
 
             // If still not allowed, try canonicalizing the absolute path.
             if !is_allowed {
+                crate::perf::count(Counter::FsCanonicalizeCalls, 1);
                 if let Ok(canon) = self.physical.canonicalize(&abs_path) {
                     let canon_norm = normalize_path(&canon);
                     is_allowed = allowed.contains(canon_norm.as_ref());
@@ -322,6 +332,7 @@ impl OverlayFileSystem {
             }
         } else if !is_allowed {
             // If absolute path is not allowed, try canonicalizing it.
+            crate::perf::count(Counter::FsCanonicalizeCalls, 1);
             if let Ok(canon) = self.physical.canonicalize(path) {
                 let canon_norm = normalize_path(&canon);
                 is_allowed = allowed.contains(canon_norm.as_ref());
@@ -340,6 +351,7 @@ impl OverlayFileSystem {
                 let resolved_norm = normalize_path(&resolved);
                 is_allowed = allowed.contains(resolved_norm.as_ref());
                 if !is_allowed {
+                    crate::perf::count(Counter::FsCanonicalizeCalls, 1);
                     if let Ok(canon) = self.physical.canonicalize(&resolved) {
                         let canon_norm = normalize_path(&canon);
                         is_allowed = allowed.contains(canon_norm.as_ref());
@@ -428,7 +440,11 @@ impl OverlayFileSystem {
             return None;
         }
         let files = self.virtual_files.read().unwrap();
-        self.get_virtual_file(path, &files).cloned()
+        let res = self.get_virtual_file(path, &files).cloned();
+        if res.is_some() {
+            crate::perf::count(Counter::VirtualFileHits, 1);
+        }
+        res
     }
 
     /// Iterate over all virtual file paths, as the caller spelled them.
@@ -446,10 +462,6 @@ impl OverlayFileSystem {
 impl crate::resource_loader::ResourceResolverFs for OverlayFileSystem {
     fn root_dirs(&self) -> Vec<PathBuf> {
         self.root_dirs.read().unwrap().clone()
-    }
-
-    fn is_core_cache(&self) -> &RwLock<HashMap<PathBuf, bool>> {
-        &self.is_core_cache
     }
 
     fn resolve_root_dirs_backing_path(&self, path: &Path) -> Option<PathBuf> {
@@ -477,7 +489,6 @@ impl FileSystem for OverlayFileSystem {
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
             allowed_sources: Arc::new(None),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
-            is_core_cache: Arc::new(RwLock::new(HashMap::new())),
             #[cfg(test)]
             delays: Arc::new(RwLock::new(HashMap::new())),
         }
@@ -500,6 +511,7 @@ impl FileSystem for OverlayFileSystem {
 
         if self.is_allowed(path) {
             if let Ok(content) = self.physical.read(path) {
+                count_read(content.len());
                 return Ok(content);
             }
         }
@@ -513,7 +525,11 @@ impl FileSystem for OverlayFileSystem {
                 return Ok(vf.content.as_bytes().to_vec());
             }
             if self.is_allowed(&resolved) {
-                return self.physical.read(&resolved);
+                let res = self.physical.read(&resolved);
+                if let Ok(content) = &res {
+                    count_read(content.len());
+                }
+                return res;
             }
         }
 
@@ -537,6 +553,7 @@ impl FileSystem for OverlayFileSystem {
 
         if self.is_allowed(path) {
             if let Ok(content) = self.physical.read_to_string(path) {
+                count_read(content.len());
                 return Ok(content);
             }
         }
@@ -550,7 +567,11 @@ impl FileSystem for OverlayFileSystem {
                 return Ok(vf.content.to_string());
             }
             if self.is_allowed(&resolved) {
-                return self.physical.read_to_string(&resolved);
+                let res = self.physical.read_to_string(&resolved);
+                if let Ok(content) = &res {
+                    count_read(content.len());
+                }
+                return res;
             }
         }
 
@@ -563,6 +584,7 @@ impl FileSystem for OverlayFileSystem {
         }
 
         if self.is_allowed(path) {
+            crate::perf::count(Counter::FsStatCalls, 1);
             if let Ok(m) = self.physical.metadata(path) {
                 return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
             }
@@ -573,6 +595,7 @@ impl FileSystem for OverlayFileSystem {
             if let Some(vf) = self.get_virtual_entry(&resolved) {
                 return Ok(FileMetadata::new(!vf.is_dir, vf.is_dir, false));
             }
+            crate::perf::count(Counter::FsStatCalls, 1);
             if let Ok(m) = self.physical.metadata(&resolved) {
                 return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
             }
@@ -588,6 +611,7 @@ impl FileSystem for OverlayFileSystem {
         }
 
         if self.is_allowed(path) {
+            crate::perf::count(Counter::FsStatCalls, 1);
             if let Ok(m) = self.physical.symlink_metadata(path) {
                 return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
             }
@@ -598,6 +622,7 @@ impl FileSystem for OverlayFileSystem {
             if let Some(vf) = self.get_virtual_entry(&resolved) {
                 return Ok(FileMetadata::new(!vf.is_dir, vf.is_dir, false));
             }
+            crate::perf::count(Counter::FsStatCalls, 1);
             if let Ok(m) = self.physical.symlink_metadata(&resolved) {
                 return Ok(FileMetadata::new(m.is_file(), m.is_dir(), m.is_symlink()));
             }
@@ -625,6 +650,7 @@ impl FileSystem for OverlayFileSystem {
         }
 
         if self.preserve_symlinks.load(Ordering::Relaxed) {
+            crate::perf::count(Counter::FsStatCalls, 1);
             if path.exists() {
                 let abs_path = if path.is_absolute() {
                     path.to_path_buf()
@@ -634,6 +660,7 @@ impl FileSystem for OverlayFileSystem {
                 return Ok(normalize_path_structural(&abs_path).into_owned());
             }
         } else {
+            crate::perf::count(Counter::FsCanonicalizeCalls, 1);
             match self.physical.canonicalize(path) {
                 Ok(canon) => return Ok(canon),
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
@@ -649,6 +676,7 @@ impl FileSystem for OverlayFileSystem {
             if self.get_virtual_entry(&resolved).is_some() {
                 return Ok(normalize_path_structural(&resolved).into_owned());
             }
+            crate::perf::count(Counter::FsCanonicalizeCalls, 1);
             return Ok(self.physical.canonicalize(&resolved).unwrap_or(resolved));
         }
 
@@ -659,6 +687,18 @@ impl FileSystem for OverlayFileSystem {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_path_to_import_specifier_uses_forward_slashes() {
+        assert_eq!(
+            path_to_import_specifier(Path::new("C:\\work\\app\\cmp.ts")),
+            "C:/work/app/cmp.ts"
+        );
+        assert_eq!(
+            path_to_import_specifier(Path::new("/work/app/cmp.ts")),
+            "/work/app/cmp.ts"
+        );
+    }
 
     #[test]
     fn test_virtual_file_read() {
@@ -1244,4 +1284,9 @@ mod tests {
             None
         );
     }
+}
+
+fn count_read(bytes: usize) {
+    crate::perf::count(Counter::FsReads, 1);
+    crate::perf::count(Counter::FsReadBytes, bytes as u64);
 }

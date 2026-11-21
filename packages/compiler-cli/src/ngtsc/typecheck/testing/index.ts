@@ -24,16 +24,11 @@ import {
   SelectorMatcher,
   TcbDirectiveMetadata,
   TcbGenericContextBehavior,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstHoverDeferredTrigger,
   TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
   TmplAstTemplate,
-  TmplAstTextAttribute,
   TmplAstViewportDeferredTrigger,
   TypeCheckId,
   TypeCheckingConfig,
@@ -151,7 +146,6 @@ export function tcb(
   const clazz = getClass(sf, 'Test');
   const templateUrl = 'synthetic.html';
   const {nodes, errors} = parseTemplate(template, templateUrl, templateParserOptions);
-  const selectorlessEnabled = templateParserOptions?.enableSelectorless ?? false;
 
   if (errors !== null) {
     throw new Error('Template parse errors: \n' + errors.join('\n'));
@@ -161,7 +155,6 @@ export function tcb(
     declarations,
     (decl) => getClass(sf, decl.name),
     new Map(),
-    selectorlessEnabled,
     foreignComponents,
   );
   const binder = new R3TargetBinder<DirectiveMeta>(matcher, foreignMatcher);
@@ -204,6 +197,7 @@ export function tcb(
     allowSignalsInTwoWayBindings: true,
     allowDomEventAssertion: true,
     checkUnknownElements: true,
+    checkTypeOfNgTemplateBindings: true,
     ...config,
   };
   options = options || {emitSpans: false};
@@ -387,7 +381,6 @@ export function setup(
             return getClass(declFile, decl.name);
           },
           fakeMetadataRegistry,
-          overrides.parseOptions?.enableSelectorless ?? false,
           foreignComponents,
         );
         const binder = new R3TargetBinder<DirectiveMeta>(matcher, foreignMatcher);
@@ -574,7 +567,6 @@ function prepareDeclarations(
   declarations: TestDeclaration[],
   resolveDeclaration: DeclarationResolver,
   metadataRegistry: Map<string, TypeCheckableDirectiveMeta>,
-  selectorlessEnabled: boolean,
   foreignComponentNames: string[] = [],
 ) {
   const pipes = new Map<string, PipeMeta>();
@@ -616,22 +608,14 @@ function prepareDeclarations(
   // We need to make two passes over the directives so that all declarations
   // have been registered by the time we resolve the host directives.
 
-  if (selectorlessEnabled) {
-    const registry = new Map<string, DirectiveMeta[]>();
-    for (const meta of directives) {
-      registry.set(meta.name, [meta, ...hostDirectiveResolder.resolve(meta)]);
-    }
-    return {matcher: new SelectorlessMatcher<DirectiveMeta>(registry), pipes, foreignMatcher};
-  } else {
-    const matcher = new SelectorMatcher<DirectiveMeta[]>();
-    for (const meta of directives) {
-      const selector = CssSelector.parse(meta.selector || '');
-      const matches = [...hostDirectiveResolder.resolve(meta), meta] as DirectiveMeta[];
-      matcher.addSelectables(selector, matches);
-    }
-
-    return {matcher, pipes, foreignMatcher};
+  const matcher = new SelectorMatcher<DirectiveMeta[]>();
+  for (const meta of directives) {
+    const selector = CssSelector.parse(meta.selector || '');
+    const matches = [...hostDirectiveResolder.resolve(meta), meta] as DirectiveMeta[];
+    matcher.addSelectables(selector, matches);
   }
+
+  return {matcher, pipes, foreignMatcher};
 }
 
 export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {
@@ -678,7 +662,6 @@ function getDirectiveMetaFromDeclaration(
     queries: decl.queries || [],
     isStructural: false,
     isStandalone: !!decl.isStandalone,
-    isSignal: !!decl.isSignal,
     baseClass: null,
     animationTriggerNames: null,
     decorator: null,
@@ -740,7 +723,6 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStructural: false,
         animationTriggerNames: null,
         isStandalone: false,
-        isSignal: false,
         imports: null,
         foreignImports: null,
         rawImports: null,
@@ -754,8 +736,6 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isExplicitlyDeferred: false,
         deferredBlocks: null,
         inputFieldNamesFromMetadataArray: null,
-        selectorlessEnabled: false,
-        localReferencedSymbols: null,
         hostDirectives:
           decl.hostDirectives === undefined
             ? null
@@ -856,19 +836,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder<TemplateDiag
     id: TypeCheckId,
     element: TmplAstElement,
     componentNames: string[],
-  ): void {}
-  missingNamedTemplateDependency(
-    id: TypeCheckId,
-    node: TmplAstComponent | TmplAstDirective,
-  ): void {}
-  unclaimedDirectiveBinding(
-    id: TypeCheckId,
-    directive: TmplAstDirective,
-    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
-  ): void {}
-  incorrectTemplateDependencyType(
-    id: TypeCheckId,
-    node: TmplAstComponent | TmplAstDirective,
   ): void {}
   deferImplicitTriggerMissingPlaceholder(
     id: TypeCheckId,

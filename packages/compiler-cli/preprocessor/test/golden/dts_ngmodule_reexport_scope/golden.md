@@ -51,9 +51,9 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [LibModule],
                 template: `
-        <div lib-dir></div>
-        <lib-cmp></lib-cmp>
-      `,
+    <div lib-dir></div>
+    <lib-cmp></lib-cmp>
+  `,
               },
             ],
           },

@@ -104,6 +104,29 @@ impl ImportDeclarationMetadata {
     }
 }
 
+/// A top-level `import X = …` statement, which the emitter hoists like the `import` declarations.
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportEqualsDeclarationMetadata {
+    /// Statement span, including a leading `export`.
+    pub span: SpanMetadata,
+    /// `span` extended over any trailing line terminator for clean removal.
+    pub removal_span: SpanMetadata,
+}
+
+impl ImportEqualsDeclarationMetadata {
+    pub(crate) fn to_wire(
+        info: &crate::analyzer::ImportEqualsDeclarationInfo,
+        converter: &crate::utils::Utf8ToUtf16,
+    ) -> Self {
+        Self {
+            span: SpanMetadata::new(info.span, converter),
+            removal_span: SpanMetadata::new(info.removal_span, converter),
+        }
+    }
+}
+
 /// Implicit signal `debugName` insertion (`signalMetadataTransform`).
 /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts#L11-L93
 #[cfg_attr(feature = "napi", napi(object))]
@@ -183,22 +206,29 @@ pub struct TypeParameterMetadata {
 
 impl TypeParameterMetadata {
     /// Rebase/resolve relative module specifiers in this type parameter's type references
-    /// from `declaring_path` into `consumer_path` using the given reference strategy.
+    /// from `declaring_path` into `consumer_path` using the given reference strategy. A `None`
+    /// `consumer_path` is a [`crate::host::IdKind::Virtual`] consumer.
     pub fn resolve_specifiers(
         &mut self,
         strategy: &dyn crate::analyzer::import_emit::ReferenceEmitStrategy,
         declaring_path: &std::path::Path,
-        consumer_path: &std::path::Path,
+        consumer_path: Option<&std::path::Path>,
     ) {
         let Some(type_refs) = &mut self.type_refs else {
             return;
         };
         for r in type_refs {
-            r.module_specifier = strategy.resolve_import_specifier(
-                declaring_path,
-                consumer_path,
-                &r.module_specifier,
-            );
+            r.module_specifier = match consumer_path {
+                Some(consumer_path) => strategy.resolve_import_specifier(
+                    declaring_path,
+                    consumer_path,
+                    &r.module_specifier,
+                ),
+                None => strategy.resolve_import_specifier_for_virtual_consumer(
+                    declaring_path,
+                    &r.module_specifier,
+                ),
+            };
         }
     }
 }
@@ -350,7 +380,6 @@ pub struct ComponentMetadata {
     pub styles_from_urls: Option<Vec<String>>,
     pub style_urls: Option<Vec<UrlMetadata>>,
     pub standalone: bool,
-    pub signals: bool,
     pub export_as: Option<Vec<String>>,
     pub schemas: Option<Vec<String>>,
     pub raw_imports_span: Option<SpanMetadata>,
@@ -465,7 +494,6 @@ pub struct DirectiveMetadata {
     pub decorator_name: Option<String>,
     pub selector: Option<String>,
     pub standalone: bool,
-    pub signals: bool,
     pub is_structural: bool,
     pub export_as: Option<Vec<String>>,
     /// Syntax of the `host` object literal, for the type-check block.
@@ -567,6 +595,8 @@ pub struct QueryMetadata {
     pub read_span: Option<SpanMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options_span: Option<SpanMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub options_string: Option<String>,
     pub is_static: bool,
     pub is_signal: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1066,6 +1096,8 @@ pub struct ClassMetadata {
     pub ng_template_guards: Vec<TemplateGuardMetadata>,
     pub has_ng_field_directive: bool,
     pub public_methods: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub signal_members: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub super_class: Option<DeclarationTuple>,
     pub uses_inheritance: bool,

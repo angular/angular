@@ -330,6 +330,98 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
       ),
     ).toEqual([]);
   });
+
+  it('guards forward declaration references in jit: true propDecorators with // @ts-ignore', async () => {
+    const outputs = await compileFiles({
+      '/test.ts': `
+        import {Component, Directive, ViewChild} from '@angular/core';
+
+        @Component({
+          selector: 'jit-cmp',
+          template: '',
+          jit: true,
+        })
+        export class JitCmp {
+          @ViewChild('tpl', {
+            static: true,
+          })
+          tpl: any;
+
+          @ViewChild(ForwardDir) child!: ForwardDir;
+        }
+
+        @Directive({
+          selector: '[forward-dir]',
+          jit: true,
+        })
+        export class ForwardDir {}
+      `,
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).toContain('child: [{type: ViewChild, args: [// @ts-ignore\nForwardDir]}]');
+
+    const diagnostics = typecheckEmittedTs(content);
+    expect(
+      diagnostics.map(
+        (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
+      ),
+    ).toEqual([]);
+  });
+
+  it('handles explicit zero-arg constructor vs implicit constructor in jit: true', async () => {
+    const source = `
+      import {Component, Directive} from '@angular/core';
+
+      @Directive({
+        selector: '[empty-ctor-dir]',
+        jit: true,
+      })
+      export class EmptyCtorDir {
+        constructor() {}
+      }
+
+      @Component({
+        selector: 'empty-ctor-cmp',
+        template: '',
+        jit: true,
+      })
+      export class EmptyCtorCmp {
+        constructor() {}
+      }
+
+      @Component({
+        selector: 'implicit-ctor-cmp',
+        template: '',
+        jit: true,
+      })
+      export class ImplicitCtorCmp {}
+    `;
+
+    const outputs = await compileFiles({'/test.ts': source});
+    const content = outputs.get('/out/test.ts')!;
+    expect(
+      [...content.matchAll(/\/\/ @ts-ignore\n  static ctorParameters = \(\): any => \[\];/g)]
+        .length,
+    ).toBe(2);
+    expect([...content.matchAll(/static ctorParameters/g)].length).toBe(2);
+    expect(content).toContain('export class ImplicitCtorCmp {}');
+
+    const jsOutput = ts.transpileModule(content, {
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2022,
+        experimentalDecorators: true,
+      },
+    }).outputText;
+    expect([...jsOutput.matchAll(/static ctorParameters = \(\) => \[\];/g)].length).toBe(2);
+
+    const diagnostics = typecheckEmittedTs(content, {noImplicitOverride: true});
+    expect(
+      diagnostics.map(
+        (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
+      ),
+    ).toEqual([]);
+  });
 });
 
 function makeTsconfig(

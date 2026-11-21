@@ -188,15 +188,15 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [TestTransformsComponent],
                 template: `
-        <test-transforms
-          [decoratorInput]="'true'"
-          [aliasedInput]="123"
-          [signalInput]="'false'"
-          [aliasedSignal]="'hello'"
-          [inlineTransform]="null"
-          [externalTypeInput]="true"
-        ></test-transforms>
-      `,
+    <test-transforms
+      [decoratorInput]="'true'"
+      [aliasedInput]="123"
+      [signalInput]="'false'"
+      [aliasedSignal]="'hello'"
+      [inlineTransform]="null"
+      [externalTypeInput]="true"
+    ></test-transforms>
+  `,
               },
             ],
           },

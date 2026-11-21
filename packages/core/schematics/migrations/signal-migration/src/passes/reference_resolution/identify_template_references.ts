@@ -139,7 +139,6 @@ function extractTemplateWithoutCompilerAnalysis(
       usePoisonedData: true,
       enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat !== false,
       i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs === true,
-      enableSelectorless: false,
     },
     CompilationMode.FULL,
   ).nodes;

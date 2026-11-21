@@ -88,4 +88,24 @@ describe('ɵsetClassMetadata placement with non-Angular class decorators', () =>
       "((): any => {\n  (((typeof ngDevMode === 'undefined') || ngDevMode) && i0.ɵsetClassMetadata(DecoratedCmp,",
     );
   });
+
+  it('preserves multiline template literal content inside the ɵsetClassMetadata static block', async () => {
+    const outputs = await compileFiles({
+      '/test.ts': [
+        "import {Component} from '@angular/core';",
+        '',
+        '@Component({',
+        "  selector: 'multiline-cmp',",
+        '  template: `<div>',
+        '  <span>hello</span>',
+        '</div>`,',
+        '})',
+        'export class MultilineCmp {}',
+      ].join('\n'),
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).toContain('static {');
+    expect(content).toContain('template: `<div>\n  <span>hello</span>\n</div>`');
+  });
 });

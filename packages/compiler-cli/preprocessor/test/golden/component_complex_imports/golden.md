@@ -118,12 +118,12 @@ export class AppComponent {
                   BarrelItemComponent,
                 ],
                 template: `
-        <app-button appLocalDir>Click</app-button>
-        <app-card>Card</app-card>
-        <app-icon></app-icon>
-        <app-barrel-item></app-barrel-item>
-        <app-feature-inner></app-feature-inner>
-      `,
+    <app-button appLocalDir>Click</app-button>
+    <app-card>Card</app-card>
+    <app-icon></app-icon>
+    <app-barrel-item></app-barrel-item>
+    <app-feature-inner></app-feature-inner>
+  `,
               },
             ],
           },
