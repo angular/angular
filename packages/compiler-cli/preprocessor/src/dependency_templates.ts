@@ -8,7 +8,11 @@
 
 import type {ParseTemplateOptions} from '@angular/compiler';
 
-import {getOrParseComponentTemplate} from './compiler-utils.js';
+import {
+  getOrParseComponentTemplate,
+  isDeclarationFilePath,
+  usesDirectInlineTemplate,
+} from './compiler-utils.js';
 import {
   getOrCreateFileAnalysis,
   type FileAnalysis,
@@ -120,8 +124,35 @@ export class DependencyTemplates {
           return;
         }
         onMetadata?.(metadata);
-        const content = await this.analyzer.getFileContent(filePath);
-        this.parseTemplates(filePath, metadata.classes, content, classIds.values());
+        const targetClasses: nga.ClassMetadata[] = [];
+        let needsSource = false;
+        for (const id of classIds.values()) {
+          const classMeta = findComponentClass(metadata.classes, id);
+          if (classMeta?.component != null) {
+            targetClasses.push(classMeta);
+            needsSource ||= usesDirectInlineTemplate(classMeta.component);
+          }
+        }
+        if (targetClasses.length === 0) {
+          return;
+        }
+        const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, filePath);
+        let content = '';
+        if (needsSource) {
+          content = fileAnalysis.sourceContent ?? (await this.analyzer.getFileContent(filePath));
+          fileAnalysis.sourceContent = content;
+        }
+        for (const classMeta of targetClasses) {
+          getOrParseComponentTemplate(
+            fileAnalysis.parsedTemplates,
+            classMeta,
+            classMeta.component!,
+            filePath,
+            content,
+            this.templateParseOptions,
+            this.tracer,
+          );
+        }
       }),
     );
   }
@@ -154,19 +185,6 @@ export class DependencyTemplates {
     }
   }
 
-  /** Parses the templates of `classIds` into `filePath`'s cache, if not there already. */
-  private parseTemplates(
-    filePath: string,
-    classes: nga.ClassMetadata[],
-    content: string,
-    classIds: Iterable<ClassId>,
-  ): void {
-    const templatesByClass = this.getParsedTemplates(filePath);
-    for (const id of classIds) {
-      this.getOrParseTemplate(id, classes, filePath, content, templatesByClass);
-    }
-  }
-
   private getTemplate(
     decl: nga.DeclarationMetadata,
     consumer: DependencyTemplateConsumer,
@@ -196,9 +214,7 @@ export class DependencyTemplates {
     content: string,
     templatesByClass: Map<string, ParsedComponentTemplate>,
   ): ParsedComponentTemplate | null {
-    const classMeta = classes.find(
-      (c) => c.nameSpan?.start === id.nameStart && c.className === id.name && c.component != null,
-    );
+    const classMeta = findComponentClass(classes, id);
     if (classMeta?.component == null) {
       return null;
     }
@@ -214,8 +230,26 @@ export class DependencyTemplates {
   }
 }
 
-function needsNgContentSelectors(decl: nga.DeclarationMetadata): boolean {
-  return decl.declarationType === 'component' && decl.ngContentSelectors == null;
+function findComponentClass(
+  classes: nga.ClassMetadata[],
+  id: ClassId,
+): nga.ClassMetadata | undefined {
+  return classes.find(
+    (c) => c.nameSpan?.start === id.nameStart && c.className === id.name && c.component != null,
+  );
+}
+
+/**
+ * Whether `decl` is a source-file component whose `ngContentSelectors` must be recovered from
+ * its template. Declaration files never carry templates, so legacy `.d.ts` components that omit
+ * the `NgContentSelectors` type argument are skipped as well.
+ */
+export function needsNgContentSelectors(decl: nga.DeclarationMetadata): boolean {
+  return (
+    decl.declarationType === 'component' &&
+    decl.ngContentSelectors == null &&
+    !isDeclarationFilePath(decl.filePath)
+  );
 }
 
 function classIdOf(decl: nga.DeclarationMetadata): ClassId {

@@ -13,13 +13,17 @@ import {
   ParseTemplateOptions,
   TcbDirectiveMetadata,
 } from '@angular/compiler';
-import {makeClassKey} from './compiler-utils.js';
+import {isDeclarationFilePath, makeClassKey} from './compiler-utils.js';
 import {
   verifyCompilerOptions,
   verifyExtendedDiagnosticsOptions,
   type NgpCompilerOptions,
 } from './compiler_options.js';
-import {DependencyTemplates, ngContentSignature} from './dependency_templates.js';
+import {
+  DependencyTemplates,
+  needsNgContentSelectors,
+  ngContentSignature,
+} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
@@ -86,7 +90,7 @@ export function serializeDiagnostics(
  * `getDiagnostics({includeDeclarationFiles: true})` consumers still can.
  */
 function targetsDeclarationFile(diag: nga.NgDiagnostic, analyzedPath: string): boolean {
-  return (diag.filePath ?? analyzedPath).endsWith('.d.ts');
+  return isDeclarationFilePath(diag.filePath ?? analyzedPath);
 }
 
 function isAbsolutePosixOrWindowsPath(p: string): boolean {
@@ -596,12 +600,7 @@ export class HybridCompiler {
         ...Object.values(component.resolvedDeferredDeclarationsByBlock ?? {}).flat(),
       ];
       for (const decl of declarations) {
-        if (
-          decl.declarationType !== 'component' ||
-          decl.ngContentSelectors != null ||
-          !decl.filePath ||
-          decl.filePath === filePath
-        ) {
+        if (!needsNgContentSelectors(decl) || !decl.filePath || decl.filePath === filePath) {
           continue;
         }
         let consumers = this.componentTemplateConsumers.get(decl.filePath);
@@ -794,7 +793,7 @@ export class HybridCompiler {
       // The flush also evicts declaration files that resolved their own re-exports. None of them
       // changed, and recording one would make the tracker start over and re-emit every file. The
       // source files that import them are in `invalidated` as well.
-      const changed = invalidated.filter((filePath) => !filePath.endsWith('.d.ts'));
+      const changed = invalidated.filter((filePath) => !isDeclarationFilePath(filePath));
       if (this.incrementalEnabled && changed.length > 0) {
         this.incremental.recordChanges(changed, []);
       }
@@ -1527,12 +1526,7 @@ export class HybridCompiler {
       ...Object.values(component.resolvedDeferredDeclarationsByBlock ?? {}).flat(),
     ];
     for (const decl of declarations) {
-      if (
-        decl.declarationType !== 'component' ||
-        decl.ngContentSelectors != null ||
-        !decl.filePath ||
-        decl.filePath === filePath
-      ) {
+      if (!needsNgContentSelectors(decl) || !decl.filePath || decl.filePath === filePath) {
         continue;
       }
       const metadata = knownMetadata?.get(decl.filePath) ?? this.metadataByFile.get(decl.filePath);
