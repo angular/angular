@@ -213,11 +213,19 @@ describe('IncrementalEmitTracker', () => {
   });
 
   it('should emit every file after a declaration file changed', () => {
-    const tracker = new IncrementalEmitTracker();
-    emit(tracker, program(dir()));
+    for (const dtsPath of [
+      '/node_modules/lib/index.d.ts',
+      '/node_modules/lib/index.d.mts',
+      '/node_modules/lib/index.d.cts',
+    ]) {
+      const tracker = new IncrementalEmitTracker();
+      emit(tracker, program(dir()));
 
-    tracker.recordChanges(['/node_modules/lib/index.d.ts']);
-    expect(emit(tracker, program(dir()))).toEqual(['/dir.ts', '/cmp.ts', '/mod.ts', '/service.ts']);
+      tracker.recordChanges([dtsPath]);
+      expect(emit(tracker, program(dir())))
+        .withContext(dtsPath)
+        .toEqual(['/dir.ts', '/cmp.ts', '/mod.ts', '/service.ts']);
+    }
   });
 
   it('should re-emit the importers of a deleted file', () => {

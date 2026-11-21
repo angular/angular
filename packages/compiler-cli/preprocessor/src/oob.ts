@@ -34,6 +34,7 @@ import {
   type TcbDirectiveMetadata,
   type TypeCheckId,
 } from '@angular/compiler';
+import {isDeclarationFilePath} from './compiler-utils.js';
 import {ErrorCode} from './error_code.js';
 import {Diagnostic, DiagnosticRelatedInformation} from './diagnostic.js';
 
@@ -255,7 +256,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
     if (outputConsumer instanceof TmplAstElement) {
       let message = `The event half of the binding is to a native event called '${input.name}' on the <${outputConsumer.name}> DOM element.`;
-      if (!inputConsumer.ref.nodeFilePath?.endsWith('.d.ts')) {
+      if (!isDeclarationFilePath(inputConsumer.ref.nodeFilePath)) {
         message += `\n \n Are you missing an output declaration called '${output.name}'?`;
       }
       relatedInformation.push({

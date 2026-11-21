@@ -64,6 +64,7 @@ import {
   createEmptySourceSpan,
   createForeignComponentMatcher,
   getOrParseComponentTemplate,
+  isDeclarationFilePath,
   makeClassKey,
   metadataToDeclaration,
   refName,
@@ -1958,7 +1959,7 @@ function serializeOutput(file: FileCompilation): void {
   // type-checked output also reports TS2450). Skipping aliases of local declarations would fix both.
   // https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/translator/src/import_manager/import_typescript_transform.ts#L114-L148
   const hoistedImports: string[] = [];
-  if (!filePath.endsWith('.d.ts') && compiledClasses.length > 0) {
+  if (!isDeclarationFilePath(filePath) && compiledClasses.length > 0) {
     const lateImports = [
       ...importDeclarations.filter((decl) => !removedDecls.has(decl)),
       ...(result.importEqualsDeclarations ?? []),

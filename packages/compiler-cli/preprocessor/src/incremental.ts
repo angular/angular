@@ -8,7 +8,7 @@
 
 import {BoundTarget, MatchSource, TcbDirectiveMetadata} from '@angular/compiler';
 
-import {makeClassKey} from './compiler-utils.js';
+import {isDeclarationFilePath, makeClassKey} from './compiler-utils.js';
 import {fingerprintOf} from './processed_file_cache.js';
 import type {ProcessedFile} from './processor.js';
 import type * as nga from './types.js';
@@ -119,7 +119,7 @@ export class IncrementalEmitTracker {
   private recordChange(path: string): void {
     // ngtsc starts a fresh compilation whenever a declaration file changes, as the change may
     // affect anything that consumes it (`IncrementalCompilation.incremental`).
-    if (path.endsWith('.d.ts')) {
+    if (isDeclarationFilePath(path)) {
       this.baseline = null;
       this.emitted.clear();
     }

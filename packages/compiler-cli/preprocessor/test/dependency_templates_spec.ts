@@ -9,7 +9,7 @@
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'path';
-import {HybridCompiler, type NgDiagnostic, SidecarAnalyzer} from '../api.js';
+import {HybridCompiler, type NgDiagnostic, run, SidecarAnalyzer} from '../api.js';
 import {createTracer, type Tracer} from '../src/perf.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
 import {resolveFixtureNodeModules, resolveSidecarBinary} from './utils.js';
@@ -183,6 +183,258 @@ describe('cross-file ngContentSelectors and dependency templates', () => {
         expect(projectionMessages(processedFromChunk.diagnostics).length).toBe(2);
       },
       {enableHmr: true},
+    );
+  });
+
+  it('should not re-analyze or parse templates for external .d.ts, .d.mts, or .d.cts components', async () => {
+    await withProject(
+      {
+        'ext.d.ts': `
+          import * as i0 from '@angular/core';
+          export declare class NoSlotCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<NoSlotCmp, 'no-slot', never, {}, {}, never, never, true, never>;
+          }
+          export declare class EmptySlotCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<EmptySlotCmp, 'empty-slot', never, {}, {}, never, [], true, never>;
+          }
+          export declare class SlotCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<SlotCmp, 'with-slot', never, {}, {}, never, ['[header]'], true, never>;
+          }
+          export declare class LegacyCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<LegacyCmp, 'legacy-comp', never, {}, {}, never>;
+          }
+          export declare class LegacyModule {
+            static ɵmod: i0.ɵɵNgModuleDeclaration<LegacyModule, [typeof LegacyCmp], never, [typeof LegacyCmp]>;
+          }
+        `,
+        'esm.d.mts': `
+          import * as i0 from '@angular/core';
+          export declare class MtsNoSlotCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<MtsNoSlotCmp, 'mts-no-slot', never, {}, {}, never, never, true, never>;
+          }
+          export declare class MtsLegacyCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<MtsLegacyCmp, 'mts-legacy', never, {}, {}, never>;
+          }
+          export declare class MtsLegacyModule {
+            static ɵmod: i0.ɵɵNgModuleDeclaration<MtsLegacyModule, [typeof MtsLegacyCmp], never, [typeof MtsLegacyCmp]>;
+          }
+        `,
+        'cjs.d.cts': `
+          import * as i0 from '@angular/core';
+          export declare class CtsNoSlotCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<CtsNoSlotCmp, 'cts-no-slot', never, {}, {}, never, never, true, never>;
+          }
+          export declare class CtsLegacyCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<CtsLegacyCmp, 'cts-legacy', never, {}, {}, never>;
+          }
+          export declare class CtsLegacyModule {
+            static ɵmod: i0.ɵɵNgModuleDeclaration<CtsLegacyModule, [typeof CtsLegacyCmp], never, [typeof CtsLegacyCmp]>;
+          }
+        `,
+        'app.ts': `
+          import {Component} from '@angular/core';
+          import {EmptySlotCmp, LegacyModule, NoSlotCmp, SlotCmp} from './ext';
+          import {MtsLegacyModule, MtsNoSlotCmp} from './esm.mjs';
+          import {CtsLegacyModule, CtsNoSlotCmp} from './cjs.cjs';
+
+          @Component({
+            selector: 'app-root',
+            imports: [
+              NoSlotCmp,
+              EmptySlotCmp,
+              SlotCmp,
+              LegacyModule,
+              MtsNoSlotCmp,
+              MtsLegacyModule,
+              CtsNoSlotCmp,
+              CtsLegacyModule,
+            ],
+            template: \`
+              <no-slot>@if (show) {<span>a</span><span>b</span>}</no-slot>
+              <empty-slot>@if (show) {<span>a</span><span>b</span>}</empty-slot>
+              <with-slot>@if (show) {<div header>a</div><span>b</span>}</with-slot>
+              <legacy-comp>@if (show) {<span>a</span><span>b</span>}</legacy-comp>
+              <mts-no-slot>@if (show) {<span>a</span><span>b</span>}</mts-no-slot>
+              <mts-legacy>@if (show) {<span>a</span><span>b</span>}</mts-legacy>
+              <cts-no-slot>@if (show) {<span>a</span><span>b</span>}</cts-no-slot>
+              <cts-legacy>@if (show) {<span>a</span><span>b</span>}</cts-legacy>
+            \`,
+          })
+          export class AppComponent {
+            show = true;
+          }
+        `,
+      },
+      async ({root, tracer, compiler}) => {
+        const outDir = path.join(root, 'out');
+        await run(compiler, {outDir, rootDir: root, tracer});
+
+        expect((await fs.readdir(outDir)).sort()).toEqual([
+          'app.ngtypecheck.ts',
+          'app.ts',
+          'app.ts.map',
+        ]);
+        expect(projectionMessages(compiler.getDiagnostics())).toEqual([
+          jasmine.stringContaining('[header]'),
+        ]);
+
+        const {summary} = tracer.take();
+        // Only `AppComponent` parses its template (codegen + diagNodes).
+        expect(summary.node.counters['TemplatesParsed']).toBe(2);
+        // Only `app.ts` runs wire/semantic file analysis; declaration files are never re-queried.
+        expect(summary.rust!.queries['AnalyzeFileWire'].count).toBe(1);
+        expect(cachedBaseNames(compiler)).toEqual(['app.ts']);
+      },
+    );
+  });
+
+  it('should reuse processed output when importing legacy 6-argument .d.ts components', async () => {
+    const appContent = `
+      import {Component} from '@angular/core';
+      import {LegacyModule} from './legacy';
+
+      @Component({
+        selector: 'app-root',
+        imports: [LegacyModule],
+        template: '<legacy-comp />',
+      })
+      export class AppComponent {}
+    `;
+    await withProject(
+      {
+        'legacy.d.ts': `
+          import * as i0 from '@angular/core';
+          export declare class LegacyCmp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<LegacyCmp, 'legacy-comp', never, {}, {}, never>;
+          }
+          export declare class LegacyModule {
+            static ɵmod: i0.ɵɵNgModuleDeclaration<LegacyModule, [typeof LegacyCmp], never, [typeof LegacyCmp]>;
+          }
+        `,
+        'app.ts': appContent,
+      },
+      async ({root, compiler}) => {
+        const appPath = path.join(root, 'app.ts');
+        const first = await compiler.processFile(appPath, appContent);
+        const second = await compiler.processFile(appPath, appContent);
+        expect(second).toBe(first);
+      },
+    );
+  });
+
+  it('should skip reading .ts dependency sources for external and indirect templates and cache sourceContent for inline templates', async () => {
+    const depsContent = `
+      import {Component} from '@angular/core';
+
+      const INDIRECT_TPL = '<ng-content select="[ind-slot]"></ng-content>';
+
+      @Component({selector: 'ext-slot-cmp', templateUrl: './external_slot.html'})
+      export class ExternalSlotCmp {}
+
+      @Component({selector: 'ind-slot-cmp', template: INDIRECT_TPL})
+      export class IndirectSlotCmp {}
+
+      @Component({selector: 'inline-slot-a', template: '<ng-content select="[inline-a]"></ng-content>'})
+      export class InlineSlotACmp {}
+
+      @Component({selector: 'inline-slot-b', template: '<ng-content select="[inline-b]"></ng-content>'})
+      export class InlineSlotBCmp {}
+    `;
+    const consumerNonInlineContent = `
+      import {Component} from '@angular/core';
+      import {ExternalSlotCmp, IndirectSlotCmp} from './deps';
+
+      @Component({
+        selector: 'consumer-non-inline',
+        imports: [ExternalSlotCmp, IndirectSlotCmp],
+        template: \`
+          <ext-slot-cmp>@if (show) {<div ext-slot>1</div><span>2</span>}</ext-slot-cmp>
+          <ind-slot-cmp>@if (show) {<div ind-slot>1</div><span>2</span>}</ind-slot-cmp>
+        \`,
+      })
+      export class ConsumerNonInline {
+        show = true;
+      }
+    `;
+    const consumerInlineAContent = `
+      import {Component} from '@angular/core';
+      import {InlineSlotACmp} from './deps';
+
+      @Component({
+        selector: 'consumer-inline-a',
+        imports: [InlineSlotACmp],
+        template: '<inline-slot-a>@if (show) {<div inline-a>1</div><div inline-a>2</div>}</inline-slot-a>',
+      })
+      export class ConsumerInlineA {
+        show = true;
+      }
+    `;
+    const consumerInlineBContent = `
+      import {Component} from '@angular/core';
+      import {InlineSlotBCmp} from './deps';
+
+      @Component({
+        selector: 'consumer-inline-b',
+        imports: [InlineSlotBCmp],
+        template: '<inline-slot-b>@if (show) {<div inline-b>1</div><div inline-b>2</div>}</inline-slot-b>',
+      })
+      export class ConsumerInlineB {
+        show = true;
+      }
+    `;
+    await withProject(
+      {
+        'external_slot.html': '<ng-content select="[ext-slot]"></ng-content>',
+        'deps.ts': depsContent,
+        'consumer_non_inline.ts': consumerNonInlineContent,
+        'consumer_inline_a.ts': consumerInlineAContent,
+        'consumer_inline_b.ts': consumerInlineBContent,
+      },
+      async ({sidecar, tracer, compiler}) => {
+        const canonicalPaths = new Map<string, string>();
+        for await (const chunk of compiler.analyzeOptimized()) {
+          for (const file of chunk.files) {
+            canonicalPaths.set(path.basename(file.filePath), file.filePath);
+          }
+        }
+        const depsPath = canonicalPaths.get('deps.ts')!;
+        const consumerNonInlinePath = canonicalPaths.get('consumer_non_inline.ts')!;
+        const consumerInlineAPath = canonicalPaths.get('consumer_inline_a.ts')!;
+        const consumerInlineBPath = canonicalPaths.get('consumer_inline_b.ts')!;
+        await sidecar.takePerf();
+        tracer.take();
+
+        // Resolving only `templateUrl` and indirect-`template` components must not read `deps.ts`.
+        const nonInlineProcessed = await compiler.processFile(
+          consumerNonInlinePath,
+          consumerNonInlineContent,
+        );
+        const perfAfterNonInline = await sidecar.takePerf();
+        expect(perfAfterNonInline.summary.counters['FsReads'] ?? 0).toBe(0);
+        expect(compiler.fileCache.get(depsPath)?.sourceContent).toBeUndefined();
+        expect(projectionMessages(nonInlineProcessed.diagnostics)).toEqual([
+          jasmine.stringContaining('[ext-slot]'),
+          jasmine.stringContaining('[ind-slot]'),
+        ]);
+
+        // Resolving an inline-`template` component reads `consumer_inline_a.ts` + `deps.ts` (2 reads)
+        // and caches `deps.ts`'s `sourceContent`.
+        await compiler.getTcbForFile(consumerInlineAPath);
+        const perfAfterInlineA = await sidecar.takePerf();
+        expect(perfAfterInlineA.summary.counters['FsReads']).toBe(2);
+        expect(compiler.fileCache.get(depsPath)?.sourceContent).toBe(depsContent);
+
+        // A second inline-`template` component in `deps.ts` reads only `consumer_inline_b.ts` (1 read),
+        // reusing `deps.ts`'s cached `sourceContent` without re-reading `deps.ts` from disk.
+        await compiler.getTcbForFile(consumerInlineBPath);
+        const perfAfterInlineB = await sidecar.takePerf();
+        expect(perfAfterInlineB.summary.counters['FsReads']).toBe(1);
+
+        // Processing `deps.ts` itself preserves all 4 resolved templates and only parses `diagNodes`.
+        tracer.take();
+        await compiler.processFile(depsPath, depsContent);
+        expect(tracer.take().summary.node.counters['TemplatesParsed']).toBe(4);
+      },
     );
   });
 });

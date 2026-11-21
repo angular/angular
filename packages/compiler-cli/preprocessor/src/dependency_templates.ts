@@ -8,7 +8,11 @@
 
 import type {ParseTemplateOptions} from '@angular/compiler';
 
-import {getOrParseComponentTemplate} from './compiler-utils.js';
+import {
+  getOrParseComponentTemplate,
+  isDeclarationFilePath,
+  usesDirectInlineTemplate,
+} from './compiler-utils.js';
 import {
   getOrCreateFileAnalysis,
   type FileAnalysis,
@@ -123,21 +127,34 @@ export async function resolveNgContentSelectors(
           return;
         }
         onMetadata?.(metadata);
-        const depContent = await analyzer.getFileContent(depFilePath);
-        const depTemplates = getOrCreateFileAnalysis(fileCache, depFilePath).parsedTemplates;
+        const targetClasses: nga.ClassMetadata[] = [];
+        let needsSource = false;
         for (const id of classIds.values()) {
           const classMeta = findComponentClass(metadata.classes, id);
           if (classMeta?.component != null) {
-            getOrParseComponentTemplate(
-              depTemplates,
-              classMeta,
-              classMeta.component,
-              depFilePath,
-              depContent,
-              templateParseOptions,
-              tracer,
-            );
+            targetClasses.push(classMeta);
+            needsSource ||= usesDirectInlineTemplate(classMeta.component);
           }
+        }
+        if (targetClasses.length === 0) {
+          return;
+        }
+        const fileAnalysis = getOrCreateFileAnalysis(fileCache, depFilePath);
+        let depContent = '';
+        if (needsSource) {
+          depContent = fileAnalysis.sourceContent ?? (await analyzer.getFileContent(depFilePath));
+          fileAnalysis.sourceContent = depContent;
+        }
+        for (const classMeta of targetClasses) {
+          getOrParseComponentTemplate(
+            fileAnalysis.parsedTemplates,
+            classMeta,
+            classMeta.component!,
+            depFilePath,
+            depContent,
+            templateParseOptions,
+            tracer,
+          );
         }
       }),
     );
@@ -192,8 +209,17 @@ function findComponentClass(
   );
 }
 
-function needsNgContentSelectors(decl: nga.DeclarationMetadata): boolean {
-  return decl.declarationType === 'component' && decl.ngContentSelectors == null;
+/**
+ * Whether `decl` is a source-file component whose `ngContentSelectors` must be recovered from
+ * its template. Declaration files never carry templates, so legacy `.d.ts` components that omit
+ * the `NgContentSelectors` type argument are skipped as well.
+ */
+export function needsNgContentSelectors(decl: nga.DeclarationMetadata): boolean {
+  return (
+    decl.declarationType === 'component' &&
+    decl.ngContentSelectors == null &&
+    !isDeclarationFilePath(decl.filePath)
+  );
 }
 
 function classIdOf(decl: nga.DeclarationMetadata): ClassId {

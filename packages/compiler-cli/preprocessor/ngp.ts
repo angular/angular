@@ -10,6 +10,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import {isDeclarationFilePath} from './src/compiler-utils.js';
 import {getDiagnosticPath, HybridCompiler, serializeDiagnostics} from './src/hybrid_compiler.js';
 import type {ProcessedFile} from './src/processor.js';
 import {
@@ -141,7 +142,7 @@ async function processFile(
   const {filePath} = file;
 
   // Declaration files are program inputs, not compilation outputs, so avoid emitting them.
-  if (filePath.endsWith('.d.ts')) {
+  if (isDeclarationFilePath(filePath)) {
     return;
   }
 
