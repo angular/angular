@@ -23,6 +23,7 @@ export interface ServerOptions {
   includeAutomaticOptionalChainCompletions?: boolean;
   includeCompletionsWithSnippetText?: boolean;
   angularCoreVersion?: string;
+  useClientSideFileWatcher?: boolean;
 }
 
 export function createConnection(serverOptions: ServerOptions): MessageConnection {
@@ -41,6 +42,9 @@ export function createConnection(serverOptions: ServerOptions): MessageConnectio
   }
   if (serverOptions.angularCoreVersion) {
     argv.push('--angularCoreVersion', serverOptions.angularCoreVersion);
+  }
+  if (serverOptions.useClientSideFileWatcher) {
+    argv.push('--useClientSideFileWatcher');
   }
   const server = fork(SERVER_PATH, argv, {
     cwd: PROJECT_PATH,
@@ -109,7 +113,10 @@ export function createConnection(serverOptions: ServerOptions): MessageConnectio
   return connection;
 }
 
-export function initializeServer(client: MessageConnection): Promise<lsp.InitializeResult> {
+export function initializeServer(
+  client: MessageConnection,
+  capabilities: lsp.ClientCapabilities = {},
+): Promise<lsp.InitializeResult> {
   return client.sendRequest(lsp.InitializeRequest.type, {
     /**
      * The process id of the parent process that started the server. It is
@@ -134,6 +141,7 @@ export function initializeServer(client: MessageConnection): Promise<lsp.Initial
       workspace: {
         configuration: true,
       },
+      ...capabilities,
     },
     /**
      * Options are 'off' | 'messages' | 'verbose'.

@@ -44,6 +44,18 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   );
 }
 
+export function shouldSkipComplianceInNgp(
+  mode: string,
+  relativePath: string,
+  description: string,
+): boolean {
+  if (!isNgpSkipEnabled()) {
+    return false;
+  }
+  const key = `${mode}::${relativePath.trim()}::${description.replace(/\s+/g, ' ').trim()}`;
+  return NGP_KNOWN_COMPLIANCE_FAILURES.has(key);
+}
+
 /**
  * Tests that rely on a TypeScript `TypeChecker` during analysis or template semantics checking,
  * which `ngp` does not have at preprocessing time.
@@ -266,4 +278,86 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc xi18n should extract xlf2',
   'ngtsc xi18n should extract xmb',
   'ngtsc xi18n should not emit js',
+
+  // Custom Elements Manifests (the `customElementsManifests` option) are not implemented in NGP.
+  'Custom Elements Manifest type validation should check static values of aliases using standard library utilities',
+  'Custom Elements Manifest type validation should retain valid generic checks',
+  'Custom Elements Manifest type validation should warn and retain unrelated checks for unusable type Box',
+  'Custom Elements Manifest type validation should warn and retain unrelated checks for unusable type Box<number>',
+  'Custom Elements Manifest type validation should warn and retain unrelated checks for unusable type Box<string, string>',
+  'Custom Elements Manifest type validation should warn and retain unrelated checks for unusable type [string?, number]',
+  'Custom Elements Manifest type validation should warn and retain unrelated checks for unusable type readonly string',
+  'NgCompiler incremental compilations should reuse the manifests of the previous compiler until one of them changes',
+  'NgCompiler resource-only changes should process manifest and component resource changes from the same batch',
+  'NgCompiler resource-only changes should reload @my/lib when its package.json mapping changes',
+  'NgCompiler resource-only changes should reload @my/lib/custom-elements.json when its package.json mapping changes',
+  'NgCompiler resource-only changes should reload a changed manifest before the first analysis',
+  'NgCompiler resource-only changes should reload a configured manifest that is created after initial analysis',
+  'NgCompiler should diagnose an invalid customElementsManifests option without throwing',
+  'NgCompiler should diagnose an invalid customElementsManifestsDiagnostics option without throwing',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should accept bindings whose value matches the declared type',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should accept valid string-union static attribute values',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should check bindings to the properties of an element class as assignments',
+  "ngtsc type checking schema checking with custom elements manifests binding value type checking should check the value of a two-way bound signal initialized to 'wrong'",
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should check the value of a two-way bound signal initialized to 1',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should check values against index-less references from a package',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should check values against types referenced from a package',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should drop inherited attribute checks when an explicit attribute type is unusable',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should fall back to addEventListener inference for unsupported event types',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should fall back to native event inference when a manifest event type is stripped',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should handle custom element instance type parameters <T = string> in strict templates',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should handle custom element instance type parameters <T> in strict templates',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should keep global targets native and manifest event typing in external templates',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should keep the class of an HTMLElement subclass whose members differ from the DOM library',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should not check binding values outside of strict mode',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should not check event types outside of strict mode',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should prefer a manifest event over a colliding native event',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should recheck unchanged templates when a referenced global type becomes available',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should recognize definition-only custom-element tags without suppressing member checks',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should report bindings whose value does not match a literal union type',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should report bindings whose value does not match the declared primitive type',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should report interpolated properties whose serialized value does not match',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should report interpolated strings that widen beyond a literal union',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should report invalid interpolated properties in external templates',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should report invalid string-union static attribute values',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should retain property checks when the related attribute type is unusable',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should treat literal interpolation as serialized string for union checking',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should type $event from the manifest event type',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should type local references from an importable package declaration',
+  "ngtsc type checking schema checking with custom elements manifests binding value type checking should type local references through a declaration's own module when a barrel re-exports it",
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should type local references when a library class does not declare HTMLElement inheritance',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should use global types that a declaration in the component file shadows',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should warn and fall back instead of emitting an unknown global into the TCB',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should warn and fall back to HTMLElement when a declaration module omits the class export',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should warn and fall back to event inference for references to packages without types',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should warn and fall back to existence checking for references to packages without types',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should warn and not check values of named types without references',
+  'ngtsc type checking schema checking with custom elements manifests binding value type checking should warn and type local references as HTMLElement when the declared class is not importable',
+  'ngtsc type checking schema checking with custom elements manifests should allow undeclared properties with CUSTOM_ELEMENTS_SCHEMA and still check declared ones',
+  'ngtsc type checking schema checking with custom elements manifests should match manifest tag names without regard to ASCII case',
+  'ngtsc type checking schema checking with custom elements manifests should not produce diagnostics for elements and properties declared in a manifest',
+  'ngtsc type checking schema checking with custom elements manifests should not treat an attribute-only declaration as a JavaScript property',
+  'ngtsc type checking schema checking with custom elements manifests should produce diagnostics for bindings to readonly manifest properties',
+  'ngtsc type checking schema checking with custom elements manifests should produce diagnostics for undeclared properties of a manifest-declared element',
+  'ngtsc type checking schema checking with custom elements manifests should retain the DOM security rejection for manifest-owned on-prefixed properties',
+  'ngtsc type checking schema checking with custom elements manifests should summarize repeated warnings by default and expand them with customElementsManifestsDiagnostics',
+  'ngtsc type checking schema checking with custom elements manifests should warn about and skip declarations with native tag names',
+  'ngtsc type checking schema checking with custom elements manifests should warn about duplicate tags across manifests and use the first declaration',
+  'ngtsc type checking strictUnclaimedEventNames with a Custom Elements Manifest should not report manifest events on a manifest element with a directive',
+  'ngtsc type checking strictUnclaimedEventNames with a Custom Elements Manifest should not report manifest events that bubble to another element',
+  'HMR code generation should preserve exact manifest property names in HMR update code',
+  'exact property names of Custom Elements Manifest properties should not retain attribute, style, or class bindings as exact manifest properties',
+  'exact property names of Custom Elements Manifest properties should set a manifest property by its exact name on a tag written in another case',
+  'exact property names of Custom Elements Manifest properties should update exact property instructions after a manifest-only change',
+  'exact property names of Custom Elements Manifest properties should update partial exact-property metadata after a manifest-only change',
+]);
+
+/**
+ * Known failures in `//packages/compiler-cli/test/compliance/full:full_ngp` and
+ * `//packages/compiler-cli/test/compliance/local:local_ngp`.
+ */
+const NGP_KNOWN_COMPLIANCE_FAILURES: ReadonlySet<string> = new Set([
+  // Custom Elements Manifests (the `customElementsManifests` option) are not implemented in NGP.
+  'full compile::r3_view_compiler_custom_elements_manifest/exact_property_names::should preserve exact manifest property names in every compilation mode',
+  'local compile::r3_view_compiler_custom_elements_manifest/exact_property_names::should preserve exact manifest property names in every compilation mode',
 ]);
