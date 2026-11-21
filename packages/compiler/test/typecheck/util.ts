@@ -139,6 +139,7 @@ const DEFAULT_CONFIG: TypeCheckingConfig = {
   allowDomEventAssertion: true,
   checkUnknownElements: true,
   checkTypeOfNgTemplateBindings: true,
+  checkCustomElementsUnderSchema: true,
 };
 
 export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {

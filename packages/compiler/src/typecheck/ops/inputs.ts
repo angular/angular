@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NO_ERRORS_SCHEMA, SecurityContext} from '../../core';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '../../core';
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
@@ -283,24 +283,38 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     const hasNoErrorsSchema = this.tcb.schemas.some(
       (schema) => schema.name === NO_ERRORS_SCHEMA.name,
     );
+    const hasCustomElementsSchema = this.tcb.schemas.some(
+      (schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name,
+    );
+    const allowUnderSchema =
+      !hasCustomElementsSchema || this.tcb.env.config.checkCustomElementsUnderSchema;
     const isCheckableDomProperty = (binding: BoundAttribute): boolean =>
       binding.name !== 'style' &&
       binding.name !== 'class' &&
       !isAriaAttribute(binding.name) &&
       binding.securityContext === SecurityContext.NONE;
-    const checkCustomElement =
+    const hasUnclaimedDomProperty = this.inputs.some(
+      (binding) =>
+        (binding.type === BindingType.Property || binding.type === BindingType.TwoWay) &&
+        !this.claimedInputs?.has(binding.name) &&
+        isCheckableDomProperty(binding) &&
+        !REGISTRY.validateProperty(binding.name).error,
+    );
+    const canCheckCustomElement =
       this.checkCustomElementBindings &&
       this.tcb.env.config.checkTypeOfInputBindings &&
       !hasNoErrorsSchema &&
+      allowUnderSchema &&
       this.target instanceof Element &&
-      this.inputs.some(
-        (binding) =>
-          (binding.type === BindingType.Property || binding.type === BindingType.TwoWay) &&
-          !this.claimedInputs?.has(binding.name) &&
-          isCheckableDomProperty(binding) &&
-          !REGISTRY.validateProperty(REGISTRY.getMappedPropName(binding.name)).error,
-      ) &&
-      (this.tcb.domSchemaChecker.isKnownCustomElement?.(this.target.name) ?? false);
+      hasUnclaimedDomProperty;
+    const isKnownCustomElement =
+      (canCheckCustomElement ||
+        (this.tcb.env.config.checkTypeOfDomBindings &&
+          this.checkCustomElementBindings &&
+          this.target instanceof Element &&
+          hasUnclaimedDomProperty)) &&
+      (this.tcb.domSchemaChecker.isKnownCustomElement?.((this.target as Element).name) ?? false);
+    const checkCustomElement = canCheckCustomElement && isKnownCustomElement;
     const shouldCheckDomBindings = this.tcb.env.config.checkTypeOfDomBindings || checkCustomElement;
 
     // TODO(alxhub): this could be more efficient.
@@ -322,7 +336,12 @@ export class TcbUnclaimedInputsOp extends TcbOp {
       if (shouldCheckDomBindings && isPropertyBinding) {
         if (isCheckableDomProperty(binding)) {
           // A direct binding to a property.
-          const propertyName = REGISTRY.getMappedPropName(binding.name);
+          // For known custom elements, preserve the exact binding name without DOM property
+          // remapping (e.g. `readonly` -> `readOnly`), since custom elements declare their
+          // property names directly on their class.
+          const propertyName = isKnownCustomElement
+            ? binding.name
+            : REGISTRY.getMappedPropName(binding.name);
           if (REGISTRY.validateProperty(propertyName).error) {
             // `TcbDomSchemaCheckerOp` already reports an error for disallowed properties (e.g.
             // `on*` event properties). Still validate the RHS expression without emitting an

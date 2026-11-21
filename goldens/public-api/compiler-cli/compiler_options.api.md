@@ -70,6 +70,7 @@ export interface TargetOptions {
 export interface TypeCheckingOptions {
     strictAttributeTypes?: boolean;
     strictContextGenerics?: boolean;
+    strictCustomElementsUnderSchema?: boolean;
     strictDomEventTypes?: boolean;
     strictDomLocalRefTypes?: boolean;
     strictInputAccessModifiers?: boolean;

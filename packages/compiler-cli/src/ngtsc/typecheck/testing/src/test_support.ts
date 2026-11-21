@@ -224,6 +224,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   allowDomEventAssertion: true,
   checkUnknownElements: true,
   checkTypeOfNgTemplateBindings: true,
+  checkCustomElementsUnderSchema: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.

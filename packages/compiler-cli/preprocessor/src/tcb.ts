@@ -40,8 +40,8 @@ import {
 import type {ExtendedDiagnosticsOptions, NgpCompilerOptions} from './compiler_options.js';
 import {Diagnostic} from './diagnostic.js';
 import {
-  normalizeCustomElementTagName,
   REGISTRY as DOM_SCHEMA_REGISTRY,
+  normalizeCustomElementTagName,
   RegistryDomSchemaChecker,
   UNCLAIMED_EVENT_CANDIDATE_REGEX,
 } from './dom_schema_checker.js';
@@ -247,6 +247,8 @@ export function buildTypeCheckingConfig(
       checkUnclaimedEventNames: false,
       checkUnknownElements: false,
       checkTypeOfNgTemplateBindings: false,
+      checkCustomElementsUnderSchema: false, // 3p-only
+      // g3-only checkCustomElementsUnderSchema: true,
     };
   } else {
     typeCheckingConfig = {
@@ -286,6 +288,7 @@ export function buildTypeCheckingConfig(
       checkUnclaimedEventNames: false,
       checkUnknownElements: false,
       checkTypeOfNgTemplateBindings: false,
+      checkCustomElementsUnderSchema: false,
     };
   }
 
@@ -329,6 +332,9 @@ export function buildTypeCheckingConfig(
   }
   if (options.strictNgTemplateTypes !== undefined) {
     typeCheckingConfig.checkTypeOfNgTemplateBindings = options.strictNgTemplateTypes;
+  }
+  if (options.strictCustomElementsUnderSchema !== undefined) {
+    typeCheckingConfig.checkCustomElementsUnderSchema = options.strictCustomElementsUnderSchema;
   }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
   typeCheckingConfig.usePoisonedData =
@@ -714,9 +720,11 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
       // `TcbElementOp` queries `isKnownCustomElement` for any uppercase dashed tag (even under
       // `NO_ERRORS_SCHEMA` or matched components/directives) to lowercase `document.createElement`.
       const rawTagName = element.name.replace(/^:xhtml:/, '');
+      const allowUnderSchema =
+        !this.hasCustomElementsSchema || this.config.checkCustomElementsUnderSchema;
       if (rawTagName !== tagName) {
         this.candidates.add(tagName);
-      } else if (!this.hasNoErrorsSchema) {
+      } else if (!this.hasNoErrorsSchema && allowUnderSchema) {
         const directives = this.boundTarget.getDirectivesOfNode(element);
         if (
           !directives?.some((dir) => dir.isComponent) &&
@@ -771,6 +779,8 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
         }
         const isAria = binding.name.startsWith('aria-') && binding.name.length > 5;
         const isUnknownAriaAttr = propertyName.startsWith('aria-') && propertyName.length > 5;
+        const allowUnderSchema =
+          !this.hasCustomElementsSchema || this.config.checkCustomElementsUnderSchema;
         if (
           !this.hasCustomElementsSchema &&
           !isUnknownAriaAttr &&
@@ -779,6 +789,7 @@ class CustomElementCandidateCollector extends TmplAstRecursiveVisitor {
           return true;
         }
         if (
+          allowUnderSchema &&
           this.config.checkTypeOfInputBindings &&
           !isAria &&
           binding.securityContext === core.SecurityContext.NONE

@@ -198,6 +198,7 @@ export function tcb(
     allowDomEventAssertion: true,
     checkUnknownElements: true,
     checkTypeOfNgTemplateBindings: true,
+    checkCustomElementsUnderSchema: true,
     ...config,
   };
   options = options || {emitSpans: false};

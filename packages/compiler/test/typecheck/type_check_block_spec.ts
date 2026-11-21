@@ -992,6 +992,14 @@ describe('type check blocks', () => {
       expect(block).toContain('_t1.label = (((this).title));');
     });
 
+    it('should preserve lowercase property names like readonly without DOM property remapping', () => {
+      const TEMPLATE = `<my-widget [readonly]="isReadOnly"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      expect(block).toContain('var _t1 = document.createElement("my-widget");');
+      expect(block).toContain('_t1.readonly = (((this).isReadOnly));');
+      expect(block).not.toContain('readOnly');
+    });
+
     it('should use element access notation for unsafe custom element property keys', () => {
       const TEMPLATE = `<my-widget [before-dispatch]="fn" [123]="num" [foo(]="broken" [foo?]="q"></my-widget>`;
       const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
@@ -1042,6 +1050,31 @@ describe('type check blocks', () => {
       });
       expect(block).not.toContain('document.createElement("my-widget")');
       expect(block).toContain('((this).title);');
+    });
+
+    it('should not emit property assignments when CUSTOM_ELEMENTS_SCHEMA is present and checkCustomElementsUnderSchema is false', () => {
+      const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
+      const block = tcb(
+        TEMPLATE,
+        undefined,
+        {checkCustomElementsUnderSchema: false},
+        {
+          knownCustomElements: ['my-widget'],
+          schemas: [{name: 'custom-elements'}],
+        },
+      );
+      expect(block).not.toContain('document.createElement("my-widget")');
+      expect(block).toContain('((this).title);');
+    });
+
+    it('should emit property assignments under CUSTOM_ELEMENTS_SCHEMA when checkCustomElementsUnderSchema is true', () => {
+      const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
+      const block = tcb(TEMPLATE, undefined, undefined, {
+        knownCustomElements: ['my-widget'],
+        schemas: [{name: 'custom-elements'}],
+      });
+      expect(block).toContain('var _t1 = document.createElement("my-widget");');
+      expect(block).toContain('_t1.label = (((this).title));');
     });
 
     it('should not emit custom element assignments when an Angular component matches the tag', () => {
@@ -1267,6 +1300,7 @@ describe('type check blocks', () => {
       allowDomEventAssertion: true,
       checkUnknownElements: true,
       checkTypeOfNgTemplateBindings: true,
+      checkCustomElementsUnderSchema: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {

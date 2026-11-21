@@ -5239,7 +5239,28 @@ runInEachFileSystem(() => {
           ]);
         });
 
-        it('should still type-check a known custom element when CUSTOM_ELEMENTS_SCHEMA is present', () => {
+        it('should disable property type-checking on a known custom element when CUSTOM_ELEMENTS_SCHEMA is present', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+                  template: '<my-widget [count]="notANumber" [doesNotExist]="1"></my-widget>',
+                })
+                export class TestCmp {
+                  notANumber = 'oops';
+                }
+              `,
+          );
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should type-check a known custom element under CUSTOM_ELEMENTS_SCHEMA when strictCustomElementsUnderSchema is enabled', () => {
+          env.tsconfig({strictTemplates: true, strictCustomElementsUnderSchema: true});
           env.write('my-widget.d.ts', customElementDts);
           env.write(
             'test.ts',
@@ -5260,6 +5281,69 @@ runInEachFileSystem(() => {
             .driveDiagnostics()
             .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
           expect(messages).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+        });
+
+        it('should allow and type-check custom elements with lowercase readonly property without TS2339', () => {
+          const customElementWithReadonlyDts = `
+            export declare class SlInputElement extends HTMLElement {
+              readonly: boolean;
+              value: string;
+            }
+            declare global {
+              interface HTMLElementTagNameMap {
+                'sl-input': SlInputElement;
+              }
+            }
+          `;
+          env.write('sl-input.d.ts', customElementWithReadonlyDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<sl-input [readonly]="isReadOnly" [value]="val"></sl-input>',
+                })
+                export class TestCmp {
+                  isReadOnly = true;
+                  val = 'test';
+                }
+              `,
+          );
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should report type mismatch on custom elements with lowercase readonly property', () => {
+          const customElementWithReadonlyDts = `
+            export declare class SlInputElement extends HTMLElement {
+              readonly: boolean;
+            }
+            declare global {
+              interface HTMLElementTagNameMap {
+                'sl-input': SlInputElement;
+              }
+            }
+          `;
+          env.write('sl-input.d.ts', customElementWithReadonlyDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<sl-input [readonly]="notABoolean"></sl-input>',
+                })
+                export class TestCmp {
+                  notABoolean = 123;
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([`Type 'number' is not assignable to type 'boolean'.`]);
         });
 
         it('should disable property type-checking on a known custom element when NO_ERRORS_SCHEMA is present', () => {
