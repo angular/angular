@@ -132,7 +132,12 @@ export class KeyValuePipe implements PipeTransform {
     const compareFnChanged = compareFn !== this.compareFn;
 
     // The differ reports added, removed, or changed entries, but not moves.
-    if (differChanges || compareFnChanged || (compareFn === null && this.keyOrderChanged(input))) {
+    if (
+      differChanges ||
+      compareFnChanged ||
+      (compareFn === null &&
+        this.keyOrderChanged(input instanceof Map ? input.keys() : Object.keys(input)))
+    ) {
       this.keyValues = [];
       if (differChanges) {
         differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
@@ -153,18 +158,13 @@ export class KeyValuePipe implements PipeTransform {
     return this.keyValues;
   }
 
-  private keyOrderChanged(input: object): boolean {
+  private keyOrderChanged(keys: Iterable<unknown>): boolean {
     let index = 0;
-    if (input instanceof Map) {
-      if (input.size !== this.keyValues.length) return true;
-      for (const key of input.keys()) {
-        if (!Object.is(key, this.keyValues[index++].key)) return true;
+    for (const key of keys) {
+      if (index >= this.keyValues.length || !Object.is(key, this.keyValues[index].key)) {
+        return true;
       }
-      return false;
-    }
-
-    for (const key in input) {
-      if (Object.hasOwn(input, key) && key !== this.keyValues[index++]?.key) return true;
+      index++;
     }
     return index !== this.keyValues.length;
   }
