@@ -46,5 +46,6 @@ export class DownloadManager {
 
     anchor.click();
     anchor.remove();
+    URL.revokeObjectURL(url);
   }
 }
