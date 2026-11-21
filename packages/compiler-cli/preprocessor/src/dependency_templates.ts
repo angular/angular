@@ -18,12 +18,27 @@ import type {IAnalyzer} from './hybrid_compiler.js';
 import {NOOP_TRACER, type Tracer} from './perf.js';
 import type * as nga from './types.js';
 
-/** The file whose component's dependencies are being resolved. */
-export interface DependencyTemplateConsumer {
+/** Shared analyzer and cache state for cross-file dependency template lookups. */
+export interface DependencyTemplateContext {
+  analyzer: IAnalyzer;
+  fileCache: Map<string, FileAnalysis>;
+  /**
+   * Metadata already at hand (e.g. the files of the chunk being processed), preferred to a round
+   * trip to the analyzer.
+   */
+  knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>;
+  onMetadata?: (metadata: nga.AnalysisResult) => void;
+}
+
+/** Consumer file inputs for {@link resolveNgContentSelectors}. */
+export interface ResolveNgContentSelectorsOptions extends DependencyTemplateContext {
   filePath: string;
   content: string;
   classes: nga.ClassMetadata[];
+  components: readonly nga.ClassMetadata[];
   templatesByClass: Map<string, ParsedComponentTemplate>;
+  templateParseOptions?: Partial<ParseTemplateOptions>;
+  tracer?: Tracer;
 }
 
 /**
@@ -43,7 +58,7 @@ interface ClassId {
 type MissingTemplates = Map<string, Map<number, ClassId>>;
 
 /**
- * Fills in template-derived metadata of the components a template depends on.
+ * Resolves `ngContentSelectors` for `resolvedDeclarations` of each component in `components`.
  *
  * The analyzer does not parse templates, so the only `DeclarationMetadata` that carry a
  * component's `ngContentSelectors` are those it read off a `.d.ts` (the `NgContentSelectors` type
@@ -53,165 +68,128 @@ type MissingTemplates = Map<string, Map<number, ClassId>>;
  * NG8011). ngtsc has them because `ComponentDecoratorHandler.analyze` registers the parsed
  * template's selectors in its metadata registry.
  *
- * They are recovered from the dependency's own parsed template. The template is parsed at most
- * once: it is cached in the dependency file's `FileAnalysis.parsedTemplates` under the same key
- * the processing of that file uses, so whichever of the two runs first parses and the other
- * reuses. A dependency file is read once per call, however many of its components are needed.
+ * Selectors are recovered from each dependency's own parsed template, cached in the declaring
+ * file's `FileAnalysis.parsedTemplates` under the same key that processing of that file uses so
+ * whichever runs first parses and the other reuses. Missing cross-file dependencies across all
+ * components in `components` are deduplicated per `(filePath, classId)` and fetched concurrently.
+ * Input declaration arrays and entries are never mutated.
  *
  * TODO(ngp): remove once the analyzer parses templates and reports `ngContentSelectors` itself.
  */
-export class DependencyTemplates {
-  /**
-   * @param knownMetadata Metadata already at hand (e.g. the files of the chunk being
-   *     processed), preferred to a round trip to the analyzer.
-   */
-  constructor(
-    private readonly analyzer: IAnalyzer,
-    private readonly fileCache: Map<string, FileAnalysis>,
-    private readonly templateParseOptions: Partial<ParseTemplateOptions> | undefined,
-    private readonly knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
-    private readonly tracer: Tracer = NOOP_TRACER,
-  ) {}
+export async function resolveNgContentSelectors(
+  options: ResolveNgContentSelectorsOptions,
+): Promise<Map<nga.ClassMetadata, nga.DeclarationMetadata[]>> {
+  const {
+    analyzer,
+    fileCache,
+    knownMetadata,
+    onMetadata,
+    filePath,
+    content,
+    classes,
+    components,
+    templatesByClass,
+    templateParseOptions,
+    tracer = NOOP_TRACER,
+  } = options;
 
-  /**
-   * Returns `declarations` with `ngContentSelectors` filled in for every source-file component
-   * that lacks them. Cross-file dependencies must be pre-fetched via `prefetch` before calling
-   * this method. The input array and its entries are not mutated; it is returned as is when
-   * nothing had to change.
-   */
-  withNgContentSelectors(
-    declarations: nga.DeclarationMetadata[],
-    consumer: DependencyTemplateConsumer,
-  ): nga.DeclarationMetadata[] {
-    let result: nga.DeclarationMetadata[] | null = null;
-    for (let i = 0; i < declarations.length; i++) {
-      const decl = declarations[i];
-      if (!needsNgContentSelectors(decl)) {
-        continue;
-      }
-      const parsed = this.getTemplate(decl, consumer);
-      if (parsed === null) {
-        continue;
-      }
-      result ??= [...declarations];
-      result[i] = {...decl, ngContentSelectors: parsed.ngContentSelectors};
-    }
-    return result ?? declarations;
-  }
-
-  /**
-   * Parses and caches the templates of the cross-file component dependencies of every component
-   * in `consumer` so `withNgContentSelectors` can read their `ngContentSelectors` synchronously
-   * during template target binding. The dependency files are read concurrently.
-   */
-  async prefetch(
-    consumer: nga.AnalysisResult,
-    onMetadata?: (metadata: nga.AnalysisResult) => void,
-  ): Promise<void> {
-    const missing: MissingTemplates = new Map();
-    for (const cls of consumer.classes) {
-      this.collectMissing(cls.component?.resolvedDeclarations ?? [], consumer.filePath, missing);
-    }
-    await Promise.all(
-      Array.from(missing, async ([filePath, classIds]) => {
-        const metadata =
-          this.knownMetadata?.get(filePath) ?? (await this.analyzer.getMetadataForFile(filePath));
-        if (metadata == null) {
-          return;
-        }
-        onMetadata?.(metadata);
-        const content = await this.analyzer.getFileContent(filePath);
-        this.parseTemplates(filePath, metadata.classes, content, classIds.values());
-      }),
-    );
-  }
-
-  /**
-   * Adds to `missing` the components among `declarations` that are declared in a file other than
-   * `consumerPath` and whose template is not cached yet. Same-file dependencies are parsed from
-   * the consumer's own content, which the caller already has.
-   */
-  private collectMissing(
-    declarations: nga.DeclarationMetadata[],
-    consumerPath: string,
-    missing: MissingTemplates,
-  ): void {
-    for (const decl of declarations) {
-      const filePath = decl.filePath ?? consumerPath;
-      if (!needsNgContentSelectors(decl) || filePath === consumerPath) {
+  const missing: MissingTemplates = new Map();
+  for (const cls of components) {
+    for (const decl of cls.component?.resolvedDeclarations ?? []) {
+      const depFilePath = decl.filePath ?? filePath;
+      if (!needsNgContentSelectors(decl) || depFilePath === filePath) {
         continue;
       }
       const id = classIdOf(decl);
-      if (findParsedTemplate(this.getParsedTemplates(filePath), id) !== null) {
+      const cached = fileCache.get(depFilePath)?.parsedTemplates;
+      if (cached !== undefined && findParsedTemplate(cached, id) !== null) {
         continue;
       }
-      let classIds = missing.get(filePath);
+      let classIds = missing.get(depFilePath);
       if (classIds === undefined) {
         classIds = new Map();
-        missing.set(filePath, classIds);
+        missing.set(depFilePath, classIds);
       }
       classIds.set(id.nameStart, id);
     }
   }
 
-  /** Parses the templates of `classIds` into `filePath`'s cache, if not there already. */
-  private parseTemplates(
-    filePath: string,
-    classes: nga.ClassMetadata[],
-    content: string,
-    classIds: Iterable<ClassId>,
-  ): void {
-    const templatesByClass = this.getParsedTemplates(filePath);
-    for (const id of classIds) {
-      this.getOrParseTemplate(id, classes, filePath, content, templatesByClass);
-    }
-  }
-
-  private getTemplate(
-    decl: nga.DeclarationMetadata,
-    consumer: DependencyTemplateConsumer,
-  ): ParsedComponentTemplate | null {
-    const filePath = decl.filePath ?? consumer.filePath;
-    const id = classIdOf(decl);
-    if (filePath === consumer.filePath) {
-      return this.getOrParseTemplate(
-        id,
-        consumer.classes,
-        consumer.filePath,
-        consumer.content,
-        consumer.templatesByClass,
-      );
-    }
-    return findParsedTemplate(this.getParsedTemplates(filePath), id);
-  }
-
-  private getParsedTemplates(filePath: string): Map<string, ParsedComponentTemplate> {
-    return getOrCreateFileAnalysis(this.fileCache, filePath).parsedTemplates;
-  }
-
-  private getOrParseTemplate(
-    id: ClassId,
-    classes: nga.ClassMetadata[],
-    filePath: string,
-    content: string,
-    templatesByClass: Map<string, ParsedComponentTemplate>,
-  ): ParsedComponentTemplate | null {
-    const classMeta = classes.find(
-      (c) => c.nameSpan?.start === id.nameStart && c.className === id.name && c.component != null,
-    );
-    if (classMeta?.component == null) {
-      return null;
-    }
-    return getOrParseComponentTemplate(
-      templatesByClass,
-      classMeta,
-      classMeta.component,
-      filePath,
-      content,
-      this.templateParseOptions,
-      this.tracer,
+  if (missing.size > 0) {
+    await Promise.all(
+      Array.from(missing, async ([depFilePath, classIds]) => {
+        const metadata =
+          knownMetadata?.get(depFilePath) ?? (await analyzer.getMetadataForFile(depFilePath));
+        if (metadata == null) {
+          return;
+        }
+        onMetadata?.(metadata);
+        const depContent = await analyzer.getFileContent(depFilePath);
+        const depTemplates = getOrCreateFileAnalysis(fileCache, depFilePath).parsedTemplates;
+        for (const id of classIds.values()) {
+          const classMeta = findComponentClass(metadata.classes, id);
+          if (classMeta?.component != null) {
+            getOrParseComponentTemplate(
+              depTemplates,
+              classMeta,
+              classMeta.component,
+              depFilePath,
+              depContent,
+              templateParseOptions,
+              tracer,
+            );
+          }
+        }
+      }),
     );
   }
+
+  const resolvedByClass = new Map<nga.ClassMetadata, nga.DeclarationMetadata[]>();
+  for (const cls of components) {
+    const declarations = cls.component?.resolvedDeclarations ?? [];
+    let enriched: nga.DeclarationMetadata[] | null = null;
+    for (let i = 0; i < declarations.length; i++) {
+      const decl = declarations[i];
+      if (!needsNgContentSelectors(decl)) {
+        continue;
+      }
+      const depFilePath = decl.filePath ?? filePath;
+      const id = classIdOf(decl);
+      let parsed: ParsedComponentTemplate | null = null;
+      if (depFilePath === filePath) {
+        const sameFileClass = findComponentClass(classes, id);
+        if (sameFileClass?.component != null) {
+          parsed = getOrParseComponentTemplate(
+            templatesByClass,
+            sameFileClass,
+            sameFileClass.component,
+            filePath,
+            content,
+            templateParseOptions,
+            tracer,
+          );
+        }
+      } else {
+        const depTemplates = fileCache.get(depFilePath)?.parsedTemplates;
+        parsed = depTemplates !== undefined ? findParsedTemplate(depTemplates, id) : null;
+      }
+      if (parsed === null) {
+        continue;
+      }
+      enriched ??= [...declarations];
+      enriched[i] = {...decl, ngContentSelectors: parsed.ngContentSelectors};
+    }
+    resolvedByClass.set(cls, enriched ?? declarations);
+  }
+  return resolvedByClass;
+}
+
+function findComponentClass(
+  classes: nga.ClassMetadata[],
+  id: ClassId,
+): nga.ClassMetadata | undefined {
+  return classes.find(
+    (c) => c.nameSpan?.start === id.nameStart && c.className === id.name && c.component != null,
+  );
 }
 
 function needsNgContentSelectors(decl: nga.DeclarationMetadata): boolean {
@@ -224,7 +202,7 @@ function classIdOf(decl: nga.DeclarationMetadata): ClassId {
 
 /**
  * Fingerprints what `template` contributes to the components that use its component: its
- * `<ng-content>` tags, in order, which are all that `withNgContentSelectors` reads off it. Two
+ * `<ng-content>` tags, in order, which are all that `resolveNgContentSelectors` reads off it. Two
  * templates with the same signature yield the same `ngContentSelectors`, so a consumer only
  * has to be re-bound when a dependency's signature changes, not on every edit to its template.
  *
