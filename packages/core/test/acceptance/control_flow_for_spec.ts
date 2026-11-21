@@ -14,6 +14,7 @@ import {
   Directive,
   forwardRef,
   inject,
+  InjectionToken,
   Input,
   OnInit,
   Pipe,
@@ -23,7 +24,7 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {global} from '../../src/util/global';
-import {TestBed} from '../../testing';
+import {ComponentFixture, TestBed} from '../../testing';
 
 describe('control flow - for', () => {
   it('should create, remove and move views corresponding to items in a collection', async () => {
@@ -270,6 +271,131 @@ describe('control flow - for', () => {
       fixture.componentInstance.items.set(undefined);
       await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('');
+    });
+  });
+
+  describe('throwing track expressions', () => {
+    function createFixture(initial: unknown) {
+      @Component({
+        template: '@for (row of rows(); track row.id) {{{row.id}}|}',
+      })
+      class TestComponent {
+        rows = signal<any>(initial);
+      }
+
+      return TestBed.createComponent(TestComponent);
+    }
+
+    it('should throw a coded error when the track expression throws', async () => {
+      const recorder: string[] = [];
+      const record = (fixture: ComponentFixture<unknown>) =>
+        fixture.whenStable().then(
+          () => recorder.push(fixture.nativeElement.textContent),
+          (e: Error) => recorder.push(e.message),
+        );
+
+      await record(createFixture(new Array(3)));
+      await record(createFixture(Array.from({length: 3})));
+
+      const fixture = createFixture([{id: 1}, {id: 2}]);
+      await record(fixture);
+      fixture.componentInstance.rows.set([{id: 1}, null]);
+      await record(fixture);
+
+      expect(recorder).toEqual([
+        jasmine.stringMatching(/NG0958: The item at index 0 of a @for collection is undefined/),
+        jasmine.stringMatching(/NG0958: The item at index 0 of a @for collection is undefined/),
+        '1|2|',
+        jasmine.stringMatching(/NG0958: The item at index 1 of a @for collection is null/),
+      ]);
+    });
+
+    it('should keep the original error as the cause', async () => {
+      const fixture = createFixture(new Array(1));
+      const error = await fixture.whenStable().then(
+        () => null,
+        (e: Error) => e,
+      );
+
+      expect(error?.message).toContain('NG0958');
+      const cause = error?.cause as Error;
+      expect(cause).toBeInstanceOf(TypeError);
+      expect(cause.message).toContain("reading 'id'");
+      expect(cause.stack).toContain('_forTrack');
+    });
+
+    it('should leave errors from the loop body unchanged', async () => {
+      const missing = new InjectionToken<string>('missing');
+      const recorder: string[] = [];
+
+      @Component({
+        selector: 'throwing-cmp',
+        template: '',
+      })
+      class ThrowingCmp {
+        constructor() {
+          throw new Error('constructor failed');
+        }
+      }
+
+      @Component({
+        selector: 'injecting-cmp',
+        template: '',
+      })
+      class InjectingCmp {
+        value = inject(missing);
+      }
+
+      @Component({
+        imports: [ThrowingCmp],
+        template: '@for (row of rows(); track row.id) {<throwing-cmp />}',
+      })
+      class PlainErrorCmp {
+        rows = signal<any>([{id: 1}]);
+      }
+
+      @Component({
+        imports: [InjectingCmp],
+        template: '@for (row of rows(); track row.id) {<injecting-cmp />}',
+      })
+      class CodedErrorCmp {
+        rows = signal<any>([{id: 1}, null]);
+      }
+
+      for (const cmp of [PlainErrorCmp, CodedErrorCmp]) {
+        const fixture = TestBed.createComponent(cmp);
+        await fixture.whenStable().catch((e: Error) => {
+          recorder.push(e.message);
+          recorder.push(`cause: ${e.cause}`);
+        });
+      }
+
+      expect(recorder).toEqual([
+        'constructor failed',
+        'cause: undefined',
+        jasmine.stringMatching(/^NG0201: No provider found/),
+        'cause: undefined',
+      ]);
+    });
+
+    it('should not throw for the built-in track expressions', async () => {
+      const recorder: string[] = [];
+
+      for (const template of [
+        '@for (row of rows(); track $index) {{{row?.id}}|}',
+        '@for (row of rows(); track row) {{{row?.id}}|}',
+      ]) {
+        @Component({template})
+        class TestComponent {
+          rows = signal<any>([{id: 1}, null]);
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        await fixture.whenStable();
+        recorder.push(fixture.nativeElement.textContent);
+      }
+
+      expect(recorder).toEqual(['1||', '1||']);
     });
   });
 

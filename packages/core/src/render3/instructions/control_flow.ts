@@ -9,7 +9,7 @@
 import {setActiveConsumer} from '../../../primitives/signals';
 
 import {TrackByFunction} from '../../change_detection';
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {
   findAndReconcileMatchingDehydratedViews,
@@ -501,6 +501,7 @@ class LiveCollectionLContainerImpl extends LiveCollection<
 export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): void {
   const prevConsumer = setActiveConsumer(null);
   const metadataSlotIdx = getSelectedIndex();
+  let trackByFn: TrackByFunction<unknown> | undefined;
   try {
     const hostLView = getLView();
     const hostTView = hostLView[TVIEW];
@@ -520,7 +521,11 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
     }
 
     const liveCollection = metadata.liveCollection;
-    reconcile(liveCollection, collection, metadata.trackByFn, prevConsumer);
+    // Assigned here rather than next to the `metadata` read above, so that a throw from
+    // `getLContainer` or from the live collection constructor leaves it `undefined` and is
+    // skipped by the diagnosis below. Those cannot be track failures.
+    trackByFn = metadata.trackByFn;
+    reconcile(liveCollection, collection, trackByFn, prevConsumer);
 
     // Warn developers about situations where the entire collection was re-created as part of the
     // reconciliation pass. Note that this warning might be "overreacting" and report cases where
@@ -583,9 +588,49 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
         }
       }
     }
+  } catch (error) {
+    throw diagnoseTrackError(error, collection, trackByFn);
   } finally {
     setActiveConsumer(prevConsumer);
   }
+}
+
+/**
+ * Checks if the error was caused by a nullish item in the collection.
+ */
+function diagnoseTrackError(
+  error: unknown,
+  collection: Iterable<unknown> | undefined | null,
+  trackByFn: TrackByFunction<unknown> | undefined,
+): unknown {
+  if (error instanceof RuntimeError || !Array.isArray(collection)) {
+    return error;
+  }
+
+  if (
+    trackByFn === undefined ||
+    trackByFn === ɵɵrepeaterTrackByIndex ||
+    trackByFn === ɵɵrepeaterTrackByIdentity
+  ) {
+    return error;
+  }
+
+  // Per ECMAScript, `findIndex` also checks holes in sparse arrays, including
+  // ones created with new `Array(n)`.
+  const index = collection.findIndex((item) => item == null);
+  if (index === -1) {
+    return error;
+  }
+
+  const trackError = new RuntimeError(
+    RuntimeErrorCode.LOOP_TRACK_FAILED,
+    ngDevMode &&
+      `The item at index ${index} of a @for collection is ` +
+        `${collection[index] === null ? 'null' : 'undefined'}, so the track expression cannot ` +
+        `return a key for it. A track expression must return a key for every item.`,
+  );
+  trackError.cause = error;
+  return trackError;
 }
 
 export function getLContainer(lView: LView, index: number): LContainer {

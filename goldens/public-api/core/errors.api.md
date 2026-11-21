@@ -112,6 +112,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     LOOP_TRACK_DUPLICATE_KEYS = -955,
     // (undocumented)
+    LOOP_TRACK_FAILED = 958,
+    // (undocumented)
     LOOP_TRACK_RECREATE = -956,
     // (undocumented)
     MISCONFIGURED_INCREMENTAL_HYDRATION = 508,
