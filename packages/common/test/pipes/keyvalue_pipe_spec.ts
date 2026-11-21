@@ -78,6 +78,37 @@ describe('KeyValuePipe', () => {
       ]);
       expect(pipe.transform({b: 2, a: 1}, null)).toBe(reordered);
     });
+    it('should ignore inherited keys when checking natural order', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = Object.assign(Object.create({inherited: 0}), {b: 2, a: 1});
+      const result = pipe.transform(input, null);
+      expect(result).toEqual([
+        {key: 'b', value: 2},
+        {key: 'a', value: 1},
+      ]);
+      expect(pipe.transform(input, null)).toBe(result);
+    });
+
+    it('should follow natural order when keys move and entries change in the same update', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      pipe.transform({a: 1, b: 2}, null);
+      expect(pipe.transform({b: 3, c: 4, a: 1}, null)).toEqual([
+        {key: 'b', value: 3},
+        {key: 'c', value: 4},
+        {key: 'a', value: 1},
+      ]);
+    });
+
+    it('should restore missing entries when the returned array was shortened', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = {a: 1, b: 2};
+      pipe.transform(input, null).pop();
+      expect(pipe.transform(input, null)).toEqual([
+        {key: 'a', value: 1},
+        {key: 'b', value: 2},
+      ]);
+    });
+
     it('should reorder when compareFn changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = {'b': 1, 'a': 2};
