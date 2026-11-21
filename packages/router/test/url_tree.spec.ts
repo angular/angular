@@ -44,6 +44,53 @@ describe('UrlTree', () => {
       expect(tree.queryParams).toEqual({'hasOwnProperty': 'foo', 'bar': 'baz'});
     });
 
+    it('should parse a query param named __proto__', () => {
+      const tree = serializer.parse('/path?__proto__=value&normal=hello');
+      // Note: cannot use toEqual({'__proto__': 'value'}) — a plain object literal
+      // does not hold __proto__ as an own property; use queryParamMap instead.
+      expect(tree.queryParamMap.has('__proto__')).toBeTrue();
+      expect(tree.queryParamMap.get('__proto__')).toBe('value');
+      expect(tree.queryParamMap.get('normal')).toBe('hello');
+      expect(Object.hasOwn(tree.queryParams, '__proto__')).toBeTrue();
+    });
+
+    it('should round-trip a URL with a __proto__ query param', () => {
+      const original = '/path?__proto__=value&normal=hello';
+      const tree = serializer.parse(original);
+      const reserialized = serializer.serialize(tree);
+
+      expect(reserialized).toContain('__proto__=value');
+      expect(reserialized).toContain('normal=hello');
+
+      const reparsed = serializer.parse(reserialized);
+      expect(reparsed.queryParamMap.get('__proto__')).toBe('value');
+    });
+
+    it('should handle duplicate __proto__ query params as an array', () => {
+      const tree = serializer.parse('/path?__proto__=first&__proto__=second');
+
+      expect(tree.queryParamMap.getAll('__proto__')).toEqual(['first', 'second']);
+      expect(tree.queryParamMap.get('__proto__')).toBe('first');
+    });
+
+    it('should parse a matrix param named __proto__', () => {
+      const tree = serializer.parse('/path;__proto__=value;normal=hello');
+      const segment = tree.root.children['primary'].segments[0];
+
+      expect(segment.parameterMap.has('__proto__')).toBeTrue();
+      expect(segment.parameterMap.get('__proto__')).toBe('value');
+      expect(segment.parameterMap.get('normal')).toBe('hello');
+      expect(Object.hasOwn(segment.parameters, '__proto__')).toBeTrue();
+    });
+
+    it('should not affect normal params when __proto__ is present', () => {
+      const tree = serializer.parse('/path?a=1&__proto__=bad&b=2');
+
+      expect(tree.queryParamMap.get('a')).toBe('1');
+      expect(tree.queryParamMap.get('b')).toBe('2');
+      expect(tree.queryParamMap.get('__proto__')).toBe('bad');
+    });
+
     it('create, serialize, parse, serialize results in same serialized tree with outlet and no primary children', () => {
       const router = TestBed.inject(Router);
       const th = router.createUrlTree(['/', {outlets: {a: ['a'], b: [{outlets: {a: ['b1']}}]}}]);

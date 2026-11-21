@@ -710,7 +710,11 @@ class UrlParser {
   }
 
   parseQueryParams(): Params {
-    const params: Params = {};
+    // A query parameter key can be `__proto__`. Indexing a plain object with that key
+    // assigns through the inherited `__proto__` setter instead of creating an own
+    // property, which silently drops the parameter. A null-prototype map makes
+    // `__proto__` an ordinary key. See the same fix in parseParens().
+    const params: Params = Object.create(null);
     if (this.consumeOptional('?')) {
       do {
         this.parseQueryParam(params);
@@ -781,7 +785,8 @@ class UrlParser {
   }
 
   private parseMatrixParams(): {[key: string]: string} {
-    const params: {[key: string]: string} = {};
+    // A matrix parameter key can be `__proto__`. See the same fix in parseQueryParams().
+    const params: {[key: string]: string} = Object.create(null);
     while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
