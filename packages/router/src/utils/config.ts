@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
-import {Route, Routes} from '../models';
+import {LazyRouteConfig, Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -36,7 +36,7 @@ export function getOrCreateRouteInjectorIfNeeded(
     route._injector = createEnvironmentInjector(
       route.providers,
       currentInjector,
-      `Route: ${route.path}`,
+      typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
     );
   }
   return route._injector ?? currentInjector;
@@ -82,6 +82,46 @@ export function assertStandalone(fullPath: string, component: Type<unknown> | un
       RuntimeErrorCode.INVALID_ROUTE_CONFIG,
       `Invalid configuration of route '${fullPath}'. The component must be standalone.`,
     );
+  }
+}
+
+const DISALLOWED_LOADED_CONFIG_KEYS = /* @__PURE__ */ new Set([
+  'path',
+  'pathMatch',
+  'matcher',
+  'outlet',
+  'data',
+  'redirectTo',
+  'canMatch',
+  'canLoad',
+  'component',
+  'loadComponent',
+  'loadConfig',
+  'children',
+  'loadChildren',
+]);
+
+export function validateLoadedConfig(route: Route, config: LazyRouteConfig): void {
+  const fullPath = route.path ?? '';
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+      `Invalid configuration of route '${fullPath}': 'loadConfig' must return an object.`,
+    );
+  }
+  for (const key of Object.keys(config)) {
+    if (DISALLOWED_LOADED_CONFIG_KEYS.has(key)) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': property '${key}' cannot be returned from 'loadConfig'.`,
+      );
+    }
+    if ((route as Record<string, unknown>)[key] !== undefined) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': property '${key}' is already defined on the route and cannot be overridden by 'loadConfig'.`,
+      );
+    }
   }
 }
 
@@ -145,6 +185,12 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
         `Invalid configuration of route '${fullPath}': component and loadComponent cannot be used together`,
+      );
+    }
+    if (route.loadConfig && route.redirectTo) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': redirectTo and loadConfig cannot be used together`,
       );
     }
 
