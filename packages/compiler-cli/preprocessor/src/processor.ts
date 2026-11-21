@@ -72,7 +72,7 @@ import {
   stripIife,
   type MinimalDirectiveMeta,
 } from './compiler-utils.js';
-import {DependencyTemplates} from './dependency_templates.js';
+import {resolveNgContentSelectors, type DependencyTemplateContext} from './dependency_templates.js';
 import {
   ChunkContext,
   FileAnalysis,
@@ -173,18 +173,37 @@ function unprocessedFile(s: MagicString): ProcessedFile {
   };
 }
 
-export function buildTcbTargets(
+export async function buildTcbTargets(
   filePath: string,
   content: string,
   classes: nga.ClassMetadata[],
   templatesByClass: Map<string, ParsedComponentTemplate>,
   options: Partial<ParseTemplateOptions> = {},
   tcbConfig: NgpTypeCheckingConfig,
-  dependencyTemplates: DependencyTemplates,
+  dependencies: DependencyTemplateContext,
   tracer: Tracer,
-): TcbTargetInput[] {
+): Promise<TcbTargetInput[]> {
   const tcbTargets: TcbTargetInput[] = [];
-  const consumer = {filePath, content, classes, templatesByClass};
+  const eligibleComponents = classes.filter(
+    (cls) =>
+      Boolean(cls.className) &&
+      cls.component !== undefined &&
+      !cls.component.isJit &&
+      (!cls.component.isPoisoned || Boolean(tcbConfig.usePoisonedData)),
+  );
+  const declarationsByClass =
+    eligibleComponents.length > 0
+      ? await resolveNgContentSelectors({
+          filePath,
+          content,
+          classes,
+          components: eligibleComponents,
+          templatesByClass,
+          templateParseOptions: options,
+          tracer,
+          ...dependencies,
+        })
+      : undefined;
 
   for (const cls of classes) {
     const {className, component, directive, hostBindings, hostListeners} = cls;
@@ -193,7 +212,8 @@ export function buildTcbTargets(
     }
 
     if (component) {
-      if (component.isJit || (component.isPoisoned && !tcbConfig.usePoisonedData)) {
+      const declarations = declarationsByClass?.get(cls);
+      if (declarations === undefined) {
         continue;
       }
 
@@ -226,10 +246,7 @@ export function buildTcbTargets(
         className,
         template: component.template || '',
         templateNodes: parsed.diagNodes,
-        declarations: dependencyTemplates.withNgContentSelectors(
-          component.resolvedDeclarations ?? [],
-          consumer,
-        ),
+        declarations,
         ownDeclaration: metadataToDeclaration(
           component,
           cls,
@@ -329,18 +346,6 @@ export async function processFile(
         resourceMap.set(styleUrl, resource);
       }
     }
-  }
-  // Templates of dependencies declared in other files are needed to bind this file's
-  // templates for type-checking; read them here, where the analyzer can be awaited. The
-  // condition mirrors when `processFile` builds the TCB targets.
-  if (rawCtx.optimize && !rawCtx.emitDeclarationOnly) {
-    await new DependencyTemplates(
-      rawCtx.analyzer,
-      rawCtx.fileCache,
-      rawCtx.templateParseOptions,
-      chunkContext?.metadataMap || rawCtx.metadataMap,
-      rawCtx.tracer,
-    ).prefetch(result);
   }
   const ctx: ProcessFileContext = {
     ...rawCtx,
@@ -447,9 +452,7 @@ export async function processFile(
 
   ctx.tracer.slice(SpanKind.SerializeOutput, () => serializeOutput(file), fileId);
   const returnTcb =
-    ctx.optimize && !ctx.emitDeclarationOnly
-      ? ctx.tracer.slice(SpanKind.GenerateTcb, () => generateTcb(file), fileId)
-      : undefined;
+    ctx.optimize && !ctx.emitDeclarationOnly ? await generateTcb(file, fileId) : undefined;
 
   if (file.pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
     throw file.pipelineError;
@@ -1988,80 +1991,89 @@ function serializeOutput(file: FileCompilation): void {
  * The `GenerateTcb` pass, when optimizing: generates the file's type-check block and adds its
  * diagnostics to `file.fileDiagnostics`.
  */
-function generateTcb(file: FileCompilation): TcbResult | undefined {
+async function generateTcb(file: FileCompilation, fileId: number): Promise<TcbResult | undefined> {
   const {ctx, filePath, content, result, templatesByClass, fileDiagnostics} = file;
   const {classes} = result;
   const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
-  let prepared: ReturnType<typeof prepareTcbTargets>;
-  if (analysis.preparedTcbData !== undefined && analysis.sourceContent === content) {
-    prepared = analysis.preparedTcbData;
-  } else {
-    const tcbTargets = buildTcbTargets(
-      filePath,
-      content,
-      classes,
-      templatesByClass,
-      ctx.templateParseOptions,
-      ctx.tcbConfig,
-      new DependencyTemplates(
-        ctx.analyzer,
-        ctx.fileCache,
-        ctx.templateParseOptions,
-        ctx.metadataMap,
-        ctx.tracer,
-      ),
-      ctx.tracer,
-    );
-    prepared =
-      tcbTargets.length > 0
-        ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
-        : null;
-    analysis.preparedTcbData = prepared;
-    analysis.sourceContent = content;
-  }
-  const tcb = prepared
-    ? (generateTcbCode(filePath, prepared, ctx.tcbConfig, result.namespaceAliasConflicts) ??
-      undefined)
-    : undefined;
+  const tcbTargets =
+    analysis.preparedTcbData !== undefined && analysis.sourceContent === content
+      ? undefined
+      : await buildTcbTargets(
+          filePath,
+          content,
+          classes,
+          templatesByClass,
+          ctx.templateParseOptions,
+          ctx.tcbConfig,
+          {
+            analyzer: ctx.analyzer,
+            fileCache: ctx.fileCache,
+            knownMetadata: ctx.metadataMap,
+          },
+          ctx.tracer,
+        );
+  return ctx.tracer.slice(
+    SpanKind.GenerateTcb,
+    () => {
+      let prepared: ReturnType<typeof prepareTcbTargets>;
+      if (tcbTargets === undefined) {
+        prepared = analysis.preparedTcbData!;
+      } else {
+        prepared =
+          tcbTargets.length > 0
+            ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
+            : null;
+        analysis.preparedTcbData = prepared;
+        analysis.sourceContent = content;
+      }
+      const tcb = prepared
+        ? (generateTcbCode(filePath, prepared, ctx.tcbConfig, result.namespaceAliasConflicts) ??
+          undefined)
+        : undefined;
 
-  const returnTcb = tcb
-    ? {...tcb, code: combineTcbContent(tcb, filePath, {sourceContent: content, classes})}
-    : undefined;
-  if (returnTcb) {
-    analysis.tcb = returnTcb.code;
-    ctx.tracer.count(Counter.TcbFilesGenerated);
-  }
-
-  if (tcb?.diagnostics && tcb.diagnostics.length > 0) {
-    for (const diag of tcb.diagnostics) {
-      let component: nga.ComponentMetadata | undefined;
-      if (prepared?.typeCheckIdMap) {
-        for (const [classKey, id] of prepared.typeCheckIdMap.entries()) {
-          if (id === diag.typeCheckId) {
-            const cls = classes.find((c) => makeClassKey(c.className, c.span.start) === classKey);
-            component = cls?.component ?? undefined;
-            break;
-          }
-        }
+      const returnTcb = tcb
+        ? {...tcb, code: combineTcbContent(tcb, filePath, {sourceContent: content, classes})}
+        : undefined;
+      if (returnTcb) {
+        analysis.tcb = returnTcb.code;
+        ctx.tracer.count(Counter.TcbFilesGenerated);
       }
 
-      fileDiagnostics.push(
-        withTemplateDiagnosticLocation(component, filePath, {
-          category: diag.category === OutOfBandDiagnosticCategory.Warning ? 0 : 1,
-          code: diag.code ?? 8000,
-          messageText: diag.message,
-          sourceFilePath: diag.sourceFilePath,
-          span: {start: diag.start, end: diag.end},
-          relatedInformation: diag.relatedInformation?.map((rel) => ({
-            messageText: rel.message,
-            sourceFilePath: rel.sourceFilePath,
-            span: {start: rel.start, end: rel.end},
-          })),
-        }),
-      );
-    }
-  }
-  return returnTcb;
+      if (tcb?.diagnostics && tcb.diagnostics.length > 0) {
+        for (const diag of tcb.diagnostics) {
+          let component: nga.ComponentMetadata | undefined;
+          if (prepared?.typeCheckIdMap) {
+            for (const [classKey, id] of prepared.typeCheckIdMap.entries()) {
+              if (id === diag.typeCheckId) {
+                const cls = classes.find(
+                  (c) => makeClassKey(c.className, c.span.start) === classKey,
+                );
+                component = cls?.component ?? undefined;
+                break;
+              }
+            }
+          }
+
+          fileDiagnostics.push(
+            withTemplateDiagnosticLocation(component, filePath, {
+              category: diag.category === OutOfBandDiagnosticCategory.Warning ? 0 : 1,
+              code: diag.code ?? 8000,
+              messageText: diag.message,
+              sourceFilePath: diag.sourceFilePath,
+              span: {start: diag.start, end: diag.end},
+              relatedInformation: diag.relatedInformation?.map((rel) => ({
+                messageText: rel.message,
+                sourceFilePath: rel.sourceFilePath,
+                span: {start: rel.start, end: rel.end},
+              })),
+            }),
+          );
+        }
+      }
+      return returnTcb;
+    },
+    fileId,
+  );
 }
 
 interface CompiledNgModuleDef {
