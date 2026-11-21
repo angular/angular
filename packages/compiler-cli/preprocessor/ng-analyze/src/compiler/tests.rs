@@ -10372,3 +10372,84 @@ fn test_batching_host_virtual_dts_overlay_retains_format_after_cache_clear() {
         "expected updated virtual .d.ts declaration VirtDir ([virt-v2]), got: {decls1:?}"
     );
 }
+
+#[test]
+fn test_dts_component_ng_content_selectors_projected_to_wire() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "ext.d.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/ext.d.ts".to_string(),
+        r#"
+            import * as i0 from '@angular/core';
+            export declare class NoSlotComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<NoSlotComponent, 'no-slot', never, {}, {}, never, never, true, never>;
+            }
+            export declare class EmptySlotComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<EmptySlotComponent, 'empty-slot', never, {}, {}, never, [], true, never>;
+            }
+            export declare class SlotComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<SlotComponent, 'with-slot', never, {}, {}, never, ['[header]', '*'], true, never>;
+            }
+            export declare class LegacyComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<LegacyComponent, 'legacy-comp', never, {}, {}, never>;
+            }
+            export declare class LegacyModule {
+                static ɵmod: i0.ɵɵNgModuleDeclaration<LegacyModule, [typeof LegacyComponent], never, [typeof LegacyComponent]>;
+            }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+            import { Component } from '@angular/core';
+            import { EmptySlotComponent, LegacyModule, NoSlotComponent, SlotComponent } from './ext';
+
+            @Component({
+                selector: 'app-root',
+                standalone: true,
+                imports: [NoSlotComponent, EmptySlotComponent, SlotComponent, LegacyModule],
+                template: '<no-slot /><empty-slot /><with-slot /><legacy-comp />',
+            })
+            export class AppComponent {}
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let app_meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+    let decls = app_meta.classes[0]
+        .component
+        .as_ref()
+        .and_then(|c| c.resolved_declarations.as_ref())
+        .expect("resolved declarations");
+
+    let selectors_of = |name: &str| {
+        decls
+            .iter()
+            .find(|d| d.name == name)
+            .unwrap_or_else(|| panic!("missing declaration {name}"))
+            .ng_content_selectors
+            .clone()
+    };
+
+    assert_eq!(selectors_of("NoSlotComponent"), Some(Vec::new()));
+    assert_eq!(selectors_of("EmptySlotComponent"), Some(Vec::new()));
+    assert_eq!(
+        selectors_of("SlotComponent"),
+        Some(vec!["[header]".to_string(), "*".to_string()])
+    );
+    assert_eq!(selectors_of("LegacyComponent"), None);
+}

@@ -882,13 +882,17 @@ fn extract_string_from_type_argument(
     Some(s.value.to_string())
 }
 
-/// Extract ngContentSelectors from position 7 (index 6) of: i0.ɵɵComponentDeclaration<T, "[selector]", ..., NgContentSelectors, ...>
+/// Extract `ngContentSelectors` from position 7 (index 6) of `ɵɵComponentDeclaration`.
 /// https://github.com/angular/angular/blob/b918bed/packages/core/src/render3/interfaces/public_definitions.ts#L49
+///
+/// Mirrors ngtsc's `DtsMetadataReader` (`readStringArrayType`): non-tuple types (such as `never`
+/// when a component has no `<ng-content>`) and tuples without string-literal elements produce
+/// `Some(vec![])`, while declarations with fewer than 7 type arguments return `None`.
 fn extract_ng_content_selectors_from_type(
     type_ann: &Option<oxc_allocator::Box<TSTypeAnnotation>>,
 ) -> Option<Vec<String>> {
-    let Some(TSType::TSTupleType(tuple)) = get_type_argument(type_ann, 6) else {
-        return None;
+    let TSType::TSTupleType(tuple) = get_type_argument(type_ann, 6)? else {
+        return Some(Vec::new());
     };
     let mut selectors = Vec::new();
     for element in &tuple.element_types {
@@ -900,10 +904,7 @@ fn extract_ng_content_selectors_from_type(
         };
         selectors.push(s.value.to_string());
     }
-    if !selectors.is_empty() {
-        return Some(selectors);
-    }
-    None
+    Some(selectors)
 }
 
 /// Extract exportAs from position 3 (index 2) of: i0.ɵɵComponentDeclaration<T, "[selector]", ["exportAs"], ...>
@@ -1446,6 +1447,65 @@ export declare class MyComponent {
             &ResolvedValue::String("my-comp".to_string())
         );
         assert!(comp.directive.standalone);
+        assert_eq!(comp.ng_content_selectors.as_ref(), Some(&Vec::new()));
+        assert_eq!(
+            result.registrations[0].ng_content_selectors.as_ref(),
+            Some(&Vec::new())
+        );
+    }
+
+    #[test]
+    fn test_component_ng_content_selectors_shapes_match_dts_metadata_reader() {
+        let source = r#"
+import * as i0 from "@angular/core";
+type AliasedSlots = ["[aliased]"];
+export declare class EmptyTupleComp {
+    static ɵcmp: i0.ɵɵComponentDeclaration<EmptyTupleComp, "empty-tuple", never, {}, {}, never, [], true, never>;
+}
+export declare class MixedTupleComp {
+    static ɵcmp: i0.ɵɵComponentDeclaration<MixedTupleComp, "mixed-tuple", never, {}, {}, never, ["[header]", string, "*"], true, never>;
+}
+export declare class NonLiteralTupleComp {
+    static ɵcmp: i0.ɵɵComponentDeclaration<NonLiteralTupleComp, "non-lit-tuple", never, {}, {}, never, [string], true, never>;
+}
+export declare class ReadonlyTupleComp {
+    static ɵcmp: i0.ɵɵComponentDeclaration<ReadonlyTupleComp, "readonly-tuple", never, {}, {}, never, readonly ["*"], true, never>;
+}
+export declare class TypeAliasComp {
+    static ɵcmp: i0.ɵɵComponentDeclaration<TypeAliasComp, "alias-comp", never, {}, {}, never, AliasedSlots, true, never>;
+}
+export declare class LegacySixArgComp {
+    static ɵcmp: i0.ɵɵComponentDeclaration<LegacySixArgComp, "legacy-comp", never, {}, {}, never>;
+}
+"#;
+        let result = run_analyze_dts(source);
+        let selectors_of = |name: &str| {
+            let cls = result
+                .classes
+                .iter()
+                .find(|c| c.class_name.as_deref() == Some(name))
+                .unwrap_or_else(|| panic!("missing class {name}"));
+            let DecoratorData::Component(comp) = &cls.decorator else {
+                panic!("expected Component for {name}");
+            };
+            let reg = result
+                .registrations
+                .iter()
+                .find(|r| r.class_name == name)
+                .unwrap_or_else(|| panic!("missing registration {name}"));
+            assert_eq!(comp.ng_content_selectors, reg.ng_content_selectors);
+            comp.ng_content_selectors.clone()
+        };
+
+        assert_eq!(selectors_of("EmptyTupleComp"), Some(Vec::new()));
+        assert_eq!(
+            selectors_of("MixedTupleComp"),
+            Some(vec!["[header]".to_string(), "*".to_string()])
+        );
+        assert_eq!(selectors_of("NonLiteralTupleComp"), Some(Vec::new()));
+        assert_eq!(selectors_of("ReadonlyTupleComp"), Some(Vec::new()));
+        assert_eq!(selectors_of("TypeAliasComp"), Some(Vec::new()));
+        assert_eq!(selectors_of("LegacySixArgComp"), None);
     }
 
     #[test]
@@ -1469,6 +1529,10 @@ export declare class AppComponent {
         );
         assert_eq!(
             comp.ng_content_selectors.as_ref(),
+            Some(&vec!["*".to_string()])
+        );
+        assert_eq!(
+            result.registrations[0].ng_content_selectors.as_ref(),
             Some(&vec!["*".to_string()])
         );
     }
