@@ -113,19 +113,20 @@ export class RegistrationComponent {
 A field is considered "empty" when its value is one of the following, and non-empty for every other
 value — including `0` and the empty array `[]`:
 
-| Condition                | Example     |
-| ------------------------ | ----------- |
-| Value is `null`          | `null`      |
-| Value is `undefined`     | `undefined` |
-| Value is an empty string | `''`        |
-| Value is `false`         | `false`     |
-| Value is `NaN`           | `NaN`       |
+| Condition                | Example                        |
+| ------------------------ | ------------------------------ |
+| Value is `null`          | `null`                         |
+| Value is `undefined`     | `undefined`                    |
+| Value is an empty string | `''`                           |
+| Value is `false`         | `false`                        |
+| Value is non-finite      | `NaN`, `Infinity`, `-Infinity` |
 
 The last two are worth calling out:
 
 - `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
   an unchecked box fails validation.
-- `NaN` is empty because it is usually the result of a parsing error, and is not a valid number.
+- Non-finite numbers (`NaN`, `Infinity`, `-Infinity`) are empty because they are not valid numbers
+  in form controls and clear native numeric controls.
 
 For conditional requirements, use the `when` option:
 
