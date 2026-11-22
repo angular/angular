@@ -81,7 +81,10 @@ export class FormFieldManager {
     liveStructures: Set<FieldNodeStructure>,
   ): void {
     liveStructures.add(structure);
-    for (const child of structure.children()) {
+    // Cleanup must not create fields that have never been accessed and have no schema logic.
+    // TODO: Consider also leveraging `materializedChildren` in other traversals (such as
+    // `getBindingForFocus` and `markAsTouched`) to avoid eager tree materialization.
+    for (const child of structure.materializedChildren()) {
       this.markStructuresLive(child.structure, liveStructures);
     }
   }
