@@ -13,15 +13,25 @@ import {requiredError} from '../../../../src/api/rules/validation/validation_err
 
 describe('required validator', () => {
   // Documented on `required()` and in guide/forms/signals/validation#required. `false` follows the
-  // native semantics of `required` on `<input type="checkbox">`; `NaN` is not a valid number.
+  // native semantics of `required` on `<input type="checkbox">`; non-finite numbers (`NaN`, `Infinity`,
+  // `-Infinity`) are not valid numbers in form controls.
   describe('emptiness', () => {
-    it('treats null, empty string, false and NaN as empty', () => {
+    it('treats null, empty string, false, NaN, and infinite numbers as empty', () => {
       const model = signal<{
         nullable: string | null;
         text: string;
         checkbox: boolean;
         num: number;
-      }>({nullable: null, text: '', checkbox: false, num: Number.NaN});
+        posInf: number;
+        negInf: number;
+      }>({
+        nullable: null,
+        text: '',
+        checkbox: false,
+        num: Number.NaN,
+        posInf: Infinity,
+        negInf: -Infinity,
+      });
       const f = form(
         model,
         (p) => {
@@ -29,6 +39,8 @@ describe('required validator', () => {
           required(p.text);
           required(p.checkbox);
           required(p.num);
+          required(p.posInf);
+          required(p.negInf);
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -37,6 +49,8 @@ describe('required validator', () => {
       expect(f.text().errors()).toEqual([requiredError({fieldTree: f.text})]);
       expect(f.checkbox().errors()).toEqual([requiredError({fieldTree: f.checkbox})]);
       expect(f.num().errors()).toEqual([requiredError({fieldTree: f.num})]);
+      expect(f.posInf().errors()).toEqual([requiredError({fieldTree: f.posInf})]);
+      expect(f.negInf().errors()).toEqual([requiredError({fieldTree: f.negInf})]);
     });
 
     it('treats 0, an empty array and other filled values as non-empty', () => {

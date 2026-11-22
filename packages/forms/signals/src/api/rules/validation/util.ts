@@ -54,11 +54,12 @@ export function getOption<TOption, TValue, TPathKind extends PathKind = PathKind
 }
 
 /**
- * Checks if the given value is considered empty. Empty values are: null, undefined, '', false, NaN.
+ * Checks if the given value is considered empty. Empty values are: null, undefined, '', false, and
+ * non-finite numbers (NaN, Infinity, -Infinity).
  */
 export function isEmpty(value: unknown): boolean {
   if (typeof value === 'number') {
-    return isNaN(value);
+    return !Number.isFinite(value);
   }
   return value === '' || value === false || value == null;
 }
