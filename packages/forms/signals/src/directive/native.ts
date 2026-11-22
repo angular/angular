@@ -166,9 +166,9 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
 
 /** Writes a value to a native <input type="number">. */
 export function setNativeNumberControlValue(element: HTMLInputElement, value: number) {
-  // Writing `NaN` causes a warning in the console, so we instead write `''`.
+  // Writing `NaN` causes a warning in the console and writing `Infinity` throws, so we write `''`.
   // This allows the user to safely use `NaN` as a number value that means "clear the input".
-  if (isNaN(value)) {
+  if (!Number.isFinite(value)) {
     element.value = '';
   } else {
     element.valueAsNumber = value;

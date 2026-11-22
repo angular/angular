@@ -138,6 +138,35 @@ describe('numeric inputs', () => {
       expect(fixture.componentInstance.f().errors()).toEqual([]);
     });
 
+    it('should render Infinity model value as empty string', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number>(10);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      expect(input.value).toBe('10');
+
+      act(() => {
+        fixture.componentInstance.data.set(Infinity);
+      });
+
+      expect(input.value).toBe('');
+      expect(fixture.componentInstance.f().value()).toBe(Infinity);
+
+      act(() => {
+        fixture.componentInstance.data.set(-Infinity);
+      });
+
+      expect(input.value).toBe('');
+      expect(fixture.componentInstance.f().value()).toBe(-Infinity);
+    });
+
     it('should not overwrite DOM input value on change detection when model remains NaN', () => {
       @Component({
         imports: [FormField],
