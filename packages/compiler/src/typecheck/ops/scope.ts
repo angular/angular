@@ -581,7 +581,7 @@ export class Scope {
 
         if (!isForeign) {
           this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
+            new TcbDomSchemaCheckerOp(this.tcb, this, node, /* checkElement */ true, claimedInputs),
           );
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
@@ -592,7 +592,7 @@ export class Scope {
           new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
         );
         this.opQueue.push(
-          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, claimedInputs),
+          new TcbDomSchemaCheckerOp(this.tcb, this, node, /* checkElement */ false, claimedInputs),
         );
       }
       return;
@@ -667,8 +667,11 @@ export class Scope {
         }
       }
 
-      const hasComponent = directives.some((dir) => dir.isComponent);
-      const checkCustomElementBindings = node instanceof Element && !hasComponent;
+      const isAngularElement =
+        directives.some((dir) => dir.isComponent) ||
+        (node instanceof Element &&
+          directives.some((dir) => matchesPureTagName(dir.selector, node.name)));
+      const checkCustomElementBindings = node instanceof Element && !isAngularElement;
       this.opQueue.push(
         new TcbUnclaimedInputsOp(
           this.tcb,
@@ -701,7 +704,14 @@ export class Scope {
       const checkElement =
         node instanceof Element && this.requiresUnknownElementCheck(node, directives);
       this.opQueue.push(
-        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs, hasComponent),
+        new TcbDomSchemaCheckerOp(
+          this.tcb,
+          this,
+          node,
+          checkElement,
+          schemaClaimedInputs,
+          isAngularElement,
+        ),
       );
     }
   }
@@ -742,6 +752,10 @@ export class Scope {
         }
       }
 
+      const isAngularElement =
+        directives.some((dir) => dir.isComponent) ||
+        (node instanceof Element &&
+          directives.some((dir) => matchesPureTagName(dir.selector, node.name)));
       this.opQueue.push(
         new TcbUnclaimedOutputsOp(
           this.tcb,
@@ -751,7 +765,7 @@ export class Scope {
           bindings,
           claimedOutputs,
           /* hasDirectives */ true,
-          /* hasComponent */ directives.some((dir) => dir.isComponent),
+          /* hasComponent */ isAngularElement,
         ),
       );
     }
@@ -830,9 +844,18 @@ export class Scope {
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
           const checkElement = this.requiresUnknownElementCheck(node, directives);
-          const hasComponent = directives?.some((dir) => dir.isComponent) ?? false;
+          const isAngularElement =
+            (directives?.some((dir) => dir.isComponent) ?? false) ||
+            (directives?.some((dir) => matchesPureTagName(dir.selector, node.name)) ?? false);
           this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs, hasComponent),
+            new TcbDomSchemaCheckerOp(
+              this.tcb,
+              this,
+              node,
+              checkElement,
+              claimedInputs,
+              isAngularElement,
+            ),
           );
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
@@ -855,7 +878,13 @@ export class Scope {
           }
         }
         this.opQueue.push(
-          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, schemaClaimedInputs),
+          new TcbDomSchemaCheckerOp(
+            this.tcb,
+            this,
+            node,
+            /* checkElement */ false,
+            schemaClaimedInputs,
+          ),
         );
       }
 
@@ -955,7 +984,7 @@ export class Scope {
     this.hostElementOpMap.set(node, opIndex);
     this.opQueue.push(
       new TcbUnclaimedInputsOp(this.tcb, this, node.bindings, node, null),
-      new TcbDomSchemaCheckerOp(this.tcb, node, false, null),
+      new TcbDomSchemaCheckerOp(this.tcb, this, node, false, null),
     );
     this.appendOutputsOfElementLikeNode(node, null, node.listeners);
   }
@@ -1063,6 +1092,30 @@ function matchesTagName(selector: string | null, tagName: string): boolean {
   const lowerTag = splitNsName(tagName, false)[1].toLowerCase();
   try {
     return CssSelector.parse(selector).some((sel) => sel.element?.toLowerCase() === lowerTag);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns whether a selector contains a pure element-name matcher for `tagName` (e.g.
+ * `router-outlet` or `mat-label`) without requiring additional attributes or classes.
+ * Such directives represent Angular elements rather than enhancer directives targeting
+ * a Web Component (e.g. `my-input[formControlName]`).
+ */
+function matchesPureTagName(selector: string | null, tagName: string): boolean {
+  if (selector === null) {
+    return false;
+  }
+  const lowerTag = splitNsName(tagName, false)[1].toLowerCase();
+  try {
+    return CssSelector.parse(selector).some(
+      (sel) =>
+        sel.element?.toLowerCase() === lowerTag &&
+        sel.attrs.length === 0 &&
+        sel.classNames.length === 0 &&
+        sel.notSelectors.length === 0,
+    );
   } catch {
     return false;
   }

@@ -11,14 +11,9 @@ import * as i1 from '@angular/core';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
+    i1.ɵassertCustomElement('app-external', true) /*230,244*/;
   }
 }
-
-/* Diagnostics:
- - (230, 244) 'app-external' is not a known element:
-1. If 'app-external' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'app-external' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
-*/
 
 ```
 
@@ -181,25 +176,5 @@ export class LocalComponent {
       lineNumber: 7,
     });
 })();
-
-```
-
-# /tsconfig.ngdiag.json
-```json
-{
-  "tsconfigPath": "/tsconfig.json",
-  "diagnostics": [
-    {
-      "filePath": "/app.component.ts",
-      "category": "error",
-      "code": 8001,
-      "messageText": "'app-external' is not a known element:\n1. If 'app-external' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'app-external' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001",
-      "span": {
-        "start": 230,
-        "end": 244
-      }
-    }
-  ]
-}
 
 ```

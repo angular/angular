@@ -5283,7 +5283,7 @@ runInEachFileSystem(() => {
           expect(messages).toEqual([`Type 'string' is not assignable to type 'number'.`]);
         });
 
-        it('should allow and type-check custom elements with lowercase readonly property without TS2339', () => {
+        it('should keep DOM property remapping aligned with runtime and append a hint on TS2339/TS2551', () => {
           const customElementWithReadonlyDts = `
             export declare class SlInputElement extends HTMLElement {
               readonly: boolean;
@@ -5303,7 +5303,7 @@ runInEachFileSystem(() => {
 
                 @Component({
                   selector: 'test-cmp',
-                  template: '<sl-input [readonly]="isReadOnly" [value]="val"></sl-input>',
+                  template: '<sl-input [readonly]="isReadOnly" [tabindex]="0" [value]="val"></sl-input>',
                 })
                 export class TestCmp {
                   isReadOnly = true;
@@ -5311,21 +5311,27 @@ runInEachFileSystem(() => {
                 }
               `,
           );
-          expect(env.driveDiagnostics()).toEqual([]);
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Property 'readOnly' does not exist on type 'SlInputElement'. Did you mean 'readonly'?\n` +
+              `Angular remaps '[readonly]' to 'readOnly' at runtime. If this custom element expects an attribute or a lowercase property, use '[attr.readonly]' instead.`,
+          ]);
         });
 
-        it('should report type mismatch on custom elements with lowercase readonly property', () => {
-          const customElementWithReadonlyDts = `
-            export declare class SlInputElement extends HTMLElement {
-              readonly: boolean;
+        it('should type-check remapped DOM properties like [readonly] and [tabindex] on elements with camelCase properties', () => {
+          const mdTextFieldDts = `
+            export declare class MdTextFieldElement extends HTMLElement {
+              readOnly: boolean;
             }
             declare global {
               interface HTMLElementTagNameMap {
-                'sl-input': SlInputElement;
+                'md-text-field': MdTextFieldElement;
               }
             }
           `;
-          env.write('sl-input.d.ts', customElementWithReadonlyDts);
+          env.write('md-text-field.d.ts', mdTextFieldDts);
           env.write(
             'test.ts',
             `
@@ -5333,7 +5339,7 @@ runInEachFileSystem(() => {
 
                 @Component({
                   selector: 'test-cmp',
-                  template: '<sl-input [readonly]="notABoolean"></sl-input>',
+                  template: '<md-text-field [readonly]="notABoolean" [tabindex]="0"></md-text-field>',
                 })
                 export class TestCmp {
                   notABoolean = 123;
@@ -5784,10 +5790,11 @@ runInEachFileSystem(() => {
           env.write(
             'test.ts',
             `
-                import {Component} from '@angular/core';
+                import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 
                 @Component({
                   selector: 'test-cmp',
+                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
                   template: '<my-widget [count]="notANumber" [unknownProp]="1"></my-widget>',
                 })
                 export class TestCmp {
@@ -6142,16 +6149,28 @@ runInEachFileSystem(() => {
           ]);
         });
 
-        it('should not emit document.createElement errors in non-DOM builds without lib.dom', () => {
-          env.tsconfig({strictTemplates: true}, {lib: ['es2022']});
+        it('should recognize and type-check custom elements declared in NgCustomElements (element, attributes, events)', () => {
           env.write(
-            'ce.d.ts',
+            'custom-element.d.ts',
             `
-                interface FakeEl {
-                  label: string;
+                export declare class CustomButtonEl {
+                  disabled: boolean;
+                  variant: 'primary' | 'secondary';
                 }
-                interface HTMLElementTagNameMap {
-                  'non-dom-widget': FakeEl;
+
+                declare module '@angular/core' {
+                  interface NgCustomElements {
+                    'custom-btn': {
+                      element: CustomButtonEl;
+                      attributes: {
+                        variant?: 'primary' | 'secondary';
+                        open?: boolean;
+                      };
+                      events: {
+                        'btn-pressed': CustomEvent<{count: number}>;
+                      };
+                    };
+                  }
                 }
               `,
           );
@@ -6162,16 +6181,231 @@ runInEachFileSystem(() => {
 
                 @Component({
                   selector: 'test-cmp',
-                  template: '<non-dom-widget [label]="title"></non-dom-widget>',
+                  template: \`
+                    <custom-btn
+                      open
+                      [attr.open]="isDisabled ? '' : null"
+                      variant="primary"
+                      [attr.variant]="nullableVariant"
+                      [disabled]="isDisabled"
+                      (btn-pressed)="onPressed($event.detail.count)"
+                    ></custom-btn>
+                    <custom-btn
+                      variant="invalid"
+                      [attr.variant]="123"
+                      [variant]="badVariant"
+                      (btn-pressed)="onPressed($event.detail.missing)"
+                    ></custom-btn>
+                  \`,
                 })
                 export class TestCmp {
-                  title = 'ok';
+                  isDisabled = true;
+                  nullableVariant: 'primary' | null = null;
+                  badVariant: 'invalid' = 'invalid';
+                  onPressed(count: number) {}
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Type '123' is not assignable to type '"primary" | "secondary" | null | undefined'.`,
+            `Type '"invalid"' is not assignable to type '"primary" | "secondary"'.`,
+            `Type '"invalid"' is not assignable to type '"primary" | "secondary" | undefined'.`,
+            `Property 'missing' does not exist on type '{ count: number; }'.`,
+          ]);
+        });
+
+        it('should fall back to HTMLElementTagNameMap when NgCustomElements omits element', () => {
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'my-widget-ng.d.ts',
+            `
+                export {};
+                declare module '@angular/core' {
+                  interface NgCustomElements {
+                    'my-widget': {
+                      attributes: {
+                        size?: 'sm' | 'lg';
+                      };
+                    };
+                  }
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-widget size="xl" [count]="badCount"></my-widget>',
+                })
+                export class TestCmp {
+                  badCount = 'oops';
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Type 'string' is not assignable to type 'number'.`,
+            `Type '"xl"' is not assignable to type '"sm" | "lg" | undefined'.`,
+          ]);
+        });
+
+        it('should work with strictNullChecks: false for known and unknown custom elements', () => {
+          env.tsconfig({strictNullChecks: false});
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: \`
+                    <my-widget [count]="1" [label]="'ok'"></my-widget>
+                    <my-widget [unknownProp]="1"></my-widget>
+                    <unknown-el></unknown-el>
+                  \`,
+                })
+                export class TestCmp {}
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(2);
+          expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'))).toEqual([
+            `Property 'unknownProp' does not exist on type 'MyWidgetElement'.`,
+            jasmine.stringContaining(`'unknown-el' is not a known element`),
+          ]);
+        });
+
+        it('should preserve custom addEventListener overloads on HTMLElementTagNameMap elements', () => {
+          env.write(
+            'typed-events.d.ts',
+            `
+                export {};
+                interface TypedEventsMap extends HTMLElementEventMap {
+                  'value-changed': CustomEvent<{value: number}>;
+                }
+                interface TypedEventEl extends HTMLElement {
+                  addEventListener<K extends keyof TypedEventsMap>(
+                    type: K,
+                    listener: (this: TypedEventEl, ev: TypedEventsMap[K]) => any,
+                  ): void;
+                  addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
+                }
+                declare global {
+                  interface HTMLElementTagNameMap {
+                    'typed-event-el': TypedEventEl;
+                  }
+                }
+              `,
+          );
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: \`
+                    <typed-event-el (value-changed)="onVal($event.detail.value)"></typed-event-el>
+                    <typed-event-el (value-changed)="onVal($event.detail.missing)"></typed-event-el>
+                  \`,
+                })
+                export class TestCmp {
+                  onVal(v: number) {}
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Property 'missing' does not exist on type '{ value: number; }'.`,
+          ]);
+        });
+
+        it('should check property existence on known custom elements when strictInputTypes is false without CUSTOM_ELEMENTS_SCHEMA', () => {
+          env.tsconfig({strictTemplates: true, strictInputTypes: false});
+          env.write('my-widget.d.ts', customElementDts);
+          env.write(
+            'test.ts',
+            `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  template: '<my-widget [count]="notANumber" [unknownProp]="1"></my-widget>',
+                })
+                export class TestCmp {
+                  notANumber = 'oops';
+                }
+              `,
+          );
+          const messages = env
+            .driveDiagnostics()
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+          expect(messages).toEqual([
+            `Property 'unknownProp' does not exist on type 'MyWidgetElement'.`,
+          ]);
+        });
+
+        it('should report NgModule-specific NG8001 message for unknown custom elements in non-standalone components', () => {
+          env.write(
+            'test.ts',
+            `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: false,
+                  template: '<unknown-widget></unknown-widget>',
+                })
+                export class TestCmp {}
+
+                @NgModule({declarations: [TestCmp]})
+                export class TestModule {}
+              `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+          const msg = ts.flattenDiagnosticMessageText(diags[0].messageText, '\n');
+          expect(msg).toContain('part of this module');
+          expect(msg).toContain('@NgModule.schemas');
+        });
+
+        it('should still report NG8002 and strictUnclaimedEventNames on pure element-selector directives', () => {
+          env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+          env.write(
+            'test.ts',
+            `
+                import {Component, Directive} from '@angular/core';
+
+                @Directive({selector: 'router-outlet'})
+                export class FakeRouterOutlet {}
+
+                @Component({
+                  selector: 'test-cmp',
+                  imports: [FakeRouterOutlet],
+                  template: '<router-outlet [unknownProp]="1" (typoEvent)="onEvt()"></router-outlet>',
+                })
+                export class TestCmp {
+                  onEvt() {}
                 }
               `,
           );
           const codes = env.driveDiagnostics().map((d) => d.code);
-          expect(codes).not.toContain(2304);
-          expect(codes).toContain(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+          expect(codes).toEqual([
+            ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+            ngErrorCode(ErrorCode.UNCLAIMED_EVENT_BINDING),
+          ]);
         });
 
         it('should recognize custom elements from packages using main+types fields and compilerOptions.types secondaryLookup', () => {

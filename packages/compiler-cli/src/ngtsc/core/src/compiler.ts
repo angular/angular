@@ -1168,8 +1168,7 @@ export class NgCompiler {
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
         checkUnknownElements: false,
-        checkTypeOfNgTemplateBindings: false, // 3p-only
-        // g3-only checkTypeOfNgTemplateBindings: true,
+        checkTypeOfNgTemplateBindings: false,
         checkCustomElementsUnderSchema: false,
       };
     }

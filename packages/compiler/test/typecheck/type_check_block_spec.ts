@@ -985,45 +985,58 @@ describe('type check blocks', () => {
   });
 
   describe('custom element bindings', () => {
-    it('should emit property assignments for known custom elements', () => {
+    it('should emit element assertion and typed property assignments for custom elements', () => {
       const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(block).toContain('var _t1 = document.createElement("my-widget");');
-      expect(block).toContain('_t1.label = (((this).title));');
+      const block = tcb(TEMPLATE);
+      expect(block).toContain('i1.ɵassertCustomElement("my-widget", false);');
+      expect(block).toContain(
+        'var _t1 = (document.createElement("my-widget") as unknown as i1.ɵNgElementType<"my-widget">);',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).label = (((this).title));',
+      );
     });
 
-    it('should preserve lowercase property names like readonly without DOM property remapping', () => {
+    it('should remap DOM property names on custom elements and attach a remap diagnostic marker', () => {
       const TEMPLATE = `<my-widget [readonly]="isReadOnly"></my-widget>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(block).toContain('var _t1 = document.createElement("my-widget");');
-      expect(block).toContain('_t1.readonly = (((this).isReadOnly));');
-      expect(block).not.toContain('readOnly');
+      const block = tcb(TEMPLATE, undefined, undefined, {emitSpans: true});
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).readOnly /*D:remap:readonly:readOnly*/',
+      );
     });
 
     it('should use element access notation for unsafe custom element property keys', () => {
       const TEMPLATE = `<my-widget [before-dispatch]="fn" [123]="num" [foo(]="broken" [foo?]="q"></my-widget>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(block).toContain('_t1["before-dispatch"] = (((this).fn));');
-      expect(block).toContain('_t1["123"] = (((this).num));');
-      expect(block).toContain('_t1["foo("] = (((this).broken));');
-      expect(block).toContain('_t1["foo?"] = (((this).q));');
+      const block = tcb(TEMPLATE);
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">)["before-dispatch"] = (((this).fn));',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">)["123"] = (((this).num));',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">)["foo("] = (((this).broken));',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">)["foo?"] = (((this).q));',
+      );
     });
 
-    it('should normalize uppercase known custom element tag names in document.createElement', () => {
+    it('should normalize uppercase custom element tag names in document.createElement and assertion', () => {
       const TEMPLATE = `<MY-WIDGET #w [label]="title"></MY-WIDGET>`;
-      const known = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(known).toContain('var _t1 = document.createElement("my-widget");');
-      expect(known).toContain('_t1.label = (((this).title));');
-
-      const unknown = tcb(`<MY-WIDGET #w></MY-WIDGET>{{ w }}`, undefined, undefined, {
-        knownCustomElements: [],
-      });
-      expect(unknown).toContain('document.createElement("MY-WIDGET")');
+      const block = tcb(TEMPLATE);
+      expect(block).toContain('i1.ɵassertCustomElement("my-widget", false);');
+      expect(block).toContain(
+        'var _t1 = (document.createElement("my-widget") as unknown as i1.ɵNgElementType<"my-widget">);',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).label = (((this).title));',
+      );
     });
 
-    it('should skip assignment for disallowed event properties on known custom elements', () => {
+    it('should skip assignment for disallowed event properties on custom elements', () => {
       const TEMPLATE = `<my-widget [onclick]="fn"></my-widget>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
+      const block = tcb(TEMPLATE);
       expect(block).not.toContain('.onclick =');
       expect(block).not.toContain('["onclick"] =');
       expect(block).toContain('((this).fn);');
@@ -1031,23 +1044,41 @@ describe('type check blocks', () => {
 
     it('should strip the :xhtml: prefix in document.createElement inside foreignObject', () => {
       const TEMPLATE = `<svg><foreignObject><my-widget [label]="title"></my-widget></foreignObject></svg>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(block).toContain('var _t1 = document.createElement("my-widget");');
-      expect(block).toContain('_t1.label = (((this).title));');
+      const block = tcb(TEMPLATE);
+      expect(block).toContain(
+        'var _t1 = (document.createElement("my-widget") as unknown as i1.ɵNgElementType<"my-widget">);',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).label = (((this).title));',
+      );
     });
 
-    it('should unwrap writable signals in two-way bindings on known custom elements', () => {
+    it('should unwrap writable signals in two-way bindings on custom elements', () => {
       const TEMPLATE = `<my-widget [(value)]="val"></my-widget>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(block).toContain('_t1.value = i1.ɵunwrapWritableSignal((((this).val)));');
+      const block = tcb(TEMPLATE);
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).value = i1.ɵunwrapWritableSignal((((this).val)));',
+      );
+    });
+
+    it('should emit attribute and event type checks for custom elements', () => {
+      const TEMPLATE = `<my-dialog variant="primary" [attr.size]="sz" (closed)="onClose($event)"></my-dialog>`;
+      const block = tcb(TEMPLATE);
+      expect(block).toContain(
+        'var _t1: i1.ɵNgAttributeType<"my-dialog", "size"> | null | undefined = (((this).sz));',
+      );
+      expect(block).toContain('var _t2: i1.ɵNgAttributeType<"my-dialog", "variant"> = "primary";');
+      expect(block).toContain(
+        '(_t3 as unknown as i1.ɵNgEventTarget<"my-dialog", "closed", typeof _t3>).addEventListener("closed", ($event): any => { (this).onClose($event); });',
+      );
     });
 
     it('should not emit property assignments when NO_ERRORS_SCHEMA is present', () => {
       const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
       const block = tcb(TEMPLATE, undefined, undefined, {
-        knownCustomElements: ['my-widget'],
         schemas: [{name: 'no-errors-schema'}],
       });
+      expect(block).not.toContain('ɵassertCustomElement');
       expect(block).not.toContain('document.createElement("my-widget")');
       expect(block).toContain('((this).title);');
     });
@@ -1059,52 +1090,64 @@ describe('type check blocks', () => {
         undefined,
         {checkCustomElementsUnderSchema: false},
         {
-          knownCustomElements: ['my-widget'],
           schemas: [{name: 'custom-elements'}],
         },
       );
+      expect(block).not.toContain('ɵassertCustomElement');
       expect(block).not.toContain('document.createElement("my-widget")');
       expect(block).toContain('((this).title);');
     });
 
-    it('should emit property assignments under CUSTOM_ELEMENTS_SCHEMA when checkCustomElementsUnderSchema is true', () => {
+    it('should emit property target under CUSTOM_ELEMENTS_SCHEMA without ɵassertCustomElement when checkCustomElementsUnderSchema is true', () => {
       const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
       const block = tcb(TEMPLATE, undefined, undefined, {
-        knownCustomElements: ['my-widget'],
         schemas: [{name: 'custom-elements'}],
       });
-      expect(block).toContain('var _t1 = document.createElement("my-widget");');
-      expect(block).toContain('_t1.label = (((this).title));');
+      expect(block).not.toContain('ɵassertCustomElement');
+      expect(block).toContain(
+        'var _t1 = (document.createElement("my-widget") as unknown as i1.ɵNgElementType<"my-widget">);',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).label = (((this).title));',
+      );
     });
 
     it('should not emit custom element assignments when an Angular component matches the tag', () => {
       const TEMPLATE = `<my-widget [unknownProp]="title"></my-widget>`;
-      const block = tcb(
-        TEMPLATE,
-        [{type: 'directive', name: 'MyWidgetCmp', selector: 'my-widget', isComponent: true}],
-        undefined,
-        {knownCustomElements: ['my-widget']},
-      );
+      const block = tcb(TEMPLATE, [
+        {type: 'directive', name: 'MyWidgetCmp', selector: 'my-widget', isComponent: true},
+      ]);
+      expect(block).not.toContain('ɵassertCustomElement');
       expect(block).not.toContain('document.createElement("my-widget")');
       expect(block).toContain('((this).title);');
     });
 
-    it('should emit custom element assignments for unclaimed bindings when only a non-component directive matches the tag', () => {
-      const TEMPLATE = `<my-widget enhance [label]="title"></my-widget>`;
-      const block = tcb(
-        TEMPLATE,
-        [{type: 'directive', name: 'EnhanceDir', selector: 'my-widget[enhance]'}],
-        undefined,
-        {knownCustomElements: ['my-widget']},
-      );
-      expect(block).toContain('var _t1 = document.createElement("my-widget");');
-      expect(block).toContain('_t1.label = (((this).title));');
+    it('should not emit custom element assignments when a pure element-selector directive matches the tag', () => {
+      const TEMPLATE = `<router-outlet [unknownProp]="title"></router-outlet>`;
+      const block = tcb(TEMPLATE, [
+        {type: 'directive', name: 'RouterOutlet', selector: 'router-outlet'},
+      ]);
+      expect(block).not.toContain('ɵassertCustomElement');
+      expect(block).not.toContain('ɵNgPropertyTarget');
+      expect(block).toContain('((this).title);');
     });
 
-    it('should skip assignment for aria-* and security-sanitized properties on known custom elements', () => {
+    it('should emit custom element assignments for unclaimed bindings when only an enhancer directive matches the tag', () => {
+      const TEMPLATE = `<my-widget enhance [label]="title"></my-widget>`;
+      const block = tcb(TEMPLATE, [
+        {type: 'directive', name: 'EnhanceDir', selector: 'my-widget[enhance]'},
+      ]);
+      expect(block).toContain(
+        'var _t1 = (document.createElement("my-widget") as unknown as i1.ɵNgElementType<"my-widget">);',
+      );
+      expect(block).toContain(
+        '(_t1 as unknown as i1.ɵNgPropertyTarget<"my-widget">).label = (((this).title));',
+      );
+    });
+
+    it('should skip assignment for aria-* and security-sanitized properties on custom elements', () => {
       const TEMPLATE = `<my-widget [aria-describedby]="desc" [aria-hidden]="hidden" [innerHTML]="html"></my-widget>`;
-      const block = tcb(TEMPLATE, undefined, undefined, {knownCustomElements: ['my-widget']});
-      expect(block).not.toContain('document.createElement("my-widget")');
+      const block = tcb(TEMPLATE);
       expect(block).not.toContain('aria-describedby');
       expect(block).not.toContain('aria-hidden');
       expect(block).not.toContain('.innerHTML =');
@@ -1115,13 +1158,7 @@ describe('type check blocks', () => {
 
     it('should not emit custom element property assignments when checkTypeOfInputBindings is false', () => {
       const TEMPLATE = `<my-widget [label]="title"></my-widget>`;
-      const block = tcb(
-        TEMPLATE,
-        undefined,
-        {checkTypeOfInputBindings: false},
-        {knownCustomElements: ['my-widget']},
-      );
-      expect(block).not.toContain('document.createElement("my-widget")');
+      const block = tcb(TEMPLATE, undefined, {checkTypeOfInputBindings: false});
       expect(block).not.toContain('_t1.label');
       expect(block).toContain('((((this).title)) as any);');
     });

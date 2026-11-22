@@ -237,18 +237,6 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 },
             }
         }
-        "getKnownCustomElements" => match a.get_known_custom_elements_checked() {
-            Ok(tags) => RpcResponse {
-                id: req.id,
-                result: Some(serde_json::to_value(&tags).unwrap()),
-                error: None,
-            },
-            Err(e) => RpcResponse {
-                id: req.id,
-                result: None,
-                error: Some(e),
-            },
-        },
         "updateFileContent" => {
             let Ok(updates) = serde_json::from_value::<Vec<FileUpdate>>(req.params) else {
                 return RpcResponse {
@@ -634,32 +622,5 @@ mod tests {
             .error
             .is_none());
         assert!(now_us(&mut analyzer) >= second);
-    }
-
-    #[test]
-    fn test_rpc_get_known_custom_elements() {
-        let mut analyzer = None;
-        let init = RpcRequest {
-            id: 1,
-            method: "initialize".to_string(),
-            params: serde_json::json!({
-                "tsconfigPath": "/ce_rpc/tsconfig.json",
-                "virtualFiles": {
-                    "/ce_rpc/tsconfig.json": r#"{"files": ["app.ts", "ce.d.ts"]}"#,
-                    "/ce_rpc/app.ts": "export class App {}",
-                    "/ce_rpc/ce.d.ts": "declare global { interface HTMLElementTagNameMap { 'rpc-widget': HTMLElement; } } export {};",
-                },
-            }),
-        };
-        assert!(handle_rpc_request(init, &mut analyzer).error.is_none());
-
-        let req = RpcRequest {
-            id: 2,
-            method: "getKnownCustomElements".to_string(),
-            params: serde_json::json!({}),
-        };
-        let res = handle_rpc_request(req, &mut analyzer);
-        assert!(res.error.is_none());
-        assert_eq!(res.result, Some(serde_json::json!(["rpc-widget"])));
     }
 }

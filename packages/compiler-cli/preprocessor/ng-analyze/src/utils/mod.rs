@@ -101,7 +101,6 @@ pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(
                 ),
             ],
             condition_names: vec!["types".into(), "node".into(), "import".into()],
-            main_fields: vec!["types".into(), "typings".into(), "main".into()],
             modules,
             tsconfig: tsconfig_path.map(|path| {
                 TsconfigDiscovery::Manual(TsconfigOptions {
@@ -121,23 +120,31 @@ pub(crate) fn is_ts_source(path: &Path) -> bool {
     if ext != "ts" {
         return false;
     }
-    !is_dts(path)
-}
-
-pub(crate) fn is_dts(path: &Path) -> bool {
     let Some(file_name) = path.file_name() else {
         return false;
     };
-    let name = file_name.to_string_lossy();
-    name.ends_with(".d.ts") || name.ends_with(".d.mts") || name.ends_with(".d.cts")
+    if let Some(s) = file_name.to_str() {
+        !s.ends_with(".d.ts")
+    } else {
+        !file_name.to_string_lossy().ends_with(".d.ts")
+    }
 }
 
-/// Whether `path` uses a TypeScript module-only extension (`.mts`, `.cts`, `.d.mts`, `.d.cts`),
-/// which TypeScript always treats as an external module even without `import`/`export`.
-pub(crate) fn is_module_by_extension(path: &Path) -> bool {
-    path.extension()
-        .and_then(|e| e.to_str())
-        .is_some_and(|ext| matches!(ext, "mts" | "cts"))
+pub(crate) fn is_dts(path: &Path) -> bool {
+    let Some(ext) = path.extension() else {
+        return false;
+    };
+    if ext != "ts" {
+        return false;
+    }
+    let Some(file_name) = path.file_name() else {
+        return false;
+    };
+    if let Some(s) = file_name.to_str() {
+        s.ends_with(".d.ts")
+    } else {
+        file_name.to_string_lossy().ends_with(".d.ts")
+    }
 }
 
 pub(crate) fn is_ts_file(path: &Path) -> bool {

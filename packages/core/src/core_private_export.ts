@@ -184,7 +184,14 @@ export {
   TESTABILITY_GETTER as ɵTESTABILITY_GETTER,
   USE_PENDING_TASKS as ɵUSE_PENDING_TASKS,
 } from './testability/testability';
-export {ɵassertType} from './type_checking';
+export {
+  ɵassertCustomElement,
+  ɵassertType,
+  ɵNgAttributeType,
+  ɵNgElementType,
+  ɵNgEventTarget,
+  ɵNgPropertyTarget,
+} from './type_checking';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';
 export {global as ɵglobal} from './util/global';

@@ -52,10 +52,6 @@ pub enum QueryKey {
     AmbientModuleFiles,
     /// Singleton: entrypoint IDs and global extra imports for `generateExtraImportsInLocalMode`.
     LocalExtraImports,
-    /// Singleton: sorted lowercase custom element tag names (containing `-`) declared on global
-    /// `HTMLElementTagNameMap` across the program's `.ts` files, tsconfig `.d.ts` files, and
-    /// imported `.d.ts` files.
-    KnownCustomElements,
 }
 
 impl QueryKey {
@@ -75,8 +71,7 @@ impl QueryKey {
             | Self::NgModuleScopeRegistry
             | Self::ProgramFiles
             | Self::AmbientModuleFiles
-            | Self::LocalExtraImports
-            | Self::KnownCustomElements => None,
+            | Self::LocalExtraImports => None,
         }
     }
 
@@ -96,7 +91,7 @@ impl QueryKey {
 
     /// Variant names, indexed by [`Self::kind_index`]. The perf layer maps a query span's
     /// `kind` field back to its name here.
-    pub const KIND_NAMES: [&'static str; 14] = [
+    pub const KIND_NAMES: [&'static str; 13] = [
         "AnalyzeFileSemantic",
         "AnalyzeFileSyntax",
         "AnalyzeFileEvaluated",
@@ -110,7 +105,6 @@ impl QueryKey {
         "ProgramFiles",
         "AmbientModuleFiles",
         "LocalExtraImports",
-        "KnownCustomElements",
     ];
 
     /// Position of this key's variant in [`Self::KIND_NAMES`].
@@ -129,7 +123,6 @@ impl QueryKey {
             Self::ProgramFiles => 10,
             Self::AmbientModuleFiles => 11,
             Self::LocalExtraImports => 12,
-            Self::KnownCustomElements => 13,
         }
     }
 
@@ -192,9 +185,6 @@ pub enum QueryValue {
     AmbientModuleFiles(Arc<AmbientModuleFiles>),
     /// Cached entrypoint IDs and global extra imports ([`QueryKey::LocalExtraImports`]).
     LocalExtraImports(Arc<LocalExtraImportsData>),
-    /// Sorted custom element tag names declared in global `HTMLElementTagNameMap`
-    /// ([`QueryKey::KnownCustomElements`]).
-    KnownCustomElements(Arc<Vec<String>>),
 }
 
 impl std::fmt::Debug for QueryValue {
@@ -228,7 +218,6 @@ impl std::fmt::Debug for QueryValue {
                     v.global_extra_imports.len()
                 )
             }
-            Self::KnownCustomElements(v) => write!(f, "KnownCustomElements({} tags)", v.len()),
         }
     }
 }

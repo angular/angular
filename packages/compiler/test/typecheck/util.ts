@@ -161,7 +161,7 @@ export function tcb(
   template: string,
   declarations: TestDeclaration[] = [],
   config?: Partial<TypeCheckingConfig>,
-  options?: {emitSpans?: boolean; schemas?: SchemaMetadata[]; knownCustomElements?: string[]},
+  options?: {emitSpans?: boolean; schemas?: SchemaMetadata[]},
   templateParserOptions?: ParseTemplateOptions,
   foreignComponents: string[] = [],
 ): string {
@@ -215,7 +215,7 @@ export function tcb(
       component,
       '_tcb1',
       meta,
-      new NoopSchemaChecker(options?.knownCustomElements),
+      new NoopSchemaChecker(),
       new NoopOobRecorder(),
     ),
   );
@@ -553,18 +553,8 @@ function parseMappingArray(values: string[]): {[field: string]: string} {
 }
 
 class NoopSchemaChecker implements DomSchemaChecker<unknown> {
-  private readonly knownCustomElements: ReadonlySet<string>;
-
-  constructor(knownCustomElements: string[] = []) {
-    this.knownCustomElements = new Set(knownCustomElements.map((tag) => tag.toLowerCase()));
-  }
-
   get diagnostics(): ReadonlyArray<unknown> {
     return [];
-  }
-  isKnownCustomElement(tagName: string): boolean {
-    const name = tagName.replace(/^:xhtml:/, '').toLowerCase();
-    return this.knownCustomElements.has(name);
   }
   checkElement(): void {}
   checkTemplateElementProperty(): void {}

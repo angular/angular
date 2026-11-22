@@ -31,12 +31,8 @@ export interface WasmInner {
   clear_resolution_cache?(): string;
   requestMetadata?(moduleRefJson: string): number;
   request_metadata?(moduleRefJson: string): number;
-  requestKnownCustomElements?(): number;
-  request_known_custom_elements?(): number;
   getMetadataForFile?(filePath: string): string | undefined;
   get_metadata_for_file?(filePath: string): string | undefined;
-  getKnownCustomElements?(): string;
-  get_known_custom_elements?(): string;
   getFileContent?(filePath: string): string;
   get_file_content?(filePath: string): string;
   getTsFileForTemplate?(templatePath: string): string | undefined;
@@ -71,12 +67,6 @@ type WasmEvent =
       event: 'metadataResult';
       data: nga.AnalysisResult | null;
       error?: string;
-    }
-  | {
-      id: number;
-      event: 'knownCustomElementsResult';
-      data: string[] | null;
-      error?: string;
     };
 
 /** JS-side state of one engine stream; `null` in `queue` marks its end. */
@@ -93,16 +83,10 @@ interface PendingMetadataRequest {
   reject: (err: Error) => void;
 }
 
-interface PendingKnownCustomElementsRequest {
-  resolve: (val: string[]) => void;
-  reject: (err: Error) => void;
-}
-
 export class WasmAnalyzer implements IAnalyzer {
   private inner: WasmInner;
   private streams = new Map<number, WasmStream>();
   private metadataRequests = new Map<number, PendingMetadataRequest>();
-  private knownCustomElementsRequests = new Map<number, PendingKnownCustomElementsRequest>();
   private microtaskScheduled = false;
   private pumpTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -111,7 +95,7 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   private hasActivePumpWork(): boolean {
-    if (this.metadataRequests.size > 0 || this.knownCustomElementsRequests.size > 0) {
+    if (this.metadataRequests.size > 0) {
       return true;
     }
     for (const stream of this.streams.values()) {
@@ -147,19 +131,6 @@ export class WasmAnalyzer implements IAnalyzer {
           pending.reject(new Error(event.error));
         } else {
           pending.resolve(event.data ?? null);
-        }
-      }
-      return;
-    }
-
-    if (event.event === 'knownCustomElementsResult') {
-      const pending = this.knownCustomElementsRequests.get(event.id);
-      if (pending) {
-        this.knownCustomElementsRequests.delete(event.id);
-        if (event.error !== undefined) {
-          pending.reject(new Error(event.error));
-        } else {
-          pending.resolve(event.data ?? []);
         }
       }
       return;
@@ -335,23 +306,6 @@ export class WasmAnalyzer implements IAnalyzer {
     });
   }
 
-  async getKnownCustomElements(): Promise<string[]> {
-    const requestFn =
-      this.inner.requestKnownCustomElements ?? this.inner.request_known_custom_elements;
-    if (requestFn) {
-      const id = this.invoke(requestFn, 'requestKnownCustomElements');
-      return new Promise<string[]>((resolve, reject) => {
-        this.knownCustomElementsRequests.set(id, {resolve, reject});
-        this.schedulePump();
-      });
-    }
-    const syncFn = this.inner.getKnownCustomElements ?? this.inner.get_known_custom_elements;
-    if (!syncFn) {
-      return [];
-    }
-    return JSON.parse(this.invoke(syncFn, 'getKnownCustomElements')) as string[];
-  }
-
   async updateFileContent(updates: nga.FileUpdate[]): Promise<string[]> {
     const res = this.invoke(
       this.inner.updateFileContent ?? this.inner.update_file_content,
@@ -448,10 +402,6 @@ export class WasmAnalyzer implements IAnalyzer {
       pending.reject(closeError);
     }
     this.metadataRequests.clear();
-    for (const pending of this.knownCustomElementsRequests.values()) {
-      pending.reject(closeError);
-    }
-    this.knownCustomElementsRequests.clear();
     for (const stream of this.streams.values()) {
       stream.ended = true;
       stream.error = closeError;

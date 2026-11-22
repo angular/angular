@@ -39,7 +39,6 @@ export declare class Analyzer {
   analyzeDelta(): AnalysisIterator;
   analyzeOptimizedDelta(): AnalysisIterator;
   getMetadataForFile(filePath: string): AnalysisResult | null;
-  getKnownCustomElements?(): Array<string>;
   getFileContent(filePath: string): string;
   canonicalPaths(paths: Array<string>): Array<string>;
   getCompilerOptions?(): string;
@@ -49,7 +48,6 @@ export declare class Analyzer {
 export declare class TestAnalyzer {
   constructor(options: TestAnalyzerOptions);
   getMetadataForFile(filePath: string): AnalysisResult | null;
-  getKnownCustomElements?(): Array<string>;
   getFileContent(filePath: string): string;
   getCompilerOptions?(): string;
   getTsFileForTemplate(templatePath: string): Array<TemplateUsage> | null;

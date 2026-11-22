@@ -117,8 +117,8 @@ export {
 export {createEnvironmentInjector, createNgModule} from './render3/ng_module_ref';
 export {publishNonCoreGlobalUtil as ɵpublishNonCoreGlobalUtil} from './render3/util/global_utils';
 export * from './resource';
-export {Sanitizer} from './sanitization/sanitizer';
 export {SecurityContext} from './sanitization/dom_security_schema';
+export {Sanitizer} from './sanitization/sanitizer';
 export {
   GetTestability,
   setTestabilityGetter,
@@ -126,6 +126,9 @@ export {
   TestabilityRegistry,
 } from './testability/testability';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
+// Publicly exported (without a `ɵ` prefix) so external tooling and application authors can
+// augment it via `declare module '@angular/core'` to register custom element types.
+export {NgCustomElements} from './type_checking';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {TypeDecorator} from './util/decorators';
 export {DefaultExport} from './util/default_export';

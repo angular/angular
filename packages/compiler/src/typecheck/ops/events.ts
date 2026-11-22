@@ -17,6 +17,7 @@ import {TcbDirectiveMetadata} from '../api';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
 import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
+import {isCustomElementTag} from './element';
 import {LocalSymbol} from './references';
 
 const EVENT_PARAMETER = '$event';
@@ -211,6 +212,27 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           target = elId = this.scope.resolve(this.target);
         } else {
           target = elId;
+        }
+
+        // For custom elements (not matched by an Angular component), wrap the target in
+        // `ɵNgEventTarget<tag, eventName, typeof target>` so `NgCustomElements[tag].events`
+        // provides scoped custom event types while preserving custom `addEventListener`
+        // overloads on the element class and standard `HTMLElementEventMap` inference.
+        if (
+          output.target === null &&
+          this.target instanceof Element &&
+          !this.hasComponent &&
+          isCustomElementTag(this.target.name)
+        ) {
+          const lowerTagName = this.target.name.replace(/^:xhtml:/, '').toLowerCase();
+          const ngEventTarget = this.tcb.env.referenceExternalSymbol(
+            '@angular/core',
+            'ɵNgEventTarget',
+          );
+          const targetCode = target.print();
+          target = new TcbExpr(
+            `(${targetCode} as unknown as ${ngEventTarget.print()}<${TcbExpr.quoteAndEscape(lowerTagName)}, ${TcbExpr.quoteAndEscape(output.name)}, typeof ${targetCode}>)`,
+          );
         }
 
         // By default the target of an event is `EventTarget | null`, because of bubbling

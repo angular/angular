@@ -303,8 +303,8 @@ export interface TypeCheckingConfig {
   checkTypeOfNgTemplateBindings: boolean;
 
   /**
-   * Whether to type-check custom elements declared in `HTMLElementTagNameMap` even when
-   * `CUSTOM_ELEMENTS_SCHEMA` is present on the component or NgModule.
+   * Whether to type-check custom elements declared in `HTMLElementTagNameMap` or
+   * `NgCustomElements` even when `CUSTOM_ELEMENTS_SCHEMA` is present on the component or NgModule.
    */
   checkCustomElementsUnderSchema: boolean;
 }

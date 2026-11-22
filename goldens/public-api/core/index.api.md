@@ -1270,6 +1270,10 @@ export interface ModuleWithProviders<T> {
 }
 
 // @public
+export interface NgCustomElements {
+}
+
+// @public
 export type NgIterable<T> = Array<T> | Iterable<T>;
 
 // @public

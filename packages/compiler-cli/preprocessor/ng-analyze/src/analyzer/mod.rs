@@ -9,7 +9,6 @@ use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
 pub mod class_data;
 mod closure_nocollapse;
 mod component;
-pub(crate) mod custom_elements;
 pub(crate) mod di_facts;
 mod directive;
 mod dts;

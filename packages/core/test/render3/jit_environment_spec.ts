@@ -41,6 +41,11 @@ const AOT_ONLY = new Set<string>([
   'ɵUnwrapDirectiveSignalInputs',
   'ɵunwrapWritableSignal',
   'ɵassertType',
+  'ɵassertCustomElement',
+  'ɵNgAttributeType',
+  'ɵNgElementType',
+  'ɵNgEventTarget',
+  'ɵNgPropertyTarget',
 ]);
 
 /**

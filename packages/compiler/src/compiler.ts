@@ -280,6 +280,7 @@ export * from './typecheck/host_bindings';
 export {CommentTriviaType, ExpressionIdentifier} from './typecheck/comments';
 export {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticCategory} from './typecheck/oob';
 export {DomSchemaChecker} from './typecheck/schema';
+export {isCustomElementTag} from './typecheck/ops/element';
 export {generateTypeCheckBlock} from './typecheck/type_check_block';
 export {TcbExpr} from './typecheck/ops/codegen';
 export {TcbGenericContextBehavior} from './typecheck/ops/context';

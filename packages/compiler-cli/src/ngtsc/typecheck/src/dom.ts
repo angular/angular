@@ -10,6 +10,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   DomElementSchemaRegistry,
   DomSchemaChecker,
+  isCustomElementTag,
   NO_ERRORS_SCHEMA,
   ParseSourceSpan,
   SchemaMetadata,
@@ -40,40 +41,15 @@ const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
  */
 export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
   private _diagnostics: TemplateDiagnostic[] = [];
-  private _checkedCustomElements = new Map<string, boolean>();
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
   }
 
-  /**
-   * Normalized candidate custom element tag names queried via `isKnownCustomElement` during this
-   * check pass, mapped to whether they were known in `HTMLElementTagNameMap`. Used to invalidate
-   * cached type-check results in incremental builds when global `HTMLElementTagNameMap` changes.
-   */
-  get checkedCustomElements(): ReadonlyMap<string, boolean> {
-    return this._checkedCustomElements;
-  }
-
   constructor(
     private resolver: TypeCheckSourceResolver,
-    private isCustomElement: (tagName: string) => boolean = () => false,
+    private checkTemplateBodies: boolean = true,
   ) {}
-
-  isKnownCustomElement(tagName: string): boolean {
-    const name = tagName.replace(REMOVE_XHTML_REGEX, '').toLowerCase();
-    if (
-      !/^[a-z].*-/.test(name) ||
-      name === 'ng-container' ||
-      name === 'ng-content' ||
-      name === 'ng-template'
-    ) {
-      return false;
-    }
-    const known = this.isCustomElement(name);
-    this._checkedCustomElements.set(name, known);
-    return known;
-  }
 
   checkElement(
     id: TypeCheckId,
@@ -87,7 +63,13 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
 
-    if (!REGISTRY.hasElement(name, schemas) && !this.isKnownCustomElement(name)) {
+    // Candidate custom elements containing `-` are validated directly in the TCB via
+    // `ɵassertCustomElement` when template type-checking is active unless suppressed by schemas.
+    if (this.checkTemplateBodies && isCustomElementTag(name)) {
+      return;
+    }
+
+    if (!REGISTRY.hasElement(name, schemas)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
@@ -144,10 +126,12 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // ARIA attribute; do not exempt it as a custom element property since Angular compiles
     // `[aria-*]` via `ɵɵariaProperty` and skips TCB property assignment for it.
     const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
-    if (
-      !REGISTRY.hasProperty(tagName, name, schemas) &&
-      !(!hasComponent && !isUnknownAriaAttr && this.isKnownCustomElement(tagName))
-    ) {
+    const isCustomElement = !hasComponent && isCustomElementTag(tagName);
+    if (this.checkTemplateBodies && isCustomElement && !isUnknownAriaAttr) {
+      return;
+    }
+
+    if (!REGISTRY.hasProperty(tagName, name, schemas)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
@@ -208,6 +192,11 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
       return;
     }
 
+    // Custom elements may emit custom events.
+    if (this.checkTemplateBodies && !hasComponent && isCustomElementTag(tagName)) {
+      return;
+    }
+
     // `CUSTOM_ELEMENTS_SCHEMA` signals that custom elements are in use, whose custom events may
     // bubble up to any element in the template. It doesn't exempt elements with a matched
     // component though: those are Angular components rather than custom elements, no matter
@@ -217,8 +206,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
         (schema) =>
           schema.name === NO_ERRORS_SCHEMA.name ||
           (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
-      ) ||
-      (!hasComponent && this.isKnownCustomElement(tagName))
+      )
     ) {
       return;
     }

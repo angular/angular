@@ -324,13 +324,6 @@ impl QueryContext {
         }
     }
 
-    pub async fn known_custom_elements(&self) -> Arc<Vec<String>> {
-        match &*self.query_with_deps(QueryKey::KnownCustomElements).await {
-            QueryValue::KnownCustomElements(r) => r.clone(),
-            _ => unreachable!("KnownCustomElements must yield KnownCustomElements"),
-        }
-    }
-
     /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare
     /// ambient global value `name`, and its position (see
     /// [`QueryEngine::next_ambient_global_candidate`]). Records that `consumer_file` looked up

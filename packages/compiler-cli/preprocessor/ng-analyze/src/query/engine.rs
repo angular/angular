@@ -92,19 +92,6 @@ pub struct QueryEngine {
     pub(crate) resource_registry: Arc<ResourceRegistry>,
     pub(crate) entrypoints: Arc<std::sync::RwLock<Vec<PathBuf>>>,
     pub(crate) tsconfig_dts_files: RwLock<Vec<PathBuf>>,
-    /// Entry `.d.ts` files discovered from `compilerOptions.typeRoots` / `node_modules/@types`
-    /// (respecting `compilerOptions.types`), scanned only on demand by `KnownCustomElements`.
-    pub(crate) tsconfig_type_root_dts_files: RwLock<Vec<PathBuf>>,
-    /// Resolved `compilerOptions.typeRoots` (or ancestor `node_modules/@types` directories),
-    /// consulted by `/// <reference types="..." />` in `KnownCustomElements`.
-    pub(crate) tsconfig_type_roots: RwLock<Vec<PathBuf>>,
-    /// Whether the active tsconfig includes TypeScript's DOM lib (default `true` unless
-    /// `noLib: true` or `lib` omits `"dom"` / `"dom.*"`).
-    pub(crate) has_dom_lib: RwLock<bool>,
-    /// Per-`FileId` cache of `.d.ts` custom-element scans so edits to unrelated `.ts` files do not
-    /// re-read or re-hash unchanged declaration files. Entries are evicted in `invalidate_file_id`.
-    pub(crate) dts_custom_element_scans:
-        RwLock<HashMap<FileId, Arc<crate::analyzer::custom_elements::DtsCustomElementScan>>>,
     pub(crate) interner: Arc<FileIdInterner>,
     pub(crate) resolution_cache: crate::query::resolution_cache::ResolutionCache,
     pub(crate) reverse_index: RwLock<HashMap<FileId, HashSet<QueryKey>>>,
@@ -120,9 +107,6 @@ pub struct QueryEngine {
     /// Canonical [`FileId`]s of a prefix of `tsconfig_dts_files`, extended on demand and
     /// dropped when the roots change.
     pub(crate) tsconfig_dts_file_ids: RwLock<Vec<FileId>>,
-    /// Canonical [`FileId`]s of a prefix of `tsconfig_type_root_dts_files`, extended on demand
-    /// and dropped when the roots change.
-    pub(crate) tsconfig_type_root_dts_file_ids: RwLock<Vec<FileId>>,
     /// The ambient global value names each `.d.ts` scanned by an ambient global lookup declares.
     pub(crate) ambient_global_names: RwLock<HashMap<FileId, AmbientGlobalNames>>,
     /// Held while a lookup scans `.d.ts` files whose names aren't cached yet, so concurrent
@@ -253,10 +237,6 @@ impl QueryEngine {
             resource_registry,
             entrypoints,
             tsconfig_dts_files: RwLock::new(Vec::new()),
-            tsconfig_type_root_dts_files: RwLock::new(Vec::new()),
-            tsconfig_type_roots: RwLock::new(Vec::new()),
-            has_dom_lib: RwLock::new(true),
-            dts_custom_element_scans: RwLock::new(HashMap::new()),
             interner: Arc::new(FileIdInterner::new()),
             resolution_cache: crate::query::resolution_cache::ResolutionCache::new(),
             reverse_index: RwLock::new(HashMap::new()),
@@ -265,7 +245,6 @@ impl QueryEngine {
             kind_epoch: AtomicU64::new(0),
             static_import_graph: RwLock::new(None),
             tsconfig_dts_file_ids: RwLock::new(Vec::new()),
-            tsconfig_type_root_dts_file_ids: RwLock::new(Vec::new()),
             ambient_global_names: RwLock::new(HashMap::new()),
             ambient_global_scan: futures::lock::Mutex::new(()),
             ambient_global_first_candidates: RwLock::new(FirstAmbientGlobalCandidates::default()),
@@ -689,10 +668,6 @@ impl QueryEngine {
     pub fn invalidate_file_id(&self, file_id: FileId) -> Vec<QueryKey> {
         if file_id == ROOTS_FILE_ID {
             self.tsconfig_dts_file_ids.write().unwrap().clear();
-            self.tsconfig_type_root_dts_file_ids
-                .write()
-                .unwrap()
-                .clear();
             self.ambient_global_first_candidates
                 .write()
                 .unwrap()
@@ -704,10 +679,6 @@ impl QueryEngine {
         {
             self.resolution_cache.remove_importer(file_id);
         }
-        self.dts_custom_element_scans
-            .write()
-            .unwrap()
-            .remove(&file_id);
         self.mark_ambient_global_names_stale(file_id);
         self.clear_ambient_global_dependents_for_file(file_id);
         self.mark_file_dirty(file_id);
@@ -734,12 +705,11 @@ impl QueryEngine {
             .collect()
     }
 
-    /// Whether `file_id` is a `.d.ts` file that no cached query read except ambient indexes
-    /// (`AmbientModuleFiles`, `KnownCustomElements`), given the queries `evicted_keys` that
-    /// depended on it. The import graph and the whole-program singletons can't depend on such a
-    /// file. Ambient global lookups that only scanned it for the names it declares don't depend on
-    /// it either; if those names changed, [`Self::ensure_singletons_fresh`] evicts the lookups and
-    /// the singletons that read them.
+    /// Whether `file_id` is a `.d.ts` file that no cached query read except the ambient module
+    /// index, given the queries `evicted_keys` that depended on it. The import graph and the
+    /// whole-program singletons can't depend on such a file. Ambient global lookups that only
+    /// scanned it for the names it declares don't depend on it either; if those names changed,
+    /// [`Self::ensure_singletons_fresh`] evicts the lookups and the singletons that read them.
     fn is_dts_read_only_by_ambient_indexes(
         &self,
         file_id: FileId,
@@ -748,12 +718,9 @@ impl QueryEngine {
         file_id != ROOTS_FILE_ID
             && file_id != UNRESOLVED_IMPORTS_FILE_ID
             && file_id != R3_SYMBOLS_ROOT_FILE_ID
-            && evicted_keys.iter().all(|key| {
-                matches!(
-                    key,
-                    QueryKey::AmbientModuleFiles | QueryKey::KnownCustomElements
-                )
-            })
+            && evicted_keys
+                .iter()
+                .all(|key| *key == QueryKey::AmbientModuleFiles)
             && self
                 .interner
                 .try_lookup_path(file_id)
@@ -1018,50 +985,6 @@ impl QueryEngine {
         Some(file_ids[position])
     }
 
-    /// Canonical [`FileId`]s for every file in `tsconfig_dts_files`, populating any remaining
-    /// tail under a single lock acquisition.
-    pub(crate) fn all_tsconfig_dts_file_ids(&self) -> Vec<FileId> {
-        let dts_files = self.tsconfig_dts_files.read().unwrap();
-        {
-            let file_ids = self.tsconfig_dts_file_ids.read().unwrap();
-            if file_ids.len() == dts_files.len() {
-                return file_ids.clone();
-            }
-        }
-        let mut file_ids = self.tsconfig_dts_file_ids.write().unwrap();
-        while file_ids.len() < dts_files.len() {
-            let path = &dts_files[file_ids.len()];
-            let path = self
-                .host
-                .canonicalize_path(path)
-                .unwrap_or_else(|| path.clone());
-            file_ids.push(self.intern_path(&path));
-        }
-        file_ids.clone()
-    }
-
-    /// Canonical [`FileId`]s for every file in `tsconfig_type_root_dts_files`, populating any
-    /// remaining tail under a single lock acquisition.
-    pub(crate) fn all_tsconfig_type_root_dts_file_ids(&self) -> Vec<FileId> {
-        let dts_files = self.tsconfig_type_root_dts_files.read().unwrap();
-        {
-            let file_ids = self.tsconfig_type_root_dts_file_ids.read().unwrap();
-            if file_ids.len() == dts_files.len() {
-                return file_ids.clone();
-            }
-        }
-        let mut file_ids = self.tsconfig_type_root_dts_file_ids.write().unwrap();
-        while file_ids.len() < dts_files.len() {
-            let path = &dts_files[file_ids.len()];
-            let path = self
-                .host
-                .canonicalize_path(path)
-                .unwrap_or_else(|| path.clone());
-            file_ids.push(self.intern_path(&path));
-        }
-        file_ids.clone()
-    }
-
     /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare ambient
     /// global value `name`, and its position. Scans in `files` order and stops at the first match,
     /// so most lookups read only a prefix of the list. Lookups from the start, which nearly all are,
@@ -1182,20 +1105,6 @@ impl QueryEngine {
         self.invalidate_file_id(ROOTS_FILE_ID)
     }
 
-    /// Evict only `KnownCustomElements` when tsconfig `typeRoots`, `types`, or `lib`/`noLib`
-    /// changed without affecting the program's `.ts` roots or tsconfig `.d.ts` files.
-    pub(crate) fn invalidate_custom_element_config(&self) -> Vec<QueryKey> {
-        self.tsconfig_type_root_dts_file_ids
-            .write()
-            .unwrap()
-            .clear();
-        if self.remove_cached_key(&QueryKey::KnownCustomElements) {
-            vec![QueryKey::KnownCustomElements]
-        } else {
-            Vec::new()
-        }
-    }
-
     /// Purge every cached query that read which root is `r3_symbols.ts`, after the roots changed
     /// that.
     pub fn invalidate_r3_symbols_root(&self) -> Vec<QueryKey> {
@@ -1259,7 +1168,6 @@ impl QueryEngine {
         evicted_keys.insert(QueryKey::ComponentMapping);
         evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
         evicted_keys.insert(QueryKey::LocalExtraImports);
-        evicted_keys.insert(QueryKey::KnownCustomElements);
 
         evicted_keys
             .into_iter()
@@ -1428,9 +1336,6 @@ impl QueryEngine {
                 QueryKey::LocalExtraImports => Arc::new(QueryValue::LocalExtraImports(
                     self.local_extra_imports_body(&child_ctx).await,
                 )),
-                QueryKey::KnownCustomElements => Arc::new(QueryValue::KnownCustomElements(
-                    self.known_custom_elements_body(&child_ctx).await,
-                )),
             };
             let deps = child_ctx.dependencies();
             let cached_res = Arc::new(CachedResult {
@@ -1538,19 +1443,6 @@ impl QueryEngine {
         file_id: FileId,
     ) -> Option<crate::AnalysisResult> {
         self.block_on_query(self.clone().get_metadata_for_file_id(file_id))
-    }
-
-    /// Drive `KnownCustomElements` to completion and return sorted custom element tag names
-    /// declared on TypeScript's global `HTMLElementTagNameMap` across the program and `.d.ts` files.
-    pub async fn get_known_custom_elements(self: &Arc<Self>) -> Arc<Vec<String>> {
-        QueryContext::new(self.clone())
-            .known_custom_elements()
-            .await
-    }
-
-    /// Synchronously drive [`Self::get_known_custom_elements`] to completion.
-    pub fn get_known_custom_elements_blocking(self: &Arc<Self>) -> Arc<Vec<String>> {
-        self.block_on_query(self.clone().get_known_custom_elements())
     }
 
     /// Synchronously drive `AnalyzeFileWire` to completion.
@@ -1778,7 +1670,6 @@ impl QueryEngine {
                 type_only_exports: Vec::new(),
                 resolved_dependencies: Vec::new(),
                 dynamic_dependencies: Vec::new(),
-                dts_dependencies: Vec::new(),
                 class_index: Arc::new(class_index),
                 symbol_index: Arc::new(symbol_index),
                 di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(result.di_facts)),
@@ -1794,8 +1685,6 @@ impl QueryEngine {
                 is_core: false,
                 top_level_value_bindings: None,
                 namespace_alias_conflicts: Vec::new(),
-                custom_element_contributions: Default::default(),
-                triple_slash_references: Default::default(),
             });
         }
 
@@ -1841,20 +1730,12 @@ impl QueryEngine {
         let static_requests = build_requests(&analysis.static_dependencies);
         let dynamic_requests = build_requests(&analysis.dynamic_dependencies);
 
-        enum ResolvedDep {
-            Ts(PathBuf),
-            Dts(FileId, bool),
-        }
-
-        let resolve_deps = |requests: Vec<crate::host::ResolveRequest>| {
+        let resolve_ts_sources = |requests: Vec<crate::host::ResolveRequest>| {
             futures::future::join_all(requests.into_iter().map(|req| async move {
                 let Ok(Some((target_id, resolved))) = ctx.resolve_request(file_id, req).await
                 else {
                     return None;
                 };
-                if Self::is_dts_resolved(&resolved) {
-                    return Some(ResolvedDep::Dts(target_id, resolved.external));
-                }
                 if resolved.external {
                     return None;
                 }
@@ -1864,10 +1745,7 @@ impl QueryEngine {
                         .format
                         .is_some_and(crate::host::ModuleFormat::is_ts_source),
                 };
-                if is_program_ts_source {
-                    return Some(ResolvedDep::Ts(self.lookup_path(target_id)));
-                }
-                None
+                is_program_ts_source.then(|| self.lookup_path(target_id))
             }))
         };
 
@@ -1878,34 +1756,12 @@ impl QueryEngine {
                 &module_id,
                 file_id,
             ),
-            resolve_deps(static_requests),
-            resolve_deps(dynamic_requests),
+            resolve_ts_sources(static_requests),
+            resolve_ts_sources(dynamic_requests),
         )
         .await;
-        let mut resolved_dependencies = Vec::new();
-        let mut dynamic_dependencies = Vec::new();
-        let mut dts_dependencies = Vec::new();
-        let mut seen_dts = HashSet::new();
-        for dep in static_resolved.into_iter().flatten() {
-            match dep {
-                ResolvedDep::Ts(path) => resolved_dependencies.push(path),
-                ResolvedDep::Dts(dts_id, is_external) => {
-                    if seen_dts.insert(dts_id) {
-                        dts_dependencies.push((dts_id, is_external));
-                    }
-                }
-            }
-        }
-        for dep in dynamic_resolved.into_iter().flatten() {
-            match dep {
-                ResolvedDep::Ts(path) => dynamic_dependencies.push(path),
-                ResolvedDep::Dts(dts_id, is_external) => {
-                    if seen_dts.insert(dts_id) {
-                        dts_dependencies.push((dts_id, is_external));
-                    }
-                }
-            }
-        }
+        let resolved_dependencies: Vec<PathBuf> = static_resolved.into_iter().flatten().collect();
+        let dynamic_dependencies: Vec<PathBuf> = dynamic_resolved.into_iter().flatten().collect();
 
         self.resource_registry
             .register_resources(&file_path, analysis.classes.iter());
@@ -1924,7 +1780,6 @@ impl QueryEngine {
             type_only_exports: analysis.type_only_exports,
             resolved_dependencies,
             dynamic_dependencies,
-            dts_dependencies,
             class_index: Arc::new(class_index),
             symbol_index: Arc::new(symbol_index),
             di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(analysis.di_facts)),
@@ -1940,8 +1795,6 @@ impl QueryEngine {
             is_core: analysis.is_core,
             top_level_value_bindings: analysis.top_level_value_bindings,
             namespace_alias_conflicts: analysis.namespace_alias_conflicts,
-            custom_element_contributions: analysis.custom_element_contributions,
-            triple_slash_references: analysis.triple_slash_references,
         })
     }
 
@@ -2128,49 +1981,27 @@ impl QueryEngine {
     /// The contents of the tsconfig `.d.ts` `file_id`, loaded through the host, or `None` if the
     /// host can't load it.
     async fn load_dts_file(&self, file_id: FileId) -> Option<crate::host::LoadedModule> {
-        self.load_dts_file_with_external(file_id, false).await
-    }
-
-    async fn load_dts_file_with_external(
-        &self,
-        file_id: FileId,
-        external: bool,
-    ) -> Option<crate::host::LoadedModule> {
         self.host
-            .load(
-                &self.lookup_id(file_id),
-                crate::host::LoadKind::Module,
-                external || self.lookup_external(file_id),
-            )
+            .load(&self.lookup_id(file_id), crate::host::LoadKind::Module, false)
             .await
             .ok()
             .flatten()
     }
 
-    /// Returns `(cache_path, is_module_by_extension)` for `file_id`, keeping virtual module IDs
-    /// (`IdKind::Virtual`) out of path-based heuristics and process-wide path caches.
-    fn dts_cache_key_and_module_kind(&self, file_id: FileId) -> (Option<PathBuf>, bool) {
-        let (module_id, id_kind) = self.lookup_module(file_id);
-        if id_kind != crate::host::IdKind::Path {
-            return (None, false);
-        }
-        let path = PathBuf::from(module_id.as_str());
-        let is_module_by_ext = crate::utils::is_module_by_extension(&path);
-        (Some(path), is_module_by_ext)
-    }
-
     /// Index the tsconfig's `.d.ts` files by the ambient modules they may declare, from a textual
     /// scan of each file rather than a parse, so that resolving an import against ambient modules
     /// only parses the few files that can declare it. The `.d.ts` paths are canonicalized lazily
-    /// ([`Self::all_tsconfig_dts_file_ids`]) and the files loaded through the host in a single
-    /// wave. Every scanned file is a recorded dependency, since an edit to any of them may add or
-    /// remove a declaration, and so is the list itself.
+    /// ([`Self::tsconfig_dts_file_id`]) and the files loaded through the host in a single wave.
+    /// Every scanned file is a recorded dependency, since an edit to any of them may add or remove
+    /// a declaration, and so is the list itself.
     async fn ambient_module_files_body(
         self: &Arc<Self>,
         ctx: &QueryContext,
     ) -> Arc<crate::query::keys::AmbientModuleFiles> {
         ctx.record_file(ROOTS_FILE_ID);
-        let dts_ids = self.all_tsconfig_dts_file_ids();
+        let dts_ids: Vec<FileId> = (0..)
+            .map_while(|position| self.tsconfig_dts_file_id(position))
+            .collect();
         for &file_id in &dts_ids {
             ctx.record_file(file_id);
         }
@@ -2189,729 +2020,6 @@ impl QueryEngine {
             }
         }
         Arc::new(index)
-    }
-
-    /// Whether `resolved` points to a TypeScript declaration file (`.d.ts`/`.d.mts`/`.d.cts`).
-    fn is_dts_resolved(resolved: &crate::host::ResolvedModule) -> bool {
-        match resolved.id_kind {
-            crate::host::IdKind::Path => {
-                resolved
-                    .format
-                    .is_some_and(crate::host::ModuleFormat::is_dts)
-                    || crate::utils::is_dts(Path::new(resolved.id.as_str()))
-            }
-            crate::host::IdKind::Virtual => resolved
-                .format
-                .is_some_and(crate::host::ModuleFormat::is_dts),
-        }
-    }
-
-    /// Resolve `exported_name` from `target_id` (`.ts` or `.d.ts`) for cross-file
-    /// `interface HTMLElementTagNameMap extends ...` heritage clauses.
-    async fn resolve_custom_element_exported_type(
-        self: &Arc<Self>,
-        target_id: FileId,
-        is_dts: bool,
-        is_external: bool,
-        exported_name: &str,
-        ctx: &QueryContext,
-    ) -> crate::analyzer::custom_elements::CustomElementTagContributions {
-        let (cache_path, is_module_by_ext) = self.dts_cache_key_and_module_kind(target_id);
-        if is_dts {
-            ctx.record_file(target_id);
-            let Some(loaded) = self.load_dts_file_with_external(target_id, is_external).await
-            else {
-                return Default::default();
-            };
-            return shared_dts_parse_cache::extract_dts_exported_type(
-                cache_path.as_deref(),
-                &loaded.code,
-                exported_name,
-                is_module_by_ext,
-            );
-        }
-        let parsed = ctx.parse_file(target_id).await;
-        let guard = parsed.lock().unwrap();
-        let dep = guard.borrow_dependent();
-        crate::analyzer::custom_elements::extract_tags_from_exported_type(
-            dep.program,
-            &dep.module_record,
-            exported_name,
-            is_module_by_ext,
-        )
-    }
-
-    /// Resolve a `/// <reference types="..." />` directive following TypeScript's lookup order:
-    /// configured `typeRoots`, `@types/<name>`, then `<name>` itself. Only records
-    /// `UNRESOLVED_IMPORTS_FILE_ID` when every candidate misses so a resolved directive does not
-    /// needlessly invalidate `KnownCustomElements` on unrelated file creations.
-    async fn resolve_triple_slash_type_ref(
-        &self,
-        ctx: &QueryContext,
-        importer_id: FileId,
-        ref_type: &str,
-    ) -> Option<(FileId, crate::host::ResolvedModule)> {
-        ctx.record_file(importer_id);
-        let type_roots = self.tsconfig_type_roots.read().unwrap().clone();
-        if !ref_type.starts_with('.') && !crate::fs::is_absolute_path(Path::new(ref_type)) {
-            for root in type_roots {
-                let synthetic_importer = self.intern_path(root.join("__type_root__.d.ts"));
-                let req = crate::host::ResolveRequest::new(
-                    self.lookup_id(synthetic_importer),
-                    format!("./{ref_type}"),
-                    crate::host::ImportKind::Static,
-                );
-                if let Ok(Some(resolved)) =
-                    self.resolve_request_cached(synthetic_importer, req).await
-                {
-                    return Some(resolved);
-                }
-            }
-        }
-        let importer_mod_id = self.lookup_id(importer_id);
-        if !ref_type.starts_with("@types/") {
-            let req = crate::host::ResolveRequest::new(
-                importer_mod_id.clone(),
-                format!("@types/{ref_type}"),
-                crate::host::ImportKind::Static,
-            );
-            if let Ok(Some(resolved)) = self.resolve_request_cached(importer_id, req).await {
-                return Some(resolved);
-            }
-        }
-        let req = crate::host::ResolveRequest::new(
-            importer_mod_id,
-            ref_type,
-            crate::host::ImportKind::Static,
-        );
-        if let Ok(Some(resolved)) = self.resolve_request_cached(importer_id, req).await {
-            return Some(resolved);
-        }
-        ctx.record_file(UNRESOLVED_IMPORTS_FILE_ID);
-        None
-    }
-
-    /// Whether any program `.ts` file or reachable `.d.ts` file declares an ambient global
-    /// `document` value (used when `compilerOptions.lib` / `noLib` excludes TypeScript's DOM lib).
-    async fn has_ambient_global_document(
-        self: &Arc<Self>,
-        ctx: &QueryContext,
-        ts_files: &[FileId],
-        scanned_dts_ids: &[FileId],
-        external_dts: &HashSet<FileId>,
-    ) -> bool {
-        for &file_id in ts_files {
-            let parsed = ctx.parse_file(file_id).await;
-            let (_, is_module_by_ext) = self.dts_cache_key_and_module_kind(file_id);
-            let declares = {
-                let guard = parsed.lock().unwrap();
-                if !guard.borrow_owner().source_text.contains("document") {
-                    false
-                } else {
-                    let dep = guard.borrow_dependent();
-                    extract_ambient_global_names_in_file(
-                        dep.program,
-                        &dep.module_record,
-                        is_module_by_ext,
-                    )
-                    .contains("document")
-                }
-            };
-            if declares {
-                return true;
-            }
-        }
-        for chunk in scanned_dts_ids.chunks(64) {
-            let loads = futures::future::join_all(chunk.iter().map(|&file_id| {
-                self.load_dts_file_with_external(file_id, external_dts.contains(&file_id))
-            }))
-            .await;
-            for (&file_id, loaded) in chunk.iter().zip(loads) {
-                let Some(loaded) = loaded else {
-                    continue;
-                };
-                if !loaded.code.contains("document") {
-                    continue;
-                }
-                let (cache_path, is_module_by_ext) = self.dts_cache_key_and_module_kind(file_id);
-                if shared_dts_parse_cache::declares_ambient_global_name(
-                    cache_path.as_deref(),
-                    &loaded.code,
-                    "document",
-                    is_module_by_ext,
-                ) {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    /// Collect all lowercase custom element tag names (containing `-`) declared on TypeScript's
-    /// global `HTMLElementTagNameMap` across program `.ts` files, tsconfig `.d.ts` files,
-    /// `typeRoots` / `@types` `.d.ts` files, transitively imported or `/// <reference>`'d `.d.ts`
-    /// files, and cross-file `extends` heritage clauses (both imported, ambient module, and
-    /// ambient global).
-    async fn known_custom_elements_body(self: &Arc<Self>, ctx: &QueryContext) -> Arc<Vec<String>> {
-        ctx.record_file(ROOTS_FILE_ID);
-
-        let mut has_dom_lib = *self.has_dom_lib.read().unwrap();
-        let mut tags: HashSet<String> = HashSet::new();
-        let mut extends_queue: std::collections::VecDeque<(FileId, String, String)> =
-            std::collections::VecDeque::new();
-        let mut ambient_queue: std::collections::VecDeque<Vec<String>> =
-            std::collections::VecDeque::new();
-        let mut dts_frontier: Vec<FileId> = Vec::new();
-        let mut external_dts: HashSet<FileId> = HashSet::new();
-
-        let record_contributions =
-            |file_id: FileId,
-             contributions: &crate::analyzer::custom_elements::CustomElementTagContributions,
-             tags: &mut HashSet<String>,
-             extends_queue: &mut std::collections::VecDeque<(FileId, String, String)>,
-             ambient_queue: &mut std::collections::VecDeque<Vec<String>>| {
-                tags.extend(contributions.tags.iter().cloned());
-                for (spec, exported) in &contributions.external_extends {
-                    extends_queue.push_back((file_id, spec.clone(), exported.clone()));
-                }
-                for path in &contributions.ambient_extends {
-                    ambient_queue.push_back(path.clone());
-                }
-            };
-
-        let enqueue_references =
-            |importer_id: FileId,
-             refs: &crate::analyzer::custom_elements::TripleSlashReferences,
-             path_pairs: &mut Vec<(FileId, String)>,
-             seen_path_pairs: &mut HashSet<(FileId, String)>,
-             type_pairs: &mut Vec<(FileId, String)>,
-             seen_type_pairs: &mut HashSet<(FileId, String)>| {
-                for ref_path in &refs.paths {
-                    let spec = if ref_path.starts_with('.')
-                        || crate::fs::is_absolute_path(Path::new(ref_path))
-                    {
-                        ref_path.clone()
-                    } else {
-                        format!("./{ref_path}")
-                    };
-                    let pair = (importer_id, spec);
-                    if seen_path_pairs.insert(pair.clone()) {
-                        path_pairs.push(pair);
-                    }
-                }
-                for ref_type in &refs.types {
-                    let pair = (importer_id, ref_type.clone());
-                    if seen_type_pairs.insert(pair.clone()) {
-                        type_pairs.push(pair);
-                    }
-                }
-            };
-
-        // 1. Program `.ts` files (already parsed via `AnalyzeFileSyntax`), plus any extra files
-        //    reached through `/// <reference path/types ... />` directives on `.ts` files and
-        //    transitive `.ts` imports of those referenced files.
-        let program_files = ctx.program_files().await;
-        let mut ts_files_to_search: Vec<FileId> = program_files.iter().copied().collect();
-        let mut seen_ts_files: HashSet<FileId> = ts_files_to_search.iter().copied().collect();
-        let program_syntax = futures::future::join_all(
-            program_files
-                .iter()
-                .map(|&file_id| ctx.analyze_file_syntax(file_id)),
-        )
-        .await;
-        let mut ts_path_refs: Vec<(FileId, String)> = Vec::new();
-        let mut seen_ts_path_refs: HashSet<(FileId, String)> = HashSet::new();
-        let mut ts_type_refs: Vec<(FileId, String)> = Vec::new();
-        let mut seen_ts_type_refs: HashSet<(FileId, String)> = HashSet::new();
-        let mut extra_ts_queue: Vec<FileId> = Vec::new();
-        for syntax in &program_syntax {
-            if !syntax.custom_element_contributions.is_empty() {
-                record_contributions(
-                    syntax.file_id,
-                    &syntax.custom_element_contributions,
-                    &mut tags,
-                    &mut extends_queue,
-                    &mut ambient_queue,
-                );
-            }
-            for &(dts_id, is_ext) in &syntax.dts_dependencies {
-                if is_ext {
-                    external_dts.insert(dts_id);
-                }
-                dts_frontier.push(dts_id);
-            }
-            if !syntax.triple_slash_references.is_empty() {
-                has_dom_lib |= syntax.triple_slash_references.has_dom_lib;
-                enqueue_references(
-                    syntax.file_id,
-                    &syntax.triple_slash_references,
-                    &mut ts_path_refs,
-                    &mut seen_ts_path_refs,
-                    &mut ts_type_refs,
-                    &mut seen_ts_type_refs,
-                );
-            }
-        }
-
-        while !ts_path_refs.is_empty() || !ts_type_refs.is_empty() || !extra_ts_queue.is_empty() {
-            if !ts_path_refs.is_empty() || !ts_type_refs.is_empty() {
-                let path_batch = std::mem::take(&mut ts_path_refs);
-                let type_batch = std::mem::take(&mut ts_type_refs);
-                let (resolved_paths, resolved_types) = futures::future::join(
-                    futures::future::join_all(path_batch.into_iter().map(
-                        |(importer_id, spec)| async move {
-                            ctx.resolve_from_id(importer_id, &spec, crate::host::ImportKind::Static)
-                                .await
-                        },
-                    )),
-                    futures::future::join_all(type_batch.into_iter().map(
-                        |(importer_id, ref_type)| async move {
-                            self.resolve_triple_slash_type_ref(ctx, importer_id, &ref_type)
-                                .await
-                        },
-                    )),
-                )
-                .await;
-                for (target_id, module) in resolved_paths
-                    .into_iter()
-                    .chain(resolved_types)
-                    .flatten()
-                {
-                    if Self::is_dts_resolved(&module) {
-                        if module.external {
-                            external_dts.insert(target_id);
-                        }
-                        dts_frontier.push(target_id);
-                    } else if !module.external && seen_ts_files.insert(target_id) {
-                        ts_files_to_search.push(target_id);
-                        extra_ts_queue.push(target_id);
-                    }
-                }
-            }
-            if extra_ts_queue.is_empty() {
-                continue;
-            }
-            let extra_ts_wave = std::mem::take(&mut extra_ts_queue);
-            let extra_syntax = futures::future::join_all(
-                extra_ts_wave
-                    .iter()
-                    .map(|&file_id| ctx.analyze_file_syntax(file_id)),
-            )
-            .await;
-            for syntax in &extra_syntax {
-                if !syntax.custom_element_contributions.is_empty() {
-                    record_contributions(
-                        syntax.file_id,
-                        &syntax.custom_element_contributions,
-                        &mut tags,
-                        &mut extends_queue,
-                        &mut ambient_queue,
-                    );
-                }
-                for &(dts_id, is_ext) in &syntax.dts_dependencies {
-                    if is_ext {
-                        external_dts.insert(dts_id);
-                    }
-                    dts_frontier.push(dts_id);
-                }
-                for dep_path in syntax.program_dependencies() {
-                    let dep_id = self.intern_entry_or_dep(dep_path);
-                    if !self.lookup_external(dep_id) && seen_ts_files.insert(dep_id) {
-                        ts_files_to_search.push(dep_id);
-                        extra_ts_queue.push(dep_id);
-                    }
-                }
-                if !syntax.triple_slash_references.is_empty() {
-                    has_dom_lib |= syntax.triple_slash_references.has_dom_lib;
-                    enqueue_references(
-                        syntax.file_id,
-                        &syntax.triple_slash_references,
-                        &mut ts_path_refs,
-                        &mut seen_ts_path_refs,
-                        &mut ts_type_refs,
-                        &mut seen_ts_type_refs,
-                    );
-                }
-            }
-        }
-
-        // 2. Seed `.d.ts` BFS with tsconfig `.d.ts` files and `typeRoots` / `@types` entries so
-        //    every `.d.ts` is scanned once (single-pass) and its transitive imports/references are
-        //    followed too.
-        dts_frontier.extend(self.all_tsconfig_dts_file_ids());
-        dts_frontier.extend(self.all_tsconfig_type_root_dts_file_ids());
-
-        // 3. Unified `.d.ts` BFS (single-pass scan per file, cached per `FileId` on `QueryEngine`
-        //    so edits to unrelated `.ts` files never re-read or re-hash unchanged `.d.ts` files).
-        let mut visited_dts: HashSet<FileId> = HashSet::new();
-        let mut scanned_dts_ids: Vec<FileId> = Vec::new();
-        while !dts_frontier.is_empty() {
-            let wave: Vec<FileId> = std::mem::take(&mut dts_frontier)
-                .into_iter()
-                .filter(|&fid| visited_dts.insert(fid))
-                .collect();
-            if wave.is_empty() {
-                break;
-            }
-            for &file_id in &wave {
-                ctx.record_file(file_id);
-            }
-
-            let mut wave_scans: Vec<(
-                FileId,
-                Arc<crate::analyzer::custom_elements::DtsCustomElementScan>,
-            )> = Vec::with_capacity(wave.len());
-            let mut uncached_ids: Vec<FileId> = Vec::new();
-            {
-                let scans = self.dts_custom_element_scans.read().unwrap();
-                for file_id in wave {
-                    if let Some(scan) = scans.get(&file_id) {
-                        wave_scans.push((file_id, Arc::clone(scan)));
-                    } else {
-                        uncached_ids.push(file_id);
-                    }
-                }
-            }
-
-            if !uncached_ids.is_empty() {
-                let loads = futures::future::join_all(uncached_ids.iter().map(|&file_id| {
-                    self.load_dts_file_with_external(file_id, external_dts.contains(&file_id))
-                }))
-                .await;
-                let mut newly_scanned: Vec<(
-                    FileId,
-                    Arc<crate::analyzer::custom_elements::DtsCustomElementScan>,
-                )> = Vec::new();
-                for (file_id, loaded) in uncached_ids.into_iter().zip(loads) {
-                    let Some(loaded) = loaded else {
-                        continue;
-                    };
-                    let (cache_path, is_module_by_ext) = self.dts_cache_key_and_module_kind(file_id);
-                    let scan = shared_dts_parse_cache::dts_custom_element_scan(
-                        cache_path,
-                        &loaded.code,
-                        is_module_by_ext,
-                    );
-                    newly_scanned.push((file_id, scan));
-                }
-                if !newly_scanned.is_empty() {
-                    let mut scans = self.dts_custom_element_scans.write().unwrap();
-                    for (file_id, scan) in &newly_scanned {
-                        scans.insert(*file_id, Arc::clone(scan));
-                    }
-                    wave_scans.extend(newly_scanned);
-                }
-            }
-
-            let mut path_pairs: Vec<(FileId, String)> = Vec::new();
-            let mut seen_path_pairs: HashSet<(FileId, String)> = HashSet::new();
-            let mut type_pairs: Vec<(FileId, String)> = Vec::new();
-            let mut seen_type_pairs: HashSet<(FileId, String)> = HashSet::new();
-            for (file_id, scan) in wave_scans {
-                scanned_dts_ids.push(file_id);
-                if !scan.contributions.is_empty() {
-                    record_contributions(
-                        file_id,
-                        &scan.contributions,
-                        &mut tags,
-                        &mut extends_queue,
-                        &mut ambient_queue,
-                    );
-                }
-                for spec in &scan.import_specifiers {
-                    let pair = (file_id, spec.clone());
-                    if seen_path_pairs.insert(pair.clone()) {
-                        path_pairs.push(pair);
-                    }
-                }
-                if !scan.references.is_empty() {
-                    has_dom_lib |= scan.references.has_dom_lib;
-                    enqueue_references(
-                        file_id,
-                        &scan.references,
-                        &mut path_pairs,
-                        &mut seen_path_pairs,
-                        &mut type_pairs,
-                        &mut seen_type_pairs,
-                    );
-                }
-            }
-            if path_pairs.is_empty() && type_pairs.is_empty() {
-                continue;
-            }
-            let (resolved_paths, resolved_types) = futures::future::join(
-                futures::future::join_all(path_pairs.into_iter().map(
-                    |(importer_id, spec)| async move {
-                        ctx.resolve_from_id(importer_id, &spec, crate::host::ImportKind::Static)
-                            .await
-                    },
-                )),
-                futures::future::join_all(type_pairs.into_iter().map(
-                    |(importer_id, ref_type)| async move {
-                        self.resolve_triple_slash_type_ref(ctx, importer_id, &ref_type)
-                            .await
-                    },
-                )),
-            )
-            .await;
-            for (target_id, module) in resolved_paths
-                .into_iter()
-                .chain(resolved_types)
-                .flatten()
-            {
-                if Self::is_dts_resolved(&module) {
-                    if module.external {
-                        external_dts.insert(target_id);
-                    }
-                    dts_frontier.push(target_id);
-                }
-            }
-        }
-
-        // 4. Cross-file `interface HTMLElementTagNameMap extends ...` fixpoint resolution
-        //    (imported modules, ambient `declare module '...'` exports, and cross-file ambient
-        //    global/namespace base types).
-        let mut visited_extends: HashSet<(FileId, String)> = HashSet::new();
-        let mut visited_ambient_module_extends: HashSet<(String, String)> = HashSet::new();
-        let mut visited_ambient: HashSet<Vec<String>> = HashSet::new();
-        while !extends_queue.is_empty() || !ambient_queue.is_empty() {
-            if !extends_queue.is_empty() {
-                let batch: Vec<(FileId, String, String)> = extends_queue.drain(..).collect();
-                let resolved_batch = futures::future::join_all(batch.into_iter().map(
-                    |(from_id, spec, exported)| async move {
-                        let resolved = ctx
-                            .resolve_from_id(from_id, &spec, crate::host::ImportKind::Static)
-                            .await;
-                        (spec, resolved, exported)
-                    },
-                ))
-                .await;
-                let mut targets_to_read: Vec<(FileId, bool, bool, String)> = Vec::new();
-                let mut unresolved_ambient_modules: Vec<(String, String)> = Vec::new();
-                for (spec, resolved, exported) in resolved_batch {
-                    let Some((target_id, module)) = resolved else {
-                        if visited_ambient_module_extends.insert((spec.clone(), exported.clone())) {
-                            unresolved_ambient_modules.push((spec, exported));
-                        }
-                        continue;
-                    };
-                    let is_dts = Self::is_dts_resolved(&module);
-                    if module.external && !is_dts {
-                        continue;
-                    }
-                    if is_dts && module.external {
-                        external_dts.insert(target_id);
-                    }
-                    if !visited_extends.insert((target_id, exported.clone())) {
-                        continue;
-                    }
-                    targets_to_read.push((target_id, is_dts, module.external, exported));
-                }
-                let extracted_batch = futures::future::join_all(targets_to_read.into_iter().map(
-                    |(target_id, is_dts, is_external, exported)| async move {
-                        let contrib = self
-                            .resolve_custom_element_exported_type(
-                                target_id,
-                                is_dts,
-                                is_external,
-                                &exported,
-                                ctx,
-                            )
-                            .await;
-                        (target_id, contrib)
-                    },
-                ))
-                .await;
-                for (target_id, contrib) in extracted_batch {
-                    if !contrib.is_empty() {
-                        record_contributions(
-                            target_id,
-                            &contrib,
-                            &mut tags,
-                            &mut extends_queue,
-                            &mut ambient_queue,
-                        );
-                    }
-                }
-                if !unresolved_ambient_modules.is_empty() {
-                    for &file_id in &ts_files_to_search {
-                        let parsed = ctx.parse_file(file_id).await;
-                        let (_, is_module_by_ext) = self.dts_cache_key_and_module_kind(file_id);
-                        let found: Vec<_> = {
-                            let guard = parsed.lock().unwrap();
-                            let source_text = &guard.borrow_owner().source_text;
-                            if !source_text.contains("module") {
-                                continue;
-                            }
-                            let dep = guard.borrow_dependent();
-                            unresolved_ambient_modules
-                                .iter()
-                                .filter(|(spec, _)| source_text.contains(spec.as_str()))
-                                .map(|(spec, exported)| {
-                                    crate::analyzer::custom_elements::extract_tags_from_ambient_module_export(
-                                        dep.program,
-                                        &dep.module_record,
-                                        spec,
-                                        exported,
-                                        is_module_by_ext,
-                                    )
-                                })
-                                .filter(|c| !c.is_empty())
-                                .collect()
-                        };
-                        for contrib in found {
-                            record_contributions(
-                                file_id,
-                                &contrib,
-                                &mut tags,
-                                &mut extends_queue,
-                                &mut ambient_queue,
-                            );
-                        }
-                    }
-                    for chunk in scanned_dts_ids.chunks(64) {
-                        let loads = futures::future::join_all(chunk.iter().map(|&file_id| {
-                            self.load_dts_file_with_external(
-                                file_id,
-                                external_dts.contains(&file_id),
-                            )
-                        }))
-                        .await;
-                        for (&file_id, loaded) in chunk.iter().zip(loads) {
-                            let Some(loaded) = loaded else {
-                                continue;
-                            };
-                            if !loaded.code.contains("module") {
-                                continue;
-                            }
-                            let (cache_path, is_module_by_ext) =
-                                self.dts_cache_key_and_module_kind(file_id);
-                            for (spec, exported) in &unresolved_ambient_modules {
-                                if !loaded.code.contains(spec.as_str()) {
-                                    continue;
-                                }
-                                let contrib = shared_dts_parse_cache::extract_dts_ambient_module_export(
-                                    cache_path.as_deref(),
-                                    &loaded.code,
-                                    spec,
-                                    exported,
-                                    is_module_by_ext,
-                                );
-                                if !contrib.is_empty() {
-                                    record_contributions(
-                                        file_id,
-                                        &contrib,
-                                        &mut tags,
-                                        &mut extends_queue,
-                                        &mut ambient_queue,
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if !ambient_queue.is_empty() {
-                let ambient_batch: Vec<Vec<String>> = ambient_queue
-                    .drain(..)
-                    .filter(|path| !path.is_empty() && visited_ambient.insert(path.clone()))
-                    .collect();
-                if ambient_batch.is_empty() {
-                    continue;
-                }
-                for &file_id in &ts_files_to_search {
-                    let parsed = ctx.parse_file(file_id).await;
-                    let (_, is_module_by_ext) = self.dts_cache_key_and_module_kind(file_id);
-                    let found: Vec<_> = {
-                        let guard = parsed.lock().unwrap();
-                        let source_text = &guard.borrow_owner().source_text;
-                        let dep = guard.borrow_dependent();
-                        ambient_batch
-                            .iter()
-                            .filter(|type_path| source_text.contains(type_path[0].as_str()))
-                            .map(|type_path| {
-                                let path_refs: Vec<&str> =
-                                    type_path.iter().map(String::as_str).collect();
-                                crate::analyzer::custom_elements::extract_tags_from_ambient_type(
-                                    dep.program,
-                                    &dep.module_record,
-                                    &path_refs,
-                                    is_module_by_ext,
-                                )
-                            })
-                            .filter(|c| !c.is_empty())
-                            .collect()
-                    };
-                    for contrib in found {
-                        record_contributions(
-                            file_id,
-                            &contrib,
-                            &mut tags,
-                            &mut extends_queue,
-                            &mut ambient_queue,
-                        );
-                    }
-                }
-                for chunk in scanned_dts_ids.chunks(64) {
-                    let loads = futures::future::join_all(chunk.iter().map(|&file_id| {
-                        self.load_dts_file_with_external(file_id, external_dts.contains(&file_id))
-                    }))
-                    .await;
-                    for (&file_id, loaded) in chunk.iter().zip(loads) {
-                        let Some(loaded) = loaded else {
-                            continue;
-                        };
-                        let (cache_path, is_module_by_ext) =
-                            self.dts_cache_key_and_module_kind(file_id);
-                        for type_path in &ambient_batch {
-                            if !loaded.code.contains(type_path[0].as_str()) {
-                                continue;
-                            }
-                            let path_refs: Vec<&str> =
-                                type_path.iter().map(String::as_str).collect();
-                            let contrib = shared_dts_parse_cache::extract_dts_ambient_type(
-                                cache_path.as_deref(),
-                                &loaded.code,
-                                &path_refs,
-                                is_module_by_ext,
-                            );
-                            if !contrib.is_empty() {
-                                record_contributions(
-                                    file_id,
-                                    &contrib,
-                                    &mut tags,
-                                    &mut extends_queue,
-                                    &mut ambient_queue,
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 5. Match `ngtsc`'s `document.createElement` check: when TypeScript's DOM lib is
-        //    excluded (e.g. `lib: ["es2022"]` or `noLib: true`) and no `/// <reference lib="dom" />`
-        //    is present, only recognize custom elements if some reachable file declares an ambient
-        //    global `document`.
-        if !tags.is_empty()
-            && !has_dom_lib
-            && !self
-                .has_ambient_global_document(
-                    ctx,
-                    &ts_files_to_search,
-                    &scanned_dts_ids,
-                    &external_dts,
-                )
-                .await
-        {
-            return Arc::new(Vec::new());
-        }
-
-        let mut sorted: Vec<String> = tags.into_iter().collect();
-        sorted.sort();
-        Arc::new(sorted)
     }
 
     /// Build the component → owning-NgModule mapping across every file of the program (the
@@ -3918,19 +3026,11 @@ fn extract_ambient_global_names_in_dts(
     program: &oxc_ast::ast::Program<'_>,
     module_record: &oxc_syntax::module_record::ModuleRecord<'_>,
 ) -> HashSet<String> {
-    extract_ambient_global_names_in_file(program, module_record, false)
-}
-
-fn extract_ambient_global_names_in_file(
-    program: &oxc_ast::ast::Program<'_>,
-    module_record: &oxc_syntax::module_record::ModuleRecord<'_>,
-    is_module_by_extension: bool,
-) -> HashSet<String> {
     use oxc_ast::ast::Statement;
 
     let mut names = HashSet::new();
 
-    if !is_module_by_extension && !is_external_module_dts(program, module_record) {
+    if !is_external_module_dts(program, module_record) {
         collect_ambient_value_decls_in_stmts(&program.body, &mut names);
     }
 
@@ -4193,12 +3293,8 @@ mod shared_dts_parse_cache {
     /// Upper bound on the total source text of the files cached in each cache.
     const MAX_SOURCE_BYTES: usize = 192 * 1024 * 1024;
 
-    type CachedDtsCustomElementScan = Arc<crate::analyzer::custom_elements::DtsCustomElementScan>;
-
     static CACHE: OnceLock<Mutex<Cache<Arc<Mutex<ParsedFile>>>>> = OnceLock::new();
     static GLOBAL_NAMES: OnceLock<Mutex<Cache<AmbientGlobalNames>>> = OnceLock::new();
-    static DTS_CUSTOM_ELEMENT_SCAN: OnceLock<Mutex<Cache<CachedDtsCustomElementScan>>> =
-        OnceLock::new();
 
     fn cache() -> &'static Mutex<Cache<Arc<Mutex<ParsedFile>>>> {
         CACHE.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
@@ -4206,29 +3302,6 @@ mod shared_dts_parse_cache {
 
     fn global_names() -> &'static Mutex<Cache<AmbientGlobalNames>> {
         GLOBAL_NAMES.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
-    }
-
-    fn dts_custom_element_scan_cache() -> &'static Mutex<Cache<CachedDtsCustomElementScan>> {
-        DTS_CUSTOM_ELEMENT_SCAN.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
-    }
-
-    fn with_lightweight_dts_parse<R>(
-        source: &str,
-        f: impl FnOnce(&oxc_ast::ast::Program<'_>, &oxc_syntax::module_record::ModuleRecord<'_>) -> R,
-    ) -> R {
-        thread_local! {
-            static ALLOCATOR: std::cell::RefCell<oxc_allocator::Allocator> =
-                std::cell::RefCell::new(oxc_allocator::Allocator::default());
-        }
-        ALLOCATOR.with_borrow_mut(|allocator| {
-            let result = {
-                let ret = oxc_parser::Parser::new(allocator, source, oxc_span::SourceType::d_ts())
-                    .parse();
-                f(&ret.program, &ret.module_record)
-            };
-            allocator.reset();
-            result
-        })
     }
 
     /// Identifies the text a file was parsed from, so a cached parse can be validated without
@@ -4285,312 +3358,31 @@ mod shared_dts_parse_cache {
                 let dep = guard.borrow_dependent();
                 super::extract_ambient_global_names_in_dts(dep.program, &dep.module_record)
             }
-            None => with_lightweight_dts_parse(source, super::extract_ambient_global_names_in_dts),
+            None => {
+                thread_local! {
+                    static ALLOCATOR: std::cell::RefCell<oxc_allocator::Allocator> =
+                        std::cell::RefCell::new(oxc_allocator::Allocator::default());
+                }
+                ALLOCATOR.with_borrow_mut(|allocator| {
+                    let names = {
+                        let ret = oxc_parser::Parser::new(
+                            allocator,
+                            source,
+                            oxc_span::SourceType::d_ts(),
+                        )
+                        .parse();
+                        super::extract_ambient_global_names_in_dts(&ret.program, &ret.module_record)
+                    };
+                    allocator.reset();
+                    names
+                })
+            }
         });
         global_names()
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .insert(path, key, names.clone());
         names
-    }
-
-    /// Fast zero-allocation pre-filter for whether a `.d.ts` file may contain an `import`,
-    /// `export ... from`, `import = require(...)`, or `import(...)` type reference. Skips
-    /// comments and quoted strings and checks identifier boundaries so JSDoc prose (`from`) and
-    /// identifiers like `transform` / `fromEntries` do not trigger a full parse.
-    fn has_dts_import_hint(source: &str) -> bool {
-        let bytes = source.as_bytes();
-        let len = bytes.len();
-        let mut i = 0;
-        let is_ident = |b: u8| b.is_ascii_alphanumeric() || b == b'_' || b == b'$';
-        while i < len {
-            let b = bytes[i];
-            if b == b'/' && i + 1 < len {
-                if bytes[i + 1] == b'/' {
-                    i += 2;
-                    while i < len && bytes[i] != b'\n' {
-                        i += 1;
-                    }
-                    continue;
-                }
-                if bytes[i + 1] == b'*' {
-                    i += 2;
-                    while i + 1 < len && !(bytes[i] == b'*' && bytes[i + 1] == b'/') {
-                        i += 1;
-                    }
-                    i = (i + 2).min(len);
-                    continue;
-                }
-            }
-            if b == b'\'' || b == b'"' {
-                let quote = b;
-                i += 1;
-                while i < len {
-                    if bytes[i] == b'\\' {
-                        i = (i + 2).min(len);
-                        continue;
-                    }
-                    let ch = bytes[i];
-                    i += 1;
-                    if ch == quote {
-                        break;
-                    }
-                }
-                continue;
-            }
-            if is_ident(b) {
-                let start = i;
-                i += 1;
-                while i < len && is_ident(bytes[i]) {
-                    i += 1;
-                }
-                let word = &bytes[start..i];
-                if word == b"import" || word == b"from" {
-                    return true;
-                }
-                continue;
-            }
-            i += 1;
-        }
-        false
-    }
-
-    /// Single-pass custom-element scan for a `.d.ts` file: extracts global
-    /// `HTMLElementTagNameMap` contributions, static/require/`import(...)` import specifiers, and
-    /// `/// <reference ... />` directives.
-    ///
-    /// Fast-paths without invoking the JS/TS parser when `source` mentions neither
-    /// `HTMLElementTagNameMap` nor any import/re-export token outside comments/strings. When
-    /// `path` is `None` (a virtual module), skips the process-wide path-keyed cache.
-    pub(super) fn dts_custom_element_scan(
-        path: Option<PathBuf>,
-        source: &str,
-        is_module_by_extension: bool,
-    ) -> CachedDtsCustomElementScan {
-        let has_tag_map = source.contains("HTMLElementTagNameMap");
-        let has_imports = has_dts_import_hint(source);
-        if !has_tag_map && !has_imports {
-            let references =
-                crate::analyzer::custom_elements::extract_triple_slash_references(source);
-            if references.is_empty() {
-                return CachedDtsCustomElementScan::default();
-            }
-            return Arc::new(crate::analyzer::custom_elements::DtsCustomElementScan {
-                references,
-                ..Default::default()
-            });
-        }
-        let key = path.as_ref().map(|_| SourceKey::of(source));
-        if let (Some(path_ref), Some(key)) = (path.as_deref(), key) {
-            if let Some(cached) = dts_custom_element_scan_cache()
-                .lock()
-                .unwrap_or_else(PoisonError::into_inner)
-                .get(path_ref, &key)
-            {
-                return cached;
-            }
-        }
-        let references = crate::analyzer::custom_elements::extract_triple_slash_references(source);
-        let cached_parse = path
-            .as_deref()
-            .zip(key)
-            .and_then(|(path_ref, key)| get(path_ref, &key));
-        let (contributions, import_specifiers) = match cached_parse {
-            Some(parsed) => {
-                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
-                let dep = guard.borrow_dependent();
-                let contributions = if has_tag_map {
-                    crate::analyzer::custom_elements::extract_custom_element_contributions(
-                        dep.program,
-                        &dep.module_record,
-                        source,
-                        is_module_by_extension,
-                    )
-                } else {
-                    Default::default()
-                };
-                let import_specifiers = if has_imports {
-                    crate::analyzer::custom_elements::extract_dts_import_specifiers(
-                        dep.program,
-                        &dep.module_record,
-                        source,
-                    )
-                } else {
-                    Vec::new()
-                };
-                (contributions, import_specifiers)
-            }
-            None => with_lightweight_dts_parse(source, |program, module_record| {
-                let contributions = if has_tag_map {
-                    crate::analyzer::custom_elements::extract_custom_element_contributions(
-                        program,
-                        module_record,
-                        source,
-                        is_module_by_extension,
-                    )
-                } else {
-                    Default::default()
-                };
-                let import_specifiers = if has_imports {
-                    crate::analyzer::custom_elements::extract_dts_import_specifiers(
-                        program,
-                        module_record,
-                        source,
-                    )
-                } else {
-                    Vec::new()
-                };
-                (contributions, import_specifiers)
-            }),
-        };
-        let scan = Arc::new(crate::analyzer::custom_elements::DtsCustomElementScan {
-            contributions,
-            import_specifiers,
-            references,
-        });
-        if let (Some(path), Some(key)) = (path, key) {
-            dts_custom_element_scan_cache()
-                .lock()
-                .unwrap_or_else(PoisonError::into_inner)
-                .insert(path, key, scan.clone());
-        }
-        scan
-    }
-
-    /// Extract tags from an exported interface/type alias in a `.d.ts` file without building a
-    /// semantic model or polluting the full `ParseFile` cache.
-    pub(super) fn extract_dts_exported_type(
-        path: Option<&Path>,
-        source: &str,
-        exported_name: &str,
-        is_module_by_extension: bool,
-    ) -> crate::analyzer::custom_elements::CustomElementTagContributions {
-        let cached_parse = path.and_then(|p| get(p, &SourceKey::of(source)));
-        match cached_parse {
-            Some(parsed) => {
-                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
-                let dep = guard.borrow_dependent();
-                crate::analyzer::custom_elements::extract_tags_from_exported_type(
-                    dep.program,
-                    &dep.module_record,
-                    exported_name,
-                    is_module_by_extension,
-                )
-            }
-            None => with_lightweight_dts_parse(source, |program, module_record| {
-                crate::analyzer::custom_elements::extract_tags_from_exported_type(
-                    program,
-                    module_record,
-                    exported_name,
-                    is_module_by_extension,
-                )
-            }),
-        }
-    }
-
-    /// Extract tags from an exported type inside an ambient `declare module 'spec' { ... }` block
-    /// in a `.d.ts` file without building a semantic model or polluting the full `ParseFile` cache.
-    pub(super) fn extract_dts_ambient_module_export(
-        path: Option<&Path>,
-        source: &str,
-        module_specifier: &str,
-        exported_path: &str,
-        is_module_by_extension: bool,
-    ) -> crate::analyzer::custom_elements::CustomElementTagContributions {
-        let cached_parse = path.and_then(|p| get(p, &SourceKey::of(source)));
-        match cached_parse {
-            Some(parsed) => {
-                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
-                let dep = guard.borrow_dependent();
-                crate::analyzer::custom_elements::extract_tags_from_ambient_module_export(
-                    dep.program,
-                    &dep.module_record,
-                    module_specifier,
-                    exported_path,
-                    is_module_by_extension,
-                )
-            }
-            None => with_lightweight_dts_parse(source, |program, module_record| {
-                crate::analyzer::custom_elements::extract_tags_from_ambient_module_export(
-                    program,
-                    module_record,
-                    module_specifier,
-                    exported_path,
-                    is_module_by_extension,
-                )
-            }),
-        }
-    }
-
-    /// Extract tags from an ambient global interface/type alias/namespace member in a `.d.ts` file
-    /// without building a semantic model or polluting the full `ParseFile` cache.
-    pub(super) fn extract_dts_ambient_type(
-        path: Option<&Path>,
-        source: &str,
-        type_path: &[&str],
-        is_module_by_extension: bool,
-    ) -> crate::analyzer::custom_elements::CustomElementTagContributions {
-        let Some(root_ident) = type_path.first() else {
-            return Default::default();
-        };
-        if !source.contains(root_ident) {
-            return Default::default();
-        }
-        let cached_parse = path.and_then(|p| get(p, &SourceKey::of(source)));
-        match cached_parse {
-            Some(parsed) => {
-                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
-                let dep = guard.borrow_dependent();
-                crate::analyzer::custom_elements::extract_tags_from_ambient_type(
-                    dep.program,
-                    &dep.module_record,
-                    type_path,
-                    is_module_by_extension,
-                )
-            }
-            None => with_lightweight_dts_parse(source, |program, module_record| {
-                crate::analyzer::custom_elements::extract_tags_from_ambient_type(
-                    program,
-                    module_record,
-                    type_path,
-                    is_module_by_extension,
-                )
-            }),
-        }
-    }
-
-    /// Whether the `.d.ts` text declares ambient global value `name` (respecting `.d.mts`/`.d.cts`
-    /// module isolation).
-    pub(super) fn declares_ambient_global_name(
-        path: Option<&Path>,
-        source: &str,
-        name: &str,
-        is_module_by_extension: bool,
-    ) -> bool {
-        if !source.contains(name) {
-            return false;
-        }
-        let cached_parse = path.and_then(|p| get(p, &SourceKey::of(source)));
-        match cached_parse {
-            Some(parsed) => {
-                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
-                let dep = guard.borrow_dependent();
-                super::extract_ambient_global_names_in_file(
-                    dep.program,
-                    &dep.module_record,
-                    is_module_by_extension,
-                )
-                .contains(name)
-            }
-            None => with_lightweight_dts_parse(source, |program, module_record| {
-                super::extract_ambient_global_names_in_file(
-                    program,
-                    module_record,
-                    is_module_by_extension,
-                )
-                .contains(name)
-            }),
-        }
     }
 
     struct Entry<V> {
@@ -4678,498 +3470,6 @@ mod tests {
     use crate::test_utils::create_test_fs;
     use oxc_resolver::ResolveOptions;
     use std::path::Path;
-
-    #[test]
-    fn test_known_custom_elements_collects_all_sources_and_invalidates_cleanly() {
-        let fs = create_test_fs(&[
-            (
-                "/ce_project/app.ts",
-                r#"
-                    import './local-el';
-                    import 'wc-barrel';
-                    export class App {}
-                "#,
-            ),
-            (
-                "/ce_project/local-el.ts",
-                r#"
-                    export class LocalEl extends HTMLElement {}
-                    declare global {
-                        interface HTMLElementTagNameMap {
-                            'local-el': LocalEl;
-                        }
-                    }
-                "#,
-            ),
-            (
-                "/ce_project/tsconfig-ce.d.ts",
-                r#"
-                    import {ExtraTags} from './extra-tags';
-                    declare global {
-                        interface HTMLElementTagNameMap extends ExtraTags {
-                            'tsconfig-el': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-            (
-                "/ce_project/extra-tags.d.ts",
-                r#"
-                    export interface ExtraTags {
-                        'extended-el': HTMLElement;
-                    }
-                "#,
-            ),
-            (
-                "/ce_project/unrelated.d.ts",
-                "export declare class Unrelated {}",
-            ),
-            (
-                "/ce_project/node_modules/wc-barrel/package.json",
-                r#"{"name": "wc-barrel", "exports": {".": {"types": "./index.d.ts"}}}"#,
-            ),
-            (
-                "/ce_project/node_modules/wc-barrel/index.d.ts",
-                "export * from './leaf.js';",
-            ),
-            (
-                "/ce_project/node_modules/wc-barrel/leaf.d.ts",
-                r#"
-                    declare global {
-                        interface HTMLElementTagNameMap {
-                            'barrel-el': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-        ]);
-        let resolver = Arc::new(crate::utils::create_resolver_with_fs(
-            None,
-            fs.clone(),
-            false,
-            None,
-        ));
-        let engine = QueryEngine::new_default(
-            fs.clone(),
-            resolver,
-            Arc::new(ResourceRegistry::default()),
-            Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
-                "/ce_project/app.ts",
-            )])),
-        );
-        *engine.tsconfig_dts_files.write().unwrap() = vec![
-            PathBuf::from("/ce_project/tsconfig-ce.d.ts"),
-            PathBuf::from("/ce_project/unrelated.d.ts"),
-        ];
-
-        // Prime `ComponentMapping` so we can verify `.d.ts` invalidation doesn't evict it.
-        let _ = futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping());
-        assert!(engine.cache.get(&QueryKey::ComponentMapping).is_some());
-
-        let tags = engine.get_known_custom_elements_blocking();
-        assert_eq!(
-            *tags,
-            vec![
-                "barrel-el".to_string(),
-                "extended-el".to_string(),
-                "local-el".to_string(),
-                "tsconfig-el".to_string(),
-            ]
-        );
-
-        // None of the `.d.ts` files should pollute the full semantic `ParseFile` cache.
-        let unrelated_id = engine.intern_path("/ce_project/unrelated.d.ts");
-        let tsconfig_ce_id = engine.intern_path("/ce_project/tsconfig-ce.d.ts");
-        assert!(engine
-            .cache
-            .get(&QueryKey::ParseFile(unrelated_id))
-            .is_none());
-        assert!(engine
-            .cache
-            .get(&QueryKey::ParseFile(tsconfig_ce_id))
-            .is_none());
-
-        // Editing `tsconfig-ce.d.ts` evicts `KnownCustomElements` while preserving `ComponentMapping`.
-        fs.upsert_file(
-            PathBuf::from("/ce_project/tsconfig-ce.d.ts"),
-            "declare global { interface HTMLElementTagNameMap { 'renamed-el': HTMLElement; } }"
-                .to_string(),
-        );
-        let evicted = engine.invalidate_file(Path::new("/ce_project/tsconfig-ce.d.ts"));
-        assert!(evicted.contains(&QueryKey::KnownCustomElements));
-        assert!(
-            engine.cache.get(&QueryKey::ComponentMapping).is_some(),
-            "ambient `.d.ts` edit should not evict ComponentMapping"
-        );
-
-        let updated_tags = engine.get_known_custom_elements_blocking();
-        assert_eq!(
-            *updated_tags,
-            vec![
-                "barrel-el".to_string(),
-                "local-el".to_string(),
-                "renamed-el".to_string(),
-            ]
-        );
-    }
-
-    #[test]
-    fn test_known_custom_elements_follows_tsconfig_dts_imports_references_type_roots_and_ambient_namespaces(
-    ) {
-        let fs = create_test_fs(&[
-            (
-                "/ce_adv/app.ts",
-                r#"
-                    /// <reference path="./from-ts-ref.d.ts" />
-                    export class App {}
-                "#,
-            ),
-            (
-                "/ce_adv/from-ts-ref.d.ts",
-                r#"
-                    interface HTMLElementTagNameMap {
-                        'ts-ref-el': HTMLElement;
-                    }
-                "#,
-            ),
-            (
-                "/ce_adv/env.d.ts",
-                r#"
-                    /// <reference path="./referenced/extra.d.ts" />
-                    /// <reference types="ref-pkg" />
-                    import 'global-barrel';
-                "#,
-            ),
-            (
-                "/ce_adv/referenced/extra.d.ts",
-                r#"
-                    interface HTMLElementTagNameMap {
-                        'dts-ref-el': HTMLElement;
-                    }
-                "#,
-            ),
-            (
-                "/ce_adv/node_modules/global-barrel/package.json",
-                r#"{"name": "global-barrel", "exports": {".": {"types": "./index.d.ts"}}}"#,
-            ),
-            (
-                "/ce_adv/node_modules/global-barrel/index.d.ts",
-                r#"
-                    declare global {
-                        interface HTMLElementTagNameMap {
-                            'global-barrel-el': HTMLElement;
-                        }
-                    }
-                    export {};
-                "#,
-            ),
-            (
-                "/ce_adv/node_modules/@types/ref-pkg/index.d.ts",
-                r#"
-                    interface HTMLElementTagNameMap {
-                        'ref-types-el': HTMLElement;
-                    }
-                "#,
-            ),
-            (
-                "/ce_adv/node_modules/@types/auto-pkg/index.d.ts",
-                r#"
-                    interface HTMLElementTagNameMap {
-                        'auto-types-el': HTMLElement;
-                    }
-                "#,
-            ),
-            (
-                "/ce_adv/google-maps.d.ts",
-                r#"
-                    declare namespace google.maps {
-                        interface HTMLElementTagNameMap {
-                            'gmp-map': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-            (
-                "/ce_adv/augment.d.ts",
-                r#"
-                    interface HTMLElementTagNameMap extends google.maps.HTMLElementTagNameMap {}
-                "#,
-            ),
-        ]);
-        let resolver = Arc::new(crate::utils::create_resolver_with_fs(
-            None,
-            fs.clone(),
-            false,
-            None,
-        ));
-        let engine = QueryEngine::new_default(
-            fs.clone(),
-            resolver,
-            Arc::new(ResourceRegistry::default()),
-            Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
-                "/ce_adv/app.ts",
-            )])),
-        );
-        *engine.tsconfig_dts_files.write().unwrap() = vec![
-            PathBuf::from("/ce_adv/env.d.ts"),
-            PathBuf::from("/ce_adv/google-maps.d.ts"),
-            PathBuf::from("/ce_adv/augment.d.ts"),
-        ];
-        *engine.tsconfig_type_root_dts_files.write().unwrap() =
-            vec![PathBuf::from("/ce_adv/node_modules/@types/auto-pkg/index.d.ts")];
-
-        let tags = engine.get_known_custom_elements_blocking();
-        assert_eq!(
-            *tags,
-            vec![
-                "auto-types-el".to_string(),
-                "dts-ref-el".to_string(),
-                "global-barrel-el".to_string(),
-                "gmp-map".to_string(),
-                "ref-types-el".to_string(),
-                "ts-ref-el".to_string(),
-            ]
-        );
-    }
-
-    #[test]
-    fn test_known_custom_elements_handles_non_dom_ambient_modules_merged_namespaces_and_main_types_pkg(
-    ) {
-        let fs = create_test_fs(&[
-            (
-                "/ce_edge/app.ts",
-                r#"
-                    /// <reference types="custom-wc" />
-                    import 'legacy-types-pkg';
-                    import {Tags} from 'ambient-wc';
-                    declare global {
-                        interface HTMLElementTagNameMap extends Tags, MyLib.MergedMap {}
-                    }
-                    export class App {}
-                "#,
-            ),
-            (
-                "/ce_edge/node_modules/legacy-types-pkg/package.json",
-                r#"{"name": "legacy-types-pkg", "main": "./index.js", "types": "./types/index.d.ts"}"#,
-            ),
-            (
-                "/ce_edge/node_modules/legacy-types-pkg/index.js",
-                "export const runtime = true;",
-            ),
-            (
-                "/ce_edge/node_modules/legacy-types-pkg/types/index.d.ts",
-                r#"
-                    declare global {
-                        interface HTMLElementTagNameMap {
-                            'legacy-pkg-el': HTMLElement;
-                        }
-                    }
-                    export {};
-                "#,
-            ),
-            (
-                "/ce_edge/custom-types/custom-wc/index.d.ts",
-                r#"
-                    interface HTMLElementTagNameMap {
-                        'custom-root-el': HTMLElement;
-                    }
-                "#,
-            ),
-            (
-                "/ce_edge/ambient-mod.d.ts",
-                r#"
-                    declare module 'ambient-wc' {
-                        export interface Tags {
-                            'ambient-mod-el': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-            (
-                "/ce_edge/merge-a.d.ts",
-                r#"
-                    declare namespace MyLib {
-                        interface MergedMap {
-                            'merged-a': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-            (
-                "/ce_edge/merge-b.d.ts",
-                r#"
-                    declare namespace MyLib {
-                        interface MergedMap {
-                            'merged-b': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-            (
-                "/ce_edge/mod-ext.d.mts",
-                r#"
-                    // Top-level interface in .d.mts is module-scoped, NOT global!
-                    interface HTMLElementTagNameMap {
-                        'not-global-dmts': HTMLElement;
-                    }
-                    declare global {
-                        interface HTMLElementTagNameMap {
-                            'global-dmts': HTMLElement;
-                        }
-                    }
-                "#,
-            ),
-        ]);
-        let resolver = Arc::new(crate::utils::create_resolver_with_fs(
-            None,
-            fs.clone(),
-            false,
-            None,
-        ));
-        let engine = QueryEngine::new_default(
-            fs.clone(),
-            resolver,
-            Arc::new(ResourceRegistry::default()),
-            Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
-                "/ce_edge/app.ts",
-            )])),
-        );
-        *engine.tsconfig_dts_files.write().unwrap() = vec![
-            PathBuf::from("/ce_edge/ambient-mod.d.ts"),
-            PathBuf::from("/ce_edge/merge-a.d.ts"),
-            PathBuf::from("/ce_edge/merge-b.d.ts"),
-            PathBuf::from("/ce_edge/mod-ext.d.mts"),
-        ];
-        *engine.tsconfig_type_roots.write().unwrap() =
-            vec![PathBuf::from("/ce_edge/custom-types")];
-
-        let expected = vec![
-            "ambient-mod-el".to_string(),
-            "custom-root-el".to_string(),
-            "global-dmts".to_string(),
-            "legacy-pkg-el".to_string(),
-            "merged-a".to_string(),
-            "merged-b".to_string(),
-        ];
-        assert_eq!(*engine.get_known_custom_elements_blocking(), expected);
-
-        // With `has_dom_lib = false` and no ambient `document`, return empty to match `ngtsc`.
-        *engine.has_dom_lib.write().unwrap() = false;
-        engine.invalidate_custom_element_config();
-        assert!(engine.get_known_custom_elements_blocking().is_empty());
-
-        // Declaring an ambient global `document` restores custom element recognition even when
-        // `has_dom_lib = false`.
-        fs.upsert_file(
-            PathBuf::from("/ce_edge/doc-shim.d.ts"),
-            "declare var document: { createElement(tag: string): any };".to_string(),
-        );
-        engine
-            .tsconfig_dts_files
-            .write()
-            .unwrap()
-            .push(PathBuf::from("/ce_edge/doc-shim.d.ts"));
-        engine.invalidate_roots();
-        assert_eq!(*engine.get_known_custom_elements_blocking(), expected);
-    }
-
-    #[test]
-    fn test_known_custom_elements_reuses_dts_scan_cache_across_unrelated_ts_edits() {
-        struct CountingHost {
-            inner: Arc<dyn crate::host::AnalysisHost>,
-            dts_loads: std::sync::atomic::AtomicUsize,
-        }
-        impl crate::host::AnalysisHost for CountingHost {
-            fn resolve(
-                &self,
-                req: crate::host::ResolveRequest,
-            ) -> crate::host::HostFuture<Result<Option<crate::host::ResolvedModule>, crate::host::HostError>>
-            {
-                self.inner.resolve(req)
-            }
-            fn load(
-                &self,
-                id: &crate::host::ModuleId,
-                kind: crate::host::LoadKind,
-                external: bool,
-            ) -> crate::host::HostFuture<Result<Option<crate::host::LoadedModule>, crate::host::HostError>>
-            {
-                if id.as_str().ends_with(".d.ts") {
-                    self.dts_loads
-                        .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-                }
-                self.inner.load(id, kind, external)
-            }
-            fn resolve_resource(
-                &self,
-                containing: &crate::host::ModuleId,
-                url: &str,
-                kind: crate::host::ResourceKind,
-            ) -> crate::host::HostFuture<
-                Result<Option<crate::host::ResolvedResourceId>, crate::host::HostError>,
-            > {
-                self.inner.resolve_resource(containing, url, kind)
-            }
-            fn is_synchronous(&self) -> bool {
-                self.inner.is_synchronous()
-            }
-        }
-
-        let fs = create_test_fs(&[
-            ("/ce_cache/app.ts", "export const v = 1;"),
-            (
-                "/ce_cache/ce.d.ts",
-                "interface HTMLElementTagNameMap { 'cached-el': HTMLElement; }",
-            ),
-        ]);
-        let resolver = Arc::new(crate::utils::create_resolver_with_fs(
-            None,
-            fs.clone(),
-            false,
-            None,
-        ));
-        let inner = Arc::new(crate::host::DefaultFsHost::new(fs.clone(), resolver));
-        let host = Arc::new(CountingHost {
-            inner,
-            dts_loads: std::sync::atomic::AtomicUsize::new(0),
-        });
-        let engine = QueryEngine::new_default_with_host(
-            host.clone(),
-            Arc::new(ResourceRegistry::default()),
-            Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
-                "/ce_cache/app.ts",
-            )])),
-        );
-        *engine.tsconfig_dts_files.write().unwrap() = vec![PathBuf::from("/ce_cache/ce.d.ts")];
-
-        assert_eq!(
-            *engine.get_known_custom_elements_blocking(),
-            vec!["cached-el".to_string()]
-        );
-        assert_eq!(host.dts_loads.load(std::sync::atomic::Ordering::SeqCst), 1);
-
-        // Editing an unrelated `.ts` file evicts `KnownCustomElements`, but `ce.d.ts` hits the
-        // engine-local `dts_custom_element_scans` cache with zero extra host loads.
-        fs.upsert_file(PathBuf::from("/ce_cache/app.ts"), "export const v = 2;".into());
-        engine.invalidate_file(Path::new("/ce_cache/app.ts"));
-        assert_eq!(
-            *engine.get_known_custom_elements_blocking(),
-            vec!["cached-el".to_string()]
-        );
-        assert_eq!(host.dts_loads.load(std::sync::atomic::Ordering::SeqCst), 1);
-
-        // Editing `ce.d.ts` invalidates its engine-local scan cache entry and reloads it once.
-        fs.upsert_file(
-            PathBuf::from("/ce_cache/ce.d.ts"),
-            "interface HTMLElementTagNameMap { 'updated-el': HTMLElement; }".into(),
-        );
-        engine.invalidate_file(Path::new("/ce_cache/ce.d.ts"));
-        assert_eq!(
-            *engine.get_known_custom_elements_blocking(),
-            vec!["updated-el".to_string()]
-        );
-        assert_eq!(host.dts_loads.load(std::sync::atomic::Ordering::SeqCst), 2);
-    }
 
     #[test]
     fn test_ambient_module_names() {

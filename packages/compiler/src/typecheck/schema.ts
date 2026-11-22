@@ -105,11 +105,4 @@ export interface DomSchemaChecker<T> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
   ): void;
-
-  /**
-   * Whether the given tag name corresponds to a known custom element (e.g., registered in
-   * TypeScript's global `HTMLElementTagNameMap`), allowing it to be used and type-checked
-   * without `CUSTOM_ELEMENTS_SCHEMA`.
-   */
-  isKnownCustomElement?(tagName: string): boolean;
 }

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import {AbstractBoundTemplate, ParseTemplateOptions} from '@angular/compiler';
+import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import * as fsSync from 'node:fs';
 import {createRequire} from 'node:module';
 import * as path from 'node:path';
@@ -31,14 +31,20 @@ import {
   type WasmInner,
 } from '../../../../preprocessor/api';
 import {exitCodeFromResult} from '../../../perform_compile';
-import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
 import {CompilerOptions, CustomTransformers, UNKNOWN_ERROR_CODE} from '../../../transformers/api';
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
+import {addDiagnosticDetails, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {RawSourceMap} from '../../sourcemaps';
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/src/comments';
-import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
+import {
+  appendHintToDiagnosticMessage,
+  checkAssertCustomElementDiagnostic,
+  formatUnknownElementMessage,
+  getRemappedPropertyHint,
+  shouldReportDiagnostic,
+} from '../../typecheck/src/diagnostics';
 import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {NgtscTestCompilerHost} from './compiler_host';
@@ -1484,11 +1490,33 @@ function translateTcbDiagnostic(
     }
   }
 
+  const customElementInfo = checkAssertCustomElementDiagnostic(diag);
+  let code = diag.code;
+  let messageText = diag.messageText;
+  let category = diag.category;
+  if (customElementInfo !== null) {
+    const errorMsg = formatUnknownElementMessage(
+      customElementInfo.tagName,
+      customElementInfo.isStandalone,
+    );
+    code = ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT);
+    messageText = addDiagnosticDetails(ErrorCode.SCHEMA_INVALID_ELEMENT, errorMsg);
+    category = ts.DiagnosticCategory.Error;
+  } else {
+    const remapHint = getRemappedPropertyHint(diag);
+    if (remapHint !== null) {
+      messageText = appendHintToDiagnosticMessage(messageText, remapHint);
+    }
+  }
+
   return {
     ...diag,
     file: targetSf,
     start: span.start,
     length: Math.max(0, span.end - span.start),
+    code,
+    category,
+    messageText,
     relatedInformation,
   };
 }

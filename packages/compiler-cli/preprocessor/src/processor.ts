@@ -86,12 +86,10 @@ import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import {OutputSourceMapBuilder, type OutputSourceMapOptions} from './output_source_map.js';
 import {Counter, SpanKind, type Tracer} from './perf.js';
 import {
-  collectCandidateCustomElementTags,
   combineTcbContent,
   generateTcbCode,
   prepareTcbTargets,
   type NgpTypeCheckingConfig,
-  type PreparedTcbData,
   type TcbResult,
   type TcbTargetInput,
 } from './tcb.js';
@@ -129,7 +127,6 @@ interface HybridCompilerContext {
   rootDirs?: string[];
   enableHmr?: boolean;
   hmrUpdateTarget?: string;
-  getKnownCustomElements?: () => Promise<ReadonlySet<string>>;
   tracer: Tracer;
 }
 
@@ -161,7 +158,6 @@ export interface ProcessedFile {
   diagnostics?: nga.NgDiagnostic[];
   hmrUpdateModule?: string | null;
   referencedStyleFiles?: string[];
-  candidateCustomElementTags?: ReadonlySet<string>;
 }
 
 /** The result for a file with nothing to compile, whose output is its original text. */
@@ -348,9 +344,6 @@ export async function processFile(
   }
   const ctx: ProcessFileContext = {
     ...rawCtx,
-    getKnownCustomElements: rawCtx.getKnownCustomElements
-      ? () => rawCtx.getKnownCustomElements!()
-      : undefined,
     remoteScopedClasses:
       chunkContext?.remoteScopedClasses || rawCtx.remoteScopedClasses || new Set(),
     metadataMap: chunkContext?.metadataMap || rawCtx.metadataMap || new Map(),
@@ -453,42 +446,10 @@ export async function processFile(
   }
 
   ctx.tracer.slice(SpanKind.SerializeOutput, () => serializeOutput(file), fileId);
-  let returnTcb: TcbResult | undefined;
-  let checkedCustomElementTags: Set<string> | undefined;
-  if (ctx.optimize && !ctx.emitDeclarationOnly) {
-    const diagCountBeforeTcb = fileDiagnostics.length;
-    const prepared = ctx.tracer.slice(SpanKind.GenerateTcb, () => prepareTcbForFile(file), fileId);
-    const hintTags = prepared
-      ? collectCandidateCustomElementTags(prepared, ctx.tcbConfig)
+  const returnTcb =
+    ctx.optimize && !ctx.emitDeclarationOnly
+      ? ctx.tracer.slice(SpanKind.GenerateTcb, () => generateTcb(file), fileId)
       : undefined;
-    let knownCustomElements =
-      hintTags && hintTags.size > 0 ? await ctx.getKnownCustomElements?.() : undefined;
-    returnTcb = ctx.tracer.slice(
-      SpanKind.GenerateTcb,
-      () => generateTcb(file, prepared, knownCustomElements),
-      fileId,
-    );
-    // Safety net: if the pre-fetch hint missed an op that actually queried `isKnownCustomElement`,
-    // fetch the global custom element tags and re-run TCB generation once so `ngp` stays exact by
-    // construction.
-    if (
-      knownCustomElements === undefined &&
-      returnTcb &&
-      returnTcb.checkedCustomElements.size > 0 &&
-      ctx.getKnownCustomElements
-    ) {
-      fileDiagnostics.length = diagCountBeforeTcb;
-      knownCustomElements = await ctx.getKnownCustomElements();
-      returnTcb = ctx.tracer.slice(
-        SpanKind.GenerateTcb,
-        () => generateTcb(file, prepared, knownCustomElements),
-        fileId,
-      );
-    }
-    if (returnTcb && returnTcb.checkedCustomElements.size > 0) {
-      checkedCustomElementTags = new Set(returnTcb.checkedCustomElements.keys());
-    }
-  }
 
   if (file.pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
     throw file.pipelineError;
@@ -501,7 +462,6 @@ export async function processFile(
     diagnostics: fileDiagnostics,
     hmrUpdateModule,
     referencedStyleFiles: referencedStyleFiles.length > 0 ? referencedStyleFiles : undefined,
-    candidateCustomElementTags: checkedCustomElementTags,
   };
 }
 
@@ -2024,58 +1984,44 @@ function serializeOutput(file: FileCompilation): void {
   }
 }
 
-function prepareTcbForFile(file: FileCompilation): PreparedTcbData | null {
-  const {ctx, filePath, content, result, templatesByClass} = file;
-  const {classes} = result;
-  const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
-  if (analysis.preparedTcbData !== undefined && analysis.sourceContent === content) {
-    return analysis.preparedTcbData;
-  }
-  const tcbTargets = buildTcbTargets(
-    filePath,
-    content,
-    classes,
-    templatesByClass,
-    ctx.templateParseOptions,
-    ctx.tcbConfig,
-    new DependencyTemplates(
-      ctx.analyzer,
-      ctx.fileCache,
-      ctx.templateParseOptions,
-      ctx.metadataMap,
-      ctx.tracer,
-    ),
-    ctx.tracer,
-  );
-  const prepared =
-    tcbTargets.length > 0
-      ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
-      : null;
-  analysis.preparedTcbData = prepared;
-  analysis.sourceContent = content;
-  return prepared;
-}
-
 /**
  * The `GenerateTcb` pass, when optimizing: generates the file's type-check block and adds its
  * diagnostics to `file.fileDiagnostics`.
  */
-function generateTcb(
-  file: FileCompilation,
-  prepared: PreparedTcbData | null,
-  knownCustomElements?: ReadonlySet<string>,
-): TcbResult | undefined {
-  const {ctx, filePath, content, result, fileDiagnostics} = file;
+function generateTcb(file: FileCompilation): TcbResult | undefined {
+  const {ctx, filePath, content, result, templatesByClass, fileDiagnostics} = file;
   const {classes} = result;
   const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
+  let prepared: ReturnType<typeof prepareTcbTargets>;
+  if (analysis.preparedTcbData !== undefined && analysis.sourceContent === content) {
+    prepared = analysis.preparedTcbData;
+  } else {
+    const tcbTargets = buildTcbTargets(
+      filePath,
+      content,
+      classes,
+      templatesByClass,
+      ctx.templateParseOptions,
+      ctx.tcbConfig,
+      new DependencyTemplates(
+        ctx.analyzer,
+        ctx.fileCache,
+        ctx.templateParseOptions,
+        ctx.metadataMap,
+        ctx.tracer,
+      ),
+      ctx.tracer,
+    );
+    prepared =
+      tcbTargets.length > 0
+        ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
+        : null;
+    analysis.preparedTcbData = prepared;
+    analysis.sourceContent = content;
+  }
   const tcb = prepared
-    ? (generateTcbCode(
-        filePath,
-        prepared,
-        ctx.tcbConfig,
-        result.namespaceAliasConflicts,
-        knownCustomElements,
-      ) ?? undefined)
+    ? (generateTcbCode(filePath, prepared, ctx.tcbConfig, result.namespaceAliasConflicts) ??
+      undefined)
     : undefined;
 
   const returnTcb = tcb
