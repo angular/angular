@@ -12,6 +12,8 @@ import {
   ɵFrameworkAgnosticGlobalUtils as FrameworkAgnosticGlobalUtils,
   ɵControlFlowBlock as ControlFlowBlock,
   ɵControlFlowBlockType as ControlFlowBlockType,
+  ɵHydratedNode as HydrationNode,
+  ɵHydrationStatus as CoreHydrationStatus,
 } from '@angular/core';
 import {RTreeStrategy} from './render-tree';
 import {getConfig} from '../../config/config';
@@ -280,5 +282,32 @@ describe('render tree extraction', () => {
 
     // The child component is a direct descendant of the app root.
     expect(rtree[0].children.map((c) => c.tagName)).toEqual(['child']);
+  });
+
+  it('should serialize hydration mismatch metadata without exposing the DOM node reference', () => {
+    const appNode = document.createElement('app');
+    const mismatchedSpan = document.createElement('span');
+    appNode.appendChild(mismatchedSpan);
+    componentMap.set(appNode, {});
+
+    (appNode as HydrationNode).__ngDebugHydrationInfo__ = {
+      status: CoreHydrationStatus.Mismatched,
+      expectedNodeDetails: '<b>expected</b>',
+      actualNodeDetails: '<span>actual</span>',
+      errorCode: 'NG0500',
+      actualNode: new WeakRef(mismatchedSpan),
+      isParentFallback: true,
+    };
+
+    const rtree = treeStrategy.build(appNode);
+    expect(rtree[0].hydration).toEqual({
+      status: 'mismatched',
+      expectedNodeDetails: '<b>expected</b>',
+      actualNodeDetails: '<span>actual</span>',
+      errorCode: 'NG0500',
+      hasActualNode: true,
+      isParentFallback: true,
+    });
+    expect('actualNode' in (rtree[0].hydration as object)).toBeFalse();
   });
 });

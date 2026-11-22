@@ -73,6 +73,9 @@ export type HydrationStatus =
       status: 'mismatched';
       expectedNodeDetails: string | null;
       actualNodeDetails: string | null;
+      errorCode?: string;
+      hasActualNode?: boolean;
+      isParentFallback?: boolean;
     };
 
 export enum ControlFlowBlockType {
@@ -442,7 +445,9 @@ export interface Events {
   profilerResults: (results: ProfilerFrame) => void;
 
   createHighlightOverlay: (position: ElementPosition) => void;
+  highlightHydrationMismatchNode: (position: ElementPosition) => void;
   removeHighlightOverlay: () => void;
+  logHydrationMismatchNode: (position: ElementPosition) => void;
 
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;

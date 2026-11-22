@@ -10,6 +10,7 @@ import {debounceTime, Subscription} from 'rxjs';
 import {HydrationStatus} from '../../../../protocol';
 import {getConfig} from '../config/config';
 import {getDirectiveForestManager} from '../directive-forest/manager';
+import {getHydrationMismatchHighlightElement} from '../directive-forest';
 import {getProfiler} from '../profiling/profiler';
 import {highlightElement, removeHighlightsByType} from '../shared/highlighter';
 import {
@@ -61,20 +62,30 @@ function disableHydrationOverlays() {
 function highlightHydrationNodes(): void {
   const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
 
-  // drop the root nodes, we don't want to highlight it
+  // Include root nodes when collecting mismatched hydration nodes so errors directly inside
+  // the root component (e.g. `<app-root>`) are still highlighted.
+  const errorNodes = findErrorNodesForHydrationOverlay(forest);
+
+  // Drop the root nodes for non-error overlays so we don't shade the entire application root.
   const forestWithoutRoots = forest.flatMap((rootNode) => rootNode.children);
 
-  const errorNodes = findErrorNodesForHydrationOverlay(forestWithoutRoots);
-
   // We get the first level of hydrated nodes
-  // nested mismatched nodes nested in hydrated nodes aren't includes
+  // nested mismatched nodes nested in hydrated nodes aren't included
   const nodes = findNodesForHydrationOverlay(forestWithoutRoots);
 
-  // This ensures top level mismatched nodes are removed as we have a dedicated array
-  const otherNodes = nodes.filter(({status}) => status?.status !== 'mismatched');
+  // Exclude mismatched (handled above with root coverage) and dehydrated (no overlay highlight).
+  const otherNodes = nodes.filter(
+    ({status}) => status?.status !== 'mismatched' && status?.status !== 'dehydrated',
+  );
 
-  for (const {node, status} of [...otherNodes, ...errorNodes]) {
+  for (const {node, status} of otherNodes) {
     highlightHydrationElement(node as Element, status);
+  }
+  for (const {node, status} of errorNodes) {
+    const target = getHydrationMismatchHighlightElement(node);
+    if (target) {
+      highlightHydrationElement(target, status);
+    }
   }
 }
 
@@ -102,6 +113,8 @@ function highlightHydrationElement(node: Element, {status}: HydrationStatus) {
     case 'skipped':
       template = hydrationSkippedHighlightTemplate;
       break;
+    case 'dehydrated':
+      return;
     default:
       throw new AngularDevtoolsError(`Unsupported hydration status highlighting: ${status}`);
   }
@@ -132,13 +145,12 @@ function findErrorNodesForHydrationOverlay(
   forest: ComponentTreeNode[],
 ): {node: Node; status: HydrationStatus}[] {
   return forest.flatMap((node) => {
-    if (node?.hydration?.status === 'mismatched') {
-      // We highlight first level
-      return {node: node.nativeElement!, status: node.hydration};
+    const childErrors = node.children.length
+      ? findErrorNodesForHydrationOverlay(node.children)
+      : [];
+    if (node?.hydration?.status === 'mismatched' && node.nativeElement) {
+      return [{node: node.nativeElement, status: node.hydration}, ...childErrors];
     }
-    if (node.children.length) {
-      return findErrorNodesForHydrationOverlay(node.children);
-    }
-    return [];
+    return childErrors;
   });
 }

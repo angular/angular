@@ -8,6 +8,7 @@ ts_project(
         "index.ts",
     ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/tree-strategies",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:app-roots",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",

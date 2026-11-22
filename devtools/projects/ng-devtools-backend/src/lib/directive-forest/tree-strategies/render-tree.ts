@@ -168,12 +168,17 @@ function hydrationStatus(element: Node): HydrationStatus | undefined {
       return {status: 'hydrated'};
     case 'skipped':
       return {status: 'skipped'};
-    case 'mismatched':
+    case 'mismatched': {
+      const actualNode = hydrationInfo.actualNode?.deref();
       return {
         status: 'mismatched',
         expectedNodeDetails: hydrationInfo.expectedNodeDetails,
         actualNodeDetails: hydrationInfo.actualNodeDetails,
+        ...(hydrationInfo.errorCode ? {errorCode: hydrationInfo.errorCode} : {}),
+        ...(actualNode ? {hasActualNode: true} : {}),
+        ...(hydrationInfo.isParentFallback ? {isParentFallback: true} : {}),
       };
+    }
     default:
       return undefined;
   }

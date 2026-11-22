@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
+import {
+  ɵDebugSignalGraph as InternalDebugSignalGraph,
+  ɵHydratedNode as HydrationNode,
+} from '@angular/core';
 import {debounceTime} from 'rxjs';
 import {
   ComponentExplorerViewQuery,
@@ -36,7 +39,7 @@ import {
 
 import {ComponentInspector} from './component-inspector/component-inspector';
 import {setConsoleReference} from './console/set-console-reference';
-import {queryDirectiveForest} from './directive-forest';
+import {findNodeInForest, getHydrationMismatchNode, queryDirectiveForest} from './directive-forest';
 import {
   getLatestDirectiveState,
   logDirectiveValue,
@@ -123,6 +126,7 @@ export const subscribeToClientEvents = (
 
   messageBus.on('updateState', updateDirectiveState);
   messageBus.on('logValue', logDirectiveValue);
+  messageBus.on('logHydrationMismatchNode', logHydrationMismatchNode);
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
@@ -410,6 +414,9 @@ const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   messageBus.on('createHighlightOverlay', (position: ElementPosition) => {
     inspector.highlightByPosition(position);
   });
+  messageBus.on('highlightHydrationMismatchNode', (position: ElementPosition) => {
+    inspector.highlightHydrationMismatchByPosition(position);
+  });
   messageBus.on('removeHighlightOverlay', () => inspector.unhighlight());
 
   return inspector;
@@ -573,6 +580,27 @@ const getInjectorProvidersCallback =
 
     messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
   };
+
+const logHydrationMismatchNode = (position: ElementPosition): void => {
+  const forest = getDirectiveForestManager().getDirectiveForest();
+  const host = findNodeInForest(position, forest);
+  if (!host) {
+    return;
+  }
+  const info = (host as HydrationNode).__ngDebugHydrationInfo__;
+  const mismatchNode = getHydrationMismatchNode(host);
+  if (mismatchNode) {
+    const label =
+      info?.status === 'mismatched' && info.isParentFallback
+        ? 'Hydration mismatch parent element (expected node was missing):'
+        : 'Hydration mismatch DOM node:';
+    // tslint:disable-next-line:no-console
+    console.log(label, mismatchNode);
+    return;
+  }
+  // tslint:disable-next-line:no-console
+  console.log('Hydration mismatch component host:', host);
+};
 
 const logProvider = (
   serializedInjector: SerializedInjector,

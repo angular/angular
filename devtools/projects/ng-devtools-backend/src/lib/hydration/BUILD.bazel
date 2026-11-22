@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ts_project")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -8,6 +8,7 @@ ts_project(
     deps = [
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools-backend/src/lib/config",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
@@ -16,5 +17,29 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "hydration-overlays.spec.ts",
+    ],
+    deps = [
+        ":hydration-overlays",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/config",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:types",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter/rendering",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
     ],
 )

@@ -26,6 +26,13 @@ export class DemoApplicationOperations extends ApplicationOperations {
     throw new Error('Not implemented in demo app.');
   }
 
+  override selectHydrationMismatchNode(position: ElementPosition): void {
+    console.warn(
+      'selectHydrationMismatchNode() is not implemented because the demo app runs in an Iframe',
+    );
+    throw new Error('Not implemented in demo app.');
+  }
+
   override inspect(directivePosition: DirectivePosition, keyPath: string[]): void {
     console.warn('inspect() is not implemented because the demo app runs in an Iframe');
     return;

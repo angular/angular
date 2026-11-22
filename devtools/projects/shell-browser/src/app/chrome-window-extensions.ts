@@ -10,6 +10,7 @@ import {RoutePropertyType, viewSourceFromRouter} from '../../../ng-devtools-back
 import {
   buildDirectiveForest,
   findNodeFromSerializedPosition,
+  getHydrationMismatchNode,
   queryDirectiveForest,
 } from '../../../ng-devtools-backend/src/lib/directive-forest';
 import {getInjectorFromElementNode} from '../../../ng-devtools-backend/src/lib/injector-tree/injector-tree';
@@ -65,6 +66,14 @@ const chromeWindowExtensions = {
       return undefined;
     }
     return node.nativeElement;
+  },
+  findHydrationMismatchNodeByPosition: (serializedId: string): Node | undefined => {
+    const node = findNodeFromSerializedPosition(serializedId);
+    if (node === null) {
+      console.error(`Cannot find element associated with node ${serializedId}`);
+      return undefined;
+    }
+    return getHydrationMismatchNode(node.nativeElement) ?? node.nativeElement;
   },
   findSignalNodeByPosition: (args: any): any => {
     const ng = ngDebugClient();
