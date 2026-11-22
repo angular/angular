@@ -7,26 +7,19 @@
  */
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
-import {RuntimeErrorCode} from '../errors';
 import {signalErrorsToValidationErrors} from '../compat/validation_errors';
+import {RuntimeErrorCode} from '../errors';
 
 import {
   ControlValueAccessor,
   Validators,
   type AbstractControl,
   type FormControlStatus,
+  type NgControl,
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
 import type {ReadonlyFieldState} from '../api/types';
-
-// TODO: Also consider supporting (if possible):
-// - hasError
-// - getError
-// - reset
-// - name
-// - path
-// - markAs[Touched,Dirty,etc.]
 
 /**
  * Represents a combination of `NgControl` and `AbstractControl`.
@@ -51,6 +44,30 @@ interface CombinedControl {
   valueAccessor: ControlValueAccessor | null;
   hasValidator(validator: ValidatorFn): boolean;
   updateValueAndValidity(): void;
+
+  // NgControl / AbstractControlDirective members
+  name: NgControl['name'];
+  path: NgControl['path'];
+  validator: NgControl['validator'];
+  asyncValidator: NgControl['asyncValidator'];
+  statusChanges: AbstractControl['statusChanges'];
+  valueChanges: AbstractControl['valueChanges'];
+  reset: AbstractControl['reset'];
+  hasError: AbstractControl['hasError'];
+  getError: AbstractControl['getError'];
+  viewToModelUpdate: NgControl['viewToModelUpdate'];
+}
+
+// Compile-time checks to ensure CombinedControl covers all public properties of NgControl.
+type _AssertAllNgControlCovered =
+  Exclude<keyof NgControl, keyof CombinedControl> extends never ? true : never;
+
+function unsupportedFeature(feature: string): never {
+  throw new RuntimeError(
+    RuntimeErrorCode.UNSUPPORTED_FEATURE,
+    ngDevMode &&
+      `'${feature}' is not supported by the fake NgControl provided by Signal Forms ([formField]).`,
+  );
 }
 
 /**
@@ -143,5 +160,45 @@ export class InteropNgControl implements CombinedControl {
   updateValueAndValidity() {
     // No-op since value and validity are always up to date in signal forms.
     // We offer this method so that reactive forms code attempting to call it doesn't error.
+  }
+
+  get name(): NgControl['name'] {
+    return unsupportedFeature('name');
+  }
+
+  get path(): NgControl['path'] {
+    return unsupportedFeature('path');
+  }
+
+  get validator(): NgControl['validator'] {
+    return unsupportedFeature('validator');
+  }
+
+  get asyncValidator(): NgControl['asyncValidator'] {
+    return unsupportedFeature('asyncValidator');
+  }
+
+  get statusChanges(): AbstractControl['statusChanges'] {
+    return unsupportedFeature('statusChanges');
+  }
+
+  get valueChanges(): AbstractControl['valueChanges'] {
+    return unsupportedFeature('valueChanges');
+  }
+
+  viewToModelUpdate(newValue: any): void {
+    unsupportedFeature('viewToModelUpdate');
+  }
+
+  reset(value?: any, options?: Object): void {
+    unsupportedFeature('reset');
+  }
+
+  hasError(errorCode: string, path?: Array<string | number> | string): boolean {
+    return unsupportedFeature('hasError');
+  }
+
+  getError(errorCode: string, path?: Array<string | number> | string): any {
+    return unsupportedFeature('getError');
   }
 }
