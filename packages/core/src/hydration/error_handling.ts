@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeErrorCode, RuntimeError, RuntimeErrorCode} from '../errors';
 import {getDeclarationComponentDef} from '../render3/instructions/element_validation';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
-import {HOST, LView, TVIEW} from '../render3/interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW} from '../render3/interfaces/view';
 import {getParentRElement} from '../render3/node_manipulation';
 import {unwrapRNode} from '../render3/util/view_utils';
 
@@ -80,13 +80,22 @@ export function validateMatchingNode(
     const expected = `Angular expected this DOM:\n\n${expectedDom}\n\n`;
 
     let actual = '';
-    const componentHostElement = unwrapRNode(lView[HOST]!);
+    const componentHostElement = getDeclarationComponentHostElement(lView);
+    const errorCode = formatRuntimeErrorCode(RuntimeErrorCode.HYDRATION_NODE_MISMATCH);
     if (!node) {
       // No node found during hydration.
       header += `the node was not found.\n\n`;
 
-      // Since the node is missing, we use the closest node to attach the error to
-      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom);
+      // Since the node is missing, we attach the error to the declaring component host
+      // and retain a weak reference to the expected parent element for DevTools inspection.
+      if (componentHostElement !== null) {
+        const parentRNode = tNode.type ? getParentRElement(lView[TVIEW], tNode, lView) : null;
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, null, {
+          actualNode: parentRNode,
+          isParentFallback: true,
+          errorCode,
+        });
+      }
     } else {
       const actualNode = shortRNodeDescription(
         (node as Node).nodeType,
@@ -99,8 +108,13 @@ export function validateMatchingNode(
       actual = `Actual DOM is:\n\n${actualDom}\n\n`;
 
       // DevTools only report hydration issues on the component level, so we attach extra debug
-      // info to a component host element to make it available to DevTools.
-      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
+      // info to the declaring component host element to make it available to DevTools.
+      if (componentHostElement !== null) {
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom, {
+          actualNode: node,
+          errorCode,
+        });
+      }
     }
 
     const footer = getHydrationErrorFooter(componentClassName);
@@ -127,12 +141,16 @@ export function validateSiblingNodeExists(node: RNode | null): void {
   validateNodeExists(node);
   if (!node!.nextSibling) {
     const header = 'During hydration Angular expected more sibling nodes to be present.\n\n';
-    const actual = `Actual DOM is:\n\n${describeDomFromNode(node!)}\n\n`;
+    const actualDom = describeDomFromNode(node!);
+    const actual = `Actual DOM is:\n\n${actualDom}\n\n`;
     const footer = getHydrationErrorFooter();
 
     const message = header + actual + footer;
 
-    markRNodeAsHavingHydrationMismatch(node!, '', actual);
+    markRNodeAsHavingHydrationMismatch(node!, '', actualDom, {
+      actualNode: node,
+      errorCode: formatRuntimeErrorCode(RuntimeErrorCode.HYDRATION_MISSING_SIBLINGS),
+    });
     throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_SIBLINGS, message);
   }
 }
@@ -154,8 +172,17 @@ export function validateNodeExists(
       expected = describeExpectedDom(lView, tNode, false);
       footer = getHydrationErrorFooter();
 
-      // Since the node is missing, we use the closest node to attach the error to
-      markRNodeAsHavingHydrationMismatch(unwrapRNode(lView[HOST]!), expected, '');
+      // Since the node is missing, attach the error to the declaring component host
+      // and retain a weak reference to the expected parent element for DevTools inspection.
+      const componentHostElement = getDeclarationComponentHostElement(lView);
+      if (componentHostElement !== null) {
+        const parentRNode = tNode.type ? getParentRElement(lView[TVIEW], tNode, lView) : null;
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expected, '', {
+          actualNode: parentRNode,
+          isParentFallback: true,
+          errorCode: formatRuntimeErrorCode(RuntimeErrorCode.HYDRATION_MISSING_NODE),
+        });
+      }
     }
 
     throw new RuntimeError(
@@ -191,8 +218,17 @@ export function nodeNotFoundAtPathError(host: Node, path: string): Error {
     `using the "${path}" path, starting from the ${describeRNode(host)} node.\n\n`;
   const footer = getHydrationErrorFooter();
 
-  markRNodeAsHavingHydrationMismatch(host);
+  markRNodeAsHavingHydrationMismatch(host, null, null, {
+    actualNode: host,
+    isParentFallback: true,
+    errorCode: formatRuntimeErrorCode(RuntimeErrorCode.HYDRATION_MISSING_NODE),
+  });
   throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + footer);
+}
+
+function getDeclarationComponentHostElement(lView: LView): RNode | null {
+  const host = lView[DECLARATION_COMPONENT_VIEW]?.[HOST];
+  return host ? unwrapRNode(host) : null;
 }
 
 /**
