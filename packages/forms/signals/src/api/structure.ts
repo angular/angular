@@ -490,6 +490,7 @@ export async function submit<TModel>(
   }
 
   node.markAsTouched();
+  node.structure.fieldManager.flushLinks?.();
 
   const onInvalid = options?.onInvalid as FormSubmitOptions<unknown, unknown>['onInvalid'];
   const shouldRun = shouldRunAction(node, options?.ignoreValidators);

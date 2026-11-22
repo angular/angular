@@ -8,6 +8,7 @@
 
 export * from './disabled';
 export * from './hidden';
+export * from './link';
 export * from './metadata';
 export * from './readonly';
 export * from './validation';

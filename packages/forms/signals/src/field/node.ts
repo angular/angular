@@ -330,7 +330,10 @@ export class FieldNode implements FieldState<unknown> {
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
   reset(value?: unknown): void {
-    untracked(() => this._reset(value));
+    untracked(() => {
+      this._reset(value);
+      this.structure.fieldManager.rebaselineLinks?.(this);
+    });
   }
 
   private _reset(value?: unknown) {
