@@ -118,13 +118,10 @@ export abstract class FieldNodeStructure {
   }
 
   /**
-   * Gets only the child fields that have been materialized already.
+   * Gets child fields without forcing materialization.
    *
-   * This is useful for iterating over children without triggering materialization of children
-   * that haven't been accessed yet.
-   *
-   * Note: This method assumes it is called within an untracked context (or in a non-reactive context)
-   * as it reads signals without wrapping them in `untracked()`.
+   * An unmaterialized children map stays unmaterialized unless child schema logic requires it.
+   * In a reactive context, reading the map tracks changes to the child structure.
    */
   materializedChildren(): readonly FieldNode[] {
     const map = this.childrenMap();
