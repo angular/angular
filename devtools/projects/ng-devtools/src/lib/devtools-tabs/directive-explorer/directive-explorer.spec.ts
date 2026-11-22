@@ -75,6 +75,7 @@ async function configureTestingModule(appData?: Partial<AppData>) {
     jasmine.createSpyObj<ApplicationOperations>('_appOperations', [
       'viewSource',
       'selectDomElement',
+      'selectHydrationMismatchNode',
       'inspect',
       'setStorageItems',
       'getStorageItems',
@@ -375,6 +376,39 @@ describe('DirectiveExplorerComponent', () => {
           [0], // current selected element position
           {name: 'test1', id: 0, url: new URL('http://localhost:4200/url')},
         );
+      });
+    });
+
+    describe('hydration mismatch actions', () => {
+      it('should call selectHydrationMismatchNode for the currently selected element', () => {
+        contentScriptConnected(0, 'test1', 'http://localhost:4200/url');
+        comp.currentSelectedElement.set({
+          position: [0, 1],
+          children: [] as IndexedNode[],
+        } as IndexedNode);
+
+        comp.handleInspectHydrationNode();
+
+        expect(applicationOperationsSpy.selectHydrationMismatchNode).toHaveBeenCalledWith([0, 1], {
+          name: 'test1',
+          id: 0,
+          url: new URL('http://localhost:4200/url'),
+        });
+      });
+
+      it('should emit logHydrationMismatchNode and highlightHydrationMismatchNode events', () => {
+        comp.currentSelectedElement.set({
+          position: [0, 1],
+          children: [] as IndexedNode[],
+        } as IndexedNode);
+
+        comp.handleLogHydrationNode();
+        comp.handleHighlightHydrationNode();
+
+        expect(messageBusMock.emit).toHaveBeenCalledWith('logHydrationMismatchNode', [[0, 1]]);
+        expect(messageBusMock.emit).toHaveBeenCalledWith('highlightHydrationMismatchNode', [
+          [0, 1],
+        ]);
       });
     });
 

@@ -25,7 +25,9 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatTooltip} from '@angular/material/tooltip';
 import {
   CdElementData,
   DevToolsNode,
@@ -62,6 +64,8 @@ const RESIZE_OBSERVER_DEBOUNCE = 250; // ms
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     TreeNodeComponent,
+    MatIcon,
+    MatTooltip,
   ],
   host: {
     '(document:keydown.ArrowUp)': 'navigateUp($event)',
@@ -96,6 +100,29 @@ export class DirectiveForestComponent {
   readonly matchedNodes = signal<Map<number, NodeTextMatch[]>>(new Map()); // Node index, NodeTextMatch
   readonly matchesCount = computed(() => this.matchedNodes().size);
   readonly currentlyMatchedIndex = signal<number>(-1);
+  readonly activeMismatchIndex = signal<number>(0);
+
+  protected readonly mismatchedNodes = computed(() => {
+    const result: Array<{name: string; position: ElementPosition; errorCode?: string}> = [];
+    const collect = (nodes: DevToolsNode[], parentPos: ElementPosition): void => {
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        const position = [...parentPos, i];
+        if (node.hydration?.status === 'mismatched') {
+          result.push({
+            name: node.component ? node.component.name : (node.tagName ?? 'unknown'),
+            position,
+            errorCode: node.hydration.errorCode,
+          });
+        }
+        if (node.children?.length) {
+          collect(node.children, position);
+        }
+      }
+    };
+    collect(this.forest(), []);
+    return result;
+  });
   protected readonly selectedNodeIdx = computed(() => {
     const node = this.selectedNode();
     if (node) {
@@ -188,6 +215,25 @@ export class DirectiveForestComponent {
 
   handleSelectDomElement(node: FlatNode): void {
     this.selectDomElement.emit(node.original);
+  }
+
+  jumpToHydrationMismatch(step: -1 | 0 | 1 = 0): void {
+    const mismatches = this.mismatchedNodes();
+    if (!mismatches.length) {
+      return;
+    }
+    const nextIdx =
+      step === 0
+        ? Math.min(this.activeMismatchIndex(), mismatches.length - 1)
+        : (this.activeMismatchIndex() + step + mismatches.length) % mismatches.length;
+    this.activeMismatchIndex.set(nextIdx);
+    const target = this.dataSource.getFlatNodeByPosition(mismatches[nextIdx].position);
+    if (!target) {
+      return;
+    }
+    this.populateParents(target.position);
+    this.expandParents();
+    this.selectAndEnsureVisible(target);
   }
 
   highlightNode(node: FlatNode): void {

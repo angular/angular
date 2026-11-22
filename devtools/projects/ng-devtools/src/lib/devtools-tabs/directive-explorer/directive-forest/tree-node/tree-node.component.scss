@@ -165,23 +165,6 @@
   &.selected .console-reference {
     display: block !important;
   }
-
-  .hydration-error {
-    color: var(--dynamic-red-01);
-    margin-left: 16px;
-    padding: 0 8px 8px 0px;
-
-    pre {
-      margin: 0;
-      background: var(--dynamic-transparent-01);
-      padding: 8px;
-      border-radius: 8px;
-
-      &:not(:last-child) {
-        margin-bottom: 16px;
-      }
-    }
-  }
 }
 
 @keyframes appear {

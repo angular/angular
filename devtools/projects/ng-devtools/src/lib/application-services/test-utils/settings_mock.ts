@@ -13,6 +13,7 @@ import {ThemePreference} from '../theme_types';
 
 export class SettingsMock extends Settings {
   showCommentNodes = signal(false);
+  showHydrationOverlays = signal(false);
   performanceTrack = signal(false);
   theme = signal<ThemePreference>('system');
   activeTab = signal('Components');

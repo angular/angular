@@ -1,0 +1,45 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "hydration_error_view_styles",
+    src = "hydration-error-view.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+)
+
+ng_project(
+    name = "hydration-error-view",
+    srcs = [
+        "hydration-error-view.component.ts",
+    ],
+    angular_assets = [
+        "hydration-error-view.component.html",
+        ":hydration_error_view_styles",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/styles:view_tab_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "hydration_error_view_test",
+    srcs = ["hydration-error-view.component.spec.ts"],
+    deps = [
+        ":hydration-error-view",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":hydration_error_view_test",
+    ],
+)

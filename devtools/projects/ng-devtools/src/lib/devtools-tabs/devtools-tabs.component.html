@@ -14,6 +14,22 @@
         />
       </svg>
     </button>
+    @if (appData().hydration) {
+      <button
+        ng-button
+        btnType="icon"
+        class="toolbar-btn hydration-overlay-btn"
+        [class.active]="showHydrationOverlays()"
+        [attr.aria-pressed]="showHydrationOverlays()"
+        (click)="toggleHydrationOverlays()"
+        [matTooltip]="
+          showHydrationOverlays() ? 'Hide hydration overlays' : 'Show hydration overlays'
+        "
+        aria-label="Toggle hydration overlays"
+      >
+        <mat-icon>water_drop</mat-icon>
+      </button>
+    }
   </div>
 
   <select

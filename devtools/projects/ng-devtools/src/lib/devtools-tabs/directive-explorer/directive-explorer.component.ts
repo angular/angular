@@ -117,6 +117,16 @@ export class DirectiveExplorerComponent {
   readonly forest = signal<DevToolsNode[]>([]);
   readonly parents = signal<FlatNode[] | null>(null);
 
+  protected readonly hasHydrationMismatch = computed(() => {
+    const hasMismatch = (nodes: DevToolsNode[]): boolean =>
+      nodes.some(
+        (node) =>
+          node.hydration?.status === 'mismatched' ||
+          (node.children?.length ? hasMismatch(node.children) : false),
+      );
+    return hasMismatch(this.forest());
+  });
+
   readonly signalsOpen = signal(false);
 
   private clickedElement: IndexedNode | null = null;
@@ -259,21 +269,54 @@ export class DirectiveExplorerComponent {
   }
 
   handleSelectDomElement(node: IndexedNode): void {
+    const selectedFrame = this.getInspectableFrame();
+    if (selectedFrame !== undefined) {
+      this.appOperations.selectDomElement(node.position, selectedFrame);
+    }
+  }
+
+  handleInspectHydrationNode(): void {
+    const selectedEl = this.currentSelectedElement();
+    if (!selectedEl) {
+      return;
+    }
+    const selectedFrame = this.getInspectableFrame();
+    if (selectedFrame !== undefined) {
+      this.appOperations.selectHydrationMismatchNode(selectedEl.position, selectedFrame);
+    }
+  }
+
+  private getInspectableFrame() {
     const selectedFrame = this.frameManager.selectedFrame();
     if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       this.messageBus.emit('log', [{level: 'warn', message: error}]);
-      return;
+      return undefined;
     }
-
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Inspecting a component's DOM element is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       this.messageBus.emit('log', [{level: 'warn', message: error}]);
-    } else {
-      this.appOperations.selectDomElement(node.position, selectedFrame!);
+      return undefined;
     }
+    return selectedFrame!;
+  }
+
+  handleLogHydrationNode(): void {
+    const selectedEl = this.currentSelectedElement();
+    if (!selectedEl) {
+      return;
+    }
+    this.messageBus.emit('logHydrationMismatchNode', [selectedEl.position]);
+  }
+
+  handleHighlightHydrationNode(): void {
+    const selectedEl = this.currentSelectedElement();
+    if (!selectedEl) {
+      return;
+    }
+    this.messageBus.emit('highlightHydrationMismatchNode', [selectedEl.position]);
   }
 
   highlight(node: FlatNode): void {

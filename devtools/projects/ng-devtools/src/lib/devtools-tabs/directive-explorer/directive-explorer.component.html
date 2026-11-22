@@ -49,9 +49,14 @@
       @if (currentSelectedElement(); as currentSelectedElement) {
         <ng-property-pane
           [currentSelectedElement]="currentSelectedElement"
+          [hasHydrationMismatch]="hasHydrationMismatch()"
           (showSignalGraph)="showSignalGraph($event)"
           (inspect)="inspect($event)"
           (viewSource)="viewSource($event)"
+          (inspectHydrationNode)="handleInspectHydrationNode()"
+          (logHydrationNode)="handleLogHydrationNode()"
+          (highlightHydrationNode)="handleHighlightHydrationNode()"
+          (unhighlightHydrationNode)="unhighlight()"
         />
       } @else {
         <p class="no-selected-element">No selected element</p>

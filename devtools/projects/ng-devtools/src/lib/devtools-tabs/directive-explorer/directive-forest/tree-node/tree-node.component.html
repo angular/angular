@@ -91,21 +91,3 @@
     }
   }
 </div>
-
-@if (
-  expansionModel().isExpanded(node()) &&
-  hydration &&
-  hydration.status === 'mismatched' &&
-  (hydration.expectedNodeDetails || hydration.actualNodeDetails)
-) {
-  <div class="hydration-error">
-    @if (hydration.expectedNodeDetails) {
-      <div>Expected DOM:</div>
-      <pre>{{ hydration.expectedNodeDetails }}</pre>
-    }
-    @if (hydration.actualNodeDetails) {
-      <div>Actual DOM:</div>
-      <pre>{{ hydration.actualNodeDetails }}</pre>
-    }
-  </div>
-}

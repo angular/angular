@@ -82,6 +82,7 @@ export class DevToolsTabsComponent {
 
   protected readonly signalGraphEnabled = () => this.supportedApis().signals;
   protected readonly showCommentNodes = this.settings.showCommentNodes;
+  protected readonly showHydrationOverlays = this.settings.showHydrationOverlays;
   protected readonly activeTab = this.settings.activeTab;
 
   protected readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
@@ -187,5 +188,9 @@ export class DevToolsTabsComponent {
 
   toggleInspectorState(): void {
     this.inspectorRunning.update((state) => !state);
+  }
+
+  toggleHydrationOverlays(): void {
+    this.showHydrationOverlays.update((enabled) => !enabled);
   }
 }

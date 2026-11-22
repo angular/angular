@@ -7,6 +7,45 @@
   [filterFnGenerator]="filterGenerator"
   placeholder="Search component"
 />
+@if (mismatchedNodes().length > 0) {
+  @let mismatches = mismatchedNodes();
+  <div class="hydration-mismatch-banner" role="status">
+    <mat-icon class="banner-icon">error_outline</mat-icon>
+    <button
+      type="button"
+      class="banner-jump-btn"
+      (click)="jumpToHydrationMismatch(0)"
+      matTooltip="Select component with hydration mismatch"
+    >
+      @if (mismatches.length === 1) {
+        Hydration mismatch in <strong>&lt;{{ mismatches[0].name }}&gt;</strong>
+      } @else {
+        @let idx = activeMismatchIndex() < mismatches.length ? activeMismatchIndex() : 0;
+        {{ mismatches.length }} hydration mismatches ({{ idx + 1 }}/{{ mismatches.length }})
+      }
+    </button>
+    @if (mismatches.length > 1) {
+      <button
+        type="button"
+        class="banner-nav-btn"
+        aria-label="Previous hydration mismatch"
+        matTooltip="Previous mismatch"
+        (click)="jumpToHydrationMismatch(-1)"
+      >
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button
+        type="button"
+        class="banner-nav-btn"
+        aria-label="Next hydration mismatch"
+        matTooltip="Next mismatch"
+        (click)="jumpToHydrationMismatch(1)"
+      >
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    }
+  </div>
+}
 <cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
   <ng-tree-node
     *cdkVirtualFor="let node of dataSource; let idx = index"

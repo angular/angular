@@ -73,6 +73,14 @@ describe('DevtoolsTabsComponent', () => {
     expect(comp.inspectorRunning()).toBe(false);
   });
 
+  it('toggles hydration overlays setting', () => {
+    expect(comp['showHydrationOverlays']()).toBe(false);
+    comp.toggleHydrationOverlays();
+    expect(comp['showHydrationOverlays']()).toBe(true);
+    comp.toggleHydrationOverlays();
+    expect(comp['showHydrationOverlays']()).toBe(false);
+  });
+
   it('emits inspector event', () => {
     comp.toggleInspector();
     expect(messageBusMock.emit).toHaveBeenCalledTimes(1);
