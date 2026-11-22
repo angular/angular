@@ -168,7 +168,9 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
 export function setNativeNumberControlValue(element: HTMLInputElement, value: number) {
   // Writing `NaN` causes a warning in the console, so we instead write `''`.
   // This allows the user to safely use `NaN` as a number value that means "clear the input".
-  if (isNaN(value)) {
+  // Browsers throw when `valueAsNumber` is set to `Infinity` or `-Infinity`, so those
+  // values clear the input as well.
+  if (!Number.isFinite(value)) {
     element.value = '';
   } else {
     element.valueAsNumber = value;
