@@ -50,6 +50,8 @@ import {
   signal,
   TemplateRef,
   Type,
+  ɵreadHydrationInfo as readHydrationInfo,
+  ɵsetClassDebugInfo as setClassDebugInfo,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
@@ -4166,8 +4168,7 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           template: `
             This is hydrated content.
-            <span>{{ spanText }}</span
-            >.
+            <span>{{ spanText }}</span>.
             <p>{{ pText }}</p>
             <div>{{ anotherText }}</div>
           `,
@@ -7049,6 +7050,8 @@ describe('platform-server full application hydration integration', () => {
             'During hydration Angular was unable to locate a node using the "firstChild" path, ' +
               'starting from the <projector-cmp>…</projector-cmp> node',
           );
+          expect(message).toContain('DOM path: app > projector-cmp');
+          expect(message).toContain('check the "ProjectorComponent" component');
           verifyNodeHasMismatchInfo(doc, 'projector-cmp');
         });
       });
@@ -7087,10 +7090,455 @@ describe('platform-server full application hydration integration', () => {
           expect(message).toContain(
             'During hydration, Angular expected an element to be present at this location.',
           );
+          expect(message).toContain('DOM path: app > a:nth-of-type(1)');
           expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
+          expect(message).toContain('Actual DOM is:\n\n<a></a>');
+          expect(message).toContain('check the "SimpleComponent" component');
           expect(message).toContain('check to see if your template has valid HTML structure');
           verifyNodeHasMismatchInfo(doc);
         }
+      });
+
+      describe('mismatch location context', () => {
+        async function expectHydrationError(
+          root: Type<unknown>,
+          ...resetTargets: Type<unknown>[]
+        ): Promise<string> {
+          const html = await ssr(root);
+          resetTViewsFor(root, ...resetTargets);
+          let caught: unknown;
+          class CaptureErrorHandler implements ErrorHandler {
+            handleError(error: unknown) {
+              caught = error;
+            }
+          }
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, root, {
+              envProviders: [{provide: ErrorHandler, useClass: CaptureErrorHandler}],
+            });
+          } catch (err: unknown) {
+            caught = err;
+          }
+          expect(caught).toBeInstanceOf(Error);
+          return (caught as Error).message;
+        }
+
+        it('should report a single compact DOM path for identical branches distinguished by attributes', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <main id="content">
+                <div class="layout">
+                  <section aria-label="Account">
+                    <div class="name"><b>Alice</b></div>
+                  </section>
+                  <section aria-label="Billing">
+                    <div class="name"><b>Bob</b></div>
+                  </section>
+                </div>
+              </main>
+            `,
+          })
+          class AmbiguousBranchComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelector('[aria-label="Billing"] b');
+              const span = this.doc.createElement('span');
+              span.textContent = 'Bob';
+              b?.parentNode?.replaceChild(span, b);
+            }
+          }
+
+          const message = await expectHydrationError(AmbiguousBranchComponent);
+          expect(message).toContain(
+            'DOM path: app > main#content > div.layout > section[aria-label="Billing"] > div.name\n\n' +
+              'Angular expected this DOM:\n\n' +
+              '<div class="name">\n' +
+              '  <b>…</b>  <-- AT THIS LOCATION\n' +
+              '  …\n' +
+              '</div>\n\n' +
+              'Actual DOM is:\n\n' +
+              '<div class="name">\n' +
+              '  <span>…</span>  <-- AT THIS LOCATION\n' +
+              '</div>',
+          );
+          verifyNodeHasMismatchInfo(doc);
+        });
+
+        it('should disambiguate identical unlabelled sibling branches with :nth-of-type', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <section>
+                <div class="name"><b>Alice</b></div>
+              </section>
+              <section>
+                <div class="name"><b>Bob</b></div>
+              </section>
+            `,
+          })
+          class RepeatedBranchComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelectorAll('b')[1];
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(RepeatedBranchComponent);
+          expect(message).toContain('DOM path: app > section:nth-of-type(2) > div.name');
+        });
+
+        it('should identify the failing iteration inside a repeated @for list', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <ul class="users">
+                @for (user of users(); track user) {
+                  <li class="row">
+                    <div class="name">
+                      <b>{{ user }}</b>
+                    </div>
+                  </li>
+                }
+              </ul>
+            `,
+          })
+          class RepeatedListComponent {
+            readonly users = signal(['Alice', 'Bob', 'Carol', 'Dave']);
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelectorAll('b')[2];
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(RepeatedListComponent);
+          expect(message).toContain('DOM path: app > ul.users > li.row:nth-of-type(3) > div.name');
+          verifyNodeHasMismatchInfo(doc, 'app');
+        });
+
+        it('should report the child element position when repeated siblings share the same parent', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <ul>
+                <li>Alice</li>
+                <li>Bob</li>
+                <li>Carol</li>
+                <li>Dave</li>
+              </ul>
+            `,
+          })
+          class RepeatedSiblingComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const li = this.doc.querySelectorAll('li')[2];
+              const span = this.doc.createElement('span');
+              span.textContent = 'Carol';
+              li?.parentNode?.replaceChild(span, li);
+            }
+          }
+
+          const message = await expectHydrationError(RepeatedSiblingComponent);
+          expect(message).toContain('DOM path: app > ul (child element 3 of 4)');
+          expect(message).toContain(
+            'Actual DOM is:\n\n' +
+              '<ul>\n' +
+              '  …\n' +
+              '  <li>…</li>\n' +
+              '  <span>…</span>  <-- AT THIS LOCATION\n' +
+              '  <li>…</li>\n' +
+              '</ul>',
+          );
+        });
+
+        it('should report child element position directly under the root component host', async () => {
+          @Component({
+            selector: 'app',
+            template: `<b>First</b><b>Second</b><b>Third</b>`,
+          })
+          class FlatRepeatedSiblingsComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelectorAll('b')[1];
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(FlatRepeatedSiblingsComponent);
+          expect(message).toContain('DOM path: app (child element 2 of 3)');
+          // Symmetric adjacent siblings with no spurious leading/trailing ellipsis.
+          expect(message).toContain(
+            'Actual DOM is:\n\n' +
+              '<app>\n' +
+              '  <b>…</b>\n' +
+              '  <span>…</span>  <-- AT THIS LOCATION\n' +
+              '  <b>…</b>\n' +
+              '</app>',
+          );
+        });
+
+        it('should report child node position for a non-element mismatch among sibling nodes', async () => {
+          @Component({
+            selector: 'app',
+            template: `<div class="content"><i>Start</i><b>Bold</b><em>End</em></div>`,
+          })
+          class CommentMismatchComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelector('b');
+              b?.parentNode?.replaceChild(this.doc.createComment('mismatch'), b);
+            }
+          }
+
+          const message = await expectHydrationError(CommentMismatchComponent);
+          expect(message).toContain('DOM path: app > div.content (child node 2 of 3)');
+          expect(message).toContain('<!-- mismatch -->  <-- AT THIS LOCATION');
+        });
+
+        it('should preserve landmark and :nth-of-type ancestors when compacting deeply nested paths', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <div>
+                <div>
+                  <section aria-label="Billing">
+                    <div>
+                      <div>
+                        <div>
+                          <div>
+                            <div class="card">
+                              <div class="body">
+                                <div class="name"><b>Bob</b></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            `,
+          })
+          class DeepBranchComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelector('b');
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(DeepBranchComponent);
+          expect(message).toContain(
+            'DOM path: app > … > section[aria-label="Billing"] > … > div.card > div.body > div.name',
+          );
+        });
+
+        it('should include cross-component ancestors in the DOM path', async () => {
+          @Component({
+            selector: 'user-row',
+            template: `<div class="name">
+              <b>{{ label() }}</b>
+            </div>`,
+          })
+          class UserRowComponent {
+            readonly label = signal('Bob');
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [UserRowComponent],
+            template: `
+              <section class="panel">
+                <user-row />
+                <user-row />
+              </section>
+            `,
+          })
+          class CrossComponentHostComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelectorAll('b')[1];
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(CrossComponentHostComponent, UserRowComponent);
+          expect(message).toContain(
+            'DOM path: app > section.panel > user-row:nth-of-type(2) > div.name',
+          );
+          expect(message).toContain('check the "UserRowComponent" component');
+          verifyNodeHasMismatchInfo(doc, 'user-row:nth-of-type(2)');
+        });
+
+        it('should include class, style, and preserved whitespace in expected DOM snippets', async () => {
+          @Component({
+            selector: 'app',
+            template: `<div class="card primary" style="color: red"><b>Bold</b></div>`,
+          })
+          class ClassStyleComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const div = this.doc.querySelector('div');
+              div?.parentNode?.replaceChild(this.doc.createElement('span'), div);
+            }
+          }
+
+          const message = await expectHydrationError(ClassStyleComponent);
+          expect(message).toContain('<div class="card primary" style="color: red;">…</div>');
+          // Single-child root host needs no redundant `DOM path: app`.
+          expect(message).not.toContain('DOM path:');
+        });
+
+        it('should safely quote non-identifier ids and skip non-CSS class tokens in DOM paths', async () => {
+          @Component({
+            selector: 'app',
+            template: `<div id="-1">
+              <div class="w-1/2 card md:flex"><b>Bold</b></div>
+            </div>`,
+          })
+          class SpecialSelectorComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelector('b');
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(SpecialSelectorComponent);
+          expect(message).toContain('DOM path: app > div[id="-1"] > div.card');
+        });
+
+        it('should show actual parent DOM when an expected node is missing (NG0500)', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <div class="box">
+                <span>Kept</span>
+                <b>Missing</b>
+              </div>
+            `,
+          })
+          class MissingNodeComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+
+            ngAfterViewInit() {
+              if (this.isServer) {
+                this.doc.querySelector('b')?.remove();
+              }
+            }
+          }
+
+          const message = await expectHydrationError(MissingNodeComponent);
+          expect(message).toContain('DOM path: app > div.box');
+          expect(message).toContain(
+            'Actual DOM is:\n\n' + '<div class="box">\n' + '  <span>…</span>\n' + '</div>',
+          );
+        });
+
+        it('should attach DevTools mismatch info to the host for embedded views (@if)', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              @if (show()) {
+                <div class="box"><b>Bold</b></div>
+              }
+            `,
+          })
+          class EmbeddedViewMismatchComponent {
+            readonly show = signal(true);
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelector('b');
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+
+          const message = await expectHydrationError(EmbeddedViewMismatchComponent);
+          expect(message).toContain('DOM path: app > div.box');
+          verifyNodeHasMismatchInfo(doc, 'app');
+          const info = readHydrationInfo(doc.querySelector('app')!);
+          expect(info && 'expectedNodeDetails' in info ? info.expectedNodeDetails : null).toContain(
+            '<b>…</b>  <-- AT THIS LOCATION',
+          );
+          expect(info && 'actualNodeDetails' in info ? info.actualNodeDetails : null).toContain(
+            '<span>…</span>  <-- AT THIS LOCATION',
+          );
+          // DevTools `<pre>` payloads stay compact without duplicating the DOM path header.
+          expect(
+            info && 'expectedNodeDetails' in info ? info.expectedNodeDetails : '',
+          ).not.toContain('DOM path:');
+        });
+
+        it('should include ClassDebugInfo file path and line number in the footer', async () => {
+          @Component({
+            selector: 'app',
+            template: `<div><b>Bold</b></div>`,
+          })
+          class DebugInfoComponent {
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              const b = this.doc.querySelector('b');
+              b?.parentNode?.replaceChild(this.doc.createElement('span'), b);
+            }
+          }
+          setClassDebugInfo(DebugInfoComponent, {
+            className: 'DebugInfoComponent',
+            filePath: 'src/app/debug-info.component.ts',
+            lineNumber: 42,
+          });
+
+          const message = await expectHydrationError(DebugInfoComponent);
+          expect(message).toContain(
+            'check the "DebugInfoComponent" component (at src/app/debug-info.component.ts:42) for hydration-related issues',
+          );
+        });
+
+        it('should include the declaring component name on NG0501 missing sibling errors', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <div class="list">
+                @if (show()) {
+                  <b>Bold</b>
+                  <i>Italic</i>
+                }
+                <main>Main</main>
+              </div>
+            `,
+          })
+          class MissingSiblingComponent {
+            readonly show = signal(true);
+            private doc = inject(DOCUMENT);
+
+            ngAfterViewInit() {
+              this.doc.querySelector('b')?.remove();
+              this.doc.querySelector('i')?.remove();
+            }
+          }
+
+          const message = await expectHydrationError(MissingSiblingComponent);
+          expect(message).toContain(
+            'During hydration Angular expected more sibling nodes to be present',
+          );
+          expect(message).toContain('DOM path: app > div.list');
+          expect(message).toContain('check the "MissingSiblingComponent" component');
+        });
       });
 
       it('should log a warning when there was no hydration info in the TransferState', async () => {

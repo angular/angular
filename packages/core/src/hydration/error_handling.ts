@@ -7,20 +7,29 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {readPatchedData} from '../render3/context_discovery';
+import {getComponentDef} from '../render3/def_getters';
 import {getDeclarationComponentDef} from '../render3/instructions/element_validation';
+import type {ComponentDef} from '../render3/interfaces/definition';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
-import {HOST, LView, TVIEW} from '../render3/interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW} from '../render3/interfaces/view';
 import {getParentRElement} from '../render3/node_manipulation';
+import {getComponent} from '../render3/util/discovery_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
-import {readPatchedData} from '../render3/context_discovery';
 import {markRNodeAsHavingHydrationMismatch} from './utils';
-import {DOC_PAGE_BASE_URL} from '../../../core/src/error_details_base_url';
+import {DOC_PAGE_BASE_URL} from '../error_details_base_url';
 
 const AT_THIS_LOCATION = '<-- AT THIS LOCATION';
 
 const THIRD_PARTY_SCRIPTS_URL = `/guide/hydration#third-party-scripts-with-dom-manipulation`;
+
+const MAX_DOM_PATH_SEGMENTS = 8;
+const MAX_DOM_PATH_ANCESTOR_WALK = 64;
+const MAX_SIBLING_INDEX_SCAN = 1000;
+const CSS_IDENTIFIER_REGEXP = /^(?:[A-Za-z_]|-(?=[A-Za-z_-]))[A-Za-z0-9_-]*$/;
+const IDENTIFYING_ATTRS = ['data-testid', 'aria-label', 'name', 'role', 'type'] as const;
 
 /**
  * Retrieves a user friendly string for a given TNodeType for use in
@@ -74,19 +83,28 @@ export function validateMatchingNode(
     let header = `During hydration Angular expected ${expectedNode} but `;
 
     const hostComponentDef = getDeclarationComponentDef(lView);
-    const componentClassName = hostComponentDef?.type?.name;
+    const parentRNode = getSafeParentRElement(lView, tNode);
+    const componentHostElement = getDeclarationComponentHostElement(lView);
 
     const expectedDom = describeExpectedDom(lView, tNode, isViewContainerAnchor);
     const expected = `Angular expected this DOM:\n\n${expectedDom}\n\n`;
 
+    let domPathSection = '';
     let actual = '';
-    const componentHostElement = unwrapRNode(lView[HOST]!);
     if (!node) {
       // No node found during hydration.
       header += `the node was not found.\n\n`;
+      domPathSection = formatDomPathSection(parentRNode);
 
-      // Since the node is missing, we use the closest node to attach the error to
-      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom);
+      const actualDom = parentRNode ? describeMissingNodeParentDom(parentRNode) : null;
+      if (actualDom !== null) {
+        actual = `Actual DOM is:\n\n${actualDom}\n\n`;
+      }
+
+      // Since the node is missing, attach mismatch info to the declaring component host.
+      if (componentHostElement !== null) {
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
+      }
     } else {
       const actualNode = shortRNodeDescription(
         (node as Node).nodeType,
@@ -95,16 +113,20 @@ export function validateMatchingNode(
       );
 
       header += `found ${actualNode}.\n\n`;
+      domPathSection = formatDomPathSection(parentRNode, (node as Node).parentNode, node as Node);
       const actualDom = describeDomFromNode(node);
       actual = `Actual DOM is:\n\n${actualDom}\n\n`;
 
       // DevTools only report hydration issues on the component level, so we attach extra debug
-      // info to a component host element to make it available to DevTools.
-      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
+      // info to the declaring component host element to make it available to DevTools.
+      if (componentHostElement !== null) {
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
+      }
     }
 
-    const footer = getHydrationErrorFooter(componentClassName);
-    let message = header + expected + actual + getHydrationAttributeNote() + footer;
+    const footer = getHydrationErrorFooter(hostComponentDef);
+    let message =
+      header + domPathSection + expected + actual + getHydrationAttributeNote() + footer;
 
     // Check both when a mismatching node is found AND when the expected node is missing,
     // since third-party scripts can both inject extra nodes and remove existing ones.
@@ -127,12 +149,14 @@ export function validateSiblingNodeExists(node: RNode | null): void {
   validateNodeExists(node);
   if (!node!.nextSibling) {
     const header = 'During hydration Angular expected more sibling nodes to be present.\n\n';
-    const actual = `Actual DOM is:\n\n${describeDomFromNode(node!)}\n\n`;
-    const footer = getHydrationErrorFooter();
+    const domPathSection = formatDomPathSection((node as Node).parentNode, undefined, node as Node);
+    const actualDom = describeDomFromNode(node!);
+    const actual = `Actual DOM is:\n\n${actualDom}\n\n`;
+    const footer = getHydrationErrorFooter(getClosestComponentDef(node!));
 
-    const message = header + actual + footer;
+    const message = header + domPathSection + actual + footer;
 
-    markRNodeAsHavingHydrationMismatch(node!, '', actual);
+    markRNodeAsHavingHydrationMismatch(node!, '', actualDom);
     throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_SIBLINGS, message);
   }
 }
@@ -148,20 +172,26 @@ export function validateNodeExists(
   if (!node) {
     const header =
       'During hydration, Angular expected an element to be present at this location.\n\n';
-    let expected = '';
-    let footer = '';
+    let body = '';
     if (lView !== null && tNode !== null) {
-      expected = describeExpectedDom(lView, tNode, false);
-      footer = getHydrationErrorFooter();
+      const parentRNode = getSafeParentRElement(lView, tNode);
+      const componentHostElement = getDeclarationComponentHostElement(lView);
+      const expectedDom = describeExpectedDom(lView, tNode, false);
+      const actualDom = parentRNode ? describeMissingNodeParentDom(parentRNode) : null;
 
-      // Since the node is missing, we use the closest node to attach the error to
-      markRNodeAsHavingHydrationMismatch(unwrapRNode(lView[HOST]!), expected, '');
+      body =
+        formatDomPathSection(parentRNode) +
+        `Angular expected this DOM:\n\n${expectedDom}\n\n` +
+        (actualDom !== null ? `Actual DOM is:\n\n${actualDom}\n\n` : '') +
+        getHydrationErrorFooter(getDeclarationComponentDef(lView));
+
+      // Since the node is missing, attach mismatch info to the declaring component host.
+      if (componentHostElement !== null) {
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom ?? '');
+      }
     }
 
-    throw new RuntimeError(
-      RuntimeErrorCode.HYDRATION_MISSING_NODE,
-      `${header}${expected}\n\n${footer}`,
-    );
+    throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, `${header}${body}`);
   }
 }
 
@@ -173,10 +203,14 @@ export function validateNodeExists(
  */
 export function nodeNotFoundError(lView: LView, tNode: TNode): Error {
   const header = 'During serialization, Angular was unable to find an element in the DOM:\n\n';
+  const domPathSection = formatDomPathSection(getSafeParentRElement(lView, tNode));
   const expected = `${describeExpectedDom(lView, tNode, false)}\n\n`;
-  const footer = getHydrationErrorFooter();
+  const footer = getHydrationErrorFooter(getDeclarationComponentDef(lView));
 
-  throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + expected + footer);
+  throw new RuntimeError(
+    RuntimeErrorCode.HYDRATION_MISSING_NODE,
+    header + domPathSection + expected + footer,
+  );
 }
 
 /**
@@ -189,18 +223,18 @@ export function nodeNotFoundAtPathError(host: Node, path: string): Error {
   const header =
     `During hydration Angular was unable to locate a node ` +
     `using the "${path}" path, starting from the ${describeRNode(host)} node.\n\n`;
-  const footer = getHydrationErrorFooter();
+  const domPathSection = formatDomPathSection(host);
+  const footer = getHydrationErrorFooter(getClosestComponentDef(host));
 
   markRNodeAsHavingHydrationMismatch(host);
-  throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + footer);
+  throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + domPathSection + footer);
 }
 
 /**
  * Builds the hydration error message in the case that dom nodes are created outside of
  * the Angular context and are being used as projected nodes
  *
- * @param lView the LView
- * @param tNode the TNode
+ * @param rNode the RNode created outside of Angular context
  * @returns an error
  */
 export function unsupportedProjectionOfDomNodes(rNode: RNode): Error {
@@ -255,6 +289,12 @@ function stringifyTNodeAttrs(tNode: TNode): string {
       results.push(`${attrName}="${shorten(attrValue as string)}"`);
     }
   }
+  if (tNode.classesWithoutHost) {
+    results.push(`class="${shorten(tNode.classesWithoutHost)}"`);
+  }
+  if (tNode.stylesWithoutHost) {
+    results.push(`style="${shorten(tNode.stylesWithoutHost)}"`);
+  }
   return results.join(' ');
 }
 
@@ -262,7 +302,7 @@ function stringifyTNodeAttrs(tNode: TNode): string {
  * The list of internal attributes that should be filtered out while
  * producing an error message.
  */
-const internalAttrs = new Set(['ngh', 'ng-version', 'ng-server-context']);
+const internalAttrs = /* @__PURE__ */ new Set(['ngh', 'ng-version', 'ng-server-context']);
 
 /**
  * Stringifies an HTML Element's attributes
@@ -345,7 +385,9 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
   const spacer = '  ';
   let content = '';
   if (tNode.prev) {
-    content += spacer + '…\n';
+    if (tNode.prev.prev) {
+      content += spacer + '…\n';
+    }
     content += spacer + describeTNode(tNode.prev) + '\n';
   } else if (tNode.type && tNode.type & TNodeType.AnyContainer) {
     content += spacer + '…\n';
@@ -358,9 +400,9 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
   }
   content += spacer + '…\n';
 
-  const parentRNode = tNode.type ? getParentRElement(lView[TVIEW], tNode, lView) : null;
+  const parentRNode = getSafeParentRElement(lView, tNode);
   if (parentRNode) {
-    content = describeRNode(parentRNode as unknown as Node, '\n' + content);
+    content = describeRNode(parentRNode as unknown as RNode, '\n' + content);
   }
   return content;
 }
@@ -377,17 +419,286 @@ function describeDomFromNode(node: RNode): string {
   let content = '';
   const currentNode = node as HTMLElement;
   if (currentNode.previousSibling) {
-    content += spacer + '…\n';
+    if (currentNode.previousSibling.previousSibling) {
+      content += spacer + '…\n';
+    }
     content += spacer + describeRNode(currentNode.previousSibling) + '\n';
   }
   content += spacer + describeRNode(currentNode) + `  ${AT_THIS_LOCATION}\n`;
-  if (node.nextSibling) {
-    content += spacer + '…\n';
+  if (currentNode.nextSibling) {
+    content += spacer + describeRNode(currentNode.nextSibling) + '\n';
+    if (currentNode.nextSibling.nextSibling) {
+      content += spacer + '…\n';
+    }
   }
-  if (node.parentNode) {
+  if (currentNode.parentNode && isElementNode(currentNode.parentNode)) {
     content = describeRNode(currentNode.parentNode as Node, '\n' + content);
   }
   return content;
+}
+
+/**
+ * Describes the actual contents of the parent element when a child node is missing.
+ */
+function describeMissingNodeParentDom(parentNode: Node): string | null {
+  if (!isElementNode(parentNode)) {
+    return null;
+  }
+  if (!parentNode.firstChild) {
+    return describeRNode(parentNode as unknown as RNode, '');
+  }
+  const spacer = '  ';
+  const tailNodes: Node[] = [];
+  let cursor = parentNode.lastChild;
+  while (cursor !== null && tailNodes.length < 2) {
+    tailNodes.unshift(cursor);
+    cursor = cursor.previousSibling;
+  }
+  let inner = cursor !== null ? `\n${spacer}…\n` : '\n';
+  for (const child of tailNodes) {
+    inner += `${spacer}${describeRNode(child as unknown as RNode)}\n`;
+  }
+  return describeRNode(parentNode as unknown as RNode, inner);
+}
+
+// Component lookup & compact DOM path helpers
+
+function getDeclarationComponentHostElement(lView: LView): RNode | null {
+  const host = lView[DECLARATION_COMPONENT_VIEW]?.[HOST];
+  return host ? unwrapRNode(host) : null;
+}
+
+function getSafeParentRElement(lView: LView, tNode: TNode): Node | null {
+  return (tNode.type
+    ? getParentRElement(lView[TVIEW], tNode, lView)
+    : null) as unknown as Node | null;
+}
+
+function isElementNode(node: Node | null | undefined): node is Element {
+  return node != null && node.nodeType === Node.ELEMENT_NODE;
+}
+
+function isBodyOrDocumentElement(el: Element): boolean {
+  const tag = el.tagName.toLowerCase();
+  return tag === 'body' || tag === 'html';
+}
+
+function getComponentAtPatchedElement(el: Element): Record<string, unknown> | null {
+  return readPatchedData(el as HTMLElement) !== null
+    ? getComponent<Record<string, unknown>>(el)
+    : null;
+}
+
+function getClosestComponentDef(node: RNode | null): ComponentDef<unknown> | null {
+  let cursor: Node | null = node as Node | null;
+  while (cursor !== null) {
+    if (isElementNode(cursor)) {
+      const component = getComponentAtPatchedElement(cursor);
+      if (component !== null && component.constructor) {
+        return getComponentDef(component.constructor);
+      }
+    }
+    cursor = cursor.parentNode;
+  }
+  return null;
+}
+
+function escapeAttrValue(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+function getBaseSelectorLabel(el: Element): string {
+  const tag = el.tagName.toLowerCase();
+  const id = el.getAttribute('id')?.trim();
+  if (id) {
+    const shortId = shorten(id, 30);
+    return CSS_IDENTIFIER_REGEXP.test(shortId)
+      ? `${tag}#${shortId}`
+      : `${tag}[id="${escapeAttrValue(shortId)}"]`;
+  }
+  for (const attr of IDENTIFYING_ATTRS) {
+    const value = el.getAttribute(attr)?.trim();
+    if (value) {
+      return `${tag}[${attr}="${escapeAttrValue(shorten(value, 30))}"]`;
+    }
+  }
+  const classAttr = el.getAttribute('class');
+  if (classAttr) {
+    const classes: string[] = [];
+    for (const token of classAttr.split(/\s+/)) {
+      if (token && CSS_IDENTIFIER_REGEXP.test(token)) {
+        classes.push(token);
+        if (classes.length === 2) break;
+      }
+    }
+    if (classes.length > 0) {
+      return `${tag}.${classes.join('.')}`;
+    }
+  }
+  return tag;
+}
+
+function formatSelectorSegment(el: Element): {label: string; isDisambiguated: boolean} {
+  const baseLabel = getBaseSelectorLabel(el);
+  const parent = el.parentNode;
+  if (!isElementNode(parent)) {
+    return {label: baseLabel, isDisambiguated: false};
+  }
+
+  const tag = el.tagName.toLowerCase();
+  let indexOfType = 0;
+  let seenSelf = false;
+  let hasDuplicateLabel = false;
+  let scanned = 0;
+
+  for (let child = parent.firstChild; child !== null; child = child.nextSibling) {
+    if (!isElementNode(child)) continue;
+    if (++scanned > MAX_SIBLING_INDEX_SCAN) {
+      return {label: baseLabel, isDisambiguated: false};
+    }
+    if (child.tagName.toLowerCase() !== tag) continue;
+    if (!seenSelf) {
+      indexOfType++;
+      if (child === el) {
+        seenSelf = true;
+        continue;
+      }
+    }
+    if (getBaseSelectorLabel(child) === baseLabel) {
+      hasDuplicateLabel = true;
+      if (seenSelf) break;
+    }
+  }
+
+  return hasDuplicateLabel && seenSelf
+    ? {label: `${baseLabel}:nth-of-type(${indexOfType})`, isDisambiguated: true}
+    : {label: baseLabel, isDisambiguated: false};
+}
+
+function getSegmentPriority(el: Element, isDisambiguated: boolean): number {
+  if (el.getAttribute('id')?.trim()) {
+    return 2;
+  }
+  for (const attr of IDENTIFYING_ATTRS) {
+    if (attr !== 'type' && el.getAttribute(attr)?.trim()) {
+      return 2;
+    }
+  }
+  if (getComponentAtPatchedElement(el) !== null) {
+    return 2;
+  }
+  return isDisambiguated ? 1 : 0;
+}
+
+/**
+ * Returns the 1-based sibling index descriptor when a node sits inside a parent with multiple
+ * siblings (e.g. `(element 3 of 5)` or `(node 2 of 4)`), so repeated direct children in a template
+ * or `@for` list can be told apart.
+ */
+function describeSiblingPosition(node: Node | undefined): string {
+  if (!node || !isElementNode(node.parentNode)) {
+    return '';
+  }
+  const elementsOnly = isElementNode(node);
+  let position = 0;
+  let total = 0;
+  for (let child = node.parentNode.firstChild; child !== null; child = child.nextSibling) {
+    if (elementsOnly && !isElementNode(child)) continue;
+    total++;
+    if (total > MAX_SIBLING_INDEX_SCAN) {
+      return '';
+    }
+    if (child === node) {
+      position = total;
+    }
+  }
+  if (total <= 1 || position === 0) {
+    return '';
+  }
+  return elementsOnly
+    ? ` (child element ${position} of ${total})`
+    : ` (child node ${position} of ${total})`;
+}
+
+/**
+ * Formats a compact CSS-style ancestor path ending at `targetNode`, crossing component boundaries.
+ * Duplicate siblings sharing the same base selector are disambiguated with `:nth-of-type(N)`.
+ * Deep paths (`> MAX_DOM_PATH_SEGMENTS`) retain notable landmarks (`#id`, identifying attributes,
+ * component hosts, and `:nth-of-type(N)` branches) while eliding unremarkable wrapper nodes.
+ */
+function buildDomPath(targetNode: Node | null | undefined, includeSingle = false): string | null {
+  if (!isElementNode(targetNode) || isBodyOrDocumentElement(targetNode)) {
+    return null;
+  }
+
+  const chain: Element[] = [];
+  let cursor: Node | null = targetNode;
+  while (
+    isElementNode(cursor) &&
+    !isBodyOrDocumentElement(cursor) &&
+    chain.length < MAX_DOM_PATH_ANCESTOR_WALK
+  ) {
+    chain.unshift(cursor);
+    cursor = cursor.parentNode;
+  }
+  if (chain.length === 0 || (!includeSingle && chain.length === 1)) {
+    return null;
+  }
+
+  const segments = chain.map((el) => formatSelectorSegment(el));
+  if (segments.length <= MAX_DOM_PATH_SEGMENTS) {
+    return segments.map((s) => s.label).join(' > ');
+  }
+
+  // Always retain the root host (`0`) and the closest 3 ancestors to the mismatch.
+  const kept = new Set<number>([0, segments.length - 3, segments.length - 2, segments.length - 1]);
+  const middleBudget = MAX_DOM_PATH_SEGMENTS - kept.size;
+  const middleCandidates: Array<{index: number; priority: number}> = [];
+  for (let i = segments.length - 4; i >= 1; i--) {
+    const priority = getSegmentPriority(chain[i], segments[i].isDisambiguated);
+    if (priority > 0) {
+      middleCandidates.push({index: i, priority});
+    }
+  }
+  // Prefer higher-signal landmarks (`id`, identifying attributes, component hosts), breaking ties
+  // in favor of ancestors closer to the mismatch.
+  middleCandidates.sort((a, b) => b.priority - a.priority || b.index - a.index);
+  for (let i = 0; i < middleCandidates.length && i < middleBudget; i++) {
+    kept.add(middleCandidates[i].index);
+  }
+
+  const ordered = Array.from(kept).sort((a, b) => a - b);
+  const parts: string[] = [];
+  for (let i = 0; i < ordered.length; i++) {
+    const idx = ordered[i];
+    if (i > 0 && idx - ordered[i - 1] > 1) {
+      parts.push('…');
+    }
+    parts.push(segments[idx].label);
+  }
+  return parts.join(' > ');
+}
+
+function formatDomPathSection(
+  expectedParent: Node | null,
+  actualParent?: Node | null,
+  actualNode?: Node,
+): string {
+  const position = describeSiblingPosition(actualNode);
+  if (actualParent && actualParent !== expectedParent) {
+    const expectedPath = buildDomPath(expectedParent, true);
+    const actualPath = buildDomPath(actualParent, true);
+    let section = '';
+    if (expectedPath) {
+      section += `Expected DOM path: ${expectedPath}\n`;
+    }
+    if (actualPath) {
+      section += `Actual DOM path: ${actualPath}${position}\n`;
+    }
+    return section ? `${section}\n` : '';
+  }
+  const path = buildDomPath(expectedParent, position !== '');
+  return path ? `DOM path: ${path}${position}\n\n` : '';
 }
 
 /**
@@ -407,7 +718,8 @@ function shortRNodeDescription(
     case Node.ELEMENT_NODE:
       return `<${tagName!.toLowerCase()}>`;
     case Node.TEXT_NODE:
-      const content = textContent ? ` (with the "${shorten(textContent)}" content)` : '';
+      const shortened = textContent ? shorten(textContent) : '';
+      const content = shortened ? ` (with the "${shortened}" content)` : '';
       return `a text node${content}`;
     case Node.COMMENT_NODE:
       return 'a comment node';
@@ -419,14 +731,20 @@ function shortRNodeDescription(
 /**
  * Builds the footer hydration error message
  *
- * @param componentClassName the name of the component class
+ * @param componentDef the ComponentDef of the declaring component, if available
  * @returns string
  */
-function getHydrationErrorFooter(componentClassName?: string): string {
+function getHydrationErrorFooter(componentDef?: ComponentDef<unknown> | null): string {
+  const debugInfo = componentDef?.debugInfo;
+  const componentClassName = debugInfo?.className || componentDef?.type?.name;
+  const sourceLocation =
+    debugInfo?.filePath && debugInfo?.lineNumber
+      ? ` (at ${debugInfo.filePath}:${debugInfo.lineNumber})`
+      : '';
   const componentInfo = componentClassName ? `the "${componentClassName}"` : 'corresponding';
   return (
     `To fix this problem:\n` +
-    `  * check ${componentInfo} component for hydration-related issues\n` +
+    `  * check ${componentInfo} component${sourceLocation} for hydration-related issues\n` +
     `  * check to see if your template has valid HTML structure\n` +
     `  * check if there are any third-party scripts that manipulate the DOM. More info: ${DOC_PAGE_BASE_URL}${THIRD_PARTY_SCRIPTS_URL}\n` +
     `  * or skip hydration by adding the \`ngSkipHydration\` attribute ` +
@@ -467,13 +785,13 @@ function getHydrationAttributeNote(): string {
 // Node string utility functions
 
 /**
- * Strips all newlines out of a given string
+ * Collapses whitespace runs (including newlines) into single spaces and trims ends.
  *
- * @param input a string to be cleared of new line characters
+ * @param input a string to normalize
  * @returns
  */
-function stripNewlines(input: string): string {
-  return input.replace(/\s+/gm, '');
+function normalizeWhitespace(input: string): string {
+  return input.replace(/\s+/gm, ' ').trim();
 }
 
 /**
@@ -487,7 +805,7 @@ function shorten(input: string | null, maxLength = 50): string {
   if (!input) {
     return '';
   }
-  input = stripNewlines(input);
+  input = normalizeWhitespace(input);
   return input.length > maxLength ? `${input.substring(0, maxLength - 1)}…` : input;
 }
 
