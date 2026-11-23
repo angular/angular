@@ -41,7 +41,12 @@ export function createGenerateUniqueIdentifierHelper(): ImportManagerConfig['gen
     const isUniqueIdentifier = (name: string) =>
       !sf['identifiers']!.has(name) && !isGeneratedIdentifier(sf, name);
 
-    if (isUniqueIdentifier(symbolName)) {
+    // Generated aliases keep the strict check, as `createUniqueName` is resolved by the
+    // emitter against the raw `identifiers` map.
+    if (
+      isUniqueIdentifier(symbolName) ||
+      (!isGeneratedIdentifier(sf, symbolName) && !getBindingNames(sf).has(symbolName))
+    ) {
       markIdentifierAsGenerated(sf, symbolName);
       return null;
     }
@@ -55,4 +60,63 @@ export function createGenerateUniqueIdentifierHelper(): ImportManagerConfig['gen
     markIdentifierAsGenerated(sf, name);
     return ts.factory.createUniqueName(name, ts.GeneratedIdentifierFlags.Optimistic);
   };
+}
+
+const bindingNamesCache = new WeakMap<ts.SourceFile, Set<string>>();
+
+/**
+ * Collects the names of identifiers in the source file that can bind or reference a symbol.
+ * Names such as object literal keys or `a.name` accesses are skipped because they cannot
+ * conflict with an import.
+ */
+function getBindingNames(sf: ts.SourceFile): Set<string> {
+  let names = bindingNamesCache.get(sf);
+  if (names === undefined) {
+    names = new Set();
+    const visit = (node: ts.Node, parent: ts.Node) => {
+      if (ts.isIdentifier(node)) {
+        if (!isNonBindingName(node, parent)) {
+          names!.add(node.text);
+        }
+      } else if (!ts.isExportDeclaration(node) || node.moduleSpecifier === undefined) {
+        ts.forEachChild(node, (child) => visit(child, node));
+      }
+    };
+    ts.forEachChild(sf, (child) => visit(child, sf));
+    bindingNamesCache.set(sf, names);
+  }
+  return names;
+}
+
+function isNonBindingName(node: ts.Identifier, parent: ts.Node): boolean {
+  if (ts.isQualifiedName(parent)) {
+    return parent.right === node;
+  }
+  if (ts.isBindingElement(parent) || ts.isImportSpecifier(parent)) {
+    return parent.propertyName === node;
+  }
+  if (ts.isExportSpecifier(parent)) {
+    return parent.propertyName !== undefined && parent.name === node;
+  }
+  if (
+    ts.isLabeledStatement(parent) ||
+    ts.isBreakStatement(parent) ||
+    ts.isContinueStatement(parent)
+  ) {
+    return parent.label === node;
+  }
+  return (
+    (ts.isPropertyAccessExpression(parent) ||
+      ts.isPropertyAssignment(parent) ||
+      ts.isPropertyDeclaration(parent) ||
+      ts.isPropertySignature(parent) ||
+      ts.isMethodDeclaration(parent) ||
+      ts.isMethodSignature(parent) ||
+      ts.isGetAccessorDeclaration(parent) ||
+      ts.isSetAccessorDeclaration(parent) ||
+      ts.isEnumMember(parent) ||
+      ts.isNamedTupleMember(parent) ||
+      ts.isJsxAttribute(parent)) &&
+    parent.name === node
+  );
 }
