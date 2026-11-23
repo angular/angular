@@ -363,7 +363,7 @@ export function refreshView<T>(
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
-    handleViewError(lView, e, isInCheckNoChangesPass);
+    handleViewError(lView, e, !isInCheckNoChangesPass);
   } finally {
     if (currentConsumer !== null) {
       consumerAfterComputation(currentConsumer, prevConsumer);
@@ -375,7 +375,11 @@ export function refreshView<T>(
   }
 }
 
-function handleViewError(lView: LView, e: unknown, isInCheckNoChangesPass: boolean | null): void {
+export function handleViewError(
+  lView: LView,
+  e: unknown,
+  shouldMarkAncestorsForTraversal = false,
+): void {
   let handled = false;
   let errorToHandle = e;
   let currentLView: LView | LContainer | null = lView;
@@ -419,7 +423,7 @@ function handleViewError(lView: LView, e: unknown, isInCheckNoChangesPass: boole
   }
 
   if (!handled) {
-    if (!isInCheckNoChangesPass) {
+    if (shouldMarkAncestorsForTraversal) {
       // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
       // because the error might have caused a situation where views below the current location are
       // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
@@ -561,7 +565,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
         try {
           runEffectsInView(lView);
         } catch (e) {
-          handleViewError(lView, e, isInCheckNoChangesPass);
+          handleViewError(lView, e, /* shouldMarkAncestorsForTraversal */ true);
         }
       }
       detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);

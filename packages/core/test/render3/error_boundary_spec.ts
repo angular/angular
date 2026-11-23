@@ -16,10 +16,12 @@ import {
   ViewChild,
   ViewContainerRef,
   effect,
+  inject,
   signal,
   viewChild,
 } from '@angular/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
+import {waitFor} from '@angular/private/testing';
 import {ErrorBoundaryWrappedError, ErrorDetails} from '../../src/error_handler';
 
 describe('Error Boundary Runtime Interception', () => {
@@ -1280,5 +1282,371 @@ describe('@boundary runtime instructions (JIT)', () => {
     // The signal writing ErrorHandler should have successfully written to the signal
     expect(errors().length).toBe(1);
     expect((errors()[0] as Error).message).toBe('original');
+  });
+
+  it('should catch constructor errors from @defer (on immediate) and support $reset()', async () => {
+    let shouldThrow = true;
+
+    @Component({
+      selector: 'app-widget',
+      template: '<p class="ready">Widget ready</p>',
+    })
+    class Widget {
+      constructor() {
+        if (shouldThrow) {
+          throw new Error('Widget initialization failed');
+        }
+      }
+    }
+
+    @Component({
+      imports: [Widget],
+      template: `
+        <section id="region">
+          @boundary {
+            @defer (on immediate) {
+              <app-widget />
+            } @placeholder {
+              <p class="placeholder">Widget placeholder</p>
+            }
+          } @error {
+            <p class="fallback">Widget unavailable: {{ $error.message }}</p>
+            <button id="retry" (click)="$reset()">Retry</button>
+          }
+        </section>
+      `,
+    })
+    class OuterImmediate {}
+
+    const fixture = TestBed.createComponent(OuterImmediate);
+    await waitFor(() => {
+      throwUnless(fixture.nativeElement.textContent).toContain(
+        'Widget unavailable: Widget initialization failed',
+      );
+    });
+    expect(fixture.nativeElement.querySelector('#retry')).not.toBeNull();
+
+    // Retry while still throwing (synchronous defer render since deps are already loaded).
+    fixture.nativeElement.querySelector('#retry').click();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'Widget unavailable: Widget initialization failed',
+    );
+    expect(fixture.nativeElement.querySelector('#retry')).not.toBeNull();
+
+    // Retry after fixing the failure condition.
+    shouldThrow = false;
+    fixture.nativeElement.querySelector('#retry').click();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Widget ready');
+    expect(fixture.nativeElement.querySelector('.fallback')).toBeNull();
+  });
+
+  it('should catch constructor errors from @defer (when condition)', async () => {
+    @Component({
+      selector: 'app-deferred-widget',
+      template: '<p>Widget ready</p>',
+    })
+    class DeferredWidget {
+      constructor() {
+        throw new Error('Deferred widget failed');
+      }
+    }
+
+    @Component({
+      imports: [DeferredWidget],
+      template: `
+        @boundary {
+          @defer (when show()) {
+            <app-deferred-widget />
+          } @placeholder {
+            <p>Placeholder</p>
+          }
+        } @error {
+          <p>Fallback: {{ $error.message }}</p>
+        }
+      `,
+    })
+    class Host {
+      show = signal(false);
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Placeholder');
+
+    fixture.componentInstance.show.set(true);
+    await waitFor(() => {
+      throwUnless(fixture.nativeElement.textContent).toContain('Fallback: Deferred widget failed');
+    });
+    expect(fixture.nativeElement.textContent).not.toContain('Placeholder');
+  });
+
+  it('should catch constructor errors from @defer @placeholder block and abort sibling creation', async () => {
+    let siblingCreated = false;
+
+    @Component({
+      selector: 'app-throwing-placeholder',
+      template: '<p>Placeholder</p>',
+    })
+    class ThrowingPlaceholder {
+      constructor() {
+        throw new Error('Placeholder failed');
+      }
+    }
+
+    @Component({
+      selector: 'app-sibling',
+      template: '<p>Sibling</p>',
+    })
+    class Sibling {
+      constructor() {
+        siblingCreated = true;
+      }
+    }
+
+    @Component({
+      imports: [ThrowingPlaceholder, Sibling],
+      template: `
+        @boundary {
+          @defer (on idle) {
+            <p>Loaded</p>
+          } @placeholder {
+            <app-throwing-placeholder />
+          }
+          <app-sibling />
+        } @error {
+          <p>Fallback: {{ $error.message }}</p>
+        }
+      `,
+    })
+    class Host {}
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Fallback: Placeholder failed');
+    expect(siblingCreated).toBe(false);
+  });
+
+  it('should abort refreshView when @defer (when) throws synchronously during update', async () => {
+    let siblingInitialized = false;
+
+    @Component({
+      selector: 'app-throwing-when-placeholder',
+      template: '<p>Placeholder</p>',
+    })
+    class ThrowingWhenPlaceholder {
+      constructor() {
+        throw new Error('When placeholder failed');
+      }
+    }
+
+    @Component({
+      selector: 'app-update-sibling',
+      template: '<p>Sibling</p>',
+    })
+    class UpdateSibling {
+      ngOnInit() {
+        siblingInitialized = true;
+      }
+    }
+
+    @Component({
+      imports: [ThrowingWhenPlaceholder, UpdateSibling],
+      template: `
+        @boundary {
+          @defer (when show()) {
+            <p>Loaded</p>
+          } @placeholder {
+            <app-throwing-when-placeholder />
+          }
+          <app-update-sibling />
+        } @error {
+          <p>Fallback: {{ $error.message }}</p>
+        }
+      `,
+    })
+    class Host {
+      show = signal(false);
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Fallback: When placeholder failed');
+    expect(siblingInitialized).toBe(false);
+  });
+
+  it('should invoke ErrorHandler.onViewError with boundary details for constructor errors inside @defer', async () => {
+    let capturedError: Error | undefined;
+    let capturedDetails: ErrorDetails | undefined;
+
+    const customErrorHandler: ErrorHandler = {
+      handleError: () => {},
+      onViewError: (error: Error, details: ErrorDetails) => {
+        capturedError = error;
+        capturedDetails = details;
+      },
+    };
+
+    @Component({
+      selector: 'app-failing-deferred',
+      template: '<p>Ready</p>',
+    })
+    class FailingDeferred {
+      constructor() {
+        throw new Error('Deferred ctor error');
+      }
+    }
+
+    @Component({
+      imports: [FailingDeferred],
+      template: `
+        @boundary {
+          @defer (on immediate) {
+            <app-failing-deferred />
+          }
+        } @error {
+          <p>Fallback: {{ $error.message }}</p>
+        }
+      `,
+    })
+    class Host {}
+
+    TestBed.configureTestingModule({
+      providers: [{provide: ErrorHandler, useValue: customErrorHandler}],
+    });
+
+    const fixture = TestBed.createComponent(Host);
+    await waitFor(() => {
+      throwUnless(fixture.nativeElement.textContent).toContain('Fallback: Deferred ctor error');
+    });
+    expect(capturedError?.message).toBe('Deferred ctor error');
+    expect(capturedDetails?.boundary?.type).toBe(Host);
+    expect(typeof capturedDetails?.boundary?.reset).toBe('function');
+  });
+
+  it('should catch constructor errors from @defer in the nearest nested @boundary', async () => {
+    @Component({
+      selector: 'app-nested-failing-widget',
+      template: '<p>Ready</p>',
+    })
+    class NestedFailingWidget {
+      constructor() {
+        throw new Error('Nested defer failure');
+      }
+    }
+
+    @Component({
+      imports: [NestedFailingWidget],
+      template: `
+        @boundary {
+          @boundary {
+            @defer (on immediate) {
+              <app-nested-failing-widget />
+            }
+          } @error {
+            <p>Inner fallback: {{ $error.message }}</p>
+          }
+        } @error {
+          <p>Outer fallback: {{ $error.message }}</p>
+        }
+      `,
+    })
+    class Host {}
+
+    const fixture = TestBed.createComponent(Host);
+    await waitFor(() => {
+      throwUnless(fixture.nativeElement.textContent).toContain(
+        'Inner fallback: Nested defer failure',
+      );
+    });
+    expect(fixture.nativeElement.textContent).not.toContain('Outer fallback');
+  });
+
+  it('should catch constructor errors from @defer when rendered via DeferBlockBehavior.Manual', async () => {
+    @Component({
+      selector: 'app-manual-failing-widget',
+      template: '<p>Ready</p>',
+    })
+    class ManualFailingWidget {
+      constructor() {
+        throw new Error('Manual defer failure');
+      }
+    }
+
+    @Component({
+      imports: [ManualFailingWidget],
+      template: `
+        @boundary {
+          @defer (on immediate) {
+            <app-manual-failing-widget />
+          } @placeholder {
+            <p>Placeholder</p>
+          }
+        } @error {
+          <p>Fallback: {{ $error.message }}</p>
+        }
+      `,
+    })
+    class Host {}
+
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Placeholder');
+
+    const [deferBlock] = await fixture.getDeferBlocks();
+    await deferBlock.render(DeferBlockState.Complete);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Fallback: Manual defer failure');
+  });
+
+  it('should intercept constructor errors from @defer using programmatic createComponent onError', async () => {
+    let interceptedError: Error | undefined;
+
+    @Component({
+      selector: 'app-programmatic-failing-widget',
+      template: '<p>Ready</p>',
+    })
+    class ProgrammaticFailingWidget {
+      constructor() {
+        throw new Error('Programmatic defer failure');
+      }
+    }
+
+    @Component({
+      imports: [ProgrammaticFailingWidget],
+      template: `
+        @defer (on immediate) {
+          <app-programmatic-failing-widget />
+        }
+      `,
+    })
+    class DeferHost {}
+
+    @Component({
+      template: '',
+    })
+    class Host {
+      vc = inject(ViewContainerRef);
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    fixture.componentInstance.vc.createComponent(DeferHost, {
+      onError: (error: Error) => {
+        interceptedError = error;
+      },
+    });
+    await waitFor(() => {
+      throwUnless(interceptedError).toBeInstanceOf(Error);
+    });
+    expect(interceptedError?.message).toBe('Programmatic defer failure');
   });
 });
