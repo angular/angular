@@ -7,6 +7,7 @@
  */
 
 import {
+  ArrowFunctionIdentifierParameter,
   AST,
   ASTWithName,
   ASTWithSource,
@@ -620,7 +621,10 @@ export class SymbolBuilder {
     }
 
     const expressionTarget = this.boundTarget.getExpressionTarget(expression);
-    if (expressionTarget !== null) {
+    if (
+      expressionTarget !== null &&
+      !(expressionTarget instanceof ArrowFunctionIdentifierParameter)
+    ) {
       return this.getSymbol(expressionTarget) as
         VariableSymbol | ReferenceSymbol | ExpressionSymbol | LetDeclarationSymbol | null;
     }

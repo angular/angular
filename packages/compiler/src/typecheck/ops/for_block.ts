@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, ImplicitReceiver, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
+import {
+  ArrowFunctionIdentifierParameter,
+  AST,
+  ImplicitReceiver,
+  PropertyRead,
+  ThisReceiver,
+} from '../../expression_parser/ast';
 import {ForLoopBlock, Variable} from '../../render3/r3_ast';
 import {tcbExpression, TcbExpressionTranslator} from './expression';
 import type {Context} from './context';
@@ -98,6 +104,7 @@ export class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
 
       if (
         target !== null &&
+        !(target instanceof ArrowFunctionIdentifierParameter) &&
         (!(target instanceof Variable) || !this.allowedVariables.has(target))
       ) {
         this.tcb.oobRecorder.illegalForLoopTrackAccess(this.tcb.id, this.block, ast);

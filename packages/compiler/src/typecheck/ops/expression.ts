@@ -7,6 +7,7 @@
  */
 
 import {
+  ArrowFunctionIdentifierParameter,
   AST,
   Binary,
   BindingPipe,
@@ -155,7 +156,7 @@ export class TcbExpressionTranslator {
       }
 
       const target = this.tcb.boundTarget.getExpressionTarget(read);
-      if (target === null) {
+      if (target === null || target instanceof ArrowFunctionIdentifierParameter) {
         return null;
       }
 
@@ -303,7 +304,10 @@ export class TcbExpressionTranslator {
   }
 
   private getTargetNodeExpression(targetNode: TemplateEntity, expressionNode: AST): TcbExpr {
-    const expr = this.scope.resolve(targetNode);
+    const expr =
+      targetNode instanceof ArrowFunctionIdentifierParameter
+        ? new TcbExpr(targetNode.name)
+        : this.scope.resolve(targetNode);
     expr.addParseSpanInfo(expressionNode.sourceSpan);
     return expr;
   }
