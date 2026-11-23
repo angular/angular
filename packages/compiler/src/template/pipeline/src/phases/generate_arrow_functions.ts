@@ -23,7 +23,8 @@ export function generateArrowFunctions(job: CompilationJob): void {
         op.kind !== ir.OpKind.Animation &&
         op.kind !== ir.OpKind.AnimationListener &&
         op.kind !== ir.OpKind.Listener &&
-        op.kind !== ir.OpKind.TwoWayListener
+        op.kind !== ir.OpKind.TwoWayListener &&
+        op.kind !== ir.OpKind.RepeaterCreate
       ) {
         addArrowFunctions(unit, op);
       }
