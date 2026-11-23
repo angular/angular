@@ -83,7 +83,7 @@ export class IndexerBoundTemplate implements AbstractBoundTemplate<ClassEntity> 
     return this.toDirectiveRef(consumer);
   }
 
-  getExpressionTarget(ast: AST): TmplAstReference | TmplAstVariable | TmplAstLetDeclaration | null {
+  getExpressionTarget(ast: AST) {
     return this.boundTarget?.getExpressionTarget(ast) ?? null;
   }
 

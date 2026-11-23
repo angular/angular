@@ -672,6 +672,12 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             TSTypeQueryExprName::QualifiedName(qualified) => {
                 self.visit_qualified_name(qualified, query.span, scope)
             }
+            TSTypeQueryExprName::TSImportType(import_type) => {
+                let old_node_id = self.current_node_id.replace(Some(import_type.node_id()));
+                let res = self.visit_import_type(import_type, scope);
+                self.current_node_id.set(old_node_id);
+                res
+            }
             _ => self.dynamic(query.span, DynamicReason::UnsupportedSyntax),
         }
     }
