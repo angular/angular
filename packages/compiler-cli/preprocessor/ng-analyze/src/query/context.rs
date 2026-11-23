@@ -127,12 +127,11 @@ impl QueryContext {
             if let Some(started) = cacheable_epoch {
                 let (remote, handle) = futures::future::ready(res.clone()).remote_handle();
                 let _ = remote.now_or_never();
-                self.engine.cache_if_kind_unchanged(
-                    key,
-                    handle.shared(),
-                    &res.dependencies,
-                    started,
-                );
+                let shared = handle.shared();
+                // Poll once so `Shared::peek` returns the value if evicted before any cache hit.
+                let _ = shared.clone().now_or_never();
+                self.engine
+                    .cache_if_kind_unchanged(key, shared, &res.dependencies, started);
             }
             res
         };

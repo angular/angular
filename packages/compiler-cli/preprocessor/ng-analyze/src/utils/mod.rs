@@ -68,9 +68,8 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
 
     /// Remove every entry whose `SharedQuery` has not completed yet, returning the removed keys.
     ///
-    /// `Shared::peek` is `None` until some `Shared` handle has been polled, and queries like
-    /// `analyze_file_wire` insert a ready `RemoteHandle::shared()` without polling it, so
-    /// `now_or_never()` is checked too.
+    /// `Shared::peek` is `None` until some `Shared` handle has been polled, and a spawned query can
+    /// resolve before any `Shared` handle has been polled, so `now_or_never()` is checked too.
     pub fn remove_incomplete(&self) -> Vec<K> {
         let mut write = self.map.write().unwrap();
         let mut removed = Vec::new();
