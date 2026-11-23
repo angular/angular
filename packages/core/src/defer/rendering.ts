@@ -14,11 +14,13 @@ import {
 } from '../hydration/interfaces';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {ChainedInjector} from '../render3/chained_injector';
+import {handleViewError} from '../render3/instructions/change_detection';
 import {handleUncaughtError} from '../render3/instructions/shared';
 import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../render3/interfaces/view';
+import {getLView} from '../render3/state';
 import {markViewForRefresh, getConstant, getTNode} from '../render3/util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../render3/view_manipulation';
 import {assertDefined} from '../util/assert';
@@ -214,7 +216,21 @@ export function renderDeferBlockState(
     try {
       applyStateFn(newState, lDetails, lContainer, tNode, hostLView);
     } catch (error: unknown) {
-      handleUncaughtError(hostLView, error);
+      // If we are executing synchronously inside `hostLView`'s creation or refresh pass
+      // (e.g. `@placeholder`, `@loading`, `when`, or an already-loaded `@defer` block),
+      // rethrow so `renderView`/`refreshView` aborts immediately and lets enclosing
+      // error boundaries handle it like any other template error.
+      if (getLView() === hostLView) {
+        throw error;
+      }
+      // For asynchronous state transitions (e.g. after chunk loading, timers, or DOM triggers),
+      // route the error through any enclosing error boundary before falling back to the
+      // application error handler.
+      try {
+        handleViewError(hostLView, error);
+      } catch (unhandledError: unknown) {
+        handleUncaughtError(hostLView, unhandledError);
+      }
     }
   }
 }
