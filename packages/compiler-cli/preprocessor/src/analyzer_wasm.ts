@@ -10,8 +10,7 @@ import type * as nga from './types.js';
 import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
-export type ModuleFormat = 'ts' | 'tsx' | 'dts' | 'js' | 'jsx';
-export type {IdKind, ModuleRef} from './types.js';
+export type {IdKind, ModuleFormat, ModuleRef} from './types.js';
 
 export interface HostItemError {
   error: string;
@@ -31,10 +30,18 @@ export interface ResolveResult {
   id: string;
   /** Required: the adapter knows its ID scheme; the core never guesses. */
   idKind: nga.IdKind;
-  /** Optional here if provided on `LoadResult`; required on at least one of the two for modules. */
-  format?: ModuleFormat;
+  /**
+   * Module syntax format (`LoadResult.format` overrides when both are set). Required on at least
+   * one of `ResolveResult` or `LoadResult` for `'virtual'` modules and `'path'` modules without a
+   * standard TS/JS extension.
+   */
+  format?: nga.ModuleFormat;
   external?: boolean;
-  /** Optional inline content: saves the follow-up `load` round trip when the adapter already has it. */
+  /**
+   * Optional inline content: saves the follow-up `load` round trip when the adapter already has it.
+   * No `load` follows, so `'virtual'` modules and `'path'` modules without a standard TS/JS
+   * extension that supply `code` must also supply `format` here, or loading them fails.
+   */
   code?: string;
 }
 
@@ -61,8 +68,12 @@ export interface LoadRequest {
 
 export interface LoadResult {
   code: string;
-  /** Required for `'module'` loads unless `ResolveResult.format` was already supplied. */
-  format?: ModuleFormat;
+  /**
+   * Authoritative module syntax format (`LoadResult.format` > `ResolveResult.format` > standard
+   * `'path'` extension fallback). Required for `'virtual'` modules and custom-extension `'path'`
+   * modules when `ResolveResult.format` was not supplied.
+   */
+  format?: nga.ModuleFormat;
 }
 
 export interface AnalyzerHost {
@@ -180,7 +191,7 @@ interface PendingMetadataRequest {
   reject: (err: Error) => void;
 }
 
-const MODULE_FORMATS: ReadonlySet<unknown> = new Set<ModuleFormat>([
+const MODULE_FORMATS: ReadonlySet<unknown> = new Set<nga.ModuleFormat>([
   'ts',
   'tsx',
   'dts',
@@ -224,7 +235,7 @@ function normalizeResolveResult(slot: Record<string, unknown>): ResolveResult | 
   }
   const normalized: ResolveResult = {id, idKind};
   if (format !== undefined && format !== null) {
-    normalized.format = format as ModuleFormat;
+    normalized.format = format as nga.ModuleFormat;
   }
   if (external !== undefined) {
     normalized.external = external;
@@ -251,7 +262,7 @@ function normalizeLoadResult(slot: Record<string, unknown>): LoadResult | string
   }
   const normalized: LoadResult = {code};
   if (format !== undefined && format !== null) {
-    normalized.format = format as ModuleFormat;
+    normalized.format = format as nga.ModuleFormat;
   }
   return normalized;
 }

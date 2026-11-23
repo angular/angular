@@ -229,7 +229,7 @@ async fn resolve_host_directive(
     let mut invalid_reason = None;
     if ctx.engine.reference_strategy.uses_owning_reference()
         && reference.owning_reference.is_none()
-        && (crate::utils::is_dts(declaring_file_path)
+        && (ctx.engine.is_dts_file(declaring_file_id)
             || ctx.engine.lookup_external(declaring_file_id))
     {
         if let Some(owning) = parent_owning {
@@ -460,7 +460,7 @@ async fn validate_own_host_directives(
 
         let host_meta = flatten_class_info(class_info, ctx).await;
         let class_name = host_meta.class_name.clone();
-        let is_dts = crate::utils::is_dts(&ctx.engine.lookup_path(resolved.decl_file_id));
+        let is_dts = ctx.engine.is_dts_file(resolved.decl_file_id);
         if !crate::query::module_scope::is_standalone_class(&host_meta, is_dts) {
             push(
                 crate::ErrorCode::HOST_DIRECTIVE_NOT_STANDALONE,

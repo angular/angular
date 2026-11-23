@@ -18,7 +18,6 @@ use crate::compiler::decorators::ng_module::optimize_ng_module;
 use crate::query::keys::{CachedResult, QueryKey, QueryValue};
 use crate::query::{FileId, FileIdInterner, QueryContext};
 use crate::resource_registry::ResourceRegistry;
-use crate::utils::is_ts_source;
 use crate::{ClassInfo, FileData, NgModuleComponentMap};
 
 /// Cheap-to-clone handle to the [`QueryEngine`] that is captured into every query body. Sub-queries
@@ -330,49 +329,42 @@ impl QueryEngine {
 
     /// Intern a module a host or direct-entry `ModuleRef` reported. The authoritative `id_kind`
     /// wins over the kind the module was interned with before (preserving any existing `external`
-    /// flag), and whatever was computed under the previous kind is evicted
+    /// flag and `format`), and whatever was computed under the previous kind is evicted
     /// ([`Self::kind_changed`]).
     pub fn intern_resolved(
         &self,
         id: &crate::host::ModuleId,
         id_kind: crate::host::IdKind,
     ) -> FileId {
-        self.intern_resolved_tracked(id, id_kind, None).0
+        self.intern_resolved_tracked(id, id_kind, None, None).0
     }
 
-    /// [`Self::intern_resolved`], optionally recording `external` and reporting whether the host's
-    /// `id_kind` replaced the kind the module was interned with before. A replaced `id_kind` or
-    /// `external` flag evicts what was computed under the previous one.
-    fn intern_resolved_tracked(
+    /// [`Self::intern_resolved`], optionally recording `external` and `format`, and reporting
+    /// whether the host's `id_kind` replaced the kind the module was interned with before. A
+    /// replaced `id_kind`, `external` flag, or effective [`crate::host::ModuleFormat`] evicts what
+    /// was computed under the previous one.
+    pub(crate) fn intern_resolved_tracked(
         &self,
         id: &crate::host::ModuleId,
         id_kind: crate::host::IdKind,
         external: Option<bool>,
+        format: Option<crate::host::ModuleFormat>,
     ) -> (FileId, bool) {
+        self.host.record_id_kind(id, id_kind);
         let backing = match id_kind {
             crate::host::IdKind::Path => self.host.resolve_backing_path(Path::new(id.as_str())),
             crate::host::IdKind::Virtual => None,
         };
-        let (file_id, previous_kind, changed) = match (backing, external) {
-            (Some(backing), Some(ext)) => self.interner.intern_authoritative_module_tracked(
+        let (file_id, previous_kind, changed) = match backing {
+            Some(backing) => self.interner.intern_authoritative_with_meta(
                 crate::host::ModuleId::from_path(&backing).as_str(),
                 crate::host::IdKind::Path,
-                ext,
+                external,
+                format,
             ),
-            (Some(backing), None) => {
-                let (fid, prev) = self.interner.intern_authoritative(
-                    crate::host::ModuleId::from_path(&backing).as_str(),
-                    crate::host::IdKind::Path,
-                );
-                (fid, prev, prev.is_some())
-            }
-            (None, Some(ext)) => self
+            None => self
                 .interner
-                .intern_authoritative_module_tracked(id.as_str(), id_kind, ext),
-            (None, None) => {
-                let (fid, prev) = self.interner.intern_authoritative(id.as_str(), id_kind);
-                (fid, prev, prev.is_some())
-            }
+                .intern_authoritative_with_meta(id.as_str(), id_kind, external, format),
         };
         if changed {
             self.kind_changed(file_id);
@@ -416,6 +408,29 @@ impl QueryEngine {
 
     pub fn lookup_external(&self, id: FileId) -> bool {
         self.interner.lookup_external(id)
+    }
+
+    pub fn lookup_format(&self, id: FileId) -> Option<crate::host::ModuleFormat> {
+        self.interner.lookup_format(id)
+    }
+
+    pub fn lookup_effective_format(&self, id: FileId) -> Option<crate::host::ModuleFormat> {
+        self.interner.lookup_effective_format(id)
+    }
+
+    pub fn is_dts_file(&self, id: FileId) -> bool {
+        self.interner
+            .try_lookup_effective_format(id)
+            .is_some_and(crate::host::ModuleFormat::is_dts)
+    }
+
+    fn record_parsed_format(&self, file_id: FileId, format: crate::host::ModuleFormat) {
+        if self.interner.record_parsed_format(file_id, format) {
+            let importers = self.resolution_cache.importers_of(file_id);
+            if !importers.is_empty() {
+                self.evict_importers_preserving_parse(importers);
+            }
+        }
     }
 
     pub fn lookup_module(&self, id: FileId) -> (crate::host::ModuleId, crate::host::IdKind) {
@@ -473,6 +488,7 @@ impl QueryEngine {
                     &resolved.id,
                     resolved.id_kind,
                     Some(resolved.external),
+                    resolved.format,
                 );
                 kind_changed = changed;
                 Ok(Some((target_id, resolved)))
@@ -485,9 +501,9 @@ impl QueryEngine {
         // before resolutions were cached, rather than be served this answer. Until a later lookup
         // is memoized, `importer` is not indexed under the target.
         //
-        // One that only changed the target's `external` flag is memoized: a path interned before
-        // its first resolution starts out non-external, the answer already carries the flag, and
-        // an importer other than the target is not re-run to ask again.
+        // One that only changed the target's `external` flag or `format` is memoized: an entry
+        // interned before its first resolution starts out with defaults, the answer already carries
+        // the authoritative metadata, and importers do not need to re-ask the host.
         if !kind_changed {
             self.resolution_cache
                 .insert(importer, key, outcome.clone(), generation);
@@ -745,10 +761,7 @@ impl QueryEngine {
             && evicted_keys
                 .iter()
                 .all(|key| *key == QueryKey::AmbientModuleFiles)
-            && self
-                .interner
-                .try_lookup_path(file_id)
-                .is_some_and(|path| crate::utils::is_dts(&path))
+            && self.is_dts_file(file_id)
     }
 
     /// Evict only the syntactic/semantic/wire queries of `path` after an external template or
@@ -1510,10 +1523,17 @@ impl QueryEngine {
         file_id: FileId,
     ) -> Option<crate::AnalysisResult> {
         let (_, id_kind) = self.lookup_module(file_id);
-        if id_kind == crate::host::IdKind::Path
-            && !crate::utils::is_ts_file(&self.lookup_path(file_id))
-        {
-            return None;
+        if id_kind == crate::host::IdKind::Path {
+            let path = self.lookup_path(file_id);
+            if self.host.is_synchronous() {
+                if !crate::utils::is_ts_file(&path) {
+                    return None;
+                }
+            } else if self.lookup_format(file_id).is_none()
+                && crate::utils::is_known_non_module_asset(&path)
+            {
+                return None;
+            }
         }
         self.ensure_singletons_fresh(true).await;
         let ctx = QueryContext::new(self.clone());
@@ -1616,10 +1636,7 @@ impl QueryEngine {
         let (module_id, id_kind) = self.lookup_module(file_id);
         let file_path = self.lookup_path(file_id);
         let external = self.lookup_external(file_id);
-        // TODO(ngp-host-h6): reuse inline `ResolvedModule::code` only from an answer the host just
-        // gave, not from `ResolutionCache` (which memoizes `ResolvedModule` across edits to the
-        // target and would otherwise serve stale text).
-        let (source_text, host_format, cache_key, loaded) = match self
+        let (source_text, effective_format, cache_key, loaded) = match self
             .host
             .load(&module_id, crate::host::LoadKind::Module, external)
             .await
@@ -1630,16 +1647,39 @@ impl QueryEngine {
             // the bulk of a request's analysis time. Reuse the parse across analyzers while the
             // file's text is unchanged.
             Ok(Some(loaded)) => {
-                let is_dts_path =
-                    id_kind == crate::host::IdKind::Path && crate::utils::is_dts(&file_path);
-                let cache_key =
-                    is_dts_path.then(|| shared_dts_parse_cache::SourceKey::of(&loaded.code));
-                if let Some(key) = &cache_key {
-                    if let Some(parsed) = shared_dts_parse_cache::get(&file_path, key) {
-                        return parsed;
+                let effective = loaded
+                    .format
+                    .or_else(|| self.lookup_format(file_id))
+                    .or_else(|| {
+                        (id_kind == crate::host::IdKind::Path)
+                            .then(|| crate::host::ModuleFormat::from_path(&file_path))
+                            .flatten()
+                    })
+                    .or_else(|| {
+                        (id_kind == crate::host::IdKind::Virtual && self.host.is_synchronous())
+                            .then_some(crate::host::ModuleFormat::Ts)
+                    });
+                if let Some(fmt) = effective {
+                    self.record_parsed_format(file_id, fmt);
+                    let is_dts_path = id_kind == crate::host::IdKind::Path && fmt.is_dts();
+                    let cache_key =
+                        is_dts_path.then(|| shared_dts_parse_cache::SourceKey::of(&loaded.code));
+                    if let Some(key) = &cache_key {
+                        if let Some(parsed) = shared_dts_parse_cache::get(&file_path, key) {
+                            return parsed;
+                        }
                     }
+                    (loaded.code.to_string(), Some(fmt), cache_key, true)
+                } else {
+                    #[allow(clippy::print_stderr)]
+                    {
+                        eprintln!(
+                            "Warning: Failed to read '{}': module format is required",
+                            module_id
+                        );
+                    }
+                    (String::new(), None, None, false)
                 }
-                (loaded.code.to_string(), loaded.format, cache_key, true)
             }
             Ok(None) => {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
@@ -1663,21 +1703,15 @@ impl QueryEngine {
         };
         let cache_entry = cache_key.map(|key| (file_path.clone(), key));
 
-        // TODO(ngp-host-h6): fall back to `ResolvedModule::format` when `LoadedModule::format` is `None`.
-        let source_type = match id_kind {
-            crate::host::IdKind::Path => oxc_span::SourceType::from_path(&file_path)
-                .ok()
-                .or_else(|| host_format.map(crate::host::ModuleFormat::to_oxc_source_type))
-                .unwrap_or_else(oxc_span::SourceType::ts),
-            crate::host::IdKind::Virtual => host_format
-                .map(crate::host::ModuleFormat::to_oxc_source_type)
-                .unwrap_or_else(oxc_span::SourceType::ts),
-        };
+        let source_type = effective_format
+            .map(crate::host::ModuleFormat::to_oxc_source_type)
+            .unwrap_or_else(oxc_span::SourceType::ts);
 
         let owner = crate::ParsedFileOwner {
             file_path,
             source_text,
             loaded,
+            format: effective_format,
             allocator: oxc_allocator::Allocator::default(),
         };
 
@@ -1706,7 +1740,7 @@ impl QueryEngine {
             }
         });
 
-        let counter = if crate::utils::is_dts(&parsed.borrow_owner().file_path) {
+        let counter = if effective_format.is_some_and(crate::host::ModuleFormat::is_dts) {
             crate::perf::Counter::DtsFilesParsed
         } else {
             crate::perf::Counter::TsFilesParsed
@@ -1727,22 +1761,11 @@ impl QueryEngine {
         ctx: &QueryContext,
     ) -> Arc<FileData> {
         let parsed = ctx.parse_file(file_id).await;
-        let (module_id, id_kind) = self.lookup_module(file_id);
+        let module_id = self.lookup_id(file_id);
         let file_path = self.lookup_path(file_id);
+        let parsed_format = parsed.lock().unwrap().borrow_owner().format;
 
-        let is_dts_file = match id_kind {
-            crate::host::IdKind::Path => crate::utils::is_dts(&file_path),
-            crate::host::IdKind::Virtual => {
-                let guard = parsed.lock().unwrap();
-                guard
-                    .borrow_dependent()
-                    .program
-                    .source_type
-                    .is_typescript_definition()
-            }
-        };
-
-        if is_dts_file {
+        if parsed_format.is_some_and(crate::host::ModuleFormat::is_dts) {
             let (converter, result, errors) = {
                 let guard = parsed.lock().unwrap();
                 let source_text = &guard.borrow_owner().source_text;
@@ -1763,6 +1786,7 @@ impl QueryEngine {
             return Arc::new(FileData {
                 file_id,
                 file_path,
+                format: parsed_format,
                 converter,
                 imports_end: 0,
                 classes: result.classes,
@@ -1840,13 +1864,20 @@ impl QueryEngine {
                 if resolved.external {
                     return None;
                 }
-                let is_program_ts_source = match resolved.id_kind {
-                    crate::host::IdKind::Path => is_ts_source(Path::new(resolved.id.as_str())),
-                    crate::host::IdKind::Virtual => resolved
-                        .format
-                        .is_some_and(crate::host::ModuleFormat::is_ts_source),
+                let target_format = match self.lookup_effective_format(target_id) {
+                    Some(fmt) => Some(fmt),
+                    None => {
+                        ctx.parse_file(target_id)
+                            .await
+                            .lock()
+                            .unwrap()
+                            .borrow_owner()
+                            .format
+                    }
                 };
-                is_program_ts_source.then(|| self.lookup_path(target_id))
+                target_format
+                    .is_some_and(crate::host::ModuleFormat::is_ts_source)
+                    .then(|| self.lookup_path(target_id))
             }))
         };
 
@@ -1873,6 +1904,7 @@ impl QueryEngine {
         Arc::new(FileData {
             file_id,
             file_path,
+            format: parsed_format,
             converter,
             imports_end: analysis.imports_end,
             classes: analysis.classes,
@@ -2069,11 +2101,11 @@ impl QueryEngine {
                     .map(|&file_id| ctx.analyze_file_syntax(file_id)),
             )
             .await;
-            program_files.extend(
-                frontier
-                    .drain(..)
-                    .filter(|&file_id| !self.lookup_external(file_id)),
-            );
+            for (file_id, file) in frontier.drain(..).zip(syntax.iter()) {
+                if !self.lookup_external(file_id) && !file.is_dts() {
+                    program_files.push(file_id);
+                }
+            }
             frontier = syntax
                 .iter()
                 .flat_map(|file| file.program_dependencies())
@@ -5399,7 +5431,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
 
@@ -5510,7 +5541,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Dts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -5520,7 +5550,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
 
@@ -5629,17 +5658,22 @@ mod tests {
 
         let lib = "/kind_change_rerun/lib.ts";
         // `lib.ts` is interned as a path, as a bare-string root would be. Its syntax analysis
-        // resolves its own import, for which the host reports `reported_kind`.
+        // resolves its own import, for which the host reports `reported_kind`. The host loads it
+        // without a format: a path is then read as TypeScript by its extension, while a virtual ID
+        // takes the declaration format its resolution reports.
         let analyze = |reported_kind: IdKind| {
+            let reported_format = match reported_kind {
+                IdKind::Path => None,
+                IdKind::Virtual => Some(ModuleFormat::Dts),
+            };
             let mut resolutions = HashMap::new();
             resolutions.insert(
                 (lib.to_owned(), "./lib".to_owned()),
                 ResolvedModule {
                     id: ModuleId::new(lib),
                     id_kind: reported_kind,
-                    format: Some(ModuleFormat::Dts),
+                    format: reported_format,
                     external: false,
-                    code: None,
                 },
             );
             let mut modules = HashMap::new();
@@ -5652,7 +5686,7 @@ mod tests {
                          @Component({ selector: 'lib-cmp', template: '' })\n\
                          export class LibCmp {}\n",
                     ),
-                    format: Some(ModuleFormat::Dts),
+                    format: None,
                 },
             );
             let host = Arc::new(AsyncMemoryHost {
@@ -5820,7 +5854,6 @@ mod tests {
                     id_kind: IdKind::Path,
                     format: Some(ModuleFormat::Ts),
                     external: false,
-                    code: None,
                 },
             );
         }
@@ -5979,7 +6012,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -5989,7 +6021,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6002,7 +6033,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6012,7 +6042,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6025,7 +6054,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Dts),
                 external: true,
-                code: None,
             },
         );
 
@@ -6039,7 +6067,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6052,7 +6079,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6065,7 +6091,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
 
@@ -6320,7 +6345,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6330,7 +6354,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6343,7 +6366,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6353,7 +6375,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6363,7 +6384,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6373,7 +6393,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         // `/@ext/ui` is registered only from `app_mod` (`IdKind::Virtual`), not from `ext_ui_mod`,
@@ -6385,7 +6404,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6398,7 +6416,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6411,7 +6428,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6424,7 +6440,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         // The bare `@ext/bare-ui` is likewise registered only from `app_mod`, so its barrel is
@@ -6436,7 +6451,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6449,7 +6463,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6462,7 +6475,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6475,7 +6487,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
 
@@ -6739,7 +6750,6 @@ mod tests {
                 id_kind,
                 format: Some(crate::host::ModuleFormat::Ts),
                 external: false,
-                code: None,
             })))
         }
 
@@ -6838,7 +6848,6 @@ mod tests {
                 id_kind: IdKind::Virtual,
                 format: Some(ModuleFormat::Dts),
                 external: false,
-                code: None,
             },
         );
         let mut modules = HashMap::new();
@@ -6938,7 +6947,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Dts),
                 external: false,
-                code: None,
             },
         );
         // `pkg-a` is nested under `pkg-wrapper/node_modules`, so neither `/app/app.ts` nor the
@@ -6950,7 +6958,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Dts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6960,7 +6967,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Dts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -6970,7 +6976,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Dts),
                 external: false,
-                code: None,
             },
         );
 
@@ -7131,7 +7136,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         resolutions.insert(
@@ -7145,7 +7149,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
 
@@ -7280,7 +7283,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
         let evicted = engine.clear_resolution_cache();
@@ -7372,7 +7374,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: true,
-                code: None,
             },
         );
         let engine = QueryEngine::new_default_with_host(
@@ -7457,7 +7458,6 @@ mod tests {
                 id_kind: IdKind::Path,
                 format: Some(ModuleFormat::Ts),
                 external: false,
-                code: None,
             },
         );
 
@@ -7581,7 +7581,6 @@ mod tests {
                             id_kind: IdKind::Path,
                             format: ModuleFormat::from_path(Path::new(target)),
                             external: false,
-                            code: None,
                         },
                     )
                 })

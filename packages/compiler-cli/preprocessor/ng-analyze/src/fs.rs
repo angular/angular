@@ -433,8 +433,8 @@ impl OverlayFileSystem {
             return true;
         };
 
-        let check_allowed =
-            crate::utils::is_ts_source(path) || path.extension().is_some_and(|e| e == "js");
+        let check_allowed = crate::host::ModuleFormat::from_path(path)
+            .is_some_and(crate::host::ModuleFormat::is_compilation_root);
         if !check_allowed {
             return true;
         }
@@ -1181,9 +1181,23 @@ mod tests {
         // Blocked TS file
         assert!(!fs.is_allowed(Path::new("/project/blocked.ts")));
 
+        // Every other compilation-root extension is gated too, not just `.ts` and `.js`.
+        for blocked in [
+            "/project/blocked.tsx",
+            "/project/blocked.mts",
+            "/project/blocked.cts",
+            "/project/blocked.js",
+            "/project/blocked.jsx",
+            "/project/blocked.mjs",
+            "/project/blocked.cjs",
+        ] {
+            assert!(!fs.is_allowed(Path::new(blocked)), "{blocked} should be blocked");
+        }
+
         // Blocked .d.ts file (should be allowed automatically, not in allowed list)
         assert!(fs.is_allowed(Path::new("/project/blocked.d.ts")));
         assert!(fs.is_allowed(Path::new("/project/allowed.d.ts")));
+        assert!(fs.is_allowed(Path::new("/project/blocked.d.mts")));
 
         // JSON file (should be allowed automatically, not in allowed list)
         assert!(fs.is_allowed(Path::new("/project/tsconfig.json")));

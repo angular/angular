@@ -22,6 +22,8 @@ import {
   type ModuleFormat,
   type ResolveRequest,
   type ResolveResult,
+  type WasmHostFs,
+  type WasmInner,
 } from '../api.js';
 import {resolveFixtureNodeModules, resolveWasmBinding} from './utils.js';
 
@@ -909,6 +911,255 @@ export class ExtApp {}
       const content = await analyzer.getFileContent(extDtsPath);
       expect(content).toBe(extDtsContent);
       expect(observedLoadRequests).toEqual([{id: extDtsPath, kind: 'module', external: true}]);
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('compiles mixed-format apps (ts, tsx, jsx, js, virtual dts, custom .ng) with zero WasmHostFs calls', async () => {
+    const wasmSpec = resolveWasmBinding();
+    const req = createRequire(import.meta.url);
+    const wasmMod = req(wasmSpec) as {
+      WasmAnalyzer: new (
+        optionsJson: string,
+        hostFs?: WasmHostFs | null,
+        useBatchingHost?: boolean,
+      ) => WasmInner;
+    };
+
+    const wasmFsCalls: string[] = [];
+    const recordFsCall = (op: string, p: string): never => {
+      wasmFsCalls.push(`${op}:${p}`);
+      throw new Error(`Unexpected WasmHostFs.${op}(${p}) in host mode`);
+    };
+    const spyHostFs: WasmHostFs = {
+      read: (p) => recordFsCall('read', p),
+      metadata: (p) => recordFsCall('metadata', p),
+      symlinkMetadata: (p) => recordFsCall('symlinkMetadata', p),
+      readLink: (p) => recordFsCall('readLink', p),
+      canonicalize: (p) => recordFsCall('canonicalize', p),
+      readDir: (p) => recordFsCall('readDir', p),
+    };
+
+    const virtDtsId = '\0virtual:ui-dts';
+    const virtTsId = '\0virtual:typed-cmp';
+    const sources = new Map<string, {code: string; format?: ModuleFormat}>([
+      [
+        '/h6/app.ng',
+        {
+          format: 'ts',
+          code: `import {NgModule} from '@angular/core';
+import {CardCmp} from './card';
+import {VirtDtsDir} from 'virtual:ui-dts';
+import {VirtTypedCmp} from 'virtual:typed-cmp';
+
+@NgModule({
+  declarations: [CardCmp],
+  imports: [VirtDtsDir, VirtTypedCmp],
+  exports: [CardCmp],
+})
+export class AppModule {}
+`,
+        },
+      ],
+      [
+        '/h6/card.ng',
+        {
+          format: 'ts',
+          code: `import {Component, signal} from '@angular/core';
+
+@Component({
+  selector: 'app-card',
+  standalone: false,
+  template: '<div virtDtsDir><virt-typed></virt-typed></div>',
+})
+export class CardCmp {
+  count = signal(0);
+}
+`,
+        },
+      ],
+      [
+        virtTsId,
+        {
+          format: 'ts',
+          code: `import {Component, signal} from '@angular/core';
+
+@Component({
+  selector: 'virt-typed',
+  template: '<span>{{ label() }}</span>',
+})
+export class VirtTypedCmp {
+  label = signal('ok');
+}
+`,
+        },
+      ],
+      [
+        '/h6/tsx_in_ts.ts',
+        {
+          format: 'tsx',
+          code: `import {Component, signal} from '@angular/core';
+
+const banner = <aside className="tsx">banner</aside>;
+
+@Component({
+  selector: 'tsx-cmp',
+  template: '<p>tsx</p>',
+})
+export class TsxInTsCmp {
+  flag = signal(1);
+  view = banner;
+}
+`,
+        },
+      ],
+      [
+        '/h6/jsx_in_js.js',
+        {
+          format: 'jsx',
+          code: `export const footer = <footer>ok</footer>;\n`,
+        },
+      ],
+      [
+        '/h6/plain.js',
+        {
+          // Deliberately omit `format` to exercise `ModuleFormat::from_path` fallback for `idKind: 'path'`.
+          code: `export const PLAIN = 42;\n`,
+        },
+      ],
+    ]);
+
+    const virtDtsCode = `import * as i0 from '@angular/core';
+export declare class VirtDtsDir {
+  static ɵdir: i0.ɵɵDirectiveDeclaration<VirtDtsDir, '[virtDtsDir]', never, {}, {}, never, never, true, never>;
+}
+`;
+
+    const {host: tsFallbackHost} = createTsTestHost(new Map(), resolveFixtureNodeModules());
+    const host: AnalyzerHost = {
+      async resolve(requests) {
+        const fallback = await tsFallbackHost.resolve(requests);
+        return requests.map((r, idx): ResolveResult | null => {
+          if (r.specifier === './card') {
+            return {id: '/h6/card.ng', idKind: 'path', format: 'ts'};
+          }
+          if (r.specifier === 'virtual:ui-dts') {
+            return {
+              id: virtDtsId,
+              idKind: 'virtual',
+              format: 'dts',
+              external: true,
+              code: virtDtsCode,
+            };
+          }
+          if (r.specifier === 'virtual:typed-cmp') {
+            return {id: virtTsId, idKind: 'virtual', format: 'ts'};
+          }
+          return fallback[idx] as ResolveResult | null;
+        });
+      },
+      async load(requests) {
+        const fallback = await tsFallbackHost.load(requests);
+        return requests.map((r, idx): LoadResult | null => {
+          const entry = sources.get(r.id);
+          if (entry !== undefined) {
+            return entry.format !== undefined
+              ? {code: entry.code, format: entry.format}
+              : {code: entry.code};
+          }
+          return fallback[idx] as LoadResult | null;
+        });
+      },
+    };
+
+    // BatchingHost refuses to attach a WasmHostFs bridge (`NoopFs` is wired unconditionally), and
+    // `createAnalyzer({host})` cannot take a `hostFs` either, which is what guarantees the compile
+    // below never touches a host filesystem.
+    expect(() => new wasmMod.WasmAnalyzer(JSON.stringify({}), spyHostFs, true)).toThrowMatching(
+      (err: unknown) => String(err).includes('host_fs cannot be combined with BatchingHost'),
+    );
+    expect(wasmFsCalls).toEqual([]);
+
+    const analyzer = await createAnalyzer({
+      host,
+      wasmBinding: wasmSpec,
+      entryPoints: ['/h6/app.ng', '/h6/tsx_in_ts.ts', '/h6/jsx_in_js.js', '/h6/plain.js'],
+      optimize: true,
+    });
+
+    try {
+      const compiler = new HybridCompiler(analyzer, {optimize: true, rootDir: '/h6'});
+      const out = await compiler.compile();
+
+      expect(compiler.getDiagnostics()).toEqual([]);
+
+      // Custom `.ng` files and virtual `'ts'` module get `emitTypes === true` (`as []` on signal debugName).
+      const cardJs = out.get('/h6/card.ng')!.magicString.toString();
+      expect(cardJs).toContain('ɵɵdefineComponent');
+      expect(cardJs).toContain('VirtDtsDir');
+      expect(cardJs).toContain('VirtTypedCmp');
+      expect(cardJs).toContain('as []');
+
+      const virtTypedJs = out.get(virtTsId)!.magicString.toString();
+      expect(virtTypedJs).toContain('ɵɵdefineComponent');
+      expect(virtTypedJs).toContain('as []');
+
+      // `.ts` file overridden by host to `format: 'tsx'` parses JSX cleanly and suppresses TS casts.
+      const tsxJs = out.get('/h6/tsx_in_ts.ts')!.magicString.toString();
+      expect(tsxJs).toContain('ɵɵdefineComponent');
+      expect(tsxJs).toContain('/* @ts-ignore */');
+      expect(tsxJs).not.toContain('as []');
+
+      expect(out.has('/h6/jsx_in_js.js')).toBe(true);
+      expect(out.has('/h6/plain.js')).toBe(true);
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('rejects virtual and custom-extension module loads without format while standard paths fall back', async () => {
+    const virtMissingId = '\0virtual:no-format';
+    const customMissingId = '/h6/no-format.ng';
+    const stdFallbackId = '/h6/fallback.mts';
+
+    const {host: tsFallbackHost} = createTsTestHost(new Map(), resolveFixtureNodeModules());
+    const host: AnalyzerHost = {
+      resolve: (requests) => tsFallbackHost.resolve(requests),
+      async load(requests) {
+        const fallback = await tsFallbackHost.load(requests);
+        return requests.map((r, idx): LoadResult | null => {
+          if (r.id === virtMissingId || r.id === customMissingId || r.id === stdFallbackId) {
+            return {
+              code: `import {Component} from '@angular/core';
+@Component({selector: 'x-cmp', template: ''})
+export class XCmp {}
+`,
+            };
+          }
+          return fallback[idx] as LoadResult | null;
+        });
+      },
+    };
+
+    const analyzer = await createAnalyzer({
+      host,
+      wasmBinding: resolveWasmBinding(),
+      entryPoints: [stdFallbackId],
+      optimize: true,
+    });
+
+    try {
+      const virtMeta = await analyzer.getMetadataForFile({id: virtMissingId, idKind: 'virtual'});
+      expect(virtMeta).toBeNull();
+
+      const customMeta = await analyzer.getMetadataForFile(customMissingId);
+      expect(customMeta).toBeNull();
+
+      const stdMeta = await analyzer.getMetadataForFile(stdFallbackId);
+      expect(stdMeta).not.toBeNull();
+      expect(stdMeta?.format).toBe('ts');
+      expect(stdMeta?.classes.map((c) => c.className)).toEqual(['XCmp']);
     } finally {
       analyzer.close();
     }

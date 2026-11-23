@@ -78,3 +78,25 @@ fn test_is_compilation_root() {
     assert!(!super::is_compilation_root(Path::new("foo.html")));
     assert!(!super::is_compilation_root(Path::new("foo.css")));
 }
+
+#[test]
+fn test_is_known_non_module_asset() {
+    use std::path::Path;
+    for asset in [
+        "a.html", "a.htm", "a.svg", "a.css", "a.scss", "a.sass", "a.less", "a.styl", "a.json",
+        "a.HTML", "a.Css", "tsconfig.JSON",
+    ] {
+        assert!(
+            super::is_known_non_module_asset(Path::new(asset)),
+            "{asset} should be a known non-module asset"
+        );
+    }
+    // Module-like and custom extensions (which an asynchronous host may supply a format for) and
+    // extensionless IDs are not short-circuited.
+    for module in ["a.ts", "a.d.ts", "a.js", "a.tsx", "a.ng", "a.html.ts", "no_ext"] {
+        assert!(
+            !super::is_known_non_module_asset(Path::new(module)),
+            "{module} should not be a known non-module asset"
+        );
+    }
+}

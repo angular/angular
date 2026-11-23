@@ -133,23 +133,6 @@ pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(
     )
 }
 
-pub(crate) fn is_ts_source(path: &Path) -> bool {
-    let Some(ext) = path.extension() else {
-        return false;
-    };
-    if ext != "ts" {
-        return false;
-    }
-    let Some(file_name) = path.file_name() else {
-        return false;
-    };
-    if let Some(s) = file_name.to_str() {
-        !s.ends_with(".d.ts")
-    } else {
-        !file_name.to_string_lossy().ends_with(".d.ts")
-    }
-}
-
 pub(crate) fn is_dts(path: &Path) -> bool {
     crate::host::ModuleFormat::from_path(path).is_some_and(crate::host::ModuleFormat::is_dts)
 }
@@ -168,6 +151,22 @@ pub(crate) fn is_ts_file(path: &Path) -> bool {
 pub(crate) fn is_compilation_root(path: &Path) -> bool {
     crate::host::ModuleFormat::from_path(path)
         .is_some_and(crate::host::ModuleFormat::is_compilation_root)
+}
+
+/// Whether `path` has a well-known non-module resource or config extension (templates,
+/// stylesheets, JSON) that should not be probed as a module unless a host explicitly resolved it
+/// with a [`crate::host::ModuleFormat`].
+pub(crate) fn is_known_non_module_asset(path: &Path) -> bool {
+    const NON_MODULE_EXTENSIONS: [&str; 9] = [
+        "html", "htm", "svg", "css", "scss", "sass", "less", "styl", "json",
+    ];
+    path.extension()
+        .and_then(|ext| ext.to_str())
+        .is_some_and(|ext| {
+            NON_MODULE_EXTENSIONS
+                .iter()
+                .any(|known| ext.eq_ignore_ascii_case(known))
+        })
 }
 
 #[cfg(test)]

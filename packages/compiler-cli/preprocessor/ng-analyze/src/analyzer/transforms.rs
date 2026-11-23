@@ -680,12 +680,16 @@ async fn imported_function_facts(
     else {
         return None;
     };
-    let declared = if crate::utils::is_dts(&resolved.file_path) {
+    let file_id = resolved
+        .export_hops
+        .first()
+        .map(|&(fid, _)| fid)
+        .unwrap_or_else(|| ctx.engine.intern_entry_or_dep(&resolved.file_path));
+    let declared = if ctx.engine.is_dts_file(file_id) {
         Declared::Declarations
     } else {
         Declared::OtherFile
     };
-    let file_id = ctx.engine.intern_path(&resolved.file_path);
     let syntax = ctx.analyze_file_syntax(file_id).await;
     let parsed = ctx.parse_file(file_id).await;
     let symbol_name = {

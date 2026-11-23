@@ -143,6 +143,18 @@ impl ResolutionCache {
         remove_importer_locked(&mut guard, importer);
     }
 
+    /// Return every importer `FileId` currently indexed as having resolved a specifier to
+    /// `target_id`, without dropping the cached resolutions themselves.
+    pub fn importers_of(&self, target_id: FileId) -> HashSet<FileId> {
+        self.inner
+            .read()
+            .unwrap()
+            .importers_by_target
+            .get(&target_id)
+            .cloned()
+            .unwrap_or_default()
+    }
+
     /// Drop cached resolutions for every importer that resolved a specifier to `target_id` and
     /// return those importer IDs so their dependent queries can re-resolve.
     pub fn remove_deleted_target(&self, target_id: FileId) -> HashSet<FileId> {
@@ -229,7 +241,6 @@ mod tests {
             id_kind: IdKind::Path,
             format: Some(ModuleFormat::Ts),
             external: false,
-            code: None,
         }
     }
 

@@ -118,15 +118,23 @@ struct LoadLookupKey {
     external: bool,
 }
 
+#[derive(Clone, Debug)]
+struct OverlayEntry {
+    code: Arc<str>,
+    /// Explicit format supplied via `FileUpdate.format` (`None` when unset).
+    format: Option<ModuleFormat>,
+}
+
 #[derive(Clone, Copy, Debug, Default)]
 struct ResolvedMeta {
+    id_kind: Option<IdKind>,
     format: Option<ModuleFormat>,
     external: bool,
 }
 
 #[derive(Default)]
 struct CachedModules {
-    overlay: HashMap<ModuleId, LoadedModule>,
+    overlay: HashMap<ModuleId, OverlayEntry>,
     inline_code: HashMap<ModuleId, LoadedModule>,
     resolved_meta: HashMap<ModuleId, ResolvedMeta>,
 }
@@ -226,10 +234,64 @@ impl BatchingHostInner {
         shared
     }
 
-    fn lookup_cached_load(&self, id: &ModuleId, kind: LoadKind) -> Option<LoadedModule> {
+    fn cached_raw_code(&self, id: &ModuleId) -> Option<Arc<str>> {
         let cache = self.cache.read().unwrap();
-        let entry = cache.overlay.get(id).or_else(|| cache.inline_code.get(id))?;
-        Some(format_loaded_module(entry.clone(), kind))
+        cache
+            .overlay
+            .get(id)
+            .map(|entry| Arc::clone(&entry.code))
+            .or_else(|| {
+                cache
+                    .inline_code
+                    .get(id)
+                    .map(|entry| Arc::clone(&entry.code))
+            })
+    }
+
+    fn lookup_cached_load(&self, id: &ModuleId, kind: LoadKind) -> Option<LoadOutcome> {
+        let cache = self.cache.read().unwrap();
+        let meta = cache.resolved_meta.get(id).copied().unwrap_or_default();
+        if let Some(overlay) = cache.overlay.get(id) {
+            let code = Arc::clone(&overlay.code);
+            return match kind {
+                LoadKind::Template | LoadKind::Style => Some(Ok(Some(strip_resource_bom(code)))),
+                LoadKind::Module => {
+                    let effective = overlay.format.or(meta.format).or_else(|| {
+                        if meta.id_kind == Some(IdKind::Virtual) {
+                            Some(ModuleFormat::Ts)
+                        } else {
+                            ModuleFormat::from_path(std::path::Path::new(id.as_str()))
+                        }
+                    });
+                    Some(match effective {
+                        Some(fmt) => Ok(Some(LoadedModule {
+                            code,
+                            format: Some(fmt),
+                        })),
+                        None => Err(missing_module_format_error(id)),
+                    })
+                }
+            };
+        }
+        let inline = cache.inline_code.get(id)?;
+        let code = Arc::clone(&inline.code);
+        match kind {
+            LoadKind::Template | LoadKind::Style => Some(Ok(Some(strip_resource_bom(code)))),
+            LoadKind::Module => {
+                let effective = inline.format.or(meta.format).or_else(|| {
+                    (meta.id_kind != Some(IdKind::Virtual))
+                        .then(|| ModuleFormat::from_path(std::path::Path::new(id.as_str())))
+                        .flatten()
+                });
+                Some(match effective {
+                    Some(fmt) => Ok(Some(LoadedModule {
+                        code,
+                        format: Some(fmt),
+                    })),
+                    None => Err(missing_module_format_error(id)),
+                })
+            }
+        }
     }
 
     fn effective_load_external(&self, id: &ModuleId, kind: LoadKind, external: bool) -> bool {
@@ -245,20 +307,22 @@ impl BatchingHostInner {
     }
 }
 
-fn format_loaded_module(module: LoadedModule, kind: LoadKind) -> LoadedModule {
-    match kind {
-        LoadKind::Module => module,
-        LoadKind::Template | LoadKind::Style => {
-            let stripped = match module.code.strip_prefix('\u{feff}') {
-                Some(rest) => Arc::from(rest),
-                None => module.code,
-            };
-            LoadedModule {
-                code: stripped,
-                format: None,
-            }
-        }
+fn strip_resource_bom(code: Arc<str>) -> LoadedModule {
+    let stripped = match code.strip_prefix('\u{feff}') {
+        Some(rest) => Arc::from(rest),
+        None => code,
+    };
+    LoadedModule {
+        code: stripped,
+        format: None,
     }
+}
+
+fn missing_module_format_error(id: &ModuleId) -> HostError {
+    HostError::new(format!(
+        "Module load for '{id}' requires 'format' when not supplied by resolve or a standard path \
+         extension"
+    ))
 }
 
 /// Asynchronous [`AnalysisHost`] that batches concurrent `resolve` and `load` requests across
@@ -290,16 +354,36 @@ impl BatchingHost {
         }
     }
 
+    /// Record the authoritative [`IdKind`] of `id` when interned directly before any `resolve`.
+    pub fn record_id_kind(&self, id: &ModuleId, id_kind: IdKind) {
+        // The engine calls this for every resolution it interns, which `provide_results` has
+        // usually recorded already, so check under the read lock before taking the write lock.
+        let already_recorded = self
+            .inner
+            .cache
+            .read()
+            .unwrap()
+            .resolved_meta
+            .get(id)
+            .is_some_and(|meta| meta.id_kind == Some(id_kind));
+        if already_recorded {
+            return;
+        }
+        let mut cache = self.inner.cache.write().unwrap();
+        cache.resolved_meta.entry(id.clone()).or_default().id_kind = Some(id_kind);
+    }
+
     /// Seed or update proactive file contents (from `virtualFiles` or `updateFileContent`).
     pub fn upsert_overlay(&self, id: ModuleId, code: Arc<str>, format: Option<ModuleFormat>) {
         let mut cache = self.inner.cache.write().unwrap();
         cache.inline_code.remove(&id);
-        let effective_format = format
-            .or_else(|| cache.overlay.get(&id).and_then(|m| m.format))
-            .or_else(|| cache.resolved_meta.get(&id).and_then(|m| m.format));
+        let effective_format = format.or_else(|| cache.overlay.get(&id).and_then(|m| m.format));
+        if let Some(fmt) = format {
+            cache.resolved_meta.entry(id.clone()).or_default().format = Some(fmt);
+        }
         cache.overlay.insert(
             id,
-            LoadedModule {
+            OverlayEntry {
                 code,
                 format: effective_format,
             },
@@ -320,9 +404,7 @@ impl BatchingHost {
 
     /// Cached module source text from the proactive overlay or inline resolve cache, if present.
     pub fn cached_module_code(&self, id: &ModuleId) -> Option<Arc<str>> {
-        self.inner
-            .lookup_cached_load(id, LoadKind::Module)
-            .map(|loaded| loaded.code)
+        self.inner.cached_raw_code(id)
     }
 
     /// Drain all requests queued in the current wave into a numbered [`HostRequestBatch`], or
@@ -447,42 +529,35 @@ impl BatchingHost {
                 None => Ok(None),
                 Some(WireSlotOutcome::Error { error }) => Err(HostError::new(error)),
                 Some(WireSlotOutcome::Ok(res)) => {
-                    let code = {
+                    {
                         let mut cache = self.inner.cache.write().unwrap();
                         let prev_format =
                             cache.resolved_meta.get(&res.id).and_then(|meta| meta.format);
                         cache.resolved_meta.insert(
                             res.id.clone(),
                             ResolvedMeta {
+                                id_kind: Some(res.id_kind),
                                 format: res.format.or(prev_format),
                                 external: res.external,
                             },
                         );
-                        if let Some(overlay_entry) = cache.overlay.get_mut(&res.id) {
-                            if overlay_entry.format.is_none() {
-                                overlay_entry.format = res.format;
-                            }
-                            Some(Arc::clone(&overlay_entry.code))
-                        } else {
-                            res.code.map(|text| {
-                                let arc: Arc<str> = Arc::from(text);
+                        if !cache.overlay.contains_key(&res.id) {
+                            if let Some(text) = res.code {
                                 cache.inline_code.insert(
                                     res.id.clone(),
                                     LoadedModule {
-                                        code: Arc::clone(&arc),
+                                        code: Arc::from(text),
                                         format: res.format,
                                     },
                                 );
-                                arc
-                            })
+                            }
                         }
-                    };
+                    }
                     Ok(Some(ResolvedModule {
                         id: res.id,
                         id_kind: res.id_kind,
                         format: res.format,
                         external: res.external,
-                        code,
                     }))
                 }
             };
@@ -494,34 +569,48 @@ impl BatchingHost {
             let outcome = match item {
                 None => Ok(None),
                 Some(WireSlotOutcome::Error { error }) => Err(HostError::new(error)),
-                Some(WireSlotOutcome::Ok(res)) => {
-                    let format = if kind == LoadKind::Module {
-                        let mut cache = self.inner.cache.write().unwrap();
-                        if let Some(fmt) = res.format {
-                            cache
-                                .resolved_meta
-                                .entry(slot.key.id.clone())
-                                .or_insert(ResolvedMeta {
-                                    format: Some(fmt),
-                                    external: slot.key.external,
-                                })
-                                .format = Some(fmt);
-                            Some(fmt)
-                        } else {
-                            cache
+                Some(WireSlotOutcome::Ok(res)) => match kind {
+                    LoadKind::Template | LoadKind::Style => {
+                        Ok(Some(strip_resource_bom(Arc::from(res.code))))
+                    }
+                    LoadKind::Module => {
+                        let effective = {
+                            let mut cache = self.inner.cache.write().unwrap();
+                            let prev = cache
                                 .resolved_meta
                                 .get(&slot.key.id)
-                                .and_then(|meta| meta.format)
+                                .copied()
+                                .unwrap_or_default();
+                            let effective = res.format.or(prev.format).or_else(|| {
+                                (prev.id_kind != Some(IdKind::Virtual))
+                                    .then(|| {
+                                        ModuleFormat::from_path(std::path::Path::new(
+                                            slot.key.id.as_str(),
+                                        ))
+                                    })
+                                    .flatten()
+                            });
+                            if let Some(fmt) = effective {
+                                cache.resolved_meta.insert(
+                                    slot.key.id.clone(),
+                                    ResolvedMeta {
+                                        id_kind: prev.id_kind,
+                                        format: Some(fmt),
+                                        external: slot.key.external || prev.external,
+                                    },
+                                );
+                            }
+                            effective
+                        };
+                        match effective {
+                            Some(format) => Ok(Some(LoadedModule {
+                                code: Arc::from(res.code),
+                                format: Some(format),
+                            })),
+                            None => Err(missing_module_format_error(&slot.key.id)),
                         }
-                    } else {
-                        res.format
-                    };
-                    let loaded = LoadedModule {
-                        code: Arc::from(res.code),
-                        format,
-                    };
-                    Ok(Some(format_loaded_module(loaded, kind)))
-                }
+                    }
+                },
             };
             let _ = slot.tx.send(outcome);
         }
@@ -547,7 +636,7 @@ impl AnalysisHost for BatchingHost {
 
     fn load(&self, id: &ModuleId, kind: LoadKind, external: bool) -> HostFuture<LoadOutcome> {
         if let Some(cached) = self.inner.lookup_cached_load(id, kind) {
-            return futures::future::ready(Ok(Some(cached))).boxed();
+            return futures::future::ready(cached).boxed();
         }
         let effective_external = self.inner.effective_load_external(id, kind, external);
         let inner = Arc::clone(&self.inner);
@@ -559,7 +648,7 @@ impl AnalysisHost for BatchingHost {
         async move {
             loop {
                 if let Some(cached) = inner.lookup_cached_load(&key.id, key.kind) {
-                    return Ok(Some(cached));
+                    return cached;
                 }
                 let rx = inner.enqueue_or_join_load(&key);
                 match rx.await {
@@ -593,19 +682,21 @@ impl AnalysisHost for BatchingHost {
             };
             let first_req = ResolveRequest::new(containing.clone(), first_spec, ImportKind::Static);
             if let Some(resolved) = host.resolve(first_req).await? {
+                let code = host.inner.cached_raw_code(&resolved.id);
                 return Ok(Some(ResolvedResourceId {
                     id: resolved.id,
                     id_kind: resolved.id_kind,
-                    code: resolved.code,
+                    code,
                 }));
             }
             if !is_explicit {
                 let fallback_req = ResolveRequest::new(containing, url, ImportKind::Static);
                 if let Some(resolved) = host.resolve(fallback_req).await? {
+                    let code = host.inner.cached_raw_code(&resolved.id);
                     return Ok(Some(ResolvedResourceId {
                         id: resolved.id,
                         id_kind: resolved.id_kind,
-                        code: resolved.code,
+                        code,
                     }));
                 }
             }
@@ -616,6 +707,10 @@ impl AnalysisHost for BatchingHost {
 
     fn is_synchronous(&self) -> bool {
         false
+    }
+
+    fn record_id_kind(&self, id: &ModuleId, id_kind: IdKind) {
+        BatchingHost::record_id_kind(self, id, id_kind);
     }
 
     fn clear_cache(&self) {
@@ -639,6 +734,16 @@ mod tests {
     use futures::task::LocalSpawnExt;
     use std::cell::RefCell;
     use std::rc::Rc;
+
+    /// Poll `fut` once without consuming it, returning its output if it is ready.
+    fn poll_once<T>(fut: &mut HostFuture<T>) -> Option<T> {
+        let waker = futures::task::noop_waker();
+        let mut cx = std::task::Context::from_waker(&waker);
+        match fut.as_mut().poll(&mut cx) {
+            std::task::Poll::Ready(value) => Some(value),
+            std::task::Poll::Pending => None,
+        }
+    }
 
     #[test]
     fn test_batching_host_dedupes_in_flight_requests_within_and_across_waves() {
@@ -1147,5 +1252,150 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(updated_dts.format, Some(ModuleFormat::Dts));
+    }
+
+    #[test]
+    fn module_load_without_authoritative_format_fails_while_path_fallback_succeeds() {
+        let host = BatchingHost::new();
+
+        // 1. Virtual module resolved with `format: None` and loaded with `format: None` -> error.
+        let virt_id = ModuleId::from("\0virtual:no-format");
+        let mut r_fut = host.resolve(ResolveRequest::new(
+            ModuleId::from("/app/main.ts"),
+            "virtual:no-format",
+            ImportKind::Static,
+        ));
+        assert!(poll_once(&mut r_fut).is_none());
+        let b1 = host.take_pending_batch().unwrap();
+        host.provide_results(
+            b1.id,
+            HostBatchResults {
+                resolve: vec![Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: virt_id.clone(),
+                    id_kind: IdKind::Virtual,
+                    format: None,
+                    external: false,
+                    code: None,
+                }))],
+                load: vec![],
+            },
+        )
+        .unwrap();
+        let resolved_virt = poll_once(&mut r_fut).unwrap().unwrap().unwrap();
+        assert_eq!(resolved_virt.format, None);
+
+        let mut l_virt = host.load(&virt_id, LoadKind::Module, false);
+        assert!(poll_once(&mut l_virt).is_none());
+        let b2 = host.take_pending_batch().unwrap();
+        host.provide_results(
+            b2.id,
+            HostBatchResults {
+                resolve: vec![],
+                load: vec![Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: "export const X: number = 1;".into(),
+                    format: None,
+                }))],
+            },
+        )
+        .unwrap();
+        let virt_err = poll_once(&mut l_virt).unwrap().unwrap_err();
+        assert!(
+            virt_err.message.contains("requires 'format'"),
+            "unexpected error: {virt_err}"
+        );
+        assert_eq!(host.cached_module_code(&virt_id), None);
+
+        // 2. Custom-extension `IdKind::Path` module loaded with `format: None` -> error.
+        let custom_path_id = ModuleId::from("/app/page.ng");
+        let mut l_custom = host.load(&custom_path_id, LoadKind::Module, false);
+        assert!(poll_once(&mut l_custom).is_none());
+        let b3 = host.take_pending_batch().unwrap();
+        host.provide_results(
+            b3.id,
+            HostBatchResults {
+                resolve: vec![],
+                load: vec![Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: "export class PageCmp {}".into(),
+                    format: None,
+                }))],
+            },
+        )
+        .unwrap();
+        let custom_err = poll_once(&mut l_custom).unwrap().unwrap_err();
+        assert!(custom_err.message.contains("requires 'format'"));
+
+        // 3. Standard-extension `IdKind::Path` module loaded with `format: None` -> falls back to
+        //    `ModuleFormat::from_path`.
+        let std_path_id = ModuleId::from("/app/util.mts");
+        let mut l_std = host.load(&std_path_id, LoadKind::Module, false);
+        assert!(poll_once(&mut l_std).is_none());
+        let b4 = host.take_pending_batch().unwrap();
+        host.provide_results(
+            b4.id,
+            HostBatchResults {
+                resolve: vec![],
+                load: vec![Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: "export const U = 1;".into(),
+                    format: None,
+                }))],
+            },
+        )
+        .unwrap();
+        let loaded_std = poll_once(&mut l_std).unwrap().unwrap().unwrap();
+        assert_eq!(loaded_std.format, Some(ModuleFormat::Ts));
+
+        // 4. `LoadResult.format` overrides `ResolveResult.format`.
+        let override_id = ModuleId::from("/app/override.js");
+        let mut r_override = host.resolve(ResolveRequest::new(
+            ModuleId::from("/app/main.ts"),
+            "./override.js",
+            ImportKind::Static,
+        ));
+        assert!(poll_once(&mut r_override).is_none());
+        let b5 = host.take_pending_batch().unwrap();
+        host.provide_results(
+            b5.id,
+            HostBatchResults {
+                resolve: vec![Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: override_id.clone(),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Js),
+                    external: false,
+                    code: None,
+                }))],
+                load: vec![],
+            },
+        )
+        .unwrap();
+        let _ = poll_once(&mut r_override).unwrap().unwrap().unwrap();
+
+        let mut l_override = host.load(&override_id, LoadKind::Module, false);
+        assert!(poll_once(&mut l_override).is_none());
+        let b6 = host.take_pending_batch().unwrap();
+        host.provide_results(
+            b6.id,
+            HostBatchResults {
+                resolve: vec![],
+                load: vec![Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: "export const el = <div />;".into(),
+                    format: Some(ModuleFormat::Jsx),
+                }))],
+            },
+        )
+        .unwrap();
+        let loaded_override = poll_once(&mut l_override).unwrap().unwrap().unwrap();
+        assert_eq!(loaded_override.format, Some(ModuleFormat::Jsx));
+
+        // 5. Proactive virtual overlay with `format: None` defaults to `ModuleFormat::Ts`.
+        let overlay_virt = ModuleId::from("\0virtual:proactive");
+        host.record_id_kind(&overlay_virt, IdKind::Virtual);
+        host.upsert_overlay(overlay_virt.clone(), Arc::from("export const P = 1;"), None);
+        let loaded_proactive = host
+            .load(&overlay_virt, LoadKind::Module, false)
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .unwrap();
+        assert_eq!(loaded_proactive.format, Some(ModuleFormat::Ts));
     }
 }

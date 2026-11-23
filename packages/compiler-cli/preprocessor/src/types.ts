@@ -10,6 +10,7 @@
 
 export type FileId = number;
 export type IdKind = 'path' | 'virtual';
+export type ModuleFormat = 'ts' | 'tsx' | 'dts' | 'js' | 'jsx';
 export type ModuleRef = string | {id: string; idKind?: IdKind};
 
 export function isVirtualModuleRef(ref: ModuleRef): boolean {
@@ -89,6 +90,7 @@ export interface AnalysisResult {
   fileId: FileId;
   filePath: string;
   idKind?: IdKind;
+  format?: ModuleFormat;
   importsEnd: number;
   classes: Array<ClassMetadata>;
   /**
@@ -591,6 +593,7 @@ export interface FileUpdate {
   filePath: string;
   content: string;
   idKind?: IdKind;
+  format?: ModuleFormat;
 }
 
 export enum FileUpdateType {

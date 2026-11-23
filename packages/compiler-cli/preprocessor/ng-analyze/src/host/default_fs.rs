@@ -96,7 +96,6 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
                     id_kind: IdKind::Path,
                     format,
                     external: false,
-                    code: None,
                 }
             });
         futures::future::ready(Ok(resolved)).boxed()
@@ -214,7 +213,6 @@ mod tests {
         assert_eq!(local.id_kind, IdKind::Path);
         assert_eq!(local.format, Some(ModuleFormat::Ts));
         assert!(!local.external);
-        assert_eq!(local.code, None);
 
         let pkg = host
             .resolve(ResolveRequest::new(

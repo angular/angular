@@ -311,7 +311,7 @@ impl ClassData {
             collect_provider_classes(providers.resolved.raw(), None, &mut entries);
             for (reference, named_span) in entries {
                 // ngtsc skips `.d.ts` classes here outright (a g3 compatibility measure).
-                if crate::utils::is_dts(&ctx.engine.lookup_path(reference.file)) {
+                if ctx.engine.is_dts_file(reference.file) {
                     continue;
                 }
                 let Some(facts) = referenced_di_facts(reference, ctx).await else {

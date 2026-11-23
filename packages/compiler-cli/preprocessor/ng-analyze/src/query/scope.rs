@@ -210,10 +210,7 @@ impl QueryEngine {
         reference_id: ReferenceId,
         ctx: &QueryContext,
     ) -> Arc<NgModuleImportsScopeData> {
-        let fp = self.lookup_path(reference_id.file);
-
-        let is_dts = crate::utils::is_dts(&fp);
-        if is_dts {
+        if self.is_dts_file(reference_id.file) {
             // A `.d.ts` NgModule has no separate imports scope; its exports scope is the whole scope.
             let exports = ctx.ngmodule_exports_scope(reference_id).await;
             return Arc::new(NgModuleImportsScopeData {
@@ -240,7 +237,7 @@ impl QueryEngine {
         let allowed = &extra.entrypoints_ids;
         if !allowed.contains(&reference_id.file)
             || self.lookup_external(reference_id.file)
-            || crate::utils::is_dts(&self.lookup_path(reference_id.file))
+            || self.is_dts_file(reference_id.file)
         {
             return Arc::new(Vec::new());
         }
@@ -429,8 +426,7 @@ impl QueryEngine {
     ) -> crate::types::analysis::Reference {
         // A declaration outside the bundle keeps the reference it was imported by, which carries
         // the specifier consumers must write instead of a path to the resolved file.
-        if crate::utils::is_dts(&self.lookup_path(info.reference_id.file))
-            || self.lookup_external(info.reference_id.file)
+        if self.is_dts_file(info.reference_id.file) || self.lookup_external(info.reference_id.file)
         {
             return r.clone();
         }
@@ -778,8 +774,7 @@ pub(crate) async fn propagate_owning_reference_validated(
     {
         return declarations.to_vec();
     }
-    let parent_path = ctx.engine.lookup_path(parent_file);
-    if !crate::utils::is_dts(&parent_path) && !ctx.engine.lookup_external(parent_file) {
+    if !ctx.engine.is_dts_file(parent_file) && !ctx.engine.lookup_external(parent_file) {
         return declarations.to_vec();
     }
 
@@ -1176,7 +1171,6 @@ mod tests {
                         id_kind: IdKind::Path,
                         format: Some(ModuleFormat::Dts),
                         external: false,
-                        code: None,
                     });
                 let in_flight = Arc::clone(&self.in_flight);
                 Box::pin(async move {

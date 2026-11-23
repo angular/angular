@@ -414,3 +414,27 @@ describe('ExpressionPrinter.getImportStatements', () => {
     );
   });
 });
+
+describe('ExpressionPrinter.emitTypes', () => {
+  it('uses authoritative ModuleFormat when supplied, overriding filePath extension', () => {
+    expect(new ExpressionPrinter('\0virtual:app', null, new Set(), 'ts').emitTypes).toBe(true);
+    expect(new ExpressionPrinter('/app/page.ng', null, new Set(), 'ts').emitTypes).toBe(true);
+    expect(new ExpressionPrinter('/app/cmp.ts', null, new Set(), 'tsx').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/cmp.ts', null, new Set(), 'js').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/cmp.ts', null, new Set(), 'jsx').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/cmp.ts', null, new Set(), 'dts').emitTypes).toBe(false);
+  });
+
+  it('falls back to path extension when ModuleFormat is omitted', () => {
+    expect(new ExpressionPrinter('/app/a.ts').emitTypes).toBe(true);
+    expect(new ExpressionPrinter('/app/a.mts').emitTypes).toBe(true);
+    expect(new ExpressionPrinter('/app/a.cts').emitTypes).toBe(true);
+    expect(new ExpressionPrinter('/app/a.d.ts').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/a.d.mts').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/a.d.cts').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/a.tsx').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/a.js').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('/app/a.jsx').emitTypes).toBe(false);
+    expect(new ExpressionPrinter('\0virtual:app').emitTypes).toBe(false);
+  });
+});

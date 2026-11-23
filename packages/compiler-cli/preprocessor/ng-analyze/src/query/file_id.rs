@@ -1,4 +1,4 @@
-use crate::host::{IdKind, ModuleId};
+use crate::host::{IdKind, ModuleFormat, ModuleId};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
@@ -16,6 +16,7 @@ struct InternedModule {
     id: ModuleId,
     kind: IdKind,
     external: bool,
+    format: Option<ModuleFormat>,
     /// Filesystem path when it differs from `id`: a non-UTF-8 path (`id` is then lossy) or a
     /// module promoted to [`IdKind::Path`] whose verbatim `id` is not structurally normalized.
     path_override: Option<PathBuf>,
@@ -28,6 +29,21 @@ impl InternedModule {
             Some(path) => path.clone(),
             None => PathBuf::from(self.id.as_str()),
         }
+    }
+
+    /// The recorded format, falling back to the extension of an [`IdKind::Path`] entry. Borrows
+    /// the path rather than going through [`Self::path`], which clones it: this runs under the
+    /// interner lock for every `is_dts_file` check and authoritative re-intern.
+    fn effective_format(&self) -> Option<ModuleFormat> {
+        self.format.or_else(|| {
+            if self.kind != IdKind::Path {
+                return None;
+            }
+            match &self.path_override {
+                Some(path) => ModuleFormat::from_path(path),
+                None => ModuleFormat::from_path(Path::new(self.id.as_str())),
+            }
+        })
     }
 }
 
@@ -95,7 +111,7 @@ impl FileIdInterner {
     }
 
     pub fn intern_path(&self, path: impl AsRef<Path>) -> FileId {
-        self.intern_path_inner(path.as_ref(), false, None).0
+        self.intern_path_inner(path.as_ref(), false, None, None).0
     }
 
     /// Intern a module identifier with a caller-supplied [`IdKind`].
@@ -105,8 +121,8 @@ impl FileIdInterner {
     /// so the host's reported [`IdKind`] wins.
     pub fn intern_module(&self, id: &str, kind: IdKind) -> FileId {
         match kind {
-            IdKind::Path => self.intern_path_inner(Path::new(id), false, None).0,
-            IdKind::Virtual => self.intern_virtual(id, false, None).0,
+            IdKind::Path => self.intern_path_inner(Path::new(id), false, None, None).0,
+            IdKind::Virtual => self.intern_virtual(id, false, None, None).0,
         }
     }
 
@@ -114,13 +130,10 @@ impl FileIdInterner {
     ///
     /// If `id` was previously interned with a different [`IdKind`] (for example via a string entry
     /// point that defaulted to [`IdKind::Path`]), the authoritative `kind` wins while any existing
-    /// `external` flag is preserved, and the previous kind is returned so callers can invalidate
-    /// results computed under it.
+    /// `external` flag and `format` are preserved, and the previous kind is returned so callers can
+    /// invalidate results computed under it.
     pub fn intern_authoritative(&self, id: &str, kind: IdKind) -> (FileId, Option<IdKind>) {
-        let (fid, prev, _) = match kind {
-            IdKind::Path => self.intern_path_inner(Path::new(id), true, None),
-            IdKind::Virtual => self.intern_virtual(id, true, None),
-        };
+        let (fid, prev, _) = self.intern_authoritative_with_meta(id, kind, None, None);
         (fid, prev)
     }
 
@@ -145,9 +158,22 @@ impl FileIdInterner {
         kind: IdKind,
         external: bool,
     ) -> (FileId, Option<IdKind>, bool) {
+        self.intern_authoritative_with_meta(id, kind, Some(external), None)
+    }
+
+    /// Intern an authoritative `(id, kind)` with optional `external` and `format` metadata,
+    /// returning `(file_id, previous_kind, changed)` where `changed` is `true` when `kind`,
+    /// `external`, or the effective [`ModuleFormat`] differed from an existing interned entry.
+    pub fn intern_authoritative_with_meta(
+        &self,
+        id: &str,
+        kind: IdKind,
+        external: Option<bool>,
+        format: Option<ModuleFormat>,
+    ) -> (FileId, Option<IdKind>, bool) {
         match kind {
-            IdKind::Path => self.intern_path_inner(Path::new(id), true, Some(external)),
-            IdKind::Virtual => self.intern_virtual(id, true, Some(external)),
+            IdKind::Path => self.intern_path_inner(Path::new(id), true, external, format),
+            IdKind::Virtual => self.intern_virtual(id, true, external, format),
         }
     }
 
@@ -156,13 +182,17 @@ impl FileIdInterner {
         id: &str,
         authoritative: bool,
         external: Option<bool>,
+        format: Option<ModuleFormat>,
     ) -> (FileId, Option<IdKind>, bool) {
         {
             let read = self.inner.read().expect("FileIdInterner lock poisoned");
             if let Some(&fid) = read.exact_map.get(id) {
                 let entry = &read.entries[fid as usize];
                 let external_matches = external.map_or(true, |ext| entry.external == ext);
-                if !authoritative || (entry.kind == IdKind::Virtual && external_matches) {
+                let format_matches = format.map_or(true, |fmt| entry.format == Some(fmt));
+                if !authoritative
+                    || (entry.kind == IdKind::Virtual && external_matches && format_matches)
+                {
                     return (fid, None, false);
                 }
             }
@@ -176,7 +206,7 @@ impl FileIdInterner {
                 return (fid, None, false);
             }
             let previous = write.entries[fid as usize].kind;
-            let previous_external = write.entries[fid as usize].external;
+            let prev_effective_format = write.entries[fid as usize].effective_format();
             if previous != IdKind::Virtual {
                 log_id_kind_override(id, previous, IdKind::Virtual);
                 let path = write.entries[fid as usize].path();
@@ -189,14 +219,27 @@ impl FileIdInterner {
                 if let Some(ext) = external {
                     entry.external = ext;
                 }
+                if let Some(fmt) = format {
+                    entry.format = Some(fmt);
+                }
                 entry.path_override = None;
                 return (fid, Some(previous), true);
             }
+            let entry = &mut write.entries[fid as usize];
+            let mut changed = false;
             if let Some(ext) = external {
-                write.entries[fid as usize].external = ext;
-                return (fid, None, previous_external != ext);
+                if entry.external != ext {
+                    entry.external = ext;
+                    changed = true;
+                }
             }
-            return (fid, None, false);
+            if let Some(fmt) = format {
+                entry.format = Some(fmt);
+                if prev_effective_format != Some(fmt) {
+                    changed = true;
+                }
+            }
+            return (fid, None, changed);
         }
 
         let fid = allocate_file_id(write.entries.len());
@@ -205,6 +248,7 @@ impl FileIdInterner {
             id: module_id.clone(),
             kind: IdKind::Virtual,
             external: authoritative && external.unwrap_or(false),
+            format: authoritative.then_some(format).flatten(),
             path_override: None,
         });
         write.exact_map.insert(module_id, fid);
@@ -216,6 +260,7 @@ impl FileIdInterner {
         path_ref: &Path,
         authoritative: bool,
         external: Option<bool>,
+        format: Option<ModuleFormat>,
     ) -> (FileId, Option<IdKind>, bool) {
         // Only a `Path` entry may short-circuit here. A `Virtual` entry spelled like the path must
         // not shadow the `Path` entry that owns its lookup key, so it is matched after `path_map`.
@@ -224,7 +269,10 @@ impl FileIdInterner {
             if let Some(&fid) = read.exact_map.get(raw_str) {
                 let entry = &read.entries[fid as usize];
                 let external_matches = external.map_or(true, |ext| entry.external == ext);
-                if entry.kind == IdKind::Path && (!authoritative || external_matches) {
+                let format_matches = format.map_or(true, |fmt| entry.format == Some(fmt));
+                if entry.kind == IdKind::Path
+                    && (!authoritative || (external_matches && format_matches))
+                {
                     return (fid, None, false);
                 }
             }
@@ -235,7 +283,9 @@ impl FileIdInterner {
             let read = self.inner.read().expect("FileIdInterner lock poisoned");
             if let Some(&fid) = read.path_map.get(&*key) {
                 let entry = &read.entries[fid as usize];
-                if !authoritative || external.map_or(true, |ext| entry.external == ext) {
+                let external_matches = external.map_or(true, |ext| entry.external == ext);
+                let format_matches = format.map_or(true, |fmt| entry.format == Some(fmt));
+                if !authoritative || (external_matches && format_matches) {
                     return (fid, None, false);
                 }
             } else if !authoritative {
@@ -253,13 +303,25 @@ impl FileIdInterner {
 
         let mut write = self.inner.write().expect("FileIdInterner lock poisoned");
         if let Some(&fid) = write.path_map.get(&*key) {
-            if let (true, Some(ext)) = (authoritative, external) {
-                if write.entries[fid as usize].external != ext {
-                    write.entries[fid as usize].external = ext;
-                    return (fid, None, true);
+            if !authoritative {
+                return (fid, None, false);
+            }
+            let prev_effective_format = write.entries[fid as usize].effective_format();
+            let entry = &mut write.entries[fid as usize];
+            let mut changed = false;
+            if let Some(ext) = external {
+                if entry.external != ext {
+                    entry.external = ext;
+                    changed = true;
                 }
             }
-            return (fid, None, false);
+            if let Some(fmt) = format {
+                entry.format = Some(fmt);
+                if prev_effective_format != Some(fmt) {
+                    changed = true;
+                }
+            }
+            return (fid, None, changed);
         }
         if is_valid_utf8 {
             let existing = path_ref
@@ -271,7 +333,7 @@ impl FileIdInterner {
                     return (fid, None, false);
                 }
                 let previous = write.entries[fid as usize].kind;
-                let previous_external = write.entries[fid as usize].external;
+                let prev_effective_format = write.entries[fid as usize].effective_format();
                 if previous != IdKind::Path {
                     let entry = &mut write.entries[fid as usize];
                     log_id_kind_override(entry.id.as_str(), previous, IdKind::Path);
@@ -279,16 +341,29 @@ impl FileIdInterner {
                     if let Some(ext) = external {
                         entry.external = ext;
                     }
+                    if let Some(fmt) = format {
+                        entry.format = Some(fmt);
+                    }
                     // Keep the host's verbatim ID, but give path math the normalized spelling.
                     entry.path_override = (entry.id != spelled_id).then_some(spelled_path);
                     write.path_map.insert(key.into_owned(), fid);
                     return (fid, Some(previous), true);
                 }
+                let entry = &mut write.entries[fid as usize];
+                let mut changed = false;
                 if let Some(ext) = external {
-                    write.entries[fid as usize].external = ext;
-                    return (fid, None, previous_external != ext);
+                    if entry.external != ext {
+                        entry.external = ext;
+                        changed = true;
+                    }
                 }
-                return (fid, None, false);
+                if let Some(fmt) = format {
+                    entry.format = Some(fmt);
+                    if prev_effective_format != Some(fmt) {
+                        changed = true;
+                    }
+                }
+                return (fid, None, changed);
             }
         }
 
@@ -297,6 +372,7 @@ impl FileIdInterner {
             id: spelled_id.clone(),
             kind: IdKind::Path,
             external: authoritative && external.unwrap_or(false),
+            format: authoritative.then_some(format).flatten(),
             path_override: (!is_valid_utf8).then_some(spelled_path),
         });
         if is_valid_utf8 {
@@ -304,6 +380,23 @@ impl FileIdInterner {
         }
         write.path_map.insert(key.into_owned(), fid);
         (fid, None, false)
+    }
+
+    /// Record `format` observed when parsing `id`, returning `true` if `id` previously had a
+    /// different effective [`ModuleFormat`] (e.g. `LoadResult.format` overrode
+    /// `ResolveResult.format` or a path extension).
+    pub fn record_parsed_format(&self, id: FileId, format: ModuleFormat) -> bool {
+        {
+            let read = self.inner.read().expect("FileIdInterner lock poisoned");
+            if read.entries[id as usize].format == Some(format) {
+                return false;
+            }
+        }
+        let mut write = self.inner.write().expect("FileIdInterner lock poisoned");
+        let entry = &mut write.entries[id as usize];
+        let prev_effective = entry.effective_format();
+        entry.format = Some(format);
+        prev_effective.is_some_and(|prev| prev != format)
     }
 
     /// Lookup the `PathBuf` corresponding to a `FileId`.
@@ -346,6 +439,33 @@ impl FileIdInterner {
             .get(id as usize)
             .map(|entry| entry.external)
             .expect("FileId out of bounds in FileIdInterner")
+    }
+
+    /// Lookup the explicitly recorded [`ModuleFormat`] for `id`, if any.
+    pub fn lookup_format(&self, id: FileId) -> Option<ModuleFormat> {
+        let read = self.inner.read().expect("FileIdInterner lock poisoned");
+        read.entries
+            .get(id as usize)
+            .map(|entry| entry.format)
+            .expect("FileId out of bounds in FileIdInterner")
+    }
+
+    /// Lookup the effective [`ModuleFormat`] for `id`: host-recorded format first, falling back to
+    /// [`ModuleFormat::from_path`] only when `id` has [`IdKind::Path`].
+    pub fn lookup_effective_format(&self, id: FileId) -> Option<ModuleFormat> {
+        let read = self.inner.read().expect("FileIdInterner lock poisoned");
+        read.entries
+            .get(id as usize)
+            .map(InternedModule::effective_format)
+            .expect("FileId out of bounds in FileIdInterner")
+    }
+
+    /// Like [`Self::lookup_effective_format`], but `None` for an unknown or pseudo `FileId`.
+    pub fn try_lookup_effective_format(&self, id: FileId) -> Option<ModuleFormat> {
+        let read = self.inner.read().expect("FileIdInterner lock poisoned");
+        read.entries
+            .get(id as usize)
+            .and_then(InternedModule::effective_format)
     }
 
     /// Lookup both `(ModuleId, IdKind)` corresponding to a `FileId` under a single lock.
@@ -735,5 +855,89 @@ mod tests {
             (ext_id, Some(IdKind::Path))
         );
         assert!(interner.lookup_external(ext_id));
+    }
+
+    #[test]
+    fn test_authoritative_format_tracking() {
+        let interner = FileIdInterner::new();
+
+        // Without a recorded format, a path falls back to its extension and a virtual ID has none.
+        let ts = interner.intern_path("/app/a.ts");
+        assert_eq!(interner.lookup_format(ts), None);
+        assert_eq!(interner.lookup_effective_format(ts), Some(ModuleFormat::Ts));
+        let virt = interner.intern_module("\0virtual:x", IdKind::Virtual);
+        assert_eq!(interner.lookup_effective_format(virt), None);
+        assert_eq!(interner.try_lookup_effective_format(FileId::MAX), None);
+
+        // Recording the format the extension already implies is not a change.
+        assert_eq!(
+            interner.intern_authoritative_with_meta(
+                "/app/a.ts",
+                IdKind::Path,
+                None,
+                Some(ModuleFormat::Ts),
+            ),
+            (ts, None, false)
+        );
+        assert_eq!(interner.lookup_format(ts), Some(ModuleFormat::Ts));
+
+        // A different host format wins over the extension and is reported as a change.
+        assert_eq!(
+            interner.intern_authoritative_with_meta(
+                "/app/a.ts",
+                IdKind::Path,
+                None,
+                Some(ModuleFormat::Tsx),
+            ),
+            (ts, None, true)
+        );
+        assert_eq!(interner.lookup_effective_format(ts), Some(ModuleFormat::Tsx));
+
+        // Format-less authoritative interning and non-authoritative lookups preserve it.
+        assert_eq!(
+            interner.intern_authoritative_with_meta("/app/a.ts", IdKind::Path, Some(false), None),
+            (ts, None, false)
+        );
+        assert_eq!(interner.intern_path("/app/a.ts"), ts);
+        assert_eq!(interner.lookup_effective_format(ts), Some(ModuleFormat::Tsx));
+
+        // A first sighting records the host format (here, for a custom extension) without
+        // reporting a change, and a kind change preserves it.
+        let (card, previous, changed) = interner.intern_authoritative_with_meta(
+            "/app/card.ng",
+            IdKind::Path,
+            None,
+            Some(ModuleFormat::Ts),
+        );
+        assert_eq!((previous, changed), (None, false));
+        assert_eq!(interner.lookup_effective_format(card), Some(ModuleFormat::Ts));
+        assert_eq!(
+            interner.intern_authoritative("/app/card.ng", IdKind::Virtual),
+            (card, Some(IdKind::Path))
+        );
+        assert_eq!(interner.lookup_effective_format(card), Some(ModuleFormat::Ts));
+
+        // A parsed format is a change only when it differs from a previous effective format: the
+        // first one observed for a format-less virtual ID is not.
+        assert!(!interner.record_parsed_format(virt, ModuleFormat::Dts));
+        assert_eq!(interner.lookup_effective_format(virt), Some(ModuleFormat::Dts));
+        assert!(!interner.record_parsed_format(virt, ModuleFormat::Dts));
+        assert!(interner.record_parsed_format(virt, ModuleFormat::Ts));
+        assert_eq!(
+            interner.intern_authoritative_with_meta(
+                "\0virtual:x",
+                IdKind::Virtual,
+                None,
+                Some(ModuleFormat::Dts),
+            ),
+            (virt, None, true)
+        );
+
+        // For a path, a parsed format is compared against its extension.
+        let js = interner.intern_path("/app/b.js");
+        assert!(interner.record_parsed_format(js, ModuleFormat::Jsx));
+        assert!(!interner.record_parsed_format(js, ModuleFormat::Jsx));
+        let plain = interner.intern_path("/app/c.ts");
+        assert!(!interner.record_parsed_format(plain, ModuleFormat::Ts));
     }
 }

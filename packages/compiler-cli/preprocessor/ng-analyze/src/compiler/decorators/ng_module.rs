@@ -348,8 +348,7 @@ fn may_export_providers<'a>(
             }
             ClassType::Component if class_info.is_standalone == Some(true) => {
                 // `.d.ts` components have no recorded `imports`, so upstream assumes yes (`assumedToExportProviders`).
-                let fp = ctx.engine.lookup_path(class_info.reference_id.file);
-                crate::utils::is_dts(&fp)
+                ctx.engine.is_dts_file(class_info.reference_id.file)
                     || imports_may_export_providers(class_info, ctx, calculating).await
             }
             _ => false,

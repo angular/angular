@@ -3,7 +3,7 @@ use crate::query::keys::QueryKey;
 use crate::query::{FileId, QueryContext};
 use crate::resource_registry::ResourceRegistry;
 use crate::tsconfig_resolution;
-use crate::utils::{create_resolver_with_fs, is_compilation_root, is_ts_file, is_ts_source};
+use crate::utils::{create_resolver_with_fs, is_compilation_root, is_ts_file};
 use crate::{
     AnalysisResult, AnalyzerOptions, CompilationChunk, FileData, FileInvalidation, FileUpdate,
 };
@@ -579,11 +579,10 @@ impl Analyzer {
         let batching_host = Arc::new(crate::host::BatchingHost::new());
         if let Some(ref virtual_files) = options.virtual_files {
             for (id, content) in virtual_files {
-                let format = crate::host::ModuleFormat::from_path(Path::new(id));
                 batching_host.upsert_overlay(
                     crate::host::ModuleId::from(id.as_str()),
                     Arc::from(content.as_str()),
-                    format,
+                    None,
                 );
             }
         }
@@ -621,7 +620,8 @@ impl Analyzer {
         let roots_from_tsconfig = config.entry_points.is_none();
         let (entrypoints, virtual_entry_ids, dts_files) = match config.entry_points {
             Some(entry_points) => {
-                let (roots, virtual_ids) = compilation_roots(entry_points, &fs);
+                let (roots, virtual_ids) =
+                    compilation_roots(entry_points, &fs, batching_host.is_some());
                 let dts = tsconfig_dts_files(config.tsconfig_files);
                 (roots, virtual_ids, dts)
             }
@@ -1105,11 +1105,18 @@ impl Analyzer {
                         && (!self.engine.is_synchronous_host() || self.fs.metadata(&path).is_ok())
                 };
                 files_created |= !existed;
-                let file_id = self
-                    .engine
-                    .intern_resolved(&module_id, crate::host::IdKind::Virtual);
+                let (file_id, _) = self.engine.intern_resolved_tracked(
+                    &module_id,
+                    crate::host::IdKind::Virtual,
+                    None,
+                    update.format,
+                );
                 if let Some(batch_host) = &self.batching_host {
-                    batch_host.upsert_overlay(module_id, Arc::from(update.content.as_str()), None);
+                    batch_host.upsert_overlay(
+                        module_id,
+                        Arc::from(update.content.as_str()),
+                        update.format,
+                    );
                 } else if self.engine.is_synchronous_host() {
                     self.fs.upsert_file(path.clone(), update.content.clone());
                 }
@@ -1136,10 +1143,18 @@ impl Analyzer {
                     files_created = true;
                     structural_paths.push(crate::fs::normalize_path(&norm_path).into_owned());
                 }
+                if let Some(fmt) = update.format {
+                    self.engine.intern_resolved_tracked(
+                        &module_id,
+                        crate::host::IdKind::Path,
+                        None,
+                        Some(fmt),
+                    );
+                }
                 batch_host.upsert_overlay(
                     module_id.clone(),
                     Arc::from(update.content.as_str()),
-                    crate::host::ModuleFormat::from_path(&norm_path),
+                    update.format,
                 );
                 paths_to_invalidate.push(module_id.as_str().to_owned());
                 self.invalidate_changed_path(&norm_path, &mut paths_to_invalidate);
@@ -1154,6 +1169,14 @@ impl Analyzer {
             config_changed |= path
                 .extension()
                 .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
+            if let Some(fmt) = update.format {
+                self.engine.intern_resolved_tracked(
+                    &crate::host::ModuleId::from_path(&path),
+                    crate::host::IdKind::Path,
+                    None,
+                    Some(fmt),
+                );
+            }
             self.fs.upsert_file(path.clone(), update.content.clone());
 
             paths_to_invalidate.push(path.to_string_lossy().into_owned());
@@ -1253,7 +1276,12 @@ impl Analyzer {
                 }
             }
 
-            if is_ts_file(&path) {
+            let is_known_module = self
+                .engine
+                .get_interned_file_id(&path)
+                .and_then(|fid| self.engine.lookup_effective_format(fid))
+                .is_some();
+            if is_ts_file(&path) || is_known_module {
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(path.to_string_lossy().into_owned());
             }
@@ -1352,11 +1380,12 @@ impl Analyzer {
         self.roots_from_tsconfig.store(false, Ordering::SeqCst);
         let mut invalidated_paths = Vec::new();
         let mut roots = Vec::new();
+        let allow_custom_ext = !self.engine.is_synchronous_host();
         for (id, kind) in validated {
             match kind {
                 crate::host::IdKind::Path => {
                     let path = PathBuf::from(id);
-                    if is_compilation_root(&path) {
+                    if is_valid_path_root(&path, allow_custom_ext) {
                         roots.push(canonical_root(&path, &self.fs));
                     }
                 }
@@ -1455,11 +1484,20 @@ fn resolve_metadata_target(
         // Non-TS files (templates, stylesheets, JSON) and missing files return `None`, like
         // ngtsc's `TraitCompiler.recordFor`, rather than failing (the language service asks about
         // every open document, and a panic over N-API aborts the host) or degrading to an empty
-        // `AnalysisResult` indistinguishable from a classless file.
-        if !is_ts_file(path) {
-            return None;
-        }
-        if engine.is_synchronous_host() && !fs.metadata(path).is_ok_and(|m| m.is_file()) {
+        // `AnalysisResult` indistinguishable from a classless file. Under an asynchronous
+        // `AnalysisHost`, custom-extension paths (e.g. `.ng`) may load with a host-supplied
+        // `ModuleFormat`, while well-known asset/config extensions still short-circuit unless the
+        // host already recorded a `ModuleFormat` for them.
+        if engine.is_synchronous_host() {
+            if !is_ts_file(path) || !fs.metadata(path).is_ok_and(|m| m.is_file()) {
+                return None;
+            }
+        } else if crate::utils::is_known_non_module_asset(path)
+            && engine
+                .get_interned_file_id(path)
+                .and_then(|fid| engine.lookup_format(fid))
+                .is_none()
+        {
             return None;
         }
         return Some(engine.intern_module(id, crate::host::IdKind::Path));
@@ -1568,18 +1606,28 @@ fn partition_tsconfig_files(
     (roots, dts_files)
 }
 
+fn is_valid_path_root(path: &Path, allow_custom_extensions: bool) -> bool {
+    if allow_custom_extensions {
+        crate::host::ModuleFormat::from_path(path) != Some(crate::host::ModuleFormat::Dts)
+            && !crate::utils::is_known_non_module_asset(path)
+    } else {
+        is_compilation_root(path)
+    }
+}
+
 /// The compilation roots among `entries`, canonicalizing [`ResolvedEntryPoint::Path`] entries
 /// through `fs` and passing [`ResolvedEntryPoint::Virtual`] IDs through verbatim.
 fn compilation_roots(
     entries: Vec<ResolvedEntryPoint>,
     fs: &OverlayFileSystem,
+    allow_custom_extensions: bool,
 ) -> (Vec<PathBuf>, Vec<String>) {
     let mut roots = Vec::new();
     let mut virtual_ids = Vec::new();
     for entry in entries {
         match entry {
             ResolvedEntryPoint::Path(path) => {
-                if is_compilation_root(&path) {
+                if is_valid_path_root(&path, allow_custom_extensions) {
                     roots.push(canonical_root(&path, fs));
                 }
             }
@@ -2069,6 +2117,14 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
                     if cancel_token.is_cancelled() {
                         return;
                     }
+                    let file_id = local_res.file_id;
+                    if local_res.is_dts() {
+                        let _ = event_sender
+                            .clone()
+                            .send(CoordinatorEvent::SkippedNonRoot { file_id })
+                            .await;
+                        return;
+                    }
                     let _ = event_sender
                         .clone()
                         .send(CoordinatorEvent::DepsDiscovered {
@@ -2079,7 +2135,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
                     if cancel_token.is_cancelled() {
                         return;
                     }
-                    let file_id = local_res.file_id;
                     let is_dirty = match &delta_dirty {
                         Some(dirty) => {
                             dirty.contains(&file_id)
@@ -2116,6 +2171,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     };
 
     let mut valid_entrypoints = Vec::new();
+    let allow_custom_ext = !engine.is_synchronous_host();
     for entry in entrypoints {
         let virtual_fid = entry
             .to_str()
@@ -2126,7 +2182,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
             }
             continue;
         }
-        if !is_compilation_root(&entry) {
+        if !is_valid_path_root(&entry, allow_custom_ext) {
             continue;
         }
         // Dedupe on the case-folded path, but keep the caller's spelling.
@@ -2309,6 +2365,9 @@ pub enum CoordinatorEvent {
     DepsDiscovered {
         deps: Vec<PathBuf>,
     },
+    SkippedNonRoot {
+        file_id: FileId,
+    },
     FileCompleted {
         file_id: FileId,
         result: Result<crate::AnalysisResult, String>,
@@ -2347,13 +2406,19 @@ fn handle_coordinator_event(
                     }
                     continue;
                 }
-                if is_ts_file(&dep) && seen.insert(crate::fs::normalize_path(&dep).into_owned()) {
+                // `analyze_file_syntax_body` already filtered `program_dependencies` to modules
+                // whose authoritative `ModuleFormat` satisfies `is_ts_source()`, so custom
+                // path extensions (e.g. `.ng` with `format: 'ts'`) are spawned here too.
+                if seen.insert(crate::fs::normalize_path(&dep).into_owned()) {
                     let file_id = engine.intern_path(&dep);
                     if !engine.lookup_external(file_id) && visited_file_ids.insert(file_id) {
                         pending_tasks.push(spawn_file_task(dep));
                     }
                 }
             }
+        }
+        CoordinatorEvent::SkippedNonRoot { file_id } => {
+            visited_file_ids.remove(&file_id);
         }
         CoordinatorEvent::FileCompleted {
             file_id,
@@ -2540,16 +2605,18 @@ pub(crate) async fn extract_chunk_info(
                     if engine.lookup_external(r.file) {
                         continue;
                     }
-                    let is_source = match engine.lookup_kind(r.file) {
-                        crate::host::IdKind::Path => is_ts_source(&engine.lookup_path(r.file)),
-                        crate::host::IdKind::Virtual => {
-                            let parsed = ctx.parse_file(r.file).await;
-                            let guard = parsed.lock().unwrap();
-                            let st = guard.borrow_dependent().program.source_type;
-                            st.is_typescript() && !st.is_typescript_definition()
+                    let target_format = match engine.lookup_effective_format(r.file) {
+                        Some(fmt) => Some(fmt),
+                        None => {
+                            ctx.parse_file(r.file)
+                                .await
+                                .lock()
+                                .unwrap()
+                                .borrow_owner()
+                                .format
                         }
                     };
-                    if is_source {
+                    if target_format.is_some_and(crate::host::ModuleFormat::is_ts_source) {
                         declared_file_ids.push(r.file);
                     }
                 }
@@ -3305,6 +3372,7 @@ mod entry_point_tests {
                 file_path: VIRTUAL_ID.to_string(),
                 content: COMPONENT.to_string(),
                 id_kind: Some(IdKind::Virtual),
+                format: None,
             }])
             .unwrap();
         let meta = engine
@@ -3404,6 +3472,7 @@ mod entry_point_tests {
                 file_path: "/project/tsconfig.json".to_string(),
                 content: r#"{"files": ["c1.component.ts", "b.d.ts"]}"#.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert_eq!(
@@ -3435,6 +3504,7 @@ mod entry_point_tests {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(
@@ -3482,6 +3552,7 @@ mod entry_point_tests {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(c1_has_module(&analyzer));
@@ -3542,6 +3613,7 @@ mod entry_point_tests {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(!c1_has_module(&analyzer));
@@ -3568,6 +3640,7 @@ mod entry_point_tests {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(!c1_has_module(&analyzer));
@@ -3690,6 +3763,7 @@ mod entry_point_tests {
                 file_path: "/project/r3_symbols.ts".to_string(),
                 content: "export const ITS_JUST_ANGULAR = false;".to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(
@@ -3729,6 +3803,7 @@ mod entry_point_tests {
                 file_path: "/project/c2.component.html".to_string(),
                 content: "<p>v2</p>".to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(
@@ -3807,6 +3882,7 @@ mod entry_point_tests {
                 file_path: "/project/c2.component.html".to_string(),
                 content: "<p>v2</p>".to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         let delta_chunks = collect_chunks(
@@ -3907,6 +3983,7 @@ mod entry_point_tests {
                 file_path: "/project/other.ts".to_string(),
                 content: OTHER_WITH_IMPORTS.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         let delta = collect_chunks(
@@ -4023,6 +4100,7 @@ mod entry_point_tests {
                 file_path: "/project/ext/kit.d.ts".to_string(),
                 content: format!("{ext_kit}export declare const UNUSED: number;\n"),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         let after_dts_edit = collect(
@@ -4046,6 +4124,7 @@ mod entry_point_tests {
                 file_path: "/project/sub_module.ts".to_string(),
                 content: sub_module("SubA, SubB, ExtKitModule"),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         let after_sub_edit = collect(
@@ -4133,6 +4212,7 @@ mod entry_point_tests {
                 file_path: "/project/util.ts".to_string(),
                 content: "export const answer = 43;".to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert_eq!(stale, vec!["/project/util.ts".to_string()]);
@@ -4184,6 +4264,7 @@ mod entry_point_tests {
                 file_path: "/project/m.module.ts".to_string(),
                 content: MODULE.to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert!(!stale.contains(&"/project/c1.component.ts".to_string()));
@@ -4249,6 +4330,7 @@ mod entry_point_tests {
                 file_path: "/project/c2.component.html".to_string(),
                 content: "<p>v2</p>".to_string(),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         analyzer
