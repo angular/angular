@@ -229,7 +229,7 @@ export async function renderInternal(
 
     if (asyncCallbacks.length) {
       if (platformRef.destroyed || applicationRef.destroyed) {
-        Promise.allSettled(asyncCallbacks);
+        void Promise.allSettled(asyncCallbacks);
         return '';
       }
 
