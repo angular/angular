@@ -380,6 +380,45 @@ describe('control flow - for', () => {
       expect(context).toBe(fixture.componentInstance);
     });
 
+    it('should support arrow functions in the track expression', async () => {
+      @Component({
+        template: `@for (item of items(); track item.tags.find((tag) => tag.primary)) {
+          {{ item.name }}|
+        }`,
+      })
+      class TestComponent {
+        items = signal([
+          {name: 'a', tags: [{primary: true}]},
+          {name: 'b', tags: [{primary: true}]},
+        ]);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent.trim()).toBe('a|  b|');
+    });
+
+    it('should support arrow functions that access the component instance in the track expression', async () => {
+      @Component({
+        template: `
+          @for (item of items(); track item.tags.find((tag) => tag === primaryTag)) {
+            {{ item.name }}|
+          }
+        `,
+      })
+      class TestComponent {
+        primaryTag = 'x';
+        items = signal([
+          {name: 'a', tags: ['x', 'y']},
+          {name: 'b', tags: ['z']},
+        ]);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent.trim()).toBe('a|  b|');
+    });
+
     it('should warn about duplicated keys when using arrays', async () => {
       @Component({
         template: `@for (item of items(); track item) {

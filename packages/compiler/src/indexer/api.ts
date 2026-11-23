@@ -11,13 +11,12 @@ import {
   BoundAttribute,
   BoundEvent,
   Element,
-  LetDeclaration,
   Node,
   Reference,
   Template,
   TextAttribute,
-  Variable,
 } from '../render3/r3_ast';
+import {TemplateEntity} from '../render3/view/t2_api';
 
 /**
  * Describes the kind of identifier found in a template.
@@ -195,7 +194,7 @@ export interface AbstractBoundTemplate<T = unknown> {
   getConsumerOfBinding?(
     binding: BoundAttribute | BoundEvent | TextAttribute,
   ): {ref: {node: T}} | Element | Template | null;
-  getExpressionTarget(ast: AST): Reference | Variable | LetDeclaration | null;
+  getExpressionTarget(ast: AST): TemplateEntity | null;
   getUsedDirectives(): Array<{ref: {node: T}; isComponent: boolean}>;
   getTemplateAst(): Node[] | undefined;
   getPipe(name: string): {ref: {node: T}} | null;
