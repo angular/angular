@@ -348,7 +348,7 @@ describe('Angular Compliance Tests', () => {
                     expectedContent,
                     `Checking ${generatedName} in ${testCase.description}`,
                     undefined,
-                    {isNgpCompilation: true, allowPartial},
+                    {isNgpCompilation: true, isLocalCompilation: isLocal, allowPartial},
                   );
 
                   if (expectation.extraChecks) {

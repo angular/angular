@@ -36,7 +36,7 @@ export class IfDirective {
   constructor(template) {}
   static ɵfac = function IfDirective_Factory(__ngFactoryType__) {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || IfDirective)(i0.ɵɵdirectiveInject(i0.TemplateRef));
+    return new (__ngFactoryType__ || IfDirective)(i0.ɵɵdirectiveInject(TemplateRef));
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({
     type: IfDirective,
@@ -59,7 +59,7 @@ export class IfDirective {
           ]
         }
       ],
-      () => [{ type: i0.TemplateRef }],
+      () => [{ type: TemplateRef }],
       null
     );
 })();

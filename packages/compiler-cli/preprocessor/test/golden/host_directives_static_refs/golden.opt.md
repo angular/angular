@@ -568,13 +568,13 @@ export class C10 {
     never,
     never,
     true,
-    [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
+    [{ directive: typeof ns.DepA; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C10,
       selectors: [['c10']],
-      features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
+      features: [i0.ɵɵHostDirectivesFeature([ns.DepA])],
       decls: 0,
       vars: 0,
       template: function C10_Template(rf: number, ctx: any): any {},
@@ -612,13 +612,13 @@ export class C11 {
     never,
     never,
     true,
-    [{ directive: typeof i1.DepB; inputs: { 'x': 'q' }; outputs: {} }]
+    [{ directive: typeof ns.DepB; inputs: { 'x': 'q' }; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C11,
       selectors: [['c11']],
-      features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepB, inputs: ['x', 'q'] }])],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: ns.DepB, inputs: ['x', 'q'] }])],
       decls: 0,
       vars: 0,
       template: function C11_Template(rf: number, ctx: any): any {},

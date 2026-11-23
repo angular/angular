@@ -122,11 +122,11 @@ export function normalizeNgpEmitForComparison(
 ): string {
   let normalized = code;
 
-  // TODO(ngp-parity): `ngtsc` runs as a TS transformer during emit, after TypeScript's
-  // `emitDecoratorMetadata` pass has already marked types referenced by Angular decorators (e.g.
-  // `QueryList`, `ElementRef`, `TemplateRef`) as value-used. NGP strips Angular decorators before
-  // `tsc` runs, so `tsc` elides those imports. Either disable `emitDecoratorMetadata` in compliance
-  // tests that do not test decorator metadata, or preserve decorator-metadata imports in NGP.
+  // TODO(ngp-parity): In local compilation, `ngtsc` refers to constructor injection tokens through
+  // generated namespace imports and leaves the author's imports as they are, whereas NGP refers to
+  // them through the author's imports and `tsc` elides the imports that are left unused. This
+  // rewrites `ngtsc` goldens to the latter form. The other compilation modes do not need it, as
+  // `ngtsc` reuses and elides imports there as well.
   if (options?.pruneUnusedImports) {
     const rewrittenNamespaces = new Set<string>();
     normalized = normalizeCtorDiNamespaceImports(normalized, rewrittenNamespaces);

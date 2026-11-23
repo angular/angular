@@ -116,7 +116,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         }
       }
 
-      const typeValueReference = typeToValue(typeNode, this.checker, this.isLocalCompilation);
+      const typeValueReference = typeToValue(
+        typeNode,
+        this.checker,
+        this.isLocalCompilation,
+        tsClazz,
+      );
 
       return {
         name,

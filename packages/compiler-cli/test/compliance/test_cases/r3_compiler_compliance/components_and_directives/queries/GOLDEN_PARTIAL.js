@@ -27,7 +27,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: view_query_for_directive.js
  ****************************************************************************************************/
-import { Component, NgModule, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, NgModule, ViewChild, ViewChildren } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ViewQueryComponent {
@@ -86,7 +86,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: view_query_forward_ref.js
  ****************************************************************************************************/
-import { Component, Directive, forwardRef, NgModule, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, Directive, forwardRef, NgModule, ViewChild, ViewChildren } from '@angular/core';
 import * as i0 from "@angular/core";
 export class ViewQueryComponent {
     someDir;
@@ -177,7 +177,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: view_query_for_local_ref.js
  ****************************************************************************************************/
-import { Component, NgModule, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, NgModule, ViewChild, ViewChildren } from '@angular/core';
 import * as i0 from "@angular/core";
 export class ViewQueryComponent {
     myRef;
@@ -261,7 +261,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: static_view_query.js
  ****************************************************************************************************/
-import { Component, ElementRef, NgModule, ViewChild } from '@angular/core';
+import { Component, NgModule, ViewChild } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ViewQueryComponent {
@@ -346,7 +346,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: view_query_read_token.js
  ****************************************************************************************************/
-import { Component, ElementRef, NgModule, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, NgModule, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ViewQueryComponent {
@@ -443,7 +443,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: content_query_for_directive.js
  ****************************************************************************************************/
-import { Component, ContentChild, ContentChildren, NgModule, QueryList } from '@angular/core';
+import { Component, ContentChild, ContentChildren, NgModule } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ContentQueryComponent {
@@ -526,7 +526,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: content_query_forward_ref.js
  ****************************************************************************************************/
-import { Component, ContentChild, ContentChildren, Directive, forwardRef, NgModule, QueryList } from '@angular/core';
+import { Component, ContentChild, ContentChildren, Directive, forwardRef, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class ContentQueryComponent {
     someDir;
@@ -621,7 +621,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: content_query_for_local_ref.js
  ****************************************************************************************************/
-import { Component, ContentChild, ContentChildren, NgModule, QueryList } from '@angular/core';
+import { Component, ContentChild, ContentChildren, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class ContentQueryComponent {
     myRef;
@@ -705,7 +705,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: static_content_query.js
  ****************************************************************************************************/
-import { Component, ContentChild, ElementRef, NgModule } from '@angular/core';
+import { Component, ContentChild, NgModule } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ContentQueryComponent {
@@ -814,7 +814,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: content_query_read_token.js
  ****************************************************************************************************/
-import { Component, ContentChild, ContentChildren, ElementRef, NgModule, QueryList, TemplateRef } from '@angular/core';
+import { Component, ContentChild, ContentChildren, ElementRef, NgModule, TemplateRef } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ContentQueryComponent {
@@ -911,7 +911,7 @@ export declare class SomeDirective {
 /****************************************************************************************************
  * PARTIAL FILE: query_with_emit_distinct_changes_only.js
  ****************************************************************************************************/
-import { Component, ContentChildren, NgModule, QueryList, ViewChildren } from '@angular/core';
+import { Component, ContentChildren, NgModule, ViewChildren } from '@angular/core';
 import { SomeDirective } from './some.directive';
 import * as i0 from "@angular/core";
 export class ContentQueryComponent {

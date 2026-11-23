@@ -769,14 +769,10 @@ runInEachFileSystem(() => {
         expect(cleanNewLines(jsContents)).toMatch(
           /\(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/cmp"\)\.then\(\(?m\)? => m\.Cmp\) ?\]/,
         );
-        if (isNgpTestMode()) {
-          // `TestCmp` also injects `Cmp` via constructor DI (`ɵɵdirectiveInject(Cmp)`), so `ngp`
-          // retains the named `import { Cmp }` instead of synthesizing `import * as i1`.
-          expect(jsContents).toContain('import { Cmp }');
-          expect(jsContents).not.toContain('import * as i1');
-        } else {
-          expect(jsContents).not.toContain('import { Cmp }');
-        }
+        // `TestCmp` also injects `Cmp` via constructor DI (`ɵɵdirectiveInject(Cmp)`), so the
+        // named `import { Cmp }` is retained instead of synthesizing `import * as i1`.
+        expect(jsContents).toContain('import { Cmp }');
+        expect(jsContents).not.toContain('import * as i1');
       });
 
       it('should retain symbols used in types and eagerly', () => {

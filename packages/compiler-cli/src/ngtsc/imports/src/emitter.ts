@@ -276,13 +276,13 @@ export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
       }
     }
 
-    // A Reference can have multiple identities in different files, so it may already have an
-    // Identifier in the requested context file.
-    const identifier = ref.getIdentityIn(context);
-    if (identifier !== null) {
+    // A Reference can have multiple identities or namespace expressions in different files, so it
+    // may already have an expression in the requested context file.
+    const localExpr = ref.getExpressionIn(context);
+    if (localExpr !== null) {
       return {
         kind: ReferenceEmitKind.Success,
-        expression: new WrappedNodeExpr(identifier),
+        expression: new WrappedNodeExpr(localExpr),
         importedFile: null,
       };
     } else {

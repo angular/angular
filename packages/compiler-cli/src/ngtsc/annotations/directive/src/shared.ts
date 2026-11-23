@@ -35,6 +35,7 @@ import {
   R3InputMetadata,
   R3QueryMetadata,
   R3Reference,
+  ReadPropExpr,
   SourceNode,
   verifyHostBindings,
   WrappedNodeExpr,
@@ -54,6 +55,7 @@ import {
   Reference,
   ReferenceEmitter,
 } from '../../../imports';
+import {getAliasImportDeclaration} from '../../../imports/src/default';
 import {
   DecoratorInputTransform,
   HostDirectiveMeta,
@@ -79,6 +81,7 @@ import {
   ReflectionHost,
   reflectObjectLiteral,
 } from '../../../reflection';
+import {getContainingImportDeclaration} from '../../../reflection/src/typescript';
 import {CompilationMode} from '../../../transform';
 import {
   assertLocalCompilationUnresolvedConst,
@@ -371,12 +374,7 @@ export function extractDirectiveMetadata(
   const isStructural =
     ctorDeps !== null &&
     ctorDeps !== 'invalid' &&
-    ctorDeps.some(
-      (dep) =>
-        dep.token instanceof ExternalExpr &&
-        dep.token.value.moduleName === '@angular/core' &&
-        dep.token.value.name === 'TemplateRef',
-    );
+    ctorDeps.some((dep) => isTemplateRefToken(dep.token));
 
   let isStandalone = implicitStandaloneValue;
   let diagnostics: ts.Diagnostic[] | undefined;
@@ -1591,7 +1589,7 @@ export function parseDecoratorInputTransformFunction(
   // all the diagnostics.
   if (compilationMode === CompilationMode.LOCAL) {
     const node =
-      value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+      value instanceof Reference ? value.getExpressionIn(clazz.getSourceFile()) : value.node;
 
     // This should never be null since we know the reference originates
     // from the same file, but we null check it just in case.
@@ -1645,7 +1643,8 @@ export function parseDecoratorInputTransformFunction(
     }
   }
 
-  const node = value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+  const node =
+    value instanceof Reference ? value.getExpressionIn(clazz.getSourceFile()) : value.node;
 
   // This should never be null since we know the reference originates
   // from the same file, but we null check it just in case.
@@ -2285,6 +2284,33 @@ export function extractHostBindingResources(nodes: HostBindingNodes): ReadonlySe
   }
 
   return result;
+}
+
+/**
+ * Whether the token of a constructor dependency is `TemplateRef`, which is referred to either
+ * through a generated import or through an import of the author: `TemplateRef`, an alias of it, or
+ * `core.TemplateRef`.
+ */
+function isTemplateRefToken(token: Expression | null): boolean {
+  if (token instanceof ExternalExpr) {
+    return token.value.moduleName === '@angular/core' && token.value.name === 'TemplateRef';
+  }
+  const local = token instanceof ReadPropExpr ? token.receiver : token;
+  const binding = local instanceof WrappedNodeExpr ? getAliasImportDeclaration(local) : null;
+  if (binding === null) {
+    return false;
+  }
+  const importedName =
+    token instanceof ReadPropExpr
+      ? token.name
+      : ts.isImportSpecifier(binding) && (binding.propertyName ?? binding.name).text;
+  const moduleSpecifier = getContainingImportDeclaration(binding)?.moduleSpecifier;
+  return (
+    importedName === 'TemplateRef' &&
+    moduleSpecifier !== undefined &&
+    ts.isStringLiteral(moduleSpecifier) &&
+    moduleSpecifier.text === '@angular/core'
+  );
 }
 
 function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {

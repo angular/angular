@@ -73,8 +73,6 @@ import { Component } from '@angular/core';
 import * as ns from './deps';
 // @ts-ignore
 import * as i0 from '@angular/core';
-// @ts-ignore
-import * as i1 from './deps';
 
 export class NsComp {
   // @ts-ignore
@@ -93,13 +91,13 @@ export class NsComp {
     never,
     never,
     true,
-    [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
+    [{ directive: typeof ns.DepA; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: NsComp,
       selectors: [['nsc']],
-      features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
+      features: [i0.ɵɵHostDirectivesFeature([ns.DepA])],
       decls: 0,
       vars: 0,
       template: function NsComp_Template(rf: number, ctx: any): any {},
@@ -137,13 +135,13 @@ export class NsComp2 {
     never,
     never,
     true,
-    [{ directive: typeof i1.DepA; inputs: { 'a': 'b' }; outputs: {} }]
+    [{ directive: typeof ns.DepA; inputs: { 'a': 'b' }; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: NsComp2,
       selectors: [['nsc2']],
-      features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepA, inputs: ['a', 'b'] }])],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: ns.DepA, inputs: ['a', 'b'] }])],
       decls: 0,
       vars: 0,
       template: function NsComp2_Template(rf: number, ctx: any): any {},

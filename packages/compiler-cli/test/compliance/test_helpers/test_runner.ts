@@ -101,6 +101,7 @@ export function runTests(
                 expectation.extraChecks,
                 options.skipMappingChecks,
                 type === 'linked compile',
+                !!options.isLocalCompilation,
               );
             }
           }

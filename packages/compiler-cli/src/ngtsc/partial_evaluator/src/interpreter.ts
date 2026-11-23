@@ -356,7 +356,18 @@ export class StaticInterpreter {
     if (lhs instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, lhs);
     }
-    return this.accessHelper(node, lhs, rhs, context);
+    const result = this.accessHelper(node, lhs, rhs, context);
+    // A member of a namespace import can be referred to as written elsewhere in the file.
+    if (
+      lhs instanceof ResolvedModule &&
+      result instanceof Reference &&
+      !result.synthetic &&
+      ts.isIdentifier(node.expression) &&
+      this.checker.getSymbolAtLocation(node.expression)?.declarations?.some(ts.isNamespaceImport)
+    ) {
+      result.addExpression(node);
+    }
+    return result;
   }
 
   private visitSourceFile(node: ts.SourceFile, context: Context): ResolvedValue {

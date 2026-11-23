@@ -1568,8 +1568,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
           isForwardReference = true;
         }
       }
-      // An appropriate identifier is already in scope.
-      return {kind, symbolName: emitted.node.text, isForwardReference};
+      // An appropriate identifier or namespace member expression is already in scope.
+      const symbolName = ts.isIdentifier(emitted.node) ? emitted.node.text : emitted.node.getText();
+      return {kind, symbolName, isForwardReference};
     } else if (
       emitted instanceof ExternalExpr &&
       emitted.value.moduleName !== null &&

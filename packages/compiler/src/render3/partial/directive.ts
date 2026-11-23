@@ -235,8 +235,8 @@ function createHostDirectives(
       {
         key: 'directive',
         value: current.isForwardReference
-          ? generateForwardRef(current.directive.type)
-          : current.directive.type,
+          ? generateForwardRef(current.directive.value)
+          : current.directive.value,
         quoted: false,
       },
     ];

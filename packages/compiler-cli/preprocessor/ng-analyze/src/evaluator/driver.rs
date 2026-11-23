@@ -1158,7 +1158,7 @@ mod tests {
             .iter()
             .map(|d| d.reference.name_in_file(app_id))
             .collect();
-        assert_eq!(names, vec!["FooComponent"]);
+        assert_eq!(names, vec!["shared.FooComponent"]);
         assert!(component.raw_imports_span.is_none());
     }
 

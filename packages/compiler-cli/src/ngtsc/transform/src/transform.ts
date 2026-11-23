@@ -14,7 +14,7 @@ import {
   LocalCompilationExtraImportsTracker,
   ReferenceEmitter,
 } from '../../imports';
-import {getDefaultImportDeclaration} from '../../imports/src/default';
+import {getAliasImportDeclaration, getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {
@@ -66,6 +66,7 @@ export function ivyTransformFactory(
           context,
           reflector,
           importRewriter,
+          defaultImportTracker,
           localCompilationExtraImportsTracker,
           file,
           isCore,
@@ -133,7 +134,7 @@ class IvyTransformationVisitor extends Visitor {
     private recordWrappedNodeExpr: RecordWrappedNodeFn<ts.Expression>,
     private isClosureCompilerEnabled: boolean,
     private isCore: boolean,
-    private deferrableImports: Set<ts.ImportDeclaration>,
+    private defaultImportTracker: DefaultImportTracker,
     private refEmitter: ReferenceEmitter | null,
     private enableTypeReification: boolean,
   ) {
@@ -221,9 +222,10 @@ class IvyTransformationVisitor extends Visitor {
       members.push(property);
     }
 
-    const filteredDecorators =
-      // Remove the decorator which triggered this compilation, leaving the others alone.
-      maybeFilterDecorator(ts.getDecorators(node), this.compilation.decoratorsFor(node));
+    // Remove the decorator which triggered this compilation, leaving the others alone.
+    const removedDecorators = this.compilation.decoratorsFor(node);
+    removedDecorators.forEach((dec) => this.defaultImportTracker.recordRemovedDecorator(dec));
+    const filteredDecorators = maybeFilterDecorator(ts.getDecorators(node), removedDecorators);
 
     const nodeModifiers = ts.getModifiers(node);
     let updatedModifiers: ts.ModifierLike[] | undefined;
@@ -243,16 +245,6 @@ class IvyTransformationVisitor extends Visitor {
       members.map((member) => this._stripAngularDecorators(member)),
     );
     return {node, after: statements};
-  }
-
-  override visitOtherNode<T extends ts.Node>(node: T): T {
-    if (ts.isImportDeclaration(node) && this.deferrableImports.has(node)) {
-      // Return `null` as an indication that this node should not be present
-      // in the final AST. Symbols from this import would be imported via
-      // dynamic imports.
-      return null!;
-    }
-    return node;
   }
 
   /**
@@ -283,6 +275,7 @@ class IvyTransformationVisitor extends Visitor {
     }
     // Build a Set of the decorators on this node from @angular/core.
     const coreDecorators = this._angularCoreDecorators(node);
+    coreDecorators.forEach((dec) => this.defaultImportTracker.recordRemovedDecorator(dec));
 
     // Filter out the core decorators.
     return decorators.filter((dec) => !coreDecorators.has(dec));
@@ -325,6 +318,7 @@ function transformIvySourceFile(
   context: ts.TransformationContext,
   reflector: ReflectionHost,
   importRewriter: ImportRewriter,
+  defaultImportTracker: DefaultImportTracker,
   localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
   file: ts.SourceFile,
   isCore: boolean,
@@ -369,11 +363,29 @@ function transformIvySourceFile(
     recordWrappedNode,
     isClosureCompilerEnabled,
     isCore,
-    compilationVisitor.deferrableImports,
+    defaultImportTracker,
     refEmitter,
     enableTypeReification,
   );
   let sf = visit(file, transformationVisitor, context);
+
+  // Drop the imports of deferred symbols, which are loaded through dynamic imports instead. This
+  // happens after the classes are compiled, because an import has to stay if the generated code
+  // reuses one of its bindings (for example as a constructor injection token).
+  const {deferrableImports} = compilationVisitor;
+  if (deferrableImports.size > 0) {
+    sf = ts.factory.updateSourceFile(
+      sf,
+      sf.statements.filter((stmt) => {
+        const original = ts.getOriginalNode(stmt);
+        return (
+          !ts.isImportDeclaration(original) ||
+          !deferrableImports.has(original) ||
+          defaultImportTracker.isImportDeclarationUsed(original)
+        );
+      }),
+    );
+  }
 
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
@@ -504,6 +516,10 @@ function createRecorderFn(
     const importDecl = getDefaultImportDeclaration(node);
     if (importDecl !== null) {
       defaultImportTracker.recordUsedImport(importDecl);
+    }
+    const reusedImport = getAliasImportDeclaration(node);
+    if (reusedImport !== null) {
+      defaultImportTracker.recordUsedAlias(reusedImport);
     }
   };
 }

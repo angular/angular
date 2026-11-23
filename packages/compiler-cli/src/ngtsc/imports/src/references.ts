@@ -44,6 +44,7 @@ export class Reference<T extends ts.Node = ts.Node> {
   readonly bestGuessOwningModule: OwningModule | null;
 
   private identifiers: ts.Identifier[] = [];
+  private expressions: ts.Expression[] = [];
 
   /**
    * Indicates that the Reference was created synthetically, not as a result of natural value
@@ -133,11 +134,31 @@ export class Reference<T extends ts.Node = ts.Node> {
   }
 
   /**
+   * Record a module-scoped `ts.Expression` (such as a `ns.Foo` property access on a namespace
+   * import) by which it's valid to refer to this node within its source file.
+   */
+  addExpression(expr: ts.Expression): void {
+    this.expressions.push(expr);
+  }
+
+  /**
    * Get a `ts.Identifier` within this `Reference` that can be used to refer within the context of a
    * given `ts.SourceFile`, if any.
    */
   getIdentityIn(context: ts.SourceFile): ts.Identifier | null {
     return this.identifiers.find((id) => id.getSourceFile() === context) || null;
+  }
+
+  /**
+   * Get a `ts.Expression` (either a local `ts.Identifier` or a recorded namespace property access
+   * expression) within this `Reference` that can be used to refer to it in `context`, if any.
+   */
+  getExpressionIn(context: ts.SourceFile): ts.Expression | null {
+    return (
+      this.getIdentityIn(context) ||
+      this.expressions.find((expr) => expr.getSourceFile() === context) ||
+      null
+    );
   }
 
   /**
@@ -192,6 +213,7 @@ export class Reference<T extends ts.Node = ts.Node> {
       this.isAmbient ? AmbientImport : this.bestGuessOwningModule,
     );
     ref.identifiers = [...this.identifiers];
+    ref.expressions = [...this.expressions];
     ref._alias = alias;
     return ref;
   }
@@ -203,6 +225,7 @@ export class Reference<T extends ts.Node = ts.Node> {
     );
     ref._alias = this._alias;
     ref.identifiers = [];
+    ref.expressions = [];
     return ref;
   }
 }

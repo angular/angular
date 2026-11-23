@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgModule, ViewChild } from "@angular/core";
+import { Component, NgModule, ViewChild } from "@angular/core";
 import { SomeDirective } from "./some.directive";
 import * as i0 from "@angular/core";
 const _c0 = ["foo"];

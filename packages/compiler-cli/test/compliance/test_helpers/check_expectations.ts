@@ -44,6 +44,7 @@ export async function checkExpectations(
   extraChecks: ExtraCheck[],
   skipMappingCheck = false,
   isLinkedCompilation = false,
+  isLocalCompilation = false,
 ): Promise<void> {
   const builtDirectory = getBuildOutputDirectory(fs);
   for (const expectedFile of expectedFiles) {
@@ -95,7 +96,7 @@ export async function checkExpectations(
       `When checking against expected file "${testPath}/${expectedFile.expected}"\n` +
         failureMessage,
       undefined,
-      {isLinkedCompilation, allowPartial},
+      {isLinkedCompilation, isLocalCompilation, allowPartial},
     );
 
     runExtraChecks(testPath, generated, extraChecks);

@@ -53,7 +53,7 @@ runInEachFileSystem(() => {
     }
     `);
       expect(res).toContain(
-        `(): any => [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }], null);`,
+        `(): any => [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: Injector }], null);`,
       );
     });
 
