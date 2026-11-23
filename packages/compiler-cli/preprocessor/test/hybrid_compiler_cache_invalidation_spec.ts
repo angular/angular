@@ -9,7 +9,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {resolveFixtureNodeModules, resolveWasmBinding, TestFile} from './utils.js';
-import {createAnalyzer} from '../api.js';
+import {createAnalyzer, FileUpdateType} from '../api.js';
 import {HybridCompiler} from '../src/hybrid_compiler.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
 
@@ -129,7 +129,8 @@ describe('HybridCompiler fileCache invalidation', () => {
       await fs.writeFile(dirPath, updated);
       await compiler.updateFileContent([{filePath: dirPath, content: updated}]);
 
-      expect(compiler.fileCache.has(key)).toBe(false);
+      expect(compiler.fileCache.get(key)?.preparedTcbData).toBeUndefined();
+      expect(compiler.fileCache.get(key)?.tcb).toBeUndefined();
       const after = await compiler.getTcbForFile(dependentPath);
       expect(after).toContain('_t1.second');
       expect(after).not.toContain('_t1.first');
@@ -185,8 +186,89 @@ describe('HybridCompiler fileCache invalidation', () => {
       await fs.writeFile(modPath, updated);
       await compiler.updateFileContent([{filePath: modPath, content: updated}]);
 
-      expect(compiler.fileCache.has(key)).toBe(false);
+      expect(compiler.fileCache.get(key)?.preparedTcbData).toBeUndefined();
+      expect(compiler.fileCache.get(key)?.tcb).toBeUndefined();
       expect(await compiler.getTcbForFile(cmpPath)).toContain('_t1.first');
+    } finally {
+      compiler.analyzer.close();
+    }
+  });
+
+  it('invalidates a file outside entrypoints when applyInvalidations receives analyzer invalidations', async () => {
+    const {compiler, root} = await createCompiler('apply_invalidations_loose_file', [
+      TSCONFIG,
+      MAIN,
+      {path: 'Shared/dir.ts', content: directiveSource('first')},
+      {path: 'dependent.ts', content: DEPENDENT_SOURCE},
+    ]);
+    try {
+      const dependentPath = path.join(root, 'dependent.ts');
+      const before = await compiler.getTcbForFile(dependentPath);
+      expect(before).toContain('_t1.first');
+      expect(before).not.toContain('_t1.second');
+
+      const dirPath = path.join(root, 'Shared/dir.ts');
+      const updated = directiveSource('second');
+      await fs.writeFile(dirPath, updated);
+      const canonical = await compiler.analyzer.canonicalPaths?.([dirPath]);
+      const invalidatedTsFiles = await compiler.analyzer.updateFileContent([
+        {filePath: dirPath, content: updated},
+      ]);
+      compiler.applyInvalidations(
+        [{filePath: dirPath, updateType: FileUpdateType.Changed}],
+        invalidatedTsFiles,
+        canonical,
+      );
+
+      const after = await compiler.getTcbForFile(dependentPath);
+      expect(after).toContain('_t1.second');
+      expect(after).not.toContain('_t1.first');
+    } finally {
+      compiler.analyzer.close();
+    }
+  });
+
+  it('invalidates a compiled root file when applyInvalidations receives analyzer invalidations', async () => {
+    const {compiler, root} = await createCompiler('apply_invalidations_root_file', [
+      {
+        path: 'tsconfig.json',
+        content: JSON.stringify({
+          compilerOptions: {},
+          files: ['Shared/dir.ts', 'dependent.ts'],
+        }),
+      },
+      {path: 'Shared/dir.ts', content: directiveSource('first')},
+      {path: 'dependent.ts', content: DEPENDENT_SOURCE},
+    ]);
+    try {
+      const dependentPath = path.join(root, 'dependent.ts');
+      await compiler.compile();
+      expect(await compiler.getTcbForFile(dependentPath)).toContain('_t1.first');
+      const cachedTemplateBefore = compiler.fileCache
+        .get(dependentPath)!
+        .parsedTemplates.values()
+        .next().value;
+      expect(cachedTemplateBefore).toBeDefined();
+
+      const dirPath = path.join(root, 'Shared/dir.ts');
+      const updated = directiveSource('second');
+      await fs.writeFile(dirPath, updated);
+      const canonical = await compiler.analyzer.canonicalPaths?.([dirPath]);
+      const invalidatedTsFiles = await compiler.analyzer.updateFileContent([
+        {filePath: dirPath, content: updated},
+      ]);
+      compiler.applyInvalidations(
+        [{filePath: dirPath, updateType: FileUpdateType.Changed}],
+        invalidatedTsFiles,
+        canonical,
+      );
+
+      const after = await compiler.getTcbForFile(dependentPath);
+      expect(after).toContain('_t1.second');
+      expect(after).not.toContain('_t1.first');
+      expect(compiler.fileCache.get(dependentPath)!.parsedTemplates.values().next().value).toBe(
+        cachedTemplateBefore,
+      );
     } finally {
       compiler.analyzer.close();
     }

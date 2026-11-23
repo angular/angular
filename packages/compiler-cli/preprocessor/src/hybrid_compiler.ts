@@ -21,11 +21,11 @@ import {
 } from './compiler_options.js';
 import {needsNgContentSelectors, ngContentSignature} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
-import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
+import {ChangeKind, ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {IncrementalEmitTracker} from './incremental.js';
 import {getIndexedComponents} from './indexing/indexer.js';
-import {fingerprintOf, ProcessedFileCache} from './processed_file_cache.js';
+import {ProcessedFileCache, type ProcessedFileCacheKey} from './processed_file_cache.js';
 import {Counter, NOOP_TRACER, SpanKind, type AnalyzerPerfTake, type Tracer} from './perf.js';
 import {buildTcbTargets, processFile, type ProcessedFile} from './processor.js';
 import {
@@ -327,9 +327,9 @@ export class HybridCompiler {
   private readonly ngContentSignatureByFile = new Map<string, string>();
   private readonly jsDirtyFiles = new Set<string>();
   private readonly pendingDeltaChunks: nga.CompilationChunk[] = [];
-  private readonly serializedObjects = new WeakMap<object, string>();
   private readonly ngContentSignatures = new WeakMap<nga.ComponentMetadata, string>();
   private hasCompiled = false;
+  private hasFullPass = false;
   private pendingCompilation: Promise<void> = Promise.resolve();
 
   constructor(analyzer: IAnalyzer, options: HybridCompilerOptions = {}) {
@@ -540,6 +540,12 @@ export class HybridCompiler {
   /** Evicts all cached state for a file that was deleted or left the program closure. */
   private evictRemovedFile(filePath: string): void {
     this.forgetDiagnosticsOf(filePath);
+    for (const consumer of this.componentTemplateConsumers.get(filePath) ?? []) {
+      if (consumer !== filePath) {
+        this.markChangeKind(consumer, ChangeKind.Dependency);
+        this.jsDirtyFiles.add(consumer);
+      }
+    }
     this.fileCache.delete(filePath);
     this.metadataByFile.delete(filePath);
     this.lastChunkByFile.delete(filePath);
@@ -547,6 +553,7 @@ export class HybridCompiler {
     this.currentProcessedFiles.delete(filePath);
     this.currentProcessErrors.delete(filePath);
     this.templateStyleUrlsByFile.delete(filePath);
+    this.knownResources.delete(filePath);
     this.ngContentSignatureByFile.delete(filePath);
     this.jsDirtyFiles.delete(filePath);
     this.componentTemplateConsumers.delete(filePath);
@@ -555,20 +562,49 @@ export class HybridCompiler {
     }
   }
 
-  private recordMetadata(result: nga.AnalysisResult): void {
-    if (this.metadataByFile.get(result.filePath) === result) {
+  private markChangeKind(filePath: string, kind: ChangeKind): void {
+    if (kind === ChangeKind.Unchanged) {
       return;
+    }
+    this.processedFiles.delete(filePath);
+    if (kind >= ChangeKind.Source) {
+      this.metadataByFile.delete(filePath);
+      this.fileCache.delete(filePath);
+      return;
+    }
+    const existing = this.fileCache.get(filePath);
+    if (!existing) {
+      return;
+    }
+    existing.changeKind = Math.max(existing.changeKind ?? ChangeKind.Unchanged, kind);
+    existing.preparedTcbData = undefined;
+    existing.tcb = undefined;
+    if (kind >= ChangeKind.ResourceOnly) {
+      existing.parsedTemplates.clear();
+    }
+    if (existing.sourceContent === undefined && existing.parsedTemplates.size === 0) {
+      this.fileCache.delete(filePath);
+    }
+  }
+
+  private recordMetadata(result: nga.AnalysisResult, isUpdate = false): void {
+    const prev = this.metadataByFile.get(result.filePath);
+    if (prev === result) {
+      return;
+    }
+    if (prev !== undefined && (isUpdate || this.hasCompiled || this.hasFullPass)) {
+      this.markChangeKind(
+        result.filePath,
+        areComponentTemplatesUnchanged(prev, result)
+          ? ChangeKind.Dependency
+          : ChangeKind.ResourceOnly,
+      );
     }
     this.metadataByFile.set(result.filePath, result);
     // Template consumers only drive incremental invalidation and delta passes.
     if (this.incrementalEnabled) {
       this.recordComponentTemplateConsumers(result.filePath, result);
     }
-  }
-
-  private invalidateCachedFile(filePath: string): void {
-    this.fileCache.delete(filePath);
-    this.metadataByFile.delete(filePath);
   }
 
   private recordComponentTemplateConsumers(filePath: string, result: nga.AnalysisResult): void {
@@ -612,6 +648,7 @@ export class HybridCompiler {
     this.ngContentSignatureByFile.set(filePath, nextSignature);
     if (prevSignature !== undefined && prevSignature !== nextSignature) {
       for (const consumer of this.componentTemplateConsumers.get(filePath) ?? []) {
+        this.markChangeKind(consumer, ChangeKind.Dependency);
         this.jsDirtyFiles.add(consumer);
       }
     }
@@ -754,13 +791,17 @@ export class HybridCompiler {
     await this.pendingCompilation;
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<void> {
+  async updateFileContent(updates: nga.FileUpdate[]): Promise<void> {
     if (updates.length === 0) {
       return;
     }
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(
-        updates.map(({filePath}) => ({filePath, updateType: nga.FileUpdateType.Changed})),
+        updates.map(({filePath, idKind}) => ({
+          filePath,
+          updateType: nga.FileUpdateType.Changed,
+          ...(idKind !== undefined ? {idKind} : {}),
+        })),
       );
       return this.analyzer.updateFileContent(updates);
     });
@@ -803,12 +844,18 @@ export class HybridCompiler {
    */
   applyInvalidations(
     updates: readonly nga.FileInvalidation[],
-    invalidatedTsFiles: readonly string[],
+    invalidatedTsFiles: readonly string[] = [],
     canonicalPaths?: readonly string[],
   ): void {
-    this.recordCanonicalInvalidations(updates, canonicalPaths);
+    if (updates.length === 0 && invalidatedTsFiles.length === 0) {
+      return;
+    }
+    if (updates.length > 0) {
+      this.recordCanonicalInvalidations(updates, canonicalPaths);
+    }
     for (const filePath of invalidatedTsFiles) {
-      this.invalidateCachedFile(filePath);
+      this.metadataByFile.delete(filePath);
+      this.markChangeKind(filePath, ChangeKind.Dependency);
     }
   }
 
@@ -829,32 +876,67 @@ export class HybridCompiler {
   ): void {
     const changed: string[] = [];
     const deleted: string[] = [];
-    updates.forEach(({filePath: hostPath, updateType}, i) => {
-      const filePath = canonicalPaths?.[i] ?? hostPath;
+    updates.forEach(({filePath: hostPath, updateType, idKind}, i) => {
+      const canonicalPath = canonicalPaths?.[i];
+      const isVirtualModule =
+        idKind === 'virtual' ||
+        this.metadataByFile.get(hostPath)?.idKind === 'virtual' ||
+        (canonicalPath !== undefined &&
+          this.metadataByFile.get(canonicalPath)?.idKind === 'virtual');
+      const filePath = isVirtualModule ? hostPath : (canonicalPath ?? hostPath);
       // A resource no component is known to use may still be read during processing (e.g. a
       // stylesheet a template links that could not be read before), so every reusable output is
       // dropped. Sources and config files (a `tsconfig.json` edit is how roots change) are never
       // read that way, and are tracked through the analyzer instead. Whether a reprocessed file
       // is then re-emitted is decided by its output (`IncrementalEmitTracker`), so this costs
       // processing time, not spurious emits.
-      if (!isSourceOrConfigFile(filePath) && !this.knownResources.has(filePath)) {
+      if (
+        !isVirtualModule &&
+        !isSourceOrConfigFile(filePath) &&
+        !this.knownResources.has(filePath)
+      ) {
         this.processedFiles.clear();
+        for (const cachedTs of Array.from(this.fileCache.keys())) {
+          this.markChangeKind(cachedTs, ChangeKind.ResourceOnly);
+        }
         for (const knownTs of this.lastChunkByFile.keys()) {
+          this.markChangeKind(knownTs, ChangeKind.ResourceOnly);
           this.jsDirtyFiles.add(knownTs);
         }
       }
       for (const [ownerTs, styleFiles] of this.templateStyleUrlsByFile) {
         if (styleFiles.includes(filePath)) {
-          this.processedFiles.delete(ownerTs);
+          this.markChangeKind(ownerTs, ChangeKind.ResourceOnly);
           this.jsDirtyFiles.add(ownerTs);
         }
       }
-      this.invalidateCachedFile(filePath);
+      if (this.knownResources.has(filePath)) {
+        for (const [ownerTs, meta] of this.metadataByFile) {
+          if (
+            meta.classes.some(
+              (c) =>
+                c.component?.templateUrl?.resolvedPath === filePath ||
+                c.component?.styleUrls?.some((s) => s.resolvedPath === filePath),
+            )
+          ) {
+            this.metadataByFile.delete(ownerTs);
+            this.markChangeKind(ownerTs, ChangeKind.ResourceOnly);
+          }
+        }
+      }
       if (updateType === nga.FileUpdateType.Deleted) {
         deleted.push(filePath);
         this.evictRemovedFile(filePath);
       } else {
         changed.push(filePath);
+        if (
+          isVirtualModule ||
+          (isSourceOrConfigFile(filePath) &&
+            !isDeclarationFilePath(filePath) &&
+            !filePath.endsWith('.json'))
+        ) {
+          this.markChangeKind(filePath, ChangeKind.Source);
+        }
       }
     });
     if (this.incrementalEnabled) {
@@ -879,21 +961,38 @@ export class HybridCompiler {
   private async runUpdate(applyUpdate: () => Promise<string[]>): Promise<void> {
     try {
       const invalidatedTsFiles = await applyUpdate();
-      for (const filePath of invalidatedTsFiles) {
-        this.invalidateCachedFile(filePath);
-      }
       const iterator = this.optimize
         ? this.analyzer.analyzeOptimizedDelta()
         : this.analyzer.analyzeDelta();
-      for await (const chunk of iterator) {
-        if (chunk.files.length > 0 || (chunk.removedFiles && chunk.removedFiles.length > 0)) {
-          for (const file of chunk.files) {
-            this.invalidateCachedFile(file.filePath);
-          }
+      const seenInDelta = new Set<string>();
+      for await (const rawChunk of iterator) {
+        if (
+          rawChunk.files.length > 0 ||
+          (rawChunk.removedFiles && rawChunk.removedFiles.length > 0)
+        ) {
+          const chunk = this.canonicalizeChunk(rawChunk);
           for (const removed of chunk.removedFiles ?? []) {
-            this.invalidateCachedFile(removed);
+            this.evictRemovedFile(removed);
+          }
+          if (this.incrementalEnabled && chunk.removedFiles && chunk.removedFiles.length > 0) {
+            this.incremental.recordChanges([], chunk.removedFiles);
+          }
+          for (const file of chunk.files) {
+            seenInDelta.add(file.filePath);
+            if (!this.incrementalEnabled) {
+              this.fileCache.delete(file.filePath);
+            } else if (!this.metadataByFile.has(file.filePath)) {
+              this.markChangeKind(file.filePath, ChangeKind.ResourceOnly);
+            }
+            this.recordMetadata(file, /* isUpdate= */ true);
           }
           this.pendingDeltaChunks.push(chunk);
+        }
+      }
+      for (const filePath of invalidatedTsFiles) {
+        if (!seenInDelta.has(filePath)) {
+          this.metadataByFile.delete(filePath);
+          this.markChangeKind(filePath, ChangeKind.Dependency);
         }
       }
     } catch (error) {
@@ -901,6 +1000,12 @@ export class HybridCompiler {
       // stale. Drop them all.
       this.fileCache.clear();
       this.metadataByFile.clear();
+      this.lastChunkByFile.clear();
+      this.processedFiles.clear();
+      this.jsDirtyFiles.clear();
+      this.componentTemplateConsumers.clear();
+      this.ngContentSignatureByFile.clear();
+      this.knownResources.clear();
       this.pendingDeltaChunks.length = 0;
       throw error;
     }
@@ -912,6 +1017,34 @@ export class HybridCompiler {
 
   analyzeOptimized(): AsyncIterable<nga.CompilationChunk> {
     return this.fullAsync(this.analyzer.analyzeOptimized());
+  }
+
+  /**
+   * Reuses the cached `AnalysisResult` reference from `metadataByFile` when a re-streamed result
+   * is structurally identical so unchanged files keep reference equality across delta passes.
+   */
+  private canonicalizeMetadata(result: nga.AnalysisResult): nga.AnalysisResult {
+    if (!this.incrementalEnabled) {
+      return result;
+    }
+    const prev = this.metadataByFile.get(result.filePath);
+    if (prev !== undefined && isAnalysisResultEqual(prev, result)) {
+      return prev;
+    }
+    return result;
+  }
+
+  private canonicalizeChunk(chunk: nga.CompilationChunk): nga.CompilationChunk {
+    if (!this.incrementalEnabled || chunk.files.length === 0) {
+      return chunk;
+    }
+    let changed = false;
+    const files = chunk.files.map((file) => {
+      const canonical = this.canonicalizeMetadata(file);
+      changed ||= canonical !== file;
+      return canonical;
+    });
+    return changed ? {...chunk, files} : chunk;
   }
 
   private recordFullChunk(chunk: nga.CompilationChunk): void {
@@ -926,13 +1059,15 @@ export class HybridCompiler {
   ): AsyncGenerator<nga.CompilationChunk, void, unknown> {
     this.jsDirtyFiles.clear();
     this.pendingDeltaChunks.length = 0;
-    for await (const chunk of chunks) {
+    for await (const rawChunk of chunks) {
+      const chunk = this.canonicalizeChunk(rawChunk);
       this.recordFullChunk(chunk);
       yield chunk;
     }
+    this.hasFullPass = true;
   }
 
-  private recordDeltaChunk(chunk: nga.CompilationChunk, yieldedFiles: Set<string>): boolean {
+  private recordDeltaChunk(chunk: nga.CompilationChunk): boolean {
     if (chunk.removedFiles && chunk.removedFiles.length > 0) {
       for (const removed of chunk.removedFiles) {
         this.evictRemovedFile(removed);
@@ -942,20 +1077,19 @@ export class HybridCompiler {
       }
     }
     for (const file of chunk.files) {
-      yieldedFiles.add(file.filePath);
-      this.recordMetadata(file);
+      this.recordMetadata(file, /* isUpdate= */ true);
       this.lastChunkByFile.set(file.filePath, chunk);
+    }
+    for (const file of chunk.files) {
+      this.jsDirtyFiles.delete(file.filePath);
     }
     return chunk.files.length > 0 || Boolean(chunk.removedFiles && chunk.removedFiles.length > 0);
   }
 
-  private *drainJsDirtyChunks(yieldedFiles: Set<string>): Generator<nga.CompilationChunk> {
+  private *drainJsDirtyChunks(): Generator<nga.CompilationChunk> {
     while (this.jsDirtyFiles.size > 0) {
       const dirtyFile = this.jsDirtyFiles.values().next().value!;
       this.jsDirtyFiles.delete(dirtyFile);
-      if (yieldedFiles.has(dirtyFile)) {
-        continue;
-      }
       const prevChunk = this.lastChunkByFile.get(dirtyFile);
       if (!prevChunk) {
         continue;
@@ -966,7 +1100,7 @@ export class HybridCompiler {
         staticEdges: prevChunk.staticEdges,
       };
       for (const f of refreshedFiles) {
-        yieldedFiles.add(f.filePath);
+        this.jsDirtyFiles.delete(f.filePath);
         this.lastChunkByFile.set(f.filePath, refreshedChunk);
       }
       yield refreshedChunk;
@@ -984,18 +1118,18 @@ export class HybridCompiler {
   private async *deltaAsync(
     chunks: AsyncIterable<nga.CompilationChunk>,
   ): AsyncGenerator<nga.CompilationChunk, void, unknown> {
-    const yieldedFiles = new Set<string>();
     for (const chunk of this.pendingDeltaChunks.splice(0)) {
-      if (this.recordDeltaChunk(chunk, yieldedFiles)) {
+      if (this.recordDeltaChunk(chunk)) {
         yield chunk;
       }
     }
-    for await (const chunk of chunks) {
-      if (this.recordDeltaChunk(chunk, yieldedFiles)) {
+    for await (const rawChunk of chunks) {
+      const chunk = this.canonicalizeChunk(rawChunk);
+      if (this.recordDeltaChunk(chunk)) {
         yield chunk;
       }
     }
-    yield* this.drainJsDirtyChunks(yieldedFiles);
+    yield* this.drainJsDirtyChunks();
   }
 
   private beginCompilationPass(): {useDelta: boolean; useOptimized: boolean} {
@@ -1084,7 +1218,21 @@ export class HybridCompiler {
 
   /** Returns the latest cached `AnalysisResult` for `filePath`, or queries the analyzer if needed. */
   async getCachedMetadata(filePath: string): Promise<nga.AnalysisResult | null> {
-    return this.metadataByFile.get(filePath) ?? (await this.analyzer.getMetadataForFile(filePath));
+    const cached = this.metadataByFile.get(filePath);
+    if (cached !== undefined) {
+      return cached;
+    }
+    const fetched = await this.analyzer.getMetadataForFile(filePath);
+    if (!fetched) {
+      return null;
+    }
+    if (this.incrementalEnabled) {
+      const existing = this.metadataByFile.get(fetched.filePath);
+      if (existing !== undefined) {
+        return existing;
+      }
+    }
+    return fetched;
   }
 
   async getTcbForFile(filePath: string): Promise<string | null> {
@@ -1108,11 +1256,9 @@ export class HybridCompiler {
   private prepareFileAnalysisForBinding(
     result: nga.AnalysisResult,
     content?: string,
-    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
   ): {
     fileAnalysis: FileAnalysis;
     effectiveContent: string | undefined;
-    boundFingerprint: string | undefined;
     reuseExisting: boolean;
   } {
     const normalized = result.filePath;
@@ -1122,36 +1268,53 @@ export class HybridCompiler {
       fileAnalysis.parsedTemplates.clear();
       fileAnalysis.preparedTcbData = null;
       fileAnalysis.tcb = null;
-      fileAnalysis.boundFingerprint = undefined;
+      fileAnalysis.analysisResult = result;
+      fileAnalysis.tcbConfig = this.tcbConfig;
+      fileAnalysis.changeKind = ChangeKind.Unchanged;
+      if (content !== undefined) {
+        fileAnalysis.sourceContent = content;
+      }
       return {
         fileAnalysis,
-        effectiveContent: content,
-        boundFingerprint: undefined,
+        effectiveContent: content ?? fileAnalysis.sourceContent,
         reuseExisting: true,
       };
     }
 
     const effectiveContent = content ?? fileAnalysis.sourceContent;
-    const boundFingerprint =
-      effectiveContent !== undefined
-        ? this.computeBoundFingerprint(normalized, effectiveContent, result, knownMetadata)
-        : undefined;
     if (
+      this.incrementalEnabled &&
       fileAnalysis.preparedTcbData !== undefined &&
-      boundFingerprint !== undefined &&
-      fileAnalysis.boundFingerprint === boundFingerprint
+      fileAnalysis.changeKind === ChangeKind.Unchanged &&
+      fileAnalysis.analysisResult === result &&
+      fileAnalysis.tcbConfig === this.tcbConfig &&
+      effectiveContent !== undefined &&
+      fileAnalysis.sourceContent === effectiveContent
     ) {
-      return {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting: true};
+      return {fileAnalysis, effectiveContent, reuseExisting: true};
     }
-    if (
-      fileAnalysis.boundFingerprint !== undefined &&
-      fileAnalysis.boundFingerprint !== boundFingerprint
-    ) {
+    const contentChanged =
+      effectiveContent !== undefined &&
+      fileAnalysis.sourceContent !== undefined &&
+      fileAnalysis.sourceContent !== effectiveContent;
+    const isFreshPrefetchedEntry =
+      this.incrementalEnabled &&
+      fileAnalysis.analysisResult === undefined &&
+      (fileAnalysis.changeKind === undefined || fileAnalysis.changeKind <= ChangeKind.Dependency) &&
+      !contentChanged;
+    const canKeepTemplates =
+      isFreshPrefetchedEntry ||
+      (this.incrementalEnabled &&
+        (fileAnalysis.changeKind ?? ChangeKind.Source) <= ChangeKind.Dependency &&
+        !contentChanged &&
+        fileAnalysis.analysisResult !== undefined &&
+        areComponentTemplatesUnchanged(fileAnalysis.analysisResult, result));
+    if (!canKeepTemplates) {
       fileAnalysis.parsedTemplates.clear();
-      fileAnalysis.preparedTcbData = undefined;
-      fileAnalysis.tcb = undefined;
     }
-    return {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting: false};
+    fileAnalysis.preparedTcbData = undefined;
+    fileAnalysis.tcb = undefined;
+    return {fileAnalysis, effectiveContent, reuseExisting: false};
   }
 
   /**
@@ -1160,7 +1323,14 @@ export class HybridCompiler {
    */
   async ensureBound(filePath: string): Promise<FileAnalysis> {
     const cached = this.fileCache.get(filePath);
-    if (cached && cached.preparedTcbData !== undefined && this.metadataByFile.has(filePath)) {
+    if (
+      cached &&
+      cached.preparedTcbData !== undefined &&
+      cached.changeKind === ChangeKind.Unchanged &&
+      cached.analysisResult !== undefined &&
+      cached.analysisResult === this.metadataByFile.get(filePath) &&
+      cached.tcbConfig === this.tcbConfig
+    ) {
       return cached;
     }
     const result = await this.getCachedMetadata(filePath);
@@ -1172,12 +1342,15 @@ export class HybridCompiler {
 
   /** Asynchronously binds template targets using a pre-fetched `AnalysisResult`. */
   async ensureBoundWithMetadata(
-    result: nga.AnalysisResult,
+    rawResult: nga.AnalysisResult,
     content?: string,
     knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
   ): Promise<FileAnalysis> {
-    const {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting} =
-      this.prepareFileAnalysisForBinding(result, content, knownMetadata);
+    const result = this.canonicalizeMetadata(rawResult);
+    const {fileAnalysis, effectiveContent, reuseExisting} = this.prepareFileAnalysisForBinding(
+      result,
+      content,
+    );
     if (reuseExisting) {
       return fileAnalysis;
     }
@@ -1197,13 +1370,14 @@ export class HybridCompiler {
         analyzer: this.analyzer,
         fileCache: this.fileCache,
         knownMetadata,
-        onMetadata: (metadata) => this.recordMetadata(metadata),
+        onMetadata: (metadata) => {
+          if (!this.metadataByFile.has(metadata.filePath)) {
+            this.recordMetadata(metadata);
+          }
+        },
       },
       this.tracer,
     );
-    const finalFingerprint =
-      boundFingerprint ??
-      this.computeBoundFingerprint(filePath, fileContent, result, knownMetadata);
     const prepared = this.tracer.slice(SpanKind.PrepareTcbTargets, () =>
       prepareTcbTargets(
         filePath,
@@ -1216,36 +1390,10 @@ export class HybridCompiler {
     );
     fileAnalysis.preparedTcbData = prepared ?? null;
     fileAnalysis.sourceContent = fileContent;
-    fileAnalysis.boundFingerprint = finalFingerprint;
+    fileAnalysis.analysisResult = result;
+    fileAnalysis.tcbConfig = this.tcbConfig;
+    fileAnalysis.changeKind = ChangeKind.Unchanged;
     return fileAnalysis;
-  }
-
-  private computeBoundFingerprint(
-    filePath: string,
-    content: string | undefined,
-    result: nga.AnalysisResult,
-    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
-  ): string | undefined {
-    if (content === undefined || !this.incrementalEnabled) {
-      return undefined;
-    }
-    const pieces = [
-      content,
-      this.serializeCached(result),
-      this.serializeCached(this.tcbConfig),
-      this.serializeCached(this.templateParseOptions),
-    ];
-    for (const cls of result.classes) {
-      if (!cls.className || !cls.component) {
-        continue;
-      }
-      const depInputs = this.dependencyTemplateInputs(filePath, cls.component, knownMetadata);
-      if (depInputs === null) {
-        return undefined;
-      }
-      pieces.push(...depInputs);
-    }
-    return fingerprintOf(pieces);
   }
 
   /** Generates and caches the Type Check Block (TCB) for `filePath` on demand. */
@@ -1321,33 +1469,45 @@ export class HybridCompiler {
     chunkContext?: ChunkContext,
     fileId = 0,
   ): Promise<ProcessedFile> {
-    const result = metadata || (await this.analyzer.getMetadataForFile(filePath));
+    const rawResult =
+      metadata ??
+      (this.incrementalEnabled
+        ? await this.getCachedMetadata(filePath)
+        : await this.analyzer.getMetadataForFile(filePath));
+    const result = rawResult ? this.canonicalizeMetadata(rawResult) : null;
     if (result) {
       this.recordMetadata(result);
     }
     const normPath = result ? result.filePath : filePath;
     let processed: ProcessedFile | undefined;
     try {
-      const boundFingerprint = result
-        ? this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
-        : undefined;
-      const fingerprint = this.processingFingerprint(
-        normPath,
-        result,
-        chunkContext,
-        boundFingerprint,
-      );
-      const reused = this.reusableOutput(normPath, fingerprint);
+      const cacheKey: ProcessedFileCacheKey | null =
+        this.reuseProcessedFiles && result
+          ? {
+              sourceContent: content,
+              analysisResult: result,
+              tcbConfig: this.tcbConfig,
+              remoteScopeKey: remoteScopeKey(normPath, result, chunkContext),
+            }
+          : null;
+      const reused = this.reusableOutput(normPath, cacheKey);
       if (!reused && result) {
-        this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint, chunkContext);
+        this.invalidateStaleFileAnalysis(normPath, content, result, chunkContext);
       }
       processed = reused
         ? this.adoptReused(normPath, reused)
         : this.rememberProcessed(
             normPath,
-            fingerprint,
+            cacheKey,
             await processFile(this, normPath, content, result || undefined, chunkContext, fileId),
           );
+      if (!reused && result) {
+        const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, normPath);
+        fileAnalysis.sourceContent = content;
+        fileAnalysis.analysisResult = result;
+        fileAnalysis.tcbConfig = this.tcbConfig;
+        fileAnalysis.changeKind = ChangeKind.Unchanged;
+      }
       this.recordProcessedDiagnostics(normPath, processed);
       return processed;
     } catch (e) {
@@ -1361,28 +1521,47 @@ export class HybridCompiler {
   private invalidateStaleFileAnalysis(
     filePath: string,
     content: string,
-    nextFingerprint: string | undefined,
+    result: nga.AnalysisResult,
     chunkContext: ChunkContext | undefined,
   ): void {
     const existing = this.fileCache.get(filePath);
     if (!existing) {
       return;
     }
-    // Without incremental compilation the binding has no fingerprint to be validated against.
-    // `prepareChunk` binds the files of a chunk afresh, but outside of a chunk the cached binding
-    // may predate a change to a dependency's metadata, so it can't be trusted.
+    // Without incremental compilation, outside of a chunk the cached binding may predate a change
+    // to a dependency's metadata, so it can't be trusted.
     const unverifiable = !this.incrementalEnabled && chunkContext === undefined;
+    const changeKind = existing.changeKind ?? ChangeKind.Source;
+    const verifying = this.pendingVerification.has(filePath);
     if (
       unverifiable ||
+      verifying ||
       existing.sourceContent !== content ||
-      (existing.boundFingerprint !== undefined && existing.boundFingerprint !== nextFingerprint)
+      existing.analysisResult !== result ||
+      existing.tcbConfig !== this.tcbConfig ||
+      changeKind !== ChangeKind.Unchanged
     ) {
-      existing.parsedTemplates.clear();
+      const isFreshPrefetchedEntry =
+        existing.analysisResult === undefined &&
+        (existing.changeKind === undefined || existing.changeKind <= ChangeKind.Dependency) &&
+        (existing.sourceContent === undefined || existing.sourceContent === content);
+      const canKeepTemplates =
+        !unverifiable &&
+        !verifying &&
+        (isFreshPrefetchedEntry ||
+          (existing.sourceContent === content &&
+            changeKind <= ChangeKind.Dependency &&
+            existing.analysisResult !== undefined &&
+            areComponentTemplatesUnchanged(existing.analysisResult, result)));
+      if (!canKeepTemplates) {
+        existing.parsedTemplates.clear();
+      }
       existing.preparedTcbData = undefined;
       existing.tcb = undefined;
     }
-    existing.boundFingerprint = nextFingerprint;
     existing.sourceContent = content;
+    existing.analysisResult = result;
+    existing.tcbConfig = this.tcbConfig;
   }
 
   /**
@@ -1390,9 +1569,11 @@ export class HybridCompiler {
    * there is none, but the would-be reused output is kept so `rememberProcessed` can compare it
    * with what processing actually produces.
    */
-  private reusableOutput(filePath: string, fingerprint: string | null): ProcessedFile | undefined {
-    const reused =
-      fingerprint !== null ? this.processedFiles.get(filePath, fingerprint) : undefined;
+  private reusableOutput(
+    filePath: string,
+    cacheKey: ProcessedFileCacheKey | null,
+  ): ProcessedFile | undefined {
+    const reused = cacheKey !== null ? this.processedFiles.get(filePath, cacheKey) : undefined;
     if (reused !== undefined && this.verifyReusedProcessedFiles) {
       this.pendingVerification.set(filePath, reused);
       return undefined;
@@ -1411,7 +1592,7 @@ export class HybridCompiler {
 
   private rememberProcessed(
     filePath: string,
-    fingerprint: string | null,
+    cacheKey: ProcessedFileCacheKey | null,
     processed: ProcessedFile,
   ): ProcessedFile {
     const reusable = this.pendingVerification.get(filePath);
@@ -1427,98 +1608,12 @@ export class HybridCompiler {
     } else {
       this.templateStyleUrlsByFile.delete(filePath);
     }
-    if (fingerprint === null) {
+    if (cacheKey === null) {
       this.processedFiles.delete(filePath);
     } else {
-      this.processedFiles.set(filePath, fingerprint, processed);
+      this.processedFiles.set(filePath, cacheKey, processed);
     }
     return processed;
-  }
-
-  /**
-   * Fingerprints everything processing `filePath` reads besides the compiler's own options, or
-   * `null` when the output must not be reused:
-   *
-   * - `boundFingerprint`, which covers the file's content, `AnalysisResult` (including external
-   *   templates/styles and resolved dependencies), `tcbConfig`, `templateParseOptions`, and the
-   *   `<ng-content>` tags of the cross-file component templates read for `ngContentSelectors`;
-   * - from the chunk: whether each of its components is remotely scoped, and for each of its
-   *   NgModules, which components it remotely scopes with which dependencies.
-   *
-   * Stylesheets a template links (`<link rel="stylesheet">`) are read during processing and are
-   * not fingerprinted; a change to a non-TS file that is no known resource drops every reusable
-   * output instead (see `recordCanonicalInvalidations`).
-   */
-  private processingFingerprint(
-    filePath: string,
-    result: nga.AnalysisResult | null | undefined,
-    chunkContext: ChunkContext | undefined,
-    boundFingerprint: string | undefined,
-  ): string | null {
-    if (!this.reuseProcessedFiles || !result || boundFingerprint === undefined) {
-      return null;
-    }
-    const pieces = [boundFingerprint];
-    const remoteScoped = chunkContext?.remoteScopedClasses;
-    for (const cls of result.classes) {
-      if (!cls.className) {
-        continue;
-      }
-      if (cls.component) {
-        pieces.push(`remote:${remoteScoped?.has(`${filePath}#${cls.className}`) ?? false}`);
-      }
-      if (cls.ngModule) {
-        pieces.push(...remoteScopeInputs(filePath, cls, chunkContext));
-      }
-    }
-    return pieces.length === 1 ? boundFingerprint : fingerprintOf(pieces);
-  }
-
-  /**
-   * What `resolveNgContentSelectors` reads off the cross-file component dependencies of
-   * `component` (the `<ng-content>` tags of their templates, see `ngContentSignature`), or `null`
-   * if one of them can't be read.
-   */
-  private dependencyTemplateInputs(
-    filePath: string,
-    component: nga.ComponentMetadata,
-    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
-  ): string[] | null {
-    const inputs: string[] = [];
-    const declarations = [
-      ...(component.resolvedDeclarations ?? []),
-      ...(component.resolvedDeferredDeclarations ?? []),
-      ...Object.values(component.resolvedDeferredDeclarationsByBlock ?? {}).flat(),
-    ];
-    for (const decl of declarations) {
-      if (!needsNgContentSelectors(decl) || !decl.filePath || decl.filePath === filePath) {
-        continue;
-      }
-      const metadata = knownMetadata?.get(decl.filePath) ?? this.metadataByFile.get(decl.filePath);
-      if (metadata === undefined) {
-        return null;
-      }
-      const declaring = metadata?.classes.find(
-        (c) => c.className === decl.name && c.nameSpan?.start === decl.nameSpan.start,
-      );
-      inputs.push(
-        `dep:${decl.filePath}#${decl.name}`,
-        declaring?.component ? this.ngContentSignatureOf(declaring.component) : 'null',
-      );
-    }
-    return inputs;
-  }
-
-  private serializeCached(value: object | null | undefined): string {
-    if (value === null || value === undefined) {
-      return 'null';
-    }
-    let cached = this.serializedObjects.get(value);
-    if (cached === undefined) {
-      cached = JSON.stringify(value);
-      this.serializedObjects.set(value, cached);
-    }
-    return cached;
   }
 
   /** `ngContentSignature` of `component`'s template, computed once per metadata object. */
@@ -1736,31 +1831,149 @@ function formatSerializedDiagnostic(d: nga.NgDiagnostic) {
 }
 
 /**
- * What processing the NgModule `ngModule` of `filePath` reads from the chunk: the components of
- * the chunk it declares, whether each is remotely scoped, and the dependencies it would scope
- * them with (`ɵɵsetComponentScope`).
+ * Whether `prev` and `next` carry identical wire metadata, checking fast file/template scalars
+ * before walking nested plain-JSON structures.
  */
-function remoteScopeInputs(
-  filePath: string,
-  ngModule: nga.ClassMetadata,
-  chunkContext: ChunkContext | undefined,
-): string[] {
-  const inputs: string[] = [];
-  for (const [declaringPath, fileMeta] of chunkContext?.metadataMap ?? []) {
-    for (const cls of fileMeta.classes) {
-      const owner = cls.component?.declaringNgModule;
-      if (!cls.className || owner?.filePath !== filePath || owner.symbolId !== ngModule.symbolId) {
-        continue;
+function isAnalysisResultEqual(prev: nga.AnalysisResult, next: nga.AnalysisResult): boolean {
+  if (prev === next) {
+    return true;
+  }
+  if (
+    prev.fileId !== next.fileId ||
+    prev.filePath !== next.filePath ||
+    prev.idKind !== next.idKind ||
+    prev.importsEnd !== next.importsEnd ||
+    !areComponentTemplatesUnchanged(prev, next)
+  ) {
+    return false;
+  }
+  return isPlainJsonEqual(prev, next);
+}
+
+function isPlainJsonEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) {
+    return true;
+  }
+  if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') {
+    return false;
+  }
+  const aIsArray = Array.isArray(a);
+  if (aIsArray !== Array.isArray(b)) {
+    return false;
+  }
+  if (aIsArray) {
+    const bArr = b as unknown[];
+    if (a.length !== bArr.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      if (!isPlainJsonEqual(a[i], bArr[i])) {
+        return false;
       }
-      const key = `${declaringPath}#${cls.className}`;
-      inputs.push(
-        `scope:${key}`,
-        String(chunkContext!.remoteScopedClasses.has(key)),
-        JSON.stringify(chunkContext!.eagerlyUsedDeclarations.get(key) ?? null),
-      );
+    }
+    return true;
+  }
+  const aObj = a as Record<string, unknown>;
+  const bObj = b as Record<string, unknown>;
+  const aKeys = Object.keys(aObj);
+  if (aKeys.length !== Object.keys(bObj).length) {
+    return false;
+  }
+  for (let i = 0; i < aKeys.length; i++) {
+    const key = aKeys[i];
+    if (
+      !Object.prototype.hasOwnProperty.call(bObj, key) ||
+      !isPlainJsonEqual(aObj[key], bObj[key])
+    ) {
+      return false;
     }
   }
-  return inputs;
+  return true;
+}
+
+/**
+ * Whether every component template input read by `parseComponentTemplate` is identical between
+ * `prev` and `next` so cached `parsedTemplates` remain valid across a dependency/scope update.
+ */
+function areComponentTemplatesUnchanged(
+  prev: nga.AnalysisResult,
+  next: nga.AnalysisResult,
+): boolean {
+  if (prev.classes.length !== next.classes.length) {
+    return false;
+  }
+  for (let i = 0; i < prev.classes.length; i++) {
+    const a = prev.classes[i];
+    const b = next.classes[i];
+    const aComp = a.component;
+    const bComp = b.component;
+    if ((aComp !== undefined) !== (bComp !== undefined)) {
+      return false;
+    }
+    if (!aComp || !bComp) {
+      continue;
+    }
+    if (
+      a.className !== b.className ||
+      a.span.start !== b.span.start ||
+      a.nameSpan?.start !== b.nameSpan?.start ||
+      aComp.preserveWhitespaces !== bComp.preserveWhitespaces ||
+      aComp.template !== bComp.template ||
+      aComp.templateUrl?.resolvedPath !== bComp.templateUrl?.resolvedPath ||
+      aComp.templateContentSpan?.start !== bComp.templateContentSpan?.start ||
+      aComp.templateContentSpan?.end !== bComp.templateContentSpan?.end
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Encodes the chunk-level remote scoping inputs read when processing `filePath`, or returns `''`
+ * when the chunk has no remotely scoped components.
+ */
+function remoteScopeKey(
+  filePath: string,
+  result: nga.AnalysisResult,
+  chunkContext: ChunkContext | undefined,
+): string {
+  if (!chunkContext || chunkContext.remoteScopedClasses.size === 0) {
+    return '';
+  }
+  const parts: string[] = [];
+  for (const cls of result.classes) {
+    if (!cls.className) {
+      continue;
+    }
+    if (cls.component && chunkContext.remoteScopedClasses.has(`${filePath}#${cls.className}`)) {
+      parts.push(`cmp:${cls.className}`);
+    }
+    if (cls.ngModule) {
+      for (const [declaringPath, fileMeta] of chunkContext.metadataMap) {
+        for (const otherCls of fileMeta.classes) {
+          const owner = otherCls.component?.declaringNgModule;
+          if (
+            !otherCls.className ||
+            owner?.filePath !== filePath ||
+            owner.symbolId !== cls.symbolId
+          ) {
+            continue;
+          }
+          const key = `${declaringPath}#${otherCls.className}`;
+          if (!chunkContext.remoteScopedClasses.has(key)) {
+            continue;
+          }
+          const eager = (chunkContext.eagerlyUsedDeclarations.get(key) ?? []).map((d) => [
+            d.declarationType,
+            d.refInDeclaringModule ?? null,
+          ]);
+          parts.push(`mod:${cls.symbolId}:${key}:${JSON.stringify(eager)}`);
+        }
+      }
+    }
+  }
+  return parts.join('\0');
 }
 
 /** Throws unless `fresh`, just produced by processing `filePath`, matches the `reused` output. */
@@ -1783,7 +1996,7 @@ function assertSameProcessedOutput(
   if (stale.length > 0) {
     throw new Error(
       `The reused processed output of ${filePath} is stale (${stale.join(', ')}): processing ` +
-        `read an input its fingerprint does not cover.`,
+        `read an input its cache key or invalidation tracking does not cover.`,
     );
   }
 }

@@ -116,8 +116,11 @@ describe('HybridCompiler processed output reuse', () => {
   });
 
   it("reprocesses a component when a dependency's public API changes", async () => {
-    const {analyzer, build, edit} = await createSession('dependency_edit');
+    const {compiler, analyzer, root, build, edit} = await createSession('dependency_edit');
     const first = await build();
+    const aPath = path.join(root, 'a.component.ts');
+    const cachedTemplatesBefore = [...compiler.fileCache.get(aPath)!.parsedTemplates.values()];
+    expect(cachedTemplatesBefore.length).toBe(1);
 
     await edit('dir.ts', FILES['dir.ts'].replace(`@Input() first = '';`, `@Input() second = '';`));
     const second = await build();
@@ -125,6 +128,11 @@ describe('HybridCompiler processed output reuse', () => {
     expect(second.get('dir.ts')).not.toBe(first.get('dir.ts'));
     expect(second.get('a.component.ts')).not.toBe(first.get('a.component.ts'));
     expect(second.get('b.component.ts')).toBe(first.get('b.component.ts'));
+    // Dependency-only changes re-bind and re-process `a.component.ts` without re-parsing its own template.
+    expect(compiler.fileCache.get(aPath)!.parsedTemplates.size).toBe(1);
+    expect(compiler.fileCache.get(aPath)!.parsedTemplates.values().next().value).toBe(
+      cachedTemplatesBefore[0],
+    );
     analyzer.close();
   });
 
@@ -323,6 +331,25 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
+  it('preserves cached outputs for unchanged files when an extensionless virtual module changes', async () => {
+    const {compiler, analyzer, build} = await createSession('virtual_module_edit');
+    const first = await build();
+
+    await compiler.updateFileContent([
+      {
+        filePath: '\0virtual:entry',
+        content: 'export const VIRT = 1;\n',
+        idKind: 'virtual',
+      },
+    ]);
+    const second = await build();
+
+    expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
+    expect(second.get('b.component.ts')).toBe(first.get('b.component.ts'));
+    expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
+    analyzer.close();
+  });
+
   it('re-processes and re-emits all files when incremental is false', async () => {
     const {compiler, analyzer, root, build, edit} = await createSession(
       'incremental_disabled',
@@ -349,7 +376,7 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
-  it('produces the same output without fingerprinting or reuse when incremental is false', async () => {
+  it('produces the same output without caching or reuse when incremental is false', async () => {
     /** Processes every file through `prepareChunk` + `processFile`, keyed by base name. */
     const processAll = async (compiler: HybridCompiler, root: string): Promise<BuildOutputs> => {
       const outputs: BuildOutputs = new Map();
@@ -384,14 +411,10 @@ describe('HybridCompiler processed output reuse', () => {
         .toBe(normalize(expected.tcb?.code, incremental.root));
     }
 
-    // Both bind the templates for this build, but only the incremental compiler keys that
-    // binding for reuse in later builds.
     const boundState = (session: {compiler: HybridCompiler; root: string}) =>
       session.compiler.fileCache.get(path.join(session.root, 'a.component.ts'));
     expect(boundState(incremental)?.preparedTcbData).toBeTruthy();
-    expect(boundState(incremental)?.boundFingerprint).toBeDefined();
     expect(boundState(oneShot)?.preparedTcbData).toBeTruthy();
-    expect(boundState(oneShot)?.boundFingerprint).toBeUndefined();
 
     // Processing a file again with unchanged inputs reuses the cached output only when incremental.
     const reprocess = async (session: {compiler: HybridCompiler; root: string}) => {
