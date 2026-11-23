@@ -5691,4 +5691,110 @@ export class TestBedImpl {}
             None
         );
     }
+
+    #[test]
+    fn test_standalone_component_imports_dts_tuple_with_typeof_import() {
+        let fs = create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {"moduleResolution": "bundler"}, "files": ["app/app.component.ts"]}"#,
+            ),
+            (
+                "/test/node_modules/pkg-a/package.json",
+                r#"{"name": "pkg-a", "types": "index.d.ts"}"#,
+            ),
+            (
+                "/test/node_modules/pkg-a/index.d.ts",
+                r#"
+import * as i0 from "@angular/core";
+
+export declare class CompC {
+    static ɵcmp: i0.ɵɵComponentDeclaration<CompC, "comp-c", never, {}, {}, never, never, true, never>;
+}
+
+export declare class DirD {
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DirD, "[dirD]", never, {}, {}, never, never, true, never>;
+}
+
+export declare const BUNDLE_A: readonly [typeof CompC, typeof DirD];
+"#,
+            ),
+            (
+                "/test/node_modules/pkg-b/package.json",
+                r#"{"name": "pkg-b", "types": "index.d.ts"}"#,
+            ),
+            (
+                "/test/node_modules/pkg-b/index.d.ts",
+                r#"
+import * as i0 from "@angular/core";
+
+export declare class DirA {
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DirA, "[dirA]", never, {}, {}, never, never, true, never>;
+}
+
+export declare const COMBINED_IMPORTS: readonly [
+    typeof DirA,
+    typeof import("pkg-a").CompC,
+    typeof import("pkg-a").DirD,
+];
+"#,
+            ),
+            (
+                "/test/app/app.component.ts",
+                r#"
+import { Component } from '@angular/core';
+import { COMBINED_IMPORTS } from 'pkg-b';
+
+@Component({
+    selector: 'app-root',
+    template: '<comp-c dirA dirD></comp-c>',
+    imports: [COMBINED_IMPORTS],
+})
+export class AppComponent {}
+"#,
+            ),
+        ]);
+
+        let results = run_analyzer(fs, "/test/tsconfig.json", true);
+        let app_result = results
+            .iter()
+            .find(|r| r.file_path == "/test/app/app.component.ts")
+            .expect("expected analysis result for app.component.ts");
+        assert!(
+            app_result.diagnostics.is_empty(),
+            "expected no diagnostics (e.g. NG1010), got: {:?}",
+            app_result.diagnostics
+        );
+
+        let class = find_class(&results, "AppComponent").expect("AppComponent should exist");
+        let component = class
+            .component
+            .as_ref()
+            .expect("expected component metadata");
+        let resolved = component
+            .resolved_declarations
+            .as_ref()
+            .expect("expected resolved declarations");
+        let summary: Vec<(&str, Option<&str>, Option<&str>)> = resolved
+            .iter()
+            .map(|d| {
+                (
+                    d.name.as_str(),
+                    d.selector.as_deref(),
+                    d.r#ref
+                        .consumer_import
+                        .as_ref()
+                        .map(|imp| imp.specifier.as_str()),
+                )
+            })
+            .collect();
+        assert_eq!(
+            summary,
+            vec![
+                ("DirA", Some("[dirA]"), Some("pkg-b")),
+                ("CompC", Some("comp-c"), Some("pkg-a")),
+                ("DirD", Some("[dirD]"), Some("pkg-a")),
+            ]
+        );
+    }
 }
