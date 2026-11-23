@@ -1,0 +1,11 @@
+<input
+  #filterInput
+  class="ng-input size-mid"
+  placeholder="Filter"
+  (input)="filter.emit($event.target.value)"
+/>
+@if (filterText().length) {
+  <button ng-button btnType="icon" class="close-btn" (click)="clearFilter()" title="Clear filter">
+    <mat-icon>close</mat-icon>
+  </button>
+}

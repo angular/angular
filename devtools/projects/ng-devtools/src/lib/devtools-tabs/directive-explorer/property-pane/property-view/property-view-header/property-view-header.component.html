@@ -4,6 +4,16 @@
     <button
       ng-button
       btnType="icon"
+      (click)="openFilter.emit(!filterOpened())"
+      [class.selected]="filterOpened()"
+      [matTooltip]="!filterOpened() ? 'Show filter' : 'Hide filter'"
+      [ariaLabel]="!filterOpened() ? 'Show filter' : 'Hide filter'"
+    >
+      <mat-icon>filter_alt</mat-icon>
+    </button>
+    <button
+      ng-button
+      btnType="icon"
       (click)="handleLogInstance($event)"
       matTooltip="Log directive instance to console"
       aria-label="Log directive instance to console"

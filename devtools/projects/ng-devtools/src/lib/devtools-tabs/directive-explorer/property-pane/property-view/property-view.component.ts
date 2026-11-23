@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output} from '@angular/core';
+import {Component, computed, inject, input, output, signal} from '@angular/core';
 import {DirectivePosition} from '../../../../../../../protocol';
 
 import {ElementPropertyResolver} from '../../property-resolver/element-property-resolver';
@@ -27,6 +27,8 @@ export class PropertyViewComponent {
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
+
+  readonly filterOpened = signal(false);
 
   handleLogInstance(): void {
     const controller = this.controller();

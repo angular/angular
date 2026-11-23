@@ -1,9 +1,12 @@
 @if (controlsLoaded()) {
+  @if (filterOpened()) {
+    <ng-prop-filter [filterText]="filterText()" (filter)="filterText.set($event)" />
+  }
   <mat-accordion [multi]="true">
     @let deps = dependencies();
     @if (deps && deps.length > 0) {
       <div class="mat-accordion-content">
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel [expanded]="!!filterText().length">
           <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
             <mat-panel-title>
               Injected Services
@@ -21,7 +24,7 @@
     @for (panel of panels(); track $index) {
       @if (panel.controls().dataSource.data.length > 0) {
         <div class="mat-accordion-content" [id]="panel.title()">
-          <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel [expanded]="true || !!filterText().length">
             <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
               <mat-panel-title>{{ panel.title() }}</mat-panel-title>
             </mat-expansion-panel-header>
@@ -45,4 +48,7 @@
       }
     }
   </mat-accordion>
+  @if (filterText().length && panelsEmpty() && !deps?.length) {
+    <p class="no-results">No results</p>
+  }
 }

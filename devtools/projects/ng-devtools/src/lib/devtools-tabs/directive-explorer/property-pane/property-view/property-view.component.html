@@ -1,7 +1,9 @@
 <ng-property-view-header
   [directive]="directive().name"
+  [filterOpened]="filterOpened()"
   (viewSource)="viewSource.emit()"
   (logInstance)="handleLogInstance()"
+  (openFilter)="filterOpened.set($event)"
 ></ng-property-view-header>
 <ng-property-view-body
   [controller]="controller()!"
@@ -9,6 +11,7 @@
   [directivePropControls]="directivePropControls()!"
   [directiveOutputControls]="directiveOutputControls()!"
   [directiveStateControls]="directiveStateControls()!"
+  [filterOpened]="filterOpened()"
   (inspect)="inspect.emit($event)"
   (showSignalGraph)="showSignalGraph.emit($event)"
 ></ng-property-view-body>

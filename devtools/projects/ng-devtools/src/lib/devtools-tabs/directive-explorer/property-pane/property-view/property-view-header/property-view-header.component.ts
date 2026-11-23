@@ -22,8 +22,10 @@ import {ButtonComponent} from '../../../../../shared/button/button.component';
 })
 export class PropertyViewHeaderComponent {
   readonly directive = input.required<string>();
+  readonly filterOpened = input.required<boolean>();
   readonly viewSource = output<void>();
   readonly logInstance = output<void>();
+  readonly openFilter = output<boolean>();
 
   private readonly frameManager = inject(FrameManager);
   private readonly platform = inject(Platform);
