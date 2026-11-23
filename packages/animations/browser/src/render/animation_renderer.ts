@@ -48,15 +48,8 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
     this.engine.register(namespaceId, hostElement);
 
-    const registerTrigger = (trigger: NestedAnimationTriggerMetadata) => {
-      if (Array.isArray(trigger)) {
-        trigger.forEach(registerTrigger);
-      } else {
-        this.engine.registerTrigger(componentId, namespaceId, hostElement, trigger.name, trigger);
-      }
-    };
     const animationTriggers = type.data['animation'] as NestedAnimationTriggerMetadata[];
-    animationTriggers.forEach(registerTrigger);
+    registerTriggers(this.engine, componentId, namespaceId, hostElement, animationTriggers);
 
     return new AnimationRenderer(this, namespaceId, delegate, this.engine);
   }
@@ -128,9 +121,32 @@ export class AnimationRendererFactory implements RendererFactory2 {
 }
 
 /**
- * Gets a base renderer for a delegate, or creates a new one of it doesn't exist.
+ * Registers animation triggers (including nested arrays of triggers) with the engine.
  *
- * Note that this logic is Kept out of `createRenderer` so the destroy callback, which outlives the
+ * Kept out of `createRenderer` as a standalone function so that `createRenderer` has no closures
+ * capturing `hostElement`, preventing V8's shared closure context from retaining `hostElement` even
+ * if a minifier or compiler inlines `getOrCreateBaseRenderer`.
+ */
+function registerTriggers(
+  engine: AnimationEngine,
+  componentId: string,
+  namespaceId: string,
+  hostElement: any,
+  triggers: NestedAnimationTriggerMetadata[],
+) {
+  for (const trigger of triggers) {
+    if (Array.isArray(trigger)) {
+      registerTriggers(engine, componentId, namespaceId, hostElement, trigger);
+    } else {
+      engine.registerTrigger(componentId, namespaceId, hostElement, trigger.name, trigger);
+    }
+  }
+}
+
+/**
+ * Gets a base renderer for a delegate, or creates a new one if it doesn't exist.
+ *
+ * Note that this logic is kept out of `createRenderer` so the destroy callback, which outlives the
  * call in the cache, does not share a closure scope with `hostElement`.
  */
 function getOrCreateBaseRenderer(

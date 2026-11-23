@@ -758,6 +758,7 @@
       "registerLView",
       "registerPostOrderHooks",
       "registerPreOrderHooks",
+      "registerTriggers",
       "relativePath",
       "remove",
       "removeClass",
