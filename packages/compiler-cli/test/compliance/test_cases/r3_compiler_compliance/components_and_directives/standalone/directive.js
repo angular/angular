@@ -5,18 +5,18 @@ export class StandaloneDir {
     return new (__ngFactoryType__ || StandaloneDir)();
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: StandaloneDir });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        StandaloneDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      StandaloneDir,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      null
-    );
-})();

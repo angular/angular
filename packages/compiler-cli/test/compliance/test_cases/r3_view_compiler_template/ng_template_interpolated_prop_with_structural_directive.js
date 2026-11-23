@@ -21,32 +21,32 @@ class WithInput {
     inputs: { dir: "dir" },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      WithInput,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        WithInput,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[dir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          dir: [
             {
-              selector: "[dir]",
-              standalone: false
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        dir: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class TestComp {
   message = "Hello";
   static ɵfac = function TestComp_Factory(__ngFactoryType__) {
@@ -72,27 +72,27 @@ export class TestComp {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComp, {

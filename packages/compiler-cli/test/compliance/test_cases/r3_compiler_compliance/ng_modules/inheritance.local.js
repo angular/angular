@@ -5,20 +5,20 @@ export class Service {
     return new (__ngFactoryType__ || Service)();
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: Service, factory: Service.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Service,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Service,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class BaseModule {
   service;
   constructor(service) {
@@ -30,21 +30,21 @@ export class BaseModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BaseModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [Service] });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BaseModule,
+        [
+          {
+            type: NgModule,
+            args: [{ providers: [Service] }]
+          }
+        ],
+        () => [{ type: Service }],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BaseModule,
-      [
-        {
-          type: NgModule,
-          args: [{ providers: [Service] }]
-        }
-      ],
-      () => [{ type: Service }],
-      null
-    );
-})();
 export class BasicModule extends BaseModule {
   static ɵfac = /*@__PURE__*/ (() => {
     let ɵBasicModule_BaseFactory;
@@ -57,18 +57,18 @@ export class BasicModule extends BaseModule {
   })();
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BasicModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BasicModule,
+        [
+          {
+            type: NgModule,
+            args: [{}]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BasicModule,
-      [
-        {
-          type: NgModule,
-          args: [{}]
-        }
-      ],
-      null,
-      null
-    );
-})();

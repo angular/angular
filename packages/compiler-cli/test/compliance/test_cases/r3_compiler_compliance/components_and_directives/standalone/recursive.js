@@ -17,27 +17,27 @@ export class RecursiveComponent {
     dependencies: [RecursiveComponent],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      RecursiveComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "recursive-cmp",
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        RecursiveComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "recursive-cmp"  ,
               // Simple recursion. Note: no `imports`.
-              template: "<recursive-cmp></recursive-cmp>"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+                template: "<recursive-cmp></recursive-cmp>"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(RecursiveComponent, {

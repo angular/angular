@@ -11,26 +11,26 @@ export class AsyncPipe {
     pure: true,
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AsyncPipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "async"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AsyncPipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "async",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 // https://github.com/angular/angular/issues/37194
 // Verifies that temporary expressions used for expressions with potential side-effects in
 // the LHS of a safe navigation access are emitted within the binding expression itself, to
@@ -66,27 +66,27 @@ export class MyComponent {
     dependencies: [AsyncPipe],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template:
+                '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template:
-                '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -101,21 +101,21 @@ export class MyMod {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyMod });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyMod,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, AsyncPipe] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyMod,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, AsyncPipe] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyMod, { declarations: [MyComponent, AsyncPipe] });

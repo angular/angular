@@ -32,25 +32,25 @@ export class ForeignParamDirective {
       type: ForeignParamDirective,
       selectors: [['', 'appForeignParam', '']],
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        ForeignParamDirective,
-        [
-          {
-            type: Directive,
-            args: [
-              {
-                selector: '[appForeignParam]',
-              },
-            ],
-          },
-        ],
-        (): any => [{ type: Dep, decorators: [] }],
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      ForeignParamDirective,
+      [
+        {
+          type: Directive,
+          args: [
+            {
+              selector: '[appForeignParam]',
+            },
+          ],
+        },
+      ],
+      (): any => [{ type: Dep, decorators: [] }],
+      null,
+    );
+})();
 
 ```
 

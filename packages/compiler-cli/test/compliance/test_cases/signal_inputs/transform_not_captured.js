@@ -15,18 +15,18 @@ export class TestDir {
     type: TestDir,
     inputs: { name: [1, "name"] }
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
+        { name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name"  , required: true }] }] }
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      { name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }] }
-    );
-})();

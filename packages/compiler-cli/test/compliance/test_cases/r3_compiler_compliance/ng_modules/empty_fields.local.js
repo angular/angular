@@ -6,27 +6,27 @@ export class FooModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FooModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        FooModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                providers: [],
+                declarations: [],
+                imports: []
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      FooModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              providers: [],
-              declarations: [],
-              imports: []
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(FooModule, { declarations: [], imports: [] });

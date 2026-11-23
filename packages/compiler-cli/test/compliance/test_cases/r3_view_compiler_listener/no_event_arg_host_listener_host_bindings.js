@@ -24,36 +24,36 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: ""  ,
+                host: {
+                "(mousedown)"  : "mousedown()"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          click: [
             {
-              template: "",
-              host: {
-                "(mousedown)": "mousedown()"
-              },
-              standalone: false
+              type: HostListener,
+              args: ["click"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        click: [
-          {
-            type: HostListener,
-            args: ["click"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

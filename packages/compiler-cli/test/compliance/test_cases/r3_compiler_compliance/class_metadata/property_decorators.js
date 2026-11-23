@@ -40,6 +40,40 @@ export class MyDir {
     inputs: { foo: "foo", bar: [0, "baz", "bar"], mixed: "mixed" },
     outputs: { mixed: "mixed" }
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDir,
+        [
+          {
+            type: Directive
+          }
+        ],
+        null,
+        {
+          foo: [
+            {
+              type: Input
+            }
+          ],
+          bar: [
+            {
+              type: Input,
+              args: ["baz"  ]
+            }
+          ],
+          custom: [],
+          mixed: [
+            {
+              type: Input
+            },
+            {
+              type: Output
+            }
+          ]
+        }
+      );
+  }
 }
 __decorate(
   [CustomPropDecorator(), __metadata("design:type", String)],
@@ -53,37 +87,3 @@ __decorate(
   "mixed",
   void 0
 );
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDir,
-      [
-        {
-          type: Directive
-        }
-      ],
-      null,
-      {
-        foo: [
-          {
-            type: Input
-          }
-        ],
-        bar: [
-          {
-            type: Input,
-            args: ["baz"]
-          }
-        ],
-        custom: [],
-        mixed: [
-          {
-            type: Input
-          },
-          {
-            type: Output
-          }
-        ]
-      }
-    );
-})();

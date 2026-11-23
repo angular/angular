@@ -46,17 +46,16 @@ export class ArrayComp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ArrayComp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ArrayComp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @let simple = [...foo];
     @let otherEntries = [1, ...foo, 2];
     @let multipleSpreads = [...foo, 1, ...bar, ...baz, 2];
@@ -65,14 +64,15 @@ export class ArrayComp {
     <!-- Use the arrays so they don't get flagged as unused. -->
     {{simple}} {{otherEntries}} {{multipleSpreads}} {{inlineArraySpread}}
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ArrayComp, {

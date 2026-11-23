@@ -17,27 +17,27 @@ export class TestComponent {
     dependencies: () => [StandaloneComponent],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "test"  ,
+                imports: [forwardRef(() => StandaloneComponent)],
+                template: "<other-standalone></other-standalone>"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "test",
-              imports: [forwardRef(() => StandaloneComponent)],
-              template: "<other-standalone></other-standalone>"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestComponent, {
@@ -58,26 +58,26 @@ export class StandaloneComponent {
     template: function StandaloneComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        StandaloneComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "other-standalone"  ,
+                template: ""
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      StandaloneComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "other-standalone",
-              template: ""
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(StandaloneComponent, {

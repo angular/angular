@@ -15,3 +15,7 @@ minimumReleaseAgeExclude:
   - 'ng-packagr'
   - 'zone.js'
 shamefullyHoist: true
+
+# Temporary until https://github.com/angular/angular-cli/pull/34770 is released.
+patchedDependencies:
+  '@angular/build@22.3.0-rc.0': patches/@angular+build@22.3.0-rc.0.patch

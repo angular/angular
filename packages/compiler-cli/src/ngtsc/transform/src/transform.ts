@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ConstantPool, isUnsafeObjectKey} from '@angular/compiler';
+import {ConstantPool, isUnsafeObjectKey, outputAst as o, R3Identifiers} from '@angular/compiler';
 import ts from 'typescript';
 import {
   DefaultImportTracker,
@@ -159,8 +159,20 @@ class IvyTransformationVisitor extends Visitor {
       annotateForClosureCompiler: this.isClosureCompilerEnabled,
     };
 
+    const filteredDecorators =
+      // Remove the decorator which triggered this compilation, leaving the others alone.
+      maybeFilterDecorator(ts.getDecorators(node), this.compilation.decoratorsFor(node));
+
+    // Class-level and constructor-parameter decorators compile to `Class = __decorate(..., Class)`
+    // and may wrap or replace the constructor, so `ɵsetClassMetadata` must execute after them.
+    // Otherwise (including when only member or method-parameter decorators survive), emit
+    // `ɵsetClassMetadata` inside a `static {}` block on the class itself.
+    const emitMetadataAfterClass =
+      Boolean(filteredDecorators?.length) || this._hasNonCoreCtorParamDecorators(node);
+
     // There is at least one field to add.
     const statements: ts.Statement[] = [];
+    const staticBlockStatements: ts.Statement[] = [];
     const members = [...node.members];
 
     // Note: Class may be already transformed by e.g. Tsickle and
@@ -214,16 +226,31 @@ class IvyTransformationVisitor extends Visitor {
         );
       }
 
-      field.statements
-        .map((stmt) => translateStatement(sourceFile, stmt, this.importManager, translateOptions))
-        .forEach((stmt) => statements.push(stmt));
+      for (const stmt of field.statements) {
+        const innerMetadataStmts = emitMetadataAfterClass ? null : unwrapSetClassMetadataIife(stmt);
+        if (innerMetadataStmts !== null) {
+          for (const innerStmt of innerMetadataStmts) {
+            staticBlockStatements.push(
+              translateStatement(sourceFile, innerStmt, this.importManager, translateOptions),
+            );
+          }
+        } else {
+          statements.push(
+            translateStatement(sourceFile, stmt, this.importManager, translateOptions),
+          );
+        }
+      }
 
       members.push(property);
     }
 
-    const filteredDecorators =
-      // Remove the decorator which triggered this compilation, leaving the others alone.
-      maybeFilterDecorator(ts.getDecorators(node), this.compilation.decoratorsFor(node));
+    if (staticBlockStatements.length > 0) {
+      members.push(
+        ts.factory.createClassStaticBlockDeclaration(
+          ts.factory.createBlock(staticBlockStatements, /* multiLine */ true),
+        ),
+      );
+    }
 
     const nodeModifiers = ts.getModifiers(node);
     let updatedModifiers: ts.ModifierLike[] | undefined;
@@ -315,6 +342,59 @@ class IvyTransformationVisitor extends Visitor {
     const combinedModifiers = [...nonCoreDecorators, ...(modifiers ?? [])];
     return ts.factory.replaceDecoratorsAndModifiers(node, combinedModifiers) as T;
   }
+
+  private _hasNonCoreCtorParamDecorators(node: ts.ClassDeclaration): boolean {
+    for (const member of node.members) {
+      if (!ts.isConstructorDeclaration(member)) {
+        continue;
+      }
+      for (const param of member.parameters) {
+        const nonCoreDecorators = this._nonCoreDecoratorsOnly(param);
+        if (nonCoreDecorators !== undefined && nonCoreDecorators.length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+
+/**
+ * Unwraps the `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata*(...); })()`
+ * IIFE produced by `compileClassMetadata` / `compileComponentClassMetadata` so its body can be
+ * emitted inside a `static {}` block on the class. Returns `null` for all other statements
+ * (such as `ɵsetClassDebugInfo`, partial `ɵɵngDeclareClassMetadata`, HMR initializers, and
+ * `NgModule` scope registration calls).
+ */
+function unwrapSetClassMetadataIife(stmt: o.Statement): o.Statement[] | null {
+  if (
+    !(stmt instanceof o.ExpressionStatement) ||
+    !(stmt.expr instanceof o.InvokeFunctionExpr) ||
+    stmt.expr.args.length !== 0 ||
+    !(stmt.expr.fn instanceof o.ArrowFunctionExpr) ||
+    !Array.isArray(stmt.expr.fn.body) ||
+    stmt.expr.fn.body.length !== 1
+  ) {
+    return null;
+  }
+  const inner = stmt.expr.fn.body[0];
+  if (
+    !(inner instanceof o.ExpressionStatement) ||
+    !(inner.expr instanceof o.BinaryOperatorExpr) ||
+    !(inner.expr.rhs instanceof o.InvokeFunctionExpr) ||
+    !(inner.expr.rhs.fn instanceof o.ExternalExpr)
+  ) {
+    return null;
+  }
+  const ref = inner.expr.rhs.fn.value;
+  if (
+    ref.moduleName !== R3Identifiers.setClassMetadata.moduleName ||
+    (ref.name !== R3Identifiers.setClassMetadata.name &&
+      ref.name !== R3Identifiers.setClassMetadataAsync.name)
+  ) {
+    return null;
+  }
+  return stmt.expr.fn.body;
 }
 
 /**

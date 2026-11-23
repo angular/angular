@@ -21,48 +21,48 @@ export class WidthDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      WidthDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        WidthDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[myWidthDir]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          myWidth: [
             {
-              selector: "[myWidthDir]",
-              standalone: false
+              type: HostBinding,
+              args: ["style.width"  ]
+            }
+          ],
+          myFooClass: [
+            {
+              type: HostBinding,
+              args: ["class.foo"  ]
+            }
+          ],
+          id: [
+            {
+              type: HostBinding,
+              args: ["id"  ]
+            }
+          ],
+          title: [
+            {
+              type: HostBinding,
+              args: ["title"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        myWidth: [
-          {
-            type: HostBinding,
-            args: ["style.width"]
-          }
-        ],
-        myFooClass: [
-          {
-            type: HostBinding,
-            args: ["class.foo"]
-          }
-        ],
-        id: [
-          {
-            type: HostBinding,
-            args: ["id"]
-          }
-        ],
-        title: [
-          {
-            type: HostBinding,
-            args: ["title"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

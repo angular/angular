@@ -43,27 +43,27 @@ export class TestCmp {
     dependencies: () => [NgModelDirective],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "test-cmp"  ,
+                template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "test-cmp",
-              template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {
@@ -85,58 +85,58 @@ export class NgModelDirective {
     outputs: { ngModelChange: "ngModelChange" },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NgModelDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NgModelDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[ngModel]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          ngModel: [
             {
-              selector: "[ngModel]",
-              standalone: false
+              type: Input
+            }
+          ],
+          ngModelChange: [
+            {
+              type: Output
             }
           ]
         }
-      ],
-      null,
-      {
-        ngModel: [
-          {
-            type: Input
-          }
-        ],
-        ngModelChange: [
-          {
-            type: Output
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class AppModule {
   static ɵfac = function AppModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || AppModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [TestCmp, NgModelDirective] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AppModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [TestCmp, NgModelDirective] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, NgModelDirective] });

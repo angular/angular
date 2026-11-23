@@ -35,30 +35,30 @@ export class NgModelDirective {
     inputs: { ngModel: [1, "ngModel"] },
     outputs: { ngModel: "ngModelChange" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      NgModelDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NgModelDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[ngModel]"
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
-            {
-              selector: "[ngModel]"
-            }
+          ngModel: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "ngModel"  , required: true }] },
+            { type: i0.Output, args: ["ngModelChange"  ] }
           ]
         }
-      ],
-      null,
-      {
-        ngModel: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "ngModel", required: true }] },
-          { type: i0.Output, args: ["ngModelChange"] }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class TestCmp {
   names = [signal("Angular")];
   static ɵfac = function TestCmp_Factory(__ngFactoryType__) {
@@ -84,30 +84,30 @@ export class TestCmp {
     dependencies: [NgModelDirective],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @for (name of names; track $index) {
       <input [(ngModel)]="name" />
     }
-  `,
-              imports: [NgModelDirective]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [NgModelDirective]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TestCmp, {

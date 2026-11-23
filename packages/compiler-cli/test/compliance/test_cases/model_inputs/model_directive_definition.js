@@ -17,27 +17,27 @@ export class TestDir {
     inputs: { counter: [1, "counter"], name: [1, "name"] },
     outputs: { counter: "counterChange", name: "nameChange" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
-        {
-          type: Directive,
-          args: [{}]
-        }
-      ],
-      null,
-      {
-        counter: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] },
-          { type: i0.Output, args: ["counterChange"] }
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
         ],
-        name: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] },
-          { type: i0.Output, args: ["nameChange"] }
-        ]
-      }
-    );
-})();
+        null,
+        {
+          counter: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "counter"  , required: false }] },
+            { type: i0.Output, args: ["counterChange"  ] }
+          ],
+          name: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "name"  , required: true }] },
+            { type: i0.Output, args: ["nameChange"  ] }
+          ]
+        }
+      );
+  }
+}

@@ -83,45 +83,45 @@ export class TestDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{}]
+          query1: [{ type: i0.ViewChild, args: ["locatorA"  , { isSignal: true }] }],
+          query2: [{ type: i0.ViewChildren, args: ["locatorB"  , { isSignal: true }] }],
+          query3: [{ type: i0.ContentChild, args: ["locatorC"  , { isSignal: true }] }],
+          query4: [{ type: i0.ContentChildren, args: ["locatorD"  , { isSignal: true }] }],
+          query5: [{ type: i0.ViewChild, args: [forwardRef(() => SomeToken), { isSignal: true }] }],
+          query6: [
+            { type: i0.ViewChildren, args: [i0.forwardRef(() => SomeToken), { isSignal: true }] }
+          ],
+          query7: [
+            { type: i0.ViewChild, args: ["locatorE"  , { ...{ read: SomeToken }, isSignal: true }] }
+          ],
+          query8: [
+            {
+              type: i0.ContentChildren,
+              args: ["locatorF, locatorG"  , { ...{ descendants: true }, isSignal: true }]
+            }
+          ],
+          query9: [
+            {
+              type: i0.ContentChildren,
+              args: [
+                i0.forwardRef(() => nonAnalyzableRefersToString),
+                { ...{ descendants: true }, isSignal: true }
+              ]
+            }
+          ]
         }
-      ],
-      null,
-      {
-        query1: [{ type: i0.ViewChild, args: ["locatorA", { isSignal: true }] }],
-        query2: [{ type: i0.ViewChildren, args: ["locatorB", { isSignal: true }] }],
-        query3: [{ type: i0.ContentChild, args: ["locatorC", { isSignal: true }] }],
-        query4: [{ type: i0.ContentChildren, args: ["locatorD", { isSignal: true }] }],
-        query5: [{ type: i0.ViewChild, args: [forwardRef(() => SomeToken), { isSignal: true }] }],
-        query6: [
-          { type: i0.ViewChildren, args: [i0.forwardRef(() => SomeToken), { isSignal: true }] }
-        ],
-        query7: [
-          { type: i0.ViewChild, args: ["locatorE", { ...{ read: SomeToken }, isSignal: true }] }
-        ],
-        query8: [
-          {
-            type: i0.ContentChildren,
-            args: ["locatorF, locatorG", { ...{ descendants: true }, isSignal: true }]
-          }
-        ],
-        query9: [
-          {
-            type: i0.ContentChildren,
-            args: [
-              i0.forwardRef(() => nonAnalyzableRefersToString),
-              { ...{ descendants: true }, isSignal: true }
-            ]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

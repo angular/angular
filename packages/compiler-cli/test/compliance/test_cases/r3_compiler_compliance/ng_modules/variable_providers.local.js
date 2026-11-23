@@ -7,18 +7,18 @@ export class FooModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FooModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: PROVIDERS });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        FooModule,
+        [
+          {
+            type: NgModule,
+            args: [{ providers: PROVIDERS }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      FooModule,
-      [
-        {
-          type: NgModule,
-          args: [{ providers: PROVIDERS }]
-        }
-      ],
-      null,
-      null
-    );
-})();

@@ -35,27 +35,27 @@ export class MyApp {
     dependencies: () => [TodoComponent],
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-app"  ,
+                template: '<todo [data]="list"></todo>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-app",
-              template: '<todo [data]="list"></todo>',
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {
@@ -95,34 +95,34 @@ export class TodoComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TodoComponent,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TodoComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "todo"  ,
+                template:
+                '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>'  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          data: [
             {
-              selector: "todo",
-              template:
-                '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>',
-              standalone: false
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        data: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(TodoComponent, {
@@ -137,25 +137,25 @@ export class TodoModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TodoModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TodoModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                declarations: [TodoComponent, MyApp]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TodoModule,
-      [
-        {
-          type: NgModule,
-          args: [
-            {
-              declarations: [TodoComponent, MyApp]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(TodoModule, { declarations: [TodoComponent, MyApp] });

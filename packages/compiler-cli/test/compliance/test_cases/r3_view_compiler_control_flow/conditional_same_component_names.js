@@ -47,32 +47,32 @@ it("case 1", () => {
       },
       encapsulation: 2
     });
-  }
-  (() => {
-    (typeof ngDevMode === "undefined" || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        TestComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                template: `
+    static {
+      (typeof ngDevMode === "undefined" || ngDevMode) &&
+        i0.ɵsetClassMetadata(
+          TestComponent,
+          [
+            {
+              type: Component,
+              args: [
+                {
+                  template: `
       @if (true) {
         First
       } @else {
         Second
       }
     `,
-                standalone: false
-              }
-            ]
-          }
-        ],
-        null,
-        null
-      );
-  })();
+                  standalone: false
+                }
+              ]
+            }
+          ],
+          null,
+          null
+        );
+    }
+  }
   (() => {
     (typeof ngDevMode === "undefined" || ngDevMode) &&
       i0.ɵsetClassDebugInfo(TestComponent, {
@@ -108,32 +108,32 @@ it("case 2", () => {
       },
       encapsulation: 2
     });
-  }
-  (() => {
-    (typeof ngDevMode === "undefined" || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        TestComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                template: `
+    static {
+      (typeof ngDevMode === "undefined" || ngDevMode) &&
+        i0.ɵsetClassMetadata(
+          TestComponent,
+          [
+            {
+              type: Component,
+              args: [
+                {
+                  template: `
       @if (true) {
         First
       } @else {
         Second
       }
     `,
-                standalone: false
-              }
-            ]
-          }
-        ],
-        null,
-        null
-      );
-  })();
+                  standalone: false
+                }
+              ]
+            }
+          ],
+          null,
+          null
+        );
+    }
+  }
   (() => {
     (typeof ngDevMode === "undefined" || ngDevMode) &&
       i0.ɵsetClassDebugInfo(TestComponent, {

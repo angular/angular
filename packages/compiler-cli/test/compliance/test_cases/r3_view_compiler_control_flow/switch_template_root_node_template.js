@@ -61,27 +61,27 @@ export class Binding {
     selectors: [["", "binding", ""]],
     inputs: { binding: "binding" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      Binding,
-      [
-        {
-          type: Directive,
-          args: [{ selector: "[binding]" }]
-        }
-      ],
-      null,
-      {
-        binding: [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        Binding,
+        [
           {
-            type: Input
+            type: Directive,
+            args: [{ selector: "[binding]"   }]
           }
-        ]
-      }
-    );
-})();
+        ],
+        null,
+        {
+          binding: [
+            {
+              type: Input
+            }
+          ]
+        }
+      );
+  }
+}
 export class MyApp {
   expr = 0;
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
@@ -116,17 +116,16 @@ export class MyApp {
     dependencies: [Binding],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @switch (expr) {
       @case (0) {
         <ng-template foo="1" bar="2" [binding]="3">{{expr}}</ng-template>
@@ -138,16 +137,17 @@ export class MyApp {
         <ng-template foo="7" bar="8" [binding]="9">{{expr}}</ng-template>
       }
     }
-  `,
-              imports: [Binding]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [Binding]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

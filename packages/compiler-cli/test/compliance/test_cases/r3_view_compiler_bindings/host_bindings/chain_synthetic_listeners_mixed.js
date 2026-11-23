@@ -37,45 +37,45 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-comp"  ,
+                template: ""  ,
+                host: {
+                "(mousedown)"  : "mousedown()"  ,
+                "(@animation.done)"  : "done()"  ,
+                "(mouseup)"  : "mouseup()"
+                },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Component,
-          args: [
+          start: [
             {
-              selector: "my-comp",
-              template: "",
-              host: {
-                "(mousedown)": "mousedown()",
-                "(@animation.done)": "done()",
-                "(mouseup)": "mouseup()"
-              },
-              standalone: false
+              type: HostListener,
+              args: ["@animation.start"  ]
+            }
+          ],
+          click: [
+            {
+              type: HostListener,
+              args: ["click"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        start: [
-          {
-            type: HostListener,
-            args: ["@animation.start"]
-          }
-        ],
-        click: [
-          {
-            type: HostListener,
-            args: ["click"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

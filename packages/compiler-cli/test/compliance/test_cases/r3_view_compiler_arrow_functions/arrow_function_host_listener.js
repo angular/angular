@@ -21,25 +21,25 @@ export class TestDir {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
-        {
-          type: Directive,
-          args: [
-            {
-              host: {
-                "(click)": "someSignal.update(prev => prev + 1)",
-                "(mousedown)": "someSignal.update(() => componentProp + 1)"
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                host: {
+                "(click)"  : "someSignal.update(prev => prev + 1)"  ,
+                "(mousedown)"  : "someSignal.update(() => componentProp + 1)"
+                }
               }
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}

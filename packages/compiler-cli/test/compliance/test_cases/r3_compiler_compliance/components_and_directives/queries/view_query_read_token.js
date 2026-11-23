@@ -53,56 +53,56 @@ export class ViewQueryComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ViewQueryComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "view-query-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ViewQueryComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "view-query-component"  ,
+                template: `
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
-  `,
-              standalone: false
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        {
+          myRef: [
+            {
+              type: ViewChild,
+              args: ["myRef"  , { read: TemplateRef }]
+            }
+          ],
+          myRefs: [
+            {
+              type: ViewChildren,
+              args: ["myRef1, myRef2, myRef3"  , { read: ElementRef }]
+            }
+          ],
+          someDir: [
+            {
+              type: ViewChild,
+              args: [SomeDirective, { read: ElementRef }]
+            }
+          ],
+          someDirs: [
+            {
+              type: ViewChildren,
+              args: [SomeDirective, { read: TemplateRef }]
             }
           ]
         }
-      ],
-      null,
-      {
-        myRef: [
-          {
-            type: ViewChild,
-            args: ["myRef", { read: TemplateRef }]
-          }
-        ],
-        myRefs: [
-          {
-            type: ViewChildren,
-            args: ["myRef1, myRef2, myRef3", { read: ElementRef }]
-          }
-        ],
-        someDir: [
-          {
-            type: ViewChild,
-            args: [SomeDirective, { read: ElementRef }]
-          }
-        ],
-        someDirs: [
-          {
-            type: ViewChildren,
-            args: [SomeDirective, { read: TemplateRef }]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ViewQueryComponent, {
@@ -117,21 +117,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [ViewQueryComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [ViewQueryComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [ViewQueryComponent] });

@@ -37,26 +37,26 @@ class MyLazyCmp {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyLazyCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-lazy-cmp"  ,
+                template: "Hi!"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyLazyCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-lazy-cmp",
-              template: "Hi!"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyLazyCmp, {
@@ -106,19 +106,18 @@ class SimpleComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SimpleComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "app",
-              imports: [MyLazyCmp],
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SimpleComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "app"  ,
+                imports: [MyLazyCmp],
+                template: `
 		Visible: {{ isVisible }}.
 
 		@defer (when isVisible) {
@@ -131,14 +130,15 @@ class SimpleComponent {
 			Failed to load dependencies :(
 		}
 	`
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(SimpleComponent, {

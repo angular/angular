@@ -13,46 +13,46 @@ export class HostDir {
     inputs: { value: [0, "valueAlias", "value"], color: [0, "colorAlias", "color"] },
     outputs: { opened: "openedAlias", closed: "closedAlias" }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      HostDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        HostDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{}]
+          value: [
+            {
+              type: Input,
+              args: ["valueAlias"  ]
+            }
+          ],
+          color: [
+            {
+              type: Input,
+              args: ["colorAlias"  ]
+            }
+          ],
+          opened: [
+            {
+              type: Output,
+              args: ["openedAlias"  ]
+            }
+          ],
+          closed: [
+            {
+              type: Output,
+              args: ["closedAlias"  ]
+            }
+          ]
         }
-      ],
-      null,
-      {
-        value: [
-          {
-            type: Input,
-            args: ["valueAlias"]
-          }
-        ],
-        color: [
-          {
-            type: Input,
-            args: ["colorAlias"]
-          }
-        ],
-        opened: [
-          {
-            type: Output,
-            args: ["openedAlias"]
-          }
-        ],
-        closed: [
-          {
-            type: Output,
-            args: ["closedAlias"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyComponent)();
@@ -75,34 +75,34 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: ""  ,
+                hostDirectives: [
+                  {
+                    directive: HostDir,
+                    inputs: ["valueAlias"  , "colorAlias: customColorAlias"  ],
+                    outputs: ["openedAlias"  , "closedAlias: customClosedAlias"  ]
+                  }
+                ],
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: "",
-              hostDirectives: [
-                {
-                  directive: HostDir,
-                  inputs: ["valueAlias", "colorAlias: customColorAlias"],
-                  outputs: ["openedAlias", "closedAlias: customClosedAlias"]
-                }
-              ],
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

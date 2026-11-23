@@ -26,37 +26,37 @@ export class MyApp {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadataAsync(
-      MyApp,
-      () => [/* @ts-ignore */ import("./defer_nested_hydrate_inner").then(m => m.InnerCmp)],
-      InnerCmp => {
-        i0.ɵsetClassMetadata(
-          MyApp,
-          [
-            {
-              type: Component,
-              args: [
-                {
-                  selector: "my-app",
-                  imports: [InnerCmp],
-                  template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadataAsync(
+        MyApp,
+        () => [/* @ts-ignore */   import("./defer_nested_hydrate_inner"  ).then(m => m.InnerCmp)],
+        InnerCmp => {
+          i0.ɵsetClassMetadata(
+            MyApp,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    selector: "my-app"  ,
+                    imports: [InnerCmp],
+                    template: `
     @defer (on idle) {
       <inner-cmp />
     }
   `
-                }
-              ]
-            }
-          ],
-          null,
-          null
-        );
-      }
-    );
-})();
+                  }
+                ]
+              }
+            ],
+            null,
+            null
+          );
+        }
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

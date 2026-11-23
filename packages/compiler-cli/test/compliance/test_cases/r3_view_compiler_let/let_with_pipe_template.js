@@ -8,25 +8,25 @@ export class DoublePipe {
     return new (__ngFactoryType__ || DoublePipe)();
   };
   static ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "double", type: DoublePipe, pure: true });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DoublePipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "double"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DoublePipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "double"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyApp {
   value = 1;
   static ɵfac = function MyApp_Factory(__ngFactoryType__) {
@@ -53,30 +53,30 @@ export class MyApp {
     dependencies: [DoublePipe],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyApp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyApp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     @let one = value + 1;
     @let result = one | double;
     The result is {{result}}
-  `,
-              imports: [DoublePipe]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                imports: [DoublePipe]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyApp, {

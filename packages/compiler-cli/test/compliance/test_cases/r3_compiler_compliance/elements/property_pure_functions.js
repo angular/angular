@@ -16,47 +16,47 @@ export class DivDir {
     inputs: { ternary: "ternary", pipe: "pipe", and: "and", or: "or" },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DivDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DivDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "div"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          ternary: [
             {
-              selector: "div",
-              standalone: false
+              type: Input
+            }
+          ],
+          pipe: [
+            {
+              type: Input
+            }
+          ],
+          and: [
+            {
+              type: Input
+            }
+          ],
+          or: [
+            {
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        ternary: [
-          {
-            type: Input
-          }
-        ],
-        pipe: [
-          {
-            type: Input
-          }
-        ],
-        and: [
-          {
-            type: Input
-          }
-        ],
-        or: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class PipePipe {
   transform(v, a, a2) {}
   static ɵfac = function PipePipe_Factory(__ngFactoryType__) {
@@ -68,26 +68,26 @@ export class PipePipe {
     pure: true,
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        PipePipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "pipe"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      PipePipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "pipe",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class MyComponent {
   id = "one";
   cond = "";
@@ -123,32 +123,32 @@ export class MyComponent {
     dependencies: [DivDir, PipePipe],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: `<div
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: `<div
     [ternary]="cond ? [a] : [0]"
     [pipe]="value | pipe:1:2"
     [and]="cond && [b]"
     [or]="cond || [c]"
-  ></div>`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  ></div>`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -163,21 +163,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, DivDir, PipePipe] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, DivDir, PipePipe] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, DivDir, PipePipe] });

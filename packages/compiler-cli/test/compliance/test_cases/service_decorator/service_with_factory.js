@@ -9,18 +9,18 @@ export class MyService {
     token: MyService,
     factory: () => (() => new Alternate())()
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Service,
+            args: [{ factory: () => new Alternate() }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Service,
-          args: [{ factory: () => new Alternate() }]
-        }
-      ],
-      null,
-      null
-    );
-})();

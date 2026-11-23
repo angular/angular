@@ -12,27 +12,27 @@ export class MyService {
     );
   };
   static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, factory: MyService.ɵfac });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Injectable
+          }
+        ],
+        () => [
+          { type: MyDependency },
+          {
+            type: MyOptionalDependency,
+            decorators: [
+              {
+                type: Optional
+              }
+            ]
+          }
+        ],
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyService,
-      [
-        {
-          type: Injectable
-        }
-      ],
-      () => [
-        { type: MyDependency },
-        {
-          type: MyOptionalDependency,
-          decorators: [
-            {
-              type: Optional
-            }
-          ]
-        }
-      ],
-      null
-    );
-})();

@@ -194,18 +194,17 @@ export class AComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "a-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "a-component"  ,
+                template: `
     <div *ngFor="let item of items">
       <p *ngIf="item < 10">less than 10</p>
       <p *ngIf="item < 10">less than 10</p>
@@ -213,16 +212,17 @@ export class AComponent {
     <div *ngFor="let item of items">
       <p *ngIf="item > 10">more than 10</p>
     </div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(AComponent, {
@@ -237,21 +237,21 @@ export class AModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [AComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      AModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [AComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AModule, { declarations: [AComponent] });
@@ -290,18 +290,17 @@ export class BComponent {
     },
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "b-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "b-component"  ,
+                template: `
     <div *ngFor="let item of items">
       <ng-container *ngFor="let subitem of item.subitems">
         <p *ngIf="subitem < 10">less than 10</p>
@@ -316,16 +315,17 @@ export class BComponent {
         <p *ngIf="subitem > 10">more than 10</p>
       </ng-container>
     </div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(BComponent, {
@@ -340,21 +340,21 @@ export class BModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        BModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [BComponent] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      BModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [BComponent] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(BModule, { declarations: [BComponent] });

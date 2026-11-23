@@ -22,30 +22,30 @@ export class MyComponent {
       }
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Directive
-        }
-      ],
-      null,
-      {
-        handleClick: [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
           {
-            type: HostListener,
-            args: ["click", ["$event"]]
+            type: Directive
           }
         ],
-        handleBeforeUnload: [
-          {
-            type: HostListener,
-            args: ["window:beforeunload", ["$event"]]
-          }
-        ]
-      }
-    );
-})();
+        null,
+        {
+          handleClick: [
+            {
+              type: HostListener,
+              args: ["click"  , ["$event"  ]]
+            }
+          ],
+          handleBeforeUnload: [
+            {
+              type: HostListener,
+              args: ["window:beforeunload"  , ["$event"  ]]
+            }
+          ]
+        }
+      );
+  }
+}

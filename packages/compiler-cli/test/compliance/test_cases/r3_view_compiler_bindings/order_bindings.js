@@ -18,27 +18,27 @@ export class SomeCmp {
     template: function SomeCmp_Template(rf, ctx) {},
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SomeCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "some-elem"  ,
+                template: ``  ,
+                inputs: ["attr1"  , "prop1"  , "attrInterp1"  , "propInterp1"  ]
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SomeCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "some-elem",
-              template: ``,
-              inputs: ["attr1", "prop1", "attrInterp1", "propInterp1"]
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(SomeCmp, {
@@ -94,29 +94,28 @@ export class MyCmp {
     dependencies: [SomeCmp],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyCmp,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-cmp",
-              imports: [SomeCmp],
-              host: {
-                "literal1": "foo",
-                "(event1)": "foo()",
-                "[attr.attr1]": "foo",
-                "[id]": "foo",
-                "[class.class1]": "false",
-                "[style.style1]": "true",
-                "[class]": "foo",
-                "[style]": "foo"
-              },
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-cmp"  ,
+                imports: [SomeCmp],
+                host: {
+                "literal1"  : "foo"  ,
+                "(event1)"  : "foo()"  ,
+                "[attr.attr1]"  : "foo"  ,
+                "[id]"  : "foo"  ,
+                "[class.class1]"  : "false"  ,
+                "[style.style1]"  : "true"  ,
+                "[class]"  : "foo"  ,
+                "[style]"  : "foo"
+                },
+                template: `
 		<some-elem
 			literal1="foo"
 			(event1)="foo()"
@@ -130,14 +129,15 @@ export class MyCmp {
 			propInterp1="interp {{foo}}"
 			/>
 	`
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyCmp, {

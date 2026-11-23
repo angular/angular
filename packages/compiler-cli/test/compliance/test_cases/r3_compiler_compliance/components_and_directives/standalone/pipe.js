@@ -10,22 +10,22 @@ export class StandalonePipe {
     type: StandalonePipe,
     pure: true
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        StandalonePipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "stpipe"
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      StandalonePipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "stpipe"
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();

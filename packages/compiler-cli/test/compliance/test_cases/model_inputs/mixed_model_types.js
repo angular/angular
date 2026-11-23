@@ -35,59 +35,59 @@ export class TestDir {
       decoratorInputTwoWayChange: "decoratorInputTwoWayChange"
     }
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      TestDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestDir,
+        [
+          {
+            type: Directive,
+            args: [{}]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [{}]
+          counter: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "counter"  , required: false }] },
+            { type: i0.Output, args: ["counterChange"  ] }
+          ],
+          modelWithAlias: [
+            { type: i0.Input, args: [{ isSignal: true, alias: "alias"  , required: false }] },
+            { type: i0.Output, args: ["aliasChange"  ] }
+          ],
+          decoratorInput: [
+            {
+              type: Input
+            }
+          ],
+          decoratorInputWithAlias: [
+            {
+              type: Input,
+              args: ["publicNameDecorator"  ]
+            }
+          ],
+          decoratorOutput: [
+            {
+              type: Output
+            }
+          ],
+          decoratorOutputWithAlias: [
+            {
+              type: Output,
+              args: ["aliasDecoratorOutputWithAlias"  ]
+            }
+          ],
+          decoratorInputTwoWay: [
+            {
+              type: Input
+            }
+          ],
+          decoratorInputTwoWayChange: [
+            {
+              type: Output
+            }
+          ]
         }
-      ],
-      null,
-      {
-        counter: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] },
-          { type: i0.Output, args: ["counterChange"] }
-        ],
-        modelWithAlias: [
-          { type: i0.Input, args: [{ isSignal: true, alias: "alias", required: false }] },
-          { type: i0.Output, args: ["aliasChange"] }
-        ],
-        decoratorInput: [
-          {
-            type: Input
-          }
-        ],
-        decoratorInputWithAlias: [
-          {
-            type: Input,
-            args: ["publicNameDecorator"]
-          }
-        ],
-        decoratorOutput: [
-          {
-            type: Output
-          }
-        ],
-        decoratorOutputWithAlias: [
-          {
-            type: Output,
-            args: ["aliasDecoratorOutputWithAlias"]
-          }
-        ],
-        decoratorInputTwoWay: [
-          {
-            type: Input
-          }
-        ],
-        decoratorInputTwoWayChange: [
-          {
-            type: Output
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

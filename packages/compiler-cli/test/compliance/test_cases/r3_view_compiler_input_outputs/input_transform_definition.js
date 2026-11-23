@@ -31,60 +31,60 @@ export class MyDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-directive]"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          functionDeclarationInput: [
             {
-              selector: "[my-directive]",
-              standalone: false
+              type: Input,
+              args: [{ transform: toNumber }]
+            }
+          ],
+          inlineFunctionInput: [
+            {
+              type: Input,
+              args: [{ transform: (value, _) => (value ? 1 : 0) }]
             }
           ]
         }
-      ],
-      null,
-      {
-        functionDeclarationInput: [
-          {
-            type: Input,
-            args: [{ transform: toNumber }]
-          }
-        ],
-        inlineFunctionInput: [
-          {
-            type: Input,
-            args: [{ transform: (value, _) => (value ? 1 : 0) }]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyModule {
   static ɵfac = function MyModule_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || MyModule)();
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyDirective] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyDirective] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyDirective] });

@@ -17,37 +17,37 @@ export class MyDirective {
     },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyDirective,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "[my-dir]"  ,
+                host: { "[attr.tabindex]"  : "1"   },
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          myTitle: [
             {
-              selector: "[my-dir]",
-              host: { "[attr.tabindex]": "1" },
-              standalone: false
+              type: HostBinding,
+              args: ["attr.title"  ]
+            }
+          ],
+          myId: [
+            {
+              type: HostBinding,
+              args: ["attr.id"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        myTitle: [
-          {
-            type: HostBinding,
-            args: ["attr.title"]
-          }
-        ],
-        myId: [
-          {
-            type: HostBinding,
-            args: ["attr.id"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}

@@ -23,27 +23,27 @@ export class ChildComponent {
     },
     encapsulation: 2
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        ChildComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "child-component"  ,
+                host: { "animate.enter"  : "fade"   },
+                template: `<p>Sliding Content</p>`
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      ChildComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "child-component",
-              host: { "animate.enter": "fade" },
-              template: `<p>Sliding Content</p>`
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ChildComponent, {
@@ -71,29 +71,29 @@ export class MyComponent {
     dependencies: [ChildComponent],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              imports: [ChildComponent],
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                imports: [ChildComponent],
+                template: `
     <child-component animate.enter="slide"></child-component>
   `
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {

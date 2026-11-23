@@ -11,26 +11,26 @@ export class UppercasePipe {
     pure: true,
     standalone: false
   });
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        UppercasePipe,
+        [
+          {
+            type: Pipe,
+            args: [
+              {
+                name: "uppercase"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      UppercasePipe,
-      [
-        {
-          type: Pipe,
-          args: [
-            {
-              name: "uppercase",
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
 export class DivDir {
   al;
   arl;
@@ -43,39 +43,39 @@ export class DivDir {
     inputs: { al: [0, "aria-label", "al"], arl: [0, "aria-roledescription", "arl"] },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      DivDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DivDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "div"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          al: [
             {
-              selector: "div",
-              standalone: false
+              type: Input,
+              args: ["aria-label"  ]
+            }
+          ],
+          arl: [
+            {
+              type: Input,
+              args: ["aria-roledescription"  ]
             }
           ]
         }
-      ],
-      null,
-      {
-        al: [
-          {
-            type: Input,
-            args: ["aria-label"]
-          }
-        ],
-        arl: [
-          {
-            type: Input,
-            args: ["aria-roledescription"]
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyComponent {
   valueA;
   valueB;
@@ -212,18 +212,17 @@ export class MyComponent {
     dependencies: [DivDir, UppercasePipe],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              selector: "my-component",
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: "my-component"  ,
+                template: `
   <div id="dynamic-1"
     i18n-title="m|d" title="intro {{ valueA | uppercase }}"
     i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
@@ -233,16 +232,17 @@ export class MyComponent {
     i18n-title="m2|d2" title="{{ valueA }} and {{ valueB }} and again {{ valueA + valueB }}"
     i18n-aria-roledescription aria-roledescription="{{ valueC }}"
   ></div>
-  `,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+  `  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -257,21 +257,21 @@ export class MyModule {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyModule,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [UppercasePipe, MyComponent, DivDir] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyModule,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [UppercasePipe, MyComponent, DivDir] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyModule, { declarations: [UppercasePipe, MyComponent, DivDir] });

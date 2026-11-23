@@ -11,32 +11,32 @@ export class SpanDir {
     inputs: { someProp: "someProp" },
     standalone: false
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      SpanDir,
-      [
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        SpanDir,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: "span"  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
         {
-          type: Directive,
-          args: [
+          someProp: [
             {
-              selector: "span",
-              standalone: false
+              type: Input
             }
           ]
         }
-      ],
-      null,
-      {
-        someProp: [
-          {
-            type: Input
-          }
-        ]
-      }
-    );
-})();
+      );
+  }
+}
 export class MyComponent {
   myTitle = "hello";
   buttonId = "special-button";
@@ -68,29 +68,29 @@ export class MyComponent {
     dependencies: [SpanDir],
     encapsulation: 2
   });
-}
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyComponent,
-      [
-        {
-          type: Component,
-          args: [
-            {
-              template: `
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                template: `
     <button [title]="myTitle" [id]="buttonId" [tabindex]="1">
       <span [id]="1" [title]="'hello'" [someProp]="1 + 2"></span>
-    </button>`,
-              standalone: false
-            }
-          ]
-        }
-      ],
-      null,
-      null
-    );
-})();
+    </button>`  ,
+                standalone: false
+              }
+            ]
+          }
+        ],
+        null,
+        null
+      );
+  }
+}
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) &&
     i0.ɵsetClassDebugInfo(MyComponent, {
@@ -105,21 +105,21 @@ export class MyMod {
   };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyMod });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static {
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyMod,
+        [
+          {
+            type: NgModule,
+            args: [{ declarations: [MyComponent, SpanDir] }]
+          }
+        ],
+        null,
+        null
+      );
+  }
 }
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) &&
-    i0.ɵsetClassMetadata(
-      MyMod,
-      [
-        {
-          type: NgModule,
-          args: [{ declarations: [MyComponent, SpanDir] }]
-        }
-      ],
-      null,
-      null
-    );
-})();
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(MyMod, { declarations: [MyComponent, SpanDir] });
