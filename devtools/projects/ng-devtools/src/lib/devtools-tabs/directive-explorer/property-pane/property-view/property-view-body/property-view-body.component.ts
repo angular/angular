@@ -20,6 +20,7 @@ import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-exp
 import {DevtoolsSignalGraphNode} from '../../../../../shared/signal-graph';
 import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
 import {PropActionsMenuComponent} from './prop-actions-menu/prop-actions-menu.component';
+import {SignalTransitiveDepsEvent} from '../../../signal-transitive-deps-pane/types';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -42,6 +43,7 @@ export class PropertyViewBodyComponent {
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
+  readonly showSignalTransitiveDeps = output<SignalTransitiveDepsEvent>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;

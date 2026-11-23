@@ -7,22 +7,32 @@
  */
 
 import {Frame} from '../application-environment';
-import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../../protocol';
+import {
+  ComponentSignalNodePosition,
+  DirectivePosition,
+  ElementPosition,
+} from '../../../../protocol';
 
 export abstract class ApplicationOperations {
   abstract viewSource(position: ElementPosition, target: Frame, directiveIndex?: number): void;
   abstract selectDomElement(position: ElementPosition, target: Frame): void;
   abstract inspect(directivePosition: DirectivePosition, objectPath: string[], target: Frame): void;
-  abstract inspectSignal(position: SignalNodePosition, target: Frame): void;
+  abstract inspectSignal(position: ComponentSignalNodePosition, target: Frame): void;
 
   /** Sets a breakpoint on a signal consumer function. @returns Promise resolving to true if set successfully, false otherwise. */
-  abstract setSignalBreakpoint(position: SignalNodePosition, target: Frame): Promise<boolean>;
+  abstract setSignalBreakpoint(
+    position: ComponentSignalNodePosition,
+    target: Frame,
+  ): Promise<boolean>;
 
   /** Removes a breakpoint from a signal consumer function. @returns Promise resolving to true if removed successfully, false otherwise. */
-  abstract removeSignalBreakpoint(position: SignalNodePosition, target: Frame): Promise<boolean>;
+  abstract removeSignalBreakpoint(
+    position: ComponentSignalNodePosition,
+    target: Frame,
+  ): Promise<boolean>;
 
   /** Fetches all active signal breakpoints for the inspected tab/frame. */
-  abstract getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]>;
+  abstract getActiveSignalBreakpoints(target: Frame): Promise<ComponentSignalNodePosition[]>;
 
   /** Registers a listener invoked when all signal breakpoints for the tab are cleared (e.g. on debugger detach). @returns An unsubscribe function. */
   abstract onSignalBreakpointsCleared(callback: () => void): () => void;

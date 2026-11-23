@@ -30,6 +30,7 @@ import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
 import {SignalsVisualizerComponent} from '../../../shared/signals-visualizer/signals-visualizer.component';
 import {ElementPosition} from '../../../../../../protocol';
 import {AngieComponent} from '../../../shared/angie/angie.component';
+import {SignalTransitiveDepsEvent} from '../signal-transitive-deps-pane/types';
 
 type SelectedNodeSource = {
   element: ElementPosition | undefined;
@@ -57,6 +58,7 @@ export class SignalGraphPaneComponent {
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
 
+  protected readonly showTransitiveDeps = output<SignalTransitiveDepsEvent>();
   protected readonly close = output<void>();
 
   constructor() {
@@ -121,7 +123,7 @@ export class SignalGraphPaneComponent {
       const positions = await this.appOperations.getActiveSignalBreakpoints(params.frame);
       const activeIds = new Set<string>();
       for (const pos of positions) {
-        if (JSON.stringify(pos.element) === JSON.stringify(params.element)) {
+        if (JSON.stringify(pos.locator) === JSON.stringify(params.element)) {
           activeIds.add(pos.signalId);
         }
       }
@@ -150,7 +152,7 @@ export class SignalGraphPaneComponent {
     }
     this.appOperations.inspectSignal(
       {
-        element: this.signalGraph.element()!,
+        locator: this.signalGraph.element()!,
         signalId: node.id,
       },
       frame,
@@ -165,7 +167,7 @@ export class SignalGraphPaneComponent {
     }
     const success = await this.appOperations.setSignalBreakpoint(
       {
-        element: this.signalGraph.element()!,
+        locator: this.signalGraph.element()!,
         signalId: node.id,
       },
       frame,
@@ -189,7 +191,7 @@ export class SignalGraphPaneComponent {
     }
     const success = await this.appOperations.removeSignalBreakpoint(
       {
-        element: this.signalGraph.element()!,
+        locator: this.signalGraph.element()!,
         signalId: node.id,
       },
       frame,
