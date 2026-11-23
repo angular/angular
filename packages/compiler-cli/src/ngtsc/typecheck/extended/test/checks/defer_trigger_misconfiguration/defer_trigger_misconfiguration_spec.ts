@@ -181,6 +181,26 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
     });
 
+    it('should not emit when prefetch when and main when have different expressions', () => {
+      const diags = getDiags(`@defer (when isOpen(); prefetch when isRequested()) { <div></div> }`);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should emit when prefetch when and main when have the same expression', () => {
+      const diags = getDiags(`@defer (when ready(); prefetch when ready()) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+      expect(diags[0].messageText).toContain(`Prefetch 'when' matches the main trigger`);
+    });
+
+    it('should emit when the same when expressions differ only in surrounding whitespace', () => {
+      const diags = getDiags(`@defer (when ready() ; prefetch when  ready()) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
     it('should emit when prefetch trigger is configured without a main trigger', () => {
       const diags = getDiags(`@defer (prefetch on viewport(ref)) { <div></div> }`);
       expect(diags.length).toBe(1);

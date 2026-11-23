@@ -8,8 +8,10 @@
 
 import {
   AST,
+  ASTWithSource,
   LiteralMap,
   LiteralPrimitive,
+  TmplAstBoundDeferredTrigger,
   TmplAstDeferredBlock,
   TmplAstDeferredTrigger,
   TmplAstHoverDeferredTrigger,
@@ -80,6 +82,15 @@ function formatTimedTrigger(
   }
 
   return trigger.timeout === null ? 'idle' : `idle(${trigger.timeout}ms)`;
+}
+
+/**
+ * Returns the expression of a `when` trigger as written in the template,
+ * or `null` if its source text isn't available.
+ */
+function getWhenExpressionSource(trigger: TmplAstBoundDeferredTrigger): string | null {
+  const value = trigger.value;
+  return value instanceof ASTWithSource && value.source !== null ? value.source.trim() : null;
 }
 
 /**
@@ -208,6 +219,26 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
                 ? 'interaction'
                 : 'viewport';
             const msg = `Prefetch '${kindName}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
+            diags.push(
+              ctx.makeTemplateDiagnostic(
+                pre.sourceSpan ?? node.sourceSpan,
+                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+              ),
+            );
+          }
+          continue;
+        }
+
+        // `when` pairs: warn only if both triggers have the same expression. Different
+        // expressions can become truthy at different times, so the prefetch is useful.
+        if (
+          main instanceof TmplAstBoundDeferredTrigger &&
+          pre instanceof TmplAstBoundDeferredTrigger
+        ) {
+          const mainSource = getWhenExpressionSource(main);
+
+          if (mainSource !== null && mainSource === getWhenExpressionSource(pre)) {
+            const msg = `Prefetch 'when' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
             diags.push(
               ctx.makeTemplateDiagnostic(
                 pre.sourceSpan ?? node.sourceSpan,
