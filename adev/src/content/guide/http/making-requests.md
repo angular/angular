@@ -636,6 +636,8 @@ Because of the automatic completion, there is usually no risk of memory leaks if
 
 TIP: Using the `async` pipe or the `toSignal` operation to subscribe to `Observable`s ensures that subscriptions are disposed properly.
 
+IMPORTANT: When the injector providing `HttpClient` (using the default fetch backend) is destroyed—such as when an SSR request is aborted or a child `EnvironmentInjector` is destroyed—Angular aborts in-flight requests without emitting `complete` or `error`. If you await a request with `firstValueFrom` or `lastValueFrom`, the returned `Promise` stays unsettled and any subsequent `finally` block will not run. To avoid leaking external resources such as locks or connections, register cleanup with [`DestroyRef.onDestroy()`](api/core/DestroyRef#onDestroy) or pipe [`takeUntilDestroyed()`](ecosystem/rxjs-interop/take-until-destroyed) before converting the `Observable` to a `Promise`.
+
 ## Best practices
 
 While `HttpClient` can be injected and used directly from components, generally we recommend you create reusable, injectable services which isolate and encapsulate data access logic. For example, this `UserService` encapsulates the logic to request data for a user by their id:
