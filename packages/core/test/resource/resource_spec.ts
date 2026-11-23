@@ -23,8 +23,10 @@ import {
   resource,
   ResourceRef,
   ResourceStatus,
+  ResourceStreamItem,
   signal,
   TransferState,
+  WritableSignal,
 } from '../../src/core';
 import {promiseWithResolvers} from '../../src/util/promise_with_resolvers';
 import {TestBed} from '../../testing';
@@ -1075,6 +1077,105 @@ describe('resource', () => {
     expect(res.value()).toBe(undefined);
     stream.set({error: new Error('fail')});
     expect(res.value()).toBe(undefined);
+  });
+
+  it('should not get stuck in reloading when a streaming resource reloads while streaming', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const streams: Array<WritableSignal<ResourceStreamItem<number>>> = [];
+    const res = resource({
+      stream: async () => {
+        const s = signal<ResourceStreamItem<number>>({value: streams.length});
+        streams.push(s);
+        return s;
+      },
+      injector: TestBed.inject(Injector),
+    });
+    await appRef.whenStable();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(0);
+
+    // Reload while the first stream is active.
+    expect(res.reload()).toBe(true);
+    expect(res.status()).toBe('reloading');
+    await appRef.whenStable();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(1);
+
+    // A late emission from the previous stream must not reset the resource back to 'reloading'.
+    streams[0].set({value: 999});
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(1);
+
+    // Subsequent reloads must still work.
+    expect(res.reload()).toBe(true);
+    await appRef.whenStable();
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(2);
+  });
+
+  it('should not get stuck in reloading when a streaming resource reuses the same signal across reloads', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const sharedStream = signal<ResourceStreamItem<number>>({value: 0});
+    let loads = 0;
+    const res = resource({
+      stream: async () => {
+        loads++;
+        return sharedStream;
+      },
+      injector: TestBed.inject(Injector),
+    });
+    await appRef.whenStable();
+
+    expect(res.status()).toBe('resolved');
+    expect(loads).toBe(1);
+
+    expect(res.reload()).toBe(true);
+    await appRef.whenStable();
+    expect(res.status()).toBe('resolved');
+    expect(loads).toBe(2);
+
+    // Streaming a new value into the reused signal must not revert status to 'reloading'.
+    sharedStream.set({value: 21});
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(21);
+
+    expect(res.reload()).toBe(true);
+    await appRef.whenStable();
+    expect(res.status()).toBe('resolved');
+    expect(loads).toBe(3);
+  });
+
+  it('should not get stuck in loading when a previous stream emits after params change resolves', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const request = signal(1);
+    const streams = new Map<number, WritableSignal<ResourceStreamItem<number>>>();
+    const res = resource({
+      params: request,
+      stream: async ({params}) => {
+        const s = signal<ResourceStreamItem<number>>({value: params * 10});
+        streams.set(params, s);
+        return s;
+      },
+      injector: TestBed.inject(Injector),
+    });
+    await appRef.whenStable();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(10);
+
+    request.set(2);
+    expect(res.status()).toBe('loading');
+    await appRef.whenStable();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(20);
+
+    // Late emission on the superseded stream must not revert status back to 'loading'.
+    streams.get(1)!.set({value: 11});
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe(20);
   });
 
   it('should interrupt pending request if the same value is set', async () => {

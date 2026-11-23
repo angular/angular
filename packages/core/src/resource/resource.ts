@@ -331,7 +331,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         return {
           extRequest,
           status,
-          previousStatus: previous ? projectStatusOfState(previous.value) : 'idle',
+          previousStatus: previous ? untracked(() => projectStatusOfState(previous.value)) : 'idle',
           stream,
         };
       },
