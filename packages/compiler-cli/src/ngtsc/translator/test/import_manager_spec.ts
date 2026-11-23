@@ -546,6 +546,79 @@ describe('import manager', () => {
     );
   });
 
+  it('should not treat property names as conflicting identifiers', () => {
+    const {testFile, emit} = createTestProgram(`
+      const x = {input: 1};
+      x.input;
+    `);
+    const manager = new ImportManager();
+
+    const inputRef = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: testFile,
+    });
+
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      "use strict";
+      import { input } from "@angular/core";
+      input;
+      const x = { input: 1 };
+      x.input;
+    `),
+    );
+  });
+
+  [
+    'const x = {input};',
+    'const x = {[input]: 1};',
+    'input.foo;',
+    'type T = input.Foo;',
+    'const {input} = x;',
+    'export {input};',
+  ].forEach((source) => {
+    it(`should avoid conflicts with identifiers referenced in: ${source}`, () => {
+      const res = emitInputImport(source);
+      expect(res).toContain(`import { input as input_1 } from "@angular/core";`);
+      expect(res).toContain(`input_1;`);
+    });
+  });
+
+  [
+    'const {input: a} = x;',
+    'enum E { input = 1 }',
+    `import {input as a} from './x';`,
+    `export {a as input};`,
+    `export {input} from './x';`,
+    'type T = [input: string];',
+    'input: for (;;) { break input; }',
+  ].forEach((source) => {
+    it(`should not treat names that do not bind a local symbol as conflicts: ${source}`, () => {
+      const res = emitInputImport(source);
+      expect(res).toContain(`import { input } from "@angular/core";`);
+    });
+  });
+
+  it('should not pick an alias that is already used as a property name', () => {
+    const res = emitInputImport(`
+      const input = 1;
+      const x = {input_1: 2};
+    `);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      "use strict";
+      import { input as input_2 } from "@angular/core";
+      input_2;
+      const input = 1;
+      const x = { input_1: 2 };
+    `),
+    );
+  });
+
   it('should avoid an import specifier alias if similar import is generated in different', () => {
     const {testFile, emit} = createTestProgram(``);
     const manager = new ImportManager();
@@ -1149,6 +1222,17 @@ function createTestProgram(text: string): {
   };
 
   return {testFile, emit};
+}
+
+function emitInputImport(text: string): string {
+  const {testFile, emit} = createTestProgram(text);
+  const manager = new ImportManager();
+  const inputRef = manager.addImport({
+    exportModuleSpecifier: '@angular/core',
+    exportSymbolName: 'input',
+    requestedFile: testFile,
+  });
+  return emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 }
 
 /** Omits the leading whitespace for each line of the given text. */
