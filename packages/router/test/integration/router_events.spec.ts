@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {Injector} from '@angular/core';
 import {Observable} from 'rxjs';
 import {filter, tap, first} from 'rxjs/operators';
 import {Event} from '../../index';
@@ -24,6 +25,7 @@ import {
   ResolveEnd,
   NavigationEnd,
   NavigationError,
+  UrlSerializer,
 } from '../../src';
 import {createRoot, RootCmp, BlankCmp, UserCmp, advance, expectEvents} from './integration_helpers';
 
@@ -152,6 +154,7 @@ export async function routerEventsIntegrationSuite() {
 
     it('should unsubscribe active navigation guards when router is disposed', async () => {
       const router: Router = TestBed.inject(Router);
+      const urlSerializer = TestBed.inject(UrlSerializer);
       const fixture = await createRoot(router, RootCmp);
       let guardUnsubscribed = false;
 
@@ -168,13 +171,53 @@ export async function routerEventsIntegrationSuite() {
         },
       ]);
 
-      router.navigateByUrl('/user/frodo');
+      const navPromise = router.navigateByUrl('/user/frodo');
       await advance(fixture);
       expect(guardUnsubscribed).toBe(false);
 
+      const serializeSpy = spyOn(urlSerializer, 'serialize').and.callThrough();
       router.dispose();
 
       expect(guardUnsubscribed).toBe(true);
+      expect(serializeSpy).not.toHaveBeenCalled();
+      expect(await navPromise).toBe(false);
+    });
+
+    it('should not invoke UrlSerializer when cancelling an active navigation on injector destroy', async () => {
+      const router: Router = TestBed.inject(Router);
+      const injector = TestBed.inject(Injector);
+      const urlSerializer = TestBed.inject(UrlSerializer);
+      const fixture = await createRoot(router, RootCmp);
+      let guardUnsubscribed = false;
+
+      router.resetConfig([
+        {
+          path: 'user/:name',
+          component: UserCmp,
+          canActivate: [
+            () =>
+              new Observable<boolean>(() => () => {
+                guardUnsubscribed = true;
+              }),
+          ],
+        },
+      ]);
+
+      const navPromise = router.navigateByUrl('/user/frodo');
+      await advance(fixture);
+      expect(guardUnsubscribed).toBe(false);
+
+      const serializeSpy = spyOn(urlSerializer, 'serialize').and.callFake((tree) => {
+        // Custom UrlSerializers may read from the injector; this would throw NG0205 if
+        // invoked during injector teardown.
+        injector.get(Router);
+        return tree.toString();
+      });
+
+      expect(() => TestBed.resetTestingModule()).not.toThrow();
+      expect(guardUnsubscribed).toBe(true);
+      expect(serializeSpy).not.toHaveBeenCalled();
+      expect(await navPromise).toBe(false);
     });
   });
 }
