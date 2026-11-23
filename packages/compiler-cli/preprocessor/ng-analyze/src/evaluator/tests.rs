@@ -1159,6 +1159,57 @@ fn test_declared_readonly_tuple_evaluation() {
 }
 
 #[test]
+fn test_typeof_import_type_query_evaluation() {
+    let source = r#"
+        class DirA {}
+        type T = readonly [
+            typeof DirA,
+            typeof import("pkg-a").CompC,
+            typeof import("pkg-a").DirD,
+            typeof import("pkg-a"),
+        ];
+    "#;
+    let val = eval_type_source(source);
+    let ResolvedValue::Array(items) = val else {
+        panic!("expected Array, got {val:?}");
+    };
+    assert_eq!(items.len(), 4);
+
+    let ResolvedValue::Reference(dir_a) = &items[0] else {
+        panic!("expected Reference for DirA, got {:?}", items[0]);
+    };
+    assert_eq!(dir_a.name, "DirA");
+
+    for (idx, expected_name) in [(1, "CompC"), (2, "DirD")] {
+        let ResolvedValue::Incomplete(hole) = &items[idx] else {
+            panic!(
+                "expected Incomplete for {expected_name}, got {:?}",
+                items[idx]
+            );
+        };
+        assert!(hole.node_id.is_some());
+        let IncompleteDep::Reference(unresolved) = &hole.dep else {
+            panic!("expected IncompleteDep::Reference, got {:?}", hole.dep);
+        };
+        assert_eq!(unresolved.specifier, "pkg-a");
+        assert_eq!(
+            unresolved.symbol,
+            ImportKind::Named(expected_name.to_string())
+        );
+        assert_eq!(unresolved.local_name, None);
+    }
+
+    // `typeof import("pkg-a")` without a qualifier is unsupported.
+    let ResolvedValue::Dynamic(dyn_val) = &items[3] else {
+        panic!(
+            "expected Dynamic for unqualified import type, got {:?}",
+            items[3]
+        );
+    };
+    assert!(matches!(dyn_val.reason, DynamicReason::UnsupportedSyntax));
+}
+
+#[test]
 fn test_declared_variable_type_reference_resolves_to_class_only() {
     let value = eval_source("class C {}\ndeclare const X: C;\nX;");
     let ResolvedValue::Reference(reference) = value.unwrap_named() else {
@@ -1462,6 +1513,116 @@ fn foreign_function_module_with_providers_marks_ng_module_synthetic() {
         panic!("expected SyntheticValue::ModuleWithProviders");
     };
     assert!(marked_mod.synthetic);
+}
+
+#[test]
+fn dts_readonly_tuple_with_typeof_import_resolves_across_files() {
+    let value = complete_across_files(
+        &[
+            (
+                "/app/pkg-a.d.ts",
+                "export declare class CompC {}\n\
+                 export declare class DirD {}\n\
+                 export declare class Holder { static readonly NESTED: typeof CompC; }",
+            ),
+            (
+                "/app/pkg-b.d.ts",
+                "export declare class DirA {}\n\
+                 export declare const COMBINED_IMPORTS: readonly [\n\
+                     typeof DirA,\n\
+                     typeof import('./pkg-a').CompC,\n\
+                     typeof import('./pkg-a').DirD,\n\
+                 ];",
+            ),
+            (
+                "/app/consumer.ts",
+                "import { COMBINED_IMPORTS } from './pkg-b';\n\
+                 [...COMBINED_IMPORTS];",
+            ),
+        ],
+        "/app/consumer.ts",
+    );
+    assert_eq!(reference_names(&value), ["DirA", "CompC", "DirD"]);
+
+    // Qualified `typeof import(...).Holder.NESTED` re-evaluates via `TSImportType`'s NodeId.
+    let qualified = complete_across_files(
+        &[
+            (
+                "/app/pkg-a.ts",
+                "export class CompC {}\n\
+                 export class Holder { static readonly NESTED = CompC; }",
+            ),
+            (
+                "/app/consumer.ts",
+                "declare const ITEMS: readonly [typeof import('./pkg-a').Holder.NESTED];\n\
+                 ITEMS;",
+            ),
+        ],
+        "/app/consumer.ts",
+    );
+    assert_eq!(reference_names(&qualified), ["CompC"]);
+}
+
+#[test]
+fn mwp_intersection_literal_type_with_typeof_import() {
+    let value = complete_across_files(
+        &[
+            ("/app/mod-a.d.ts", "export declare class ModA {}"),
+            (
+                "/app/provider.d.ts",
+                "export declare function withModA(): { providers: unknown[] } & { ngModule: typeof import('./mod-a').ModA };",
+            ),
+            (
+                "/app/consumer.ts",
+                "import { withModA } from './provider';\n\
+                 withModA();",
+            ),
+        ],
+        "/app/consumer.ts",
+    );
+    let ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders { ng_module, .. }) =
+        value.unwrap_named()
+    else {
+        panic!("expected SyntheticValue::ModuleWithProviders, got {value:?}");
+    };
+    assert_eq!(ng_module.name, "ModA");
+    assert_eq!(ng_module.kind, DeclKind::Class);
+    assert!(ng_module.synthetic);
+
+    // `ReturnType<typeof import('./provider').withModA>` in a `.d.ts` tuple also resolves.
+    let via_return_type = complete_across_files(
+        &[
+            ("/app/mod-a.d.ts", "export declare class ModA {}"),
+            (
+                "/app/provider.d.ts",
+                "export declare function withModA(): { providers: unknown[] } & { ngModule: typeof import('./mod-a').ModA };",
+            ),
+            (
+                "/app/bundle.d.ts",
+                "export declare const BUNDLE: readonly [ReturnType<typeof import('./provider').withModA>];",
+            ),
+            (
+                "/app/consumer.ts",
+                "import { BUNDLE } from './bundle';\n\
+                 BUNDLE;",
+            ),
+        ],
+        "/app/consumer.ts",
+    );
+    let ResolvedValue::Array(items) = via_return_type.unwrap_named() else {
+        panic!("expected Array, got {via_return_type:?}");
+    };
+    assert_eq!(items.len(), 1);
+    let ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders { ng_module, .. }) =
+        items[0].unwrap_named()
+    else {
+        panic!(
+            "expected SyntheticValue::ModuleWithProviders, got {:?}",
+            items[0]
+        );
+    };
+    assert_eq!(ng_module.name, "ModA");
+    assert_eq!(ng_module.kind, DeclKind::Class);
 }
 
 fn complete_across_files_with_dts(

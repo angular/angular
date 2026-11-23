@@ -93,6 +93,9 @@ impl ModuleWithProvidersResolver {
                 TSTypeQueryExprName::QualifiedName(qualified) => {
                     Some(TypeNameRef::Qualified(qualified))
                 }
+                TSTypeQueryExprName::TSImportType(import_type) => {
+                    Some(TypeNameRef::Import(import_type))
+                }
                 _ => None,
             },
             TSType::TSImportType(import_type) => Some(TypeNameRef::Import(import_type)),
