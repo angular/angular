@@ -988,10 +988,9 @@ export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBounda
 /**
  * Enables error boundary support in the Router.
  *
- * When enabled, errors thrown within routed components (lifecycle hooks, template bindings,
- * resource loaders, and event handlers) are caught by the `RouterOutlet`. If the route or
- * feature defines an `errorComponent`, it is rendered in place of the failed component,
- * receiving the caught error through an `error` input.
+ * When enabled, router outlets become error boundaries. If the route or feature defines an
+ * `errorComponent`, it is rendered in place of the failed component, receiving the caught error
+ * through an `error` input.
  *
  * @usageNotes
  *
