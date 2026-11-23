@@ -1,5 +1,5 @@
 use crate::fs::OverlayFileSystem;
-use crate::query::keys::QueryKey;
+use crate::query::keys::{QueryKey, WireFileResult};
 use crate::query::{FileId, QueryContext};
 use crate::resource_registry::ResourceRegistry;
 use crate::tsconfig_resolution;
@@ -1881,15 +1881,14 @@ impl Analyzer {
 
             async move {
                 if cancel_token.is_cancelled() {
-                    return (Err("Cancelled".to_string()), FileChunkInfo::default());
+                    return Err("Cancelled".to_string());
                 }
 
                 // TODO(diagnostics): surface `_local_res.errors` as a WireError on the
                 // AnalysisResult for consumers that don't run TypeScript.
-                let wire = QueryContext::new(engine)
+                Ok(QueryContext::new(engine)
                     .analyze_file_wire(local_res.file_id, is_optimized)
-                    .await;
-                (*wire).clone()
+                    .await)
             }
             .boxed()
         };
@@ -1983,9 +1982,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     LA: Fn(PathBuf) -> FutLA + Send + Sync + 'static + Clone,
     FutLA: std::future::Future<Output = Arc<FileData>> + Send + 'static,
     P: Fn(PathBuf, Arc<FileData>) -> FutP + Send + Sync + 'static + Clone,
-    FutP: std::future::Future<Output = (Result<crate::AnalysisResult, String>, FileChunkInfo)>
-        + Send
-        + 'static,
+    FutP: std::future::Future<Output = Result<Arc<WireFileResult>, String>> + Send + 'static,
 {
     let mut seen = HashSet::new();
     let mut visited_file_ids = HashSet::new();
@@ -2034,7 +2031,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     }
 
     let prev_program_files = Arc::new(engine.last_program_files.lock().unwrap().clone());
-    let dirty_snapshot = DirtyFilesSnapshot::take(&engine);
+    let dirty_snapshot = DirtyFilesSnapshot::take(&engine, is_optimized);
     let delta_dirty_files = if is_delta {
         dirty_snapshot.files().cloned()
     } else {
@@ -2042,6 +2039,11 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     };
     let delta_direct_files = if delta_dirty_files.is_some() {
         Some(dirty_snapshot.direct_files().clone())
+    } else {
+        None
+    };
+    let delta_prev_wire = if delta_dirty_files.is_some() {
+        Some(dirty_snapshot.prev_wire_results().clone())
     } else {
         None
     };
@@ -2054,6 +2056,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     let task_engine = engine.clone();
     let task_delta_dirty = delta_dirty_files.clone();
     let task_delta_direct = delta_direct_files.clone();
+    let task_delta_prev_wire = delta_prev_wire.clone();
     let task_prev_program = prev_program_files.clone();
     let spawn_file_task = move |path: PathBuf| {
         let event_sender = event_sender.clone();
@@ -2064,6 +2067,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
         let engine = task_engine.clone();
         let delta_dirty = task_delta_dirty.clone();
         let delta_direct = task_delta_direct.clone();
+        let delta_prev_wire = task_delta_prev_wire.clone();
         let prev_program = task_prev_program.clone();
         spawner
             .spawn_with_handle(async move {
@@ -2090,22 +2094,50 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
                     let directly_invalidated = delta_direct
                         .as_ref()
                         .is_some_and(|set| set.contains(&file_id));
-                    let is_dirty = match &delta_dirty {
+                    let prev_wire = delta_prev_wire.as_ref().and_then(|map| map.get(&file_id));
+                    let was_dirty = match &delta_dirty {
                         Some(dirty) => {
                             directly_invalidated
                                 || dirty.contains(&file_id)
+                                || prev_wire.is_some()
                                 || !prev_program.contains(&file_id)
                                 || !engine.has_cached_wire(file_id, is_optimized)
                         }
                         None => true,
                     };
-                    if !is_dirty
+                    if !was_dirty
                         && (!group_chunks_by_ng_module
                             || !local_res.may_have_non_standalone_class())
                     {
                         return;
                     }
-                    let (result, chunk_info) = processor(path, local_res).await;
+                    let (result, chunk_info, is_dirty) = match processor(path, local_res).await {
+                        Ok(wire) => {
+                            let prev_same = match &wire.0 {
+                                Ok(res) => {
+                                    delta_dirty.is_some()
+                                        && !directly_invalidated
+                                        && prev_program.contains(&file_id)
+                                        && (!was_dirty
+                                            || prev_wire.and_then(Option::as_ref).is_some_and(
+                                                |prev| {
+                                                    Arc::ptr_eq(prev, &wire)
+                                                        || matches!(&prev.0, Ok(prev_res) if *prev_res == *res)
+                                                },
+                                            ))
+                                }
+                                Err(_) => false,
+                            };
+                            if prev_same
+                                && (!group_chunks_by_ng_module || !wire.1.has_non_standalone)
+                            {
+                                return;
+                            }
+                            let (res, info) = Arc::unwrap_or_clone(wire);
+                            (res, info, !prev_same && was_dirty)
+                        }
+                        Err(err) => (Err(err), FileChunkInfo::default(), was_dirty),
+                    };
                     let _ = event_sender
                         .clone()
                         .send(CoordinatorEvent::FileCompleted {
@@ -2252,7 +2284,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     }
 
     *engine.last_program_files.lock().unwrap() = visited_file_ids;
-    dirty_snapshot.consume();
+    dirty_snapshot.consume(is_optimized);
 }
 
 /// The files marked dirty since the last completed stream, taken from the engine for one
@@ -2267,11 +2299,37 @@ struct DirtyFilesSnapshot {
     engine: Arc<crate::QueryEngine>,
     files: Option<Arc<HashSet<FileId>>>,
     direct_files: Arc<HashSet<FileId>>,
+    prev_wire_results: Arc<HashMap<FileId, Option<Arc<WireFileResult>>>>,
     consumed: bool,
 }
 
 impl DirtyFilesSnapshot {
-    fn take(engine: &Arc<crate::QueryEngine>) -> Self {
+    fn take(engine: &Arc<crate::QueryEngine>, is_optimized: bool) -> Self {
+        let same_mode = engine
+            .last_stream_optimized
+            .lock()
+            .is_ok_and(|g| *g == Some(is_optimized));
+        if !same_mode {
+            if let Ok(mut mode_guard) = engine.last_stream_optimized.lock() {
+                *mode_guard = None;
+            }
+            if let Ok(mut dirty_guard) = engine.dirty_wire_files.lock() {
+                *dirty_guard = None;
+            }
+            if let Ok(mut direct_guard) = engine.directly_invalidated_files.lock() {
+                direct_guard.clear();
+            }
+            if let Ok(mut wire_guard) = engine.last_wire_results.lock() {
+                wire_guard.clear();
+            }
+            return Self {
+                engine: engine.clone(),
+                files: None,
+                direct_files: Arc::new(HashSet::new()),
+                prev_wire_results: Arc::new(HashMap::new()),
+                consumed: false,
+            };
+        }
         let files = engine
             .dirty_wire_files
             .lock()
@@ -2284,10 +2342,18 @@ impl DirtyFilesSnapshot {
                 .map(|mut guard| std::mem::take(&mut *guard))
                 .unwrap_or_default(),
         );
+        let prev_wire_results = Arc::new(
+            engine
+                .last_wire_results
+                .lock()
+                .map(|mut guard| std::mem::take(&mut *guard))
+                .unwrap_or_default(),
+        );
         Self {
             engine: engine.clone(),
             files,
             direct_files,
+            prev_wire_results,
             consumed: false,
         }
     }
@@ -2302,9 +2368,17 @@ impl DirtyFilesSnapshot {
         &self.direct_files
     }
 
+    /// Evicted wire results from the last completed stream.
+    fn prev_wire_results(&self) -> &Arc<HashMap<FileId, Option<Arc<WireFileResult>>>> {
+        &self.prev_wire_results
+    }
+
     /// Marks the run complete: the snapshot is spent, and from now on dirty files are tracked.
-    fn consume(mut self) {
+    fn consume(mut self, is_optimized: bool) {
         self.consumed = true;
+        if let Ok(mut mode_guard) = self.engine.last_stream_optimized.lock() {
+            *mode_guard = Some(is_optimized);
+        }
         if let Ok(mut guard) = self.engine.dirty_wire_files.lock() {
             if guard.is_none() {
                 *guard = Some(HashSet::new());
@@ -2321,8 +2395,19 @@ impl Drop for DirtyFilesSnapshot {
         let Some(files) = self.files.take() else {
             return;
         };
-        if let Ok(mut direct_guard) = self.engine.directly_invalidated_files.lock() {
-            direct_guard.extend(self.direct_files.iter().copied());
+        let direct_snapshot =
+            if let Ok(mut direct_guard) = self.engine.directly_invalidated_files.lock() {
+                direct_guard.extend(self.direct_files.iter().copied());
+                direct_guard.clone()
+            } else {
+                HashSet::new()
+            };
+        if let Ok(mut wire_guard) = self.engine.last_wire_results.lock() {
+            for (&k, v) in self.prev_wire_results.iter() {
+                if !direct_snapshot.contains(&k) {
+                    wire_guard.insert(k, v.clone());
+                }
+            }
         }
         if let Ok(mut guard) = self.engine.dirty_wire_files.lock() {
             match guard.as_mut() {
@@ -4310,10 +4395,9 @@ mod entry_point_tests {
             let token = processor_token.clone();
             async move {
                 token.cancel();
-                let wire = QueryContext::new(engine)
+                Ok(QueryContext::new(engine)
                     .analyze_file_wire(local.file_id, true)
-                    .await;
-                (*wire).clone()
+                    .await)
             }
             .boxed()
         };
@@ -4413,10 +4497,9 @@ mod entry_point_tests {
         let processor = move |_path: PathBuf, local: Arc<FileData>| {
             let engine = processor_engine.clone();
             async move {
-                let wire = QueryContext::new(engine)
+                Ok(QueryContext::new(engine)
                     .analyze_file_wire(local.file_id, true)
-                    .await;
-                (*wire).clone()
+                    .await)
             }
             .boxed()
         };

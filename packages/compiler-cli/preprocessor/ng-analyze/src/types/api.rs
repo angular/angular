@@ -104,7 +104,7 @@ impl NgDiagnostic {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AnalysisResult {
     pub file_id: FileId,
@@ -273,7 +273,7 @@ pub struct FileInvalidation {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeclarationMetadata {
     pub name: String,
@@ -314,7 +314,7 @@ pub struct DeclarationMetadata {
 
 /// Wire form of `ResolvedHostDirective`.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ResolvedHostDirectiveMetadata {
     pub directive: DeclarationMetadata,
