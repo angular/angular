@@ -1,0 +1,24 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "prop-filter_styles",
+    src = "prop-filter.component.scss",
+)
+
+ng_project(
+    name = "prop-filter",
+    srcs = [
+        "prop-filter.component.ts",
+    ],
+    angular_assets = [
+        "prop-filter.component.html",
+        ":prop-filter_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+    ],
+)

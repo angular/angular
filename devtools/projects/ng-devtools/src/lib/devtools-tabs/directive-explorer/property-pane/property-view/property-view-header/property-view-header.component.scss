@@ -37,4 +37,11 @@ button {
     cursor: not-allowed;
     opacity: 1;
   }
+
+  &.selected {
+    opacity: 1;
+    outline: 1px solid var(--dynamic-blue-02);
+    background: var(--dynamic-blue-02);
+    border-radius: 50%;
+  }
 }

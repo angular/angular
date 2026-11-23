@@ -32,6 +32,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   private subscriptions: Subscription[] = [];
   private expandedData = new BehaviorSubject<FlatNode[]>([]);
   private differ = new DefaultIterableDiffer<FlatNode>(trackBy);
+  private nonFilteredData: FlatNode[] | null = null;
 
   constructor(
     props: {[prop: string]: Descriptor},
@@ -56,6 +57,33 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     const newData = this.treeFlattener.flattenNodes(arrayifyProps(props));
     diff(this.differ, this.data, newData);
     this.dataStream.next(this.data);
+  }
+
+  filter(filterText: string, level: number) {
+    if (filterText.length) {
+      if (!this.nonFilteredData) {
+        this.nonFilteredData = structuredClone(this.data);
+      }
+
+      const nonFilteredData = structuredClone(this.nonFilteredData);
+
+      filterText = filterText.toLowerCase();
+      const newData = nonFilteredData.filter((node) => {
+        const {name, descriptor} = node.prop;
+
+        return (
+          node.level === level &&
+          (name.toLowerCase().includes(filterText) ||
+            descriptor.preview.toLowerCase().includes(filterText))
+        );
+      });
+
+      diff(this.differ, nonFilteredData, newData);
+      this.dataStream.next(nonFilteredData);
+    } else {
+      this.dataStream.next(this.nonFilteredData ?? this.data);
+      this.nonFilteredData = null;
+    }
   }
 
   override connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
@@ -116,7 +144,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
 
     this.messageBus.once(
       'nestedProperties',
-      (position: DirectivePosition, data: Properties, _path: string[]) => {
+      (_: DirectivePosition, data: Properties, _path: string[]) => {
         node.prop.descriptor.value = data.props;
         this.treeCtrl.expand(node);
         const props = arrayifyProps(data.props, node.prop);

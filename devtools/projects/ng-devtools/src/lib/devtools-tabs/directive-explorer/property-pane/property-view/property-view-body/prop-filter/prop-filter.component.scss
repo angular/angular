@@ -1,0 +1,26 @@
+:host {
+  position: relative;
+  width: 100%;
+  padding: 0.375rem;
+  box-sizing: border-box;
+  display: block;
+
+  input {
+    width: 100%;
+    padding-right: 1.75rem;
+  }
+
+  .close-btn {
+    $size: 16px;
+    position: absolute;
+    top: calc(50% - $size / 2);
+    right: 0.5rem;
+    margin-right: 0.5rem;
+
+    mat-icon {
+      width: $size;
+      height: $size;
+      font-size: $size;
+    }
+  }
+}

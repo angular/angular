@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ɵFramework as Framework, computed, input, output, signal} from '@angular/core';
+import {
+  Component,
+  ɵFramework as Framework,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {MatExpansionModule} from '@angular/material/expansion';
 
 import {DirectivePosition} from '../../../../../../../../protocol';
@@ -20,6 +28,7 @@ import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-exp
 import {DevtoolsSignalGraphNode} from '../../../../../shared/signal-graph';
 import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
 import {PropActionsMenuComponent} from './prop-actions-menu/prop-actions-menu.component';
+import {PropFilterComponent} from './prop-filter/prop-filter.component';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -31,6 +40,7 @@ import {PropActionsMenuComponent} from './prop-actions-menu/prop-actions-menu.co
     DependencyViewerComponent,
     ObjectTreeExplorerComponent,
     PropActionsMenuComponent,
+    PropFilterComponent,
   ],
 })
 export class PropertyViewBodyComponent {
@@ -39,15 +49,20 @@ export class PropertyViewBodyComponent {
   readonly directivePropControls = input.required<DirectiveTreeData>();
   readonly directiveOutputControls = input.required<DirectiveTreeData>();
   readonly directiveStateControls = input.required<DirectiveTreeData>();
+  readonly filterOpened = input.required<boolean>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
+  readonly filterText = signal('');
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;
     if (!metadata) return [];
     if (!('dependencies' in metadata)) return [];
-    return metadata.dependencies;
+
+    return metadata.dependencies?.filter((token) =>
+      token.token.toLowerCase().includes(this.filterText().toLowerCase()),
+    );
   });
 
   protected readonly panels = signal([
@@ -70,6 +85,10 @@ export class PropertyViewBodyComponent {
     },
   ]);
 
+  protected readonly panelsEmpty = computed(() => {
+    return this.panels().every((p) => p.controls().dataSource.data.length === 0);
+  });
+
   readonly controlsLoaded = computed(() => {
     return (
       !!this.directiveStateControls() &&
@@ -77,6 +96,14 @@ export class PropertyViewBodyComponent {
       !!this.directiveInputControls()
     );
   });
+
+  constructor() {
+    effect(() => {
+      for (const panel of this.panels()) {
+        panel.controls().dataSource.filter(this.filterText(), 0);
+      }
+    });
+  }
 
   updateValue({node, newValue}: {node: FlatNode; newValue: unknown}): void {
     this.controller().updateValue(node, newValue);
