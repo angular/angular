@@ -15,7 +15,8 @@ export function migrateFile(
   sourceFile: ts.SourceFile,
   typeChecker: ts.TypeChecker,
 ): PendingChange[] {
-  const tracker = new ChangeTracker(ts.createPrinter());
+  const printer = ts.createPrinter();
+  const tracker = new ChangeTracker(printer);
   let totalInjectables = 0;
   let migratedInjectables = 0;
 
@@ -31,12 +32,13 @@ export function migrateFile(
 
         if (analysis.canMigrate) {
           migratedInjectables++;
-          tracker.addImport(sourceFile, 'Service', '@angular/core');
+          const serviceRef = tracker.addImport(sourceFile, 'Service', '@angular/core');
+          const serviceName = printer.printNode(ts.EmitHint.Unspecified, serviceRef, sourceFile);
           tracker.replaceText(
             sourceFile,
             decorator.node.getStart(),
             decorator.node.getWidth(),
-            `@Service(${analysis.providedInRoot ? '' : '{ autoProvided: false }'})`,
+            `@${serviceName}(${analysis.providedInRoot ? '' : '{ autoProvided: false }'})`,
           );
         }
       }
