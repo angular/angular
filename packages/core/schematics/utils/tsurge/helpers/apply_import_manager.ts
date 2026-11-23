@@ -88,12 +88,41 @@ export function applyImportManagerChanges(
 
   // Update removed imports
   for (const removedImport of deletedImports) {
+    const sf = removedImport.getSourceFile();
+    const text = sf.getFullText();
+    let start = removedImport.getStart();
+    let end = removedImport.getEnd();
+
+    // Remove leading horizontal whitespace on the same line if nothing precedes the import.
+    let lineStart = start;
+    while (lineStart > 0 && (text[lineStart - 1] === ' ' || text[lineStart - 1] === '\t')) {
+      lineStart--;
+    }
+    const isAtLineStart =
+      lineStart === 0 || text[lineStart - 1] === '\n' || text[lineStart - 1] === '\r';
+    if (isAtLineStart) {
+      start = lineStart;
+    }
+
+    // Remove trailing horizontal whitespace and a single line break if nothing else follows.
+    if (isAtLineStart) {
+      let lineEnd = end;
+      while (lineEnd < text.length && (text[lineEnd] === ' ' || text[lineEnd] === '\t')) {
+        lineEnd++;
+      }
+      if (text[lineEnd] === '\r' && text[lineEnd + 1] === '\n') {
+        end = lineEnd + 2;
+      } else if (text[lineEnd] === '\n' || text[lineEnd] === '\r') {
+        end = lineEnd + 1;
+      }
+    }
+
     replacements.push(
       new Replacement(
-        projectFile(removedImport.getSourceFile(), info),
+        projectFile(sf, info),
         new TextUpdate({
-          position: removedImport.getStart(),
-          end: removedImport.getEnd(),
+          position: start,
+          end,
           toInsert: '',
         }),
       ),

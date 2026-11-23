@@ -330,4 +330,41 @@ describe('cleanup unused imports schematic', () => {
     expect(contents).toContain('imports: [Three],');
     expect(contents).toContain(`import {Three} from './directives';`);
   });
+
+  it('should not leave a blank line when removing an entire import declaration', async () => {
+    writeFile(
+      'comp.ts',
+      [
+        `import {Component} from '@angular/core';`,
+        `import {One} from './directives';`,
+        `import {Directive} from '@angular/core';`,
+        ``,
+        `@Component({`,
+        `  imports: [One],`,
+        `  template: '',`,
+        `})`,
+        `export class Comp {}`,
+        ``,
+        `@Directive({selector: '[keep]'})`,
+        `export class Keep {}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(logs.pop()).toBe('Removed 1 import in 1 file');
+    expect(tree.readContent('comp.ts').split('\n')).toEqual([
+      `import {Component} from '@angular/core';`,
+      `import {Directive} from '@angular/core';`,
+      ``,
+      `@Component({`,
+      `  imports: [],`,
+      `  template: '',`,
+      `})`,
+      `export class Comp {}`,
+      ``,
+      `@Directive({selector: '[keep]'})`,
+      `export class Keep {}`,
+    ]);
+  });
 });
