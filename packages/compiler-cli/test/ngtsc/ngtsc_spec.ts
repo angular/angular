@@ -12,10 +12,14 @@ import {NgtscProgram} from '../../src/ngtsc/program';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
 
-import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom} from '../../src/ngtsc/file_system';
+import {ErrorCode, ERROR_DETAILS_PAGE_BASE_URL, ngErrorCode} from '../../src/ngtsc/diagnostics';
+import {absoluteFrom, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {
+  isNgpTestMode,
+  loadStandardTestFiles,
+  performNgpCompilationSync,
+} from '../../src/ngtsc/testing';
 import {
   restoreTypeScriptVersionForTesting,
   setTypeScriptVersionForTesting,
@@ -114,8 +118,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
@@ -137,7 +140,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Store.ɵprov =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Store<any>, never>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Store<any>>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
     });
 
     it('should compile Injectables with providedIn without errors', () => {
@@ -161,14 +164,13 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+      expect(jsContents).toMatch(
+        /Service\.ɵfac = function Service_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\); \};/,
       );
-      expect(jsContents).toContain("providedIn: 'root' })");
+      expect(jsContents).toMatch(/providedIn: ['"]root['"] \}\)/);
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
@@ -194,10 +196,10 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         'Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(); }',
       );
-      expect(jsContents).toContain(", providedIn: 'root' });");
+      expect(jsContents).toMatch(/, providedIn: ['"]root['"] \}\);/);
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -225,8 +227,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateEnterListener(function TestComponent_Conditional_1_Template_p_animateenter_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateEnterListener\(function TestComponent_Conditional_1_Template_p_animateenter_0_listener\(\$event\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.animateFn\(\$event\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -253,8 +255,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateEnter\(function TestComponent_Conditional_1_Template_animateenter_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.fade\(\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -281,8 +283,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateEnter\(function TestComponent_Conditional_1_Template_animateenter_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.classList\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -382,8 +384,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateLeaveListener(function TestComponent_Conditional_1_Template_p_animateleave_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateLeaveListener\(function TestComponent_Conditional_1_Template_p_animateleave_0_listener\(\$event\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.animateFn\(\$event\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -410,8 +412,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateLeave\(function TestComponent_Conditional_1_Template_animateleave_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.fade\(\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -438,8 +440,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateLeave\(function TestComponent_Conditional_1_Template_animateleave_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.classList\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -491,19 +493,21 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain(
-        'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
+      expect(jsContents).toMatch(
+        /factory: function Service_Factory\(__ngFactoryType__\) \{\s*let __ngConditionalFactory__ = null;\s*if \(__ngFactoryType__\) \{/,
       );
-      expect(jsContents).toContain(
-        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      expect(jsContents).toMatch(
+        /(?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\);/,
       );
-      expect(jsContents).toContain(
-        '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));',
+      expect(jsContents).toMatch(
+        /__ngConditionalFactory__ = \(\(dep\) => new Service\(dep\)\)\(i0\.ɵɵinject\(Dep\)\)\)?;/,
       );
-      expect(jsContents).toContain("return __ngConditionalFactory__; }, providedIn: 'root' });");
+      expect(jsContents).toMatch(
+        /return __ngConditionalFactory__;\s*\},\s*providedIn: ['"]root['"] \}\);/,
+      );
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -531,19 +535,21 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain(
-        'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
+      expect(jsContents).toMatch(
+        /factory: function Service_Factory\(__ngFactoryType__\) \{\s*let __ngConditionalFactory__ = null;\s*if \(__ngFactoryType__\) \{/,
       );
-      expect(jsContents).toContain(
-        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      expect(jsContents).toMatch(
+        /(?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\);/,
       );
-      expect(jsContents).toContain(
-        '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));',
+      expect(jsContents).toMatch(
+        /__ngConditionalFactory__ = \(\(dep\) => new Service\(dep\)\)\(i0\.ɵɵinject\(Dep, 10\)\)\)?;/,
       );
-      expect(jsContents).toContain(`return __ngConditionalFactory__; }, providedIn: 'root' });`);
+      expect(jsContents).toMatch(
+        /return __ngConditionalFactory__;\s*\},\s*providedIn: ['"]root['"] \}\);/,
+      );
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -572,14 +578,13 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('Mod.ɵmod =');
-      expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+      expect(jsContents).toMatch(
+        /Service\.ɵfac = function Service_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\); \};/,
       );
       expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
       expect(dtsContents).toContain('i0.ɵɵFactoryDeclaration<Mod, never>;');
@@ -628,9 +633,8 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
 
-      expect(jsContents).toContain(
-        `Service.ɵfac = function Service_Factory(__ngFactoryType__) { ` +
-          `/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
+      expect(jsContents).toMatch(
+        /Service\.ɵfac = function Service_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\), i0\.ɵɵinject\(OptionalDep, 8\)\); \};/,
       );
     });
 
@@ -950,14 +954,11 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      expect(trim(env.getContents('test.js'))).toContain(
-        trim(`
-        MyTestComponent.propDecorators = {
-          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false, transform: undefined },] }]
-        };
-      `),
+      expect(trim(env.getContents('test.js'))).toMatch(
+        /i0\.Input[\s\S]*\{\s*isSignal:\s*true,\s*alias:\s*"name",\s*required:\s*false\s*,?\s*\}/,
       );
       expect(env.getContents('test.js')).not.toContain('NonJitComponent.propDecorators');
+      expect(env.getContents('test.js')).not.toContain('NonJitComponent.prototype, "nonJitInput"');
     });
 
     it('should run JIT transform for `NgModule` marked as `jit: true`', () => {
@@ -982,13 +983,47 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      expect(trim(env.getContents('test.js'))).toContain(
-        trim(`
-        MyJitModule.ctorParameters = () => [
-          { type: Injector }
-        ];`),
+      expect(trim(env.getContents('test.js'))).toMatch(
+        /MyJitModule\.ctorParameters = \(\) => \[\s*\{ type: Injector \}\s*\];/,
       );
       expect(env.getContents('test.js')).not.toContain('NonJitModule.ctorParameters');
+    });
+
+    it('should synthesize boxed primitive/built-in types and null for untyped params in `jit: true` ctorParameters', () => {
+      env.tsconfig({noImplicitAny: false});
+      env.write(
+        'test.ts',
+        `
+        import {Component, Optional} from '@angular/core';
+
+        export interface SomeInterface {}
+
+        @Component({
+          template: '{{ view }}',
+          jit: true,
+        })
+        export class TestHostComponent {
+          constructor(
+            public view: string,
+            public visible: boolean,
+            count: number,
+            nullable: string | null,
+            items: string[],
+            fn: () => void,
+            obj: object,
+            iface: SomeInterface,
+            untyped,
+            @Optional() untypedOptional,
+          ) {}
+        }
+      `,
+      );
+
+      env.driveMain();
+
+      expect(trim(env.getContents('test.js'))).toMatch(
+        /TestHostComponent\.ctorParameters = \(\) => \[\s*\{ type: String \},\s*\{ type: Boolean \},\s*\{ type: Number \},\s*\{ type: String \},\s*\{ type: Array \},\s*\{ type: Function \},\s*\{ type: Object \},\s*\{ type: undefined \},\s*null,\s*\{ type: undefined, decorators: \[\{ type: Optional \}\] \},?\s*\];/,
+      );
     });
 
     // This test triggers the Tsickle compiler which asserts that the file-paths
@@ -1022,8 +1057,8 @@ runInEachFileSystem((os: string) => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ (() => {');
-          expect(jsContents).toContain(
-            '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(__ngFactoryType__ || Dir);',
+          expect(jsContents).toMatch(
+            /\(ɵDir_BaseFactory \|\| \(ɵDir_BaseFactory = i0\.ɵɵgetInheritedFactory\(Dir\)\)\)\(\(?__ngFactoryType__ \|\| Dir\)?\);/,
           );
         });
 
@@ -1048,12 +1083,12 @@ runInEachFileSystem((os: string) => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
+          expect(jsContents).toMatch(/\/\*\* @nocollapse \*\/\s*TestCmp\.ɵcmp/);
         });
 
         it('should still perform schema checks in embedded views', () => {
           env.tsconfig({
-            'fullTemplateTypeCheck': false,
+            'strictTemplates': false,
             'annotateForClosureCompiler': true,
           });
           env.write(
@@ -1129,20 +1164,8 @@ runInEachFileSystem((os: string) => {
             // insertion by checking that there are no function return statements
             // not wrapped in parentheses
             expect(trim(jsContents)).not.toMatch(/return\s+function/);
-            expect(trim(jsContents)).toContain(
-              trim(`
-              [{
-                  provide: 'token-a',
-                  useFactory: ((service) => {
-                      return (() => service.id);
-                  })
-              }, {
-                  provide: 'token-b',
-                  useFactory: (function (service) {
-                      return (function () { return service.id; });
-                  })
-              }]
-            `),
+            expect(trim(jsContents)).toMatch(
+              /\[\{\s*provide:\s*['"]token-a['"],\s*useFactory:\s*\(\(service\)\s*=>\s*\{\s*return\s*\(\(\)\s*=>\s*service\.id\);\s*\}\)\s*\},\s*\{\s*provide:\s*['"]token-b['"],\s*useFactory:\s*\(function\s*\(service\)\s*\{\s*return\s*\(function\s*\(\)\s*\{\s*return\s*service\.id;\s*\}\);\s*\}\)\s*\}\]/,
             );
           };
 
@@ -1315,7 +1338,6 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
-      env.tsconfig({});
       env.write(
         'test.ts',
         `
@@ -1344,7 +1366,7 @@ runInEachFileSystem((os: string) => {
           standalone: false,
         })
         class PipeB {
-          transform() {}
+          transform(arg: unknown) {}
         }
 
         @Component({
@@ -1371,7 +1393,7 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should respect imported module order when selecting Pipe (last imported Pipe is used)', () => {
-      env.tsconfig({});
+      env.tsconfig({strictTemplates: false});
       env.write(
         'test.ts',
         `
@@ -1741,7 +1763,7 @@ runInEachFileSystem((os: string) => {
         'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
       );
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, true, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
@@ -1900,7 +1922,9 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(`i0.ɵɵdefineNgModule({ type: TestModule, id: 'test' })`);
+      expect(jsContents).toMatch(
+        /i0\.ɵɵdefineNgModule\(\{ type: TestModule, id: ['"]test['"] \}\)/,
+      );
     });
 
     it('should warn when an NgModule id is defined as module.id, and not emit it', () => {
@@ -1946,7 +1970,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(`i0.ɵɵregisterNgModuleType(TestModule, 'test')`);
+      expect(jsContents).toMatch(/i0\.ɵɵregisterNgModuleType\(TestModule, ['"]test['"]\)/);
     });
 
     it('should filter out directives and pipes from module exports in the injector def', () => {
@@ -2066,10 +2090,8 @@ runInEachFileSystem((os: string) => {
         'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
-      expect(jsContents).toContain(
-        `TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ ` +
-          `providers: [{ provide: Token, useValue: 'test' }], ` +
-          `imports: [OtherModule] });`,
+      expect(jsContents).toMatch(
+        /TestModule\.ɵinj = \/\*@__PURE__\*\/ i0\.ɵɵdefineInjector\(\{ providers: \[\{ provide: Token, useValue: ['"]test['"] \}\], imports: \[OtherModule\] \}\);/,
       );
 
       const dtsContents = env.getContents('test.d.ts');
@@ -2208,7 +2230,7 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain("import { Foo } from './foo';");
+      expect(jsContents).toMatch(/import \{ Foo \} from ['"]\.\/foo['"];/);
       expect(jsContents).not.toMatch(/as i[0-9] from ".\/foo"/);
       expect(dtsContents).toContain('as i1 from "./foo";');
     });
@@ -2257,7 +2279,7 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain("import { Foo } from 'foo';");
+      expect(jsContents).toMatch(/import \{ Foo \} from ['"]foo['"];/);
       expect(jsContents).not.toMatch(/as i[0-9] from "foo"/);
       expect(dtsContents).toContain('as i1 from "foo";');
     });
@@ -2565,7 +2587,7 @@ runInEachFileSystem((os: string) => {
           standalone: false,
         })
         export class TestPipe {
-          transform() {}
+          transform(arg: unknown) {}
         }
 
         @Component({
@@ -3256,6 +3278,25 @@ runInEachFileSystem((os: string) => {
         );
       });
 
+      it('should report a diagnostic instead of crashing when a host property binding has a non-static value', () => {
+        env.tsconfig({});
+        env.write(
+          'test.ts',
+          `
+              import {Directive} from '@angular/core';
+
+              declare function getValue(): string;
+
+              @Directive({
+                selector: 'test-dir',
+                host: {'[class.foo]': getValue()}
+              })
+              export class TestDir {}
+            `,
+        );
+        verifyThrownError(ErrorCode.HOST_BINDING_PARSE_ERROR, 'Property binding must be string');
+      });
+
       it('should throw error if @Directive.queries field has wrong type', () => {
         env.tsconfig({});
         env.write(
@@ -3385,7 +3426,7 @@ runInEachFileSystem((os: string) => {
       });
 
       it('should produce a diangostic if the transform function first parameter has no arguments', () => {
-        env.tsconfig({noImplicitAny: false});
+        env.tsconfig({}, {noImplicitAny: false});
         env.write(
           '/test.ts',
           `
@@ -3688,10 +3729,7 @@ runInEachFileSystem((os: string) => {
 
         // Validate that each class's .d.ts declaration also has an injectable
         // definition.
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestCmp');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestDir');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestPipe');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestNgModule');
+        expect(dtsContents.match(/ɵɵInjectableDeclaration<any>/g)?.length).toBe(4);
       });
 
       it('should not compile a component and a directive annotation on the same class', () => {
@@ -3734,8 +3772,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain('Directive({');
-        expect(jsContents).toContain(
-          ` { type: String, decorators: [{ type: Inject, args: ['foo',] }] }`,
+        expect(jsContents).toMatch(
+          /\{ type: (?:String|undefined), decorators: \[\{ type: Inject, args: \[['"]foo['"],?\] \}\] \}/,
         );
       });
     });
@@ -3758,9 +3796,8 @@ runInEachFileSystem((os: string) => {
 
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'notInjectable' of class 'Test'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'notInjectable' of class 'Test'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(errors[0].relatedInformation!.length).toBe(1);
           expect(errors[0].relatedInformation![0].messageText).toBe(
@@ -3784,9 +3821,8 @@ runInEachFileSystem((os: string) => {
 
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'notInjectable' of class 'Test'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'notInjectable' of class 'Test'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(errors[0].relatedInformation!.length).toBe(1);
           expect(errors[0].relatedInformation![0].messageText).toBe(
@@ -3817,10 +3853,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider changing the type-only import to a regular import, ` +
-              `or use the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider changing the type-only import to a regular import, or use the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(2);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3855,10 +3889,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider changing the type-only import to a regular import, ` +
-              `or use the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider changing the type-only import to a regular import, or use the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(2);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3886,9 +3918,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(1);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3915,9 +3946,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(1);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3943,9 +3973,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(2);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3976,10 +4005,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of ` +
-              `class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(1);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3988,7 +4015,7 @@ runInEachFileSystem((os: string) => {
         });
 
         it('should report an error when no type is present', () => {
-          env.tsconfig({strictInjectionParameters: true, noImplicitAny: false});
+          env.tsconfig({strictInjectionParameters: true}, {noImplicitAny: false});
           env.write(
             `test.ts`,
             `
@@ -4003,10 +4030,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider adding a type to the parameter or ` +
-              `use the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider adding a type to the parameter or use the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation).toBeUndefined();
         });
@@ -5128,8 +5153,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(
-        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
+      expect(jsContents).toMatch(
+        /FooCmp\.ɵfac = function FooCmp_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| FooCmp\)\(i0\.ɵɵinjectAttribute\("test"\), i0\.ɵɵdirectiveInject\((?:i0\.)?ChangeDetectorRef\), i0\.ɵɵdirectiveInject\((?:i0\.)?ElementRef\), i0\.ɵɵdirectiveInject\((?:i0\.)?Injector\), i0\.ɵɵdirectiveInject\((?:i0\.)?Renderer2\), i0\.ɵɵdirectiveInject\((?:i0\.)?TemplateRef\), i0\.ɵɵdirectiveInject\((?:i0\.)?ViewContainerRef\)\); \}/,
       );
     });
 
@@ -5181,7 +5206,7 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain(
         'static ɵfac: i0.ɵɵFactoryDeclaration<WithDecorators, [' +
           '{ self: true; }, { skipSelf: true; }, { host: true; }, ' +
@@ -5247,7 +5272,7 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDeclaration<Inj, [{ self: true; }]>`);
       expect(dtsContents).toContain(
         `static ɵfac: i0.ɵɵFactoryDeclaration<InjUseExisting, [{ self: true; }]>`,
@@ -5666,8 +5691,8 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      expect(env.getContents('test.js')).toContain(
-        `ɵɵdomListener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`,
+      expect(env.getContents('test.js')).toMatch(
+        /ɵɵdomListener\("click", function TestCmp_Template_div_click_0_listener\(\) \{\s*return 123;\s*\}\);/,
       );
     });
 
@@ -5758,6 +5783,74 @@ runInEachFileSystem((os: string) => {
       expect(trim(jsContents)).toContain(trim(hostBindingsFn));
     });
 
+    it('should report diagnostics for invalid @HostBinding decorator attribute names', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({selector: '[test1]'})
+        export class Dir1 {
+          @HostBinding('attr.onclick') onClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test2]'})
+        export class Dir2 {
+          @HostBinding('attr.:onclick') colonOnClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test3]'})
+        export class Dir3 {
+          @HostBinding('attr.::onclick') doubleColonOnClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test4]'})
+        export class Dir4 {
+          @HostBinding('attr.svg:onclick') svgOnClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test5]'})
+        export class Dir5 {
+          @HostBinding('attr.:href') colonHref = 'javascript:alert(1)';
+        }
+
+        @Directive({selector: '[test6]'})
+        export class Dir6 {
+          @HostBinding('attr.::href') doubleColonHref = 'javascript:alert(1)';
+        }
+      `,
+      );
+
+      const errors = env.driveDiagnostics();
+      const messages = errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, '\n'));
+      expect(messages).toEqual([
+        "Binding to event attribute 'onclick' is disallowed for security reasons, please use (click)=...",
+        "Invalid attribute name ':onclick'. Attribute names cannot start with a colon.",
+        "Invalid attribute name '::onclick'. Attribute names cannot start with a colon.",
+        "Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use (click)=...",
+        "Invalid attribute name ':href'. Attribute names cannot start with a colon.",
+        "Invalid attribute name '::href'. Attribute names cannot start with a colon.",
+      ]);
+    });
+
+    it('should allow @HostBinding with colon variant class and style bindings', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({selector: '[test]'})
+        export class Dir {
+          @HostBinding('class.hover:online') isOnline = true;
+          @HostBinding('style.color:only') colorOnly = 'red';
+        }
+      `,
+      );
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(0);
+    });
+
     it('should use proper default value for preserveWhitespaces config param', () => {
       env.tsconfig(); // default is `false`
       env.write(
@@ -5800,8 +5893,8 @@ runInEachFileSystem((os: string) => {
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(
-        'text(2, "\\n            Template with whitespaces\\n          ");',
+      expect(jsContents).toMatch(
+        /text\(2, ['"]\\n            Template with whitespaces\\n          ['"]\);/,
       );
     });
 
@@ -5987,7 +6080,7 @@ runInEachFileSystem((os: string) => {
       expect(messageText).toContain("Value is of type 'string'.");
     });
 
-    it('should handle `changeDetection` field', () => {
+    it('should handle `changeDetection` field with the "default" value: OnPush', () => {
       env.write(
         `test.ts`,
         `
@@ -6003,7 +6096,27 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('changeDetection: 0');
+      // because this default value is implicit
+      expect(jsContents).not.toContain('changeDetection: 0');
+    });
+
+    it('should handle `changeDetection` field', () => {
+      env.write(
+        `test.ts`,
+        `
+      import {Component, ChangeDetectionStrategy} from '@angular/core';
+      @Component({
+        selector: 'comp-a',
+        template: '...',
+        changeDetection: ChangeDetectionStrategy.Eager
+      })
+      class CompA {}
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('changeDetection: 1');
     });
 
     it('should throw if `changeDetection` contains invalid value', () => {
@@ -6128,6 +6241,7 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should compile a banana-in-a-box inside of a template', () => {
+      env.tsconfig({strictTemplates: false});
       env.write(
         'test.ts',
         `
@@ -6173,11 +6287,11 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
 
-      expect(jsContents).toContain(
-        'function Base_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
+      expect(jsContents).toMatch(
+        /function Base_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Base\)\(i0\.ɵɵinject\(Dep\)\); \}/,
       );
-      expect(jsContents).toContain(
-        '(() => { let ɵChild_BaseFactory; return function Child_Factory(__ngFactoryType__) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(__ngFactoryType__ || Child); }; })();',
+      expect(jsContents).toMatch(
+        /\(\(\) => \{\s*let ɵChild_BaseFactory;\s*return function Child_Factory\(__ngFactoryType__\) \{\s*return \(ɵChild_BaseFactory \|\| \(ɵChild_BaseFactory = i0\.ɵɵgetInheritedFactory\(Child\)\)\)\(\(?__ngFactoryType__ \|\| Child\)?\);\s*\};\s*\}\)\(\);/,
       );
       expect(jsContents).toContain(
         'function GrandChild_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || GrandChild)(); }',
@@ -6205,8 +6319,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(
-        '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(__ngFactoryType__) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(__ngFactoryType__ || Dir); }; })();',
+      expect(jsContents).toMatch(
+        /\/\*@__PURE__\*\/ \(\(\) => \{\s*let ɵDir_BaseFactory;\s*return function Dir_Factory\(__ngFactoryType__\) \{\s*return \(ɵDir_BaseFactory \|\| \(ɵDir_BaseFactory = i0\.ɵɵgetInheritedFactory\(Dir\)\)\)\(\(?__ngFactoryType__ \|\| Dir\)?\);\s*\};\s*\}\)\(\);/,
       );
     });
 
@@ -6256,9 +6370,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
-      expect(jsContents).toContain(
-        `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
-          `i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`,
+      expect(jsContents).toMatch(
+        /\(\(\) => \{ \(typeof ngDevMode === "undefined" \|\| ngDevMode\) && i0\.ɵsetClassMetadata\(Service, \[\{ type: Injectable, args: \[\{ providedIn: ['"]root['"] \}\] \}\], null, null\); \}\)\(\);/,
       );
     });
 
@@ -6470,9 +6583,11 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import * as i1 from "./types";`);
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.MyTypeA'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.MyTypeB'));
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/types";|import \{ MyTypeA, MyTypeB \} from "\.\/types";/,
+      );
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.MyTypeA|MyTypeA)'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.MyTypeB|MyTypeB)'));
     });
 
     it('should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`', () => {
@@ -6506,9 +6621,11 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import * as i1 from "./types";`);
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.MyTypeA'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.MyTypeB'));
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/types";|import \* as types from "\.\/types";/,
+      );
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|types)\\.MyTypeA'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|types)\\.MyTypeB'));
     });
 
     it('should use default-imported types if they can be represented as values', () => {
@@ -6535,12 +6652,14 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import Default from './types';`);
-      expect(jsContents).toContain(`import * as i1 from "./types";`);
+      expect(jsContents).toMatch(/import Default from ['"]\.\/types['"];/);
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/types";|import \{ Other \} from "\.\/types";/,
+      );
       expect(jsContents).toContain('i0.ɵɵdirectiveInject(Default)');
-      expect(jsContents).toContain('i0.ɵɵdirectiveInject(i1.Other)');
+      expect(jsContents).toMatch(/i0\.ɵɵdirectiveInject\((?:i1\.Other|Other)\)/);
       expect(jsContents).toMatch(setClassMetadataRegExp('type: Default'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Other'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.Other|Other)'));
     });
 
     it('should not throw when using an SVG-specific `title` tag', () => {
@@ -6603,13 +6722,13 @@ runInEachFileSystem((os: string) => {
 
         env.driveMain();
         const jsContents = trim(env.getContents('test.js'));
-        expect(jsContents).toContain(`import * as i1 from "ns";`);
-        expect(jsContents).toContain('i0.ɵɵinject(i1.Zero)');
-        expect(jsContents).toContain('i0.ɵɵinject(i1.one.One)');
-        expect(jsContents).toContain('i0.ɵɵinject(i1.one.two.Two)');
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Zero'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.one.One'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.one.two.Two'));
+        expect(jsContents).toMatch(/import \* as i1 from "ns";|import \* as ns from "ns";/);
+        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.Zero\)/);
+        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.one\.One\)/);
+        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.one\.two\.Two\)/);
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.Zero'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.one\\.One'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.one\\.two\\.Two'));
       });
 
       it('should generate correct imports for type references to namespaced symbols using named imports', () => {
@@ -6650,18 +6769,17 @@ runInEachFileSystem((os: string) => {
 
         env.driveMain();
         const jsContents = trim(env.getContents('test.js'));
-        expect(jsContents).toContain(`import * as i1 from "ns";`);
-        expect(jsContents).toContain(
-          'i0.ɵɵinject(i1.ns.Zero), ' +
-            'i0.ɵɵinject(i1.ns.one.One), ' +
-            'i0.ɵɵinject(i1.ns.one.two.Two), ' +
-            'i0.ɵɵinject(i1.ns.Zero), ' +
-            'i0.ɵɵinject(i1.ns.one.One), ' +
-            'i0.ɵɵinject(i1.ns.one.two.Two)',
+        expect(jsContents).toMatch(
+          /import \* as i1 from "ns";|import \{ ns \} from "ns"; import \{ ns as alias \} from "ns";/,
         );
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.Zero'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.One'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.two.Two'));
+        expect(jsContents).toMatch(
+          /i0\.ɵɵinject\(i1\.ns\.Zero\), i0\.ɵɵinject\(i1\.ns\.one\.One\), i0\.ɵɵinject\(i1\.ns\.one\.two\.Two\), i0\.ɵɵinject\(i1\.ns\.Zero\), i0\.ɵɵinject\(i1\.ns\.one\.One\), i0\.ɵɵinject\(i1\.ns\.one\.two\.Two\)|i0\.ɵɵinject\(ns\.Zero\), i0\.ɵɵinject\(ns\.one\.One\), i0\.ɵɵinject\(ns\.one\.two\.Two\), i0\.ɵɵinject\(alias\.Zero\), i0\.ɵɵinject\(alias\.one\.One\), i0\.ɵɵinject\(alias\.one\.two\.Two\)/,
+        );
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.Zero'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.one\\.One'));
+        expect(jsContents).toMatch(
+          setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.one\\.two\\.Two'),
+        );
       });
 
       it('should not error for a namespace import as parameter type when @Inject is used', () => {
@@ -6720,9 +6838,8 @@ runInEachFileSystem((os: string) => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-          `No suitable injection token for parameter 'foo' of class 'MyService'.\n` +
-            `  Consider using the @Inject decorator to specify an injection token.`,
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+          /No suitable injection token for parameter 'foo' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
         );
         expect(diags[0].relatedInformation!.length).toBe(2);
         expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -6819,8 +6936,10 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import * as i1 from "./keycodes";`);
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.KeyCodes'));
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/keycodes";|import \{ KeyCodes \} from "\.\/keycodes";/,
+      );
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.KeyCodes|KeyCodes)'));
     });
 
     it('should use `undefined` in setClassMetadata if types originate from type-only imports', () => {
@@ -7258,9 +7377,8 @@ runInEachFileSystem((os: string) => {
         expect(diagnostics.length).toEqual(1);
         const error = diagnostics[0];
         expect(error.code).toBe(ngErrorCode(ErrorCode.IMPORT_CYCLE_DETECTED));
-        expect(error.messageText).toEqual(
-          'One or more import cycles would need to be created to compile this component, ' +
-            'which is not supported by the current compiler configuration.',
+        expect(error.messageText).toMatch(
+          /One or more import cycles would need to be created to compile this component, which is not supported by the current compiler configuration\. Find more at .*/,
         );
         const _abs = absoluteFrom;
         expect(error.relatedInformation?.map((diag) => diag.messageText)).toEqual([
@@ -7286,7 +7404,82 @@ runInEachFileSystem((os: string) => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(`No directive found with exportAs 'unknownTarget'.`);
+        expect(diags[0].messageText).toMatch(
+          /No directive found with exportAs 'unknownTarget'\. Find more at .*/,
+        );
+      });
+    });
+
+    describe('diagnostic guide links', () => {
+      it('should add error guide links only to diagnostics that have guides', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<not-known>{{value | missingPipe}}</not-known>',
+          })
+          export class Cmp {
+            value = '';
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        const schemaDiag = diags.find(
+          (diag) => diag.code === ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT),
+        );
+        expect(schemaDiag).toBeDefined();
+        expect(ts.flattenDiagnosticMessageText(schemaDiag!.messageText, '\n')).toContain(
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG8001`,
+        );
+
+        const pipeDiag = diags.find((diag) => diag.code === ngErrorCode(ErrorCode.MISSING_PIPE));
+        expect(pipeDiag).toBeDefined();
+        expect(ts.flattenDiagnosticMessageText(pipeDiag!.messageText, '\n')).not.toContain(
+          'Find more at',
+        );
+      });
+
+      it('should add an error guide link to multiple component match diagnostics', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: '[stroked-button]',
+            template: '',
+          })
+          export class StrokedBtn {}
+
+          @Component({
+            selector: '[raised-button]',
+            template: '',
+          })
+          export class RaisedBtn {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<button stroked-button raised-button></button>',
+            imports: [StrokedBtn, RaisedBtn],
+          })
+          export class Cmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        const multipleComponentsDiag = diags.find(
+          (diag) => diag.code === ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS),
+        );
+        expect(multipleComponentsDiag).toBeDefined();
+        expect(
+          ts.flattenDiagnosticMessageText(multipleComponentsDiag!.messageText, '\n'),
+        ).toContain(`Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG8023`);
       });
     });
 
@@ -7401,7 +7594,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
 
       expect(dtsContents).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
@@ -7441,7 +7634,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
 
       expect(dtsContents).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
@@ -8575,7 +8768,7 @@ runInEachFileSystem((os: string) => {
         hostVars: 6,
         hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
+            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrlOrResourceUrl)("profile", ctx.attrProfile)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
         }
       `;
@@ -8621,42 +8814,14 @@ runInEachFileSystem((os: string) => {
         hostVars: 3,
         hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
+            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
         }
       `;
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
       });
 
-      it('should generate sanitizers for URL properties in SVG script fn in Component', () => {
-        env.write(
-          'test.ts',
-          `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              template: \`
-                <svg>
-                  <script [attr.xlink:href]="attr" [attr.href]="attr"></script>
-                </svg>
-              \`,
-            })
-            export class TestCmp {
-              attr = './script.js';
-            }
-          `,
-        );
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵattribute("href", ctx.attr, i0.ɵɵsanitizeResourceUrl, "xlink")("href", ctx.attr, i0.ɵɵsanitizeResourceUrl);',
-        );
-      });
-
-      it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {
+      it('should generate concrete-host URL sanitizers in hostBindings fn in Component', () => {
         env.write(
           `test.ts`,
           `
@@ -8689,8 +8854,40 @@ runInEachFileSystem((os: string) => {
         hostVars: 5,
         hostBindings: function FooCmp_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("href", ctx.hrefProp, i0.ɵɵsanitizeUrl)("title", ctx.titleProp);
-            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr, i0.ɵɵsanitizeUrl)("title", ctx.titleAttr);
+            i0.ɵɵdomProperty("href", ctx.hrefProp, i0.ɵɵsanitizeUrlOrResourceUrl)("title", ctx.titleProp);
+            i0.ɵɵattribute("src", ctx.srcAttr, i0.ɵɵsanitizeUrlOrResourceUrl)("href", ctx.hrefAttr, i0.ɵɵsanitizeUrlOrResourceUrl)("title", ctx.titleAttr);
+          }
+        }
+        `;
+        expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+      });
+
+      it('should generate sanitizers for pure :not selector host bindings', () => {
+        env.write(
+          `test.ts`,
+          `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: ':not(iframe)',
+          template: '',
+          host: {
+            '[attr.srcdoc]': 'srcdoc',
+          }
+        })
+        class FooCmp {
+          srcdoc: any;
+        }
+      `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        const hostBindingsFn = `
+        hostVars: 1,
+        hostBindings: function FooCmp_HostBindings(rf, ctx) {
+          if (rf & 2) {
+            i0.ɵɵattribute("srcdoc", ctx.srcdoc, i0.ɵɵsanitizeHtml);
           }
         }
       `;
@@ -9382,6 +9579,41 @@ runInEachFileSystem((os: string) => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should emit `declare` fields without runtime initialization in decorated classes', () => {
+        env.tsconfig();
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          function Log(target: any, key: string): void {}
+
+          @Directive({selector: '[child]'})
+          export class Child {
+            @Log declare value: string;
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = trim(env.getContents('test.js'));
+        expect(jsContents).toMatch(/import \{ Directive \} from ['"]@angular\/core['"];/);
+        expect(jsContents).toContain(
+          trim(`
+            import * as i0 from "@angular/core";
+            function Log(target, key) { }
+            export class Child {
+            }
+            Child.ɵfac = function Child_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Child)(); };
+            Child.ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Child, selectors: [["", "child", ""]] });
+            __decorate([
+                Log
+            ], Child.prototype, "value", void 0);
+          `),
+        );
+      });
     });
 
     describe('SVG animation processing', () => {
@@ -9560,12 +9792,8 @@ runInEachFileSystem((os: string) => {
         // Verify that long strings are extracted to a separate var. This should be
         // wrapped in a function to trick Closure not to inline the contents for very
         // large strings. See: https://github.com/angular/angular/pull/38253.
-        expect(jsContents).toContain(
-          '_c0 = function () {' +
-            ' return "div[_ngcontent-%COMP%] {' +
-            ' background: url(/some-very-very-long-path.png);' +
-            ' }";' +
-            ' };',
+        expect(jsContents).toMatch(
+          /_c0 = function \(\) \{\s*return "div\[_ngcontent-%COMP%\] \{ background: url\(\/some-very-very-long-path\.png\); \}";\s*\};/,
         );
 
         expect(jsContents).toContain(
@@ -9734,7 +9962,8 @@ runInEachFileSystem((os: string) => {
           import {Directive} from '@angular/core';
 
           @Directive({
-            selector: '[test]'
+            selector: '[test]',
+            standalone: false,
           })
           class TestDirective {}
         `,
@@ -9746,7 +9975,46 @@ runInEachFileSystem((os: string) => {
         expect(jsContents).toContain('Directive({');
       });
 
+      it('should emit directive definitions for non-exported standalone classes by default', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[test]'
+          })
+          class TestDirective {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('defineDirective(');
+      });
+
       it('should not emit component definitions for non-exported classes if configured', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: 'hello',
+            standalone: false,
+          })
+          class TestComponent {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('defineComponent(');
+        expect(jsContents).toContain('Component({');
+      });
+
+      it('should emit component definitions for non-exported standalone classes by default', () => {
         env.write(
           'test.ts',
           `
@@ -9762,8 +10030,7 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).not.toContain('defineComponent(');
-        expect(jsContents).toContain('Component({');
+        expect(jsContents).toContain('defineComponent(');
       });
 
       it('should not emit module definitions for non-exported classes if configured', () => {
@@ -9785,6 +10052,44 @@ runInEachFileSystem((os: string) => {
         expect(jsContents).toContain('NgModule({');
       });
 
+      it('should not emit pipe definitions for non-exported classes if configured', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({
+            name: 'test',
+            standalone: false,
+          })
+          class TestPipe {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('definePipe(');
+        expect(jsContents).toContain('Pipe({');
+      });
+
+      it('should emit pipe definitions for non-exported standalone classes by default', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({
+            name: 'test'
+          })
+          class TestPipe {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('definePipe(');
+      });
+
       it('should still compile a class that is indirectly exported', () => {
         env.write(
           'test.ts',
@@ -9794,6 +10099,7 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'test-cmp',
             template: 'Test Cmp',
+            standalone: false,
           })
           class TestCmp {}
 
@@ -9837,6 +10143,33 @@ runInEachFileSystem((os: string) => {
 
         // The `allow` property is also security-sensitive, thus an extra validation fn.
         expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
+      });
+
+      it('should generate a validator fn for credentialless bindings when on <iframe>', () => {
+        env.write(
+          'test.ts',
+          `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  template: \`
+                    <iframe src="http://angular.io"
+                      [credentialless]="true"
+                      [attr.credentialless]="''"
+                    ></iframe>
+                  \`
+                })
+                export class SomeComponent {}
+              `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain(
+          'ɵɵdomProperty("credentialless", true, i0.ɵɵvalidateAttribute)',
+        );
+        expect(jsContents).toContain('ɵɵattribute("credentialless", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(
@@ -9929,6 +10262,33 @@ runInEachFileSystem((os: string) => {
         // Similar to the above, but for an attribute binding (host attributes are
         // represented via `ɵɵattribute`).
         expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
+      });
+
+      it('should generate a validator fn for credentialless host bindings on a directive', () => {
+        env.write(
+          'test.ts',
+          `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                selector: 'iframe[someDir]',
+                host: {
+                  '[credentialless]': 'true',
+                  '[attr.credentialless]': "''",
+                  'src': 'http://angular.io'
+                }
+              })
+              export class SomeDir {}
+            `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain(
+          'ɵɵdomProperty("credentialless", true, i0.ɵɵvalidateAttribute)',
+        );
+        expect(jsContents).toContain('ɵɵattribute("credentialless", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(
@@ -10418,13 +10778,34 @@ runInEachFileSystem((os: string) => {
               }
             `,
           );
-          const diags = env.driveDiagnostics();
+          const diags = [...env.driveDiagnostics()].sort((a, b) => a.start! - b.start!);
 
           expect(diags.length).toBe(2);
           expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
           expect(diags[1].messageText).toContain(
             'Parser Error: Bindings cannot contain assignments at column 5 in [x = 2]',
           );
+        });
+
+        it('should report a parse error for unexpected tokens in a template literal interpolation', () => {
+          env.write(
+            'test.ts',
+            `
+              import {Component} from '@angular/core';
+              @Component({
+                template: '{{ \`Hello, $\{first last}!\` }}',
+                selector: 'test-cmp',
+              })
+              export class TestCmp {
+                first = 'Jane';
+                last = 'Doe';
+              }
+            `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain('Parser Error: Missing expected }');
         });
       });
 
@@ -10445,8 +10826,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a component that uses ViewEncapsulation\.ShadowDom must contain a hyphen\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'cmp'`);
         });
@@ -10467,8 +10848,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a ShadowDom-encapsulated component must all be in lower case.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a ShadowDom-encapsulated component must all be in lower case\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'my-Comp'`);
         });
@@ -10489,8 +10870,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a ShadowDom-encapsulated component must start with a lower case letter.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a ShadowDom-encapsulated component must start with a lower case letter\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'123-comp'`);
         });
@@ -10511,8 +10892,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a ShadowDom-encapsulated component must start with a lower case letter.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a ShadowDom-encapsulated component must start with a lower case letter\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'-comp'`);
         });
@@ -10794,10 +11175,12 @@ runInEachFileSystem((os: string) => {
       expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
     });
 
-    it('should compile a component with a complex generic', () => {
-      env.write(
-        'test.ts',
-        `
+    [true, false].forEach((strictTemplates) => {
+      it(`[strictTemplates: ${strictTemplates}] should compile a component with a complex generic`, () => {
+        env.tsconfig({strictTemplates});
+        env.write(
+          'test.ts',
+          `
           import {Component} from '@angular/core';
 
           @Component({
@@ -10809,10 +11192,37 @@ runInEachFileSystem((os: string) => {
             TOptions extends { [K in keyof T]?: T[K] } = object
           > {}
         `,
-      );
+        );
 
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(0);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      // See #67704.
+      it(`[strictTemplates: ${strictTemplates}] should compile a directive with a generic that has type parameters`, () => {
+        env.tsconfig({strictTemplates});
+        env.write(
+          'test.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            type Foo<T> = {prop: T};
+
+            @Directive({
+              host: {
+                '[class.some-class]': 'foo || bar' // Only necessary to enable type checking.
+              },
+            })
+            export class TestDir<T, U = T extends Foo<infer V> ? V : never> {
+              foo?: T;
+              bar?: U;
+            }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('InjectorDef emit optimizations for standalone', () => {
@@ -11217,6 +11627,54 @@ runInEachFileSystem((os: string) => {
           'static ngAcceptInputType_element: HTMLElement | i0.ElementRef<HTMLElement>;',
         );
       });
+
+      it('should compile an input with a transform function and whose name needs to be quoted', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input({transform: (value: string) => value}) 'aria-label': string = '';
+          }
+        `,
+        );
+
+        env.driveMain();
+        const dtsContents = env.getContents('test.d.ts');
+        expect(dtsContents).toContain('static "ngAcceptInputType_aria-label": string;');
+      });
+
+      it('should compile an input with a transform function in the inputs array referenced via a constant', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          const INPUT_CONFIG = {
+            name: 'value',
+            transform: (value: boolean | string) => 1,
+          };
+
+          @Directive({
+            selector: '[dir]',
+            inputs: [INPUT_CONFIG],
+          })
+          export class Dir {
+            value!: number;
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", (value) => 1] }');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
+      });
     });
 
     describe('debug info', () => {
@@ -11311,42 +11769,66 @@ runInEachFileSystem((os: string) => {
         );
 
         const options: CompilerOptions = {
-          strict: true,
-          strictTemplates: true,
+          // strict: true & strictTemplates: true are set by default
           target: ts.ScriptTarget.Latest,
           module: ts.ModuleKind.ESNext,
+          moduleResolution: ts.ModuleResolutionKind.Bundler,
+          skipLibCheck: true,
           annotateForClosureCompiler: true,
         };
+
+        const fakeTsickleTransform: ts.TransformerFactory<ts.SourceFile> =
+          (ctx) => (sf: ts.SourceFile) => {
+            const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
+            ts.setSyntheticLeadingComments(tsickleFileOverview, [
+              {
+                kind: ts.SyntaxKind.MultiLineCommentTrivia,
+                text: `*
+                  * @fileoverview Closure comment
+                  * @suppress bla1
+                  * @suppress bla2
+                `,
+                pos: -1,
+                end: -1,
+                hasTrailingNewLine: true,
+              },
+            ]);
+            return ctx.factory.updateSourceFile(
+              sf,
+              [tsickleFileOverview, ...sf.statements],
+              sf.isDeclarationFile,
+              sf.referencedFiles,
+              sf.typeReferenceDirectives,
+              sf.hasNoDefaultLib,
+              sf.libReferenceDirectives,
+            );
+          };
+
+        if (isNgpTestMode()) {
+          const fs = getFileSystem();
+          const result = performNgpCompilationSync({
+            fs,
+            basePath: env.basePath,
+            tsconfigPath: fs.resolve(env.basePath, 'tsconfig.json'),
+            rootNames: [fs.resolve('/test.ts')],
+            options,
+            emit: true,
+            complianceMode: true,
+            customTransformers: {beforeTs: [fakeTsickleTransform]},
+          });
+
+          expect(
+            result.diagnostics.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n')),
+          ).toEqual([]);
+          expect(env.getContents('/test.js')).toContain(`* @fileoverview Closure comment`);
+          return;
+        }
 
         const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
         const transformers = program.compiler.prepareEmit().transformers;
 
         // Add a "fake tsickle" transform before Angular's transform.
-        transformers.before!.unshift((ctx) => (sf: ts.SourceFile) => {
-          const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
-          ts.setSyntheticLeadingComments(tsickleFileOverview, [
-            {
-              kind: ts.SyntaxKind.MultiLineCommentTrivia,
-              text: `*
-                  * @fileoverview Closure comment
-                  * @suppress bla1
-                  * @suppress bla2
-                `,
-              pos: -1,
-              end: -1,
-              hasTrailingNewLine: true,
-            },
-          ]);
-          return ctx.factory.updateSourceFile(
-            sf,
-            [tsickleFileOverview, ...sf.statements],
-            sf.isDeclarationFile,
-            sf.referencedFiles,
-            sf.typeReferenceDirectives,
-            sf.hasNoDefaultLib,
-            sf.libReferenceDirectives,
-          );
-        });
+        transformers.before!.unshift(fakeTsickleTransform);
 
         const {diagnostics, emitSkipped} = program
           .getTsProgram()
@@ -11470,6 +11952,30 @@ runInEachFileSystem((os: string) => {
         );
         expect(diags[2].messageText).toContain(
           `The pipe 'TestPipe' appears in 'imports', but is not standalone`,
+        );
+      });
+
+      it('should not recurse when a non-standalone component is both declared and imported', () => {
+        env.write(
+          '/test.ts',
+          `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({standalone: false, template: ''})
+            export class TestComp {}
+
+            @NgModule({
+              declarations: [TestComp],
+              imports: [TestComp],
+            })
+            export class TestModule {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `The component 'TestComp' appears in 'imports', but is not standalone`,
         );
       });
     });

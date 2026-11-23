@@ -14,7 +14,7 @@ import {Router, provideRouter} from '@angular/router';
 import {SearchDialog} from './search-dialog.component';
 import {ENVIRONMENT, WINDOW} from '../../providers';
 import {ALGOLIA_CLIENT, Search} from '../../services';
-import {FakeEventTarget} from '../../testing/index';
+import {FakeEventTarget, timeout, useAutoTick} from '../../testing/index';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {SearchResult} from '../../interfaces';
 
@@ -27,8 +27,10 @@ describe('SearchDialog', () => {
 
   let search: Search;
 
+  useAutoTick();
+
   beforeEach(async () => {
-    searchResults.and.returnValue([]);
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: []}]}));
 
     TestBed.configureTestingModule({
       imports: [SearchDialog],
@@ -55,6 +57,9 @@ describe('SearchDialog', () => {
     // Fire the request
     TestBed.inject(ApplicationRef).tick();
 
+    // The delay from debounced (200ms)
+    await timeout(300);
+
     // Wait for the resource to resolve
     await TestBed.inject(ApplicationRef).whenStable();
 
@@ -72,6 +77,38 @@ describe('SearchDialog', () => {
     expect(navigateByUrlSpy).toHaveBeenCalledOnceWith('fakeUrl1#h1');
   });
 
+  it('should navigate to the item the pointer moved over when user pressed Enter', async () => {
+    const router = TestBed.inject(Router);
+    const navigateByUrlSpy = spyOn(router, 'navigateByUrl');
+
+    search.searchQuery.set('fakeQuery');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
+
+    TestBed.inject(ApplicationRef).tick();
+    await timeout(300);
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    const items = fixture.debugElement.queryAll(By.css('.docs-search-result'));
+    items[1].nativeElement.dispatchEvent(new MouseEvent('mousemove', {bubbles: true}));
+    await fixture.whenStable();
+
+    expect(items[0].nativeElement.classList).not.toContain('active');
+    expect(items[1].nativeElement.classList).toContain('active');
+
+    fakeWindow.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        code: 'Enter',
+        key: 'Enter',
+        charCode: 13,
+        keyCode: 13,
+        view: window,
+        bubbles: true,
+      }),
+    );
+
+    expect(navigateByUrlSpy).toHaveBeenCalledOnceWith('fakeUrl2#h1');
+  });
+
   it('should always display algolia logo', () => {
     const algoliaIcon = fixture.debugElement.query(By.directive(AlgoliaIcon));
 
@@ -85,6 +122,9 @@ describe('SearchDialog', () => {
     // Fire the request
     TestBed.inject(ApplicationRef).tick();
 
+    // The delay from debounced (200ms)
+    await timeout(300);
+
     // Wait for the resource to resolve
     await TestBed.inject(ApplicationRef).whenStable();
 
@@ -96,7 +136,7 @@ describe('SearchDialog', () => {
   });
 
   it('should display `Start typing to see results` message when there are no provided query', () => {
-    searchResults.and.returnValue(undefined);
+    searchResults.and.returnValue(Promise.resolve(undefined));
 
     const startTypingContainer = fixture.debugElement.query(
       By.css('.docs-search-results__start-typing'),
@@ -105,12 +145,44 @@ describe('SearchDialog', () => {
     expect(startTypingContainer).toBeTruthy();
   });
 
+  it('should keep the `No results found` message while re-querying instead of flickering back to `Start typing`', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+
+    // Settle on an empty result set so `No results found` is shown.
+    search.searchQuery.set('foobarbaz');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: []}]}));
+    appRef.tick();
+    await timeout(300);
+    await appRef.whenStable();
+
+    expect(fixture.debugElement.query(By.css('.docs-search-results__no-results'))).toBeTruthy();
+
+    // Edit the query so a new search goes in flight and stays pending.
+    let resolveReload!: (value: unknown) => void;
+    searchResults.and.returnValue(new Promise((resolve) => (resolveReload = resolve)));
+    search.searchQuery.set('foobarba');
+    appRef.tick();
+
+    // The delay from debounced (200ms), after which the pending request is loading.
+    await timeout(300);
+
+    // While the re-query is loading it must not revert to the `Start typing` state.
+    expect(fixture.debugElement.query(By.css('.docs-search-results__start-typing'))).toBeNull();
+    expect(fixture.debugElement.query(By.css('.docs-search-results__no-results'))).toBeTruthy();
+
+    resolveReload({results: [{hits: []}]});
+    await appRef.whenStable();
+  });
+
   it('should display list of the search results when results exist', async () => {
     search.searchQuery.set('fakeQuery');
     searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
 
     // Fire the request
     TestBed.inject(ApplicationRef).tick();
+
+    // The delay from debounced (200ms)
+    await timeout(300);
 
     // Wait for the resource to resolve
     await TestBed.inject(ApplicationRef).whenStable();

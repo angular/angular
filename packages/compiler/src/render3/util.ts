@@ -9,7 +9,103 @@
 import {escapeIdentifier} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 
+import {ParseError, ParseSourceSpan} from '../parse_util';
+
+import * as t from './r3_ast';
 import {Identifiers} from './r3_identifiers';
+
+/**
+ * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
+ * Useful for getting the variable name span when a span can contain leading and trailing space.
+ */
+const CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN = /(\s*)(\S+)(\s*)/;
+
+/** Regex that includes unsafe characters in an object literal property name. */
+const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
+
+/** Pattern used to validate a JavaScript identifier. */
+export const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
+
+/** Pattern used to identify a `let` parameter. */
+export const LET_PATTERN = /^let\s+([\S\s]*)/;
+
+/**
+ * Parses the `let` parameter of a `@for` or `@error` block.
+ *
+ * @param sourceSpan The source span of the entire `let` parameter.
+ * @param expression The expression string of the `let` parameter, e.g., `"foo = $implicit, bar = $index"`.
+ * @param span The source span of the expression string.
+ * @param context The variable context to append parsed variables to.
+ * @param errors The array of parsing errors to append to.
+ * @param messagePrefix The prefix to use in error messages (e.g. '@for loop').
+ * @param defaultImplicitVariableName An optional default variable name to use if no value is provided.
+ */
+export function parseLetParameters(
+  sourceSpan: ParseSourceSpan,
+  expression: string,
+  span: ParseSourceSpan,
+  context: t.Variable[],
+  errors: ParseError[],
+  validateLet: (name: string, variableName: string, sourceSpan: ParseSourceSpan) => void,
+  messagePrefix: string,
+  defaultImplicitVariableName?: string,
+): void {
+  const parts = expression.split(',');
+  let startSpan = span.start;
+  for (const part of parts) {
+    const expressionParts = part.split('=');
+    const name = expressionParts[0].trim();
+    let variableName =
+      expressionParts.length === 2
+        ? expressionParts[1].trim()
+        : (defaultImplicitVariableName ?? '');
+
+    if (name.length === 0 || variableName.length === 0) {
+      errors.push(
+        new ParseError(
+          sourceSpan,
+          `Invalid ${messagePrefix} "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
+        ),
+      );
+    } else if (!IDENTIFIER_PATTERN.test(name)) {
+      errors.push(
+        new ParseError(sourceSpan, `"let" parameter must be a valid JavaScript identifier`),
+      );
+    } else {
+      validateLet(name, variableName, sourceSpan);
+
+      const [, keyLeadingWhitespace, keyName] =
+        expressionParts[0].match(CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN) ?? [];
+      const keySpan =
+        keyLeadingWhitespace !== undefined
+          ? new ParseSourceSpan(
+              /* strip leading spaces */
+              startSpan.moveBy(keyLeadingWhitespace.length),
+              /* advance to end of the variable name */
+              startSpan.moveBy(keyLeadingWhitespace.length + keyName.length),
+            )
+          : span;
+
+      let valueSpan: ParseSourceSpan | undefined = undefined;
+      if (expressionParts.length === 2) {
+        const [, valueLeadingWhitespace, implicit] =
+          expressionParts[1].match(CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN) ?? [];
+        valueSpan =
+          valueLeadingWhitespace !== undefined
+            ? new ParseSourceSpan(
+                startSpan.moveBy(expressionParts[0].length + 1 + valueLeadingWhitespace.length),
+                startSpan.moveBy(
+                  expressionParts[0].length + 1 + valueLeadingWhitespace.length + implicit.length,
+                ),
+              )
+            : undefined;
+      }
+      const variableSpan = new ParseSourceSpan(keySpan.start, valueSpan?.end ?? keySpan.end);
+      context.push(new t.Variable(name, variableName, variableSpan, keySpan, valueSpan));
+    }
+    startSpan = startSpan.moveBy(part.length + 1 /* add 1 to move past the comma */);
+  }
+}
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {
@@ -36,22 +132,9 @@ export interface R3CompiledExpression {
   statements: o.Statement[];
 }
 
-const LEGACY_ANIMATE_SYMBOL_PREFIX = '@';
-export function prepareSyntheticPropertyName(name: string) {
-  return `${LEGACY_ANIMATE_SYMBOL_PREFIX}${name}`;
-}
-
-export function prepareSyntheticListenerName(name: string, phase: string) {
-  return `${LEGACY_ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
-}
-
 export function getSafePropertyAccessString(accessor: string, name: string): string {
   const escapedName = escapeIdentifier(name, false);
   return escapedName !== name ? `${accessor}[${escapedName}]` : `${accessor}.${name}`;
-}
-
-export function prepareSyntheticListenerFunctionName(name: string, phase: string) {
-  return `animation_${name}_${phase}`;
 }
 
 export function jitOnlyGuardedExpression(expr: o.Expression): o.Expression {
@@ -62,7 +145,7 @@ export function devOnlyGuardedExpression(expr: o.Expression): o.Expression {
   return guardedExpression('ngDevMode', expr);
 }
 
-export function guardedExpression(guard: string, expr: o.Expression): o.Expression {
+function guardedExpression(guard: string, expr: o.Expression): o.Expression {
   const guardExpr = new o.ExternalExpr({name: guard, moduleName: null});
   const guardNotDefined = new o.BinaryOperatorExpr(
     o.BinaryOperator.Identical,
@@ -86,11 +169,15 @@ export function wrapReference(value: any): R3Reference {
 
 export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
   const values = o.literalArr(refs.map((ref) => ref.value));
-  return shouldForwardDeclare ? o.arrowFn([], values) : values;
+  return shouldForwardDeclare ? o.arrowFn([], values, o.DYNAMIC_TYPE) : values;
 }
 
 export function tsIgnoreComment(): o.LeadingComment {
   return o.leadingComment('@ts-ignore', true, true);
+}
+
+export function isUnsafeObjectKey(key: string): boolean {
+  return UNSAFE_OBJECT_KEY_NAME_REGEXP.test(key);
 }
 
 /**
@@ -165,7 +252,7 @@ export function convertFromMaybeForwardRefExpression({
  * ```
  */
 export function generateForwardRef(expr: o.Expression): o.Expression {
-  return o.importExpr(Identifiers.forwardRef).callFn([o.arrowFn([], expr)]);
+  return o.importExpr(Identifiers.forwardRef).callFn([o.arrowFn([], expr, o.DYNAMIC_TYPE)]);
 }
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {noSideEffects} from '../util/closure';
 
 interface TypeWithMetadata extends Type<any> {
@@ -22,6 +22,8 @@ interface TypeWithMetadata extends Type<any> {
  */
 const ASYNC_COMPONENT_METADATA_FN = '__ngAsyncComponentMetadataFn__';
 
+const ASYNC_METADATA_LOADED = '__ngAsyncMetadataLoaded__';
+
 /**
  * If a given component has unresolved async metadata - returns a reference
  * to a function that applies component metadata after resolving defer-loadable
@@ -31,6 +33,10 @@ export function getAsyncClassMetadataFn(
   type: Type<unknown>,
 ): (() => Promise<Array<Type<unknown>>>) | null {
   const componentClass = type as any; // cast to `any`, so that we can read a monkey-patched field
+  if (componentClass[ASYNC_COMPONENT_METADATA_FN] === ASYNC_METADATA_LOADED) {
+    return null;
+  }
+
   return componentClass[ASYNC_COMPONENT_METADATA_FN] ?? null;
 }
 
@@ -43,17 +49,17 @@ export function getAsyncClassMetadataFn(
  * @param metadataSetterFn Function that forms a scope in which the `setClassMetadata` is invoked
  */
 export function setClassMetadataAsync(
-  type: Type<any>,
-  dependencyLoaderFn: () => Array<Promise<Type<unknown>>>,
-  metadataSetterFn: (...types: Type<unknown>[]) => void,
-): () => Promise<Array<Type<unknown>>> {
+  type: Type<any> | AbstractType<any>,
+  dependencyLoaderFn: () => Array<Promise<Type<unknown> | AbstractType<unknown>>>,
+  metadataSetterFn: (...types: (Type<unknown> | AbstractType<unknown>)[]) => void,
+): () => Promise<Array<Type<unknown> | AbstractType<unknown>>> {
   const componentClass = type as any; // cast to `any`, so that we can monkey-patch it
   componentClass[ASYNC_COMPONENT_METADATA_FN] = () =>
     Promise.all(dependencyLoaderFn()).then((dependencies) => {
       metadataSetterFn(...dependencies);
       // Metadata is now set, reset field value to indicate that this component
       // can by used/compiled synchronously.
-      componentClass[ASYNC_COMPONENT_METADATA_FN] = null;
+      componentClass[ASYNC_COMPONENT_METADATA_FN] = ASYNC_METADATA_LOADED;
 
       return dependencies;
     });
@@ -71,7 +77,7 @@ export function setClassMetadataAsync(
  */
 export function setClassMetadata(
   type: any,
-  decorators: any[] | null,
+  decorators: readonly any[] | null,
   ctorParameters: (() => any[]) | null,
   propDecorators: {[field: string]: any} | null,
 ): void {
@@ -79,10 +85,10 @@ export function setClassMetadata(
     const clazz = type as TypeWithMetadata;
 
     if (decorators !== null) {
-      if (clazz.hasOwnProperty('decorators') && clazz.decorators !== undefined) {
+      if (Object.hasOwn(clazz, 'decorators') && clazz.decorators !== undefined) {
         clazz.decorators.push(...decorators);
       } else {
-        clazz.decorators = decorators;
+        clazz.decorators = decorators as any[];
       }
     }
     if (ctorParameters !== null) {
@@ -96,7 +102,7 @@ export function setClassMetadata(
       // different decorator types. Decorators on individual fields are not merged, as it's
       // also incredibly unlikely that a field will be decorated both with an Angular
       // decorator and a non-Angular decorator that's also been downleveled.
-      if (clazz.hasOwnProperty('propDecorators') && clazz.propDecorators !== undefined) {
+      if (Object.hasOwn(clazz, 'propDecorators') && clazz.propDecorators !== undefined) {
         clazz.propDecorators = {...clazz.propDecorators, ...propDecorators};
       } else {
         clazz.propDecorators = propDecorators;

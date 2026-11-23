@@ -2,7 +2,7 @@
 
 IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
 
-This guide goes into depth on special transition states such as the `*` wildcard and `void`. It shows how these special states are used for elements entering and leaving a view.
+This guide goes into depth on special transition states such as the `*` wildcard and `void`. It also shows how these states are used for elements entering and leaving a view.
 This section also explores multiple animation triggers, animation callbacks, and sequence-based animation using keyframes.
 
 ## Predefined states and wildcard matching
@@ -99,7 +99,7 @@ Use the aliases `:enter` and `:leave` to target HTML elements that are inserted 
 
 The `:enter` transition runs when any `*ngIf` or `*ngFor` views are placed on the page, and `:leave` runs when those views are removed from the page.
 
-IMPORTANT: Entering/leaving behaviors can sometime be confusing.
+IMPORTANT: Entering/leaving behaviors can sometimes be confusing.
 As a rule of thumb consider that any element being added to the DOM by Angular passes via the `:enter` transition. Only elements being directly removed from the DOM by Angular pass via the `:leave` transition. For example, an element's view is removed from the DOM because its parent is being removed from the DOM.
 
 This example has a special trigger for the enter and leave animation called `myInsertRemoveTrigger`.
@@ -239,7 +239,7 @@ You can combine keyframes with `duration`, `delay`, and `easing` within a single
 
 ### Keyframes with a pulsation
 
-Use keyframes to create a pulse effect in your animations by defining styles at specific offset throughout the animation.
+Use keyframes to create a pulse effect in your animations by defining styles at specific offsets throughout the animation.
 
 Here's an example of using keyframes to create a pulse effect:
 
@@ -254,7 +254,7 @@ The code snippet for this animation might look like this.
 
 ### Animatable properties and units
 
-Angular animations support builds on top of web animations, so you can animate any property that the browser considers animatable.
+Angular animations are built on top of web animations, so you can animate any property that the browser considers animatable.
 This includes positions, sizes, transforms, colors, borders, and more.
 The W3C maintains a list of animatable properties on its [CSS Transitions](https://www.w3.org/TR/css-transitions-1) page.
 

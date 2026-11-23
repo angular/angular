@@ -66,7 +66,7 @@ abstract class SafeValueImpl implements SafeValue {
   toString() {
     return (
       `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
-      ` (see ${XSS_SECURITY_URL})`
+      (ngDevMode ? ` (see ${XSS_SECURITY_URL})` : '')
     );
   }
 }

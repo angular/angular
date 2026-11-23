@@ -10,7 +10,7 @@ import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
-import {ShadowCss} from '../../shadow_css';
+import {namespaceCssVariables, ShadowCss} from '../../shadow_css';
 import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
@@ -27,7 +27,7 @@ import {
   R3HostMetadata,
   R3TemplateDependency,
 } from './api';
-import {getTemplateSourceLocationsEnabled} from './config';
+import {ENABLE_TEMPLATE_SOURCE_LOCATIONS} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
@@ -35,7 +35,6 @@ import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} fr
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-const ANIMATE_LEAVE = `animate.leave`;
 
 function baseDirectiveFields(
   meta: R3DirectiveMetadata,
@@ -79,6 +78,7 @@ function baseDirectiveFields(
       meta.selector || '',
       meta.name,
       definitionMap,
+      meta.legacyOptionalChaining,
     ),
   );
 
@@ -95,21 +95,8 @@ function baseDirectiveFields(
   if (meta.isStandalone === false) {
     definitionMap.set('standalone', o.literal(false));
   }
-  if (meta.isSignal) {
-    definitionMap.set('signals', o.literal(true));
-  }
 
   return definitionMap;
-}
-
-function hasAnimationHostBinding(
-  meta: R3DirectiveMetadata | R3ComponentMetadata<R3TemplateDependency>,
-): boolean {
-  return (
-    meta.host.attributes[ANIMATE_LEAVE] !== undefined ||
-    meta.host.properties[ANIMATE_LEAVE] !== undefined ||
-    meta.host.listeners[ANIMATE_LEAVE] !== undefined
-  );
 }
 
 /**
@@ -224,7 +211,9 @@ export function compileComponentFromMetadata(
     meta.defer,
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
-    getTemplateSourceLocationsEnabled(),
+    meta.enableTemplateSourceLocations || ENABLE_TEMPLATE_SOURCE_LOCATIONS,
+    meta.legacyOptionalChaining,
+    meta.foreignImports,
   );
 
   // Then the IR is transformed to prepare it for code generation.
@@ -243,7 +232,11 @@ export function compileComponentFromMetadata(
     if (tpl.constsInitializers.length > 0) {
       definitionMap.set(
         'consts',
-        o.arrowFn([], [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))]),
+        o.arrowFn(
+          [],
+          [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))],
+          o.DYNAMIC_TYPE,
+        ),
       );
     } else {
       definitionMap.set('consts', o.literalArr(tpl.consts));
@@ -277,10 +270,11 @@ export function compileComponentFromMetadata(
   let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
+    const namespacedStyles = meta.styles.map((s) => namespaceCssVariables(s));
     const styleValues =
       meta.encapsulation == core.ViewEncapsulation.Emulated
-        ? compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR)
-        : meta.styles;
+        ? compileStyles(namespacedStyles, CONTENT_ATTR, HOST_ATTR)
+        : namespacedStyles;
     const styleNodes = styleValues.reduce((result, style) => {
       if (style.trim().length > 0) {
         result.push(constantPool.getConstLiteral(o.literal(style)));
@@ -316,7 +310,7 @@ export function compileComponentFromMetadata(
   if (meta.changeDetection !== null) {
     if (
       typeof meta.changeDetection === 'number' &&
-      meta.changeDetection !== core.ChangeDetectionStrategy.Default
+      meta.changeDetection !== core.ChangeDetectionStrategy.OnPush
     ) {
       // changeDetection is resolved during analysis. Only set it if not the default.
       definitionMap.set('changeDetection', o.literal(meta.changeDetection));
@@ -344,12 +338,6 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
-  // TODO(signals): Always include this metadata starting with v17. Right
-  // now Angular v16.0.x does not support this field and library distributions
-  // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
-    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
-  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -367,11 +355,11 @@ function compileDeclarationList(
       return list;
     case DeclarationListEmitMode.Closure:
       // directives: function () { return [MyDir]; }
-      return o.arrowFn([], list);
+      return o.arrowFn([], list, o.DYNAMIC_TYPE);
     case DeclarationListEmitMode.ClosureResolved:
       // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
       const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
-      return o.arrowFn([], resolvedList);
+      return o.arrowFn([], resolvedList, o.DYNAMIC_TYPE);
     case DeclarationListEmitMode.RuntimeResolved:
       throw new Error(`Unsupported with an array of pre-resolved dependencies`);
   }
@@ -446,12 +434,6 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
-  // TODO(signals): Always include this metadata starting with v17. Right
-  // now Angular v16.0.x does not support this field and library distributions
-  // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
-    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
-  }
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
@@ -464,6 +446,7 @@ function createHostBindingsFunction(
   selector: string,
   name: string,
   definitionMap: DefinitionMap,
+  legacyOptionalChaining: boolean,
 ): o.Expression | null {
   const bindings = bindingParser.createBoundHostProperties(
     hostBindingsMetadata.properties,
@@ -498,6 +481,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
+      legacyOptionalChaining: legacyOptionalChaining,
     },
     bindingParser,
     constantPool,
@@ -514,38 +498,42 @@ function createHostBindingsFunction(
   return emitHostBindingFunction(hostJob);
 }
 
-const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
-// Represents the groups in the above regex.
-const enum HostBindingGroup {
-  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]", or @anim from [@anim]
-  Binding = 1,
-
-  // group 2: "event" from "(event)"
-  Event = 2,
-}
-
 // Defines Host Bindings structure that contains attributes, listeners, and properties,
 // parsed from the `host` object defined for a Type.
 export interface ParsedHostBindings {
-  attributes: {[key: string]: o.Expression};
-  listeners: {[key: string]: string};
-  properties: {[key: string]: string};
+  attributes: Record<string, o.Expression>;
+  listeners: Record<string, string>;
+  properties: Record<string, string>;
   specialAttributes: {styleAttr?: string; classAttr?: string};
 }
 
 export function parseHostBindings(host: {
   [key: string]: string | o.Expression;
 }): ParsedHostBindings {
-  const attributes: {[key: string]: o.Expression} = {};
-  const listeners: {[key: string]: string} = {};
-  const properties: {[key: string]: string} = {};
+  const attributes: Record<string, o.Expression> = {};
+  const listeners: Record<string, string> = {};
+  const properties: Record<string, string> = {};
   const specialAttributes: {styleAttr?: string; classAttr?: string} = {};
 
   for (const key of Object.keys(host)) {
     const value = host[key];
-    const matches = key.match(HOST_REG_EXP);
 
-    if (matches === null) {
+    if (key.startsWith('(') && key.endsWith(')')) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Event binding must be string`);
+      }
+      listeners[key.slice(1, -1)] = value;
+    } else if (key.startsWith('[') && key.endsWith(']')) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Property binding must be string`);
+      }
+      // synthetic properties (the ones that have a `@` as a prefix)
+      // are still treated the same as regular properties. Therefore
+      // there is no point in storing them in a separate map.
+      properties[key.slice(1, -1)] = value;
+    } else {
       switch (key) {
         case 'class':
           if (typeof value !== 'string') {
@@ -568,21 +556,6 @@ export function parseHostBindings(host: {
             attributes[key] = value;
           }
       }
-    } else if (matches[HostBindingGroup.Binding] != null) {
-      if (typeof value !== 'string') {
-        // TODO(alxhub): make this a diagnostic.
-        throw new Error(`Property binding must be string`);
-      }
-      // synthetic properties (the ones that have a `@` as a prefix)
-      // are still treated the same as regular properties. Therefore
-      // there is no point in storing them in a separate map.
-      properties[matches[HostBindingGroup.Binding]] = value;
-    } else if (matches[HostBindingGroup.Event] != null) {
-      if (typeof value !== 'string') {
-        // TODO(alxhub): make this a diagnostic.
-        throw new Error(`Event binding must be string`);
-      }
-      listeners[matches[HostBindingGroup.Event]] = value;
     }
   }
 
@@ -606,7 +579,59 @@ export function verifyHostBindings(
   const bindingParser = makeBindingParser();
   bindingParser.createDirectiveHostEventAsts(bindings.listeners, sourceSpan);
   bindingParser.createBoundHostProperties(bindings.properties, sourceSpan);
+
+  validateNoEventBindings(bindings, bindingParser, sourceSpan);
+
   return bindingParser.errors;
+}
+
+/**
+ * Validates that there are no event attribute bindings in the host bindings.
+ * @param bindings - Map of host bindings for the component.
+ * @param bindingParser - Binding parser used to create the binding expression.
+ * @param sourceSpan - Source span where the host bindings were defined.
+ */
+function validateNoEventBindings(
+  bindings: ParsedHostBindings,
+  bindingParser: BindingParser,
+  sourceSpan: ParseSourceSpan,
+): void {
+  for (const prop in bindings.properties) {
+    if (
+      prop.startsWith('class.') ||
+      prop.startsWith('style.') ||
+      prop.startsWith('class!') ||
+      prop.startsWith('style!')
+    ) {
+      continue;
+    }
+    const isAttr = prop.startsWith('attr.');
+    const boundName = isAttr ? prop.slice(5) : prop;
+    if (boundName.startsWith(':')) {
+      const type = isAttr ? 'attribute' : 'property';
+      bindingParser.errors.push(
+        new ParseError(
+          sourceSpan,
+          `Invalid ${type} name '${boundName}'. ${type === 'attribute' ? 'Attribute' : 'Property'} names cannot start with a colon.`,
+        ),
+      );
+      continue;
+    }
+    const colonIdx = boundName.lastIndexOf(':');
+    const localName = colonIdx > -1 ? boundName.substring(colonIdx + 1) : boundName;
+
+    if (localName.toLowerCase().startsWith('on')) {
+      const errorType = isAttr ? 'attribute' : 'property';
+      const suggestion = `(${localName.slice(2)})=...`;
+
+      let msg = `Binding to event ${errorType} '${boundName}' is disallowed for security reasons, please use ${suggestion}`;
+      if (!isAttr) {
+        msg += `\nIf '${prop}' is a directive input, make sure the directive is imported by the current module.`;
+      }
+
+      bindingParser.errors.push(new ParseError(sourceSpan, msg));
+    }
+  }
 }
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
@@ -700,7 +725,7 @@ function createHostDirectivesFeatureArg(
   // If there's a forward reference, we generate a `function() { return [HostDir] }`,
   // otherwise we can save some bytes by using a plain array, e.g. `[HostDir]`.
   return hasForwardRef
-    ? new o.FunctionExpr([], [new o.ReturnStatement(o.literalArr(expressions))])
+    ? new o.FunctionExpr([], [new o.ReturnStatement(o.literalArr(expressions))], o.DYNAMIC_TYPE)
     : o.literalArr(expressions);
 }
 
@@ -719,7 +744,7 @@ export function createHostDirectivesMappingArray(
   const elements: o.LiteralExpr[] = [];
 
   for (const publicName in mapping) {
-    if (mapping.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(mapping, publicName)) {
       elements.push(o.literal(publicName), o.literal(mapping[publicName]));
     }
   }
@@ -743,6 +768,7 @@ export function compileDeferResolverFunction(
           // Default imports are always accessed through the `default` property.
           [new o.FnParam('m', o.DYNAMIC_TYPE)],
           o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName),
+          o.DYNAMIC_TYPE,
         );
 
         // Dynamic import, e.g. `import('./a').then(...)`.
@@ -767,6 +793,7 @@ export function compileDeferResolverFunction(
       const innerFn = o.arrowFn(
         [new o.FnParam('m', o.DYNAMIC_TYPE)],
         o.variable('m').prop(isDefaultImport ? 'default' : symbolName),
+        o.DYNAMIC_TYPE,
       );
 
       // Dynamic import, e.g. `import('./a').then(...)`.
@@ -781,5 +808,5 @@ export function compileDeferResolverFunction(
     }
   }
 
-  return o.arrowFn([], o.literalArr(depExpressions));
+  return o.arrowFn([], o.literalArr(depExpressions), o.DYNAMIC_TYPE);
 }

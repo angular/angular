@@ -25,7 +25,7 @@ import {
   REQUIRED,
   IS_ASYNC_VALIDATION_RESOURCE,
 } from '../api/rules/metadata';
-import type {ValidationError} from '../api/rules/validation/validation_errors';
+import type {NgValidationError, ValidationError} from '../api/rules/validation/validation_errors';
 import type {
   DisabledReason,
   FieldContext,
@@ -33,7 +33,7 @@ import type {
   FieldTree,
   MarkAsTouchedOptions,
 } from '../api/types';
-import type {FormField} from '../directive/form_field_directive';
+import type {FormField} from '../directive/form_field';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
@@ -52,6 +52,10 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
+
+export interface ControlValueSignal<T> extends WritableSignal<T> {
+  rawSet(value: T): void;
+}
 
 /**
  * Internal node in the form tree for a given field.
@@ -73,7 +77,7 @@ export class FieldNode implements FieldState<unknown> {
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
   readonly fieldAdapter: FieldAdapter;
-  readonly controlValue: WritableSignal<unknown>;
+  readonly controlValue: ControlValueSignal<unknown>;
 
   private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
@@ -95,6 +99,9 @@ export class FieldNode implements FieldState<unknown> {
     this.metadataState = new FieldMetadataState(this);
     this.submitState = new FieldSubmitState(this);
     this.controlValue = this.controlValueSignal();
+    // We eagerly create metadata at the end of construction so that the node is fully constructed
+    // before metadata creation logic runs (which may access other states on the node).
+    this.metadataState.runMetadataCreateLifecycle();
   }
 
   focusBoundControl(options?: FocusOptions): void {
@@ -110,8 +117,7 @@ export class FieldNode implements FieldState<unknown> {
    * first focusable binding in the DOM for any descendant node of this one.
    */
   private getBindingForFocus():
-    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
-    | undefined {
+    (FormField<unknown> & {focus: (options?: FocusOptions) => void}) | undefined {
     // First try to focus one of our own bindings.
     const own = this.formFieldBindings()
       .filter(
@@ -221,16 +227,18 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  get max(): Signal<number | undefined> | undefined {
-    return this.metadata(MAX);
+  get max(): Signal<{} | undefined> | undefined {
+    const maxKey = this.metadata(MAX)?.();
+    return maxKey ? this.metadata(maxKey) : undefined;
   }
 
   get maxLength(): Signal<number | undefined> | undefined {
     return this.metadata(MAX_LENGTH);
   }
 
-  get min(): Signal<number | undefined> | undefined {
-    return this.metadata(MIN);
+  get min(): Signal<{} | undefined> | undefined {
+    const minKey = this.metadata(MIN)?.();
+    return minKey ? this.metadata(minKey) : undefined;
   }
 
   get minLength(): Signal<number | undefined> | undefined {
@@ -249,26 +257,46 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataState.get(key);
   }
 
+  getError<K extends NgValidationError['kind']>(
+    kind: K,
+  ): (Extract<NgValidationError, {kind: K}> & ValidationError.WithFieldTree) | undefined;
+  getError(kind: string): ValidationError.WithFieldTree | undefined;
+  getError(kind: string): ValidationError.WithFieldTree | undefined {
+    return this.errors().find((e) => e.kind === kind);
+  }
+
   hasMetadata(key: MetadataKey<any, any, any>): boolean {
     return this.metadataState.has(key);
   }
 
   markAsTouched(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
     untracked(() => {
       this.markAsTouchedInternal(options);
-      this.flushSync();
     });
   }
 
   markAsTouchedInternal(options?: MarkAsTouchedOptions): void {
-    if (this.validationState.shouldSkipValidation()) {
+    if (this.structure.isOrphaned()) {
       return;
     }
-    this.nodeState.markAsTouched();
+    const skipValidation = this.validationState.shouldSkipValidation();
+    if (!skipValidation) {
+      this.nodeState.markAsTouched();
+    }
+    // Flush even when validation is skipped: the debounce writes the value anyway, and flushing
+    // makes it land before a submit action reads the model.
+    this.flushSync();
     if (options?.skipDescendants) {
       return;
     }
-    for (const child of this.structure.children()) {
+    // Inactive subtrees stay lazy: only fields that already exist can have a pending value.
+    const children = skipValidation
+      ? this.structure.materializedChildren()
+      : this.structure.children();
+    for (const child of children) {
       child.markAsTouchedInternal();
     }
   }
@@ -306,14 +334,26 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   private _reset(value?: unknown) {
+    this.pendingSync()?.abort();
+
     if (value !== undefined) {
       this.value.set(value);
     }
 
+    // controlValue is a linkedSignal that only auto-resets when value *changes*.
+    // When the reset value equals the current value (or no value was passed),
+    // controlValue retains the typed text. Force it to match value by setting
+    // directly via the raw interface, which doesn't trigger a sync.
+    this.controlValue.rawSet(this.value());
+
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 
-    for (const child of this.structure.children()) {
+    for (const binding of this.formFieldBindings()) {
+      binding.reset();
+    }
+
+    for (const child of this.structure.materializedChildren()) {
       child._reset();
     }
   }
@@ -343,17 +383,22 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Creates a linked signal that initiates a {@link debounceSync} when set.
    */
-  private controlValueSignal(): WritableSignal<unknown> {
-    const controlValue = linkedSignal(this.value);
-    const {set, update} = controlValue;
+  private controlValueSignal(): ControlValueSignal<unknown> {
+    const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
 
+    controlValue.rawSet = controlValue.set;
     controlValue.set = (newValue) => {
-      set(newValue);
+      // We intentionally allow same-value updates here to ensure that setting the control value
+      // (even to the same value) still marks the control as dirty.
+      controlValue.rawSet(newValue);
       this.markAsDirty();
       this.debounceSync();
     };
+    const rawUpdate = controlValue.update;
     controlValue.update = (updateFn) => {
-      update(updateFn);
+      // We intentionally allow same-value updates here to ensure that updating the control value
+      // (even to the same value) still marks the control as dirty.
+      rawUpdate(updateFn);
       this.markAsDirty();
       this.debounceSync();
     };
@@ -371,7 +416,7 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * If there is a pending sync, abort it and sync immediately.
    */
-  private flushSync() {
+  flushSync() {
     const pending = this.pendingSync();
     if (pending && !pending.signal.aborted) {
       pending.abort();
@@ -403,6 +448,10 @@ export class FieldNode implements FieldState<unknown> {
           return; // Do not sync if the debounce was aborted.
         }
       }
+    }
+
+    if (this.structure.isOrphaned()) {
+      return;
     }
 
     this.sync();

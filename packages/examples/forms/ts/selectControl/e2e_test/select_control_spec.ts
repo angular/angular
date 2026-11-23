@@ -6,31 +6,45 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
 describe('selectControl example', () => {
-  afterEach(verifyNoBrowserErrors);
-  let select: ElementFinder;
-  let options: ElementArrayFinder;
-  let p: ElementFinder;
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  beforeEach(() => {
-    browser.get('/selectControl');
-    select = element(by.css('select'));
-    options = element.all(by.css('option'));
-    p = element(by.css('p'));
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should initially select the placeholder option', () => {
-    expect(options.get(0).getAttribute('selected')).toBe('true');
+  afterAll(async () => {
+    await driver.quit();
   });
 
-  it('should update the model when the value changes in the UI', () => {
-    select.click();
-    options.get(1).click();
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
-    expect(p.getText()).toEqual('Form value: { "state": { "name": "Arizona", "abbrev": "AZ" } }');
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/selectControl`);
+    await waitForAngular(driver);
+  });
+
+  it('should initially select the placeholder option', async () => {
+    const options = await driver.findElements(webdriver.By.css('option'));
+    expect(await options[0].isSelected()).toBe(true);
+  });
+
+  it('should update the model when the value changes in the UI', async () => {
+    const select = await driver.findElement(webdriver.By.css('select'));
+    const options = await driver.findElements(webdriver.By.css('option'));
+    await select.click();
+    await options[1].click();
+    await waitForAngular(driver);
+
+    const p = await driver.findElement(webdriver.By.css('p'));
+    expect(await p.getText()).toEqual(
+      'Form value: { "state": { "name": "Arizona", "abbrev": "AZ" } }',
+    );
   });
 });

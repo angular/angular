@@ -40,9 +40,8 @@ describe('LowerCasePipe', () => {
     expect(() => pipe.transform({} as any)).toThrowError();
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [LowerCasePipe],
       template: '{{ value | lowercase }}',
     })
@@ -51,7 +50,7 @@ describe('LowerCasePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('foo');
@@ -131,9 +130,8 @@ describe('TitleCasePipe', () => {
     expect(() => pipe.transform({} as any)).toThrowError();
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [TitleCasePipe],
       template: '{{ value | titlecase }}',
     })
@@ -142,7 +140,7 @@ describe('TitleCasePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('Foo');
@@ -179,9 +177,8 @@ describe('UpperCasePipe', () => {
     expect(() => pipe.transform({} as any)).toThrowError();
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [UpperCasePipe],
       template: '{{ value | uppercase }}',
     })
@@ -190,7 +187,7 @@ describe('UpperCasePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('FOO');

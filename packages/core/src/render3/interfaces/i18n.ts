@@ -66,6 +66,16 @@ export const enum IcuCreateOpCode {
   //           65432109876543210
 
   /**
+   * Maximum value for the reference node index (16 bits).
+   */
+  MAX_REF = 0b1111111111111111,
+
+  /**
+   * Maximum value for the parent node index (15 bits).
+   */
+  MAX_PARENT = 0b111111111111111,
+
+  /**
    * Instruction to append the current node to `PARENT`.
    */
   AppendChild = 0b0,
@@ -123,8 +133,7 @@ export const enum IcuCreateOpCode {
  * ```
  */
 export interface IcuCreateOpCodes
-  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>,
-    I18nDebug {
+  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>, I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 

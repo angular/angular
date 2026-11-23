@@ -142,12 +142,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
 
   visitTemplate(ast: t.Template) {
-    t.visitAll(this, ast.directives);
     t.visitAll(this, ast.children);
     t.visitAll(this, ast.templateAttrs);
   }
   visitElement(ast: t.Element) {
-    t.visitAll(this, ast.directives);
     t.visitAll(this, ast.children);
     t.visitAll(this, ast.inputs);
     t.visitAll(this, ast.outputs);
@@ -243,20 +241,22 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     t.visitAll(this, block.children);
   }
 
+  visitBoundaryBlock(block: t.BoundaryBlock) {
+    t.visitAll(this, block.children);
+    t.visitAll(this, block.errorBlocks);
+  }
+
+  visitBoundaryErrorBlock(block: t.BoundaryErrorBlock) {
+    block.expression?.visit(this);
+    t.visitAll(this, block.children);
+  }
+
   visitLetDeclaration(decl: t.LetDeclaration) {
     decl.value.visit(this);
   }
 
-  visitComponent(ast: t.Component) {
-    t.visitAll(this, ast.children);
-    t.visitAll(this, ast.directives);
-    t.visitAll(this, ast.inputs);
-    t.visitAll(this, ast.outputs);
-  }
-
-  visitDirective(ast: t.Directive) {
-    t.visitAll(this, ast.inputs);
-    t.visitAll(this, ast.outputs);
+  visitContentBlock(block: t.ContentBlock) {
+    t.visitAll(this, block.children);
   }
 }
 

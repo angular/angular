@@ -1,8 +1,5 @@
 # Async Reactivity with `resource`
 
-> [!IMPORTANT]
-> The `resource` API is currently experimental in Angular.
-
 A `Resource` incorporates asynchronous data fetching into Angular's signal-based reactivity. It executes an async loader function whenever its dependencies change, exposing the status and result as synchronous signals.
 
 ## Basic Usage
@@ -17,9 +14,9 @@ import { Component, resource, signal, computed } from '@angular/core';
 
 @Component({...})
 export class UserProfile {
-  userId = signal('123');
+  protected readonly userId = signal('123');
 
-  userResource = resource({
+  protected readonly userResource = resource({
     // Reactively tracking userId
     params: () => ({ id: this.userId() }),
 
@@ -32,9 +29,11 @@ export class UserProfile {
   });
 
   // Use the resource value in computed signals
-  userName = computed(() => {
+  protected readonly userName = computed(() => {
     if (this.userResource.hasValue()) {
       return this.userResource.value()?.name;
+    } else if (this.userResource.error()) {
+      return 'Failed to load';
     } else {
       return 'Loading...';
     }
@@ -58,11 +57,22 @@ this.userResource.reload();
 
 The `Resource` object provides several signals to read its current state:
 
-- `value()`: The resolved data, or `undefined`.
-- `hasValue()`: Type-guard boolean. `true` if a value exists.
-- `isLoading()`: Boolean indicating if the loader is currently running.
+- `value()`: The resolved data, or `undefined` if there is none yet. **Throws if the resource is in the `'error'` status**, so guard reads with `hasValue()` or check `error()` first.
+- `hasValue()`: Type-guard boolean. `true` if a value exists. It is `false` (and does not throw) in the `'error'` status.
+- `isLoading()`: Boolean indicating if the loader is currently running (`'loading'` or `'reloading'`).
 - `error()`: The error thrown by the loader, or `undefined`.
 - `status()`: A string constant representing the exact state (`'idle'`, `'loading'`, `'resolved'`, `'error'`, `'reloading'`, `'local'`).
+
+| `status()`    | `value()`                    | Meaning                                                   |
+| ------------- | ---------------------------- | --------------------------------------------------------- |
+| `'idle'`      | `undefined`                  | `params` returned `undefined`, so the loader did not run. |
+| `'loading'`   | `undefined`                  | The loader is running because `params` changed.           |
+| `'reloading'` | the previous value           | The loader is running because of `.reload()`.             |
+| `'resolved'`  | the loaded value             | The loader completed.                                     |
+| `'error'`     | **throws**                   | The loader threw or rejected.                             |
+| `'local'`     | the value passed to `.set()` | The value was set locally.                                |
+
+Do not read `value()` directly in a template or computed signal without a guard, because a failed request would throw there.
 
 ## Local Mutation
 

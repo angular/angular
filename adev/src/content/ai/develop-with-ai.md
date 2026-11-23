@@ -18,14 +18,14 @@ Here is a set of instructions to help LLMs generate correct code that follows An
 
 ## Rules Files
 
-Several editors, such as <a href="https://studio.firebase.google.com?utm_source=adev&utm_medium=website&utm_campaign=BUILD_WITH_AI_ANGULAR&utm_term=angular_devrel&utm_content=build_with_ai_angular_firebase_studio">Firebase Studio</a> have rules files useful for providing critical context to LLMs.
+Several tools, such as <a href="https://antigravity.google?utm_source=adev&utm_medium=website&utm_campaign=BUILD_WITH_AI_ANGULAR&utm_term=angular_devrel&utm_content=build_with_ai_angular_antigravity" target="_blank">Antigravity</a> have rules files useful for providing critical context to LLMs.
 
 | Environment/IDE      | Rules File                                                                                                             | Installation Instructions                                                                                                                                       |
 | :------------------- | :--------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Firebase Studio      | <a download href="/assets/context/airules.md" target="_blank">airules.md</a>                                           | <a href="https://firebase.google.com/docs/studio/set-up-gemini#custom-instructions">Configure `airules.md`</a>                                                  |
+| Antigravity          | <a download href="/assets/context/GEMINI.md" target="_blank">GEMINI.md</a>                                             | <a href="https://antigravity.google/docs/rules-workflows" target="_blank">Configure `GEMINI.md`</a>                                                             |
 | Copilot powered IDEs | <a download="copilot-instructions.md" href="/assets/context/guidelines.md" target="_blank">copilot-instructions.md</a> | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Configure `.github/copilot-instructions.md`</a> |
 | Cursor               | <a download href="/assets/context/angular-20.mdc" target="_blank">cursor.md</a>                                        | <a href="https://docs.cursor.com/context/rules" target="_blank">Configure `cursorrules.md`</a>                                                                  |
-| JetBrains IDEs       | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>                                     | <a href="https://www.jetbrains.com/help/junie/customize-guidelines.html" target="_blank">Configure `guidelines.md`</a>                                          |
+| JetBrains IDEs       | <a download href="/assets/context/AGENTS.md" target="_blank">AGENTS.md</a>                                             | <a href="https://junie.jetbrains.com/docs/guidelines-and-memory.html#how-junie-cli-discovers-guidelines" target="_blank">Configure `AGENTS.md`</a>              |
 | VS Code              | <a download=".instructions.md" href="/assets/context/guidelines.md" target="_blank">.instructions.md</a>               | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Configure `.instructions.md`</a>                |
 | Windsurf             | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>                                     | <a href="https://docs.windsurf.com/windsurf/cascade/memories#rules" target="_blank">Configure `guidelines.md`</a>                                               |
 
@@ -42,8 +42,4 @@ The Angular CLI includes an experimental [Model Context Protocol (MCP) server](h
 - <a href="/llms.txt" target="_blank">llms.txt</a> - an index file providing links to key files and resources.
 - <a href="/assets/context/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
 
-Be sure [to check out the overview page](/ai) for more information on how to integrate AI into your Angular applications.
-
-## Web Codegen Scorer
-
-The Angular team developed and open-sourced the [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer), a tool to evaluate and score the quality of AI generated web code. You can use this tool to make evidence-based decisions relating to AI-generated code, such as fine-tuning prompts to improve the accuracy of LLM-generated code for Angular. These prompts can be included as system instructions for your AI tooling or as context with your prompt. You can also use this tool to compare the quality of code produced by different models and monitor quality over time as models and agents evolve.
+Be sure to check out the [overview page](/ai) for more information on how to integrate AI into your Angular applications.

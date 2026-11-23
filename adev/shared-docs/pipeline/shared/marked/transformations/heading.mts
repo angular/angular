@@ -31,7 +31,7 @@ export function headingRender(
   // Replace code backticks and remove custom ID syntax from the displayed label
   let label = parsedText.replace(/`(.*?)`/g, '<code>$1</code>');
   label = label.replace(/{#\s*[\w-]+\s*}/g, '').trim();
-  const normalizedLabel = label.replace(/<\/?code>/g, '');
+  const normalizedLabel = label.replace(/<[^>]+>/g, '').replace(/"/g, '&quot;');
 
   return `
   <h${depth} id="${link}">

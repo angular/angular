@@ -1,0 +1,13 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "set-console-reference",
+    srcs = ["set-console-reference.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)

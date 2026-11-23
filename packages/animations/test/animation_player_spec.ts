@@ -5,27 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {fakeAsync} from '@angular/core/testing';
-
-import {flushMicrotasks} from '../../core/testing/src/fake_async';
 import {NoopAnimationPlayer} from '../src/players/animation_player';
 
 describe('NoopAnimationPlayer', () => {
-  it('should finish after the next microtask once started', fakeAsync(() => {
+  it('should finish after the next microtask once started', async () => {
     const log: string[] = [];
 
     const player = new NoopAnimationPlayer();
     player.onStart(() => log.push('started'));
     player.onDone(() => log.push('done'));
-    flushMicrotasks();
+    await Promise.resolve();
 
     expect(log).toEqual([]);
     player.play();
     expect(log).toEqual(['started']);
 
-    flushMicrotasks();
+    await Promise.resolve();
     expect(log).toEqual(['started', 'done']);
-  }));
+  });
 
   it('should fire all callbacks when destroyed', () => {
     const log: string[] = [];
@@ -40,13 +37,13 @@ describe('NoopAnimationPlayer', () => {
     expect(log).toEqual(['started', 'done', 'destroy']);
   });
 
-  it('should fire start/done callbacks manually when called directly', fakeAsync(() => {
+  it('should fire start/done callbacks manually when called directly', async () => {
     const log: string[] = [];
 
     const player = new NoopAnimationPlayer();
     player.onStart(() => log.push('started'));
     player.onDone(() => log.push('done'));
-    flushMicrotasks();
+    await Promise.resolve();
 
     (player as any).triggerCallback('start');
     expect(log).toEqual(['started']);
@@ -60,11 +57,11 @@ describe('NoopAnimationPlayer', () => {
     player.finish();
     expect(log).toEqual(['started', 'done']);
 
-    flushMicrotasks();
+    await Promise.resolve();
     expect(log).toEqual(['started', 'done']);
-  }));
+  });
 
-  it('should fire off start callbacks before triggering the finish callback', fakeAsync(() => {
+  it('should fire off start callbacks before triggering the finish callback', async () => {
     const log: string[] = [];
 
     const player = new NoopAnimationPlayer();
@@ -77,7 +74,7 @@ describe('NoopAnimationPlayer', () => {
     player.play();
     expect(log).toEqual([]);
 
-    flushMicrotasks();
+    await Promise.resolve();
     expect(log).toEqual(['started', 'done']);
-  }));
+  });
 });

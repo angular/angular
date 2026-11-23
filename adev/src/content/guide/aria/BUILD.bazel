@@ -7,6 +7,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
+        "//adev/src/assets/images:aria.svg",
         "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],

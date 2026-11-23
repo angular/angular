@@ -7,9 +7,10 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {Type, Writable} from '../../interface/type';
+import {AbstractType, Type, Writable} from '../../interface/type';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {fillProperties} from '../../util/property';
+import {NG_COMP_DEF, NG_DIR_DEF} from '../fields';
 import {
   ComponentDef,
   ContentQueriesFunction,
@@ -25,8 +26,8 @@ import {mergeHostAttrs} from '../util/attrs_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
 export function getSuperType(
-  type: Type<any>,
-): Type<any> & {ɵcmp?: ComponentDef<any>; ɵdir?: DirectiveDef<any>} {
+  type: Type<any> | AbstractType<any>,
+): (Type<any> | AbstractType<any>) & {ɵcmp?: ComponentDef<any>; ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
 
@@ -45,13 +46,22 @@ export function ɵɵInheritDefinitionFeature(
   let shouldInheritFields = true;
   const inheritanceChain: WritableDef[] = [definition];
 
-  while (superType) {
+  // Only accept defs declared on the current type to avoid polluted prototype members.
+  // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
+  while (superType && superType !== Function.prototype && superType !== Object.prototype) {
     let superDef: DirectiveDef<any> | ComponentDef<any> | undefined = undefined;
+    const cmpDef = Object.hasOwn(superType, NG_COMP_DEF)
+      ? ((superType as any)[NG_COMP_DEF] as ComponentDef<any>)
+      : undefined;
+    const dirDef = Object.hasOwn(superType, NG_DIR_DEF)
+      ? ((superType as any)[NG_DIR_DEF] as DirectiveDef<any>)
+      : undefined;
     if (isComponentDef(definition)) {
-      // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-      superDef = superType.ɵcmp || superType.ɵdir;
+      superDef = cmpDef ?? dirDef;
     } else {
-      if (superType.ɵcmp) {
+      // Abstract directives (and undecorated base classes compiled as such)
+      // may extend components without throwing.
+      if (cmpDef && definition.selectors && definition.selectors.length > 0) {
         throw new RuntimeError(
           RuntimeErrorCode.INVALID_INHERITANCE,
           ngDevMode &&
@@ -60,8 +70,7 @@ export function ɵɵInheritDefinitionFeature(
             )} is attempting to extend component ${stringifyForError(superType)}`,
         );
       }
-      // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-      superDef = superType.ɵdir;
+      superDef = cmpDef ?? dirDef;
     }
 
     if (superDef) {
@@ -89,12 +98,10 @@ export function ɵɵInheritDefinitionFeature(
         fillProperties(definition.outputs, superDef.outputs);
 
         // Merge animations metadata.
-        // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
-        if (isComponentDef(superDef) && superDef.data.animation) {
-          // If super def is a Component, the `definition` is also a Component, since Directives can
-          // not inherit Components (we throw an error above and cannot reach this code).
-          const defData = (definition as ComponentDef<any>).data;
-          defData.animation = (defData.animation || []).concat(superDef.data.animation);
+        const superAnimation = (superDef as ComponentDef<any>).data?.animation;
+        if (superAnimation) {
+          const defData = ((definition as Writable<ComponentDef<any>>).data ??= {});
+          defData.animation = (defData.animation || []).concat(superAnimation);
         }
       }
 
@@ -127,10 +134,10 @@ export function ɵɵInheritDefinitionFeature(
 
 function mergeInputsWithTransforms<T>(target: WritableDef, source: DirectiveDef<any>) {
   for (const key in source.inputs) {
-    if (!source.inputs.hasOwnProperty(key)) {
+    if (!Object.hasOwn(source.inputs, key)) {
       continue;
     }
-    if (target.inputs.hasOwnProperty(key)) {
+    if (Object.hasOwn(target.inputs, key)) {
       continue;
     }
 

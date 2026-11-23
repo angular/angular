@@ -5,7 +5,7 @@ Angular uses the Unicode _locale identifier_ \(Unicode locale ID\) to find the c
 <docs-callout title="Unicode locale ID">
 
 - A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification].
-  For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleIDs].
+  For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleID].
 
 - CLDR and Angular use [BCP 47 tags][RfcEditorInfoBcp47] as the base for the locale ID
 
@@ -60,6 +60,22 @@ To change the source locale of your project for the build, complete the followin
   }
 }
 ```
+
+## Read the active locale outside dependency injection
+
+Inside a component or service, inject the `LOCALE_ID` token to get the active locale.
+
+If you can't inject `LOCALE_ID`, for example in a plain function outside an injection context, read `$localize.locale`.
+Each localized build sets this value, and it is what the default `LOCALE_ID` factory reads.
+If your application provides its own `LOCALE_ID`, `$localize.locale` does not reflect it.
+
+```ts
+declare const $localize: {locale?: string};
+
+export const locale = (typeof $localize !== 'undefined' && $localize.locale) || 'en-US';
+```
+
+Put this in a file that has an `import` or `export`. If your project already includes the `@angular/localize` types, omit the `declare` line.
 
 ## What's next
 

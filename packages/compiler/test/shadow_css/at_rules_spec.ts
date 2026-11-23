@@ -135,6 +135,13 @@ describe('ShadowCss, at-rules', () => {
       expect(css).toEqualCss(styleStr);
     });
 
+    it('should pass through @import that contains an unquoted URL with colons and semicolons', () => {
+      const styleStr =
+        '@import url(https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap);';
+      const css = shim(styleStr, 'contenta');
+      expect(css).toEqualCss(styleStr);
+    });
+
     it('should shim rules after @import with colons and semicolons', () => {
       const styleStr =
         '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div {}';

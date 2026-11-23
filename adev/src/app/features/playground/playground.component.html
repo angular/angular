@@ -10,9 +10,9 @@
   </div>
 </div>
 
-@if (embeddedEditorComponent) {
+@if (embeddedEditorComponent()) {
   <div class="adev-embedded-editor-wrapper">
-    <ng-container *ngComponentOutlet="embeddedEditorComponent" />
+    <ng-container *ngComponentOutlet="embeddedEditorComponent()" />
   </div>
 }
 

@@ -16,6 +16,7 @@ import {
   ElementRef,
   inject,
   input,
+  linkedSignal,
   output,
   resource,
   signal,
@@ -25,11 +26,11 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-import {ZippyComponent} from './zippy.component';
+import {RouterModule, RouterOutlet} from '@angular/router';
+import {CookieRecipe} from './cookies.component';
 import {HeavyComponent} from './heavy.component';
 import {SamplePropertiesComponent} from './sample-properties.component';
-import {RouterOutlet, RouterModule} from '@angular/router';
-import {CookieRecipe} from './cookies.component';
+import {ZippyComponent} from './zippy.component';
 
 // structual directive example
 @Directive({
@@ -79,6 +80,10 @@ export class DemoAppComponent {
   objectComputed = computed(() => {
     const original = this.objectSignal();
     return {...original, age: original.age + 1};
+  });
+  linkedPrimitive = linkedSignal({
+    source: this.primitiveSignal,
+    computation: (value) => value * 2,
   });
 
   demoRsrc = resource({

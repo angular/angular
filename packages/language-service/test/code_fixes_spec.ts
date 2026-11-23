@@ -598,6 +598,80 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
+        [``, `import { BarComponent } from './bar';`],
+        [``, `, imports: [BarComponent]`],
+      ]);
+    });
+
+    it('respects an explicit double quote preference for the generated import', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+           selector: 'foo',
+           template: '<bar></bar>'
+         })
+         export class FooComponent {}
+         `,
+        'bar.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+           selector: 'bar',
+           template: '<div>bar</div>'
+         })
+         export class BarComponent {}
+         `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+        {quotePreference: 'double'},
+      );
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
+        [``, `import { BarComponent } from "./bar";`],
+        [``, `, imports: [BarComponent]`],
+      ]);
+    });
+
+    it('matches the quote style of existing imports for the generated import', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+         import {Component} from "@angular/core";
+         @Component({
+           selector: 'foo',
+           template: '<bar></bar>'
+         })
+         export class FooComponent {}
+         `,
+        'bar.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+           selector: 'bar',
+           template: '<div>bar</div>'
+         })
+         export class BarComponent {}
+         `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
         [``, `import { BarComponent } from "./bar";`],
         [``, `, imports: [BarComponent]`],
       ]);
@@ -640,7 +714,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
-        [``, `import { BarModule } from "./bar";`],
+        [``, `import { BarModule } from './bar';`],
         [``, `, imports: [BarModule]`],
       ]);
     });
@@ -682,7 +756,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooModule`, [
-        [``, `import { BarComponent } from "./bar";`],
+        [``, `import { BarComponent } from './bar';`],
         [`imports: []`, `imports: [BarComponent]`],
       ]);
     });
@@ -721,7 +795,7 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
 
       actionChangesMatch(actionChanges, `Import BarPipe from './bar' on FooComponent`, [
-        [``, `import { BarPipe } from "./bar";`],
+        [``, `import { BarPipe } from './bar';`],
         ['', `, imports: [BarPipe]`],
       ]);
     });
@@ -768,11 +842,11 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
-        [``, `import { BarModule } from "./bar";`],
+        [``, `import { BarModule } from './bar';`],
         [``, `, imports: [BarModule]`],
       ]);
       actionChangesMatch(actionChanges, `Import Bar2Module from './bar' on FooComponent`, [
-        [``, `import { Bar2Module } from "./bar";`],
+        [``, `import { Bar2Module } from './bar';`],
         [``, `, imports: [Bar2Module]`],
       ]);
     });
@@ -808,7 +882,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
-        [``, `import BarComponent from "./bar";`],
+        [``, `import BarComponent from './bar';`],
         [``, `, imports: [BarComponent]`],
       ]);
     });
@@ -948,7 +1022,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import MatCard from '@angular/common' on FooComponent`, [
-        [``, `import { MatCard } from "@angular/common";`],
+        [``, `import { MatCard } from '@angular/common';`],
         [``, `, imports: [MatCard]`],
       ]);
     });
@@ -988,7 +1062,7 @@ describe('code fixes', () => {
       );
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
-        [``, `import { BarComponent } from "@app/bar";`],
+        [``, `import { BarComponent } from '@app/bar';`],
         [``, `, imports: [BarComponent]`],
       ]);
     });
@@ -1041,7 +1115,7 @@ describe('code fixes', () => {
         actionChanges,
         `Import NewBarComponent3 from '@app/index' on FooComponent`,
         [
-          [``, `import { NewBarComponent3 } from "@app/index";`],
+          [``, `import { NewBarComponent3 } from '@app/index';`],
           [``, `, imports: [NewBarComponent3]`],
         ],
       );
@@ -1197,7 +1271,7 @@ describe('code fixes', () => {
         actionChanges,
         `Import BarModule from '../component/share/bar.module' on FooComponent`,
         [
-          [``, `import { BarModule } from "../component/share/bar.module";`],
+          [``, `import { BarModule } from '../component/share/bar.module';`],
           [``, `, imports: [BarModule]`],
         ],
       );
@@ -1255,7 +1329,7 @@ describe('code fixes', () => {
 
       const actionChanges = allChangesForCodeActions(appModuleContents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on AppModule`, [
-        [``, `import { BarComponent } from "./bar";`],
+        [``, `import { BarComponent } from './bar';`],
         [`imports: []`, `imports: [BarComponent]`],
       ]);
     });

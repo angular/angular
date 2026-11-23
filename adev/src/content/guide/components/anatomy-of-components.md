@@ -51,7 +51,7 @@ You can alternatively choose to write your template and styles in separate files
 export class ProfilePhoto {}
 ```
 
-This can help separate the concerns of _presentation_ from _behavior_ in your project. You can choose one approach for your entire project, or you decide which to use for each component.
+This can help separate the concerns of _presentation_ from _behavior_ in your project. You can choose one approach for your entire project, or you can decide which to use for each component.
 
 Both `templateUrl` and `styleUrl` are relative to the directory in which the component resides.
 
@@ -63,6 +63,7 @@ To use a component, [directive](guide/directives), or [pipe](guide/templates/pip
 it to the `imports` array in the `@Component` decorator:
 
 ```ts
+import {Component} from '@angular/core';
 import {ProfilePhoto} from './profile-photo';
 
 @Component({

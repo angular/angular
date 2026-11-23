@@ -23,6 +23,7 @@ import {TNode} from '../interfaces/node';
 import {promiseWithResolvers} from '../../util/promise_with_resolvers';
 
 import {
+  addClasses,
   addAnimationToLView,
   areAnimationsDisabled,
   areAnimationSupported,
@@ -42,10 +43,12 @@ import {
   leaveAnimationFunctionCleanup,
   longestAnimations,
   noOpAnimationComplete,
+  removeClasses,
   trackEnterClasses,
   trackLeavingNodes,
 } from '../../animation/utils';
 import {initializeAnimationQueueScheduler, queueEnterAnimations} from '../../animation/queue';
+import {enableAnimationRuntimeSupport, enableViewDetachAnimationsSupport} from '../node_animations';
 
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
@@ -74,6 +77,9 @@ export function ɵɵanimateEnter(value: string | AnimationClassBindingFn): typeo
   // function runs later from the queue, at which point the lView injector
   // may have been destroyed.
   const ngZone = lView[INJECTOR]!.get(NgZone);
+
+  // The runtime that plays and awaits the animations is only linked in from here.
+  enableAnimationRuntimeSupport();
 
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
     runEnterAnimation(lView, tNode, value, ngZone),
@@ -143,9 +149,7 @@ export function runEnterAnimation(
 
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
-    for (const klass of activeClasses) {
-      renderer.addClass(nativeElement, klass);
-    }
+    addClasses(renderer, nativeElement, activeClasses);
 
     // In the case that the classes added have no animations, we need to remove
     // the classes right away. This could happen because someone is intentionally
@@ -155,9 +159,7 @@ export function runEnterAnimation(
         if (hasCompleted) return;
         determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
         if (!longestAnimations.has(nativeElement)) {
-          for (const klass of activeClasses) {
-            renderer.removeClass(nativeElement, klass);
-          }
+          removeClasses(renderer, nativeElement, activeClasses);
           cleanupEnterClassData(nativeElement);
         }
       });
@@ -179,9 +181,7 @@ function enterAnimationEnd(
     // other elements further up. We don't want it to inadvertently
     // affect any other animations on the page.
     event.stopPropagation();
-    for (const klass of elementData.classList) {
-      renderer.removeClass(nativeElement, klass);
-    }
+    removeClasses(renderer, nativeElement, elementData.classList);
     cleanupEnterClassData(nativeElement);
   }
 }
@@ -209,6 +209,8 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
     return ɵɵanimateEnterListener;
   }
   const tNode = getCurrentTNode()!;
+
+  enableAnimationRuntimeSupport();
 
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
     runEnterAnimationFunction(lView, tNode, value),
@@ -268,6 +270,9 @@ export function ɵɵanimateLeave(value: string | AnimationClassBindingFn): typeo
   // may have been destroyed.
   const ngZone = lView[INJECTOR]!.get(NgZone);
 
+  enableAnimationRuntimeSupport();
+  enableViewDetachAnimationsSupport();
+
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
     runLeaveAnimations(lView, tNode, value, ngZone),
   );
@@ -288,12 +293,11 @@ function runLeaveAnimations(
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
-  const renderer = lView[RENDERER];
-  allLeavingAnimations.add(lView[ID]);
-  (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
-
   const activeClasses = getClassListFromValue(value);
   if (activeClasses && activeClasses.length > 0) {
+    const renderer = lView[RENDERER];
+    allLeavingAnimations.add(lView[ID]);
+    (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
     animateLeaveClassRunner(
       nativeElement as HTMLElement,
       tNode,
@@ -334,6 +338,7 @@ function animateLeaveClassRunner(
 
     if (
       event.type === 'animation-fallback' ||
+      (event as CustomEvent).detail?.cancel ||
       isLongestAnimation(event as TransitionEvent | AnimationEvent, el)
     ) {
       hasCompleted = true;
@@ -346,14 +351,7 @@ function animateLeaveClassRunner(
       longestAnimations.delete(el);
       clearLeavingNodes(tNode, el);
 
-      if (Array.isArray(tNode.projection)) {
-        // in the content projection case, the element is not destroyed.
-        // So we need to remove the class at the end so that it isn't left
-        // behind for whenever the item shows up again.
-        for (const item of classList) {
-          renderer.removeClass(el, item);
-        }
-      }
+      removeClasses(renderer, el, classList);
       cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
       clearLViewNodeAnimationResolvers(lView, tNode);
     }
@@ -365,9 +363,7 @@ function animateLeaveClassRunner(
   });
   trackLeavingNodes(tNode, el);
 
-  for (const item of classList) {
-    renderer.addClass(el, item);
-  }
+  addClasses(renderer, el, classList);
 
   // Force a reflow to ensure the browser registers the class addition and triggers the transition
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -383,6 +379,7 @@ function animateLeaveClassRunner(
       const longest = longestAnimations.get(el);
       if (!longest) {
         clearLeavingNodes(tNode, el);
+        removeClasses(renderer, el, classList);
         cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
         clearLViewNodeAnimationResolvers(lView, tNode);
       } else {
@@ -424,13 +421,14 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  allLeavingAnimations.add(lView[ID]);
-
   // Capture NgZone and MAX_ANIMATION_TIMEOUT eagerly while the injector is
   // still valid. The animation function runs later from the queue, at which
   // point the lView injector may have been destroyed.
   const ngZone = lView[INJECTOR]!.get(NgZone);
   const maxAnimationTimeout = lView[INJECTOR]!.get(MAX_ANIMATION_TIMEOUT);
+
+  enableAnimationRuntimeSupport();
+  enableViewDetachAnimationsSupport();
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
     runLeaveAnimationFunction(lView, tNode, value, ngZone, maxAnimationTimeout),
@@ -460,6 +458,7 @@ function runLeaveAnimationFunction(
   const renderer = lView[RENDERER];
   const animationsDisabled = areAnimationsDisabled(lView);
 
+  allLeavingAnimations.add(lView[ID]);
   (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
   const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
 

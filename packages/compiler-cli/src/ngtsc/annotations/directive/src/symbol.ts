@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ClassPropertyMapping, InputOrOutput, TemplateGuardMeta} from '@angular/compiler';
 import {
   areTypeParametersEqual,
   isArrayEqual,
@@ -14,13 +15,7 @@ import {
   SemanticSymbol,
   SemanticTypeParameter,
 } from '../../../incremental/semantic_graph';
-import {
-  ClassPropertyMapping,
-  DirectiveTypeCheckMeta,
-  InputMapping,
-  InputOrOutput,
-  TemplateGuardMeta,
-} from '../../../metadata';
+import {DirectiveTypeCheckMeta, InputMapping} from '../../../metadata';
 import {ClassDeclaration} from '../../../reflection';
 
 /**

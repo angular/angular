@@ -2,7 +2,7 @@
 
 The `NgOptimizedImage` directive makes it easy to adopt performance best practices for loading images.
 
-The directive ensures that the loading of the [Largest Contentful Paint (LCP)](http://web.dev/lcp) image is prioritized by:
+The directive ensures that the loading of the [Largest Contentful Paint (LCP)](https://web.dev/lcp) image is prioritized by:
 
 - Automatically setting the `fetchpriority` attribute on the `<img>` tag
 - Lazy loading other images by default
@@ -19,7 +19,7 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 
 If you're using a background image in CSS, [start here](#how-to-migrate-your-background-image).
 
-**NOTE: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.**
+NOTE: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.
 
 ## Getting Started
 
@@ -216,7 +216,7 @@ If you haven't used `sizes` before, a good place to start is to set it based on 
 
 If you find that the above does not cover your desired image behavior, see the documentation on [advanced sizes values](#advanced-sizes-values).
 
-Note that `NgOptimizedImage` automatically prepends `"auto"` to the provided `sizes` value. This is an optimization that increases the accuracy of srcset selection on browsers which support `sizes="auto"`, and is ignored by browsers which do not.
+Note that for lazy-loaded images, `NgOptimizedImage` automatically prepends `"auto"` to the provided `sizes` value. This is an optimization that increases the accuracy of srcset selection on browsers which support `sizes="auto"`, and is ignored by browsers which do not. Images that are not lazy-loaded, such as `priority` images, keep the `sizes` value as provided.
 
 By default, the responsive breakpoints are:
 
@@ -267,7 +267,7 @@ By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not m
 
 By default, `NgOptimizedImage` sets `decoding="auto"` for all images. This allows the browser to decide the optimal time to decode an image after it has been fetched. When an image is marked as `priority`, Angular automatically sets `decoding="sync"` to ensure the image is decoded and painted as early as possible helping improve **Largest Contentful Paint (LCP)** performance.
 
-You can still override this behavior by explicitly setting the `decoding` attribute.  
+You can override the default `auto` for non-priority images by explicitly setting the `decoding` attribute. Priority images always use `decoding="sync"`.  
 [See the documentation for the standard image `decoding` attribute for details](https://developer.mozilla.org/docs/Web/HTML/Element/img#decoding).
 
 ```html
@@ -468,7 +468,7 @@ For maintenance reasons, we don't currently plan to support additional built-in 
 
 No, but this is on our roadmap, so stay tuned.
 
-If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
+If you're waiting on this feature, please upvote the GitHub issue [here](https://github.com/angular/angular/issues/56594).
 
 ### How do I find my LCP image with Chrome DevTools?
 

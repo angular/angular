@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {PathManipulation} from '@angular/compiler-cli/private/localize';
+import {NodePath, PluginObject, types as t} from '@babel/core';
 import {ɵParsedMessage, ɵparseMessage} from '../../../../index';
-import {NodePath, PluginObj, types as t} from '@babel/core';
 
 import {
   buildCodeFrameError,
@@ -23,7 +23,7 @@ export function makeEs5ExtractPlugin(
   fs: PathManipulation,
   messages: ɵParsedMessage[],
   localizeName = '$localize',
-): PluginObj {
+): PluginObject {
   return {
     visitor: {
       CallExpression(callPath: NodePath<t.CallExpression>, state) {

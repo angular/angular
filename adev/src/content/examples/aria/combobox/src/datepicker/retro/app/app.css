@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: 'Press Start 2P', Courier, monospace;
+  font-size: 0.6rem;
+  --border-color: var(--tertiary-contrast, #000000);
+
+  --retro-button-color: var(--septenary-contrast, #ffffff);
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #ffffff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--border-color),
+    0px 4px 0px 0px var(--border-color), -4px 0px 0px 0px var(--border-color),
+    0px -4px 0px 0px var(--border-color);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--border-color), 0px 4px 0px 0px var(--border-color),
+    -4px 0px 0px 0px var(--border-color), 0px -4px 0px 0px var(--border-color);
+}
+
+/* Input Trigger Styles */
+.example-combobox-container {
+  position: relative;
+  width: 16rem;
+  display: flex;
+  flex-direction: column;
+  border: 4px solid var(--border-color);
+  border-radius: 0;
+  background-color: var(--retro-button-color);
+  box-shadow: var(--retro-flat-shadow);
+}
+
+.example-combobox-input-container {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.example-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: var(--border-color);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.example-search-icon {
+  padding: 0 0.5rem;
+  position: absolute;
+  opacity: 0.8;
+}
+
+.example-combobox-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.6rem;
+  font-family: 'Press Start 2P', Courier, monospace;
+  word-spacing: -4px;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  background-color: transparent;
+  color: var(--primary-contrast, #000000);
+}
+
+.example-combobox-container:focus-within {
+  outline: 3px solid var(--vivid-pink, #ff007f);
+}
+
+/* Overlay Bounding Popover & Dividers */
+.example-popover {
+  margin: 0;
+  padding: 0;
+  border: 4px solid var(--border-color);
+  background-color: var(--septenary-contrast, #ffffff);
+  box-shadow: 8px 8px 0px var(--border-color); /* 3D offset shadow */
+}
+
+.example-datepicker-popup {
+  padding: 12px;
+  width: 320px;
+  max-height: none;
+  overflow: visible;
+  background-color: transparent;
+  border: none;
+  box-shadow: none; /* Border & shadow handled by popover */
+  font-family: 'Press Start 2P', Courier, monospace;
+}
+
+.example-datepicker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 3px double var(--border-color);
+  margin-bottom: 12px;
+}
+
+.example-datepicker-title {
+  font-weight: bold;
+  font-size: 0.6rem;
+  color: var(--border-color);
+}
+
+.example-datepicker-nav-button {
+  background-color: var(--retro-button-color);
+  border: 2px solid var(--border-color);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--border-color);
+  font-weight: bold;
+  box-shadow: 2px 2px 0px var(--border-color);
+}
+
+.example-datepicker-nav-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.example-datepicker-nav-button:focus {
+  outline: 2px dashed var(--vivid-pink, #ff007f);
+  outline-offset: 2px;
+}
+
+.example-datepicker-grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.example-datepicker-cell {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+}
+
+.example-datepicker-weekday {
+  font-size: 0.5rem;
+  font-weight: bold;
+  color: var(--border-color);
+  padding-bottom: 8px;
+}
+
+.example-datepicker-empty {
+  color: var(--senary-contrast, #aaaaaa);
+  font-size: 0.5rem;
+}
+
+.example-datepicker-day-button {
+  width: 32px;
+  height: 32px;
+  border: 2px solid transparent;
+  border-radius: 0;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: var(--border-color);
+}
+
+.example-datepicker-cell:hover .example-datepicker-day-button {
+  background-color: var(--senary-contrast, #dddddd);
+  border-color: var(--border-color);
+}
+
+/* Suppress native focus rings and force solid high contrast outlines */
+.example-datepicker-cell:focus-within {
+  outline: 3px solid var(--border-color);
+  outline-offset: -3px;
+}
+
+@media (forced-colors: active) {
+  .example-datepicker-cell:focus-within {
+    outline: 3px solid CanvasText;
+  }
+}
+
+.example-datepicker-day-button:focus {
+  outline: none;
+}
+
+thead {
+  background-image: var(
+    --orange-to-pink-vertical-gradient,
+    linear-gradient(to bottom, #ffaa00, #ff007f)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.example-datepicker-cell[aria-selected='true'] .example-datepicker-day-button {
+  background-color: var(--vivid-pink, #ff007f);
+  color: var(--page-background, #ffffff);
+}
+
+.example-combobox-hint {
+  font-size: 0.5rem;
+  font-weight: bold;
+  font-family: 'Press Start 2P', Courier, monospace;
+  color: var(--border-color);
+  margin-top: 6px;
+}

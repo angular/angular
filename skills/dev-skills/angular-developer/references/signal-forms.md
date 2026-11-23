@@ -45,7 +45,7 @@ import {form, FormField} from '@angular/forms/signals';
 })
 export class Example {
   // 1. Define your model with initial values (avoid undefined)
-  userModel = signal({
+  protected readonly userModel = signal({
     name: '', // CRITICAL: NEVER use null or undefined as initial values
     email: '',
     age: 0, // Use 0 for numbers, NOT null
@@ -64,7 +64,7 @@ export class Example {
   // });
 
   // 2. Create the form
-  userForm = form(this.userModel);
+  protected readonly userForm = form(this.userModel);
 }
 ```
 
@@ -89,8 +89,6 @@ userForm = form(this.userModel, (schemaPath) => {
       return valueOf(schemaPath.age) > 10;
     },
   });
-  // when is only available for required
-  // Do NOT do this: pattern(p.name, /xxx/, {when /* ERROR */)
 
   // Email
   email(schemaPath.email, {message: 'Invalid email'});
@@ -103,8 +101,12 @@ userForm = form(this.userModel, (schemaPath) => {
   minLength(schemaPath.password, 8);
   maxLength(schemaPath.description, 500);
 
-  // Pattern (Regex)
-  pattern(schemaPath.zipCode, /^\d{5}$/);
+  // Pattern (Regex), applied only when the condition holds
+  pattern(schemaPath.zipCode, /^\d{5}$/, {
+    when({valueOf}) {
+      return valueOf(schemaPath.country) === 'US';
+    },
+  });
 });
 ```
 
@@ -145,10 +147,10 @@ import {disabled, readonly, hidden} from '@angular/forms/signals';
 
 userForm = form(this.userModel, (schemaPath) => {
   // Conditionally disabled
-  disabled(schemaPath.password, ({valueOf}) => !valueOf(schemaPath.createAccount));
+  disabled(schemaPath.password, {when: ({valueOf}) => !valueOf(schemaPath.createAccount)});
 
   // Conditionally hidden (does NOT remove from model, just marks as hidden)
-  hidden(schemaPath.shippingAddress, ({valueOf}) => valueOf(schemaPath.sameAsBilling));
+  hidden(schemaPath.shippingAddress, {when: ({valueOf}) => valueOf(schemaPath.sameAsBilling)});
 
   // Readonly
   readonly(schemaPath.username);
@@ -170,9 +172,19 @@ Do _NOT_ bind the `name` field.
 When using `[formField]`, you MUST NOT set the following attributes in the template (either static or bound):
 
 - `min`, `max` (Use validators in the schema instead)
-- `value`, `[value]`, `[attr.value]` (Already handled by `[formField]`)
+- `value`, `[value]`, `[attr.value]` on **text/number/date inputs** (Already handled by `[formField]`)
 - `[attr.min]`, `[attr.max]`
 - `[disabled]`, `[readonly]` (Already handled by `[formField]`)
+
+**Exception**: Static `value` on `<input type="radio">` and `<input type="checkbox">` is **allowed and required** — it identifies which option the input represents, not the bound field value.
+
+```html
+<!-- CORRECT: value on radio specifies which option this button represents -->
+<input type="radio" value="economy" [formField]="bookingForm.package.tier" />
+
+<!-- WRONG: value binding on a regular input -->
+<input [value]="someVar" [formField]="form.name" />
+```
 
 Do NOT do this: `<input min="1" [formField]>` or `<input [value]="val" [formField]>`.
 
@@ -212,6 +224,7 @@ const value = this.userForm().value();
 const isValid = this.userForm().valid();
 const isInvalid = this.userForm().invalid();
 const errors = this.userForm().errors(); // Array of errors
+const error = this.userForm().getError('...'); // Single error, by error `kind`
 const isPending = this.userForm().pending(); // Async validation pending
 
 // Interaction State (Signals)
@@ -278,6 +291,8 @@ interface ValidationError {
   readonly message?: string;
 }
 ```
+
+`field().getError('...')` returns a single ValidationError by its `kind`.
 
 Do _NOT_ return null from validators.
 When there are no errors, return undefined
@@ -424,10 +439,7 @@ validateAsync(s.username, {
 // WRONG - missing onError (it's required!)
 validateAsync(s.username, {
   params: ({value}) => value(),
-  factory: (username) =>
-    resource({
-      /* ... */
-    }),
+  factory: (username) => resource({/* ... */}),
   onSuccess: (result) => (result ? {kind: 'error'} : undefined),
   // ERROR: 'onError' is missing but required!
 });
@@ -469,76 +481,67 @@ userForm = form(this.userModel, (s) => {
 ### Conditional Validation
 
 ```ts
-form(
-  data,
-  (path) => {
-    applyWhen(
-      name,
-      ({value}) => value() !== 'admin',
-      (namePath) => {
-        validate(namePath.last /* ... */);
-        disable(namePath.last /* ... */);
-      },
-    );
-  },
-  {injector: TestBed.inject(Injector)},
-);
+form(this.model, (path) => {
+  applyWhen(
+    path.name,
+    ({value}) => value().first !== 'admin',
+    (namePath) => {
+      required(namePath.last);
+      disabled(namePath.last, {when: ({valueOf}) => valueOf(path.locked)});
+    },
+  );
+});
 ```
 
 `applyWhen` passes the path mapped to the first argument.
 If you need parent field, just pass it to `applyWhen`:
 
 ```ts
-form(
-  data,
-  (path) => {
-    applyWhen(
-      cat,
-      ({value}) => value().name !== 'admin',
-      (catPath) => {
-        require(cat.catPath /* ... */);
-      },
-    );
-  },
-  {injector: TestBed.inject(Injector)},
-);
+form(this.model, (path) => {
+  applyWhen(
+    path.cat,
+    ({value}) => value().name !== 'admin',
+    (catPath) => {
+      required(catPath.age);
+    },
+  );
+});
 ```
 
 ## Common Pitfalls (DO NOT DO THESE)
 
-| Error Scenario         | WRONG (Common Mistake)                        | RIGHT (Correct Way)                                         |
-| :--------------------- | :-------------------------------------------- | :---------------------------------------------------------- |
-| **Accessing Flags**    | `form.field.valid()`                          | `form.field().valid()`                                      |
-| **Accessing value**    | `form.field.value()`                          | `form.field().value()`                                      |
-| **Setting value**      | `form.field.set(x)`                           | Update model signal: `this.model.update(...)`               |
-| **Form root flags**    | `form.invalid()`                              | `form().invalid()`                                          |
-| **Double-calling**     | `form.field()()`                              | `form.field().value()`                                      |
-| **Rules Context**      | `({ touched }) => touched()`                  | `({ state }) => state.touched()`                            |
-| **Calling Paths**      | `applyWhen(p.foo, () => p.foo() === 'x')`     | `applyWhen(p.foo, ({ valueOf }) => valueOf(p.foo) === 'x')` |
-| **applyWhen args**     | `applyWhen(condition, () => {...})`           | `applyWhen(path, condition, schemaFn)` - needs 3 args       |
-| **Array length**       | `form.items().length`                         | `form.items.length` (structural)                            |
-| **Multi-select array** | `<select [formField]="form.tags">` (string[]) | Use checkboxes for array fields                             |
-| **readonly attribute** | `<input readonly [formField]>`                | Use `readonly()` rule in schema                             |
-| **min/max attributes** | `<input min="1" max="10">`                    | Use `min()` and `max()` rules in schema                     |
-| **value binding**      | `<input [value]="val">`                       | Do NOT use `[value]` with `[formField]`                     |
-| **when option**        | `pattern(p.x, /.../, {when: ...})`            | `when` only works with `required()`                         |
-| **Submit callback**    | `submit(form, () => { ... })`                 | `submit(form, async () => { ... })`                         |
-| **Async params**       | `params: s.field`                             | `params: ({ value }) => value()`                            |
-| **Async onError**      | Omitting `onError`                            | `onError` is REQUIRED in `validateAsync`                    |
-| **resource() API**     | `request: signal`                             | `params: signal`                                            |
-| **applyEach args**     | `applyEach(s.items, (item, index) => ...)`    | `applyEach(s.items, (item) => ...)`                         |
-| **Nested @for**        | `$parent.$index`                              | Use `let outerIndex = $index`                               |
-| **FormState import**   | `import { FormState }`                        | `FormState` does not exist, use `FieldState`                |
-| **Null in model**      | `signal({ name: null })`                      | `signal({ name: '' })` or `signal({ age: 0 })`              |
-| **Validate syntax**    | `validate(s.field, { value } => ...)`         | `validate(s.field, ({ value }) => ...)`                     |
-| **Checkbox Array**     | `[formField]="form.tags"` (string[])          | Checkboxes ONLY bind to `boolean`                           |
+| Error Scenario         | WRONG (Common Mistake)                        | RIGHT (Correct Way)                                                              |
+| :--------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------- |
+| **Accessing Flags**    | `form.field.valid()`                          | `form.field().valid()`                                                           |
+| **Accessing value**    | `form.field.value()`                          | `form.field().value()`                                                           |
+| **Setting value**      | `form.field.set(x)`                           | Update model signal: `this.model.update(...)`                                    |
+| **Form root flags**    | `form.invalid()`                              | `form().invalid()`                                                               |
+| **Double-calling**     | `form.field()()`                              | `form.field().value()`                                                           |
+| **Rules Context**      | `({ touched }) => touched()`                  | `({ state }) => state.touched()`                                                 |
+| **Calling Paths**      | `applyWhen(p.foo, () => p.foo() === 'x')`     | `applyWhen(p.foo, ({ valueOf }) => valueOf(p.foo) === 'x')`                      |
+| **applyWhen args**     | `applyWhen(condition, () => {...})`           | `applyWhen(path, condition, schemaFn)` - needs 3 args                            |
+| **Array length**       | `form.items().length`                         | `form.items.length` (structural)                                                 |
+| **Multi-select array** | `<select multiple [formField]="form.labels">` | `<select multiple>` is unsupported. Use one boolean field + checkbox per option  |
+| **readonly attribute** | `<input readonly [formField]>`                | Use `readonly()` rule in schema                                                  |
+| **min/max attributes** | `<input min="1" max="10">`                    | Use `min()` and `max()` rules in schema                                          |
+| **value binding**      | `<input [value]="val">`                       | Do NOT use `[value]` with `[formField]` (static `value` on radio/checkbox is OK) |
+| **Submit callback**    | `submit(form, () => { ... })`                 | `submit(form, async () => { ... })`                                              |
+| **Async params**       | `params: s.field`                             | `params: ({ value }) => value()`                                                 |
+| **Async onError**      | Omitting `onError`                            | `onError` is REQUIRED in `validateAsync`                                         |
+| **resource() API**     | `request: signal`                             | `params: signal`                                                                 |
+| **applyEach args**     | `applyEach(s.items, (item, index) => ...)`    | `applyEach(s.items, (item) => ...)`                                              |
+| **Nested @for**        | `$parent.$index`                              | Use `let outerIndex = $index`                                                    |
+| **FormState import**   | `import { FormState }`                        | `FormState` does not exist, use `FieldState`                                     |
+| **Null in model**      | `signal({ name: null })`                      | `signal({ name: '' })` or `signal({ age: 0 })`                                   |
+| **Validate syntax**    | `validate(s.field, { value } => ...)`         | `validate(s.field, ({ value }) => ...)`                                          |
+| **Checkbox Array**     | `[formField]="form.tags"` (string[])          | Checkboxes ONLY bind to `boolean`: one boolean field per option                  |
 
 ## Big Form Example
 
 ### `src/app/app.ts`
 
 ```ts
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {
   form,
   FormField,
@@ -553,13 +556,11 @@ import {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [FormField],
   templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  model = signal({
+  protected readonly model = signal({
     personalInfo: {
       firstName: '',
       lastName: '',
@@ -572,12 +573,12 @@ export class App {
     },
     package: {
       tier: 'economy',
-      extras: [] as string[],
+      extras: {wifi: false, gym: false},
     },
     companions: [] as Array<{name: string; relation: string}>,
   });
 
-  bookingForm = form(this.model, (s) => {
+  protected readonly bookingForm = form(this.model, (s) => {
     required(s.personalInfo.firstName, {message: 'First name is required'});
     required(s.personalInfo.lastName, {message: 'Last name is required'});
     required(s.personalInfo.email, {message: 'Email is required'});
@@ -598,7 +599,7 @@ export class App {
     });
 
     // valueOf is used to access values of other fields in rules
-    hidden(s.package.extras, ({valueOf}) => valueOf(s.package.tier) === 'economy');
+    hidden(s.package.extras, {when: ({valueOf}) => valueOf(s.package.tier) === 'economy'});
 
     applyEach(s.companions, (companion) => {
       required(companion.name, {message: 'Companion name required'});
@@ -718,11 +719,15 @@ export class App {
     @if (!bookingForm.package.extras().hidden()) {
     <div>
       <h3>Extras</h3>
-      <!-- Multi-select for arrays must use select multiple -->
-      <select multiple [formField]="bookingForm.package.extras">
-        <option value="wifi">WiFi</option>
-        <option value="gym">Gym</option>
-      </select>
+      <!-- Multiple choices: one boolean field per option, bound to a checkbox -->
+      <label>
+        <input type="checkbox" [formField]="bookingForm.package.extras.wifi" />
+        WiFi
+      </label>
+      <label>
+        <input type="checkbox" [formField]="bookingForm.package.extras.gym" />
+        Gym
+      </label>
     </div>
     }
   </section>
@@ -780,7 +785,7 @@ this.model.update((m) => ({...m, address: {...m.address, street: 'Main St'}}));
 
 ### `Type 'string[]' is not assignable to type 'string'`
 
-**Problem**: Binding `[formField]` to an array field with a single-value `<select>`.
+**Problem**: Binding `[formField]` to an array field with a `<select>`. The native `<select>` control only supports a single string value, and `<select multiple>` is not supported by `[formField]`.
 
 ```html
 <!-- WRONG - assignees is string[], select expects string -->
@@ -788,10 +793,12 @@ this.model.update((m) => ({...m, address: {...m.address, street: 'Main St'}}));
   ...
 </select>
 
-<!-- RIGHT - Use select multiple for array fields -->
+<!-- ALSO WRONG - <select multiple> is not supported by [formField] -->
 <select multiple [formField]="form.assignees">
-  <option value="us">US</option>
+  ...
 </select>
+
+<!-- RIGHT - Model each option as its own boolean field, bound to a checkbox (see below) -->
 ```
 
 ### `NG8022: Setting the 'readonly/min/max/value' attribute is not allowed`
@@ -816,28 +823,10 @@ min(s.age, 18); max(s.age, 99); // Then just:
 <!-- WRONG - tags is string[] -->
 <input type="checkbox" [formField]="form.tags" />
 
-<!-- RIGHT - Use select multiple for array values -->
-<select multiple [formField]="form.tags">
-  <option value="a">A</option>
-</select>
-
-<!-- OR - Map to boolean fields in the model -->
-model = signal({ hasWifi: false, hasGym: false });
+<!-- RIGHT - Map each option to a boolean field in the model -->
+protected readonly model = signal({ hasWifi: false, hasGym: false });
 <input type="checkbox" [formField]="form.hasWifi" />
-```
-
-### `'when' does not exist in type` for pattern/email/min/max
-
-**Problem**: Using `when` option with validators other than `required`.
-
-```ts
-// WRONG - when only works with required
-pattern(s.ssn, /^\d{3}-\d{2}-\d{4}$/, {when: isJoint});
-
-// RIGHT - use applyWhen for conditional non-required validators
-applyWhen(s.ssn, isJoint, (ssnPath) => {
-  pattern(ssnPath, /^\d{3}-\d{2}-\d{4}$/);
-});
+<input type="checkbox" [formField]="form.hasGym" />
 ```
 
 ### `Expected 3 arguments, but got 2` for applyWhen
@@ -875,7 +864,7 @@ import {FormState} from '@angular/forms/signals';
 {{ totalPrice() | number:'1.2-2' }}
 
 <!-- RIGHT - format in the component -->
-totalPriceFormatted = computed(() => this.totalPrice().toFixed(2));
+protected readonly totalPriceFormatted = computed(() => this.totalPrice().toFixed(2));
 <!-- then: -->
 {{ totalPriceFormatted() }}
 ```

@@ -35,7 +35,7 @@ export function mockMessage(
     text += `{$${placeholderNames[i - 1]}}${messageParts[i]}`;
   }
   return {
-    substitutions: [],
+    substitutions: {},
     ...options,
     id: options.customId || id, // customId trumps id
     text,

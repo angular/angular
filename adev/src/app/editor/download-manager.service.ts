@@ -7,14 +7,12 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {EnvironmentInjector, Injectable, PLATFORM_ID, inject} from '@angular/core';
+import {EnvironmentInjector, PLATFORM_ID, Service, inject} from '@angular/core';
 import {generateZip} from '@angular/docs';
 
 import {injectNodeRuntimeSandbox} from './inject-node-runtime-sandbox';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DownloadManager {
   private readonly document = inject(DOCUMENT);
   private readonly environmentInjector = inject(EnvironmentInjector);

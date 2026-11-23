@@ -8,7 +8,7 @@
 
 import {Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FormArray, FormControlStatus, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormControlStatus, FormGroup} from '@angular/forms';
 import {SignalFormControl} from '../../../compat/src/signal_form_control/signal_form_control';
 import {required} from '../../../public_api';
 import {SchemaFn} from '../../../src/api/types';
@@ -388,6 +388,59 @@ describe('SignalFormControl in FormGroup', () => {
         expect(array.valid).withContext('Invalid immediately on value change').toBe(false);
         array.at(0).setValue('meow');
         expect(array.valid).withContext('Valid initially').toBe(true);
+      });
+    });
+
+    describe('updateOn', () => {
+      it('should throw error when parent FormGroup has updateOn: "blur"', () => {
+        const child = createSignalFormControl('meow');
+        expect(() => new FormGroup({child}, {updateOn: 'blur'})).toThrowError(
+          /SignalFormControl does not support the "updateOn: 'blur'" option inherited from its parent/,
+        );
+      });
+
+      it('should throw error when parent FormGroup has updateOn: "submit"', () => {
+        const child = createSignalFormControl('meow');
+        expect(() => new FormGroup({child}, {updateOn: 'submit'})).toThrowError(
+          /SignalFormControl does not support the "updateOn: 'submit'" option inherited from its parent/,
+        );
+      });
+
+      it('should throw error when added to a FormGroup with updateOn: "blur"', () => {
+        const group = new FormGroup({}, {updateOn: 'blur'});
+        const child = createSignalFormControl('meow');
+        expect(() => group.addControl('child', child)).toThrowError(
+          /SignalFormControl does not support the "updateOn: 'blur'" option inherited from its parent/,
+        );
+      });
+
+      it('should throw error when setControl in a FormGroup with updateOn: "blur"', () => {
+        const group = new FormGroup({}, {updateOn: 'blur'});
+        const child = createSignalFormControl('meow');
+        expect(() => group.setControl('child', child)).toThrowError(
+          /SignalFormControl does not support the "updateOn: 'blur'" option inherited from its parent/,
+        );
+      });
+
+      it('should throw error when parent FormArray has updateOn: "blur"', () => {
+        const child = createSignalFormControl('meow');
+        expect(() => new FormArray([child], {updateOn: 'blur'})).toThrowError(
+          /SignalFormControl does not support the "updateOn: 'blur'" option inherited from its parent/,
+        );
+      });
+
+      it('should throw error when pushed into a FormArray with updateOn: "blur"', () => {
+        const array = new FormArray<AbstractControl>([], {updateOn: 'blur'});
+        const child = createSignalFormControl('meow');
+        expect(() => array.push(child)).toThrowError(
+          /SignalFormControl does not support the "updateOn: 'blur'" option inherited from its parent/,
+        );
+      });
+
+      it('should not throw error when parent FormGroup has default updateOn ("change")', () => {
+        const child = createSignalFormControl('meow');
+        expect(() => new FormGroup({child})).not.toThrow();
+        expect(() => new FormGroup({child}, {updateOn: 'change'})).not.toThrow();
       });
     });
   });

@@ -13,11 +13,11 @@ import { Component, signal, linkedSignal } from '@angular/core';
 
 @Component({...})
 export class ShippingMethodPicker {
-  shippingOptions = signal(['Ground', 'Air', 'Sea']);
+  protected readonly shippingOptions = signal(['Ground', 'Air', 'Sea']);
 
   // Defaults to the first option.
   // If shippingOptions changes, selectedOption resets to the new first option.
-  selectedOption = linkedSignal(() => this.shippingOptions()[0]);
+  protected readonly selectedOption = linkedSignal(() => this.shippingOptions()[0]);
 
   changeShipping(index: number) {
     // We can still manually update this signal!
@@ -37,11 +37,11 @@ interface ShippingMethod { id: number; name: string; }
 
 @Component({...})
 export class ShippingMethodPicker {
-  shippingOptions = signal<ShippingMethod[]>([
+  protected readonly shippingOptions = signal<ShippingMethod[]>([
     {id: 0, name: 'Ground'}, {id: 1, name: 'Air'}, {id: 2, name: 'Sea'}
   ]);
 
-  selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
+  protected readonly selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
     source: this.shippingOptions,
     computation: (newOptions, previous) => {
       // If the newly loaded options still contain the user's previously
@@ -50,6 +50,20 @@ export class ShippingMethodPicker {
     }
   });
 }
+```
+
+## Customizing the `set` Operation
+
+By default, calling `.set()` on a `linkedSignal` updates its internal value directly. To write back to the source of truth instead, pass a `set` function in the options. It receives the new value plus a `rawSet` function that applies the default behavior directly (useful to skip the computation when it is expensive and you already know the result).
+
+```ts
+const tempC = signal(0);
+// tempF.set() writes back to tempC instead of only updating tempF
+const tempF = linkedSignal(() => (tempC() * 9) / 5 + 32, {
+  set: (valF) => tempC.set(((valF - 32) * 5) / 9),
+});
+
+tempF.set(212); // tempC() is now 100, tempF() re-derives to 212
 ```
 
 ### When to use `linkedSignal` vs `computed` vs `effect`

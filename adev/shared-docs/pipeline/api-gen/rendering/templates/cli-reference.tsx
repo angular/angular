@@ -9,6 +9,7 @@
 import {Fragment, h} from 'preact';
 import {CliCommandRenderable} from '../entities/renderables.mjs';
 import {REFERENCE_MEMBERS} from '../styling/css-classes.mjs';
+import {convertSectionNameToId} from '../transforms/reference-section-id.mjs';
 import {CliCard} from './cli-card';
 import {HeaderCli} from './header-cli';
 import {RawHtml} from './raw-html';
@@ -27,14 +28,14 @@ export function CliCommandReference(entry: CliCommandRenderable) {
                 <div className={'shiki line cli'}>
                   ng {commandName(entry, command)}
                   {entry.argumentsLabel && (
-                    <button member-id={'Arguments'} className="shiki-ln-line-argument">
+                    <span member-id={'Arguments'} className="shiki-ln-line-argument">
                       {entry.argumentsLabel}
-                    </button>
+                    </span>
                   )}
                   {entry.optionsLabel && (
-                    <button member-id={'Options'} className="shiki-ln-line-option">
+                    <span member-id={'Options'} className="shiki-ln-line-option">
                       {entry.optionsLabel}
-                    </button>
+                    </span>
                   )}
                 </div>
               </code>
@@ -50,6 +51,23 @@ export function CliCommandReference(entry: CliCommandRenderable) {
               {entry.subcommands.map((subcommand) => (
                 <li>
                   <a href={`cli/${entry.name}/${subcommand.name}`}>{subcommand.name}</a>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <></>
+        )}
+        {entry.builders && entry.builders.length > 0 ? (
+          <>
+            <h3>Builders</h3>
+            <p>This command has the following builders</p>
+            <ul>
+              {entry.builders.map((builder) => (
+                <li>
+                  <a href={`#${convertSectionNameToId(`${builder.name} builder options`)}`}>
+                    {builder.name}
+                  </a>
                 </li>
               ))}
             </ul>

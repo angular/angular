@@ -77,6 +77,18 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 2},
       ]);
     });
+    it('should restore natural order when compareFn changes to null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = {'b': 1, 'a': 2};
+      expect(pipe.transform<string, number>(input)).toEqual([
+        {key: 'a', value: 2},
+        {key: 'b', value: 1},
+      ]);
+      expect(pipe.transform<string, number>(input, null)).toEqual([
+        {key: 'b', value: 1},
+        {key: 'a', value: 2},
+      ]);
+    });
     it('should return the same ref if nothing changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const transform1 = pipe.transform({1: 2});
@@ -98,6 +110,38 @@ describe('KeyValuePipe', () => {
       let value!: {[key: number]: string} | null;
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(value)).toEqual(null);
+    });
+
+    it('should preserve a literal key union instead of widening it to string', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input: Record<'a' | 'b', number> = {a: 1, b: 2};
+      const result = pipe.transform(input);
+
+      // Compile-time check: if `key` had widened back to plain `string`, this
+      // assignment would fail to compile — that's the actual bug from #43883.
+      const key: 'a' | 'b' = result[0].key;
+
+      expect(key).toBe('a');
+      expect(result).toEqual([
+        {key: 'a', value: 1},
+        {key: 'b', value: 2},
+      ]);
+    });
+
+    it('should still collapse a numerically-keyed object to string keys', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input: Record<1 | 2, string> = {1: 'one', 2: 'two'};
+      const result = pipe.transform(input);
+
+      // Numeric keys become strings at runtime (Object.keys() always returns
+      // strings), so `key` should stay `string`, not narrow to `1 | 2`.
+      const key: string = result[0].key;
+
+      expect(key).toBe('1');
+      expect(result).toEqual([
+        {key: '1', value: 'one'},
+        {key: '2', value: 'two'},
+      ]);
     });
 
     it('should accept an object with optional keys', () => {
@@ -250,6 +294,21 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 2},
       ]);
     });
+    it('should restore natural order when compareFn changes to null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = new Map([
+        ['b', 1],
+        ['a', 2],
+      ]);
+      expect(pipe.transform<string, number>(input)).toEqual([
+        {key: 'a', value: 2},
+        {key: 'b', value: 1},
+      ]);
+      expect(pipe.transform<string, number>(input, null)).toEqual([
+        {key: 'b', value: 1},
+        {key: 'a', value: 2},
+      ]);
+    });
     it('should return the same ref if nothing changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const transform1 = pipe.transform(new Map([[1, 2]]));
@@ -269,9 +328,8 @@ describe('KeyValuePipe', () => {
     });
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [KeyValuePipe, JsonPipe],
       template: '{{ value | keyvalue | json }}',
     })
@@ -280,7 +338,7 @@ describe('KeyValuePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content.replace(/\s/g, '')).toBe('[{"key":"a","value":2},{"key":"b","value":1}]');

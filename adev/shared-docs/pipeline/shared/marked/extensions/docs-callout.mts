@@ -27,11 +27,13 @@ interface DocsCalloutToken extends Tokens.Generic {
 
 // Capture group 1: all attributes on the opening tag
 // Capture group 2: all content between the open and close tags
-const calloutRule = /^<docs-callout([^>]*)>((?:.(?!\/docs-callout))*)<\/docs-callout>/s;
+const calloutRule =
+  /^<docs-callout((?:[^>"'`]|"[^"]*"|'[^']*'|`[^`]*`)*)>((?:.(?!\/docs-callout))*)<\/docs-callout>/s;
 
-const titleRule = /title="([^"]*)"/;
-const isImportantRule = /important/;
-const isCriticalRule = /critical/;
+const titleRule = /title=(['"`])(.*?)\1/; // The 2nd capture matters here
+const attributeValueRule = /=(['"`])(?:.*?)\1/gs;
+const isImportantRule = /\bimportant\b/;
+const isCriticalRule = /\bcritical\b/;
 
 export const docsCalloutExtension = {
   name: 'docs-callout',
@@ -46,9 +48,12 @@ export const docsCalloutExtension = {
       const attr = match[1].trim();
       const title = titleRule.exec(attr);
 
+      // Severity is a bare word on the tag, so it must not be matched inside an attribute value.
+      const flags = attr.replace(attributeValueRule, '');
+
       let severityLevel = CalloutSeverityLevel.HELPFUL;
-      if (isImportantRule.exec(attr)) severityLevel = CalloutSeverityLevel.IMPORTANT;
-      if (isCriticalRule.exec(attr)) severityLevel = CalloutSeverityLevel.CRITICAL;
+      if (isImportantRule.exec(flags)) severityLevel = CalloutSeverityLevel.IMPORTANT;
+      if (isCriticalRule.exec(flags)) severityLevel = CalloutSeverityLevel.CRITICAL;
 
       const body = match[2].trim();
 
@@ -56,7 +61,7 @@ export const docsCalloutExtension = {
         type: 'docs-callout',
         raw: match[0],
         severityLevel: severityLevel,
-        title: title ? title[1] : '',
+        title: title ? title[2] : '',
         titleTokens: [],
         body: body ?? '',
         bodyTokens: [],

@@ -31,7 +31,7 @@ const ITEMS: HistoryItem[] = [
   },
 ].map((i) => ({...i, url: '', createdAt: 0, isFavorite: false}));
 
-describe('SearchHistory', async () => {
+describe('SearchHistory', () => {
   let service: SearchHistory;
   let storage: Storage;
 

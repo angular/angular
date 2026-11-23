@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {parse, template, types as t} from '@babel/core';
+import {parseSync, types as t, template} from '@babel/core';
 
 import {BabelAstHost} from '../../src/ast/babel_ast_host';
 
@@ -358,7 +358,7 @@ describe('BabelAstHost', () => {
 
   describe('getRange()', () => {
     it('should extract the range from the expression', () => {
-      const file = parse("// preamble\nx = 'moo';");
+      const file = parseSync("// preamble\nx = 'moo';", {sourceType: 'script'});
       const stmt = file!.program.body[0] as t.Statement;
       assertExpressionStatement(stmt);
       assertAssignmentExpression(stmt.expression);

@@ -9,13 +9,13 @@
 import {RoutePropertyType, viewSourceFromRouter} from '../../../ng-devtools-backend';
 import {
   buildDirectiveForest,
-  getInjectorFromElementNode,
   findNodeFromSerializedPosition,
   queryDirectiveForest,
-} from '../../../ng-devtools-backend/src/lib/component-tree/component-tree';
+} from '../../../ng-devtools-backend/src/lib/directive-forest';
+import {getInjectorFromElementNode} from '../../../ng-devtools-backend/src/lib/injector-tree/injector-tree';
 
 import {ElementPosition, SignalNodePosition} from '../../../protocol';
-import {ngDebugClient} from '../../../ng-devtools-backend/src/lib/ng-debug-api/ng-debug-api';
+import {ngDebugClient} from '../../../ng-devtools-backend/src/lib/shared/ng-debug-api/ng-debug-api';
 
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(globalThis, {inspectedApplication: chromeWindowExtensions});
@@ -42,7 +42,7 @@ const chromeWindowExtensions = {
       return;
     }
     if (directiveIndex !== undefined) {
-      if (node.directives[directiveIndex]) {
+      if (node.directives?.[directiveIndex]) {
         return node.directives[directiveIndex].instance.constructor;
       } else {
         console.error(
@@ -74,7 +74,7 @@ const chromeWindowExtensions = {
       console.error(`Cannot find element associated with node ${element}`);
       return undefined;
     }
-    const injector = getInjectorFromElementNode(node.nativeElement!);
+    const injector = node.injector ?? getInjectorFromElementNode(node.nativeElement!);
     if (!injector) {
       return;
     }
@@ -102,10 +102,10 @@ const chromeWindowExtensions = {
 
     const isDirective =
       directivePosition.directive !== undefined &&
-      node.directives[directivePosition.directive] &&
+      node.directives?.[directivePosition.directive] &&
       typeof node.directives[directivePosition.directive] === 'object';
     if (isDirective) {
-      return traverseDirective(node.directives[directivePosition.directive].instance, objectPath);
+      return traverseDirective(node.directives![directivePosition.directive].instance, objectPath);
     }
     if (node.component) {
       return traverseDirective(node.component.instance, objectPath);

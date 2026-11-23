@@ -98,7 +98,7 @@ export function resolveForwardRef<T>(type: T): T {
 export function isForwardRef(fn: any): fn is () => any {
   return (
     typeof fn === 'function' &&
-    fn.hasOwnProperty(__forward_ref__) &&
+    Object.hasOwn(fn, __forward_ref__) &&
     fn.__forward_ref__ === forwardRef
   );
 }

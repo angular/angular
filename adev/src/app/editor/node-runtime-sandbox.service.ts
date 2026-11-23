@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, effect, inject, Injectable, signal} from '@angular/core';
+import {DestroyRef, effect, inject, signal, Service} from '@angular/core';
 import {FileSystemTree, WebContainer, WebContainerProcess} from '@webcontainer/api';
 import {setupErrorFilenameHandler} from './error-filename-handler';
 import {BehaviorSubject, filter, map, Subject} from 'rxjs';
@@ -38,7 +38,7 @@ export const PACKAGE_MANAGER = 'npm';
  * It boots the WebContainer, loads the project files into the WebContainer
  * filesystem, install the project dependencies and starts the dev server.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class NodeRuntimeSandbox {
   private readonly _createdFile$ = new Subject<string>();
   readonly createdFile$ = this._createdFile$.asObservable();
@@ -158,7 +158,6 @@ export class NodeRuntimeSandbox {
       '.angular',
       'dist',
       'BUILD.bazel',
-      'idx',
       'package.json.template',
       'config.json',
     ];
@@ -366,6 +365,7 @@ export class NodeRuntimeSandbox {
   }
 
   private setLoading(loading: LoadingStep) {
+    if (this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR) return;
     this.nodeRuntimeState.setLoadingStep(loading);
   }
 
@@ -413,8 +413,13 @@ export class NodeRuntimeSandbox {
   }
 
   private setErrorState(message: string | undefined, type?: ErrorType) {
+    if (this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR) {
+      return;
+    }
+
     this.nodeRuntimeState.setError({message, type});
     this.nodeRuntimeState.setLoadingStep(LoadingStep.ERROR);
+    this.alertManager.decreaseInstancesCounter();
     this.terminate();
   }
 

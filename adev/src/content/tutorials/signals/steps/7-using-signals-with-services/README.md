@@ -13,7 +13,7 @@ Add readonly and computed signals to make the cart state reactive in `cart-store
 
 ```ts
 // Add the computed import
-import {Injectable, signal, computed} from '@angular/core';
+import {Service, signal, computed} from '@angular/core';
 
 // Then add these signals to the class:
 

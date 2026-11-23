@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgIf, NgTemplateOutlet} from '@angular/common';
 import {
   Component,
   Injector,
@@ -20,7 +21,7 @@ describe('TemplateRef', () => {
   describe('rootNodes', () => {
     @Component({
       template: `<ng-template #templateRef></ng-template>`,
-      standalone: false,
+      imports: [NgIf, NgTemplateOutlet],
     })
     class App {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -28,9 +29,6 @@ describe('TemplateRef', () => {
     }
 
     function getRootNodes(template: string): any[] {
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
       TestBed.overrideTemplate(App, template);
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -63,7 +61,6 @@ describe('TemplateRef', () => {
           </ng-template>
         `,
         exportAs: 'menuContent',
-        standalone: false,
       })
       class MenuContent {
         @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
@@ -77,7 +74,7 @@ describe('TemplateRef', () => {
             <ng-template [ngIf]="true"><button>Item three</button></ng-template>
           </menu-content>
         `,
-        standalone: false,
+        imports: [MenuContent, NgIf],
       })
       class App {
         @ViewChild(MenuContent) content!: MenuContent;
@@ -86,7 +83,6 @@ describe('TemplateRef', () => {
       }
 
       TestBed.configureTestingModule({
-        declarations: [MenuContent, App],
         providers: [provideNgReflectAttributes()],
       });
       const fixture = TestBed.createComponent(App);
@@ -108,8 +104,8 @@ describe('TemplateRef', () => {
       </ng-template>`);
 
       expect(rootNodes.length).toBe(3);
-      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[0].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.COMMENT_NODE);
       expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
@@ -146,8 +142,8 @@ describe('TemplateRef', () => {
         `);
 
       expect(rootNodes.length).toBe(3);
-      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[0].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.COMMENT_NODE);
       expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
@@ -195,7 +191,6 @@ describe('TemplateRef', () => {
       @Component({
         selector: 'dynamic',
         template: '',
-        standalone: false,
       })
       class DynamicCmp {
         @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -204,14 +199,13 @@ describe('TemplateRef', () => {
       @Component({
         selector: 'test',
         template: '',
-        standalone: false,
       })
       class TestCmp {
         constructor(public vcr: ViewContainerRef) {}
       }
 
       beforeEach(() => {
-        TestBed.configureTestingModule({declarations: [TestCmp, DynamicCmp]});
+        TestBed.configureTestingModule({imports: [TestCmp, DynamicCmp]});
       });
 
       it('should return projectable nodes when provided', () => {
@@ -274,7 +268,6 @@ describe('TemplateRef', () => {
         <ng-template #templateRef let-name="name">{{ name }}</ng-template>
         <ng-container #containerRef></ng-container>
       `,
-      standalone: false,
     })
     class App {
       @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -282,7 +275,6 @@ describe('TemplateRef', () => {
     }
 
     it('should update if the context of a view ref is mutated', () => {
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const context = {name: 'Frodo'};
@@ -293,14 +285,13 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
       context.name = 'Bilbo';
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
     });
 
     it('should update if the context of a view ref is replaced', () => {
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -310,7 +301,7 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
       viewRef.context = {name: 'Bilbo'};
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
@@ -326,7 +317,6 @@ describe('TemplateRef', () => {
           </ng-template>
           <ng-container #containerRef></ng-container>
         `,
-        standalone: false,
       })
       class ListenerTest {
         @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -337,7 +327,6 @@ describe('TemplateRef', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [ListenerTest]});
       const fixture = TestBed.createComponent(ListenerTest);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -349,14 +338,13 @@ describe('TemplateRef', () => {
       expect(events).toEqual(['Frodo']);
 
       viewRef.context = {name: 'Bilbo'};
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
       button.click();
       expect(events).toEqual(['Frodo', 'Bilbo']);
     });
 
     it('should warn if the context of an embedded view ref is replaced', () => {
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -367,7 +355,7 @@ describe('TemplateRef', () => {
       spyOn(console, 'warn');
 
       viewRef.context = {name: 'Bilbo'};
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
 
       expect(console.warn).toHaveBeenCalledTimes(1);

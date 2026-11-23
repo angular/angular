@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ActivatedRouteSnapshot, provideRouter, Router} from '../../index';
+import {ActivatedRouteSnapshot, provideRouter, Router, withRouterConfig} from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {EMPTY, interval, NEVER, of} from 'rxjs';
 import {useAutoTick} from '@angular/private/testing';
@@ -125,27 +125,29 @@ describe('resolveData operator', () => {
   it('should have correct data when parent resolver runs but data is not inherited', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class Empty {}
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([
-          {
-            path: 'a',
-            component: Empty,
-            data: {parent: 'parent'},
-            resolve: {other: () => 'other'},
-            children: [
-              {
-                path: 'b',
-                data: {child: 'child'},
-                component: Empty,
-              },
-            ],
-          },
-        ]),
+        provideRouter(
+          [
+            {
+              path: 'a',
+              component: Empty,
+              data: {parent: 'parent'},
+              resolve: {other: () => 'other'},
+              children: [
+                {
+                  path: 'b',
+                  data: {child: 'child'},
+                  component: Empty,
+                },
+              ],
+            },
+          ],
+          withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}),
+        ),
       ],
     });
     await RouterTestingHarness.create('/a/b');
@@ -157,7 +159,6 @@ describe('resolveData operator', () => {
   it('should have static title when there is a resolver', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class Empty {}
 
@@ -222,7 +223,6 @@ describe('resolveData operator', () => {
   it('should inherit resolved data from parent of parent route', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class Empty {}
 

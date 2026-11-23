@@ -32,7 +32,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
-import {NG_CONTROL_PARSE_ERRORS_PROVIDER, NgControl} from '../ng_control';
+import {NG_CONTROL_INTEGRATION_PROVIDER, NgControl} from '../ng_control';
 import {
   controlParentException,
   disabledAttrWarning,
@@ -90,7 +90,7 @@ const controlNameBinding: Provider = {
  */
 @Directive({
   selector: '[formControlName]',
-  providers: [controlNameBinding, NG_CONTROL_PARSE_ERRORS_PROVIDER],
+  providers: [controlNameBinding, NG_CONTROL_INTEGRATION_PROVIDER],
   standalone: false,
 })
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
@@ -267,10 +267,16 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
       return;
     }
 
-    // this.control is typically initialized by `ngOnChanges`, however `ɵngControlUpdate` fires
-    // first. So, we're responsible for initializing it here.
-    if (!this._added) this._setUpControl();
-    super.ngControlUpdate(host, true);
+    // `ɵngControlUpdate` runs during `executeTemplate`, before `ngOnChanges` calls
+    // `_setUpControl()` (which sets `_added = true`). Resolve `this.control` early so
+    // `super.ngControlUpdate` can bind initial state and track reactive signals, while
+    // leaving `_setUpControl()` to `ngOnChanges`.
+    if (!this.control) {
+      const control = this.formDirective?.getControl(this);
+      if (!control) return;
+      (this as Writable<this>).control = control;
+    }
+    super.ngControlUpdate(host);
   }
 }
 

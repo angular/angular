@@ -10,12 +10,13 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {getDocument} from '../render3/interfaces/document';
-import {TNodeType} from '../render3/interfaces/node';
+import {TNode, TNodeName, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {ENVIRONMENT} from '../render3/interfaces/view';
-import {getLView, getSelectedTNode} from '../render3/state';
+import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode} from '../render3/util/view_utils';
+import {NAMESPACE_URIS} from '../render3/namespaces';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {
@@ -25,11 +26,12 @@ import {
 } from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './security';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {checkSecurityContext, SecurityContext, SVG_NAMESPACE} from './dom_security_schema';
+import {_sanitizeUrl} from './url_sanitizer';
+import {splitNsName} from '../render3/util/tags';
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -46,7 +48,19 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML | string {
+export function ɵɵsanitizeHtml(
+  unsafeHtml: any,
+  tagName?: string,
+  propName?: string,
+): TrustedHTML | string {
+  if (
+    tagName !== undefined &&
+    propName !== undefined &&
+    getSecurityContext(tagName, propName) !== SecurityContext.HTML
+  ) {
+    return unsafeHtml;
+  }
+
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
@@ -110,10 +124,12 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  * A `url` sanitizer which only lets trusted `url`s through.
  *
  * This passes only `url`s marked trusted by calling {@link bypassSanitizationTrustResourceUrl}.
+ * `null` and `undefined` are not considered unsafe and are mapped to an empty string, so that a
+ * resource URL binding can be cleared without having to provide a trusted placeholder value.
  *
  * @param unsafeResourceUrl untrusted `url`, typically from the user.
- * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
- * only trusted `url`s have been allowed to pass.
+ * @returns `url` string which is safe to bind to the `src` properties such as `<iframe src>`,
+ * because only trusted `url`s have been allowed to pass.
  *
  * @codeGenApi
  */
@@ -123,6 +139,11 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
     return trustedScriptURLFromStringBypass(
       sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '',
     );
+  }
+  if (unsafeResourceUrl == null) {
+    // Consistent with `DomSanitizer.sanitize`, which returns `null` for nullish values: there is
+    // nothing to sanitize, and setting the property to `''` avoids a request to `'undefined'`.
+    return trustedScriptURLFromStringBypass('');
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
@@ -213,24 +234,22 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
   return trustedScriptURLFromString(url[0]);
 }
 
-// Define sets outside the function for O(1) lookups and memory efficiency
-const SRC_RESOURCE_TAGS = new Set(['embed', 'frame', 'iframe', 'media', 'script']);
-const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
-
 /**
  * Detects which sanitizer to use for URL property, based on tag name and prop name.
  *
- * The rules are based on the RESOURCE_URL context config from
+ * The rules are based on the URL and RESOURCE_URL context config from
  * `packages/compiler/src/schema/dom_security_schema.ts`.
- * If tag and prop names don't match Resource URL schema, use URL sanitizer.
+ * If tag and prop names don't match URL or Resource URL schema, no sanitizer is required.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const isResource =
-    (prop === 'src' && SRC_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'href' && HREF_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'xlink:href' && tag === 'script');
-
-  return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
+  switch (getSecurityContext(tag, prop)) {
+    case SecurityContext.RESOURCE_URL:
+      return ɵɵsanitizeResourceUrl;
+    case SecurityContext.URL:
+      return ɵɵsanitizeUrl;
+    default:
+      return null;
+  }
 }
 
 /**
@@ -248,26 +267,23 @@ export function getUrlSanitizer(tag: string, prop: string) {
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
-  return getUrlSanitizer(tag, prop)(unsafeUrl);
+export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string) {
+  return getUrlSanitizer(tag, prop)?.(unsafeUrl) ?? unsafeUrl;
 }
 
 export function validateAgainstEventProperties(name: string) {
-  if (name.toLowerCase().startsWith('on')) {
-    const errorMessage =
-      `Binding to event property '${name}' is disallowed for security reasons, ` +
-      `please use (${name.slice(2)})=...` +
-      `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
-      ` current module.`;
+  if (name.startsWith(':')) {
+    const errorMessage = `Invalid property name '${name}'. Property names cannot start with a colon.`;
     throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
   }
-}
-
-export function validateAgainstEventAttributes(name: string) {
-  if (name.toLowerCase().startsWith('on')) {
+  const colonIdx = name.lastIndexOf(':');
+  const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+  if (localName.toLowerCase().startsWith('on')) {
     const errorMessage =
-      `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-      `please use (${name.slice(2)})=...`;
+      `Binding to event property '${name}' is disallowed for security reasons, ` +
+      `please use (${localName.slice(2)})=...` +
+      `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+      ` current module.`;
     throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
   }
 }
@@ -277,25 +293,56 @@ function getSanitizer(): Sanitizer | null {
   return lView && lView[ENVIRONMENT].sanitizer;
 }
 
-const attributeName: ReadonlySet<string> = new Set(['attributename']);
+function getSecurityContext(tagName: string, propName: string): SecurityContext {
+  const [namespace, resolvedTagName] = resolveElement(tagName);
+  return checkSecurityContext(resolvedTagName, propName, namespace);
+}
+
+function resolveElement(tagName: string): [namespace: string | null | undefined, tagName: string] {
+  tagName = tagName.toLowerCase();
+  const splitResult = splitNsName(tagName, false);
+  if (splitResult[0]) {
+    return splitResult;
+  }
+
+  const index = getSelectedIndex();
+  const tNode = index === -1 ? null : getSelectedTNode();
+  let namespace = tNode?.namespace;
+
+  if (tagName === TNodeName.DynamicHost && tNode?.type === TNodeType.Element) {
+    const element = getNativeByTNode(tNode, getLView()) as RElement;
+    if (element.tagName) {
+      tagName = element.tagName.toLowerCase();
+    }
+
+    if (namespace == null) {
+      const namespaceURI = (element as RElement & {namespaceURI?: string | null}).namespaceURI;
+      namespace = namespaceURI && NAMESPACE_URIS[namespaceURI];
+    }
+  }
+
+  return [namespace, tagName];
+}
+
+/**
+ * Set of attributes that are sensitive and should be sanitized.
+ */
+const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href', 'xlink:href']);
 
 /**
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>> = {
-  'iframe': new Set([
-    'sandbox',
-    'allow',
-    'allowfullscreen',
-    'referrerpolicy',
-    'csp',
-    'fetchpriority',
-  ]),
-  'animate': attributeName,
-  'set': attributeName,
-  'animatemotion': attributeName,
-  'animatetransform': attributeName,
+const SVG_ANIMATION_SENSITIVE_STATIC_VALUES: Record<
+  string,
+  Record<string, ReadonlySet<string>> | undefined
+> = {
+  'animate': {
+    'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+    'values': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+    'from': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+  },
+  'set': {'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES},
 };
 
 /**
@@ -306,30 +353,75 @@ const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>>
  * @param attributeName The name of the attribute.
  */
 export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
-  const lowerCaseTagName = tagName.toLowerCase();
-  const lowerCaseAttrName = attributeName.toLowerCase();
-  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {
+  const index = getSelectedIndex();
+  const tNode: TNode | null = index === -1 ? null : getSelectedTNode();
+  if (tNode && tNode.type !== TNodeType.Element) {
     return value;
   }
 
-  const tNode = getSelectedTNode()!;
-  if (tNode.type !== TNodeType.Element) {
+  const [namespace, resolvedTagName] = resolveElement(tagName);
+  const securityContext = checkSecurityContext(resolvedTagName, attributeName, namespace);
+
+  if (securityContext !== SecurityContext.ATTRIBUTE_NO_BINDING) {
     return value;
   }
 
   const lView = getLView();
-  if (lowerCaseTagName === 'iframe') {
-    const element = getNativeByTNode(tNode, lView) as RElement;
-    enforceIframeSecurity(element as HTMLIFrameElement);
+  if (tNode) {
+    if (resolvedTagName === 'iframe') {
+      const element = getNativeByTNode(tNode, lView) as RElement;
+      enforceIframeSecurity(element as HTMLIFrameElement);
+    } else if (namespace === SVG_NAMESPACE || !namespace) {
+      const config =
+        SVG_ANIMATION_SENSITIVE_STATIC_VALUES[resolvedTagName]?.[attributeName.toLowerCase()];
+      if (config) {
+        const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
+        const attributeNameValue = getSecuritySensitiveSVGAnimationAttributeName(element, config);
+
+        if (attributeNameValue) {
+          const errorMessage =
+            ngDevMode &&
+            `Angular has detected that the \`${attributeName}\` was applied ` +
+              `as a binding to the <${resolvedTagName}> element${getTemplateLocationDetails(lView)}. ` +
+              `For security reasons, the \`${attributeName}\` can be set on the <${resolvedTagName}> element ` +
+              `as a static attribute only when the "attributeName" is set to \'${attributeNameValue}\'. \n` +
+              `To fix this, switch the \`${attributeNameValue}\` binding to a static attribute ` +
+              `in a template or in host bindings section.`;
+
+          throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+        }
+
+        return value;
+      }
+    }
   }
 
   const errorMessage =
     ngDevMode &&
     `Angular has detected that the \`${attributeName}\` was applied ` +
-      `as a binding to the <${tagName}> element${getTemplateLocationDetails(lView)}. ` +
-      `For security reasons, the \`${attributeName}\` can be set on the <${tagName}> element ` +
+      `as a binding to the <${resolvedTagName}> element${tNode ? getTemplateLocationDetails(lView) : ''}. ` +
+      `For security reasons, the \`${attributeName}\` can be set on the <${resolvedTagName}> element ` +
       `as a static attribute only. \n` +
       `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +
       `in a template or in host bindings section.`;
+
   throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+}
+
+function getSecuritySensitiveSVGAnimationAttributeName(
+  element: SVGAnimateElement,
+  validationConfig: ReadonlySet<string>,
+): string | null {
+  for (const attributeName of element.getAttributeNames()) {
+    if (attributeName.toLowerCase() !== 'attributename') {
+      continue;
+    }
+
+    const attributeNameValue = element.getAttribute(attributeName);
+    if (attributeNameValue !== null && validationConfig.has(attributeNameValue.toLowerCase())) {
+      return attributeNameValue;
+    }
+  }
+
+  return null;
 }

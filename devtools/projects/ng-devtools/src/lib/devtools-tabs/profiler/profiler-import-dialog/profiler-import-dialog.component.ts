@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef, MatDialogClose} from '@angular/material/dialog';
 import {ButtonComponent} from '../../../shared/button/button.component';
 
@@ -22,7 +22,6 @@ interface DialogData {
   templateUrl: './profiler-import-dialog.component.html',
   styleUrls: ['./profiler-import-dialog.component.scss'],
   imports: [MatDialogClose, ButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilerImportDialogComponent {
   public dialogRef = inject<MatDialogRef<ProfilerImportDialogComponent>>(MatDialogRef);

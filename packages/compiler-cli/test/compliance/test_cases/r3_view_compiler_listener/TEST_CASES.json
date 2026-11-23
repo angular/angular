@@ -51,22 +51,7 @@
       "inputFiles": ["local_ref_before_listener.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "local_ref_before_listener.js",
-              "generated": "local_ref_before_listener.js"
-            }
-          ],
-          "failureMessage": "Incorrect template"
-        },
-        {
-          "files": [
-            {
-              "expected": "local_ref_before_listener_factory.js",
-              "generated": "local_ref_before_listener.js"
-            }
-          ],
-          "failureMessage": "Incorrect factory"
+          "files": ["local_ref_before_listener.js"]
         }
       ]
     },
@@ -154,6 +139,21 @@
             {
               "expected": "has_event_arg_host_listener_host_bindings.js",
               "generated": "has_event_arg_host_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
+      "description": "should generate host listeners for a decorator on a property holding a function",
+      "inputFiles": ["host_listener_property.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "host_listener_property_host_bindings.js",
+              "generated": "host_listener_property.js"
             }
           ],
           "failureMessage": "Incorrect event listener"

@@ -234,38 +234,73 @@ a.gradient-button:focus-visible span:nth-of-type(2) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 50%;
+  width: min(90%, 480px);
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  gap: 1rem;
   padding: 2rem;
   z-index: 10;
 }
 
-svg.personified {
-  height: 125px;
+.angie-reaction {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
 }
 
-.personified .g {
-  fill: #fff;
+.personified {
+  height: 160px;
+  width: auto;
+  flex: none;
+  animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.personified .h {
-  stroke-miterlimit: 10;
-  stroke-width: 4px;
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-.personified .h,
-.personified .i {
-  fill: none;
-  stroke: #000;
-  stroke-linecap: round;
+.result-quote {
+  position: relative;
+  margin-top: 2rem;
+  max-width: 32ch;
+  padding: 0.85rem 1.25rem;
+  border-radius: 1rem;
+  background: #f1f1f3;
+  text-align: center;
+  animation: fade-in 0.4s ease 0.15s both;
 }
 
-.personified .i {
-  stroke-linejoin: round;
-  stroke-width: 3px;
+.result-quote::before {
+  content: '';
+  position: absolute;
+  top: 1.1rem;
+  left: -0.4rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #close {

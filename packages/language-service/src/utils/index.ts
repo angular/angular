@@ -24,15 +24,16 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  AbsoluteFsPath,
+  DeclarationNode,
+  DirectiveSymbol,
+  isExternalResource,
+  NgCompiler,
+  TemplateTypeChecker,
   absoluteFrom,
   absoluteFromSourceFile,
-  AbsoluteFsPath,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {
@@ -76,7 +77,7 @@ interface NodeWithKeyAndValue extends TmplAstNode {
 export function isTemplateNodeWithKeyAndValue(
   node: TmplAstNode | AST,
 ): node is NodeWithKeyAndValue {
-  return isTemplateNode(node) && node.hasOwnProperty('keySpan');
+  return isTemplateNode(node) && Object.hasOwn(node, 'keySpan');
 }
 
 export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolean {

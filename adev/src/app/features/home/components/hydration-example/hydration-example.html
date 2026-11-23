@@ -57,8 +57,7 @@
                 <span class="log-tag">event:</span>
                 <span class="log-msg">{{ evt }}</span>
               </div>
-            }
-            @if (eventQueue().length === 0) {
+            } @empty {
               <div class="log-placeholder">Awaiting app bootstrap...</div>
             }
           </div>

@@ -7,22 +7,21 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {expect} from '@angular/private/testing/matchers';
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
+  forwardRef,
   Inject,
   Injectable,
   InjectionToken,
   Input,
   NgModule,
-  OnChanges,
   OnDestroy,
   Pipe,
   PipeTransform,
-  provideZoneChangeDetection,
-  SimpleChanges,
+  signal,
   ViewChild,
   ɵɵdefineInjectable,
   ɵɵdefinePipe,
@@ -30,12 +29,10 @@ import {
   ɵɵinject,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {expect} from '@angular/private/testing/matchers';
 
 describe('pipe', () => {
   @Pipe({
     name: 'countingPipe',
-    standalone: false,
   })
   class CountingPipe implements PipeTransform {
     state: number = 0;
@@ -46,7 +43,6 @@ describe('pipe', () => {
 
   @Pipe({
     name: 'multiArgPipe',
-    standalone: false,
   })
   class MultiArgPipe implements PipeTransform {
     transform(value: any, arg1: any, arg2: any, arg3 = 'default') {
@@ -57,13 +53,12 @@ describe('pipe', () => {
   it('should support interpolation', () => {
     @Component({
       template: '{{person.name | countingPipe}}',
-      standalone: false,
+      imports: [CountingPipe],
     })
     class App {
       person = {name: 'bob'};
     }
 
-    TestBed.configureTestingModule({declarations: [App, CountingPipe]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -73,7 +68,6 @@ describe('pipe', () => {
   it('should support bindings', () => {
     @Directive({
       selector: '[my-dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dirProp: string = '';
@@ -81,7 +75,6 @@ describe('pipe', () => {
 
     @Pipe({
       name: 'double',
-      standalone: false,
     })
     class DoublePipe implements PipeTransform {
       transform(value: any) {
@@ -91,13 +84,12 @@ describe('pipe', () => {
 
     @Component({
       template: `<div my-dir [dirProp]="'a' | double"></div>`,
-      standalone: false,
+      imports: [Dir, DoublePipe],
     })
     class App {
       @ViewChild(Dir) directive!: Dir;
     }
 
-    TestBed.configureTestingModule({declarations: [App, DoublePipe, Dir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -107,13 +99,12 @@ describe('pipe', () => {
   it('should support arguments in pipes', () => {
     @Component({
       template: `{{ person.name | multiArgPipe: 'one' : person.address.city }}`,
-      standalone: false,
+      imports: [MultiArgPipe],
     })
     class App {
       person = {name: 'value', address: {city: 'two'}};
     }
 
-    TestBed.configureTestingModule({declarations: [App, MultiArgPipe]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -123,13 +114,12 @@ describe('pipe', () => {
   it('should support calling pipes with different number of arguments', () => {
     @Component({
       template: `{{ person.name | multiArgPipe: 'a' : 'b' }} {{ 0 | multiArgPipe: 1 : 2 : 3 }}`,
-      standalone: false,
+      imports: [MultiArgPipe],
     })
     class App {
       person = {name: 'value'};
     }
 
-    TestBed.configureTestingModule({declarations: [App, MultiArgPipe]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -164,7 +154,6 @@ describe('pipe', () => {
     }
 
     @Component({
-      selector: 'app',
       template: '{{ count | number }}',
       standalone: false,
     })
@@ -216,7 +205,6 @@ describe('pipe', () => {
     class ModuleB {}
 
     @Component({
-      selector: 'app',
       template: '{{ count | number }}',
       standalone: false,
     })
@@ -239,7 +227,6 @@ describe('pipe', () => {
 
     @Pipe({
       name: 'identityPipe',
-      standalone: false,
     })
     class IdentityPipe implements PipeTransform {
       transform(value: any) {
@@ -250,13 +237,12 @@ describe('pipe', () => {
 
     @Component({
       template: `{{ person.name | identityPipe }}`,
-      standalone: false,
+      imports: [IdentityPipe],
     })
     class App {
       person = {name: 'Megatron'};
     }
 
-    TestBed.configureTestingModule({declarations: [App, IdentityPipe]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -270,7 +256,6 @@ describe('pipe', () => {
   it('should support duplicates by using the later entry', () => {
     @Pipe({
       name: 'duplicatePipe',
-      standalone: false,
     })
     class DuplicatePipe1 implements PipeTransform {
       transform(value: any) {
@@ -280,7 +265,6 @@ describe('pipe', () => {
 
     @Pipe({
       name: 'duplicatePipe',
-      standalone: false,
     })
     class DuplicatePipe2 implements PipeTransform {
       transform(value: any) {
@@ -290,23 +274,21 @@ describe('pipe', () => {
 
     @Component({
       template: '{{person.name | duplicatePipe}}',
-      standalone: false,
+      imports: [DuplicatePipe1, DuplicatePipe2],
     })
     class App {
       person = {name: 'bob'};
     }
 
-    TestBed.configureTestingModule({declarations: [App, DuplicatePipe1, DuplicatePipe2]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toEqual('bob from duplicate 2');
   });
 
-  it('should support pipe in context of ternary operator', () => {
+  it('should support pipe in context of ternary operator', async () => {
     @Pipe({
       name: 'pipe',
-      standalone: false,
     })
     class MyPipe implements PipeTransform {
       transform(value: any): any {
@@ -315,22 +297,19 @@ describe('pipe', () => {
     }
 
     @Component({
-      template: `{{ condition ? 'a' : ('b' | pipe) }}`,
-      standalone: false,
+      template: `{{ condition() ? 'a' : ('b' | pipe) }}`,
+      imports: [MyPipe],
     })
     class App {
-      condition = false;
+      condition = signal(false);
     }
 
-    TestBed.configureTestingModule({declarations: [App, MyPipe]});
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-
+    await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('b');
 
-    fixture.componentInstance.condition = true;
-    fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    fixture.componentInstance.condition.set(true);
+    await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('a');
   });
 
@@ -371,7 +350,6 @@ describe('pipe', () => {
     }
 
     @Component({
-      selector: 'app',
       template: '{{ value | sayHello }}',
       imports: [SayHelloPipe],
     })
@@ -385,46 +363,40 @@ describe('pipe', () => {
   });
 
   describe('pure', () => {
-    it('should call pure pipes only if the arguments change', () => {
+    it('should call pure pipes only if the arguments change', async () => {
       @Component({
-        template: '{{person.name | countingPipe}}',
-        standalone: false,
+        template: '{{person().name | countingPipe}}',
+        imports: [CountingPipe],
       })
       class App {
-        person = {name: null as string | null};
+        person = signal({name: null as string | null});
       }
 
-      TestBed.configureTestingModule({declarations: [App, CountingPipe]});
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // change from undefined -> null
-      fixture.componentInstance.person.name = null;
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      fixture.componentInstance.person.set({name: null});
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('null state:0');
 
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('null state:0');
 
       // change from null -> some value
-      fixture.componentInstance.person.name = 'bob';
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      fixture.componentInstance.person.set({name: 'bob'});
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bob state:1');
 
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bob state:1');
 
       // change from some value -> some other value
-      fixture.componentInstance.person.name = 'bart';
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      fixture.componentInstance.person.set({name: 'bart'});
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bart state:2');
 
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bart state:2');
     });
   });
@@ -435,7 +407,6 @@ describe('pipe', () => {
     @Pipe({
       name: 'countingImpurePipe',
       pure: false,
-      standalone: false,
     })
     class CountingImpurePipe implements PipeTransform {
       state: number = 0;
@@ -447,33 +418,35 @@ describe('pipe', () => {
       }
     }
 
-    beforeEach(() => (impurePipeInstances = []));
-    afterEach(() => (impurePipeInstances = []));
+    beforeEach(() => {
+      impurePipeInstances = [];
+    });
+    afterEach(() => {
+      impurePipeInstances = [];
+    });
 
-    it('should call impure pipes on each change detection run', () => {
+    it('should call impure pipes on each change detection run', async () => {
       @Component({
-        template: '{{person.name | countingImpurePipe}}',
-        standalone: false,
+        template: '{{person().name | countingImpurePipe}}',
+        imports: [CountingImpurePipe],
       })
       class App {
-        person = {name: 'bob'};
+        person = signal({name: 'bob'});
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, CountingImpurePipe],
-        providers: [provideZoneChangeDetection()],
-      });
       const fixture = TestBed.createComponent(App);
       const pipe = impurePipeInstances[0];
 
       spyOn(pipe, 'transform').and.returnValue('');
       expect(pipe.transform).not.toHaveBeenCalled();
 
-      fixture.detectChanges();
-      expect(pipe.transform).toHaveBeenCalledTimes(2);
+      await fixture.whenStable();
+      expect(pipe.transform).toHaveBeenCalledTimes(1);
 
-      fixture.detectChanges();
-      expect(pipe.transform).toHaveBeenCalledTimes(4);
+      // Pipe sees the same name, should still be invoked
+      fixture.componentInstance.person.set({name: 'bob'});
+      await fixture.whenStable();
+      expect(pipe.transform).toHaveBeenCalledTimes(2);
     });
 
     it('should not cache impure pipes', () => {
@@ -482,11 +455,10 @@ describe('pipe', () => {
           <div [id]="0 | countingImpurePipe">{{ 1 | countingImpurePipe }}</div>
           <div [id]="2 | countingImpurePipe">{{ 3 | countingImpurePipe }}</div>
         `,
-        standalone: false,
+        imports: [CountingImpurePipe],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, CountingImpurePipe]});
       TestBed.createComponent(App);
 
       expect(impurePipeInstances.length).toEqual(4);
@@ -506,7 +478,6 @@ describe('pipe', () => {
 
       @Pipe({
         name: 'pipeWithOnDestroy',
-        standalone: false,
       })
       class PipeWithOnDestroy implements PipeTransform, OnDestroy {
         ngOnDestroy() {
@@ -519,11 +490,10 @@ describe('pipe', () => {
 
       @Component({
         template: '{{1 | pipeWithOnDestroy}}',
-        standalone: false,
+        imports: [PipeWithOnDestroy],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, PipeWithOnDestroy]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -541,7 +511,6 @@ describe('pipe', () => {
 
       @Pipe({
         name: 'myConcatPipe',
-        standalone: false,
       })
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
@@ -552,13 +521,13 @@ describe('pipe', () => {
 
       @Component({
         template: '{{title | myConcatPipe}}',
-        standalone: false,
+        imports: [ConcatPipe],
       })
       class App {
         title = 'MyComponent Title';
       }
 
-      TestBed.configureTestingModule({declarations: [App, ConcatPipe], providers: [Service]});
+      TestBed.configureTestingModule({providers: [Service]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -574,7 +543,6 @@ describe('pipe', () => {
 
       @Pipe({
         name: 'myConcatPipe',
-        standalone: false,
       })
       class ConcatPipe implements PipeTransform {
         constructor(@Inject(token) public service: Service) {}
@@ -585,14 +553,13 @@ describe('pipe', () => {
 
       @Component({
         template: '{{title | myConcatPipe}}',
-        standalone: false,
+        imports: [ConcatPipe],
       })
       class App {
         title = 'MyComponent Title';
       }
 
       TestBed.configureTestingModule({
-        declarations: [App, ConcatPipe],
         providers: [{provide: token, useValue: new Service()}],
       });
       const fixture = TestBed.createComponent(App);
@@ -640,10 +607,8 @@ describe('pipe', () => {
       let pipeChangeDetectorRef: ChangeDetectorRef | undefined;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         selector: 'some-comp',
         template: 'Inner value: "{{displayValue}}"',
-        standalone: false,
       })
       class SomeComp {
         @Input() value: any;
@@ -651,12 +616,12 @@ describe('pipe', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           <some-comp [value]="pipeValue | testPipe"></some-comp>
           Outer value: "{{ displayValue }}"
         `,
-        standalone: false,
+
+        imports: [SomeComp, forwardRef(() => TestPipe)],
       })
       class App {
         @Input() something: any;
@@ -667,7 +632,6 @@ describe('pipe', () => {
 
       @Pipe({
         name: 'testPipe',
-        standalone: false,
       })
       class TestPipe implements PipeTransform {
         constructor(changeDetectorRef: ChangeDetectorRef) {
@@ -679,7 +643,6 @@ describe('pipe', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -696,10 +659,8 @@ describe('pipe', () => {
       let pipeChangeDetectorRef: ChangeDetectorRef | undefined;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         selector: 'some-comp',
         template: 'Inner value: "{{displayValue}}" <ng-content></ng-content>',
-        standalone: false,
       })
       class SomeComp {
         @Input() value: any;
@@ -707,14 +668,14 @@ describe('pipe', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           <some-comp [value]="pipeValue | testPipe">
             <div>Hello</div>
           </some-comp>
           Outer value: "{{ displayValue }}"
         `,
-        standalone: false,
+
+        imports: [SomeComp, forwardRef(() => TestPipe)],
       })
       class App {
         @Input() something: any;
@@ -725,7 +686,6 @@ describe('pipe', () => {
 
       @Pipe({
         name: 'testPipe',
-        standalone: false,
       })
       class TestPipe implements PipeTransform {
         constructor(changeDetectorRef: ChangeDetectorRef) {
@@ -737,7 +697,6 @@ describe('pipe', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -752,33 +711,22 @@ describe('pipe', () => {
   });
 
   describe('pure pipe error handling', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        providers: [provideZoneChangeDetection()],
-      });
-    });
     it('should not re-invoke pure pipes if it fails initially', () => {
-      @Pipe({
-        name: 'throwPipe',
-        pure: true,
-        standalone: false,
-      })
+      @Pipe({name: 'throwPipe'})
       class ThrowPipe implements PipeTransform {
-        transform(): never {
+        transform(val: string): never {
           throw new Error('ThrowPipeError');
         }
       }
       @Component({
-        template: `{{ val | throwPipe }}`,
-        standalone: false,
+        template: `{{ val() | throwPipe }}`,
+        imports: [ThrowPipe],
       })
       class App {
-        val = 'anything';
+        val = signal('anything');
       }
 
-      const fixture = TestBed.configureTestingModule({
-        declarations: [App, ThrowPipe],
-      }).createComponent(App);
+      const fixture = TestBed.createComponent(App);
 
       // first invocation
       expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
@@ -788,11 +736,7 @@ describe('pipe', () => {
     });
 
     it('should display the last known result from a pure pipe when it throws', () => {
-      @Pipe({
-        name: 'throwPipe',
-        pure: true,
-        standalone: false,
-      })
+      @Pipe({name: 'throwPipe'})
       class ThrowPipe implements PipeTransform {
         transform(value: string): string {
           if (value === 'KO') {
@@ -804,23 +748,21 @@ describe('pipe', () => {
       }
 
       @Component({
-        template: `{{ val | throwPipe }}`,
-        standalone: false,
+        template: `{{ val() | throwPipe }}`,
+        imports: [ThrowPipe],
       })
       class App {
-        val = 'anything';
+        val = signal('anything');
       }
 
-      const fixture = TestBed.configureTestingModule({
-        declarations: [App, ThrowPipe],
-      }).createComponent(App);
+      const fixture = TestBed.createComponent(App);
 
       // first invocation - no error thrown
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('anything');
 
       // second invocation when the error is thrown
-      fixture.componentInstance.val = 'KO';
+      fixture.componentInstance.val.set('KO');
       expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
       expect(fixture.nativeElement.textContent).toBe('anything');
 
@@ -836,28 +778,22 @@ describe('pipe', () => {
         it(`should not invoke ${numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`, () => {
           // https://stackblitz.com/edit/angular-mbx2pg
           const log: string[] = [];
-          @Pipe({
-            name: 'throw',
-            pure: true,
-            standalone: false,
-          })
+          @Pipe({name: 'throw'})
           class ThrowPipe implements PipeTransform {
-            transform(): never {
+            transform(_: string): never {
               log.push('throw');
               throw new Error('ThrowPipeError');
             }
           }
           @Component({
-            template: `{{ val | throw${args.slice(0, numberOfPipeArgs).join('')} }}`,
-            standalone: false,
+            template: `{{ val() | throw${args.slice(0, numberOfPipeArgs).join('')} }}`,
+            imports: [ThrowPipe],
           })
           class App {
-            val = 'anything';
+            val = signal('anything');
           }
 
-          const fixture = TestBed.configureTestingModule({
-            declarations: [App, ThrowPipe],
-          }).createComponent(App);
+          const fixture = TestBed.createComponent(App);
           // First invocation of detect changes should throw.
           expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
           expect(log).toEqual(['throw']);
@@ -866,7 +802,7 @@ describe('pipe', () => {
           log.length = 0;
           expect(() => fixture.detectChanges()).not.toThrow();
           expect(log).toEqual([]);
-          fixture.componentInstance.val = 'change';
+          fixture.componentInstance.val.set('change');
           // First invocation of detect changes should throw because the input changed.
           expect(() => fixture.detectChanges()).toThrowError(/ThrowPipeError/);
           expect(log).toEqual(['throw']);

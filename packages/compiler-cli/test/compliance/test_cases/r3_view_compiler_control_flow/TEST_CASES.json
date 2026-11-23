@@ -512,6 +512,21 @@
       ]
     },
     {
+      "description": "should generate an if block with namespaced element root nodes",
+      "inputFiles": ["if_namespaced_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_namespaced_root_node_template.js",
+              "generated": "if_namespaced_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate an if block with an ng-template root node",
       "inputFiles": ["if_template_root_node.ts"],
       "expectations": [
@@ -723,6 +738,28 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support expressions requiring temporary variables inside `track` with legacyOptionalChaining",
+      "inputFiles": ["for_track_by_temporary_variables_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "for_track_by_temporary_variables_template_use_null.js",
+              "generated": "for_track_by_temporary_variables_use_null.js"
+            }
+          ]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
     },
     {
       "description": "should support `as` expression on `@else if` block",

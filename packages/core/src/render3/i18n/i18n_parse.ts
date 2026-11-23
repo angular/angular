@@ -9,14 +9,18 @@ import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
-import {
-  getTemplateContent,
-  SENSITIVE_ATTRS,
-  VALID_ATTRS,
-  VALID_ELEMENTS,
-} from '../../sanitization/html_sanitizer';
+import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
+import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
-import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
+import {
+  ɵɵsanitizeHtml as _sanitizeHtml,
+  ɵɵsanitizeResourceUrl as _sanitizeResourceUrl,
+  ɵɵsanitizeScript as _sanitizeScript,
+  ɵɵsanitizeStyle as _sanitizeStyle,
+  ɵɵsanitizeUrl as _sanitizeUrl,
+  ɵɵvalidateAttribute as _validateAttribute,
+} from '../../sanitization/sanitization';
 import {
   assertDefined,
   assertEqual,
@@ -25,6 +29,7 @@ import {
   assertString,
 } from '../../util/assert';
 import {CharCode} from '../../util/char_code';
+import {getFirstChild, getNextSibling, getNodeName} from '../../util/dom';
 import {loadIcuContainerVisitor} from './i18n_icu_container_visitor';
 
 import {getDocument} from '../interfaces/document';
@@ -53,6 +58,8 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
 
+import {createTNodeAtIndex} from '../tnode_manipulation';
+import {allocExpando} from '../view/construction';
 import {
   i18nCreateOpCodesToString,
   i18nRemoveOpCodesToString,
@@ -68,11 +75,11 @@ import {
   setTIcu,
   setTNodeInsertBeforeIndex,
 } from './i18n_util';
-import {createTNodeAtIndex} from '../tnode_manipulation';
-import {allocExpando} from '../view/construction';
+import {splitNsName} from '../util/tags';
+import {NAMESPACE_URIS} from '../namespaces';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
-const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
+const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/i;
 const NESTED_ICU = /�(\d+)�/;
 const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 
@@ -172,11 +179,20 @@ export function i18nStartFirstCreatePass(
           // Verify that ICU expression has the right shape. Translations might contain invalid
           // constructions (while original messages were correct), so ICU parsing at runtime may
           // not succeed (thus `icuExpression` remains a string).
-          // Note: we intentionally retain the error here by not using `ngDevMode`, because
-          // the value can change based on the locale and users aren't guaranteed to hit
-          // an invalid string while they're developing.
+          // Note: we intentionally throw the error in production mode as well (only the
+          // message is guarded by `ngDevMode`), because the value can change based on the
+          // locale and users aren't guaranteed to hit an invalid string while they're
+          // developing.
           if (typeof icuExpression !== 'object') {
-            throw new Error(`Unable to parse ICU expression in "${message}" message.`);
+            throw new RuntimeError(
+              RuntimeErrorCode.UNPARSABLE_ICU_EXPRESSION,
+              ngDevMode &&
+                `Unable to parse ICU expression in "${message}" message. ` +
+                  `Check that the translation contains a valid ICU expression. ` +
+                  `Note that ICU expressions in translations are only supported if the ` +
+                  `original message contains an ICU expression as well: introducing an ` +
+                  `ICU expression solely in a translation is not supported.`,
+            );
           }
           const icuContainerTNode = createTNodeAndAddOpCode(
             tView,
@@ -382,13 +398,16 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
         // the compiler treats static i18n attributes as regular attribute bindings.
         // Since this may not be the first i18n attribute on this element we need to pass in how
         // many previous bindings there have already been.
+        const tagName = previousElement.namespace
+          ? `:${previousElement.namespace}:${previousElement.value}`
+          : previousElement.value;
         generateBindingUpdateOpCodes(
           updateOpCodes,
           message,
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          SENSITIVE_ATTRS[attrName.toLowerCase()] ? _sanitizeUrl : null,
+          i18nResolveSanitizer(attrName, tagName),
         );
       }
     }
@@ -652,7 +671,7 @@ function parseICUBlock(pattern: string): IcuExpression {
 
   const parts = i18nParseTextIntoPartsAndICU(pattern) as string[];
   // Looking for (key block)+ sequence. One of the keys has to be "other".
-  for (let pos = 0; pos < parts.length; ) {
+  for (let pos = 0; pos < parts.length;) {
     let key = parts[pos++].trim();
     if (icuType === IcuType.plural) {
       // Key can be "=x", we just want "x"
@@ -793,30 +812,49 @@ function walkIcuTree(
   depth: number,
 ): number {
   let bindingMask = 0;
-  let currentNode = parentNode.firstChild;
+  let currentNode = getFirstChild(parentNode);
   while (currentNode) {
     const newIndex = allocExpando(tView, lView, 1, null);
     switch (currentNode.nodeType) {
       case Node.ELEMENT_NODE:
         const element = currentNode as Element;
-        const tagName = element.tagName.toLowerCase();
-        if (VALID_ELEMENTS.hasOwnProperty(tagName)) {
+        const tagName = getNodeName(element).toLowerCase();
+        if (Object.hasOwn(VALID_ELEMENTS, tagName)) {
           addCreateNodeAndAppend(create, ELEMENT_MARKER, tagName, parentIdx, newIndex);
           tView.data[newIndex] = tagName;
           const elAttrs = element.attributes;
           for (let i = 0; i < elAttrs.length; i++) {
             const attr = elAttrs.item(i)!;
+            if (ngDevMode && isBindingLikeAttributeName(attr.name)) {
+              // Directives and bindings are not supported inside ICU expressions, since ICU
+              // content is processed at runtime as plain HTML. Such attributes are dropped
+              // below as unknown attributes; explain why instead of reporting them as unsafe.
+              console.warn(
+                formatRuntimeError(
+                  RuntimeErrorCode.INVALID_I18N_STRUCTURE,
+                  `ICU expressions cannot contain bindings or structural directives. ` +
+                    `The attribute "${attr.name}" on the <${tagName}> element inside an ICU ` +
+                    `expression is not supported and will be ignored. ` +
+                    `Only static attributes are allowed inside ICU cases.`,
+                ),
+              );
+              continue;
+            }
             const lowerAttrName = attr.name.toLowerCase();
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
+            const namespaceUri = element.namespaceURI;
+            const namespace = namespaceUri && NAMESPACE_URIS[namespaceUri];
+            const tagNameWithNamespace = namespace ? `:${namespace}:${tagName}` : tagName;
+
             if (hasBinding) {
-              if (VALID_ATTRS.hasOwnProperty(lowerAttrName)) {
+              if (Object.hasOwn(VALID_ATTRS, lowerAttrName)) {
                 generateBindingUpdateOpCodes(
                   update,
                   attr.value,
                   newIndex,
                   attr.name,
                   0,
-                  SENSITIVE_ATTRS[lowerAttrName] ? _sanitizeUrl : null,
+                  i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace),
                 );
               } else {
                 ngDevMode &&
@@ -827,9 +865,9 @@ function walkIcuTree(
                   );
               }
             } else if (VALID_ATTRS[lowerAttrName]) {
-              if (SENSITIVE_ATTRS[lowerAttrName]) {
-                // Don't sanitize, because no value is acceptable in sensitive attributes.
-                // Translators are not allowed to create URIs.
+              let val = attr.value;
+              const sanitizer = i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace);
+              if (sanitizer) {
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   console.warn(
                     `WARNING: ignoring unsafe attribute ` +
@@ -837,9 +875,10 @@ function walkIcuTree(
                       `(see ${XSS_SECURITY_URL})`,
                   );
                 }
+
                 addCreateAttribute(create, newIndex, attr.name, 'unsafe:blocked');
               } else {
-                addCreateAttribute(create, newIndex, attr.name, attr.value);
+                addCreateAttribute(create, newIndex, attr.name, val);
               }
             } else {
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
@@ -909,7 +948,7 @@ function walkIcuTree(
         }
         break;
     }
-    currentNode = currentNode.nextSibling;
+    currentNode = getNextSibling(currentNode);
   }
   return bindingMask;
 }
@@ -968,4 +1007,46 @@ function addCreateAttribute(
   attrValue: string,
 ) {
   create.push((newIndex << IcuCreateOpCode.SHIFT_REF) | IcuCreateOpCode.Attr, attrName, attrValue);
+}
+
+function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn | null {
+  let schemaContext: SecurityContext;
+
+  if (tagName) {
+    const [ns, name] = splitNsName(tagName, false);
+    schemaContext = checkSecurityContext(name, attrName, ns);
+  } else {
+    schemaContext = checkSecurityContext('*', attrName);
+  }
+
+  switch (schemaContext) {
+    case SecurityContext.HTML:
+      return _sanitizeHtml;
+    case SecurityContext.STYLE:
+      return _sanitizeStyle;
+    case SecurityContext.SCRIPT:
+      return _sanitizeScript;
+    case SecurityContext.URL:
+      return _sanitizeUrl;
+    case SecurityContext.RESOURCE_URL:
+      return _sanitizeResourceUrl;
+    case SecurityContext.ATTRIBUTE_NO_BINDING:
+      return _validateAttribute;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Whether an attribute name uses an Angular binding syntax (`[prop]`, `(event)`, `*structural`,
+ * `#ref`, `@trigger`) rather than being a plain HTML attribute.
+ */
+function isBindingLikeAttributeName(attrName: string): boolean {
+  return (
+    attrName.startsWith('[') ||
+    attrName.startsWith('(') ||
+    attrName.startsWith('*') ||
+    attrName.startsWith('#') ||
+    attrName.startsWith('@')
+  );
 }

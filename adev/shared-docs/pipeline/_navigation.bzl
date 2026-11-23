@@ -1,3 +1,5 @@
+load("@aspect_rules_js//js:providers.bzl", "js_info")
+
 def _generate_nav_items(ctx):
     """Implementation of the navigation items data generator rule"""
 
@@ -33,9 +35,18 @@ def _generate_nav_items(ctx):
         },
     )
 
-    # The return value describes what the rule is producing. In this case we need to specify
-    # the "DefaultInfo" with the output json file.
-    return [DefaultInfo(files = depset([json_output]))]
+    # The return value describes what the rule is producing. We expose the generated JSON via
+    # both DefaultInfo and JsInfo so it can be consumed as a `ts_project` dependency (the new
+    # rules_angular `ts_project` requires deps to provide JsInfo).
+    outputs = depset([json_output])
+    return [
+        DefaultInfo(files = outputs),
+        js_info(
+            target = ctx.label,
+            sources = outputs,
+            transitive_sources = outputs,
+        ),
+    ]
 
 generate_nav_items = rule(
     # Point to the starlark function that will execute for this rule.

@@ -8,6 +8,7 @@
 
 import {TokenizerThis, RendererThis} from 'marked';
 import {CodeToken, formatCode} from './format/index.mjs';
+import {expandRangeStringValues} from './format/range.mjs';
 import {AdevDocsRenderer} from '../../renderer.mjs';
 
 export interface DocsCodeBlock extends CodeToken {
@@ -38,17 +39,26 @@ export const docsCodeBlockExtension = {
     if (match) {
       const metadataStr = match[2].trim();
 
-      const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
-      const highlightRule = /highlight\s*:\s*(.*)([^,])/;
+      const headerRule = /header\s*:\s*(['"`])(.*?)\1/; // The 2nd capture matters here
+      const highlightRule = /highlight\s*:\s*(\[(?:[^[\]]|\[[^[\]]*\])*\])/;
       const hideCopyRule = /hideCopy/;
       const hideDollarRule = /hideDollar/;
       const preferRule = /\b(prefer|avoid)\b/;
       const linenumsRule = /linenums/;
 
+      validateMetadata(metadataStr, highlightRule.exec(metadataStr)?.[1], [
+        headerRule,
+        highlightRule,
+        hideCopyRule,
+        hideDollarRule,
+        preferRule,
+        linenumsRule,
+      ]);
+
       const token: DocsCodeBlock = {
         raw: match[0],
         type: 'docs-code-block',
-        code: deindent(match[3]),
+        code: match[3],
         language: match[1],
         header: headerRule.exec(metadataStr)?.[2],
         highlight: highlightRule.exec(metadataStr)?.[1],
@@ -69,19 +79,14 @@ export const docsCodeBlockExtension = {
   },
 };
 
-/**
- * Removes leading indentation from code blocks.
- */
-function deindent(str: string): string {
-  const lines = str.split('\n');
-  let minIndent = Infinity;
-  for (const line of lines) {
-    if (!line.trim()) {
-      minIndent = Math.min(line.match(/^(\s*)/)?.[1].length ?? 0, minIndent);
-    }
+function validateMetadata(metadataStr: string, highlight: string | undefined, rules: RegExp[]) {
+  const unrecognized = rules
+    .reduce((rest, rule) => rest.replace(new RegExp(rule, 'g'), ''), metadataStr)
+    .replace(/[{},\s]/g, '');
+  const invalidHighlight =
+    highlight !== undefined && expandRangeStringValues(highlight).length === 0;
+
+  if (unrecognized || invalidHighlight) {
+    throw new Error(`Invalid code block metadata: ${metadataStr}`);
   }
-  if (minIndent === Infinity || minIndent === 0) {
-    return str;
-  }
-  return lines.map((line) => line.slice(minIndent)).join('\n');
 }

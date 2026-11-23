@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
+import {
+  computed,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
+  Service,
+  Signal,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import type {Router} from './router';
@@ -123,22 +129,41 @@ export function isActive(
 ): Signal<boolean> {
   const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
   return computed(() =>
-    containsTree(router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(), urlTree, {
-      ...subsetMatchOptions,
-      ...matchOptions,
-    }),
+    containsTree(
+      router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
+      urlTree,
+      matchOptions,
+    ),
   );
 }
 
+/**
+ * Determines if a `UrlTree` is contained within another `UrlTree` based on the provided matching options.
+ *
+ * @param container The outer or reference `UrlTree`.
+ * @param containee The target `UrlTree` to test against the container.
+ * @param options Optional, matching options:
+ * - `paths`: Defines how to compare URL segments ('exact' or 'subset'). Defaults to 'subset'.
+ * - `matrixParams`: Defines how to compare matrix parameters ('exact', 'subset', or 'ignored'). Defaults to 'ignored'.
+ * - `queryParams`: Defines how to compare query parameters ('exact', 'subset', or 'ignored'). Defaults to 'subset'.
+ * - `fragment`: Defines how to compare URL fragments ('exact' or 'ignored'). Defaults to 'ignored'.
+ *
+ * @publicApi
+ */
 export function containsTree(
   container: UrlTree,
   containee: UrlTree,
-  options: IsActiveMatchOptions,
+  options?: Partial<IsActiveMatchOptions>,
 ): boolean {
+  const matchOptions: IsActiveMatchOptions = {
+    ...subsetMatchOptions,
+    ...(options || {}),
+  };
+
   return (
-    pathCompareMap[options.paths](container.root, containee.root, options.matrixParams) &&
-    paramCompareMap[options.queryParams](container.queryParams, containee.queryParams) &&
-    !(options.fragment === 'exact' && container.fragment !== containee.fragment)
+    pathCompareMap[matchOptions.paths](container.root, containee.root, matchOptions.matrixParams) &&
+    paramCompareMap[matchOptions.queryParams](container.queryParams, containee.queryParams) &&
+    !(matchOptions.fragment === 'exact' && container.fragment !== containee.fragment)
   );
 }
 
@@ -417,7 +442,7 @@ export function mapChildrenIntoArray<T>(
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: () => new DefaultUrlSerializer()})
+@Service({factory: () => new DefaultUrlSerializer()})
 export abstract class UrlSerializer {
   /** Parse a url into a `UrlTree` */
   abstract parse(url: string): UrlTree;
@@ -453,12 +478,40 @@ export class DefaultUrlSerializer implements UrlSerializer {
 
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
-    const segment = `/${serializeSegment(tree.root, true)}`;
+    let segment = `/${serializeSegment(tree.root, true)}`;
+    if (isProtocolRelative(segment)) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+            `Cannot serialize a UrlTree that would produce a protocol-relative URL. Falling back to '/' instead.`,
+          ),
+        );
+      }
+      segment = '/';
+    }
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
 
     return `${segment}${query}${fragment}`;
+  }
+}
+
+const DUMMY_BASE_URL = 'http://fake';
+
+/**
+ * Determines whether a serialized path would produce a protocol-relative URL when interpreted
+ * by a browser or server. Under the WHATWG URL standard, paths starting with `//` or `/\`, or paths
+ * where leading dot segments collapse to `//` (such as `/.//` or `/..//`), resolve to an external
+ * origin or a protocol-relative pathname.
+ */
+function isProtocolRelative(url: string): boolean {
+  try {
+    const resolved = new URL(url, DUMMY_BASE_URL);
+    return resolved.origin !== DUMMY_BASE_URL || resolved.pathname.startsWith('//');
+  } catch {
+    return true;
   }
 }
 
@@ -487,21 +540,31 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
 
     return children.length > 0 ? `${primary}(${children.join('//')})` : primary;
   } else {
+    // use no parenthesis if the only child is a primary outlet route
+    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
+      return `${serializePaths(segment)}/${serializeSegment(segment.children[PRIMARY_OUTLET], false)}`;
+    }
+
     const children = mapChildrenIntoArray(segment, (v: UrlSegmentGroup, k: string) => {
       if (k === PRIMARY_OUTLET) {
-        return [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
+        return [escapeOutletDelimiter(serializeSegment(segment.children[PRIMARY_OUTLET], false))];
       }
 
       return [`${k}:${serializeSegment(v, false)}`];
     });
 
-    // use no parenthesis if the only child is a primary outlet route
-    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
-      return `${serializePaths(segment)}/${children[0]}`;
-    }
-
     return `${serializePaths(segment)}/(${children.join('//')})`;
   }
+}
+
+/**
+ * Inside a parenthesized group, the parser distinguishes a named outlet (`name:path`) from the
+ * unprefixed primary child by looking for a `:` in the first segment token. A primary child whose
+ * first segment legitimately contains a colon (e.g. a param value `admin:y`) would therefore be
+ * misparsed as outlet `admin` on round-trip. Percent-encode colons in that leading token only.
+ */
+function escapeOutletDelimiter(serializedPrimary: string): string {
+  return serializedPrimary.replace(SEGMENT_RE, (firstSegment) => firstSegment.replace(/:/g, '%3A'));
 }
 
 /**
@@ -581,6 +644,23 @@ function serializeQueryParams(params: {[key: string]: any}): string {
   return strParams.length ? `?${strParams.join('&')}` : '';
 }
 
+// Above V8's threshold for requiring dictionary elements.
+const SLOW_ELEMENTS_SENTINEL = 0x40000000;
+
+/**
+ * Avoids oversized V8 backing stores for numeric URL keys.
+ * Setting then deleting the sentinel keeps indexed properties in dictionary storage.
+ * Indices below 32 use little space, so leave them alone.
+ */
+function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
+  // Preserve URL keys that happen to equal the sentinel.
+  if (Number(key) >= 32 && !Object.hasOwn(target, SLOW_ELEMENTS_SENTINEL)) {
+    target[SLOW_ELEMENTS_SENTINEL] = value;
+    delete target[SLOW_ELEMENTS_SENTINEL];
+  }
+  target[key] = value;
+}
+
 const SEGMENT_RE = /^[^\/()?;#]+/;
 function matchSegments(str: string): string {
   const match = str.match(SEGMENT_RE);
@@ -615,7 +695,11 @@ class UrlParser {
   }
 
   parseRootSegment(): UrlSegmentGroup {
-    this.consumeOptional('/');
+    // Consume all leading slashes. Multiple consecutive leading slashes (e.g. `///path`)
+    // are not meaningful and would otherwise produce a `//path`-style serialized URL,
+    // which browsers interpret as protocol-relative (resolving to a different origin)
+    // and reject with a SecurityError when passed to `history.pushState`/`replaceState`.
+    while (this.consumeOptional('/')) {}
 
     if (this.remaining === '' || this.peekStartsWith('?') || this.peekStartsWith('#')) {
       return new UrlSegmentGroup([], {});
@@ -710,7 +794,7 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    let value: any = '';
+    let value = '';
     if (this.consumeOptional('=')) {
       const valueMatch = matchSegments(this.remaining);
       if (valueMatch) {
@@ -719,7 +803,7 @@ class UrlParser {
       }
     }
 
-    params[decode(key)] = decode(value);
+    setUrlDerivedKey(params, decode(key), decode(value));
   }
 
   // Parse a single query parameter `name[=value]`
@@ -729,7 +813,7 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    let value: any = '';
+    let value = '';
     if (this.consumeOptional('=')) {
       const valueMatch = matchUrlQueryParamValue(this.remaining);
       if (valueMatch) {
@@ -741,7 +825,7 @@ class UrlParser {
     const decodedKey = decodeQuery(key);
     const decodedVal = decodeQuery(value);
 
-    if (params.hasOwnProperty(decodedKey)) {
+    if (Object.hasOwn(params, decodedKey)) {
       // Append to existing values
       let currentVal = params[decodedKey];
       if (!Array.isArray(currentVal)) {
@@ -757,7 +841,11 @@ class UrlParser {
 
   // parse `(a/b//outlet_name:c/d)`
   private parseParens(allowPrimary: boolean, depth: number): {[outlet: string]: UrlSegmentGroup} {
-    const segments: {[key: string]: UrlSegmentGroup} = {};
+    // The outlet name is taken verbatim from the URL, so it can be `__proto__`. Indexing a plain
+    // object with that key assigns through the inherited `__proto__` setter instead of creating an
+    // outlet, which drops the outlet and mutates the map's prototype (and throws under Node's
+    // `--disable-proto=throw`). A null-prototype map makes `__proto__` an ordinary key.
+    const segments: {[key: string]: UrlSegmentGroup} = Object.create(null);
     this.capture('(');
 
     while (!this.consumeOptional(')') && this.remaining.length > 0) {
@@ -784,10 +872,11 @@ class UrlParser {
       }
 
       const children = this.parseChildren(depth + 1);
-      segments[outletName ?? PRIMARY_OUTLET] =
+      const child =
         Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
           : new UrlSegmentGroup([], children);
+      setUrlDerivedKey(segments, outletName ?? PRIMARY_OUTLET, child);
       this.consumeOptional('//');
     }
 
@@ -834,7 +923,8 @@ export function createRoot(rootCandidate: UrlSegmentGroup): UrlSegmentGroup {
  * root but the `a` route lives under an empty path primary route.
  */
 export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
-  const newChildren: Record<string, UrlSegmentGroup> = {};
+  // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map (see `parseParens`).
+  const newChildren: Record<string, UrlSegmentGroup> = Object.create(null);
   for (const [childOutlet, child] of Object.entries(segmentGroup.children)) {
     const childCandidate = squashSegmentGroup(child);
     // moves named children in an empty path primary child into this group
@@ -844,11 +934,11 @@ export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGro
       childCandidate.hasChildren()
     ) {
       for (const [grandChildOutlet, grandChild] of Object.entries(childCandidate.children)) {
-        newChildren[grandChildOutlet] = grandChild;
+        setUrlDerivedKey(newChildren, grandChildOutlet, grandChild);
       }
     } // don't add empty children
     else if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
-      newChildren[childOutlet] = childCandidate;
+      setUrlDerivedKey(newChildren, childOutlet, childCandidate);
     }
   }
   const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);

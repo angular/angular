@@ -18,18 +18,19 @@ import {
   RecursiveAstVisitor,
   SafeCall,
   ThisReceiver,
+  TmplAstBoundaryBlock,
+  TmplAstBoundaryErrorBlock,
   TmplAstBoundAttribute,
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
   TmplAstBoundText,
-  TmplAstComponent,
   TmplAstContent,
+  TmplAstContentBlock,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -53,8 +54,7 @@ import {
   tmplAstVisitAll,
   TmplAstVisitor,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
+import {findFirstMatchingNode} from '@angular/compiler-cli/private/hybrid_analysis';
 import tss from 'typescript';
 
 import {
@@ -62,7 +62,6 @@ import {
   isTemplateNodeWithKeyAndValue,
   isWithin,
   isWithinKeyValue,
-  TypeCheckInfo,
 } from './utils';
 
 /**
@@ -109,11 +108,7 @@ export type SingleNodeTarget =
   | ElementInBodyContext
   | ElementInTagContext
   | AttributeInKeyContext
-  | AttributeInValueContext
-  | ComponentInBodyContext
-  | ComponentInTagContext
-  | DirectiveInNameContext
-  | DirectiveInBodyContext;
+  | AttributeInValueContext;
 
 /**
  * Contexts which logically target multiple nodes in the template AST, which cannot be
@@ -135,10 +130,6 @@ export enum TargetNodeKind {
   AttributeInKeyContext,
   AttributeInValueContext,
   TwoWayBindingContext,
-  ComponentInTagContext,
-  ComponentInBodyContext,
-  DirectiveInNameContext,
-  DirectiveInBodyContext,
 }
 
 /**
@@ -187,42 +178,6 @@ export interface ElementInTagContext {
 export interface ElementInBodyContext {
   kind: TargetNodeKind.ElementInBodyContext;
   node: TmplAstElement | TmplAstTemplate;
-}
-
-/**
- * A `TmplAstComponent` element node that's targeted, where the given position is within the tag,
- * e.g. `MyComp` in `<MyComp foo="bar"/>`.
- */
-export interface ComponentInTagContext {
-  kind: TargetNodeKind.ComponentInTagContext;
-  node: TmplAstComponent;
-}
-
-/**
- * A `TmplAstComponent` element node that's targeted, where the given position is within the body,
- * e.g. `foo="bar"/>` in `<MyComp foo="bar"/>`.
- */
-export interface ComponentInBodyContext {
-  kind: TargetNodeKind.ComponentInBodyContext;
-  node: TmplAstComponent;
-}
-
-/**
- * A `TmplAstDirective` element node that's targeted, where the given position is within the
- * directive's name (e.g. `MyDir` in `@MyDir`).
- */
-export interface DirectiveInNameContext {
-  kind: TargetNodeKind.DirectiveInNameContext;
-  node: TmplAstDirective;
-}
-
-/**
- * A `TmplAstDirective` element node that's targeted, where the given position is within the body,
- * e.g. `(foo="bar")` in `@MyDir(foo="bar")`.
- */
-export interface DirectiveInBodyContext {
-  kind: TargetNodeKind.DirectiveInBodyContext;
-  node: TmplAstDirective;
 }
 
 export interface AttributeInKeyContext {
@@ -321,26 +276,6 @@ export function getTargetAtPosition(
         : TargetNodeKind.ElementInTagContext,
       node: candidate,
     };
-  } else if (candidate instanceof TmplAstComponent) {
-    nodeInContext = {
-      kind: isWithinTagBody(position, candidate)
-        ? TargetNodeKind.ComponentInBodyContext
-        : TargetNodeKind.ComponentInTagContext,
-      node: candidate,
-    };
-  } else if (candidate instanceof TmplAstDirective) {
-    const startSpan = candidate.startSourceSpan;
-
-    // The start span includes the opening paren, if there is one which we have to account for.
-    const endOffset = startSpan.end.offset - (startSpan.toString().endsWith('(') ? 1 : 0);
-
-    nodeInContext = {
-      kind:
-        position >= startSpan.start.offset && position <= endOffset
-          ? TargetNodeKind.DirectiveInNameContext
-          : TargetNodeKind.DirectiveInBodyContext,
-      node: candidate,
-    };
   } else if (
     (candidate instanceof TmplAstBoundAttribute ||
       candidate instanceof TmplAstBoundEvent ||
@@ -410,20 +345,14 @@ interface TcbNodesInfoForTemplate {
  *
  */
 export function getTcbNodesOfTemplateAtPosition(
-  typeCheckInfo: TypeCheckInfo,
+  templateNodes: TmplAstNode[],
   position: number,
-  compiler: NgCompiler,
+  tcb: tss.Node,
 ): TcbNodesInfoForTemplate | null {
-  const target = getTargetAtPosition(typeCheckInfo.nodes, position);
+  const target = getTargetAtPosition(templateNodes, position);
   if (target === null) {
     return null;
   }
-
-  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
-  if (tcb === null) {
-    return null;
-  }
-
   const tcbNodes: (tss.Node | null)[] = [];
   if (target.context.kind === TargetNodeKind.RawExpression) {
     const targetNode = target.context.node;
@@ -539,23 +468,9 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitDirectiveHost(template);
   }
 
-  visitComponent(component: TmplAstComponent) {
-    this.visitDirectiveHost(component);
-  }
-
-  visitDirective(directive: TmplAstDirective) {
-    this.visitDirectiveHost(directive);
-  }
-
-  private visitDirectiveHost(
-    node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
-  ) {
+  private visitDirectiveHost(node: TmplAstTemplate | TmplAstElement) {
     const isTemplate = node instanceof TmplAstTemplate;
-    const isDirective = node instanceof TmplAstDirective;
     this.visitAll(node.attributes);
-    if (!isDirective) {
-      this.visitAll(node.directives);
-    }
     this.visitAll(node.inputs);
     // We allow the path to contain both the `TmplAstBoundAttribute` and `TmplAstBoundEvent` for
     // two-way bindings but do not want the path to contain both the `TmplAstBoundAttribute` with
@@ -584,14 +499,16 @@ class TemplateTargetVisitor implements TmplAstVisitor {
       return;
     }
 
-    if (!isDirective) {
-      this.visitAll(node.children);
-    }
+    this.visitAll(node.children);
   }
 
   visitContent(content: TmplAstContent) {
     tmplAstVisitAll(this, content.attributes);
     this.visitAll(content.children);
+  }
+
+  visitContentBlock(block: TmplAstContentBlock) {
+    this.visitAll(block.children);
   }
 
   visitVariable(variable: TmplAstVariable) {
@@ -677,13 +594,15 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitAll(block.children);
   }
 
-  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {}
+  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {
+    block.expression && this.visitBinding(block.expression);
+  }
 
   visitForLoopBlock(block: TmplAstForLoopBlock) {
     this.visit(block.item);
     this.visitAll(block.contextVariables);
     this.visitBinding(block.expression);
-    this.visitBinding(block.trackBy);
+    block.trackBy && this.visitBinding(block.trackBy);
     this.visitAll(block.children);
     block.empty && this.visit(block.empty);
   }
@@ -699,6 +618,17 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   visitIfBlockBranch(block: TmplAstIfBlockBranch) {
     block.expression && this.visitBinding(block.expression);
     block.expressionAlias && this.visit(block.expressionAlias);
+    this.visitAll(block.children);
+  }
+
+  visitBoundaryBlock(block: TmplAstBoundaryBlock) {
+    this.visitAll(block.children);
+    this.visitAll(block.errorBlocks);
+  }
+
+  visitBoundaryErrorBlock(block: TmplAstBoundaryErrorBlock) {
+    this.visitAll(block.contextVariables);
+    block.expression && this.visitBinding(block.expression);
     this.visitAll(block.children);
   }
 
@@ -788,10 +718,9 @@ function isWithinNode(position: number, node: TmplAstNode): boolean {
 }
 
 /** Checks whether a position is within the body or the start syntax of a node. */
-function isWithinTagBody(position: number, node: TmplAstElement | TmplAstComponent): boolean {
+function isWithinTagBody(position: number, node: TmplAstElement): boolean {
   // Calculate the end of the element tag name. Any position beyond this is in the body.
-  const name = node instanceof TmplAstComponent ? node.fullName : node.name;
   const tagEndPos =
-    node.sourceSpan.start.offset + 1 /* '<' is the opening character */ + name.length;
+    node.sourceSpan.start.offset + 1 /* '<' is the opening character */ + node.name.length;
   return position > tagEndPos;
 }

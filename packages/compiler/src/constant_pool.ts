@@ -7,6 +7,7 @@
  */
 
 import * as o from './output/output_ast';
+import {ParseSourceSpan} from './parse_util';
 
 const CONSTANT_PREFIX = '_c';
 
@@ -79,7 +80,6 @@ class FixupExpression extends o.Expression {
 export class ConstantPool {
   statements: o.Statement[] = [];
   private literals = new Map<string, FixupExpression>();
-  private literalFactories = new Map<string, o.Expression>();
   private sharedConstants = new Map<string, o.Expression>();
 
   /**
@@ -89,8 +89,6 @@ export class ConstantPool {
    * them with unique numbers.
    */
   private _claimedNames = new Map<string, number>();
-
-  private nextNameIndex = 0;
 
   constructor(private readonly isClosureCompilerEnabled: boolean = false) {}
 
@@ -131,13 +129,7 @@ export class ConstantPool {
         // const myStr = function() { return "very very very long string"; };
         // const usage1 = myStr();
         // const usage2 = myStr();
-        value = new o.FunctionExpr(
-          [], // Params.
-          [
-            // Statements.
-            new o.ReturnStatement(literal),
-          ],
-        );
+        value = new o.FunctionExpr([], [new o.ReturnStatement(literal)], o.DYNAMIC_TYPE);
         usage = o.variable(name).callFn([]);
       } else {
         // Just declare and use the variable directly, without a function call
@@ -146,9 +138,7 @@ export class ConstantPool {
         usage = o.variable(name);
       }
 
-      this.statements.push(
-        new o.DeclareVarStmt(name, value, o.INFERRED_TYPE, o.StmtModifier.Final),
-      );
+      this.statements.push(this.getVariableDeclaration(name, value, null));
       fixup.fixup(usage);
     }
 
@@ -171,7 +161,7 @@ export class ConstantPool {
     fn: o.Expression,
     prefix: string,
     useUniqueName: boolean = true,
-  ): o.Expression {
+  ): o.ReadVarExpr {
     const isArrow = fn instanceof o.ArrowFunctionExpr;
 
     for (const current of this.statements) {
@@ -198,7 +188,7 @@ export class ConstantPool {
     this.statements.push(
       fn instanceof o.FunctionExpr
         ? fn.toDeclStmt(name, o.StmtModifier.Final)
-        : new o.DeclareVarStmt(name, fn, o.INFERRED_TYPE, o.StmtModifier.Final, fn.sourceSpan),
+        : this.getVariableDeclaration(name, fn, fn.sourceSpan),
     );
     return o.variable(name);
   }
@@ -221,6 +211,26 @@ export class ConstantPool {
   private freshName(): string {
     return this.uniqueName(CONSTANT_PREFIX);
   }
+
+  private getVariableDeclaration(
+    name: string,
+    value: o.Expression,
+    span: ParseSourceSpan | null,
+  ): o.DeclareVarStmt {
+    return new o.DeclareVarStmt(
+      name,
+      value,
+      // TODO(crisbeto): switch this to DYNAMIC_TYPE like we do for other generated code.
+      // It'll involve updating a bunch of goldens.
+      o.INFERRED_TYPE,
+      // Generating top-level constant without type annotations causes
+      // Closure to log warnings so we generate a variable instead.
+      // Note that an alternative is to output an `@type` comment,
+      // but that ends up hitting a different assertion.
+      this.isClosureCompilerEnabled ? o.StmtModifier.None : o.StmtModifier.Final,
+      span,
+    );
+  }
 }
 
 export interface ExpressionKeyFn {
@@ -236,7 +246,9 @@ export class GenericKeyFn implements ExpressionKeyFn {
 
   keyOf(expr: o.Expression): string {
     if (expr instanceof o.LiteralExpr && typeof expr.value === 'string') {
-      return `"${expr.value}"`;
+      // Prefix with the string length so embedded quotes/delimiters cannot cause key collisions
+      // without needing to scan or escape the string.
+      return `"${expr.value.length}:${expr.value}"`;
     } else if (expr instanceof o.LiteralExpr) {
       return String(expr.value);
     } else if (expr instanceof o.RegularExpressionLiteralExpr) {
@@ -255,7 +267,7 @@ export class GenericKeyFn implements ExpressionKeyFn {
         } else {
           let key = entry.key;
           if (entry.quoted) {
-            key = `"${key}"`;
+            key = `"${key.length}:${key}"`;
           }
           entries.push(key + ':' + this.keyOf(entry.value));
         }
@@ -267,6 +279,8 @@ export class GenericKeyFn implements ExpressionKeyFn {
       return `read(${expr.name})`;
     } else if (expr instanceof o.TypeofExpr) {
       return `typeof(${this.keyOf(expr.expr)})`;
+    } else if (expr instanceof o.VoidExpr) {
+      return `void(${this.keyOf(expr.expr)})`;
     } else if (expr instanceof o.SpreadElementExpr) {
       return `...${this.keyOf(expr.expression)}`;
     } else {

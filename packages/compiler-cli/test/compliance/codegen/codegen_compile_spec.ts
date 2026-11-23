@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgtscIsolatedPreprocessor} from '@angular/compiler-cli/src/ngtsc/preprocessor';
 import ts from 'typescript';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
 import {
+  isNgpTestMode,
+  NgtscTestCompilerHost,
+  performNgpCompilationSync,
+} from '../../../src/ngtsc/testing';
+import {
+  CompileResult,
   getBuildOutputDirectory,
   getOptions,
   getRootDirectory,
-  CompileResult,
 } from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
-import {NgtscIsolatedPreprocessor} from '@angular/compiler-cli/src/ngtsc/preprocessor';
 import {runTests} from '../test_helpers/test_runner';
 
 runTests('instruction compile', compileTests, {
@@ -32,10 +36,25 @@ function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
   const options = getOptions(rootDir, outDir, compilerOptions, angularCompilerOptions);
   const rootNames = test.inputFiles.map((f) => fs.resolve(rootDir, f));
 
-  const host = new NgtscTestCompilerHost(fs, options);
-  const preprocessor = new NgtscIsolatedPreprocessor(rootNames, options, host);
-
-  const transformedFiles = preprocessor.transformAndPrint();
+  const transformedFiles: {fileName: string; content: string}[] = [];
+  if (isNgpTestMode()) {
+    const ngpResult = performNgpCompilationSync({
+      fs,
+      basePath: rootDir,
+      tsconfigPath: fs.resolve(rootDir, 'tsconfig.json'),
+      rootNames,
+      options,
+      emit: false,
+      complianceMode: true,
+    });
+    for (const [fileName, content] of ngpResult.preprocessedTsMap.entries()) {
+      transformedFiles.push({fileName, content});
+    }
+  } else {
+    const host = new NgtscTestCompilerHost(fs, options);
+    const preprocessor = new NgtscIsolatedPreprocessor(rootNames, options, host);
+    transformedFiles.push(...preprocessor.transformAndPrint());
+  }
 
   const emittedFiles: AbsoluteFsPath[] = [];
   const validFiles = new Set<AbsoluteFsPath>();
@@ -55,8 +74,7 @@ function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
 
   const verifyHost = new NgtscTestCompilerHost(fs, options);
   const extraPaths = test.compilerOptions?.['paths'] as unknown as
-    | Record<string, string[]>
-    | undefined;
+    Record<string, string[]> | undefined;
   const verifyProgram = ts.createProgram({
     rootNames: [...emittedFiles],
     options: {
@@ -71,7 +89,6 @@ function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
       // than 'Bundler' or 'NodeNext' which expect specific package.json exports.
       moduleResolution: ts.ModuleResolutionKind.Node16,
       module: ts.ModuleKind.Node16,
-      strict: true,
       target: ts.ScriptTarget.ES2015,
       experimentalDecorators: true,
       types: [],

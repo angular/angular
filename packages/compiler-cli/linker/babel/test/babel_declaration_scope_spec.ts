@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NodePath, parse, traverse, types as t} from '@babel/core';
+import {NodePath, parseSync, types as t, traverse} from '@babel/core';
 
 import {BabelDeclarationScope} from '../src/babel_declaration_scope';
 
 describe('BabelDeclarationScope', () => {
   describe('getConstantScopeRef()', () => {
     it('should return a path to the ES module where the expression was imported', () => {
-      const ast = parse(
+      const ast = parseSync(
         [
           "import * as core from '@angular/core';",
           'function foo() {',
@@ -30,7 +30,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return a path to the ES Module where the expression is declared', () => {
-      const ast = parse(
+      const ast = parseSync(
         ['var core;', 'export function foo() {', '  var TEST = core;', '}'].join('\n'),
         {sourceType: 'module'},
       ) as t.File;
@@ -42,9 +42,12 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return null if the file is not an ES module', () => {
-      const ast = parse(['var core;', 'function foo() {', '  var TEST = core;', '}'].join('\n'), {
-        sourceType: 'script',
-      }) as t.File;
+      const ast = parseSync(
+        ['var core;', 'function foo() {', '  var TEST = core;', '}'].join('\n'),
+        {
+          sourceType: 'script',
+        },
+      ) as t.File;
       const nodePath = findVarDeclaration(ast, 'TEST');
       const scope = new BabelDeclarationScope(nodePath.scope);
       const constantScope = scope.getConstantScopeRef(nodePath.get('init').node);
@@ -52,7 +55,7 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return the IIFE factory function where the expression is a parameter', () => {
-      const ast = parse(
+      const ast = parseSync(
         [
           'var core;',
           '(function(core) {',

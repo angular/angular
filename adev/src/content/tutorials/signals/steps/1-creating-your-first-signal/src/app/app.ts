@@ -1,5 +1,5 @@
 // TODO: Import signal from @angular/core
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +21,6 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   // TODO: Create a userStatus signal with type 'online' | 'offline' and the initial value of 'offline'

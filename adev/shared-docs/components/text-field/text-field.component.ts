@@ -6,21 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  afterNextRender,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  input,
-  model,
-  viewChild,
-} from '@angular/core';
+import {afterNextRender, Component, ElementRef, input, model, viewChild} from '@angular/core';
 import {FormValueControl} from '@angular/forms/signals';
 import {IconComponent} from '../icon/icon.component';
 
 @Component({
   selector: 'docs-text-field',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   templateUrl: './text-field.component.html',
   styleUrls: ['./text-field.component.scss'],

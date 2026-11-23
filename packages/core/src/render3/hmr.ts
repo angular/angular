@@ -23,10 +23,12 @@ import {
   CHILD_TAIL,
   CONTEXT,
   ENVIRONMENT,
+  FLAGS,
   HEADER_OFFSET,
   HOST,
   INJECTOR,
   LView,
+  LViewFlags,
   NEXT,
   PARENT,
   RENDERER,
@@ -70,7 +72,7 @@ export function ɵɵgetReplaceMetadataURL(id: string, timestamp: string, base: s
  * Replaces the metadata of a component type and re-renders all live instances of the component.
  * @param type Class whose metadata will be replaced.
  * @param applyMetadata Callback that will apply a new set of metadata on the `type` when invoked.
- * @param environment Syntehtic namespace imports that need to be passed along to the callback.
+ * @param environment Synthetic namespace imports that need to be passed along to the callback.
  * @param locals Local symbols from the source location that have to be exposed to the callback.
  * @param importMeta `import.meta` from the call site of the replacement function. Optional since
  *   it isn't used internally.
@@ -134,11 +136,13 @@ function mergeWithExistingDefinition(
   // Keep the object in place, because there can be references to it, for example in the
   // `directiveDefs` of another definition.
   const replacement = Object.assign(currentDef, newDef, {
-    // We need to keep the existing directive and pipe defs, because they can get patched on
-    // by a call to `setComponentScope` from a module file. That call won't make it into the
-    // HMR replacement function, because it lives in an entirely different file.
-    directiveDefs: clone.directiveDefs,
-    pipeDefs: clone.pipeDefs,
+    // For standalone components, `setComponentScope` is never used (imports are always inlined on
+    // the component definition), so always take the new directive and pipe defs, including `null`
+    // when the last import is removed. For non-standalone components, keep the existing defs
+    // unconditionally, because `setComponentScope` in the module file won't run again during an
+    // HMR replacement of the component file.
+    directiveDefs: newDef.standalone ? newDef.directiveDefs : clone.directiveDefs,
+    pipeDefs: newDef.standalone ? newDef.pipeDefs : clone.pipeDefs,
 
     // Preserve the old `setInput` function, because it has some state.
     // This is fine, because the component instance is preserved as well.
@@ -307,7 +311,9 @@ function recreateLView(
     // Creation pass for the new view.
     renderView(newTView, newLView, instance);
 
-    // Update pass for the new view.
+    // Consume the initial refresh flag before updating, as in normal change detection,
+    // so views dirtied during this pass (e.g. by an error boundary) can schedule a refresh.
+    newLView[FLAGS] &= ~LViewFlags.RefreshView;
     refreshView(newTView, newLView, newTView.template, instance);
   };
 

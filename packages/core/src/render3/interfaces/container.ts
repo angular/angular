@@ -127,4 +127,10 @@ export const enum LContainerFlags {
    * This flag, once set, is never unset for the `LContainer`.
    */
   HasTransplantedViews = 1 << 1,
+
+  /**
+   * Flag to signify that this `LContainer` is logical-only and its views should not be added
+   * to or removed from the rendering tree by the platform renderer.
+   */
+  LogicalOnly = 1 << 2,
 }

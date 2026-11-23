@@ -42,7 +42,7 @@ runInNativeFileSystem('makeEs5ExtractPlugin()', () => {
       const cwd = fs.resolve('/');
       const filename = fs.resolve(cwd, testPath);
       transformSync(input, {
-        plugins: [makeEs5ExtractPlugin(getFileSystem(), messages)],
+        plugins: [() => makeEs5ExtractPlugin(getFileSystem(), messages)],
         filename,
         cwd,
       })!.code!;

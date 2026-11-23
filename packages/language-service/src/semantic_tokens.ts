@@ -11,14 +11,13 @@ import {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
-  TmplAstComponent,
   TmplAstContent,
+  TmplAstContentBlock,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -38,9 +37,11 @@ import {
   TmplAstUnknownBlock,
   TmplAstVariable,
   TmplAstVisitor,
+  TmplAstBoundaryBlock,
+  TmplAstBoundaryErrorBlock,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {PotentialDirective} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {NgCompiler, PotentialDirective} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 import {TypeCheckInfo} from './utils';
 
@@ -141,6 +142,10 @@ class ClassificationVisitor implements TmplAstVisitor {
     this.visitAll(content.children);
   }
 
+  visitContentBlock(block: TmplAstContentBlock) {
+    this.visitAll(block.children);
+  }
+
   visitVariable(variable: TmplAstVariable) {}
   visitReference(reference: TmplAstReference) {}
   visitTextAttribute(attribute: TmplAstTextAttribute) {}
@@ -200,15 +205,21 @@ class ClassificationVisitor implements TmplAstVisitor {
     this.visitAll(block.children);
   }
 
+  visitBoundaryBlock(block: TmplAstBoundaryBlock) {
+    this.visitAll(block.children);
+    this.visitAll(block.errorBlocks);
+  }
+
+  visitBoundaryErrorBlock(block: TmplAstBoundaryErrorBlock) {
+    this.visitAll(block.children);
+  }
+
   visitTemplate(template: TmplAstTemplate) {
     this.visitAll(template.children);
   }
 
   visitUnknownBlock(block: TmplAstUnknownBlock) {}
   visitLetDeclaration(decl: TmplAstLetDeclaration) {}
-
-  visitComponent(component: TmplAstComponent) {}
-  visitDirective(directive: TmplAstDirective) {}
 
   visitAll(children: TmplAstNode[]) {
     for (const child of children) {

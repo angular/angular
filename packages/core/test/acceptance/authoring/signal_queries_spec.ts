@@ -15,14 +15,19 @@ import {
   Directive,
   ElementRef,
   EnvironmentInjector,
+  inject,
+  InjectionToken,
+  Injector,
   QueryList,
+  signal,
+  ViewChild,
   viewChild,
   ViewChildren,
   viewChildren,
 } from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {SIGNAL} from '../../../primitives/signals';
 import {TestBed} from '../../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('queries as signals', () => {
   describe('view', () => {
@@ -87,13 +92,13 @@ describe('queries as signals', () => {
       @Component({
         template: `
           <div #el></div>
-          @if (show) {
+          @if (show()) {
             <div #el></div>
           }
         `,
       })
       class AppComponent {
-        show = false;
+        show = signal(false);
 
         divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
         foundEl = computed(() => this.divEls().length);
@@ -108,13 +113,11 @@ describe('queries as signals', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(1);
 
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(2);
 
-      fixture.componentInstance.show = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(false);
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(1);
     });
@@ -162,7 +165,7 @@ describe('queries as signals', () => {
       @Component({
         template: `
           <div #el></div>
-          @if (show) {
+          @if (show()) {
             <div #el></div>
           }
         `,
@@ -170,7 +173,7 @@ describe('queries as signals', () => {
       class AppComponent {
         divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
         isThere = computed(() => ++computeCount);
-        show = false;
+        show = signal(false);
       }
 
       const fixture = TestBed.createComponent(AppComponent);
@@ -180,8 +183,7 @@ describe('queries as signals', () => {
 
       // subsequent reads should return the same result instance and _not_ trigger downstream
       // computed re-evaluation
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       expect(fixture.componentInstance.divEl()).toBe(divEl);
       expect(fixture.componentInstance.isThere()).toBe(1);
@@ -191,7 +193,7 @@ describe('queries as signals', () => {
       @Component({
         template: `
           <div #el></div>
-          @if (show) {
+          @if (show()) {
             <div></div>
           }
         `,
@@ -199,7 +201,7 @@ describe('queries as signals', () => {
       class AppComponent {
         divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
 
-        show = false;
+        show = signal(false);
       }
 
       const fixture = TestBed.createComponent(AppComponent);
@@ -207,8 +209,7 @@ describe('queries as signals', () => {
       const result1 = fixture.componentInstance.divEls();
       expect(result1.length).toBe(1);
 
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       // subsequent reads should return the same result instance since the query results didn't
       // change
@@ -267,6 +268,32 @@ describe('queries as signals', () => {
       const node = fixture.componentInstance.viewChildQuery![SIGNAL] as {debugName: string};
       expect(node.debugName).toBe('viewChildQuery');
     });
+
+    it('should read the node injector of the queried element with `read: Injector`', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Directive({
+        selector: '[provider]',
+        providers: [{provide: TOKEN, useValue: 'from directive'}],
+      })
+      class ProviderDir {}
+
+      @Component({
+        imports: [ProviderDir],
+        template: `<div #el provider></div>`,
+      })
+      class AppComponent {
+        elInjector = viewChild('el', {read: Injector});
+        ownInjector = inject(Injector);
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      const queried = fixture.componentInstance.elInjector()!;
+      expect(queried.get(TOKEN)).toBe('from directive');
+      expect(fixture.componentInstance.ownInjector.get(TOKEN, null)).toBeNull();
+    });
   });
 
   describe('content queries', () => {
@@ -293,27 +320,25 @@ describe('queries as signals', () => {
         template: `
           <query-cmp>
             <div #el></div>
-            @if (show) {
+            @if (show()) {
               <div #el></div>
             }
           </query-cmp>
         `,
       })
       class AppComponent {
-        show = false;
+        show = signal(false);
       }
 
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
 
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('4');
 
-      fixture.componentInstance.show = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(false);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
     });
@@ -341,27 +366,25 @@ describe('queries as signals', () => {
         template: `
           <div query>
             <div #el></div>
-            @if (show) {
+            @if (show()) {
               <div #el></div>
             }
           </div>
         `,
       })
       class AppComponent {
-        show = false;
+        show = signal(false);
       }
 
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
 
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('4');
 
-      fixture.componentInstance.show = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(false);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
     });
@@ -552,7 +575,6 @@ describe('queries as signals', () => {
     it('should return empty results for content queries of dynamically created components', () => {
       // https://github.com/angular/angular/issues/54450
       @Component({
-        selector: 'query-cmp',
         template: ``,
       })
       class QueryComponent {
@@ -585,13 +607,13 @@ describe('queries as signals', () => {
       @Component({
         template: `
           <div #el></div>
-          @if (show) {
+          @if (show()) {
             <div #el></div>
           }
         `,
       })
       class AppComponent {
-        show = false;
+        show = signal(false);
 
         divElsSignal = viewChildren<ElementRef<HTMLDivElement>>('el');
 
@@ -603,14 +625,12 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
 
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(2);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
 
-      fixture.componentInstance.show = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(false);
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
@@ -618,22 +638,23 @@ describe('queries as signals', () => {
 
     it('should allow combination via inheritance of both types of queries in one component', () => {
       @Component({
+        selector: 'base-comp',
         template: `
           <div #el></div>
-          @if (show) {
+          @if (show()) {
             <div #el></div>
           }
         `,
       })
       class BaseComponent {
-        show = false;
+        show = signal(false);
         divElsSignal = viewChildren<ElementRef<HTMLDivElement>>('el');
       }
 
       @Component({
         template: `
           <div #el></div>
-          @if (show) {
+          @if (show()) {
             <div #el></div>
           }
         `,
@@ -647,17 +668,53 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
 
-      fixture.componentInstance.show = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(true);
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(2);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
 
-      fixture.componentInstance.show = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.show.set(false);
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
     });
+  });
+
+  it('should resolve static decorator queries when mixed with signal queries', () => {
+    @Directive({
+      selector: 'div',
+    })
+    class DivDirective {}
+
+    @Component({
+      imports: [DivDirective],
+      template: `
+        <div #templateA>Content A</div>
+        <div #templateB>Content B</div>
+        <div #templateC>Content C</div>
+      `,
+    })
+    class App {
+      @ViewChildren(DivDirective) divs!: QueryList<ElementRef<HTMLDivElement>>;
+      @ViewChild('templateA') elRefA!: ElementRef<HTMLDivElement>;
+      readonly elRefB = viewChild<ElementRef<HTMLDivElement>>('templateB');
+      @ViewChild('templateC') elRefC!: ElementRef<HTMLDivElement>;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const componentInstance = fixture.componentInstance;
+
+    expect(fixture.componentInstance.divs).withContext('divs').toBeDefined();
+    expect(componentInstance.divs.length).toBe(3);
+
+    expect(componentInstance.elRefA).withContext('A').toBeDefined();
+    expect(componentInstance.elRefA.nativeElement.textContent).toBe('Content A');
+
+    expect(fixture.componentInstance.elRefB()).withContext('B').toBeDefined();
+    expect(componentInstance.elRefB()?.nativeElement.textContent).toBe('Content B');
+
+    expect(fixture.componentInstance.elRefC).withContext('C').toBeDefined();
+    expect(componentInstance.elRefC.nativeElement.textContent).toBe('Content C');
   });
 });

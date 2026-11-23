@@ -12,6 +12,9 @@ import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
 
+/** Regex flags that can be safely optimized. */
+const SAFE_REGEX_FLAGS = new Set(['d', 'i', 'm', 's', 'u', 'v']);
+
 /** Optimizes regular expressions used in expressions. */
 export function optimizeRegularExpressions(job: CompilationJob): void {
   for (const view of job.units) {
@@ -19,11 +22,7 @@ export function optimizeRegularExpressions(job: CompilationJob): void {
       ir.transformExpressionsInOp(
         op,
         (expr) => {
-          if (
-            expr instanceof o.RegularExpressionLiteralExpr &&
-            // We can't optimize global regexes, because they're stateful.
-            (expr.flags === null || !expr.flags.includes('g'))
-          ) {
+          if (expr instanceof o.RegularExpressionLiteralExpr && canOptimizeRegex(expr)) {
             return job.pool.getSharedConstant(new RegularExpressionConstant(), expr);
           }
           return expr;
@@ -32,6 +31,20 @@ export function optimizeRegularExpressions(job: CompilationJob): void {
       );
     }
   }
+}
+
+function canOptimizeRegex(expr: o.RegularExpressionLiteralExpr): boolean {
+  if (!expr.flags) {
+    return true;
+  }
+
+  for (let i = 0; i < expr.flags.length; i++) {
+    if (!SAFE_REGEX_FLAGS.has(expr.flags[i])) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 class RegularExpressionConstant extends GenericKeyFn implements SharedConstantDefinition {

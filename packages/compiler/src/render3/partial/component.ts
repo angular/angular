@@ -79,7 +79,7 @@ export function compileDeclareComponentFromMetadata(
 /**
  * Gathers the declaration fields for a component into a `DefinitionMap`.
  */
-export function createComponentDefinitionMap(
+function createComponentDefinitionMap(
   meta: R3ComponentMetadata<R3TemplateDependencyMetadata>,
   template: ParsedTemplate,
   templateInfo: DeclareComponentTemplateInfo,

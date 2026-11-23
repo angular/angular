@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ClassPropertyName} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -16,7 +17,6 @@ import {
 } from '../../../diagnostics';
 import {Reference} from '../../../imports';
 import {
-  ClassPropertyName,
   DirectiveMeta,
   flattenInheritedDirectiveMetadata,
   HostDirectiveMeta,
@@ -283,7 +283,7 @@ function validateHostDirectiveMappings(
   const exposedRequiredBindings = new Set<string>();
 
   for (const publicName in hostDirectiveMappings) {
-    if (hostDirectiveMappings.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(hostDirectiveMappings, publicName)) {
       const bindings = existingBindings.getByBindingPropertyName(publicName);
 
       if (bindings === null) {

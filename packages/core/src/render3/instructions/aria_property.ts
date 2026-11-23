@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {bindingUpdated} from '../bindings';
+import {setElementAttribute} from '../dom_node_manipulation';
 import {TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost} from '../interfaces/type_checks';
@@ -16,7 +17,6 @@ import {getNativeByTNode} from '../util/view_utils';
 import {
   markDirtyIfOnPush,
   setAllInputsForProperty,
-  setElementAttribute,
   setNgReflectProperties,
   storePropertyBindingMetadata,
 } from './shared';

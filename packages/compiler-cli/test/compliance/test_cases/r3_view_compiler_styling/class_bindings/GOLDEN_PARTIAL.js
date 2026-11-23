@@ -308,7 +308,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
     expr = true;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "ng-component", host: { properties: { "class.text-primary/80": "expr", "class.data-active:text-green-300/80": "expr", "class.data-[size='large'": "expr" } }, ngImport: i0, template: ``, isInline: true });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "ng-component", host: { properties: { "class.text-primary/80": "expr", "class.data-active:text-green-300/80": "expr", "class.data-[size='large']:p-8": "expr" } }, ngImport: i0, template: ``, isInline: true });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,

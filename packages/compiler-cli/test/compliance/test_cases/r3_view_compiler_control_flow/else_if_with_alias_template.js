@@ -1,34 +1,90 @@
+import { Component } from "@angular/core";
+import * as i0 from "@angular/core";
 function MyApp_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0);
+    i0.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate1(" ", $ctx_r0$.one, " ");
+    const ctx_r0 = i0.ɵɵnextContext();
+    i0.ɵɵtextInterpolate1(" ", ctx_r0.one, " ");
   }
 }
 function MyApp_Conditional_3_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0);
+    i0.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate2(" ", $ctx_r0$.value(), " as ", ctx, " ");
+    const ctx_r0 = i0.ɵɵnextContext();
+    i0.ɵɵtextInterpolate2(" ", ctx_r0.value(), " as ", ctx, " ");
   }
 }
-…
-function MyApp_Template(rf, ctx) {
-  if (rf & 1) {
-    $r3$.ɵɵdomElementStart(0, "div");
-    $r3$.ɵɵtext(1);
-    $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 1)(3, MyApp_Conditional_3_Template, 1, 2);
-    $r3$.ɵɵdomElementEnd();
-  }
-  if (rf & 2) {
-    let $tmp_1_0$;
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵconditional(ctx.one ? 2 : ($tmp_1_0$ = ctx.value()) ? 3 : -1, $tmp_1_0$);
-  }
+export class MyApp {
+  message = "hello";
+  one = false;
+  value = () => 1;
+  static ɵfac = function MyApp_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyApp)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MyApp,
+    selectors: [["ng-component"]],
+    decls: 4,
+    vars: 2,
+    template: function MyApp_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵdomElementStart(0, "div");
+        i0.ɵɵtext(1);
+        i0.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 1)(
+          3,
+          MyApp_Conditional_3_Template,
+          1,
+          2
+        );
+        i0.ɵɵdomElementEnd();
+      }
+      if (rf & 2) {
+        let tmp_1_0;
+        i0.ɵɵadvance();
+        i0.ɵɵtextInterpolate1(" ", ctx.message, " ");
+        i0.ɵɵadvance();
+        i0.ɵɵconditional(ctx.one ? 2 : (tmp_1_0 = ctx.value()) ? 3 : -1, tmp_1_0);
+      }
+    },
+    encapsulation: 2
+  });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyApp,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              template: `
+    <div>
+      {{message}}
+      @if (one) {
+        {{one}}
+      } @else if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
+    </div>
+  `
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyApp, {
+      className: "MyApp",
+      filePath: "else_if_with_alias.ts",
+      lineNumber: 15
+    });
+})();

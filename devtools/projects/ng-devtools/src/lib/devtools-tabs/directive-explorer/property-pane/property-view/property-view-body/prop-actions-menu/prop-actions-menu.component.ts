@@ -9,7 +9,6 @@
 import {
   afterRenderEffect,
   AfterRenderRef,
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -83,7 +82,6 @@ interface AvailableActions {
   templateUrl: './prop-actions-menu.component.html',
   styleUrl: './prop-actions-menu.component.scss',
   imports: [MatTooltip, MatIcon, Menu, MenuContent, MenuItem, MenuTrigger, CdkConnectedOverlay],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropActionsMenuComponent {
   private readonly signalGraph = inject(SignalGraphManager);
@@ -152,7 +150,7 @@ export class PropActionsMenuComponent {
     e.stopPropagation();
 
     const node = this.node();
-    this.controller().logValue();
+    this.controller().logValue(node);
     this.snackBar.open(`Logged value of '${node.prop.name}' to the console`, 'Dismiss', {
       duration: 2000,
       horizontalPosition: 'left',
@@ -161,7 +159,8 @@ export class PropActionsMenuComponent {
   }
 
   private getSignalNode(node: FlatNode): DevtoolsSignalGraphNode | null {
-    if (node.prop.descriptor.containerType?.includes('Signal')) {
+    const containerType = node.prop.descriptor.containerType;
+    if (containerType === 'WritableSignal' || containerType === 'ReadonlySignal') {
       return this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name) ?? null;
     }
     return null;

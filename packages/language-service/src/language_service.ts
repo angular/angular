@@ -7,64 +7,70 @@
  */
 
 import {AST, TmplAstNode} from '@angular/compiler';
-import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  CompilerOptions,
+  ConfigurationHost,
   ErrorCode,
+  FileUpdate,
+  InliningMode,
+  isExternalResource,
   isFatalDiagnosticError,
+  isNamedClassDeclaration,
+  NgCompiler,
   ngErrorCode,
-} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
-import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import ts from 'typescript';
-
+  OptimizeFor,
+  PerfPhase,
+  ProgramDriver,
+  readConfiguration,
+} from '@angular/compiler-cli';
 import {
+  AngularInlayHint,
   ApplyRefactoringProgressFn,
   ApplyRefactoringResult,
-  AngularInlayHint,
   GetComponentLocationsForTemplateResponse,
-  InlayHintsConfig,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
+  InlayHintsConfig,
   LinkedEditingRanges,
   PluginConfig,
 } from '../api';
+
+import ts from 'typescript';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
 import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
-import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
 import {
   DocumentSymbolsOptions,
   getTemplateDocumentSymbols,
   TemplateDocumentSymbol,
 } from './document_symbols';
+import {getInlayHintsForTemplate} from './inlay_hints';
+import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
+import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
+import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {getSignatureHelp} from './signature_help';
+import {getTemplateSelectionRange} from './smart_selection';
 import {
   getTargetAtPosition,
   getTcbNodesOfTemplateAtPosition,
   TargetNodeKind,
 } from './template_target';
+import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
 import {
   findTightestNode,
   getClassDeclFromDecoratorProp,
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
-import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
-import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
-import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {getInlayHintsForTemplate} from './inlay_hints';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -277,6 +283,7 @@ export class LanguageService {
                     compiler,
                     typeCheckInfo,
                     span,
+                    fileName,
                     config,
                   );
                   hints.push(...templateHints);
@@ -293,7 +300,13 @@ export class LanguageService {
           // For external template files (HTML), find the associated component
           const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
           if (typeCheckInfo) {
-            const templateHints = getInlayHintsForTemplate(compiler, typeCheckInfo, span, config);
+            const templateHints = getInlayHintsForTemplate(
+              compiler,
+              typeCheckInfo,
+              span,
+              fileName,
+              config,
+            );
             hints.push(...templateHints);
           }
         }
@@ -455,7 +468,7 @@ export class LanguageService {
       }
 
       const classDeclarations: ts.ClassDeclaration[] = [];
-      sf.forEachChild((node) => {
+      sf.forEachChild((node: ts.Node) => {
         if (ts.isClassDeclaration(node)) {
           classDeclarations.push(node);
         }
@@ -569,6 +582,21 @@ export class LanguageService {
       }
 
       return getSignatureHelp(compiler, this.tsLS, fileName, position, options);
+    });
+  }
+
+  /**
+   * Gets the smart selection range (nested ranges used by the editor's
+   * "Expand/Shrink Selection" feature) at a position inside an Angular
+   * template. The ranges follow the template AST, so expressions, control flow
+   * blocks (`@if`, `@for`, ...) and their bodies become selection steps.
+   * Returns `undefined` outside templates; merging with the surrounding
+   * TypeScript structure is left to the editor, which combines the ranges of
+   * every registered selection range provider.
+   */
+  getTemplateSelectionRange(fileName: string, position: number): ts.SelectionRange | undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsSmartSelection, (compiler) => {
+      return getTemplateSelectionRange(compiler, fileName, position);
     });
   }
 
@@ -691,7 +719,7 @@ export class LanguageService {
       (compiler) => {
         const components = compiler.getComponentsWithTemplateFile(fileName);
         const componentDeclarationLocations: ts.DocumentSpan[] = Array.from(
-          components.values(),
+          components.values() as IterableIterator<ts.ClassDeclaration>,
         ).map((c) => {
           let contextSpan: ts.TextSpan | undefined = undefined;
           let textSpan: ts.TextSpan;
@@ -758,10 +786,15 @@ export class LanguageService {
           return undefined;
         }
 
+        const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
+        if (tcb === null) {
+          return undefined;
+        }
+
         const selectionNodesInfo = getTcbNodesOfTemplateAtPosition(
-          typeCheckInfo,
+          typeCheckInfo.nodes,
           position,
-          compiler,
+          tcb,
         );
         if (selectionNodesInfo === null) {
           return undefined;
@@ -882,7 +915,7 @@ export class LanguageService {
         project.readFile(path),
       );
 
-      if (!this.options.strictTemplates && !this.options.fullTemplateTypeCheck) {
+      if (this.options.strictTemplates === false) {
         diagnostics.push({
           messageText:
             'Some language features are not available. ' +
@@ -962,9 +995,6 @@ function parseNgCompilerOptions(
   if (config['forceStrictTemplates'] === true) {
     options.strictTemplates = true;
   }
-  if (config['enableSelectorless'] === true) {
-    options['_enableSelectorless'] = true;
-  }
 
   options['_angularCoreVersion'] = config['angularCoreVersion'];
 
@@ -974,6 +1004,17 @@ function parseNgCompilerOptions(
     const detectedVersion = detectAngularCoreVersion(project, host);
     if (detectedVersion !== null) {
       options['_angularCoreVersion'] = detectedVersion;
+    }
+  }
+
+  // Prior to v22, strictTemplates was set to false by default
+  if (options.strictTemplates === undefined && typeof options['_angularCoreVersion'] === 'string') {
+    const version = options['_angularCoreVersion'];
+    if (version !== `0.0.0-${'PLACEHOLDER'}`) {
+      const major = parseInt(version.split('.')[0], 10);
+      if (!Number.isNaN(major) && major < 22) {
+        options.strictTemplates = false;
+      }
     }
   }
 
@@ -1026,6 +1067,7 @@ function detectAngularCoreVersion(
 
 function createProgramDriver(project: ts.server.Project): ProgramDriver {
   return {
+    inliningMode: InliningMode.CopySourceToTcb,
     supportsInlineOperations: false,
     getProgram(): ts.Program {
       const program = project.getLanguageService().getProgram();

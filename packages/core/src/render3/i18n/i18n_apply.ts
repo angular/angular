@@ -21,7 +21,7 @@ import {
 } from '../../util/assert';
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {setPropertyAndInputs, setElementAttribute} from '../instructions/shared';
+import {setPropertyAndInputs} from '../instructions/shared';
 import {
   ELEMENT_MARKER,
   I18nCreateOpCode,
@@ -38,25 +38,27 @@ import {
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {ENVIRONMENT, HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {
   createCommentNode,
   createElementNode,
   createTextNode,
   nativeInsertBefore,
   nativeRemoveNode,
+  setElementAttribute,
   updateTextNode,
 } from '../dom_node_manipulation';
 import {
   getBindingIndex,
+  getSelectedIndex,
   isInSkipHydrationBlock,
   lastNodeWasCreated,
+  setSelectedIndex,
   wasLastNodeCreated,
 } from '../state';
 import {renderStringify} from '../util/stringify_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
 
-import {getLocaleId} from './i18n_locale_id';
 import {
   getCurrentICUCaseIndex,
   getParentFromIcuCreateOpCode,
@@ -101,19 +103,22 @@ export function setMaskBit(hasChange: boolean) {
 }
 
 export function applyI18n(tView: TView, lView: LView, index: number) {
-  if (changeMaskCounter > 0) {
-    ngDevMode && assertDefined(tView, `tView should be defined`);
-    const tI18n = tView.data[index] as TI18n | I18nUpdateOpCodes;
-    // When `index` points to an `ɵɵi18nAttributes` then we have an array otherwise `TI18n`
-    const updateOpCodes: I18nUpdateOpCodes = Array.isArray(tI18n)
-      ? (tI18n as I18nUpdateOpCodes)
-      : (tI18n as TI18n).update;
-    const bindingsStartIndex = getBindingIndex() - changeMaskCounter - 1;
-    applyUpdateOpCodes(tView, lView, updateOpCodes, bindingsStartIndex, changeMask);
+  try {
+    if (changeMaskCounter > 0) {
+      ngDevMode && assertDefined(tView, `tView should be defined`);
+      const tI18n = tView.data[index] as TI18n | I18nUpdateOpCodes;
+      // When `index` points to an `ɵɵi18nAttributes` then we have an array otherwise `TI18n`
+      const updateOpCodes: I18nUpdateOpCodes = Array.isArray(tI18n)
+        ? (tI18n as I18nUpdateOpCodes)
+        : (tI18n as TI18n).update;
+      const bindingsStartIndex = getBindingIndex() - changeMaskCounter - 1;
+      applyUpdateOpCodes(tView, lView, updateOpCodes, bindingsStartIndex, changeMask);
+    }
+  } finally {
+    // Reset changeMask & maskBit to default for the next update cycle
+    changeMask = 0b0;
+    changeMaskCounter = 0;
   }
-  // Reset changeMask & maskBit to default for the next update cycle
-  changeMask = 0b0;
-  changeMaskCounter = 0;
 }
 
 function createNodeWithoutHydration(
@@ -237,7 +242,7 @@ export function applyCreateOpCodes(
  * @param lView Current `LView`
  * @param anchorRNode place where the i18n node should be inserted.
  */
-export function applyMutableOpCodes(
+function applyMutableOpCodes(
   tView: TView,
   mutableOpCodes: IcuCreateOpCodes,
   lView: LView,
@@ -394,7 +399,7 @@ export function applyMutableOpCodes(
  * @param changeMask Each bit corresponds to a `ɵɵi18nExp` (Counting backwards from
  *     `bindingsStartIndex`)
  */
-export function applyUpdateOpCodes(
+function applyUpdateOpCodes(
   tView: TView,
   lView: LView,
   updateOpCodes: I18nUpdateOpCodes,
@@ -439,14 +444,20 @@ export function applyUpdateOpCodes(
                     sanitizeFn,
                   );
                 } else {
-                  setPropertyAndInputs(
-                    tNodeOrTagName,
-                    lView,
-                    propName,
-                    value,
-                    lView[RENDERER],
-                    sanitizeFn,
-                  );
+                  const prevSelectedIndex = getSelectedIndex();
+                  setSelectedIndex(nodeIndex);
+                  try {
+                    setPropertyAndInputs(
+                      tNodeOrTagName,
+                      lView,
+                      propName,
+                      value,
+                      lView[RENDERER],
+                      sanitizeFn,
+                    );
+                  } finally {
+                    setSelectedIndex(prevSelectedIndex);
+                  }
                 }
                 break;
               case I18nUpdateOpCode.Text:
@@ -518,7 +529,7 @@ function applyIcuUpdateCase(tView: TView, tIcu: TIcu, bindingsStartIndex: number
  */
 function applyIcuSwitchCase(tView: TView, tIcu: TIcu, lView: LView, value: string) {
   // Rebuild a new case for this ICU
-  const caseIndex = getCaseIndex(tIcu, value);
+  const caseIndex = getCaseIndex(lView[ENVIRONMENT].locale, tIcu, value);
   let activeCaseIndex = getCurrentICUCaseIndex(tIcu, lView);
   if (activeCaseIndex !== caseIndex) {
     applyIcuSwitchCaseRemove(tView, tIcu, lView);
@@ -568,12 +579,12 @@ function applyIcuSwitchCaseRemove(tView: TView, tIcu: TIcu, lView: LView) {
  * @param icuExpression
  * @param bindingValue The value of the main binding used by this ICU expression
  */
-function getCaseIndex(icuExpression: TIcu, bindingValue: string): number | null {
+function getCaseIndex(locale: string, icuExpression: TIcu, bindingValue: string): number | null {
   let index = icuExpression.cases.indexOf(bindingValue);
   if (index === -1) {
     switch (icuExpression.type) {
       case IcuType.plural: {
-        const resolvedCase = getPluralCase(bindingValue, getLocaleId());
+        const resolvedCase = getPluralCase(bindingValue, locale);
         index = icuExpression.cases.indexOf(resolvedCase);
         if (index === -1 && resolvedCase !== 'other') {
           index = icuExpression.cases.indexOf('other');

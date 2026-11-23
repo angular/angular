@@ -163,7 +163,7 @@ npm install @angular/material --save
 
 You can style standard Markdown triple backticks with attributes for enhanced presentation:
 
-```ts {header:"Awesome Title", linenums, highlight="[2]", hideCopy}
+```ts {header:"Awesome Title", linenums, highlight: [2], hideCopy}
 console.log('Hello, World!');
 console.log('Awesome Angular Docs!');
 ```
@@ -178,7 +178,6 @@ console.log('Awesome Angular Docs!');
 | `language`     | `string`             | code language                                                   |
 | `linenums`     | `boolean`            | (False) displays line numbers                                   |
 | `highlight`    | `string of number[]` | lines highlighted                                               |
-| `diff`         | `string`             | path to changed code                                            |
 | `visibleLines` | `string of number[]` | range of lines for collapse mode                                |
 | `region`       | `string`             | only show the provided region.                                  |
 | `preview`      | `boolean`            | (False) display preview                                         |
@@ -202,17 +201,16 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 
 #### `<docs-code-multifile>` Attributes
 
-| Attributes    | Type      | Details                                                         |
-| :------------ | :-------- | :-------------------------------------------------------------- |
-| body contents | `string`  | nested tabs of `docs-code` examples                             |
-| `path`        | `string`  | Path to code example for preview and external link              |
-| `preview`     | `boolean` | (False) display preview                                         |
-| `hideCode`    | `boolean` | (False) Whether to collapse code example by default.            |
-| `hideDollar`  | `boolean` | (False) Whether to hide the dollar sign in shell code examples. |
+| Attributes    | Type      | Details                                              |
+| :------------ | :-------- | :--------------------------------------------------- |
+| body contents | `string`  | nested tabs of `docs-code` examples                  |
+| `path`        | `string`  | Path to code example for preview and external link   |
+| `preview`     | `boolean` | (False) display preview                              |
+| `hideCode`    | `boolean` | (False) Whether to collapse code example by default. |
 
 ### Adding `preview` to your code example
 
-Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in Stackblitz.
+Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in StackBlitz.
 
 NOTE: `preview` only works with standalone.
 
@@ -335,13 +333,13 @@ You can add images using the semantic Markdown image:
 ![Lazy loaded image](assets/images/kitchen-sink/rhubarb.jpg {loading: 'lazy'})
 ![Combined attributes](assets/images/kitchen-sink/rhubarb.jpg#small {loading: 'lazy', decoding: 'async', fetchpriority: 'low'})
 
-Embedded videos are created with `docs-video` and just need a `src` and `alt`:
+Embedded videos are created with `docs-video` and just need a `src` and `title`:
 
-<docs-video src="https://www.youtube.com/embed/O47uUnJjbJc" alt=""/>
+<docs-video src="https://www.youtube.com/embed/O47uUnJjbJc" title="Expression changed after checked"/>
 
 ## Charts & Graphs
 
-Write diagrams and charts using [Mermaid](http://mermaid.js.org/) by setting the code language to `mermaid`, all theming is built-in.
+Write diagrams and charts using [Mermaid](https://mermaid.js.org/) by setting the code language to `mermaid`, all theming is built-in.
 
 ```mermaid
     graph TD;

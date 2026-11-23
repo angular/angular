@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector, inject, Injectable} from '@angular/core';
+import {EnvironmentInjector, inject, Service} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {filter, from, map, switchMap} from 'rxjs';
 
@@ -14,7 +14,7 @@ import {TutorialMetadata} from '@angular/docs';
 
 import {injectEmbeddedTutorialManager} from './inject-embedded-tutorial-manager';
 
-@Injectable()
+@Service({autoProvided: false})
 export class EditorUiState {
   private readonly environmentInjector = inject(EnvironmentInjector);
 

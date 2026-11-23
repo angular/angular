@@ -4,7 +4,7 @@ CSS offers a robust set of tools for you to create beautiful and engaging animat
 
 ## How to write animations in native CSS
 
-If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here's a few of them:
+If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here are a few of them:
 [MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)
 [W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)
 [The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)
@@ -14,7 +14,7 @@ and a couple of videos:
 [Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)
 [Net Ninja CSS Animation Tutorial Playlist](https://www.youtube.com/watch?v=jgw82b5Y2MU&list=PL4cUxeGkcC9iGYgmEd2dm3zAKzyCGDtM5)
 
-Check some of these various guides and tutorials out, and then come back to this guide.
+Check out some of these guides and tutorials, then come back to this guide.
 
 ## Creating Reusable Animations
 
@@ -28,7 +28,7 @@ Adding the class `animated-class` to an element would trigger the animation on t
 
 ### Animating State and Styles
 
-You may want to animate between two different states, for example when an element is opened or closed. You can accomplish this by using CSS classes either using a keyframe animation or transition styling.
+You may want to animate between two different states, for example when an element is opened or closed. You can accomplish this by using CSS classes, either with a keyframe animation or transition styling.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-states"/>
 
@@ -38,7 +38,7 @@ You can see similar examples in the template guide for [animating styles directl
 
 ### Transitions, Timing, and Easing
 
-Animating often requires adjusting timing, delays and easeing behaviors. This can be done using several css properties or shorthand properties.
+Animating often requires adjusting timing, delays, and easing behaviors. This can be done using several css properties or shorthand properties.
 
 Specify `animation-duration`, `animation-delay`, and `animation-timing-function` for a keyframe animation in CSS, or alternatively use the `animation` shorthand property.
 
@@ -62,7 +62,7 @@ Animations can be triggered by toggling CSS styles or classes. Once a class is p
 
 ### Animating Auto Height
 
-You can use css-grid to animate to auto height.
+You can use CSS Grid to animate to auto height.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts">
     <docs-code header="auto-height.ts" path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts" />
@@ -70,7 +70,7 @@ You can use css-grid to animate to auto height.
     <docs-code header="auto-height.css" path="adev/src/content/examples/animations/src/app/native-css/auto-height.css"  />
 </docs-code-multifile>
 
-If you don't have to worry about supporting all browsers, you can also check out `calc-size()`, which is the true solution to animating auto height. See [MDN's docs](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) and (this tutorial)[https://frontendmasters.com/blog/one-of-the-boss-battles-of-css-is-almost-won-transitioning-to-auto/] for more information.
+If you don't have to worry about supporting all browsers, you can also check out `calc-size()`, which is the true solution to animating auto height. See [MDN's docs](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) and [this tutorial](https://frontendmasters.com/blog/one-of-the-boss-battles-of-css-is-almost-won-transitioning-to-auto/) for more information.
 
 ### Animate entering and leaving a view
 
@@ -89,6 +89,8 @@ Animating an element when it leaves the view is similar to animating when enteri
     <docs-code header="remove.html" path="adev/src/content/examples/animations/src/app/native-css/remove.html" />
     <docs-code header="remove.css" path="adev/src/content/examples/animations/src/app/native-css/remove.css"  />
 </docs-code-multifile>
+
+NOTE: Child `animate.leave` animations fire only within the same component template. Nested component `animate.leave` animations will not fire when a parent element is removed.
 
 For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
 
@@ -119,7 +121,7 @@ Applying this class to an element prevents any animation from firing on that ele
 
 2. Use the [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) media query to ensure no animations play for users that prefer less animation.
 
-3. Prevent adding animation classes programatically
+3. Prevent adding animation classes programmatically
 
 ### Animation Callbacks
 
@@ -127,7 +129,7 @@ If you have actions you would like to execute at certain points during animation
 
 [`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)  
 [`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)  
-[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationitration_event)  
+[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationiteration_event)  
 [`OnAnimationCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)
 
 [`OnTransitionStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionstart_event)  

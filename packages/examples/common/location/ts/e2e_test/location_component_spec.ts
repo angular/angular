@@ -6,23 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {$, browser, by, element, protractor} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../test-utils';
-
-function waitForElement(selector: string) {
-  const EC = (<any>protractor).ExpectedConditions;
-  // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
-}
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
 describe('Location', () => {
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  it('should verify paths', () => {
-    browser.get('/location/#/bar/baz');
-    waitForElement('hash-location');
-    expect(element.all(by.css('path-location code')).get(0).getText()).toEqual('/location');
-    expect(element.all(by.css('hash-location code')).get(0).getText()).toEqual('/bar/baz');
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  it('should verify paths', async () => {
+    await driver.get(`${baseUrl}/location/#/bar/baz`);
+    await waitForAngular(driver);
+    const pathCode = await driver.findElement(webdriver.By.css('path-location code'));
+    const hashCode = await driver.findElement(webdriver.By.css('hash-location code'));
+    expect(await pathCode.getText()).toEqual('/location');
+    expect(await hashCode.getText()).toEqual('/bar/baz');
   });
 });

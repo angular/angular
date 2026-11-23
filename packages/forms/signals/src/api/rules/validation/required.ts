@@ -17,10 +17,18 @@ import {requiredError} from './validation_errors';
  * This function can only be called on any type of path.
  * In addition to binding a validator, this function adds `REQUIRED` property to the field.
  *
+ * A value is considered empty when it is `null`, `undefined`, the empty string `''`, `false`, or
+ * `NaN`. Every other value is considered non-empty, including `0` and the empty array `[]` — use
+ * [`minLength()`](api/forms/signals/minLength) to require a minimum number of items in an array.
+ *
+ * `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
+ * an unchecked box fails validation. `NaN` is empty because it is usually the result of a parsing
+ * error, and is not a valid number.
+ *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
  *  - `message`: A user-facing message for the error.
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.required()`
+ *  - `error`: Custom validation error(s) to be used instead of the default `requiredError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  *  - `when`: A function that receives the `FieldContext` and returns true if the field is required
  * @template TValue The type of value stored in the field the logic is bound to.
@@ -28,7 +36,7 @@ import {requiredError} from './validation_errors';
  *
  * @see [Signal Form Required Validation](guide/forms/signals/validation#required)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

@@ -265,7 +265,7 @@ import {useAutoTick, timeout} from '@angular/private/testing';
       expect(a.errors).toEqual({'sync1': true, 'sync2': true});
     });
 
-    it('should be injectable', () => {
+    it('should be injectable', async () => {
       @Component({
         template: '...',
       })
@@ -276,7 +276,7 @@ import {useAutoTick, timeout} from '@angular/private/testing';
       TestBed.configureTestingModule({imports: [ReactiveFormsModule]});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.fb).toBeInstanceOf(FormBuilder);
 
       const fc = fixture.componentInstance.fb.control('foo');
@@ -291,7 +291,7 @@ import {useAutoTick, timeout} from '@angular/private/testing';
       expect(fc.value).toEqual(null);
     });
 
-    it('should be injectable as NonNullableFormBuilder', () => {
+    it('should be injectable as NonNullableFormBuilder', async () => {
       @Component({
         template: '...',
       })
@@ -302,7 +302,7 @@ import {useAutoTick, timeout} from '@angular/private/testing';
       TestBed.configureTestingModule({imports: [ReactiveFormsModule]});
 
       const fixture = TestBed.createComponent(MyComp);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.fb).toBeInstanceOf(FormBuilder);
 
       const fc = fixture.componentInstance.fb.control('foo');

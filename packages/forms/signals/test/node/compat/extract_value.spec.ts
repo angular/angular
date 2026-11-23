@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, signal} from '@angular/core';
+import {computed, effect, Injector, runInInjectionContext, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup} from '@angular/forms';
 import {applyEach, disabled, form} from '@angular/forms/signals';
@@ -58,6 +58,43 @@ describe('extractValue', () => {
     expect(extractValue(f)).toEqual({
       firstName: 'John',
       lastName: 'Smith',
+    });
+  });
+
+  it('should notify reactive consumers when AbstractControl value changes', () => {
+    const formGroup = new FormGroup({
+      firstName: new FormControl('Max'),
+      lastName: new FormControl('Maxer'),
+    });
+
+    const f = compatForm(signal(formGroup), {injector});
+    const unwrapped = computed(() => extractValue(f));
+
+    let runs = 0;
+    let latest: unknown;
+
+    runInInjectionContext(injector, () => {
+      effect(() => {
+        runs++;
+        latest = unwrapped();
+      });
+    });
+
+    TestBed.tick();
+
+    expect(runs).toBe(1);
+    expect(latest).toEqual({
+      firstName: 'Max',
+      lastName: 'Maxer',
+    });
+
+    formGroup.get('lastName')?.setValue('NotMaxer');
+    TestBed.tick();
+
+    expect(runs).toBe(2);
+    expect(latest).toEqual({
+      firstName: 'Max',
+      lastName: 'NotMaxer',
     });
   });
 
@@ -227,7 +264,7 @@ describe('extractValue', () => {
         signal(model),
         (p) => {
           applyEach(p.items, (item) => {
-            disabled(item, ({value}) => value() === 2 || value() === 4);
+            disabled(item, {when: ({value}) => value() === 2 || value() === 4});
           });
         },
         {injector},
@@ -242,7 +279,7 @@ describe('extractValue', () => {
         signal(model),
         (p) => {
           applyEach(p.items, (item) => {
-            disabled(item, ({value}) => value() !== 30);
+            disabled(item, {when: ({value}) => value() !== 30});
           });
         },
         {injector},

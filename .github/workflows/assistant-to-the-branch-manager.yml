@@ -2,6 +2,7 @@ name: DevInfra
 
 on:
   push:
+  # zizmor: ignore[dangerous-triggers] - {Trigger is safe as workflow does not checkout untrusted code}
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review, labeled]
 
@@ -14,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.repository.fork == false
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: angular/dev-infra/github-actions/branch-manager@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+      - uses: angular/dev-infra/github-actions/branch-manager@aba3adc53489fee586e2375ee4367ff30c947390 # main
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

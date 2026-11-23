@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ElementRef, signal, viewChild} from '@angular/core';
+import {Component, signal} from '@angular/core';
 
-import {IFrameMessageBus} from '../../iframe-message-bus';
 import {DevToolsComponent} from '../../../projects/ng-devtools';
 import {SplitAreaDirective} from '../../../projects/ng-devtools/src/lib/shared/split/splitArea.directive';
 import {SplitComponent} from '../../../projects/ng-devtools/src/lib/shared/split/split.component';
@@ -19,7 +18,6 @@ import {SplitComponent} from '../../../projects/ng-devtools/src/lib/shared/split
   imports: [DevToolsComponent, SplitAreaDirective, SplitComponent],
 })
 export class AppDevToolsComponent {
-  messageBus: IFrameMessageBus | null = null;
-  readonly iframe = viewChild<ElementRef>('ref');
   readonly resizingDevtools = signal(false);
+  readonly iframeLoaded = signal(false);
 }

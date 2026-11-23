@@ -15,7 +15,7 @@
     @if (f.password().touched() && f.password().invalid()) {
       <div class="error-list">
         @for (error of f.password().errors(); track error) {
-          <p>{{ error.message || error.kind }}</p>
+          <p>{{ errorMessage(error) }}</p>
         }
       </div>
     }

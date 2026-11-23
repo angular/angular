@@ -11,9 +11,9 @@ import {
   computed,
   effect,
   inject,
-  Injectable,
   RendererFactory2,
   signal,
+  Service,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {WINDOW} from '../application-providers/window_provider';
@@ -24,7 +24,7 @@ import {ThemeUi} from './theme_types';
 const DARK_THEME_CLASS = 'dark-theme';
 const LIGHT_THEME_CLASS = 'light-theme';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ThemeService {
   private readonly win = inject(WINDOW);
   private readonly doc = inject(DOCUMENT);

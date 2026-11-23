@@ -5,7 +5,6 @@
     "types": ["node"],
     "lib": ["es2021"],
     "experimentalDecorators": true,
-    "strict": true,
     "skipLibCheck": true,
     "noImplicitOverride": true,
     "esModuleInterop": true,

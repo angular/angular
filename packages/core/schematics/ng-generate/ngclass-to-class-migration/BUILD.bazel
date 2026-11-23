@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
+load("//tools:defaults.bzl", "copy_to_bin", "jasmine_test", "ts_project")
 
 package(
     default_visibility = [
@@ -14,7 +14,10 @@ copy_to_bin(
 
 ts_project(
     name = "ngclass-to-class-migration",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*_spec.ts"],
+    ),
     data = ["schema.json"],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
@@ -26,5 +29,30 @@ ts_project(
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    timeout = "moderate",
+    data = [
+        ":static_files",
+        ":test_lib",
+        "//:node_modules/@angular/compiler",
+        "//:node_modules/@angular/compiler-cli",
+        "//packages/core/schematics:bundles",
+        "//packages/core/schematics:schematics_jsons",
     ],
 )

@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "../built/e2e",
-    "types": ["jasmine", "jasminewd2"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "types": ["jasmine", "node", "selenium-webdriver"]
   }
 }

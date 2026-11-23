@@ -1,8 +1,13 @@
 {
   "name": "post",
   "version": "0.0.1",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    }
+  },
   "peerDependencies": {
-    "@angular/core": "^22.0.0-next"
+    "@angular/core": "^22.2.0-next"
   },
   "dependencies": {
     "tslib": "^2.3.0"

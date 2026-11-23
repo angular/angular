@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    visibility = ["//ngp-vscode-ng-language-service/tests:__pkg__"],
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/preprocessor/language-service",
+        "//packages/compiler-cli/preprocessor/language-service:node_modules/vscode-jsonrpc",
+        "//packages/compiler-cli/preprocessor/language-service:node_modules/vscode-languageserver",
+        "//packages/compiler-cli/preprocessor/language-service:node_modules/vscode-languageserver-textdocument",
+        "//packages/compiler-cli/preprocessor/language-service:node_modules/vscode-uri",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    timeout = "long",
+    data = [
+        ":test_lib",
+        # Provides the `tsgo` binary that backs the language service.
+        "//packages/compiler-cli/preprocessor/language-service:node_modules/@typescript/native-preview",
+        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
+        "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
+    ] + glob(["test-workspace/**"]),
+    # The specs drive an external `tsgo` process over LSP and some rely on fixed
+    # sleeps, so they can occasionally fail under heavy machine load.
+    flaky = True,
+    shard_count = 4,
+)

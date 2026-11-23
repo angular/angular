@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 
 import {Todo} from './todo';
 import {TooltipDirective} from './tooltip.directive';
@@ -14,7 +14,6 @@ import {TooltipDirective} from './tooltip.directive';
 @Component({
   templateUrl: 'todo.component.html',
   selector: 'app-todo',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./todo.component.scss'],
   imports: [TooltipDirective],
 })

@@ -34,10 +34,10 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('dataKey', 'value');
     await fixture.whenStable();
 
-    const labelElement = fixture.debugElement.query(By.css('th'));
+    const labelElement = fixture.debugElement.query(By.css('dt'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
-    const dataElements = fixture.debugElement.queryAll(By.css('td'));
+    const dataElements = fixture.debugElement.queryAll(By.css('dd'));
     expect(dataElements.length).toEqual(1);
     expect(dataElements[0].nativeElement.innerText).toEqual('Route Data');
   });
@@ -48,7 +48,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('dataKey', 'isActive');
     await fixture.whenStable();
 
-    const labelElement = fixture.debugElement.query(By.css('th'));
+    const labelElement = fixture.debugElement.query(By.css('dt'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('.tag-active'));
@@ -62,7 +62,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('dataKey', 'isLazy');
     await fixture.whenStable();
 
-    const labelElement = fixture.debugElement.query(By.css('th'));
+    const labelElement = fixture.debugElement.query(By.css('dt'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('.tag-inactive'));
@@ -77,7 +77,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('actionBtnType', 'view-source');
     await fixture.whenStable();
 
-    const labelElement = fixture.debugElement.query(By.css('th'));
+    const labelElement = fixture.debugElement.query(By.css('dt'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('button'));
@@ -92,7 +92,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('actionBtnDisabled', true);
     await fixture.whenStable();
 
-    const labelElement = fixture.debugElement.query(By.css('th'));
+    const labelElement = fixture.debugElement.query(By.css('dt'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('button'));
@@ -107,7 +107,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('actionBtnType', 'view-source');
     await fixture.whenStable();
 
-    const labelElement = fixture.debugElement.query(By.css('th'));
+    const labelElement = fixture.debugElement.query(By.css('dt'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('button'));

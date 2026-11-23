@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export function isIterable(obj: any): obj is Iterable<any> {
-  return obj !== null && typeof obj === 'object' && obj[Symbol.iterator] !== undefined;
-}
-
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
   return (

@@ -85,6 +85,16 @@ describe('locale data api', () => {
       expect(findLocaleData('de-CH')).toEqual(localeDeCH);
     });
 
+    it('should not cache missing global locale data lookups', () => {
+      const localeEnNZ: any[] = ['en-NZ'];
+
+      expect(findLocaleData('en-NZ')).toEqual(localeEn);
+
+      global.ng.common.locales['en-nz'] = localeEnNZ;
+
+      expect(findLocaleData('en-NZ')).toBe(localeEnNZ);
+    });
+
     it('should find the parent LOCALE_DATA if the exact locale is not available and the parent locale is on the global object', () => {
       expect(findLocaleData('de-BE')).toEqual(localeDe);
     });

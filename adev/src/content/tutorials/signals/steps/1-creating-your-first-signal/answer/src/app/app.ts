@@ -1,4 +1,4 @@
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, signal} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +18,6 @@ import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   userStatus = signal<'online' | 'offline'>('offline');

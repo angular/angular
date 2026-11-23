@@ -7,7 +7,9 @@
  */
 
 import {
+  ɵAcxChangeDetectionStrategy as AcxChangeDetectionStrategy,
   ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  ChangeDetectionStrategy as AngularChangeDetectionStrategy,
   ViewEncapsulation as AngularViewEncapsulation,
   ɵFramework as Framework,
   InjectionToken,
@@ -15,22 +17,16 @@ import {
   Injector,
   Type,
 } from '@angular/core';
+import {ReactiveNodeKind} from '@angular/core/primitives/signals';
 
 export interface DebugSignalGraphNode {
   id: string;
-  kind:
-    | 'signal'
-    | 'computed'
-    | 'effect'
-    | 'template'
-    | 'linkedSignal'
-    | 'afterRenderEffectPhase'
-    | 'childSignalProp' // Represents a signal passed as a prop to a child component in a CoW app
-    | 'unknown';
+  kind: ReactiveNodeKind;
   epoch: number;
   label?: string;
   preview: Descriptor;
   debuggable: boolean;
+  watched: boolean;
 }
 
 export interface DebugSignalGraphEdge {
@@ -67,11 +63,11 @@ export interface ComponentType {
   name: string;
   isElement: boolean;
   id: number;
+  /** Angular framework instance ID assigned by the profiler. Only present when profiling is active. */
+  instanceId?: number;
 }
 
 export type HydrationStatus =
-  // null represent the absence of hydration status (a node created via CSR)
-  | null
   | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
@@ -116,18 +112,20 @@ export interface ForLoopBlock extends ControlFlowBlock {
   trackExpression: string;
 }
 
-// TODO: refactor to remove nativeElement as it is not serializable
-// and only really exists on the ng-devtools-backend
+export type ChangeDetection = 'ng-on-push' | 'ng-eager' | 'acx-on-push' | 'acx-default';
+
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
-  element: string;
-  directives: DirType[];
+  tagName?: string;
+  directives?: DirType[];
   component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
-  hydration: HydrationStatus;
+  hydration?: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
-  onPush?: boolean;
+  static: boolean;
+  changeDetection?: ChangeDetection;
+  injector?: Injector;
 }
 
 export interface SerializedInjector {
@@ -205,7 +203,7 @@ export interface AngularDirectiveMetadata extends BaseDirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
   encapsulation?: AngularViewEncapsulation;
-  onPush?: boolean;
+  changeDetection?: AngularChangeDetectionStrategy;
   dependencies?: SerializedInjectedService[];
 }
 
@@ -215,7 +213,7 @@ export interface AcxDirectiveMetadata extends BaseDirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
   encapsulation?: AcxViewEncapsulation;
-  onPush?: boolean;
+  changeDetection?: AcxChangeDetectionStrategy;
 }
 
 /** Directive metadata specific to Wiz. */
@@ -226,9 +224,7 @@ export interface WizComponentMetadata extends BaseDirectiveMetadata {
 
 /** Directive metadata for all supported frameworks. */
 export type DirectiveMetadata =
-  | AngularDirectiveMetadata
-  | AcxDirectiveMetadata
-  | WizComponentMetadata;
+  AngularDirectiveMetadata | AcxDirectiveMetadata | WizComponentMetadata;
 
 export interface SerializedInjectedService {
   token: string;
@@ -383,16 +379,26 @@ export interface SupportedApis {
   signals: boolean;
   transferState: boolean;
   signalPropertiesInspection: boolean;
+  signalWatch: boolean;
 }
 
 export type TransferStateValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Record<string, unknown>
-  | unknown[];
+  string | number | boolean | null | undefined | Record<string, unknown> | unknown[];
+
+export interface CdElementData {
+  element: ElementPosition;
+  lastCdPassDuration: number;
+  cdCount: number;
+}
+
+export interface DevtoolsConfig {
+  performanceTrack: boolean;
+  hydrationOverlays: boolean;
+  cdHighlighting: boolean;
+  cdDataStream: boolean;
+  forBlocks: boolean;
+  deferBlocks: boolean;
+}
 
 export interface Events {
   handshake: () => void;
@@ -438,15 +444,9 @@ export interface Events {
   createHighlightOverlay: (position: ElementPosition) => void;
   removeHighlightOverlay: () => void;
 
-  createHydrationOverlay: () => void;
-  removeHydrationOverlay: () => void;
-
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;
   removeComponentHighlight: () => void;
-
-  enableTimingAPI: () => void;
-  disableTimingAPI: () => void;
 
   // todo: type properly
   getInjectorProviders: (injector: SerializedInjector) => void;
@@ -460,6 +460,8 @@ export interface Events {
   getTransferState: () => void;
   transferStateData: (data: Record<string, TransferStateValue> | null) => void;
 
+  latestCdData: (cdData: CdElementData[]) => void;
+
   contentScriptConnected: (frameId: number, name: string, url: string) => void;
   contentScriptDisconnected: (frameId: number, name: string, url: string) => void;
   enableFrameConnection: (frameId: number, tabId: number) => void;
@@ -467,6 +469,10 @@ export interface Events {
   detectAngular: (detectionResult: AngularDetection) => void;
   backendInstalled: (detectionResult: AngularDetection) => void;
   backendReady: () => void;
+  setConfig: (config: Partial<DevtoolsConfig>) => void;
+  devtoolsShutdown: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;
+
+  toggleWatchSignal: (signalId: string) => void;
 }

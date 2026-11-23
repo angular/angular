@@ -156,6 +156,7 @@ describe('di', () => {
           changeDetectionScheduler: null,
           ngReflect: false,
           tracingService: null,
+          locale: 'en-us',
         },
         {} as any,
         null,

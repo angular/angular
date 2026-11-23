@@ -84,7 +84,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, ElementRef);`);
+      expect(js).toMatch(/i0\.ɵɵviewQuerySignal\(ctx\.el, _c0, 5, \(*ElementRef\)*\);/);
       expect(js).toContain(`i0.ɵɵqueryAdvance();`);
     });
 
@@ -103,7 +103,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, ElementRef);`);
+      expect(js).toMatch(/i0\.ɵɵviewQuerySignal\(ctx\.el, _c0, 5, \(*ElementRef\)*\);/);
       expect(js).toContain(`i0.ɵɵqueryAdvance();`);
     });
 
@@ -346,13 +346,9 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "viewChild" on a class member that is declared as ES private.`,
-            }),
-          }),
-        ]);
+        expect(ts.flattenDiagnosticMessageText(diagnostics[0].messageText, '\n')).toContain(
+          `Cannot use "viewChild" on a class member that is declared as ES private.`,
+        );
       });
 
       it('should allow query is declared on a `private` field', () => {
@@ -407,10 +403,9 @@ runInEachFileSystem(() => {
 
         const js = env.getContents('test.js');
         expect(js).toContain('import * as i0 from "@angular/core";');
-        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { el: [{ type: i0.ViewChild, args: ['myLocator', { isSignal: true }] }] });`);
+        expect(js).toMatch(
+          /i0\.ɵsetClassMetadata\(TestDir,\s*\[\{\s*type:\s*Component,\s*args:\s*\[\{\s*selector:\s*['"]test['"],\s*template:\s*['"]['"]\s*\}\]\s*\}\],\s*null,\s*\{\s*el:\s*\[\{\s*type:\s*i0\.ViewChild,\s*args:\s*\[['"]myLocator['"],\s*\{\s*isSignal:\s*true\s*\}\]\s*\}\]\s*\}\);/,
+        );
       });
 
       it('should capture a viewChildren query in the setClasMetadata call', () => {
@@ -429,10 +424,9 @@ runInEachFileSystem(() => {
 
         const js = env.getContents('test.js');
         expect(js).toContain('import * as i0 from "@angular/core";');
-        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { el: [{ type: i0.ViewChildren, args: ['myLocator', { isSignal: true }] }] });`);
+        expect(js).toMatch(
+          /i0\.ɵsetClassMetadata\(TestDir,\s*\[\{\s*type:\s*Component,\s*args:\s*\[\{\s*selector:\s*['"]test['"],\s*template:\s*['"]['"]\s*\}\]\s*\}\],\s*null,\s*\{\s*el:\s*\[\{\s*type:\s*i0\.ViewChildren,\s*args:\s*\[['"]myLocator['"],\s*\{\s*isSignal:\s*true\s*\}\]\s*\}\]\s*\}\);/,
+        );
       });
 
       it('should capture a contentChild query in the setClasMetadata call', () => {
@@ -451,10 +445,9 @@ runInEachFileSystem(() => {
 
         const js = env.getContents('test.js');
         expect(js).toContain('import * as i0 from "@angular/core";');
-        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { el: [{ type: i0.ContentChild, args: ['myLocator', { isSignal: true }] }] });`);
+        expect(js).toMatch(
+          /i0\.ɵsetClassMetadata\(TestDir,\s*\[\{\s*type:\s*Component,\s*args:\s*\[\{\s*selector:\s*['"]test['"],\s*template:\s*['"]['"]\s*\}\]\s*\}\],\s*null,\s*\{\s*el:\s*\[\{\s*type:\s*i0\.ContentChild,\s*args:\s*\[['"]myLocator['"],\s*\{\s*isSignal:\s*true\s*\}\]\s*\}\]\s*\}\);/,
+        );
       });
 
       it('should capture a contentChildren query in the setClasMetadata call', () => {
@@ -473,10 +466,9 @@ runInEachFileSystem(() => {
 
         const js = env.getContents('test.js');
         expect(js).toContain('import * as i0 from "@angular/core";');
-        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { el: [{ type: i0.ContentChildren, args: ['myLocator', { isSignal: true }] }] });`);
+        expect(js).toMatch(
+          /i0\.ɵsetClassMetadata\(TestDir,\s*\[\{\s*type:\s*Component,\s*args:\s*\[\{\s*selector:\s*['"]test['"],\s*template:\s*['"]['"]\s*\}\]\s*\}\],\s*null,\s*\{\s*el:\s*\[\{\s*type:\s*i0\.ContentChildren,\s*args:\s*\[['"]myLocator['"],\s*\{\s*isSignal:\s*true\s*\}\]\s*\}\]\s*\}\);/,
+        );
       });
 
       it('should capture a query with options in a setClassMetadata call', () => {
@@ -495,12 +487,8 @@ runInEachFileSystem(() => {
 
         const js = env.getContents('test.js');
         expect(js).toContain('import * as i0 from "@angular/core";');
-        expect(js).toContain(
-          `i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { el: [{ type: i0.ViewChild, ` +
-            `args: ['myLocator', Object.assign({ read: ElementRef }, { isSignal: true })] }] });`,
+        expect(js).toMatch(
+          /i0\.ɵsetClassMetadata\(TestDir,\s*\[\{\s*type:\s*Component,\s*args:\s*\[\{\s*selector:\s*['"]test['"],\s*template:\s*['"]['"]\s*\}\]\s*\}\],\s*null,\s*\{\s*el:\s*\[\{\s*type:\s*i0\.ViewChild,\s*args:\s*\[['"]myLocator['"],\s*Object\.assign\(\{\s*read:\s*ElementRef\s*\},\s*\{\s*isSignal:\s*true\s*\}\)\]\s*\}\]\s*\}\);/,
         );
       });
 
@@ -523,11 +511,8 @@ runInEachFileSystem(() => {
 
         const js = env.getContents('test.js');
         expect(js).toContain('import * as i0 from "@angular/core";');
-        expect(js).toContain(
-          `i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { el: [{ type: i0.ViewChild, args: [i0.forwardRef(() => Dep), { isSignal: true }] }] });`,
+        expect(js).toMatch(
+          /i0\.ɵsetClassMetadata\(TestDir,\s*\[\{\s*type:\s*Component,\s*args:\s*\[\{\s*selector:\s*['"]test['"],\s*template:\s*['"]['"]\s*\}\]\s*\}\],\s*null,\s*\{\s*el:\s*\[\{\s*type:\s*i0\.ViewChild,\s*args:\s*\[i0\.forwardRef\(\(\)\s*=>\s*Dep\),\s*\{\s*isSignal:\s*true\s*\}\]\s*\}\]\s*\}\);/,
         );
       });
     });

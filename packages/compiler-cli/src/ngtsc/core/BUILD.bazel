@@ -25,7 +25,6 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/incremental",
         "//packages/compiler-cli/src/ngtsc/incremental:api",
         "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
-        "//packages/compiler-cli/src/ngtsc/indexer",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/perf",

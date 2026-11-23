@@ -6,7 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export const removeTrailingSlash = (url: string): string => {
+import {normalizePath} from './navigation.utils';
+
+export function getRelativeUrl(
+  absoluteUrl: string,
+  result: 'relative' | 'pathname' | 'hash' = 'relative',
+): string {
+  const url = new URL(normalizePath(absoluteUrl));
+
+  if (result === 'hash') {
+    return url.hash?.substring(1) ?? '';
+  }
+  if (result === 'pathname') {
+    return `${removeTrailingSlash(normalizePath(url.pathname))}`;
+  }
+  return `${removeTrailingSlash(normalizePath(url.pathname))}${url.hash ?? ''}`;
+}
+
+const removeTrailingSlash = (url: string): string => {
   if (url.endsWith('/')) {
     return url.slice(0, -1);
   }

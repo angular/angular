@@ -6,19 +6,36 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '../../../utilities/index.js';
-import {browser, by, element} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
+import {
+  createWebDriver,
+  verifyNoBrowserErrors,
+  waitForAngular,
+} from '../../../../packages/examples/test-utils/index.js';
 
 describe('SVG', function () {
-  const URL = '/';
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  afterEach(verifyNoBrowserErrors);
-  beforeEach(() => {
-    browser.get(URL);
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should display SVG component contents', function () {
-    const svgText = element.all(by.css('g text')).get(0);
-    expect(svgText.getText()).toEqual('Hello');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
+  });
+
+  it('should display SVG component contents', async function () {
+    const texts = await driver.findElements(webdriver.By.css('g text'));
+    expect(await texts[0].getText()).toEqual('Hello');
   });
 });

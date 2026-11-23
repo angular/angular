@@ -24,7 +24,8 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "optimization": true,
-            "progress": false
+            "progress": false,
+            "preserveSymlinks": true
           },
           "configurations": {
             "development": {
@@ -76,13 +77,14 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.css"],
             "scripts": [],
             "progress": false,
+            "preserveSymlinks": true,
             "watch": false
           }
         },

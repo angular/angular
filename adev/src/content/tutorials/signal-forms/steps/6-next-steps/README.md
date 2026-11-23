@@ -1,6 +1,9 @@
 # Congratulations!
 
-You've completed the Signal Forms tutorial and built a complete login form from scratch!
+<div class="docs-tutorial-mascot">
+  <img class="docs-tutorial-mascot__angie" src="assets/images/angie/superhero.svg" aria-hidden="true">
+  <p class="docs-tutorial-mascot__bubble">You've done it! You completed the Signal Forms tutorial and built a login form from scratch.</p>
+</div>
 
 ## What you learned
 
@@ -22,10 +25,10 @@ Ready to learn more? Here are recommended next steps:
 - **[Form Models Guide](guide/forms/signals/models)** - Deep dive into form models and data management
 - **[Validation Guide](guide/forms/signals/validation)** - Comprehensive validation reference
 - **[Field State Management Guide](guide/forms/signals/field-state-management)** - Advanced state patterns
-- **[Custom Controls Guide](guide/forms/signals/custom-controls)** - Building reusable form components -->
+- **[Custom Controls Guide](guide/forms/signals/custom-controls)** - Building reusable form components
 
 ## Keep learning
 
-Remember: Signal Forms is experimental, so check the [official documentation](guide/forms/signals/overview) for updates to the API.
+Check the [official documentation](guide/forms/signals/overview) for the complete Signal Forms API.
 
 Happy coding!

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {timeout} from '@angular/private/testing';
+
 import {ApplicationRef, Injector, resource, ResourceParamsStatus, signal} from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -19,6 +21,42 @@ function throwStatusAndErrors<T>(source: () => T | ResourceParamsStatus | Error)
 }
 
 describe('resource with ResourceParamsStatus', () => {
+  for (const [paramsStatus, expectedStatus] of [
+    [ResourceParamsStatus.IDLE, 'idle'],
+    [ResourceParamsStatus.LOADING, 'loading'],
+    [new Error('params error'), 'error'],
+  ] as const) {
+    it(`should cancel a pending load and release stability when params throws ${expectedStatus}`, async () => {
+      const params = signal<string | ResourceParamsStatus | Error>('first');
+      const abortSignals: AbortSignal[] = [];
+      const res = resource({
+        params: throwStatusAndErrors(params),
+        loader: ({params, abortSignal}) => {
+          abortSignals.push(abortSignal);
+          // The first load deliberately remains pending even after it is aborted.
+          return params === 'first' ? new Promise<string>(() => {}) : Promise.resolve(params);
+        },
+        injector: TestBed.inject(Injector),
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+
+      await timeout();
+      expect(abortSignals[0]?.aborted).toBeFalse();
+
+      params.set(paramsStatus);
+      await appRef.whenStable();
+
+      expect(res.status()).toBe(expectedStatus);
+      expect(abortSignals.map((signal) => signal.aborted)).toEqual([true]);
+
+      params.set('second');
+      await appRef.whenStable();
+
+      expect(res.snapshot()).toEqual({status: 'resolved', value: 'second'});
+      expect(abortSignals.map((signal) => signal.aborted)).toEqual([true, false]);
+    });
+  }
+
   it('should transition to idle when params throws ResourceParamsStatus.IDLE', async () => {
     const s = signal<string | ResourceParamsStatus>('foo');
     const res = await act(() =>
@@ -116,6 +154,88 @@ describe('resource with ResourceParamsStatus', () => {
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('foo');
     expect(loadCount).toBe(1);
+  });
+
+  it('should propagate a different error thrown from params', async () => {
+    const s = signal<string | Error>('foo');
+    const res = await act(() =>
+      resource({
+        params: throwStatusAndErrors(s),
+        loader: async ({params}) => params as string,
+        injector: TestBed.inject(Injector),
+      }),
+    );
+
+    await act(() => s.set(new Error('first')));
+    expect(res.status()).toBe('error');
+    expect(res.error()).toEqual(new Error('first'));
+
+    await act(() => s.set(new Error('second')));
+    expect(res.status()).toBe('error');
+    expect(res.error()).toEqual(new Error('second'));
+  });
+
+  it('should keep the status when an unrelated signal re-runs params that throws the same status', async () => {
+    const unrelated = signal(0);
+    const s = signal<string | ResourceParamsStatus>(ResourceParamsStatus.LOADING);
+    let paramsCount = 0;
+    let loadCount = 0;
+    const res = await act(() =>
+      resource({
+        params: () => {
+          paramsCount++;
+          unrelated();
+          return throwStatusAndErrors(s)();
+        },
+        loader: async ({params}) => {
+          loadCount++;
+          return params;
+        },
+        injector: TestBed.inject(Injector),
+      }),
+    );
+
+    expect(res.status()).toBe('loading');
+    expect(paramsCount).toBe(1);
+
+    await act(() => unrelated.set(1));
+
+    expect(paramsCount).toBe(2);
+    expect(res.status()).toBe('loading');
+    expect(loadCount).toBe(0);
+
+    await act(() => s.set('foo'));
+    expect(res.status()).toBe('resolved');
+    expect(loadCount).toBe(1);
+  });
+
+  it('should distinguish between returning undefined and throwing undefined in params', async () => {
+    const throwIt = signal(false);
+    let loads = 0;
+
+    const res = await act(() =>
+      resource({
+        params: () => {
+          if (throwIt()) {
+            throw undefined;
+          }
+          return undefined;
+        },
+        loader: async () => {
+          loads++;
+          return 'loaded';
+        },
+        injector: TestBed.inject(Injector),
+      }),
+    );
+
+    expect(res.status()).toBe('idle');
+    expect(loads).toBe(0);
+
+    await act(() => throwIt.set(true));
+
+    expect(res.status()).toBe('error');
+    expect(loads).toBe(0);
   });
 });
 

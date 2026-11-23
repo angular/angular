@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {DestroyRef, Injectable, PLATFORM_ID, inject} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {DestroyRef, Service, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fromEvent} from 'rxjs';
 import {MEMBER_ID_ATTRIBUTE} from '../constants/api-reference-prerender.constants';
 import {Router} from '@angular/router';
 
-@Injectable()
+@Service({autoProvided: false})
 export class ReferenceScrollHandler {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);

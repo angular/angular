@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TypeCheckingConfig} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../imports';
@@ -14,7 +15,7 @@ import {ReflectionHost} from '../../reflection';
 import {SourceFileValidatorRule} from './rules/api';
 import {InitializerApiUsageRule} from './rules/initializer_api_usage_rule';
 import {UnusedStandaloneImportsRule} from './rules/unused_standalone_imports_rule';
-import {TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
+import {TemplateTypeChecker} from '../../typecheck/api';
 import {ForbiddenRequiredInitializersInvocationRule} from './rules/forbidden_required_initializer_invocation_rule';
 
 /**

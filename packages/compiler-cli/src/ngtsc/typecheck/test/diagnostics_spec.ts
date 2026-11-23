@@ -15,6 +15,39 @@ import {diagnose, ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts} from '..
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
+    describe('arrow functions', () => {
+      it('should report duplicate arrow function parameter names', () => {
+        const messages = diagnose(
+          `<div (click)="takes((a, a) => a)"></div>`,
+          `
+          class TestComponent {
+            takes(fn: (a: number, b: number) => number) {}
+          }`,
+        );
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 22): Duplicate identifier 'a'.`,
+          `TestComponent.html(1, 25): Duplicate identifier 'a'.`,
+        ]);
+      });
+
+      it('should not report unused arrow function parameters', () => {
+        const messages = diagnose(
+          `<div (click)="takes((prev) => 1)"></div>`,
+          `
+          class TestComponent {
+            takes(fn: (value: number) => number) {}
+          }`,
+          [],
+          [],
+          {},
+          {noUnusedLocals: true, noUnusedParameters: true},
+        );
+
+        expect(messages).toEqual([]);
+      });
+    });
+
     it('works for directive bindings', () => {
       const messages = diagnose(
         `<div dir [input]="person.name"></div>`,
@@ -181,9 +214,28 @@ runInEachFileSystem(() => {
       }`,
       );
 
-      expect(messages).toEqual([
+      expect(messages.sort()).toEqual([
         `TestComponent.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
-        `TestComponent.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
+        jasmine.stringContaining(
+          `TestComponent.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
+        ),
+      ]);
+    });
+
+    it('should disallow binding to event properties starting with on', () => {
+      const messages = diagnose(
+        `<div [onclick]="handler"></div>`,
+        `
+      class TestComponent {
+        handler: any;
+      }`,
+      );
+
+      expect(messages).toEqual([
+        jasmine.stringContaining(
+          `TestComponent.html(1, 6): Binding to event property 'onclick' is disallowed for security reasons, please use (click)=...
+If 'onclick' is a directive input, make sure the directive is imported by the current module.`,
+        ),
       ]);
     });
 
@@ -733,7 +785,7 @@ class TestComponent {
       expect(messages).toEqual([]);
     });
 
-    it('disallows access to private members', () => {
+    it('allow access to private members', () => {
       const messages = diagnose(
         `<button (click)="doFoo()">{{ message }}</button>`,
         `
@@ -743,9 +795,24 @@ class TestComponent {
         }`,
       );
 
+      expect(messages).toEqual([]);
+    });
+
+    it('disallows access of a nested private member', () => {
+      const messages = diagnose(
+        `<div>{{ prop.a }}</div>`,
+        `
+        export class Model {
+          private a = 1;
+        }
+
+        export class TestComponent {
+          private prop =  new Model();
+        }      
+        `,
+      );
       expect(messages).toEqual([
-        `TestComponent.html(1, 18): Property 'doFoo' is private and only accessible within class 'TestComponent'.`,
-        `TestComponent.html(1, 30): Property 'message' is private and only accessible within class 'TestComponent'.`,
+        `TestComponent.html(1, 14): Property 'a' is private and only accessible within class 'Model'.`,
       ]);
     });
   });
@@ -996,11 +1063,13 @@ class TestComponent {
         ],
       );
 
-      expect(messages).toEqual([
+      expect(messages.sort()).toEqual([
         // These messages are expected to refer to the native
         // typings since the inputs/outputs haven't been exposed.
+        jasmine.stringContaining(
+          `TestComponent.html(1, 10): Can't bind to 'input' since it isn't a known property of 'div'.`,
+        ),
         `TestComponent.html(1, 60): Argument of type 'Event' is not assignable to parameter of type 'string'.`,
-        `TestComponent.html(1, 10): Can't bind to 'input' since it isn't a known property of 'div'.`,
       ]);
     });
 
@@ -1447,6 +1516,46 @@ class TestComponent {
         `
           export class TestComponent {
             value: 'a' | 'b';
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should narrow union when switching on a nested prop', () => {
+      const messages = diagnose(
+        `
+        @switch (state.mode) {
+          @case ('show') { {{ state.menu }}; }
+          @case ('hide') {}
+          @default never(state);
+        }
+        `,
+        `
+          export class TestComponent {
+            state: { mode: 'hide' } | { mode: 'show'; menu: number };
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should narrow a let declaration with the same name as a component property', () => {
+      const messages = diagnose(
+        `
+          @let state = this.state();
+          @switch (state.mode) {
+            @case ('show') { {{ state.menu }}; }
+            @case ('hide') {}
+            @default never(state);
+          }
+        `,
+        `
+          import {InputSignal} from '@angular/core';
+          export class TestComponent {
+            state: InputSignal<{ mode: 'hide' } | { mode: 'show'; menu: number }>;
           }
         `,
       );

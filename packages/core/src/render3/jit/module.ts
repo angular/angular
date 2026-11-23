@@ -306,17 +306,32 @@ function verifySemanticsOfNgModuleDef(
     }
   }
 
+  /**
+   * Checks that a directive declared in the module actually has a selector.
+   *
+   * This does the following:
+   * 1. Reads the directive definition off the type. This also finds a definition that the type
+   *    inherited from a base class.
+   * 2. Skips the check if the type is really a component or a pipe. Components don't need a
+   *    selector, and a pipe can inherit a directive definition from an abstract base class (for
+   *    example a base class that only adds a lifecycle hook) - that inherited definition belongs
+   *    to the base class, not to the pipe.
+   * 3. Otherwise, if the directive has a definition but no selectors, adds an error telling the
+   *    user to add one.
+   */
   function verifyDirectivesHaveSelector(type: Type<any>): void {
     type = resolveForwardRef(type);
     const def = getDirectiveDef(type);
-    if (!getComponentDef(type) && def && def.selectors.length == 0) {
+    if (!getComponentDef(type) && !getPipeDef(type) && def && def.selectors.length == 0) {
       errors.push(`Directive ${stringifyForError(type)} has no selector, please add it!`);
     }
   }
 
   function verifyNotStandalone(type: Type<any>, moduleType: NgModuleType): void {
     type = resolveForwardRef(type);
-    const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
+    // Check the pipe def first: a pipe that extends an abstract directive base class also has
+    // an (inherited) directive def, and we want the pipe's own `standalone` flag here.
+    const def = getPipeDef(type) || getComponentDef(type) || getDirectiveDef(type);
     if (def?.standalone) {
       const location = `"${stringifyForError(moduleType)}" NgModule`;
       errors.push(generateStandaloneInDeclarationsError(type, location));
@@ -506,14 +521,14 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
 
   declarations.forEach((declaration) => {
     declaration = resolveForwardRef(declaration);
-    if (declaration.hasOwnProperty(NG_COMP_DEF)) {
+    if (Object.hasOwn(declaration, NG_COMP_DEF)) {
       // A `ɵcmp` field exists - go ahead and patch the component directly.
       const component = declaration as Type<any> & {ɵcmp: ComponentDef<any>};
       const componentDef = getComponentDef(component)!;
       patchComponentDefWithScope(componentDef, transitiveScopes);
     } else if (
-      !declaration.hasOwnProperty(NG_DIR_DEF) &&
-      !declaration.hasOwnProperty(NG_PIPE_DEF)
+      !Object.hasOwn(declaration, NG_DIR_DEF) &&
+      !Object.hasOwn(declaration, NG_PIPE_DEF)
     ) {
       // Set `ngSelectorScope` for future reference when the component compilation finishes.
       (declaration as Type<any> & {ngSelectorScope?: any}).ngSelectorScope = moduleType;
@@ -532,7 +547,7 @@ export function patchComponentDefWithScope<C>(
   componentDef.directiveDefs = () =>
     Array.from(transitiveScopes.compilation.directives)
       .map((dir) =>
-        dir.hasOwnProperty(NG_COMP_DEF) ? getComponentDef(dir)! : getDirectiveDef(dir)!,
+        Object.hasOwn(dir, NG_COMP_DEF) ? getComponentDef(dir)! : getDirectiveDef(dir)!,
       )
       .filter((def) => !!def);
   componentDef.pipeDefs = () =>
@@ -592,91 +607,6 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
 
   // TODO: change the error message to be more user-facing and take standalone into account
   throw new Error(`${type.name} does not have a module def (ɵmod property)`);
-}
-
-/**
- * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
- *
- * This operation is memoized and the result is cached on the module's definition. This function can
- * be called on modules with components that have not fully compiled yet, but the result should not
- * be used until they have.
- *
- * @param moduleType module that transitive scope should be calculated for.
- */
-export function transitiveScopesForNgModule<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
-  const def = getNgModuleDefOrThrow(moduleType);
-
-  if (def.transitiveCompileScopes !== null) {
-    return def.transitiveCompileScopes;
-  }
-
-  const scopes: NgModuleTransitiveScopes = {
-    schemas: def.schemas || null,
-    compilation: {
-      directives: new Set<any>(),
-      pipes: new Set<any>(),
-    },
-    exported: {
-      directives: new Set<any>(),
-      pipes: new Set<any>(),
-    },
-  };
-
-  maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
-    // When this module imports another, the imported module's exported directives and pipes are
-    // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(imported);
-    importedScope.exported.directives.forEach((entry) => scopes.compilation.directives.add(entry));
-    importedScope.exported.pipes.forEach((entry) => scopes.compilation.pipes.add(entry));
-  });
-
-  maybeUnwrapFn(def.declarations).forEach((declared) => {
-    const declaredWithDefs = declared as Type<any> & {
-      ɵpipe?: any;
-    };
-
-    if (getPipeDef(declaredWithDefs)) {
-      scopes.compilation.pipes.add(declared);
-    } else {
-      // Either declared has a ɵcmp or ɵdir, or it's a component which hasn't
-      // had its template compiled yet. In either case, it gets added to the compilation's
-      // directives.
-      scopes.compilation.directives.add(declared);
-    }
-  });
-
-  maybeUnwrapFn(def.exports).forEach(<E>(exported: Type<E>) => {
-    const exportedType = exported as Type<E> & {
-      // Components, Directives, NgModules, and Pipes can all be exported.
-      ɵcmp?: any;
-      ɵdir?: any;
-      ɵmod?: NgModuleDef<E>;
-      ɵpipe?: any;
-    };
-
-    // Either the type is a module, a pipe, or a component/directive (which may not have a
-    // ɵcmp as it might be compiled asynchronously).
-    if (isNgModule(exportedType)) {
-      // When this module exports another, the exported module's exported directives and pipes are
-      // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedType);
-      exportedScope.exported.directives.forEach((entry) => {
-        scopes.compilation.directives.add(entry);
-        scopes.exported.directives.add(entry);
-      });
-      exportedScope.exported.pipes.forEach((entry) => {
-        scopes.compilation.pipes.add(entry);
-        scopes.exported.pipes.add(entry);
-      });
-    } else if (getPipeDef(exportedType)) {
-      scopes.exported.pipes.add(exportedType);
-    } else {
-      scopes.exported.directives.add(exportedType);
-    }
-  });
-
-  def.transitiveCompileScopes = scopes;
-  return scopes;
 }
 
 function expandModuleWithProviders(value: Type<any> | ModuleWithProviders<{}>): Type<any> {

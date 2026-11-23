@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_project", "ts_project", "webdriver_test")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the
@@ -30,8 +30,9 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
         testonly = True,
         deps = [
             "//packages/private/testing:testing",
-            "//:node_modules/@types/jasminewd2",
-            "//:node_modules/protractor",
+            "//:node_modules/@types/jasmine",
+            "//:node_modules/@types/selenium-webdriver",
+            "//:node_modules/selenium-webdriver",
             "//packages/examples/test-utils:test-utils",
         ],
         tsconfig = "//packages/examples/upgrade:tsconfig_e2e",
@@ -59,11 +60,10 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
         deps = [":app_bundle"],
     )
 
-    protractor_web_test_suite(
-        name = "%s_protractor" % name,
+    webdriver_test(
+        name = "%s_webdriver" % name,
         server = ":devserver",
         deps = [
             ":%s_e2e_lib" % name,
-            "//:node_modules/selenium-webdriver",
         ],
     )

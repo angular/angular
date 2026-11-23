@@ -13,6 +13,7 @@ import {headingRender} from './transformations/heading.mjs';
 import {imageRender} from './transformations/image.mjs';
 import {linkRender} from './transformations/link.mjs';
 import {listRender} from './transformations/list.mjs';
+import {paragraphRender} from './transformations/paragraph.mjs';
 import {tableRender} from './transformations/table.mjs';
 import {textRender} from './transformations/text.mjs';
 
@@ -75,10 +76,6 @@ export class AdevDocsRenderer extends Renderer {
       route.startsWith('#') || // Anchor link within the same page
       route.startsWith('mailto:') || // Should we have a regex to exclude any protocol?
       route.startsWith('playground') ||
-      // TODO: Extract routes from the CDK as well
-      route.startsWith('api/cdk') ||
-      // TODO: Extract routes from Aria as well
-      route.startsWith('api/aria') ||
       route.startsWith('tutorials') ||
       route.startsWith('extended-diagnostics')
     ) {
@@ -91,6 +88,7 @@ export class AdevDocsRenderer extends Renderer {
   override link = linkRender;
   override table = tableRender;
   override list = listRender;
+  override paragraph = paragraphRender;
   override image = imageRender;
   override text = textRender;
   override heading = headingRender;

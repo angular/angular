@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, signal} from '@angular/core';
+import {signal, Service} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {WebContainer} from '@webcontainer/api';
 import {Typing} from './code-editor/workers/interfaces/define-types-request';
@@ -15,7 +15,7 @@ import {Typing} from './code-editor/workers/interfaces/define-types-request';
  * This service is responsible for retrieving the types definitions for the
  * predefined dependencies.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class TypingsLoader {
   private readonly librariesToGetTypesFrom = [
     '@angular/common',
@@ -25,6 +25,7 @@ export class TypingsLoader {
     '@angular/platform-browser',
     '@angular/material',
     '@angular/cdk',
+    '@angular/aria',
   ];
 
   private webContainer: WebContainer | undefined;
@@ -71,8 +72,8 @@ export class TypingsLoader {
   private async getFilesToRead() {
     if (!this.webContainer) return;
 
-    const filesToRead: string[] = [];
-    const directoriesToRead: string[] = [];
+    const filesToRead = new Set<string>();
+    const directoriesToRead = new Set<string>();
 
     for (const library of this.librariesToGetTypesFrom) {
       // The library's package.json is where the type definitions are defined
@@ -97,7 +98,7 @@ export class TypingsLoader {
 
       // Ensure the worker VFS also receives the package.json file so NodeNext resolution
       // can read "exports"/"types" information when resolving imports like '@angular/core'.
-      filesToRead.push(`/node_modules/${library}/package.json`);
+      filesToRead.add(`/node_modules/${library}/package.json`);
 
       const packageJson = JSON.parse(packageJsonContent);
 
@@ -106,7 +107,7 @@ export class TypingsLoader {
       if (!packageJson?.exports && topLevelTypes) {
         const path = `/node_modules/${library}/${this.normalizePath(topLevelTypes)}`;
         const directory = path.substring(0, path.lastIndexOf('/'));
-        directoriesToRead.push(directory);
+        directoriesToRead.add(directory);
         continue;
       }
 
@@ -127,29 +128,35 @@ export class TypingsLoader {
           // We want to pull all the d.ts files in the directory
           // as the file pointed `path` might also import other d.ts files
           const directory = path.substring(0, path.lastIndexOf('/'));
-          directoriesToRead.push(directory);
+          directoriesToRead.add(directory);
         }
       }
     }
 
+    const visitedDirectories = new Set<string>();
     const directoryFiles = (
       await Promise.all(
-        directoriesToRead.map((directory) => this.getTypeDefinitionFilesFromDirectory(directory)),
+        Array.from(directoriesToRead).map((directory) =>
+          this.getTypeDefinitionFilesFromDirectory(directory, visitedDirectories),
+        ),
       )
     ).flat();
 
     for (const file of directoryFiles) {
-      filesToRead.push(file);
+      filesToRead.add(file);
     }
 
-    return filesToRead;
+    return Array.from(filesToRead);
   }
 
-  private async getTypeDefinitionFilesFromDirectory(directory: string): Promise<string[]> {
+  private async getTypeDefinitionFilesFromDirectory(
+    directory: string,
+    visited: Set<string> = new Set(),
+  ): Promise<string[]> {
     if (!this.webContainer) throw new Error('this.webContainer is not defined');
 
     // Use a `visited` set to avoid loops/duplicates between recurses.
-    return this.getTypeDefinitionFilesRecursively(directory, new Set());
+    return this.getTypeDefinitionFilesRecursively(directory, visited);
   }
 
   private async getTypeDefinitionFilesRecursively(

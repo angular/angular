@@ -13,17 +13,18 @@ import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core';
 import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from '../../../ng-devtools';
 import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../protocol';
+import {stringifyAndEscape} from './comm-utils';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
   platform = inject(Platform);
 
   override viewSource(position: ElementPosition, target: Frame, directiveIndex?: number): void {
-    const viewSource = `inspect(inspectedApplication.findConstructorByPosition('${position}', ${directiveIndex}))`;
+    const viewSource = `inspect(inspectedApplication.findConstructorByPosition(${stringifyAndEscape(position)}, ${directiveIndex}))`;
     this.runInInspectedWindow(viewSource, target);
   }
 
   override selectDomElement(position: ElementPosition, target: Frame): void {
-    const selectDomElement = `inspect(inspectedApplication.findDomElementByPosition('${position}'))`;
+    const selectDomElement = `inspect(inspectedApplication.findDomElementByPosition(${stringifyAndEscape(position)}))`;
     this.runInInspectedWindow(selectDomElement, target);
   }
 
@@ -36,21 +37,101 @@ export class ChromeApplicationOperations extends ApplicationOperations {
       directivePosition,
       objectPath,
     };
-    const inspect = `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(
+    const inspect = `inspect(inspectedApplication.findPropertyByPosition(${stringifyAndEscape(
       args,
-    )}'))`;
+    )}))`;
     this.runInInspectedWindow(inspect, target);
   }
 
   override inspectSignal(position: SignalNodePosition, target: Frame): void {
-    const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition('${JSON.stringify(
+    const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition(${stringifyAndEscape(
       position,
-    )}'))`;
+    )}))`;
     this.runInInspectedWindow(inspectSignal, target);
   }
 
+  override async setSignalBreakpoint(
+    position: SignalNodePosition,
+    target: Frame,
+  ): Promise<boolean> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'setSignalBreakpoint',
+        tabId,
+        position,
+      });
+      if (!response?.success) {
+        console.error('Failed to set breakpoint via CDP:', response?.error);
+      }
+      return Boolean(response?.success);
+    } catch (err) {
+      console.error('Failed to set breakpoint via CDP:', err);
+      return false;
+    }
+  }
+
+  override async removeSignalBreakpoint(
+    position: SignalNodePosition,
+    target: Frame,
+  ): Promise<boolean> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'removeSignalBreakpoint',
+        tabId,
+        position,
+      });
+      if (!response?.success) {
+        console.error('Failed to remove breakpoint via CDP:', response?.error);
+      }
+      return Boolean(response?.success);
+    } catch (err) {
+      console.error('Failed to remove breakpoint via CDP:', err);
+      return false;
+    }
+  }
+
+  override async getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'getActiveSignalBreakpoints',
+        tabId,
+      });
+      if (!response?.success) {
+        console.error('Failed to get active signal breakpoints via CDP:', response?.error);
+      }
+      return response?.success ? (response.activePositions ?? []) : [];
+    } catch (err) {
+      console.error('Failed to get active signal breakpoints via CDP:', err);
+      return [];
+    }
+  }
+
+  override onSignalBreakpointsCleared(callback: () => void): () => void {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    const listener = (
+      message: {action?: string; tabId?: number},
+      sender: chrome.runtime.MessageSender,
+    ) => {
+      if (
+        sender?.id === chrome.runtime.id &&
+        sender?.tab === undefined &&
+        message?.action === 'signalBreakpointsCleared' &&
+        message.tabId === tabId
+      ) {
+        callback();
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+  }
+
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
-    const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter('${name}', '${type}'))`;
+    const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter(${JSON.stringify(name)}, ${JSON.stringify(type)}))`;
     this.runInInspectedWindow(viewSource, target);
   }
 

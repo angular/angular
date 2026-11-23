@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
+import {
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  Injectable,
+  OnDestroy,
+  Service,
+} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
@@ -33,7 +39,7 @@ export abstract class PreloadingStrategy {
  * Provides a preloading strategy that preloads all modules as quickly as possible.
  *
  * ```ts
- * RouterModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
+ * RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})
  * ```
  *
  * ```ts
@@ -52,7 +58,7 @@ export abstract class PreloadingStrategy {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return fn().pipe(catchError(() => of(null)));
@@ -70,7 +76,7 @@ export class PreloadAllModules implements PreloadingStrategy {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return of(null);
@@ -119,7 +125,7 @@ export class RouterPreloader implements OnDestroy {
   }
 
   private processRoutes(injector: EnvironmentInjector, routes: Routes): Observable<void> {
-    const res: Observable<any>[] = [];
+    const res: Observable<void>[] = [];
     for (const route of routes) {
       if (route.providers && !route._injector) {
         route._injector = createEnvironmentInjector(
@@ -145,7 +151,8 @@ export class RouterPreloader implements OnDestroy {
       // at all. Code splitting and lazy loading is separate from client-side authorization checks
       // and should not be used as a security measure to prevent loading of code.
       if (
-        (route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
+        // TODO: Remove `canLoad` check once removed from 3p.
+        (route.loadChildren && !route._loadedRoutes && (route as any).canLoad === undefined) ||
         (route.loadComponent && !route._loadedComponent)
       ) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
@@ -163,7 +170,8 @@ export class RouterPreloader implements OnDestroy {
         return of(null);
       }
       let loadedChildren$: Observable<LoadedRouterConfig | null>;
-      if (route.loadChildren && route.canLoad === undefined) {
+      // TODO: Remove `canLoad` check once removed from 3p.
+      if (route.loadChildren && (route as any).canLoad === undefined) {
         loadedChildren$ = from(this.loader.loadChildren(injector, route));
       } else {
         loadedChildren$ = of(null);

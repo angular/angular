@@ -32,7 +32,7 @@ import {
   advance,
 } from './integration_helpers';
 
-export function routeReuseIntegrationSuite() {
+export async function routeReuseIntegrationSuite() {
   describe('Custom Route Reuse Strategy', () => {
     class AttachDetachReuseStrategy implements RouteReuseStrategy {
       stored: {[k: string]: DetachedRouteHandle} = {};
@@ -101,12 +101,11 @@ export function routeReuseIntegrationSuite() {
 
     it('should emit an event when an outlet gets attached/detached', async () => {
       @Component({
-        selector: 'container',
         template: `<router-outlet
           (attach)="recordAttached($event)"
           (detach)="recordDetached($event)"
         ></router-outlet>`,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class Container {
         attachedComponents: unknown[] = [];
@@ -122,7 +121,6 @@ export function routeReuseIntegrationSuite() {
       }
 
       TestBed.configureTestingModule({
-        declarations: [Container],
         providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}],
       });
 
@@ -231,10 +229,9 @@ export function routeReuseIntegrationSuite() {
 
     it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation', async () => {
       @Component({
-        selector: 'root-cmp',
         template:
           '<div *ngIf="isToolpanelShowing()"><router-outlet name="toolpanel"></router-outlet></div>',
-        standalone: false,
+        imports: [CommonModule, ROUTER_DIRECTIVES],
       })
       class RootCmpWithCondOutlet implements OnDestroy {
         private subscription: Subscription;
@@ -254,32 +251,23 @@ export function routeReuseIntegrationSuite() {
       }
 
       @Component({
-        selector: 'tool-1-cmp',
         template: 'Tool 1 showing',
-        standalone: false,
       })
       class Tool1Component {}
 
       @Component({
-        selector: 'tool-2-cmp',
         template: 'Tool 2 showing',
-        standalone: false,
       })
       class Tool2Component {}
 
-      @NgModule({
-        declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
-        imports: [CommonModule, ...ROUTER_DIRECTIVES],
+      TestBed.configureTestingModule({
         providers: [
           provideRouter([
             {path: 'a', outlet: 'toolpanel', component: Tool1Component},
             {path: 'b', outlet: 'toolpanel', component: Tool2Component},
           ]),
         ],
-      })
-      class TestModule {}
-
-      TestBed.configureTestingModule({imports: [TestModule]});
+      });
 
       const router: Router = TestBed.inject(Router);
       router.routeReuseStrategy = new AttachDetachReuseStrategy();
@@ -314,17 +302,14 @@ export function routeReuseIntegrationSuite() {
 
     it('should not remount a destroyed component', async () => {
       @Component({
-        selector: 'root-cmp',
         template: '<div *ngIf="showRouterOutlet()"><router-outlet></router-outlet></div>',
-        standalone: false,
+        imports: [CommonModule, ROUTER_DIRECTIVES],
       })
       class RootCmpWithCondOutlet {
         public showRouterOutlet = signal(true);
       }
 
-      @NgModule({
-        declarations: [RootCmpWithCondOutlet],
-        imports: [CommonModule, ...ROUTER_DIRECTIVES],
+      TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
           provideRouter([
@@ -332,9 +317,7 @@ export function routeReuseIntegrationSuite() {
             {path: 'b', component: BlankCmp},
           ]),
         ],
-      })
-      class TestModule {}
-      TestBed.configureTestingModule({imports: [TestModule]});
+      });
 
       const router: Router = TestBed.inject(Router);
       const fixture = await createRoot(router, RootCmpWithCondOutlet);
@@ -369,16 +352,14 @@ export function routeReuseIntegrationSuite() {
       const CREATED_COMPS = new InjectionToken<string[]>('CREATED_COMPS');
 
       @Component({
-        selector: 'root',
         template: `<router-outlet></router-outlet>`,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class Root {}
 
       @Component({
-        selector: 'parent',
         template: `<router-outlet></router-outlet>`,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class Parent {
         constructor(@Inject(CREATED_COMPS) createdComps: string[]) {
@@ -387,9 +368,7 @@ export function routeReuseIntegrationSuite() {
       }
 
       @Component({
-        selector: 'child',
         template: `child`,
-        standalone: false,
       })
       class Child {
         constructor(@Inject(CREATED_COMPS) createdComps: string[]) {
@@ -397,9 +376,7 @@ export function routeReuseIntegrationSuite() {
         }
       }
 
-      @NgModule({
-        declarations: [Root, Parent, Child],
-        imports: [CommonModule, ...ROUTER_DIRECTIVES],
+      TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
           {provide: CREATED_COMPS, useValue: []},
@@ -408,9 +385,7 @@ export function routeReuseIntegrationSuite() {
             {path: 'c', component: SimpleCmp},
           ]),
         ],
-      })
-      class TestModule {}
-      TestBed.configureTestingModule({imports: [TestModule]});
+      });
 
       const router = TestBed.inject(Router);
       const fixture = await createRoot(router, Root);
@@ -433,25 +408,222 @@ export function routeReuseIntegrationSuite() {
       expect(createdComps).toEqual(['parent', 'child', 'child']);
     });
 
+    it('should render child routes on reused list when outer shell is destroyed and recreated', async () => {
+      // https://github.com/angular/angular/issues/57285
+
+      @Component({template: '<router-outlet></router-outlet>', imports: [ROUTER_DIRECTIVES]})
+      class Root {}
+
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [ROUTER_DIRECTIVES],
+      })
+      class EventsShellCmp {}
+
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [ROUTER_DIRECTIVES],
+      })
+      class EventListCmp {}
+
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [ROUTER_DIRECTIVES],
+      })
+      class EventDetailCmp {}
+
+      @Component({template: 'edit'})
+      class EventEditCmp {}
+
+      @Component({template: 'chats'})
+      class ChatsCmp {}
+
+      class ReusableStrategy implements RouteReuseStrategy {
+        private handles = new Map<object, DetachedRouteHandle>();
+
+        shouldDetach(route: ActivatedRouteSnapshot): boolean {
+          return !!route.routeConfig?.data?.['reusable'];
+        }
+        store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
+          if (route.routeConfig && handle) {
+            this.handles.set(route.routeConfig, handle);
+          } else if (route.routeConfig) {
+            this.handles.delete(route.routeConfig);
+          }
+        }
+        shouldAttach(route: ActivatedRouteSnapshot): boolean {
+          return !!(route.routeConfig && this.handles.has(route.routeConfig));
+        }
+        retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+          return (route.routeConfig && this.handles.get(route.routeConfig)) ?? null;
+        }
+        shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+          return future.routeConfig === curr.routeConfig;
+        }
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: RouteReuseStrategy, useClass: ReusableStrategy},
+          provideRouter([
+            {
+              path: 'events',
+              component: EventsShellCmp,
+              children: [
+                {
+                  path: '',
+                  data: {reusable: true},
+                  component: EventListCmp,
+                  children: [
+                    {
+                      path: ':id',
+                      data: {reusable: true},
+                      component: EventDetailCmp,
+                      children: [{path: 'edit', component: EventEditCmp}],
+                    },
+                  ],
+                },
+              ],
+            },
+            {path: 'chats', component: ChatsCmp},
+          ]),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, Root);
+
+      router.navigateByUrl('/chats');
+      await advance(fixture);
+
+      router.navigateByUrl('/events');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeTruthy();
+
+      router.navigateByUrl('/chats');
+      await advance(fixture);
+
+      // Shell is recreated and the stored list is re-attached into it.
+      router.navigateByUrl('/events');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeTruthy();
+
+      router.navigateByUrl('/events/1/edit');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventEditCmp))).toBeTruthy();
+    });
+
+    it('should render child routes of a reused tab after a sibling tab was shown in the same outlet', async () => {
+      // https://github.com/angular/angular/issues/57285 (sibling outlet case)
+
+      @Component({template: '<router-outlet></router-outlet>', imports: [ROUTER_DIRECTIVES]})
+      class Root {}
+
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [ROUTER_DIRECTIVES],
+      })
+      class TabsShellCmp {}
+
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [ROUTER_DIRECTIVES],
+      })
+      class Tab1Cmp {}
+
+      @Component({template: 'tab1-inner'})
+      class Tab1InnerCmp {}
+
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [ROUTER_DIRECTIVES],
+      })
+      class Tab2Cmp {}
+
+      @Component({template: 'tab2-inner'})
+      class Tab2InnerCmp {}
+
+      class ReusableStrategy implements RouteReuseStrategy {
+        private handles = new Map<object, DetachedRouteHandle>();
+
+        shouldDetach(route: ActivatedRouteSnapshot): boolean {
+          return !!route.routeConfig?.data?.['reusable'];
+        }
+        store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
+          if (route.routeConfig && handle) {
+            this.handles.set(route.routeConfig, handle);
+          } else if (route.routeConfig) {
+            this.handles.delete(route.routeConfig);
+          }
+        }
+        shouldAttach(route: ActivatedRouteSnapshot): boolean {
+          return !!(route.routeConfig && this.handles.has(route.routeConfig));
+        }
+        retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+          return (route.routeConfig && this.handles.get(route.routeConfig)) ?? null;
+        }
+        shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+          return future.routeConfig === curr.routeConfig;
+        }
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: RouteReuseStrategy, useClass: ReusableStrategy},
+          provideRouter([
+            {
+              path: 'tabs',
+              component: TabsShellCmp,
+              children: [
+                {
+                  path: 'tab1',
+                  data: {reusable: true},
+                  component: Tab1Cmp,
+                  children: [{path: 'inner', component: Tab1InnerCmp}],
+                },
+                {
+                  path: 'tab2',
+                  component: Tab2Cmp,
+                  children: [{path: 'inner', component: Tab2InnerCmp}],
+                },
+              ],
+            },
+          ]),
+        ],
+      });
+
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, Root);
+
+      router.navigateByUrl('/tabs/tab1/inner');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(Tab1InnerCmp))).toBeTruthy();
+
+      router.navigateByUrl('/tabs/tab2/inner');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(Tab2InnerCmp))).toBeTruthy();
+      expect(fixture.debugElement.query(By.directive(Tab1InnerCmp))).toBeNull();
+
+      router.navigateByUrl('/tabs/tab1/inner');
+      await advance(fixture);
+      expect(router.url).toEqual('/tabs/tab1/inner');
+      expect(fixture.debugElement.query(By.directive(Tab1InnerCmp))).toBeTruthy();
+    });
+
     it('should not try to detach the outlet of a route that does not get to attach a component', async () => {
       @Component({
-        selector: 'root',
         template: `<router-outlet></router-outlet>`,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class Root {}
 
       @Component({
-        selector: 'component-a',
         template: 'Component A',
         standalone: false,
       })
       class ComponentA {}
 
       @Component({
-        selector: 'component-b',
         template: 'Component B',
-        standalone: false,
       })
       class ComponentB {}
 
@@ -461,9 +633,7 @@ export function routeReuseIntegrationSuite() {
       })
       class LoadedModule {}
 
-      @NgModule({
-        declarations: [Root, ComponentB],
-        imports: [ROUTER_DIRECTIVES],
+      TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
           provideRouter([
@@ -471,10 +641,7 @@ export function routeReuseIntegrationSuite() {
             {path: 'b', component: ComponentB},
           ]),
         ],
-      })
-      class TestModule {}
-
-      TestBed.configureTestingModule({imports: [TestModule]});
+      });
 
       const router = TestBed.inject(Router);
       const strategy = TestBed.inject(RouteReuseStrategy);

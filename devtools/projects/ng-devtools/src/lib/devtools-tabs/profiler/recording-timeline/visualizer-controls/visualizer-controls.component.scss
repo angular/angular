@@ -21,12 +21,16 @@
         margin-bottom: 0.2rem;
       }
 
-      &.warning-label {
-        color: var(--dynamic-red-01);
-      }
-
       .value {
         color: var(--dynamic-purple-01);
+      }
+
+      &.warning-label {
+        color: var(--dynamic-red-01);
+
+        .value {
+          color: var(--dynamic-red-01);
+        }
       }
     }
   }
@@ -39,6 +43,14 @@
 
     #cd-only-checkbox {
       margin-right: 0.5rem;
+    }
+
+    .vis-info {
+      margin-left: 0.375rem;
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      vertical-align: middle;
     }
   }
 }

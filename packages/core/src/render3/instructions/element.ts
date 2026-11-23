@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {
+  describeDomNode,
   invalidSkipHydrationHost,
   validateMatchingNode,
   validateNodeExists,
 } from '../../hydration/error_handling';
+import {getNextSibling} from '../../util/dom';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {
   hasSkipHydrationAttrOnRElement,
@@ -32,8 +35,10 @@ import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../i
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {
+  DECLARATION_COMPONENT_VIEW,
   ENVIRONMENT,
   HEADER_OFFSET,
+  HOST,
   HYDRATION,
   LView,
   RENDERER,
@@ -355,30 +360,61 @@ function locateOrCreateElementNodeImpl(
     // `<div #vcrTarget>` is represented in the DOM as `<div></div>...<!--container-->`,
     // so while processing a `<div>` instruction, point to the next sibling as a
     // start of a segment.
-    ngDevMode && validateNodeExists(native.nextSibling, lView, tNode);
-    setSegmentHead(hydrationInfo, index, native.nextSibling);
+    const segmentHead = getNextSibling(native as unknown as Node);
+    ngDevMode && validateNodeExists(segmentHead, lView, tNode);
+    setSegmentHead(hydrationInfo, index, segmentHead);
   }
 
-  // Checks if the skip hydration attribute is present during hydration so we know to
-  // skip attempting to hydrate this block. We check both TNode and RElement for an
-  // attribute: the RElement case is needed for i18n cases, when we add it to host
-  // elements during the annotation phase (after all internal data structures are setup).
-  if (
-    hydrationInfo &&
-    (hasSkipHydrationAttrOnTNode(tNode) || hasSkipHydrationAttrOnRElement(native))
-  ) {
-    if (isComponentHost(tNode)) {
-      enterSkipHydrationBlock(tNode);
+  if (hydrationInfo) {
+    // `validateMatchingNode` above would normally catch a missing node too, but it's dev-mode
+    // only. Guard against it here so production throws a coded RuntimeError instead of a raw
+    // TypeError when dereferencing `native` below.
+    if (native == null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_MISSING_NODE,
+        // Wrapped in an IIFE so the `host` lookup below is dev-mode only too, not just the
+        // message strings, and gets tree-shaken from production builds along with them.
+        ngDevMode &&
+          (() => {
+            // Embedded views don't have their own host, so use the declaring component's host.
+            const host = lView[HOST] ?? lView[DECLARATION_COMPONENT_VIEW]?.[HOST];
+            return host
+              ? `During hydration Angular expected a "<${name}>" element inside <${host.tagName.toLowerCase()}>, but no matching DOM node was found. This usually means the client-rendered DOM no longer matches the server-rendered HTML.`
+              : `During hydration Angular expected a "<${name}>" element at this location, but no matching DOM node was found. This usually means the client-rendered DOM no longer matches the server-rendered HTML.`;
+          })(),
+      );
+    }
 
-      // Since this isn't hydratable, we need to empty the node
-      // so there's no duplicate content after render
-      clearElementContents(native);
+    // `hasSkipHydrationAttrOnRElement` below calls `.hasAttribute`, which needs `native` to be
+    // an Element. `validateMatchingNode` above would normally catch a wrong node type, but it's
+    // dev-mode only. Guard against it here too, cheaply, so production throws a coded
+    // RuntimeError instead of a raw TypeError.
+    if ((native as unknown as Node).nodeType !== Node.ELEMENT_NODE) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_NODE_MISMATCH,
+        ngDevMode &&
+          `During hydration Angular expected an element at this location, but found a ${describeDomNode(native as unknown as Node)} node instead.`,
+      );
+    }
 
-      ngDevMode && markRNodeAsSkippedByHydration(native);
-    } else if (ngDevMode) {
-      // If this is not a component host, throw an error.
-      // Hydration can be skipped on per-component basis only.
-      throw invalidSkipHydrationHost(native);
+    // Checks if the skip hydration attribute is present during hydration so we know to
+    // skip attempting to hydrate this block. We check both TNode and RElement for an
+    // attribute: the RElement case is needed for i18n cases, when we add it to host
+    // elements during the annotation phase (after all internal data structures are setup).
+    if (hasSkipHydrationAttrOnTNode(tNode) || hasSkipHydrationAttrOnRElement(native)) {
+      if (isComponentHost(tNode)) {
+        enterSkipHydrationBlock(tNode);
+
+        // Since this isn't hydratable, we need to empty the node
+        // so there's no duplicate content after render
+        clearElementContents(native);
+
+        ngDevMode && markRNodeAsSkippedByHydration(native);
+      } else if (ngDevMode) {
+        // If this is not a component host, throw an error.
+        // Hydration can be skipped on per-component basis only.
+        throw invalidSkipHydrationHost(native);
+      }
     }
   }
   return native;

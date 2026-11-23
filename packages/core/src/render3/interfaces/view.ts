@@ -12,6 +12,7 @@ import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/z
 import {TDeferBlockDetails} from '../../defer/interfaces';
 import type {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
+import type {ErrorDetails} from '../../error_handler';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
@@ -72,6 +73,7 @@ export const EFFECTS = 23;
 export const REACTIVE_TEMPLATE_CONSUMER = 24;
 export const AFTER_RENDER_SEQUENCES_TO_ADD = 25;
 export const ANIMATIONS = 26;
+export const ON_ERROR = 27;
 
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
@@ -80,7 +82,7 @@ export const ANIMATIONS = 26;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 27;
+export const HEADER_OFFSET = 28;
 
 // This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -373,6 +375,12 @@ export interface LView<T = unknown> extends Array<any> {
 
   // Enter animations that apply to nodes in this view
   [ANIMATIONS]: AnimationLViewData | null;
+
+  /**
+   * Function to be called when an error occurs during change detection or lifecycle hooks
+   * in this view or any of its descendants. The error is always encapsulated in an `Error` instance.
+   */
+  [ON_ERROR]: ((error: Error, details: ErrorDetails) => void) | null;
 }
 
 /**
@@ -396,6 +404,9 @@ export interface LViewEnvironment {
    * (always disabled in prod mode).
    */
   ngReflect: boolean;
+
+  /** Locale that should be used in i18n instructions. */
+  locale: string;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -452,20 +463,17 @@ export const enum LViewFlags {
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
   HasEmbeddedViewInjector = 1 << 11,
 
-  /** Indicates that the view was created with `signals: true`. */
-  SignalView = 1 << 12,
-
   /**
    * Indicates that this LView has a view underneath it that needs to be refreshed during change
    * detection. This flag indicates that even if this view is not dirty itself, we still need to
    * traverse its children during change detection.
    */
-  HasChildViewsToRefresh = 1 << 13,
+  HasChildViewsToRefresh = 1 << 12,
 
   /**
    * This is the count of the bits the 1 was shifted above (base 10)
    */
-  IndexWithinInitPhaseShift = 14,
+  IndexWithinInitPhaseShift = 13,
 
   /**
    * Index of the current init phase on last 21 bits
@@ -599,6 +607,11 @@ export const enum TViewType {
    * can have zero or more `Embedded` `TView`s.
    */
   Embedded = 2,
+
+  /**
+   * Foreign `TView` associated with a range of nodes between `head` and `tail` comment nodes.
+   */
+  Foreign = 3,
 }
 
 /**

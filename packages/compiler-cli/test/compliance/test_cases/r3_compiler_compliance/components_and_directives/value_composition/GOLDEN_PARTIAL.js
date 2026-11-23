@@ -683,6 +683,43 @@ export declare class ObjectComp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: literal_void.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class VoidComp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: VoidComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: VoidComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @let array = [void 0, 1];
+    @let object = {a: void 0, b: 2};
+
+    <!-- Use the literals so they don't get flagged as unused. -->
+    {{array}} {{object}}
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: VoidComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @let array = [void 0, 1];
+    @let object = {a: void 0, b: 2};
+
+    <!-- Use the literals so they don't get flagged as unused. -->
+    {{array}} {{object}}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: literal_void.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class VoidComp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoidComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoidComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: literal_nested_expression.js
  ****************************************************************************************************/
 import { Component, Input, NgModule } from '@angular/core';
@@ -981,6 +1018,33 @@ export declare class TestComp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: regular_expression_with_sticky_flag.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComp {
+    value = '123';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `{{/^hello/y.test(value)}}`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `{{/^hello/y.test(value)}}`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: regular_expression_with_sticky_flag.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComp {
+    value: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: call_rest.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
@@ -1027,5 +1091,62 @@ export declare class TestComp {
     fn(..._: any[]): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: dollar_escape.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    price = '3.50';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-comp", ngImport: i0, template: `\${{price}}`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp',
+                    template: `\${{price}}`,
+                    standalone: false,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: dollar_escape.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    price: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: inline_object_literal_access.js
+ ****************************************************************************************************/
+import { Component, input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Greeting {
+    type = input('one', /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "type" }] : /* istanbul ignore next */ []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Greeting, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: Greeting, isStandalone: true, selector: "ng-component", inputs: { type: { classPropertyName: "type", publicName: "type", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: `<span [title]="{one: 'Hello', two: 'Hola'}[type()]"></span>`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Greeting, decorators: [{
+            type: Component,
+            args: [{
+                    template: `<span [title]="{one: 'Hello', two: 'Hola'}[type()]"></span>`,
+                }]
+        }], propDecorators: { type: [{ type: i0.Input, args: [{ isSignal: true, alias: "type", required: false }] }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: inline_object_literal_access.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Greeting {
+    readonly type: import("@angular/core").InputSignal<"one" | "two">;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Greeting, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<Greeting, "ng-component", never, { "type": { "alias": "type"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 

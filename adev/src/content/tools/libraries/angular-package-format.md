@@ -12,12 +12,12 @@ You can find the versions of the specification prior to v13 in this [google doc]
 
 ## Why specify a package format?
 
-In today's JavaScript landscape, developers consume packages in many different ways, using many different toolchains \(webpack, Rollup, esbuild, etc.\).
+In today's JavaScript landscape, developers consume packages in many different ways, using many different toolchains \(webpack, Rollup, Rolldown, esbuild, etc.\).
 These tools may understand and require different inputs - some tools may be able to process the latest ES language version, while others may benefit from directly consuming an older ES version.
 
 The Angular distribution format supports all of the commonly used development tools and workflows, and adds emphasis on optimizations that result either in smaller application payload size or faster development iteration cycle \(build time\).
 
-Developers can rely on Angular CLI and [ng-packagr](https://github.com/ng-packagr/ng-packagr) \(a build tool Angular CLI uses\) to produce packages in the Angular package format.
+Developers can rely on the Angular CLI to produce packages in the Angular Package Format.
 See the [Creating Libraries](tools/libraries/creating-libraries) guide for more details.
 
 ## File layout
@@ -47,7 +47,7 @@ This table describes the file layout under `node_modules/@angular/core` annotate
 | `fesm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2022 format, along with source maps.                                                                                                                          |
 | `types/` <br /> &nbsp;&nbsp;─ `core.d.ts` <br /> &nbsp;&nbsp;─ `testing.d.ts`                                                                             | Bundled TypeScript type definitions for all public entrypoints.                                                                                                                                                |
 
-## `package.json`
+### `package.json`
 
 The primary `package.json` contains important package metadata, including the following:
 
@@ -103,7 +103,7 @@ For each entrypoint, the available formats are:
 
 Tooling that is aware of these keys may preferentially select a desirable code format from `"exports"`.
 
-Libraries may want to expose additional static files which are not captured by the exports of the JavaScript-based entry-points such as Sass mixins or pre-compiled CSS.
+You might also want to expose additional static files, such as Sass mixins or pre-compiled CSS, that are not part of the JavaScript-based entry points.
 
 For more information, see [Managing assets in a library](tools/libraries/creating-libraries#managing-assets-in-a-library).
 
@@ -133,7 +133,7 @@ The last function of `package.json` is to declare whether the package has [side 
 
 Most Angular packages should not depend on top-level side effects, and thus should include this declaration.
 
-## Entrypoints and code splitting
+### Entrypoints and code splitting
 
 Packages in the Angular Package Format contain one primary entrypoint and zero or more secondary entrypoints \(for example, `@angular/common/http`\).
 Entrypoints serve several functions.
@@ -158,11 +158,13 @@ Not all libraries require such granularity.
 Most libraries with a single logical purpose should be published as a single entrypoint.
 `@angular/core` for example uses a single entrypoint for the runtime, because the Angular runtime is generally used as a single entity.
 
-### Resolution of secondary entry points
+#### Resolution of secondary entry points
 
-Secondary entrypoints can be resolved via the `"exports"` field of the `package.json` for the package.
+Module resolvers resolve secondary entry points using the `"exports"` field in the package's `package.json` file.
 
-## README.md
+To learn how to configure secondary entry points in a library, see [Entry points](tools/libraries/creating-libraries#entry-points).
+
+### README.md
 
 The README file in the Markdown format that is used to display description of a package on npm and GitHub.
 
@@ -174,7 +176,11 @@ the main [Angular](https://github.com/angular/angular) repo.Please file issues a
 against that repo. License: MIT
 ```
 
-## Partial compilation
+## Library Compilation and Package Optimizations
+
+This section describes the compilation process for libraries and optimizations that apply to the npm package before publishing the artifact to a registry.
+
+### Partial compilation
 
 Libraries in the Angular Package Format must be published in "partial compilation" mode.
 This is a compilation mode for `ngc` which produces compiled Angular code that is not tied to a specific Angular runtime version, in contrast to the full compilation used for applications, where the Angular compiler and runtime versions must match exactly.
@@ -194,43 +200,21 @@ Partially compiled library code is then converted to fully compiled code during 
 
 If your build pipeline does not use the Angular CLI then refer to the [Consuming partial ivy code outside the Angular CLI](tools/libraries/creating-libraries#consuming-partial-ivy-code-outside-the-angular-cli) guide.
 
-## Optimizations
-
 ### Flattening of ES modules
 
 The Angular Package Format specifies that code be published in "flattened" ES module format.
 This significantly reduces the build time of Angular applications as well as download and parse time of the final application bundle.
 Please check out the excellent post ["The cost of small modules"](https://nolanlawson.com/2016/08/15/the-cost-of-small-modules) by Nolan Lawson.
 
-The Angular compiler can generate index ES module files. Tools like Rollup can use these files to generate flattened modules in a _Flattened ES Module_ (FESM) file format.
-
 FESM is a file format created by flattening all ES Modules accessible from an entrypoint into a single ES Module.
 It's formed by following all imports from a package and copying that code into a single file while preserving all public ES exports and removing all private imports.
 However, in some cases, the FESM may depend on shared chunks that are shared between multiple entry points.
 
-The abbreviated name, FESM, pronounced _phe-som_, can be followed by a number such as FESM2020.
+The abbreviated name, FESM, pronounced _phe-som_, can be followed by a number such as FESM2022.
 The number refers to the language level of the JavaScript inside the module.
-Accordingly a FESM2022 file would be ESM+ES2022 and include import/export statements and ES2022 source code.
+Accordingly a FESM2022 file is ESM+ES2022 and includes import/export statements and ES2022 source code.
 
-To generate a flattened ES Module index file, use the following configuration options in your tsconfig.json file:
-
-```js
-{
-  "compilerOptions": {
-    …
-    "module": "esnext",
-    "target": "es2022",
-    …
-  },
-  "angularCompilerOptions": {
-    …
-    "flatModuleOutFile": "my-ui-lib.js",
-    "flatModuleId": "my-ui-lib"
-  }
-}
-```
-
-Once the index file \(for example, `my-ui-lib.js`\) is generated by ngc, bundlers and optimizers like Rollup can be used to produce the flattened ESM file.
+When building with the Angular CLI (`@angular/build:library`), the builder compiles your library with `ngc` and uses Rolldown to bundle each entry point directly into flattened ES2022 modules in the `fesm2022/` directory.
 
 ### "sideEffects" flag
 
@@ -243,34 +227,38 @@ The end result of these optimizations should be smaller bundle size and better c
 This optimization can break your code if it contains non-local side-effects - this is however not common in Angular applications and it's usually a sign of bad design.
 The recommendation is for all packages to claim the side-effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](/style-guide) which naturally results in code without non-local side-effects.
 
-More info: [webpack docs on side effects](https://github.com/webpack/webpack/tree/master/examples/side-effects)
+More info: [webpack docs on side effects](https://github.com/webpack/webpack/tree/main/examples/side-effects)
 
 ### ES2022 language level
 
 ES2022 Language level is now the default language level that is consumed by Angular CLI and other tooling.
 The Angular CLI down-levels the bundle to a language level that is supported by all targeted browsers at application build time.
 
-### d.ts bundling / type definition flattening
+### Flattening of Type Definitions (`.d.ts` bundling)
 
 As of APF v8, it is recommended to bundle TypeScript definitions.
 Bundling of type definitions can significantly speed up compilations for users, especially if there are many individual `.ts` source files in your library.
 
-Angular uses [`rollup-plugin-dts`](https://github.com/Swatinem/rollup-plugin-dts) to flatten `.d.ts` files (using `rollup`, similar to how FESM files are created).
+Angular uses [`rolldown-plugin-dts`](https://github.com/sxzz/rolldown-plugin-dts) to flatten `.d.ts` files (using `rolldown`, similar to how FESM files are created).
 
-Using rollup for `.d.ts` bundling is beneficial as it supports code splitting between entry-points.
+Using rolldown for `.d.ts` bundling is beneficial as it supports code splitting between entry-points.
 For example, consider you have multiple entrypoints relying on the same shared type, a shared `.d.ts` file would be created along with the larger flattened `.d.ts` files.
 This is desirable and avoids duplication of types.
 
 ### Tslib
 
-As of APF v10, it is recommended to add tslib as a direct dependency of your primary entry-point.
-This is because the tslib version is tied to the TypeScript version used to compile your library.
+As of APF v10, it is recommended to list `tslib` as a direct dependency of your library whenever its compiled output imports runtime helpers from `tslib`.
+This is because the `tslib` version is tied to the TypeScript version used to compile your library.
+When building with `@angular/build:library`, the builder automatically adds `tslib` to `dependencies` in the generated `package.json` if the compiled code imports `tslib`.
 
 ## Examples
 
+The npm packages of the Angular framework are a good reference point for APF-compliant library packages.
+Browse the file layout and npm package on UNPKG:
+
 <docs-pill-row>
-  <docs-pill href="https://app.unpkg.com/@angular/core@21.0.6" title="@angular/core package"/>
-  <docs-pill href="https://app.unpkg.com/@angular/material@21.0.3" title="@angular/material package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/core@latest" title="@angular/core package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/material@latest" title="@angular/material package"/>
 </docs-pill-row>
 
 ## Definition of terms
@@ -280,7 +268,7 @@ In this section are the definitions of all of them to provide additional clarity
 
 ### Package
 
-The smallest set of files that are published to NPM and installed together, for example `@angular/core`.
+The smallest set of files that are published to npm and installed together, for example `@angular/core`.
 This package includes a manifest called package.json, compiled source code, typescript definition files, source maps, metadata, etc.
 The package is installed with `npm install @angular/core`.
 
@@ -357,7 +345,7 @@ The available top-level imports are what define the public API and are exposed i
 ### Tree-shaking
 
 The process of identifying and removing code not used by an application - also known as dead code elimination.
-This is a global optimization performed at the application level using tools like [Rollup](https://rollupjs.org), [Closure Compiler](https://developers.google.com/closure/compiler), or [Terser](https://github.com/terser/terser).
+This is a global optimization performed at the application level using tools like [Rollup](https://rollupjs.org), [Rolldown](https://rolldown.rs/), [Closure Compiler](https://developers.google.com/closure/compiler), or [Terser](https://github.com/terser/terser).
 
 ### AOT compiler
 
@@ -365,4 +353,4 @@ The Ahead of Time Compiler for Angular.
 
 ### Flattened type definitions
 
-The bundled TypeScript definitions generated using tools like [API Extractor](https://api-extractor.com) or [rollup-plugin-dts](https://github.com/Swatinem/rollup-plugin-dts).
+The bundled TypeScript definitions generated using tools like [API Extractor](https://api-extractor.com) or [`rolldown-plugin-dts`](https://github.com/sxzz/rolldown-plugin-dts).

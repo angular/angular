@@ -151,4 +151,17 @@ describe('setTimeout', function () {
     clearTimeout(null as any);
     clearTimeout(<any>{});
   });
+
+  it('should not throw when the native timer returns null', function () {
+    // A wrapper that blocks a timer (e.g. a browser extension or automation
+    // harness) can return null instead of a handle, see issue #70044.
+    const fakeGlobal = {
+      setTimeout: function () {
+        return null;
+      },
+      clearTimeout: function () {},
+    };
+    patchTimer(fakeGlobal, 'set', 'clear', 'Timeout');
+    expect(() => (fakeGlobal as any).setTimeout(() => {}, 0)).not.toThrow();
+  });
 });

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ClassPropertyMapping, ClassPropertyName} from '@angular/compiler';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
 import {DirectiveMeta, HostDirectiveMeta, InputMapping, MetadataReader} from './api';
-import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 /**
  * Given a reference to a directive, return a flattened version of its `DirectiveMeta` metadata

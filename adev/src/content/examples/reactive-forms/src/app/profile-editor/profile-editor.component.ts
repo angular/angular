@@ -1,10 +1,9 @@
 // #docplaster
 import {Component, inject} from '@angular/core';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {FormArray, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 // #docregion validator-imports
 import {Validators} from '@angular/forms';
 // #enddocregion validator-imports
-import {FormArray} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
 
 @Component({
@@ -52,7 +51,7 @@ export class ProfileEditorComponent {
   // #enddocregion add-alias
   // #docregion on-submit
   onSubmit() {
-    // TODO: Use EventEmitter with form value
+    // TODO: Use output() with form value
     console.warn(this.profileForm.value);
   }
   // #enddocregion on-submit

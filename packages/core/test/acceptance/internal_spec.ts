@@ -129,7 +129,6 @@ describe('internal utilities', () => {
 
     it('should get the name from a node placed inside a dynamically-created component through createComponent', () => {
       @Component({
-        selector: 'comp',
         template: `<section><div class="target"></div></section>`,
       })
       class Comp {}
@@ -142,6 +141,27 @@ describe('internal utilities', () => {
         'Comp',
       );
       ref.destroy();
+    });
+
+    it('should be able to skip over components', () => {
+      @Component({
+        selector: 'comp',
+        template: '<div class="target"></div>',
+      })
+      class Comp {}
+
+      @Component({
+        template: `<section><comp /></section>`,
+        imports: [Comp],
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const target = fixture.nativeElement.querySelector('.target');
+
+      expect(getClosestComponentName(target)).toBe('Comp');
+      expect(getClosestComponentName(target, (el) => el.tagName !== 'COMP')).toBe('App');
     });
   });
 });

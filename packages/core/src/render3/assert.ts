@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {
   assertDefined,
   assertEqual,
@@ -16,7 +15,7 @@ import {
   throwError,
 } from '../util/assert';
 
-import {getComponentDef, getNgModuleDef} from './def_getters';
+import {getNgModuleDef} from './def_getters';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
 import {TIcu} from './interfaces/i18n';
@@ -62,7 +61,7 @@ export function assertTNodeForTView(tNode: TNode, tView: TView) {
 
 export function assertTNode(tNode: TNode) {
   assertDefined(tNode, 'TNode must be defined');
-  if (!(tNode && typeof tNode === 'object' && tNode.hasOwnProperty('directiveStylingLast'))) {
+  if (!(tNode && typeof tNode === 'object' && Object.hasOwn(tNode, 'directiveStylingLast'))) {
     throwError('Not of type TNode, got: ' + tNode);
   }
 }
@@ -74,15 +73,6 @@ export function assertTIcu(tIcu: TIcu) {
   }
 }
 
-export function assertComponentType(
-  actual: any,
-  msg: string = "Type passed in is not ComponentType, it does not have 'ɵcmp' property.",
-) {
-  if (!getComponentDef(actual)) {
-    throwError(msg);
-  }
-}
-
 export function assertNgModuleType(
   actual: any,
   msg: string = "Type passed in is not NgModuleType, it does not have 'ɵmod' property.",
@@ -90,10 +80,6 @@ export function assertNgModuleType(
   if (!getNgModuleDef(actual)) {
     throwError(msg);
   }
-}
-
-export function assertCurrentTNodeIsParent(isParent: boolean) {
-  assertEqual(isParent, true, 'currentTNode should be a parent');
 }
 
 export function assertHasParent(tNode: TNode | null) {
@@ -172,26 +158,6 @@ export function assertParentView(lView: LView | null, errMessage?: string) {
     lView,
     errMessage || "Component views should always have a parent view (component's host view)",
   );
-}
-
-export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[]): void {
-  // The array needs at least two elements in order to have duplicates.
-  if (directives.length < 2) {
-    return;
-  }
-
-  const seenDirectives = new Set<DirectiveDef<unknown>>();
-
-  for (const current of directives) {
-    if (seenDirectives.has(current)) {
-      throw new RuntimeError(
-        RuntimeErrorCode.DUPLICATE_DIRECTIVE,
-        `Directive ${current.type.name} matches multiple times on the same element. ` +
-          `Directives can only match an element once.`,
-      );
-    }
-    seenDirectives.add(current);
-  }
 }
 
 /**

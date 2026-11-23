@@ -94,7 +94,7 @@ because they are _very_ common.
   - Use callouts for a brief aside that offers more context on a topic that's not strictly
     necessary to understanding the main content
   - Never put multiple callouts next to each other or in proximity (such as separated
-    by one a line or two of text)
+    by a line or two of text)
   - Never put a callout inside another element, such as a card or table cell
 - **Alerts**
   - Use sparingly to call attention to a very brief but relevant point

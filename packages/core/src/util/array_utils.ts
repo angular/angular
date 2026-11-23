@@ -78,7 +78,7 @@ export function newArray<T>(size: number, value?: T): T[] {
  * removed. This causes memory pressure and slows down code when most of the time we don't
  * care about the deleted items array.
  *
- * https://jsperf.com/fast-array-splice (About 20x faster)
+ * https://jsperf.app/fast-array-splice (About 20x faster)
  *
  * @param array Array to splice
  * @param index Index of element in array to remove.

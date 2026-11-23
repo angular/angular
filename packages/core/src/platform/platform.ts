@@ -11,21 +11,16 @@ import {
   publishSignalConfiguration,
 } from '../application/application_ref';
 import {PLATFORM_INITIALIZER} from '../application/application_tokens';
-import {
-  EnvironmentProviders,
-  InjectionToken,
-  Injector,
-  makeEnvironmentProviders,
-  runInInjectionContext,
-  StaticProvider,
-} from '../di';
+import {InjectionToken, Injector, runInInjectionContext, StaticProvider} from '../di';
 import {INJECTOR_SCOPE} from '../di/scope';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 import {PlatformRef} from './platform_ref';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
+import {registerAiTools} from '../debug/ai';
 
 let _platformInjector: Injector | null = null;
+let _unregisterAiTools: (() => void) | null = null;
 
 /**
  * Creates a platform.
@@ -43,6 +38,9 @@ export function createPlatform(injector: Injector): PlatformRef {
 
   publishDefaultGlobalUtils();
   publishSignalConfiguration();
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    _unregisterAiTools = registerAiTools();
+  }
 
   // During SSR, using this setting and using an injector from the global can cause the
   // injector to be used for a different requjest due to concurrency.
@@ -151,6 +149,11 @@ export function getPlatform(): PlatformRef | null {
  * @publicApi
  */
 export function destroyPlatform(): void {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    _unregisterAiTools?.();
+    _unregisterAiTools = null;
+  }
+
   getPlatform()?.destroy();
 }
 
@@ -165,6 +168,9 @@ export function createOrReusePlatformInjector(providers: StaticProvider[] = []):
   if (_platformInjector) return _platformInjector;
 
   publishDefaultGlobalUtils();
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    _unregisterAiTools = registerAiTools();
+  }
 
   // Otherwise, setup a new platform injector and run platform initializers.
   const injector = createPlatformInjector(providers);

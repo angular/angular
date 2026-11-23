@@ -11,7 +11,8 @@ import {
   Provider,
   ɵperformanceMarkFeature as performanceMarkFeature,
 } from '@angular/core';
-import {BrowserModule} from '../../index';
+// g3-only import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule} from '../../index'; // 3p-only
 
 import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
 

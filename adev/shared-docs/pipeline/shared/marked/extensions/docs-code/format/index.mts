@@ -52,6 +52,7 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
   }
 
   extractRegions(token);
+  token.code = deindent(token.code).trim();
   highlightCode(context.highlighter, token, context);
 
   const containerEl = JSDOM.fragment(`
@@ -95,6 +96,11 @@ export function processForApiLinks(fragment: Element, apiEntries: ApiEntries): v
   });
 }
 
+/** Escapes text that is interpolated into an HTML string. */
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 /** Build the header element if a header is provided in the token. */
 function buildHeaderElement(token: CodeToken) {
   let header = '';
@@ -103,7 +109,7 @@ function buildHeaderElement(token: CodeToken) {
   }
 
   if (token.header) {
-    header += `<h3>${token.header}</h3>`;
+    header += `<h3>${escapeHtml(token.header)}</h3>`;
   }
 
   if (!header) return '';
@@ -152,4 +158,21 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   if (token.classes) {
     el.classList.add(...token.classes);
   }
+}
+
+/**
+ * Removes leading indentation from code blocks.
+ */
+function deindent(str: string): string {
+  const lines = str.split('\n');
+  let minIndent = Infinity;
+  for (const line of lines) {
+    if (line.trim()) {
+      minIndent = Math.min(line.match(/^(\s*)/)?.[1].length ?? 0, minIndent);
+    }
+  }
+  if (minIndent === Infinity || minIndent === 0) {
+    return str;
+  }
+  return lines.map((line) => line.slice(minIndent)).join('\n');
 }

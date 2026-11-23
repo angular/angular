@@ -34,7 +34,7 @@ export class ForbiddenValidatorDirective implements Validator {
   readonly forbiddenName = input<string>('', {alias: 'appForbiddenName'});
 
   validate(control: AbstractControl): ValidationErrors | null {
-    return this.forbiddenName
+    return this.forbiddenName()
       ? forbiddenNameValidator(new RegExp(this.forbiddenName(), 'i'))(control)
       : null;
   }

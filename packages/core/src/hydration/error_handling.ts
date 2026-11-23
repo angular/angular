@@ -14,9 +14,13 @@ import {HOST, LView, TVIEW} from '../render3/interfaces/view';
 import {getParentRElement} from '../render3/node_manipulation';
 import {unwrapRNode} from '../render3/util/view_utils';
 
+import {readPatchedData} from '../render3/context_discovery';
 import {markRNodeAsHavingHydrationMismatch} from './utils';
+import {DOC_PAGE_BASE_URL} from '../../../core/src/error_details_base_url';
 
 const AT_THIS_LOCATION = '<-- AT THIS LOCATION';
+
+const THIRD_PARTY_SCRIPTS_URL = `/guide/hydration#third-party-scripts-with-dom-manipulation`;
 
 /**
  * Retrieves a user friendly string for a given TNodeType for use in
@@ -100,7 +104,18 @@ export function validateMatchingNode(
     }
 
     const footer = getHydrationErrorFooter(componentClassName);
-    const message = header + expected + actual + getHydrationAttributeNote() + footer;
+    let message = header + expected + actual + getHydrationAttributeNote() + footer;
+
+    // Check both when a mismatching node is found AND when the expected node is missing,
+    // since third-party scripts can both inject extra nodes and remove existing ones.
+    if (!node || (node && isLikelyExternalSourceNode(node))) {
+      message +=
+        `Note: It looks like this mismatch may have been caused by a third-party script or ` +
+        `browser extension that modified the DOM outside of Angular's control. ` +
+        `Angular hydration does not support nodes injected or removed outside of the Angular-managed DOM. ` +
+        `Note: If you know which element in the DOM this will be inserted, consider adding ngSkipHydration to prevent this error. \n\n`;
+    }
+
     throw new RuntimeError(RuntimeErrorCode.HYDRATION_NODE_MISMATCH, message);
   }
 }
@@ -229,7 +244,7 @@ export function invalidSkipHydrationHost(rNode: RNode): Error {
 function stringifyTNodeAttrs(tNode: TNode): string {
   const results = [];
   if (tNode.attrs) {
-    for (let i = 0; i < tNode.attrs.length; ) {
+    for (let i = 0; i < tNode.attrs.length;) {
       const attrName = tNode.attrs[i++];
       // Once we reach the first flag, we know that the list of
       // attributes is over.
@@ -413,9 +428,30 @@ function getHydrationErrorFooter(componentClassName?: string): string {
     `To fix this problem:\n` +
     `  * check ${componentInfo} component for hydration-related issues\n` +
     `  * check to see if your template has valid HTML structure\n` +
+    `  * check if there are any third-party scripts that manipulate the DOM. More info: ${DOC_PAGE_BASE_URL}${THIRD_PARTY_SCRIPTS_URL}\n` +
     `  * or skip hydration by adding the \`ngSkipHydration\` attribute ` +
     `to its host node in a template\n\n`
   );
+}
+
+/**
+ * Checks if a given RNode is likely to have been added by a third-party script
+ * or browser extension, by checking whether Angular has any knowledge of it
+ * via patched data. Nodes created and managed by Angular will always have
+ * patched data attached to them.
+ */
+function isLikelyExternalSourceNode(rNode: RNode): boolean {
+  const node = rNode as Node;
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return false;
+  }
+  // If Angular has patched this node, it was created within Angular's context.
+  if (readPatchedData(node as HTMLElement)) {
+    return false;
+  }
+  // No patched data means Angular has no record of this node —
+  // it was likely injected by a third-party script or browser extension.
+  return true;
 }
 
 /**
@@ -453,4 +489,15 @@ function shorten(input: string | null, maxLength = 50): string {
   }
   input = stripNewlines(input);
   return input.length > maxLength ? `${input.substring(0, maxLength - 1)}…` : input;
+}
+
+/**
+ * Cheap, production-safe description of a DOM node for error messages: its `nodeName`, plus a
+ * truncated snippet of its `textContent` if it has any. Unlike `shorten()` above, this is meant
+ * to be called from code paths that also run in production, so it skips the newline-stripping
+ * and ellipsis formatting that `shorten()` does.
+ */
+export function describeDomNode(node: Node): string {
+  const textContent = node.textContent?.slice(0, 50);
+  return textContent ? `${node.nodeName} ("${textContent}")` : node.nodeName;
 }

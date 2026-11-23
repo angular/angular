@@ -27,6 +27,7 @@ const REGION_MATCHERS = {
   es6: inlineC,
   html: html,
   svg: html,
+  xlf: html,
   css: blockC,
   conf: inlineHash,
   yaml: inlineHash,

@@ -6,8 +6,9 @@ It also explains the basic mechanics of using `git`, `node`, and `pnpm`.
 - [Building and Testing Angular](#building-and-testing-angular)
   - [Prerequisite Software](#prerequisite-software)
   - [Development in a Container](#development-in-a-container)
+  - [Experimenting in dev-app](#experimenting-in-dev-app)
   - [Getting the Sources](#getting-the-sources)
-  - [Installing NPM Modules](#installing-npm-modules)
+  - [Installing npm Modules](#installing-npm-modules)
   - [Building](#building)
   - [Running Tests Locally](#running-tests-locally)
     - [Testing changes against a local library/project](#testing-changes-against-a-local-libraryproject)
@@ -35,7 +36,7 @@ following on your development machine:
 
 - [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and
   Windows);
-  [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source
+  [GitHub's Guide to Installing Git](https://docs.github.com/en/get-started/git-basics/set-up-git) is a good source
   of information.\
   **Windows Users**: Git Bash or an equivalent shell is required\
   _Windows Powershell and cmd shells are not
@@ -57,6 +58,10 @@ following on your development machine:
 
 You can also use the provided [Dev Container](https://containers.dev/) configuration to set up a development environment. This approach uses Docker to create a container with all the necessary tools (Node.js, pnpm, etc.) pre-installed.
 
+## Experimenting in dev-app
+
+For experimentation while developing Angular, consider running the [dev-app](../dev-app/README.md) in this repository.
+
 **Prerequisites:**
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
@@ -74,7 +79,7 @@ Fork and clone the Angular repository:
 
 1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
-2. [Fork](https://help.github.com/forking) the [main Angular
+2. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the [main Angular
    repository](https://github.com/angular/angular).
 3. Clone your fork of the Angular repository and define an `upstream` remote pointing back to
    the Angular repository that you forked in the first place.
@@ -90,7 +95,7 @@ cd angular
 git remote add upstream https://github.com/angular/angular.git
 ```
 
-## Installing NPM Modules
+## Installing npm Modules
 
 Next, install the JavaScript modules needed to build and test Angular:
 

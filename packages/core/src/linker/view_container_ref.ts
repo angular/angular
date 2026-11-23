@@ -8,6 +8,7 @@
 
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
+import {ErrorDetails} from '../error_handler';
 import {validateMatchingNode} from '../hydration/error_handling';
 import {CONTAINERS} from '../hydration/interfaces';
 import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
@@ -17,9 +18,9 @@ import {
   markRNodeAsClaimedByHydration,
 } from '../hydration/utils';
 import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../hydration/views';
-import {isType, Type} from '../interface/type';
+import {Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
-import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
+import {ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/def_getters';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
 import {nativeInsertBefore} from '../render3/dom_node_manipulation';
@@ -45,6 +46,7 @@ import {
   HEADER_OFFSET,
   HYDRATION,
   LView,
+  ON_ERROR,
   PARENT,
   RENDERER,
   T_HOST,
@@ -71,10 +73,11 @@ import {
 } from '../util/assert';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 import {addToEndOfViewTree} from '../render3/view/construction';
 import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
-import {ComponentFactory, ComponentRef} from './component_factory';
+import {ComponentRef} from './component_factory';
 import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
@@ -180,6 +183,8 @@ export abstract class ViewContainerRef {
    *  * index: The 0-based index at which to insert the new view into this container.
    *           If not specified, appends the new view as the last entry.
    *  * injector: Injector to be used within the embedded view.
+   *  * onError: A callback that will be invoked when an error occurs during the view's change detection or lifecycle hooks.
+   *             Note that this will not catch errors thrown during the view's creation.
    *
    * @returns The `ViewRef` instance for the newly created view.
    */
@@ -189,6 +194,7 @@ export abstract class ViewContainerRef {
     options?: {
       index?: number;
       injector?: Injector;
+      onError?: (error: Error, details: ErrorDetails) => void;
     },
   ): EmbeddedViewRef<C>;
 
@@ -228,6 +234,8 @@ export abstract class ViewContainerRef {
    *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
    *  * directives: Directives that should be applied to the component.
    *  * bindings: Bindings that should be applied to the component.
+   *  * onError: A callback that will be invoked when an error occurs during the component's change detection or lifecycle hooks.
+   *             Note that this will not catch errors thrown during the component's construction.
    *
    * @returns The new `ComponentRef` which contains the component instance and the host view.
    */
@@ -241,37 +249,8 @@ export abstract class ViewContainerRef {
       projectableNodes?: Node[][];
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
-  ): ComponentRef<C>;
-
-  /**
-   * Instantiates a single component and inserts its host view into this container.
-   *
-   * @param componentFactory Component factory to use.
-   * @param index The index at which to insert the new component's host view into this container.
-   * If not specified, appends the new view as the last entry.
-   * @param injector The injector to use as the parent for the new component.
-   * @param projectableNodes List of DOM nodes that should be projected through
-   *     [`<ng-content>`](api/core/ng-content) of the new component instance.
-   * @param ngModuleRef An instance of the NgModuleRef that represent an NgModule.
-   * This information is used to retrieve corresponding NgModule injector.
-   * @param directives Directives that should be applied to the component.
-   * @param bindings Bindings that should be applied to the component.
-   *
-   * @returns The new `ComponentRef` which contains the component instance and the host view.
-   *
-   * @deprecated Angular no longer requires component factories to dynamically create components.
-   *     Use different signature of the `createComponent` method, which allows passing
-   *     Component class directly.
-   */
-  abstract createComponent<C>(
-    componentFactory: ComponentFactory<C>,
-    index?: number,
-    injector?: Injector,
-    projectableNodes?: any[][],
-    environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
-    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
-    bindings?: Binding[],
   ): ComponentRef<C>;
 
   /**
@@ -287,7 +266,7 @@ export abstract class ViewContainerRef {
   /**
    * Moves a view to a new location in this container.
    * @param viewRef The view to move.
-   * @param index The 0-based index of the new location.
+   * @param currentIndex The 0-based index of the new location.
    * @returns The moved `ViewRef` instance.
    */
   abstract move(viewRef: ViewRef, currentIndex: number): ViewRef;
@@ -320,6 +299,10 @@ export abstract class ViewContainerRef {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__: () => ViewContainerRef = injectViewContainerRef;
+}
+
+if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  registerSpecialProvider(ViewContainerRef);
 }
 
 /**
@@ -387,6 +370,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     options?: {
       index?: number;
       injector?: Injector;
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
   ): EmbeddedViewRef<C>;
   override createEmbeddedView<C>(
@@ -402,16 +386,19 @@ class R3ViewContainerRef extends ViewContainerRef {
       | {
           index?: number;
           injector?: Injector;
+          onError?: (error: Error, context: ErrorDetails) => void;
         },
   ): EmbeddedViewRef<C> {
     let index: number | undefined;
     let injector: Injector | undefined;
+    let onError: ((error: Error, context: ErrorDetails) => void) | undefined;
 
     if (typeof indexOrOptions === 'number') {
       index = indexOrOptions;
     } else if (indexOrOptions != null) {
       index = indexOrOptions.index;
       injector = indexOrOptions.injector;
+      onError = indexOrOptions.onError;
     }
 
     const dehydratedView = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
@@ -420,6 +407,9 @@ class R3ViewContainerRef extends ViewContainerRef {
       injector,
       dehydratedView,
     );
+    if (onError) {
+      (viewRef as R3ViewRef<any>)._lView![ON_ERROR] = onError;
+    }
     this.insertImpl(viewRef, index, shouldAddViewToDom(this._hostTNode, dehydratedView));
     return viewRef;
   }
@@ -433,104 +423,70 @@ class R3ViewContainerRef extends ViewContainerRef {
       ngModuleRef?: NgModuleRef<unknown>;
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
   ): ComponentRef<C>;
-  /**
-   * @deprecated Angular no longer requires component factories to dynamically create components.
-   *     Use different signature of the `createComponent` method, which allows passing
-   *     Component class directly.
-   */
   override createComponent<C>(
-    componentFactory: ComponentFactory<C>,
-    index?: number | undefined,
-    injector?: Injector | undefined,
-    projectableNodes?: any[][] | undefined,
-    environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
-    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
-    bindings?: Binding[],
-  ): ComponentRef<C>;
-  override createComponent<C>(
-    componentFactoryOrType: ComponentFactory<C> | Type<C>,
-    indexOrOptions?:
-      | number
-      | undefined
-      | {
-          index?: number;
-          injector?: Injector;
-          ngModuleRef?: NgModuleRef<unknown>;
-          environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
-          projectableNodes?: Node[][];
-          directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
-          bindings?: Binding[];
-        },
+    componentType: Type<C>,
+    opts?: {
+      index?: number;
+      injector?: Injector;
+      ngModuleRef?: NgModuleRef<unknown>;
+      environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
+      projectableNodes?: Node[][];
+      directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+      bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
+    },
     injector?: Injector | undefined,
     projectableNodes?: any[][] | undefined,
     environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     bindings?: Binding[],
   ): ComponentRef<C> {
-    const isComponentFactory = componentFactoryOrType && !isType(componentFactoryOrType);
     let index: number | undefined;
+    let onError: ((error: Error, context: ErrorDetails) => void) | undefined;
 
-    // This function supports 2 signatures and we need to handle options correctly for both:
-    //   1. When first argument is a Component type. This signature also requires extra
-    //      options to be provided as object (more ergonomic option).
-    //   2. First argument is a Component factory. In this case extra options are represented as
-    //      positional arguments. This signature is less ergonomic and will be deprecated.
-    if (isComponentFactory) {
-      if (ngDevMode) {
-        assertEqual(
-          typeof indexOrOptions !== 'object',
-          true,
-          'It looks like Component factory was provided as the first argument ' +
-            'and an options object as the second argument. This combination of arguments ' +
-            'is incompatible. You can either change the first argument to provide Component ' +
-            'type or change the second argument to be a number (representing an index at ' +
-            "which to insert the new component's host view into this container)",
-        );
-      }
-      index = indexOrOptions as number | undefined;
-    } else {
-      if (ngDevMode) {
-        assertDefined(
-          getComponentDef(componentFactoryOrType),
-          `Provided Component class doesn't contain Component definition. ` +
-            `Please check whether provided class has @Component decorator.`,
-        );
-        assertEqual(
-          typeof indexOrOptions !== 'number',
-          true,
-          'It looks like Component type was provided as the first argument ' +
-            "and a number (representing an index at which to insert the new component's " +
-            'host view into this container as the second argument. This combination of arguments ' +
-            'is incompatible. Please use an object as the second argument instead.',
-        );
-      }
-      const options = (indexOrOptions || {}) as {
-        index?: number;
-        injector?: Injector;
-        ngModuleRef?: NgModuleRef<unknown>;
-        environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
-        projectableNodes?: Node[][];
-        directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
-        bindings?: Binding[];
-      };
-      if (ngDevMode && options.environmentInjector && options.ngModuleRef) {
-        throwError(
-          `Cannot pass both environmentInjector and ngModuleRef options to createComponent().`,
-        );
-      }
-      index = options.index;
-      injector = options.injector;
-      projectableNodes = options.projectableNodes;
-      environmentInjector = options.environmentInjector || options.ngModuleRef;
-      directives = options.directives;
-      bindings = options.bindings;
+    if (ngDevMode) {
+      assertDefined(
+        getComponentDef(componentType),
+        `Provided Component class doesn't contain Component definition. ` +
+          `Please check whether provided class has @Component decorator.`,
+      );
+      assertEqual(
+        typeof opts !== 'number',
+        true,
+        'It looks like Component type was provided as the first argument ' +
+          "and a number (representing an index at which to insert the new component's " +
+          'host view into this container as the second argument. This combination of arguments ' +
+          'is incompatible. Please use an object as the second argument instead.',
+      );
     }
+    const options = (opts || {}) as {
+      index?: number;
+      injector?: Injector;
+      ngModuleRef?: NgModuleRef<unknown>;
+      environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
+      projectableNodes?: Node[][];
+      directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+      bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
+    };
 
-    const componentFactory: ComponentFactory<C> = isComponentFactory
-      ? (componentFactoryOrType as ComponentFactory<C>)
-      : new R3ComponentFactory(getComponentDef(componentFactoryOrType)!);
+    if (ngDevMode && options.environmentInjector && options.ngModuleRef) {
+      throwError(
+        `Cannot pass both environmentInjector and ngModuleRef options to createComponent().`,
+      );
+    }
+    index = options.index;
+    injector = options.injector;
+    projectableNodes = options.projectableNodes;
+    environmentInjector = options.environmentInjector || options.ngModuleRef;
+    directives = options.directives;
+    bindings = options.bindings;
+    onError = options.onError;
+
+    const componentFactory = new ComponentFactory(getComponentDef(componentType)!);
     const contextInjector = injector || this.parentInjector;
 
     // If an `NgModuleRef` is not provided explicitly, try retrieving it from the DI tree.
@@ -551,7 +507,7 @@ class R3ViewContainerRef extends ViewContainerRef {
       // NgModule outside of a module tree). Instead, we always use `ViewContainerRef`'s parent
       // injector, which is normally connected to the DI tree, which includes module injector
       // subtree.
-      const _injector = isComponentFactory ? contextInjector : this.parentInjector;
+      const _injector = this.parentInjector;
 
       // DO NOT REFACTOR. The code here used to have a `injector.get(NgModuleRef, null) ||
       // undefined` expression which seems to cause internal google apps to fail. This is documented
@@ -572,13 +528,39 @@ class R3ViewContainerRef extends ViewContainerRef {
       environmentInjector,
       directives,
       bindings,
+      this._getHostElementNamespace(),
     );
+    if (onError) {
+      (componentRef.hostView as R3ViewRef<any>)._lView![ON_ERROR] = onError;
+    }
     this.insertImpl(
       componentRef.hostView,
       index,
       shouldAddViewToDom(this._hostTNode, dehydratedView),
     );
-    return componentRef;
+    return componentRef as ComponentRef<C>;
+  }
+
+  /** Returns the namespace used by nodes inserted at this container's render location. */
+  private _getHostElementNamespace(): string | null {
+    if (this._hostTNode.type & TNodeType.Element) {
+      const parentTNode = this._hostTNode.parent ?? this._hostLView[T_HOST];
+
+      // SVG foreignObject elements are namespace integration points: the foreignObject itself is
+      // SVG, but its children are HTML.
+      if (
+        parentTNode !== null &&
+        parentTNode.type & TNodeType.Element &&
+        typeof parentTNode.value === 'string' &&
+        parentTNode.value.toLowerCase() === 'foreignobject'
+      ) {
+        return null;
+      }
+
+      return parentTNode?.namespace ?? null;
+    }
+
+    return this._hostTNode.namespace;
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {
@@ -842,16 +824,23 @@ function populateDehydratedViewsInLContainerImpl(
   const currentRNode: RNode | null = getSegmentHead(hydrationInfo, noOffsetIndex);
 
   const serializedViews = hydrationInfo.data[CONTAINERS]?.[noOffsetIndex];
-  ngDevMode &&
-    assertDefined(
-      serializedViews,
-      'Unexpected state: no hydration info available for a given TNode, ' +
-        'which represents a view container.',
-    );
+  if (serializedViews === undefined) {
+    ngDevMode &&
+      console.warn(
+        'Unexpected state: no hydration info available for a given TNode, ' +
+          'which represents a view container.',
+      );
+
+    // This ViewContainerRef was created for an element through a query
+    // (for example `viewChild(..., {read: ViewContainerRef})`) and there
+    // is no corresponding serialized container data in hydration metadata.
+    // Fall back to creation mode and insert an anchor on demand.
+    return false;
+  }
 
   const [commentNode, dehydratedViews] = locateDehydratedViewsInContainer(
     currentRNode!,
-    serializedViews!,
+    serializedViews,
   );
 
   if (ngDevMode) {

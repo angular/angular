@@ -298,4 +298,76 @@ describe('perform_compile', () => {
       }),
     );
   });
+
+  it('should reuse cached configuration populated by extendedConfigCache across calls', () => {
+    writeSomeConfigs();
+
+    const extendedConfigCache = new Map<string, ts.ExtendedConfigCacheEntry>();
+    const {options: firstRunOptions} = readConfiguration(
+      path.resolve(basePath, 'tsconfig-level-1.json'),
+      undefined,
+      undefined,
+      extendedConfigCache,
+    );
+
+    expect(firstRunOptions.annotateForClosureCompiler).toBeTrue();
+    expect(firstRunOptions.skipMetadataEmit).toBeTrue();
+    expect(extendedConfigCache.size).toBeGreaterThan(0);
+
+    // Overwrite the file on disk with invalid JSON. If readConfiguration uses cache, it will not fail.
+    support.writeFiles({
+      'tsconfig-level-2.json': `INVALID_JSON`,
+    });
+
+    const {options: secondRunOptions} = readConfiguration(
+      path.resolve(basePath, 'tsconfig-level-1.json'),
+      undefined,
+      undefined,
+      extendedConfigCache,
+    );
+
+    expect(secondRunOptions.annotateForClosureCompiler).toBeTrue();
+    expect(secondRunOptions.skipMetadataEmit).toBeTrue();
+  });
+
+  it('should honor changed angularCompilerOptions in an extended tsconfig across calls when cache is invalidated', () => {
+    writeSomeConfigs();
+
+    const extendedConfigCache = new Map<string, ts.ExtendedConfigCacheEntry>();
+    const level1Path = path.resolve(basePath, 'tsconfig-level-1.json');
+    const level2Path = path.resolve(basePath, 'tsconfig-level-2.json');
+
+    // First run: initial values
+    const {options: firstRunOptions} = readConfiguration(
+      level1Path,
+      undefined,
+      undefined,
+      extendedConfigCache,
+    );
+
+    expect(firstRunOptions.skipMetadataEmit).toBeTrue();
+
+    // Modify the angular-specific option in the extended config file
+    support.writeFiles({
+      'tsconfig-level-2.json': `{
+        "extends": "./tsconfig-level-3.json",
+        "angularCompilerOptions": {
+          "skipMetadataEmit": false
+        }
+      }`,
+    });
+
+    // Invalidate the cache entry for the modified extended configuration (mimicking watch mode file watcher behavior)
+    extendedConfigCache.delete(level2Path);
+
+    // Second run: verify updated option is picked up and honored
+    const {options: secondRunOptions} = readConfiguration(
+      level1Path,
+      undefined,
+      undefined,
+      extendedConfigCache,
+    );
+
+    expect(secondRunOptions.skipMetadataEmit).toBeFalse();
+  });
 });

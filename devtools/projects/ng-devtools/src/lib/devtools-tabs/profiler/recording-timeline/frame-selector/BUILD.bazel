@@ -25,7 +25,7 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:estimate-frame-rate",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:calculate-frame-rate",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/protocol",

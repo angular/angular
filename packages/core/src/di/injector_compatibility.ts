@@ -67,12 +67,6 @@ export class RetrievingInjector implements PrimitivesInjector {
   }
 }
 
-export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
-const NG_TOKEN_PATH = 'ngTokenPath';
-const NEW_LINE = /\n/gm;
-const NO_NEW_LINE = 'ɵ';
-export const SOURCE = '__source';
-
 /**
  * Temporary type to allow internal symbols to use inject flags. This should be
  * removed once we consolidate the flags and the object literal approach.
@@ -235,9 +229,9 @@ export function inject(token: HostAttributeToken, options: {optional: false}): s
  * - In a stackframe of a function call in a DI context
  *
  * @param token A token that represents a dependency that should be injected.
- * @param flags Optional flags that control how injection is executed.
- * The flags correspond to injection strategies that can be specified with
- * parameter decorators `@Host`, `@Self`, `@SkipSelf`, and `@Optional`.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
  * @returns the injected value if operation is successful, `null` otherwise.
  * @throws if called outside of a supported context.
  *

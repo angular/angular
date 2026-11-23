@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {OwningModule, Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
 
@@ -22,6 +22,8 @@ export type ForeignFunctionResolver = (
   resolve: (expr: ts.Expression) => ResolvedValue,
   unresolvable: DynamicValue,
 ) => ResolvedValue;
+
+export type ForeignTypeResolver = (typeNode: ts.TypeNode) => ts.TypeNode | null;
 
 export class PartialEvaluator {
   constructor(
@@ -39,6 +41,32 @@ export class PartialEvaluator {
       resolutionContext: sourceFile.fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(),
       foreignFunctionResolver,
+    });
+  }
+
+  /**
+   * Statically evaluates a `ts.TypeNode` (rather than a value expression) to a `ResolvedValue`.
+   *
+   * This is used when reading metadata that was encoded into `.d.ts` type positions - for example
+   * the `imports`/`exports`/`declarations` tuples of `ɵɵNgModuleDeclaration`, which may be written
+   * as `typeof X` queries, `ReturnType<typeof X.forRoot>`, references to constants that themselves
+   * resolve to tuples, etc.
+   */
+  evaluateType(
+    typeNode: ts.TypeNode,
+    owningModule: OwningModule | null = null,
+    foreignFunctionResolver?: ForeignFunctionResolver,
+    foreignTypeResolver?: ForeignTypeResolver,
+  ): ResolvedValue {
+    const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);
+    const sourceFile = typeNode.getSourceFile();
+    return interpreter.visitType(typeNode, {
+      originatingFile: sourceFile,
+      absoluteModuleName: owningModule ? owningModule.specifier : null,
+      resolutionContext: owningModule ? owningModule.resolutionContext : sourceFile.fileName,
+      scope: new Map<ts.ParameterDeclaration, ResolvedValue>(),
+      foreignFunctionResolver,
+      foreignTypeResolver,
     });
   }
 }

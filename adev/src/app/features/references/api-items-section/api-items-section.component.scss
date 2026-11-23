@@ -15,14 +15,6 @@
     margin-top: 1.43rem;
     font-size: 1.25rem;
   }
-
-  .adev-link-icon {
-    color: var(--quinary-contrast);
-    cursor: pointer;
-    &:hover {
-      color: var(--primary-contrast);
-    }
-  }
 }
 
 .adev-api-items-section-grid {
@@ -79,12 +71,15 @@
 
 :host {
   --item-attr-base-mix: 80%;
+  --item-attr-text: var(--page-background);
 
   .docs-light-mode & {
     --item-attr-base-mix: 20%;
+    --item-attr-text: var(--primary-contrast);
   }
   @media screen and (prefers-color-scheme: light) {
     --item-attr-base-mix: 20%;
+    --item-attr-text: var(--primary-contrast);
   }
 }
 
@@ -110,7 +105,7 @@
       var(--symbolic-yellow) var(--item-attr-base-mix),
       var(--octonary-contrast)
     );
-    color: var(--page-background);
+    color: var(--item-attr-text);
   }
 
   &.adev-experimental {
@@ -119,7 +114,7 @@
       var(--symbolic-green) var(--item-attr-base-mix),
       var(--octonary-contrast)
     );
-    color: var(--page-background);
+    color: var(--item-attr-text);
   }
 
   &.adev-deprecated {

@@ -48,6 +48,7 @@ import {netlifyLoaderInfo} from './image_loaders/netlify_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
+import {escapeCssUrl} from './url';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -390,8 +391,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
   /**
    * Value of the `srcset` attribute if set on the host `<img>` element.
-   * This input is exclusively read to assert that `srcset` is not set in conflict
-   * with `ngSrcset` and that images don't start to load until a lazy loading strategy is set.
+   * This input is read to assert that `srcset` is not set in conflict with `ngSrcset` and that
+   * images don't start to load until a lazy loading strategy is set. When `disableOptimizedSrcset`
+   * is set, this value is also written back to the host element's `srcset` attribute (otherwise a
+   * `[srcset]` binding would be captured by this input and never reach the DOM).
    * @internal
    */
   @Input() srcset?: string;
@@ -527,6 +530,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         this.getRewrittenSrc(),
         rewrittenSrcset,
         this.sizes,
+        this.imgElement.getAttribute('crossorigin'),
       );
     }
   }
@@ -690,6 +694,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
     if (rewrittenSrcset) {
       this.setHostAttribute('srcset', rewrittenSrcset);
+    } else if (this.disableOptimizedSrcset && this.srcset) {
+      // A `[srcset]` binding is captured by the `srcset` input rather than reaching the DOM. When
+      // the user opted out of optimized srcset generation, pass their value through unchanged.
+      this.setHostAttribute('srcset', this.srcset);
     }
     return rewrittenSrcset;
   }
@@ -727,13 +735,15 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
     const {placeholderResolution} = this.config;
     if (placeholderInput === true) {
-      return `url(${this.callImageLoader({
-        src: this.ngSrc,
-        width: placeholderResolution,
-        isPlaceholder: true,
-      })})`;
+      return `url("${escapeCssUrl(
+        this.callImageLoader({
+          src: this.ngSrc,
+          width: placeholderResolution,
+          isPlaceholder: true,
+        }),
+      )}")`;
     } else if (typeof placeholderInput === 'string') {
-      return `url(${placeholderInput})`;
+      return `url("${escapeCssUrl(placeholderInput)}")`;
     }
     return null;
   }
@@ -743,7 +753,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
    * property `blur` within the optional configuration object `placeholderConfig`.
    */
   protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
-    if (!placeholderConfig || !placeholderConfig.hasOwnProperty('blur')) {
+    if (!placeholderConfig || !Object.hasOwn(placeholderConfig, 'blur')) {
       return true;
     }
     return Boolean(placeholderConfig.blur);
@@ -1038,7 +1048,7 @@ function assertNoPostInitInputChange(
   inputs: string[],
 ) {
   inputs.forEach((input) => {
-    const isUpdated = changes.hasOwnProperty(input);
+    const isUpdated = Object.hasOwn(changes, input);
     if (isUpdated && !changes[input].isFirstChange()) {
       if (input === 'ngSrc') {
         // When the `ngSrc` input changes, we detect that only in the

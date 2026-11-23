@@ -49,6 +49,12 @@ function createNgModuleDefinitionMap(
     );
   }
 
+  if (meta.kind === R3NgModuleMetadataKind.Isolated) {
+    throw new Error(
+      'Invalid path! Isolated compilation mode should not get into the partial compilation path',
+    );
+  }
+
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('ngImport', o.importExpr(R3.core));

@@ -9,17 +9,21 @@
 import {ApplicationRef, Injector, resourceFromSnapshots, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
+import {Observable} from 'rxjs';
 import {
   HttpContext,
   HttpContextToken,
   HttpEventType,
   httpResource,
   HttpResourceRef,
+  HttpResponse,
   provideHttpClient,
 } from '../index';
-import {HttpTestingController, provideHttpClientTesting} from '../testing';
-import {withHttpTransferCache} from '../src/transfer_cache';
 import {HttpClient} from '../src/client';
+import {withInterceptors} from '../src/provider';
+import {HttpEvent} from '../src/response';
+import {withHttpTransferCache} from '../src/transfer_cache';
+import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('httpResource', () => {
   beforeEach(() => {
@@ -187,6 +191,8 @@ describe('httpResource', () => {
     );
     TestBed.tick();
     const req = backend.expectOne('/data');
+    expect(req.request.reportDownloadProgress).toBe(true);
+    expect(req.request.reportProgress).toBe(false);
     req.event({
       type: HttpEventType.DownloadProgress,
       loaded: 100,
@@ -244,7 +250,7 @@ describe('httpResource', () => {
     expect(req.request.responseType).toEqual('json');
     expect(req.request.withCredentials).toEqual(true);
     expect(req.request.context.get(CTX_TOKEN)).toEqual('bar');
-    expect(req.request.reportProgress).toEqual(true);
+    expect(req.request.reportDownloadProgress).toEqual(true);
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
     expect(req.request.timeout).toBe(1234);
@@ -367,6 +373,33 @@ describe('httpResource', () => {
     req.flush([]);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).toEqual([]);
+  });
+
+  it('should unsubscribe the observable when the request emits synchronously', async () => {
+    let unsubscribed = false;
+    const request = signal('/data/0');
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(
+          withInterceptors([
+            () =>
+              new Observable<HttpEvent<unknown>>((subscriber) => {
+                subscriber.next(new HttpResponse({body: request()}));
+                subscriber.complete();
+
+                return () => (unsubscribed = true);
+              }),
+          ]),
+        ),
+      ],
+    });
+
+    const res = httpResource(() => request(), {injector: TestBed.inject(Injector)});
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toBe('/data/0');
+    expect(unsubscribed).toBeTrue();
   });
 
   describe('types', () => {

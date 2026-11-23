@@ -6,6 +6,7 @@
   [element]="signalGraph.element()"
   (nodeClick)="onNodeClick($event)"
   (clusterCollapse)="detailsVisible.set(false)"
+  (searchedNodeFound)="detailsVisible.set(false)"
 />
 
 @let node = selectedNode();
@@ -14,7 +15,10 @@
     [node]="node"
     [graph]="signalGraph.graph()!"
     [element]="signalGraph.element()!"
+    [hasBreakpoint]="hasBreakpoint(node)"
     (gotoSource)="gotoSource($event)"
+    (setBreakpoint)="setBreakpoint($event)"
+    (removeBreakpoint)="removeBreakpoint($event)"
     (expandCluster)="expandCluster($event)"
     (highlightDeps)="highlightDeps($event)"
     (close)="detailsVisible.set(false)"
@@ -22,7 +26,10 @@
 }
 
 @if (empty()) {
-  <div class="no-signals">No signals in this component</div>
+  <div class="no-signals">
+    <ng-angie type="orthos-back" size="md" />
+    <span>No signals in this component</span>
+  </div>
 }
 
 <button

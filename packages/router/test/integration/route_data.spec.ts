@@ -41,7 +41,7 @@ import {
   advance,
 } from './integration_helpers';
 
-export function routeDataIntegrationSuite() {
+export async function routeDataIntegrationSuite() {
   describe('data', () => {
     class ResolveSix {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number {
@@ -50,9 +50,7 @@ export function routeDataIntegrationSuite() {
     }
 
     @Component({
-      selector: 'nested-cmp',
       template: 'nested-cmp',
-      standalone: false,
     })
     class NestedComponentWithData {
       data: any = [];
@@ -231,7 +229,6 @@ export function routeDataIntegrationSuite() {
       const fixture = await createRoot(router, RootCmp);
 
       @Component({
-        selector: 'lazy-cmp',
         template: 'lazy-loaded-1',
         standalone: false,
       })
@@ -277,7 +274,6 @@ export function routeDataIntegrationSuite() {
       const fixture = await createRoot(router, RootCmp);
 
       @Component({
-        selector: 'lazy-cmp',
         template: 'lazy-loaded-1',
         standalone: false,
       })
@@ -429,7 +425,7 @@ export function routeDataIntegrationSuite() {
       const pInj = fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0]
         .injector!;
       const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested'}]);
+      expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested', prop2: 2}]);
     });
 
     it('should not override inherited resolved data with inherited static data', async () => {

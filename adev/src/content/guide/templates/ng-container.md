@@ -1,4 +1,4 @@
-﻿# Grouping elements with ng-container
+# Grouping elements with ng-container
 
 `<ng-container>` is a special element in Angular that groups multiple elements together or marks a location in a template without rendering a real element in the DOM.
 
@@ -22,7 +22,7 @@
 
 You can apply directives to `<ng-container>` to add behaviors or configuration to a part of your template.
 
-Angular ignores all attribute bindings and event listeners applied to `<ng-container>`, including those applied via directive.
+Angular ignores class bindings, style bindings, DOM event listeners, and static attributes applied to `<ng-container>`, including those applied via directive. Attribute bindings cause errors, and property bindings only work for directive inputs.
 
 ## Using `<ng-container>` to display dynamic contents
 

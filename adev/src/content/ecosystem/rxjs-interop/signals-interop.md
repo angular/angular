@@ -2,7 +2,7 @@
 
 The `@angular/core/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
-## Create a signal from an RxJs Observable with `toSignal`
+## Create a signal from an RxJS Observable with `toSignal`
 
 Use the `toSignal` function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
@@ -91,8 +91,9 @@ If an Observable used in `toSignal` completes, the signal continues to return th
 Use the `toObservable` utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
 
 ```ts
-import {Component, signal} from '@angular/core';
+import {Component, signal, Signal, inject} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs';
 
 @Component(/* ... */)
 export class SearchResults {
@@ -105,7 +106,7 @@ export class SearchResults {
 
 As the `query` signal changes, the `query$` Observable emits the latest query and triggers a new HTTP request.
 
-### Injection context
+### Injection context {#injection-context-to-observable}
 
 `toObservable` by default needs to run in an [injection context](guide/di/dependency-injection-context), such as during construction of a component or service. If an injection context is not available, you can manually specify the `Injector` to use instead.
 
@@ -128,12 +129,10 @@ Here, only the last value (3) will be logged.
 
 ## Using `rxResource` for async data
 
-IMPORTANT: `rxResource` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
-
-Angular's [`resource` function](/guide/signals/resource) gives you a way to incorporate async data into your application's signal-based code. Building on top of this pattern, `rxResource` lets you define a resource where the source of your data is defined in terms of an RxJS `Observable`. Instead of accepting a `loader` function, `rxResource` accepts a `stream` function that accepts an RxJS `Observable`.
+Angular's [`resource` function](/guide/signals/resource) gives you a way to incorporate async data into your application's signal-based code. Building on top of this pattern, `rxResource` lets you define a resource where the source of your data is defined in terms of an RxJS `Observable`. Instead of accepting a `loader` function, `rxResource` accepts a `stream` function that returns an RxJS `Observable`.
 
 ```typescript
-import {Component, inject} from '@angular/core';
+import {Component, inject, input} from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
 
 @Component(/* ... */)
@@ -156,3 +155,5 @@ export class UserProfile {
 The `stream` property accepts a factory function for an RxJS `Observable`. This factory function is passed the resource's `params` value and returns an `Observable`. The resource calls this factory function every time the `params` computation produces a new value. See [Resource loaders](/guide/signals/resource#resource-loaders) for more details on the parameters passed to the factory function.
 
 In all other ways, `rxResource` behaves like and provides the same APIs as `resource` for specifying parameters, reading values, checking loading state, and examining errors.
+
+The `Observable` returned from `stream` must always emit a value or an error before it completes; see [`NG0991`](/errors/NG0991) for what happens otherwise and how to avoid it.

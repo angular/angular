@@ -31,6 +31,7 @@ import {ɵɵdefineInjectable, ɵɵInjectorDef} from '../../../src/di/interface/d
 import {FactoryFn} from '../../../src/render3/definition_factory';
 import {ComponentDef, PipeDef} from '../../../src/render3/interfaces/definition';
 import {InputFlags} from '../../../src/render3/interfaces/input_flags';
+import {foreignImport} from '../../../src/render3/foreign_import';
 
 describe('render3 jit', () => {
   let injector: any;
@@ -45,7 +46,7 @@ describe('render3 jit', () => {
   it('compiles a component', () => {
     @Component({
       template: 'test',
-      selector: 'test-cmp',
+
       standalone: false,
     })
     class SomeCmp {}
@@ -114,6 +115,32 @@ describe('render3 jit', () => {
       rawDirectiveDefs! instanceof Function ? rawDirectiveDefs!() : rawDirectiveDefs!;
     expect(directiveDefs.length).toBe(1);
     expect(directiveDefs[0].type).toBe(InnerCmp);
+  });
+
+  it('compiles a partially compiled component with ngmodule dependency', () => {
+    @NgModule()
+    class InnerMod {}
+
+    class OuterCmp {
+      static ɵcmp = ngDeclareComponent({
+        template: '<inner-cmp></inner-cmp>',
+        type: OuterCmp,
+        version: '21.0.0',
+        dependencies: [
+          {
+            kind: 'ngmodule',
+            type: InnerMod,
+          },
+        ],
+      });
+    }
+
+    const rawDependencies = (OuterCmp.ɵcmp as ComponentDef<OuterCmp>).dependencies;
+    expect(rawDependencies).not.toBeNull();
+    const dependencies =
+      rawDependencies! instanceof Function ? rawDependencies!() : rawDependencies!;
+    expect(dependencies.length).toBe(1);
+    expect(dependencies[0]).toBe(InnerMod);
   });
 
   it('compiles an injectable with a type provider', () => {
@@ -371,7 +398,6 @@ describe('render3 jit', () => {
 
   it('should add @Input properties to a component', () => {
     @Component({
-      selector: 'input-comp',
       template: 'test',
       standalone: false,
     })
@@ -452,7 +478,6 @@ describe('render3 jit', () => {
 
   it('should compile ViewChild query on a component', () => {
     @Component({
-      selector: 'test',
       template: '',
       standalone: false,
     })
@@ -465,7 +490,6 @@ describe('render3 jit', () => {
 
   it('should compile ViewChildren query on a component', () => {
     @Component({
-      selector: 'test',
       template: '',
       standalone: false,
     })
@@ -517,6 +541,50 @@ describe('render3 jit', () => {
       expect(TestDirAny.ɵfac).toBeDefined();
       expect(() => TestDirAny.ɵfac()).toThrowError(
         /constructor is not compatible with Angular Dependency Injection because its dependency at index 0 of the parameter list is invalid/,
+      );
+    });
+  });
+
+  describe('foreign components', () => {
+    function fooImport<TProps>(component: (props: TProps) => Node[]) {
+      return foreignImport<TProps>(
+        (props) => [component(props)],
+        () => {},
+        (producer) => producer(),
+      );
+    }
+
+    function FooComponent(props: {children?: Node[]}): Node[] {
+      return [];
+    }
+
+    it('should error when foreignImports is specified on a component in JIT mode', () => {
+      expect(() => {
+        @Component({
+          template: 'test',
+          // @ts-ignore
+          foreignImports: [fooImport(FooComponent)],
+        })
+        class SomeCmp {}
+
+        const _ = (SomeCmp as any).ɵcmp;
+      }).toThrowError(
+        `Foreign components are not supported in JIT mode. Component 'SomeCmp' cannot specify 'foreignImports'.`,
+      );
+    });
+
+    it('should error when a foreign component is imported via imports array in JIT mode', () => {
+      @Component({
+        template: 'test',
+        imports: [fooImport(FooComponent) as any],
+      })
+      class SomeCmp {}
+
+      const cmpDef = (SomeCmp as any).ɵcmp as ComponentDef<SomeCmp>;
+      expect(() => {
+        (cmpDef.directiveDefs! as () => unknown)();
+      }).toThrowError(
+        /A foreign component, imported from "SomeCmp", cannot be imported using 'imports'\. Foreign components are only supported in AOT mode and must be registered in 'foreignImports'\./,
       );
     });
   });

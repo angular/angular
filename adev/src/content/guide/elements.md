@@ -39,7 +39,7 @@ The `createCustomElement()` function converts a component into a class that can 
 After you register your configured class with the browser's custom-element registry, use the new element just like a built-in HTML element in content that you add directly into the DOM:
 
 ```html
-<my-popup message="Use Angular!"></my-popup>
+<my-popup message="Use Angular!" />
 ```
 
 When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM.
@@ -68,7 +68,7 @@ Component properties and logic map directly into HTML attributes and the browser
 - The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element.
   It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions.
   The resulting attribute names use dash-separated lowercase.
-  For example, for a component with `inputProp = input({alias: 'myInputProp'})`, the corresponding custom element defines an attribute `my-input-prop`.
+  For example, for a component with `inputProp = input('', {alias: 'myInputProp'})`, the corresponding custom element defines an attribute `my-input-prop`.
 
 - Component outputs are dispatched as HTML [Custom Events](https://developer.mozilla.org/docs/Web/API/CustomEvent), with the name of the custom event matching the output name.
   For example, for a component with `valueChanged = output()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
@@ -78,10 +78,10 @@ For more information, see Web Component documentation for [Creating custom event
 
 ## Example: A Popup Service
 
-Previously, when you wanted to add a component to an application at runtime, you had to define a _dynamic component_, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling.
+To add a component to an application at runtime, you can [render it programmatically](guide/components/programmatic-rendering) with the `createComponent` API.
+With this approach, you are responsible for the surrounding infrastructure: attaching the component's host view to the `ApplicationRef` so that change detection runs, setting its inputs, subscribing to its outputs, and detaching and cleaning up the view when the component is removed.
 
-Using an Angular custom element makes the process simpler and more transparent, by providing all the infrastructure and framework automatically —all you have to do is define the kind of event handling you want.
-\(You do still have to exclude the component from compilation, if you are not going to use it in your application.\)
+Using an Angular custom element makes the process simpler and more transparent, by providing all of this infrastructure automatically — all you have to do is define the kind of event handling you want.
 
 The following Popup Service example application defines a component that you can either load dynamically or convert to a custom element.
 

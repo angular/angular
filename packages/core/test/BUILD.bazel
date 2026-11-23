@@ -25,7 +25,6 @@ ts_project(
             "**/*_node_only_spec.ts",
         ],
     ),
-    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         ":test_utils",
@@ -38,6 +37,7 @@ ts_project(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/primitives/devtools",
         "//packages/core/rxjs-interop",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocsCodeToken} from '../extensions/docs-code/docs-code.mjs';
-import {chromium} from 'playwright-core';
 import {Mermaid, MermaidConfig} from 'mermaid';
-import {resolve, join} from 'path';
+import {join, resolve} from 'path';
+import {chromium} from 'playwright-core';
+import {DocsCodeToken} from '../extensions/docs-code/docs-code.mjs';
 
 const runfilesDir = process.env['JS_BINARY__RUNFILES']!;
 // Declare mermarid in the context of this file so that typescript doesn't get upset when we
@@ -62,7 +62,7 @@ export async function processMermaidCodeBlock(token: DocsCodeToken) {
     /** The generated SVG element string for the provided token's code. */
     let {svg} = await page.evaluate(
       ({diagram, config}) => {
-        mermaid.initialize(config);
+        mermaid.initialize(config as MermaidConfig);
 
         return mermaid.render('mermaid-generated-diagram', diagram);
       },

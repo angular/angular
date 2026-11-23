@@ -19,10 +19,10 @@ Use the `host` property in the `@Component` decorator to bind properties, attrib
   },
 })
 export class CustomSlider {
-  value = 0;
-  disabled = false;
-  isActive = signal(false);
-  color = signal('blue');
+  protected readonly value = 0;
+  protected readonly disabled = false;
+  protected readonly isActive = signal(false);
+  protected readonly color = signal('blue');
 
   onKeyDown(event: KeyboardEvent) {
     /* ... */

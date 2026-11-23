@@ -217,12 +217,13 @@ function runCanDeactivate(
   const canDeactivateObservables = canDeactivate.map((c: any) => {
     const closestInjector = currARS._environmentInjector;
     const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
-    const guardVal = isCanDeactivate(guard)
-      ? guard.canDeactivate(component, currARS, currRSS, futureRSS)
-      : runInInjectionContext(closestInjector, () =>
-          (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS),
-        );
-    return wrapIntoObservable(guardVal).pipe(first());
+    return callGuard(() =>
+      isCanDeactivate(guard)
+        ? guard.canDeactivate(component, currARS, currRSS, futureRSS)
+        : runInInjectionContext(closestInjector, () =>
+            (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS),
+          ),
+    ).pipe(first());
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
 }
@@ -234,21 +235,35 @@ export function runCanLoadGuards(
   urlSerializer: UrlSerializer,
   abortSignal?: AbortSignal,
 ): Observable<boolean> {
-  const canLoad = route.canLoad;
+  // TODO: Remove `canLoad` check once removed from 3p.
+  const canLoad = (route as any).canLoad;
   if (canLoad === undefined || canLoad.length === 0) {
     return of(true);
   }
 
   const canLoadObservables = canLoad.map((injectionToken: any) => {
     const guard = getTokenOrFunctionIdentity<any>(injectionToken, injector);
-    const guardVal = isCanLoad(guard)
-      ? guard.canLoad(route, segments)
-      : runInInjectionContext(injector, () => (guard as CanLoadFn)(route, segments));
-    const obs$ = wrapIntoObservable(guardVal);
+    const obs$ = callGuard(() =>
+      isCanLoad(guard)
+        ? guard.canLoad(route, segments)
+        : runInInjectionContext(injector, () => (guard as CanLoadFn)(route, segments)),
+    );
     return abortSignal ? obs$.pipe(takeUntilAbort(abortSignal)) : obs$;
   });
 
   return of(canLoadObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));
+}
+
+/**
+ * Calls a guard right away, but delivers a synchronous throw as an observable error so that
+ * `prioritizedGuardValue` orders it with the other guards' results.
+ */
+function callGuard<T>(guardFn: () => T | Promise<T> | Observable<T>): Observable<T> {
+  try {
+    return wrapIntoObservable(guardFn());
+  } catch (e) {
+    return new Observable<T>((subscriber) => subscriber.error(e));
+  }
 }
 
 function redirectIfUrlTree(urlSerializer: UrlSerializer): OperatorFunction<GuardResult, boolean> {
@@ -275,12 +290,13 @@ export function runCanMatchGuards(
 
   const canMatchObservables = canMatch.map((injectionToken) => {
     const guard = getTokenOrFunctionIdentity(injectionToken as ProviderToken<any>, injector);
-    const guardVal = isCanMatch(guard)
-      ? guard.canMatch(route, segments, currentSnapshot)
-      : runInInjectionContext(injector, () =>
-          (guard as CanMatchFn)(route, segments, currentSnapshot),
-        );
-    return wrapIntoObservable(guardVal).pipe(takeUntilAbort(abortSignal));
+    return callGuard(() =>
+      isCanMatch(guard)
+        ? guard.canMatch(route, segments, currentSnapshot)
+        : runInInjectionContext(injector, () =>
+            (guard as CanMatchFn)(route, segments, currentSnapshot),
+          ),
+    ).pipe(takeUntilAbort(abortSignal));
   });
 
   return of(canMatchObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));

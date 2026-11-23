@@ -7,7 +7,16 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {inject, Injectable, InjectionToken, NgZone, OnDestroy, untracked} from '@angular/core';
+import {
+  ApplicationRef,
+  inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  OnDestroy,
+  untracked,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {
@@ -36,6 +45,8 @@ export class RouterScroller implements OnDestroy {
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
 
+  private isHydrating = inject(IS_HYDRATION_DOM_REUSE_ENABLED, {optional: true}) ?? false;
+
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly zone = inject(NgZone);
   readonly viewportScroller = inject(ViewportScroller);
@@ -51,6 +62,13 @@ export class RouterScroller implements OnDestroy {
     // Default both options to 'disabled'
     this.options.scrollPositionRestoration ||= 'disabled';
     this.options.anchorScrolling ||= 'disabled';
+    if (this.isHydrating) {
+      inject(ApplicationRef)
+        .whenStable()
+        .then(() => {
+          this.isHydrating = false;
+        });
+    }
   }
 
   init(): void {
@@ -111,6 +129,7 @@ export class RouterScroller implements OnDestroy {
     routerEvent: NavigationEnd | NavigationSkipped,
     anchor: string | null,
   ): void {
+    if (this.isHydrating) return;
     const scroll = untracked(this.transitions.currentNavigation)?.extras.scroll;
     this.zone.runOutsideAngular(async () => {
       // The scroll event needs to be delayed until after change detection. Otherwise, we may

@@ -6,14 +6,13 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
     "outDir": "../../dist/all/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "selenium-webdriver": ["../../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../../node_modules/rxjs/*"],
-      "@angular/*": ["../../packages/*"],
+      "@angular/*": ["../../packages/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

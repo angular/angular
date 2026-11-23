@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 // TODO: Import FormField directive from @angular/forms/signals
 import {form} from '@angular/forms/signals';
 
@@ -13,7 +13,6 @@ interface LoginData {
   templateUrl: './app.html',
   styleUrl: './app.css',
   // TODO: Add FormField to imports array
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   loginModel = signal<LoginData>({

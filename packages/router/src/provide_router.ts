@@ -19,7 +19,9 @@ import {
   ApplicationRef,
   ComponentRef,
   ENVIRONMENT_INITIALIZER,
+  EnvironmentInjector,
   EnvironmentProviders,
+  ErrorDetails,
   inject,
   InjectionToken,
   Injector,
@@ -29,9 +31,8 @@ import {
   provideAppInitializer,
   provideEnvironmentInitializer,
   Provider,
-  runInInjectionContext,
   Type,
-  ɵpublishExternalGlobalUtil,
+  ɵpublishNonCoreGlobalUtil,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -39,6 +40,7 @@ import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outl
 import {Event, NavigationError, stringifyEvent} from './events';
 import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
+import {setupAndRunResources} from './operators/setup_and_run_resources';
 import {ROUTE_INJECTOR_CLEANUP, routeInjectorCleanup} from './route_injector_cleanup';
 import {Router} from './router';
 import {
@@ -48,11 +50,15 @@ import {
   RouterConfigOptions,
 } from './router_config';
 import {ROUTES} from './router_config_loader';
+import {ErrorBoundaryHandler} from './router_error_boundary';
+import {ROUTER_ERROR_BOUNDARY_HANDLER} from './router_error_boundary_feature';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
+import {createResourceOutletBindingEffects} from './router_resource';
 
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
 import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
+import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 import {ActivatedRoute} from './router_state';
 import {NavigationStateManager} from './statemanager/navigation_state_manager';
 import {StateManager} from './statemanager/state_manager';
@@ -104,9 +110,9 @@ import {
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     // Publish this util when the router is provided so that the devtools can use it.
-    ɵpublishExternalGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
-    ɵpublishExternalGlobalUtil('ɵgetRouterInstance', getRouterInstance);
-    ɵpublishExternalGlobalUtil('ɵnavigateByUrl', navigateByUrl);
+    ɵpublishNonCoreGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
+    ɵpublishNonCoreGlobalUtil('ɵgetRouterInstance', getRouterInstance);
+    ɵpublishNonCoreGlobalUtil('ɵnavigateByUrl', navigateByUrl);
   }
 
   return makeEnvironmentProviders([
@@ -361,8 +367,7 @@ export type EnabledBlockingInitialNavigationFeature =
  * @publicApi
  */
 export type InitialNavigationFeature =
-  | EnabledBlockingInitialNavigationFeature
-  | DisabledInitialNavigationFeature;
+  EnabledBlockingInitialNavigationFeature | DisabledInitialNavigationFeature;
 
 /**
  * Configures initial navigation to start before the root component is created.
@@ -730,15 +735,15 @@ export function withNavigationErrorHandler(
 }
 
 /**
- * A type alias for providers returned by `withExperimentalAutoCleanupInjectors` for use with `provideRouter`.
+ * A type alias for providers returned by `withAutoCleanupInjectors` for use with `provideRouter`.
  *
- * @see {@link withExperimentalAutoCleanupInjectors}
+ * @see {@link withAutoCleanupInjectors}
  * @see {@link provideRouter}
  *
- * @experimental 21.1
+ * @publicApi 22.2
  */
-export type ExperimentalAutoCleanupInjectorsFeature =
-  RouterFeature<RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature>;
+export type AutoCleanupInjectorsFeature =
+  RouterFeature<RouterFeatureKind.AutoCleanupInjectorsFeature>;
 
 /**
  * Enables automatic destruction of unused route injectors.
@@ -750,14 +755,26 @@ export type ExperimentalAutoCleanupInjectorsFeature =
  *
  * This feature is opt-in and requires `RouteReuseStrategy.shouldDestroyInjector` to return `true`
  * for the routes that should be destroyed. If the `RouteReuseStrategy` uses stored handles, it
- * should also implement `retrieveStoredHandle` to ensure we don't destroy injectors for handles that will be reattached.
+ * should also implement `retrieveStoredRouteHandles` to ensure injectors for handles that will be
+ * reattached are not destroyed.
  *
- * @experimental 21.1
+ * @publicApi 22.2
  */
-export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature {
-  return routerFeature(RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature, [
+export function withAutoCleanupInjectors(): AutoCleanupInjectorsFeature {
+  return routerFeature(RouterFeatureKind.AutoCleanupInjectorsFeature, [
     {provide: ROUTE_INJECTOR_CLEANUP, useValue: routeInjectorCleanup},
   ]);
+}
+
+/**
+ * Enables automatic destruction of unused route injectors.
+ *
+ * @deprecated Use `withAutoCleanupInjectors` instead.
+ * @see {@link withAutoCleanupInjectors}
+ * @publicApi
+ */
+export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature {
+  return withAutoCleanupInjectors();
 }
 
 /**
@@ -777,7 +794,7 @@ export type ComponentInputBindingFeature =
  * @see {@link withViewTransitions}
  * @see {@link provideRouter}
  *
- * @publicApi
+ * @publicApi 22.3
  */
 export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
 
@@ -837,7 +854,11 @@ export function withComponentInputBinding(
   options: ComponentInputBindingOptions = {},
 ): ComponentInputBindingFeature {
   const providers = [
-    {provide: INPUT_BINDER, useFactory: () => new RoutedComponentInputBinder(options)},
+    {
+      provide: INPUT_BINDER,
+      useFactory: () =>
+        new RoutedComponentInputBinder(options, inject(ROUTER_RESOURCES_FEATURE, {optional: true})),
+    },
   ];
 
   return routerFeature(RouterFeatureKind.ComponentInputBindingFeature, providers);
@@ -869,7 +890,7 @@ export function withComponentInputBinding(
  * @see [View Transitions on MDN](https://developer.chrome.com/docs/web-platform/view-transitions/)
  * @see [View Transitions API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
  * @see [Route transition animations](guide/routing/route-transition-animations)
- * @developerPreview 19.0
+ * @publicApi 22.3
  */
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,
@@ -883,6 +904,119 @@ export function withViewTransitions(
     },
   ];
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+}
+
+/**
+ * A type alias for providers returned by `withRouterResources` for use with `provideRouter`.
+ *
+ * @see {@link withRouterResources}
+ * @see {@link provideRouter}
+ *
+ * @developerPreview 22.2
+ */
+export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.RouterResourcesFeature>;
+
+/**
+ * Enables `resources` capabilities for Route definitions.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable the feature:
+ * ```ts
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withRouterResources())
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @developerPreview 22.2
+ * @returns A set of providers for use with `provideRouter`.
+ */
+export function withRouterResources(): RouterResourcesFeature {
+  const providers = [
+    {
+      provide: ROUTER_RESOURCES_FEATURE,
+      useValue: {
+        setupAndRunResources,
+        createResourceOutletBindingEffects,
+      },
+    },
+  ];
+  return routerFeature(RouterFeatureKind.RouterResourcesFeature, providers);
+}
+
+/**
+ * Options to configure router error boundary behavior when using `withErrorBoundaries`.
+ *
+ * @see [Global error boundary configuration](guide/routing/error-boundaries#global-error-boundary-configuration)
+ * @developerPreview 22.3
+ */
+export interface ErrorBoundaryOptions {
+  /**
+   * Default component to render when an error occurs in a route that does not specify its own `errorComponent`.
+   */
+  defaultErrorComponent?: Type<unknown>;
+
+  /**
+   * Optional global callback invoked when any route-level error is caught by the router error
+   * boundaries.
+   *
+   * The callback runs in the root injection context, so it can use `inject` to retrieve providers
+   * available at the root of the application.
+   */
+  onError?: (error: Error, details?: ErrorDetails) => void;
+}
+
+/**
+ * A type alias for providers returned by `withErrorBoundaries` for use with `provideRouter`.
+ *
+ * @see {@link withErrorBoundaries}
+ * @see {@link provideRouter}
+ * @see [Global error boundary configuration](guide/routing/error-boundaries#global-error-boundary-configuration)
+ *
+ * @developerPreview 22.3
+ */
+export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBoundariesFeature>;
+
+/**
+ * Enables error boundary support in the Router.
+ *
+ * When enabled, errors thrown within routed components (lifecycle hooks, template bindings,
+ * resource loaders, and event handlers) are caught by the `RouterOutlet`. If the route or
+ * feature defines an `errorComponent`, it is rendered in place of the failed component,
+ * receiving the caught error through an `error` input.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideRouter(
+ *       appRoutes,
+ *       withErrorBoundaries({
+ *         defaultErrorComponent: GlobalErrorComponent,
+ *       }),
+ *     ),
+ *   ],
+ * });
+ * ```
+ *
+ * @see [Global error boundary configuration](guide/routing/error-boundaries#global-error-boundary-configuration)
+ * @developerPreview 22.3
+ */
+export function withErrorBoundaries(options: ErrorBoundaryOptions = {}): ErrorBoundariesFeature {
+  const providers = [
+    {
+      provide: ROUTER_ERROR_BOUNDARY_HANDLER,
+      useFactory: () =>
+        new ErrorBoundaryHandler(inject(Router), inject(EnvironmentInjector), options),
+    },
+  ];
+  return routerFeature(RouterFeatureKind.ErrorBoundariesFeature, providers);
 }
 
 /**
@@ -904,9 +1038,11 @@ export type RouterFeatures =
   | NavigationErrorHandlerFeature
   | ComponentInputBindingFeature
   | ViewTransitionsFeature
-  | ExperimentalAutoCleanupInjectorsFeature
+  | AutoCleanupInjectorsFeature
   | RouterHashLocationFeature
-  | ExperimentalPlatformNavigationFeature;
+  | ExperimentalPlatformNavigationFeature
+  | RouterResourcesFeature
+  | ErrorBoundariesFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -922,6 +1058,8 @@ export const enum RouterFeatureKind {
   NavigationErrorHandlerFeature,
   ComponentInputBindingFeature,
   ViewTransitionsFeature,
-  ExperimentalAutoCleanupInjectorsFeature,
+  AutoCleanupInjectorsFeature,
   ExperimentalPlatformNavigationFeature,
+  RouterResourcesFeature,
+  ErrorBoundariesFeature,
 }

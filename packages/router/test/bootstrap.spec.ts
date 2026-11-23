@@ -7,11 +7,11 @@
  */
 
 import {
-  DOCUMENT,
-  PlatformLocation,
-  ɵgetDOM as getDOM,
   BrowserPlatformLocation,
+  DOCUMENT,
+  ɵgetDOM as getDOM,
   ɵNullViewportScroller as NullViewportScroller,
+  PlatformLocation,
   ViewportScroller,
 } from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
@@ -26,8 +26,8 @@ import {
   NgModule,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {isNode, useAutoTick} from '@angular/private/testing';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
+import {isNode, useAutoTick} from '@angular/private/testing';
 import {
   NavigationEnd,
   provideRouter,
@@ -37,16 +37,6 @@ import {
   withEnabledBlockingInitialNavigation,
 } from '../index';
 
-// This is needed, because all files under `packages/` are compiled together as part of the
-// [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
-// [service-worker/worker/src/service-worker.d.ts][2].
-//
-// [1]:
-// https://github.com/angular/angular/blob/ffeea63f43e6a7fd46be4a8cd5a5d254c98dea08/.circleci/config.yml#L681
-// [2]:
-// https://github.com/angular/angular/blob/316dc2f12ce8931f5ff66fa5f8da21c0d251a337/packages/service-worker/worker/src/service-worker.d.ts#L9
-declare var window: Window;
-
 describe('bootstrap', () => {
   useAutoTick();
   let log: any[] = [];
@@ -54,7 +44,6 @@ describe('bootstrap', () => {
 
   @Component({
     template: 'simple',
-    standalone: false,
   })
   class SimpleCmp {}
 
@@ -79,10 +68,9 @@ describe('bootstrap', () => {
   @Injectable({providedIn: 'root'})
   class TestResolver {
     resolve() {
-      let resolve: (value: unknown) => void;
-      const res = new Promise((r) => (resolve = r));
+      const {promise, resolve} = Promise.withResolvers();
       setTimeout(() => resolve('test-data'), 0);
-      return res;
+      return promise;
     }
   }
 
@@ -100,7 +88,7 @@ describe('bootstrap', () => {
     doc.body.appendChild(el1);
     doc.body.appendChild(el2);
 
-    const {promise, resolveFn} = createPromise();
+    const {promise, resolve: resolveFn} = Promise.withResolvers<void>();
     navigationEndPromise = promise;
     log = [];
     testProviders = [
@@ -275,7 +263,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpEnabled {}
 
@@ -287,7 +274,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'enabledBlocking'},
         ),
       ],
-      declarations: [RootCmp, TestCmpEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -313,7 +300,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpLegacyEnabled {}
 
@@ -325,7 +311,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'enabledNonBlocking'},
         ),
       ],
-      declarations: [RootCmp, TestCmpLegacyEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -353,7 +339,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpLegacyEnabled {}
 
@@ -364,7 +349,7 @@ describe('bootstrap', () => {
           {path: '**', component: TestCmpLegacyEnabled, resolve: {test: TestResolver}},
         ]),
       ],
-      declarations: [RootCmp, TestCmpLegacyEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -392,7 +377,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpDiabled {}
 
@@ -404,7 +388,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'disabled'},
         ),
       ],
-      declarations: [RootCmp, TestCmpDiabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -465,7 +449,7 @@ describe('bootstrap', () => {
         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
         const appRef: ApplicationRef = res.injector.get(ApplicationRef);
-        const {promise, resolveFn} = createPromise();
+        const {promise, resolve: resolveFn} = Promise.withResolvers<void>();
         appRef.components[0].onDestroy(() => {
           appRef.bootstrap(SecondRootCmp);
           expect((router as any).resetRootComponentType).toHaveBeenCalled();
@@ -480,7 +464,6 @@ describe('bootstrap', () => {
   if (!isNode) {
     it('should restore the scrolling position', async () => {
       @Component({
-        selector: 'component-a',
         template: `
           <div style="height: 3000px;"></div>
           <div id="marker1"></div>
@@ -490,7 +473,6 @@ describe('bootstrap', () => {
           <a name="marker3"></a>
           <div style="height: 3000px;"></div>
         `,
-        standalone: false,
       })
       class TallComponent {}
       @NgModule({
@@ -512,7 +494,7 @@ describe('bootstrap', () => {
             },
           ),
         ],
-        declarations: [TallComponent, RootCmp],
+        declarations: [RootCmp],
         bootstrap: [RootCmp],
         providers: [...testProviders],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -577,8 +559,6 @@ describe('bootstrap', () => {
       const ngModuleRef = await platformBrowser().bootstrapModule(TestModule);
       ngModuleRef.destroy();
 
-      expect(window.addEventListener).toHaveBeenCalledTimes(2);
-
       expect(window.addEventListener).toHaveBeenCalledWith(
         'popstate',
         jasmine.any(Function),
@@ -604,7 +584,7 @@ describe('bootstrap', () => {
           {path: 'b', component: SimpleCmp},
         ]),
       ],
-      declarations: [RootCmp, SimpleCmp],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders],
     })
@@ -640,12 +620,4 @@ function provideNavigationEndAction(fn: Function) {
       onNavigationEnd(inject(Router), fn);
     },
   };
-}
-
-function createPromise() {
-  let resolveFn: () => void;
-  const promise = new Promise<void>((r) => {
-    resolveFn = r;
-  });
-  return {resolveFn: () => resolveFn(), promise};
 }

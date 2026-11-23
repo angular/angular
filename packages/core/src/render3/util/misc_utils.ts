@@ -12,15 +12,15 @@ import {RElement} from '../interfaces/renderer_dom';
  *
  * @codeGenApi
  */
-export function ɵɵresolveWindow(element: RElement & {ownerDocument: Document}) {
-  return element.ownerDocument.defaultView;
+export function ɵɵresolveWindow(element: RElement & {ownerDocument: Document}): EventTarget {
+  return element.ownerDocument.defaultView!;
 }
 
 /**
  *
  * @codeGenApi
  */
-export function ɵɵresolveDocument(element: RElement & {ownerDocument: Document}) {
+export function ɵɵresolveDocument(element: RElement & {ownerDocument: Document}): EventTarget {
   return element.ownerDocument;
 }
 
@@ -28,7 +28,7 @@ export function ɵɵresolveDocument(element: RElement & {ownerDocument: Document
  *
  * @codeGenApi
  */
-export function ɵɵresolveBody(element: RElement & {ownerDocument: Document}) {
+export function ɵɵresolveBody(element: RElement & {ownerDocument: Document}): EventTarget {
   return element.ownerDocument.body;
 }
 

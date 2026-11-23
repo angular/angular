@@ -1,0 +1,19 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "angie_component_styles",
+    src = "angie.component.scss",
+)
+
+ng_project(
+    name = "angie",
+    srcs = ["angie.component.ts"],
+    angular_assets = [
+        ":angie_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)

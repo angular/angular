@@ -9,7 +9,7 @@
 import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
-import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {rmSync} from 'node:fs';
 import fs from 'fs';
 import {resolve} from 'path';
@@ -72,7 +72,7 @@ describe('all migrations', () => {
     });
   }
 
-  function createTests(migrationName: string) {
+  async function createTests(migrationName: string) {
     // Regression test for: https://github.com/angular/angular/issues/36346.
     it('should not throw if non-existent symbols are imported with rootDirs', async () => {
       writeFile(

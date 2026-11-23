@@ -21,7 +21,6 @@ import {
   ParameterEntry,
   PipeEntry,
   TypeAliasEntry,
-  EntryType,
 } from '../entities.mjs';
 
 import {CliCommand, CliOption} from '../cli-entities.mjs';
@@ -105,6 +104,7 @@ export type FunctionEntryRenderable = FunctionEntry &
 export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
   DocEntryRenderable & {
     params: ParameterEntryRenderable[];
+    htmlReturnDescription?: string;
   };
 
 /** Documentation entity for a block augmented with transformed content for rendering. */
@@ -149,16 +149,18 @@ export interface LinkEntryRenderable {
   label: string;
   url: string;
   title?: string;
+  target?: string;
 }
 
-export type CliOptionRenderable = CliOption & {
+export type CliOptionRenderable = Omit<CliOption, 'deprecated'> & {
   deprecated: {version: string | undefined} | undefined;
+  deprecationMessage: string | null;
 };
 
 export type CliCardItemRenderable = CliOptionRenderable;
 
 export interface CliCardRenderable {
-  type: 'Options' | 'Arguments';
+  type: 'Options' | 'Arguments' | `${string} builder options`;
   items: CliCardItemRenderable[];
 }
 

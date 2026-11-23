@@ -10,6 +10,7 @@ import {type Signal, linkedSignal} from '@angular/core';
 import type {ValidationError} from '../api/rules';
 import {normalizeErrors} from '../api/rules/validation/util';
 import type {ParseResult} from '../api/transformed_value';
+import {shallowArrayEquals} from './array';
 
 /**
  * An object that handles parsing raw UI values into model values.
@@ -23,6 +24,10 @@ export interface Parser<TRaw> {
    * Parses the given raw value and updates the underlying model value if successful.
    */
   setRawValue: (rawValue: TRaw) => void;
+  /**
+   * Resets the parser errors.
+   */
+  readonly reset: () => void;
 }
 
 /**
@@ -41,6 +46,7 @@ export function createParser<TValue, TRaw>(
   const errors = linkedSignal({
     source: getValue,
     computation: () => [] as readonly ValidationError.WithoutFieldTree[],
+    equal: shallowArrayEquals,
   });
 
   const setRawValue = (rawValue: TRaw) => {
@@ -54,5 +60,9 @@ export function createParser<TValue, TRaw>(
     errors.set(normalizeErrors(result.error));
   };
 
-  return {errors: errors.asReadonly(), setRawValue};
+  const reset = () => {
+    errors.set([]);
+  };
+
+  return {errors: errors.asReadonly(), setRawValue, reset};
 }

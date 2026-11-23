@@ -39,11 +39,18 @@ export function migrateNgClassBindings(
   replacementCount: number;
   migrated: string;
   changed: boolean;
+  canRemoveNgClass: boolean;
   canRemoveCommonModule: boolean;
 } {
   const parsed = parseTemplate(template);
   if (!parsed.tree || !parsed.tree.rootNodes.length) {
-    return {migrated: template, changed: false, replacementCount: 0, canRemoveCommonModule: false};
+    return {
+      migrated: template,
+      changed: false,
+      replacementCount: 0,
+      canRemoveNgClass: true,
+      canRemoveCommonModule: false,
+    };
   }
 
   const visitor = new NgClassCollector(template, componentNode, typeChecker);
@@ -66,6 +73,7 @@ export function migrateNgClassBindings(
     migrated: newTemplate,
     changed,
     replacementCount,
+    canRemoveNgClass: visitor.skippedNgClassCount === 0,
     canRemoveCommonModule: changed ? canRemoveCommonModule(newTemplate) : false,
   };
 }
@@ -178,14 +186,23 @@ function getPropertyRemovalRange(property: ts.ObjectLiteralElementLike): {
 
   const properties = parent.properties;
   const propertyIndex = properties.indexOf(property);
-  const end = property.getEnd();
 
-  if (propertyIndex < properties.length - 1) {
-    const nextProperty = properties[propertyIndex + 1];
-    return {start: property.getStart(), end: nextProperty.getStart()};
+  if (properties.length === 1) {
+    const sourceFile = property.getSourceFile();
+    let end = property.getEnd();
+    const textAfter = sourceFile.text.substring(end, parent.getEnd());
+    const commaIndex = textAfter.indexOf(',');
+    if (commaIndex !== -1) {
+      end += commaIndex + 1;
+    }
+    return {start: property.getFullStart(), end};
   }
 
-  return {start: property.getStart(), end};
+  if (propertyIndex === 0) {
+    return {start: property.getFullStart(), end: properties[1].getFullStart()};
+  }
+
+  return {start: properties[propertyIndex - 1].getEnd(), end: property.getEnd()};
 }
 
 export function calculateImportReplacements(
@@ -240,6 +257,7 @@ function replaceTemplate(
  */
 export class NgClassCollector extends RecursiveVisitor {
   readonly replacements: {start: number; end: number; replacement: string}[] = [];
+  skippedNgClassCount = 0;
   private originalTemplate: string;
   private isNgClassImported: boolean = true; // Default to true (permissive)
 
@@ -278,11 +296,27 @@ export class NgClassCollector extends RecursiveVisitor {
           attr.valueSpan.end.offset,
         );
 
-        const staticMatch = tryParseStaticObjectLiteral(expr);
+        // `[class]` supports the same string and string[] shapes as `[ngClass]`, so a static
+        // string or array literal can be handed to it unchanged.
+        const staticLiteral = tryParseStaticStringOrArrayLiteral(expr);
 
-        if (staticMatch === null) {
+        if (staticLiteral !== null) {
+          this.replacements.push({
+            start: attr.sourceSpan.start.offset,
+            end: attr.sourceSpan.end.offset,
+            replacement: buildAttribute('[class]', staticLiteral),
+          });
           continue;
         }
+
+        const parseResult = tryParseStaticObjectLiteral(expr);
+
+        if (parseResult === null) {
+          this.skippedNgClassCount++;
+          continue;
+        }
+
+        const {bindings: staticMatch, hasSpaceSeparatedKeys} = parseResult;
 
         let replacement: string;
 
@@ -295,30 +329,36 @@ export class NgClassCollector extends RecursiveVisitor {
             replacement = '[class]=""';
           } else {
             // Normal single condition: use [class.className]="condition"
-            replacement = `[class.${key}]="${value}"`;
+            replacement = buildAttribute(`[class.${key}]`, value);
           }
         } else {
-          // Check if all entries have the same value (condition)
-          const allSameValue = staticMatch.every((entry) => entry.value === staticMatch[0].value);
-          if (
-            allSameValue &&
-            staticMatch.length > 1 &&
-            // Check if this was originally a single key with multiple classes
-            expr.includes('{') &&
-            expr.includes('}') &&
-            expr.split(':').length === 2
-          ) {
-            // Multiple classes with the same condition: use [class.class1]="condition" [class.class2]="condition"
-            if (config.migrateSpaceSeparatedKey) {
+          // Multiple bindings. If any original key contained spaces, [class]="{...}" object
+          // syntax cannot be used because [class] does not support space-separated key names
+          // (only [ngClass] does). Either expand every binding individually, or skip.
+          if (hasSpaceSeparatedKeys) {
+            // Expanding is only safe if every binding maps to a distinct, non-empty class
+            // name that doesn't contain a dot: an empty key would produce the invalid
+            // `[class.]` binding, duplicate keys would produce multiple conflicting
+            // `[class.foo]` bindings on one element, and a dot in the class name (e.g.
+            // 'a.b') would silently bind to the wrong property since `[class.a.b]` is
+            // parsed as `[class.a]` — everything after the first dot is discarded.
+            const expandedKeys = staticMatch.map(({key}) => key);
+            const canExpand =
+              expandedKeys.every((key) => key !== '' && !key.includes('.')) &&
+              new Set(expandedKeys).size === expandedKeys.length;
+
+            if (config.migrateSpaceSeparatedKey && canExpand) {
               replacement = staticMatch
-                .map(({key, value}) => `[class.${key}]="${value}"`)
+                .map(({key, value}) => buildAttribute(`[class.${key}]`, value))
                 .join(' ');
             } else {
+              // Cannot produce valid [class]="..." output — leave binding as-is.
+              this.skippedNgClassCount++;
               continue;
             }
           } else {
-            // Multiple conditions with different values: use [class]="{'class1': condition1, 'class2': condition2}"
-            replacement = `[class]="${expr}"`;
+            // All keys are single class names: [class]="{'cls1': cond1, 'cls2': cond2}" is valid.
+            replacement = buildAttribute('[class]', expr);
           }
         }
 
@@ -343,11 +383,99 @@ export class NgClassCollector extends RecursiveVisitor {
   }
 }
 
-function tryParseStaticObjectLiteral(expr: string): {key: string; value: string}[] | null {
+/**
+ * Attempts to parse an expression as a static string literal or as an array literal whose
+ * elements are all static string literals. Returns the expression text to place inside the
+ * generated `[class]="..."` binding, or `null` when the expression isn't statically known.
+ *
+ * `[class]` accepts `string | string[] | Set<string> | {[key: string]: any}` (see
+ * `toStylingKeyValueArray` in `packages/core/src/render3/instructions/styling.ts`), so both
+ * shapes map onto it without a behavioural change. Anything dynamic - identifiers, calls,
+ * ternaries, concatenations - is rejected so that those bindings keep using `NgClass`.
+ */
+function tryParseStaticStringOrArrayLiteral(expr: string): string | null {
+  const trimmedExpr = expr.trim();
+
+  let initializer: ts.Expression;
+  try {
+    const sourceFile = ts.createSourceFile(
+      'temp.ts',
+      `const value = ${trimmedExpr}`,
+      ts.ScriptTarget.Latest,
+      true,
+    );
+
+    const variableStatement = sourceFile.statements[0];
+    if (!ts.isVariableStatement(variableStatement)) {
+      return null;
+    }
+
+    const declaration = variableStatement.declarationList.declarations[0];
+    if (!declaration?.initializer) {
+      return null;
+    }
+
+    initializer = declaration.initializer;
+  } catch {
+    return null;
+  }
+
+  // A lone string literal, e.g. [ngClass]="'first second'".
+  if (isStaticStringLiteral(initializer)) {
+    return trimmedExpr;
+  }
+
+  if (!ts.isArrayLiteralExpression(initializer)) {
+    return null;
+  }
+
+  // An empty array is already handled by `tryParseStaticObjectLiteral`, which maps it to
+  // `[class]=""`. Defer to it so that behaviour stays unchanged.
+  if (initializer.elements.length === 0) {
+    return null;
+  }
+
+  for (const element of initializer.elements) {
+    if (!isStaticStringLiteral(element)) {
+      return null;
+    }
+
+    // `NgClass` splits each array entry on whitespace, but `[class]` drops any entry that
+    // contains a space (see `classKeyValueArraySet`), so such an array cannot be forwarded.
+    if (/\s/.test(element.text)) {
+      return null;
+    }
+  }
+
+  return trimmedExpr;
+}
+
+/**
+ * Builds an attribute for the migrated template. The value is emitted verbatim, so the quote
+ * character has to match it: a value containing a double quote (which can only come from a
+ * single-quoted attribute such as `[ngClass]='["a", "b"]'`, and therefore never contains a
+ * single quote) has to be wrapped in single quotes, or it would terminate the attribute early
+ * and produce invalid HTML.
+ */
+function buildAttribute(name: string, value: string): string {
+  return value.includes('"') ? `${name}='${value}'` : `${name}="${value}"`;
+}
+
+/** Whether the expression is a string literal with no interpolation. */
+function isStaticStringLiteral(
+  node: ts.Expression,
+): node is ts.StringLiteral | ts.NoSubstitutionTemplateLiteral {
+  return ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node);
+}
+
+function tryParseStaticObjectLiteral(expr: string): {
+  bindings: {key: string; value: string}[];
+  hasSpaceSeparatedKeys: boolean;
+} | null {
   const trimmedExpr = expr.trim();
 
   if (trimmedExpr === '{}' || trimmedExpr === '[]') {
-    return [];
+    return {bindings: [], hasSpaceSeparatedKeys: false};
   }
 
   if (!isObjectLiteralSyntax(trimmedExpr)) {
@@ -408,12 +536,16 @@ function parseAsObjectLiteral(expr: string): ts.ObjectLiteralExpression | null {
 }
 
 /**
- * Extracts class bindings from object literal properties
+ * Extracts class bindings from object literal properties.
+ * Returns the list of individual `{key, value}` bindings (space-separated keys are expanded)
+ * along with a flag indicating whether any original key contained spaces.
  */
-function extractClassBindings(
-  objectLiteral: ts.ObjectLiteralExpression,
-): {key: string; value: string}[] | null {
-  const result: {key: string; value: string}[] = [];
+function extractClassBindings(objectLiteral: ts.ObjectLiteralExpression): {
+  bindings: {key: string; value: string}[];
+  hasSpaceSeparatedKeys: boolean;
+} | null {
+  const bindings: {key: string; value: string}[] = [];
+  let hasSpaceSeparatedKeys = false;
 
   for (const property of objectLiteral.properties) {
     if (ts.isShorthandPropertyAssignment(property)) {
@@ -421,13 +553,13 @@ function extractClassBindings(
       if (key.includes(' ')) {
         return null;
       }
-      result.push({key, value: key});
+      bindings.push({key, value: key});
     } else if (ts.isPropertyAssignment(property)) {
       const keyText = extractPropertyKey(property.name);
       const valueText = extractPropertyValue(property.initializer);
 
       if (keyText === '' && valueText) {
-        result.push({key: '', value: valueText});
+        bindings.push({key: '', value: valueText});
       } else {
         if (!keyText || !valueText) {
           return null;
@@ -435,9 +567,12 @@ function extractClassBindings(
 
         // Handle multiple CSS classes in single key (e.g., 'class1 class2': condition)
         const classNames = keyText.split(/\s+/).filter(Boolean);
+        if (classNames.length > 1) {
+          hasSpaceSeparatedKeys = true;
+        }
 
         for (const className of classNames) {
-          result.push({key: className, value: valueText});
+          bindings.push({key: className, value: valueText});
         }
       }
     } else {
@@ -445,7 +580,7 @@ function extractClassBindings(
     }
   }
 
-  return result;
+  return {bindings, hasSpaceSeparatedKeys};
 }
 
 /**
@@ -471,9 +606,12 @@ function extractPropertyKey(name: ts.PropertyName): string | null {
  * Extracts text from property value
  */
 function extractPropertyValue(initializer: ts.Expression): string | null {
-  // String literals: 'value' or "value"
-  if (ts.isStringLiteral(initializer)) {
-    return `'${initializer.text}'`;
+  // String literals: 'value', "value" or `value`. Keep them exactly as written rather than
+  // re-wrapping their text in single quotes: the text may contain a quote (e.g. "\"yes\"" in a
+  // single-quoted attribute), which would then clash with the quote `buildAttribute` picks for
+  // the attribute.
+  if (isStaticStringLiteral(initializer)) {
+    return initializer.getText();
   }
 
   // Numeric literals: 42, 3.14

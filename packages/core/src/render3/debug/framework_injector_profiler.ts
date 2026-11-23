@@ -8,7 +8,7 @@
 
 import {Injector} from '../../di/injector';
 import {EnvironmentInjector} from '../../di/r3_injector';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
 import {assertTNodeForLView} from '../assert';
 import {getComponentDef} from '../def_getters';
@@ -67,7 +67,7 @@ import {
 class DIDebugData {
   resolverToTokenToDependencies = new WeakMap<
     Injector | LView,
-    WeakMap<Type<unknown>, InjectedService[]>
+    WeakMap<Type<unknown> | AbstractType<unknown>, InjectedService[]>
   >();
   resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
   resolverToEffects = new WeakMap<
@@ -79,7 +79,7 @@ class DIDebugData {
   reset() {
     this.resolverToTokenToDependencies = new WeakMap<
       Injector | LView,
-      WeakMap<Type<unknown>, InjectedService[]>
+      WeakMap<Type<unknown> | AbstractType<unknown>, InjectedService[]>
     >();
     this.resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
     this.standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();

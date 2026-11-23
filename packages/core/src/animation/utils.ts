@@ -15,14 +15,17 @@ import {
   EnterNodeAnimations,
   LeaveNodeAnimations,
   AnimationClassBindingFn,
+  AnimationClassValue,
 } from './interfaces';
-import {INJECTOR, LView, ANIMATIONS} from '../render3/interfaces/view';
+import {INJECTOR, LView, ANIMATIONS, DECLARATION_VIEW} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {TNode} from '../render3/interfaces/node';
+import {getAnimationDuration} from './longest_animation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
+const ANIMATION_DURATION_TOLERANCE_MS = 1;
 
 export const areAnimationSupported =
   (typeof ngServerMode === 'undefined' || !ngServerMode) &&
@@ -110,10 +113,37 @@ export const enterClassMap = new WeakMap<
 >();
 export const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 
+/**
+ * A node that is currently animating away, tracked alongside the view that
+ * declares its template. The declaration view lets us tell apart two distinct
+ * instances of the same template (which share a `TNode`) from the same logical
+ * view being re-rendered.
+ */
+interface LeavingNode {
+  el: HTMLElement;
+  // The view that declares the template the leaving element belongs to. For two
+  // separate component instances of the same template this differs; for the same
+  // logical view re-rendered (e.g. a dynamic component repeatedly created from the
+  // same `ViewContainerRef`) it is identical. `null` when no owning view is known.
+  declarationView: LView | null;
+}
+
 // Tracks nodes that are animating away for the duration of the animation. This is
 // used to prevent duplicate nodes from showing up when nodes have been toggled quickly
 // from an `@if` or `@for`.
-export const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
+export const leavingNodes = new WeakMap<TNode, LeavingNode[]>();
+
+/**
+ * Resolves the view that declares the template a node belongs to. We use the
+ * declaration view (rather than the rendered `LView` itself, which is a fresh
+ * object on every re-render) so that the same logical insertion point compares
+ * equal across re-renders, while distinct instances of a shared template compare
+ * unequal.
+ */
+function getDeclarationView(lView: LView | undefined): LView | null {
+  if (!lView) return null;
+  return lView[DECLARATION_VIEW] ?? lView;
+}
 
 // Tracks nodes that have scheduled leave animations but were re-inserted into the DOM
 // before the animation completed, thus rescuing them from being physically removed.
@@ -125,7 +155,7 @@ export const reusedNodes = new WeakSet<HTMLElement>();
 export function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
   const nodes = leavingNodes.get(tNode);
   if (nodes && nodes.length > 0) {
-    const ix = nodes.findIndex((node) => node === el);
+    const ix = nodes.findIndex((node) => node.el === el);
     if (ix > -1) nodes.splice(ix, 1);
   }
   if (nodes?.length === 0) {
@@ -141,16 +171,23 @@ export function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
  *
  * Leaving elements in the same parent are left alone — their leave
  * animation will complete naturally and remove them from the DOM.
+ *
+ * @param tNode The `TNode` of the entering element.
+ * @param newElement The element being inserted.
+ * @param newLView The view the entering element is being rendered into. Used to
+ *   tell apart two separate instances of the same template (which share a
+ *   `TNode`) from the same logical view being re-rendered into a new DOM parent.
  */
-export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void {
+export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement, newLView?: LView): void {
   const nodes = leavingNodes.get(tNode);
   if (!nodes || nodes.length === 0) return;
 
   const newParent = newElement.parentNode;
   const prevSibling = newElement.previousSibling;
+  const newDeclarationView = getDeclarationView(newLView);
 
   for (let i = nodes.length - 1; i >= 0; i--) {
-    const leavingEl = nodes[i];
+    const {el: leavingEl, declarationView: leavingDeclarationView} = nodes[i];
     const leavingParent = leavingEl.parentNode;
     // Cancel if the leaving element is:
     // - The direct previousSibling of the new element. This is reliable
@@ -164,14 +201,34 @@ export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void 
       nodes.splice(i, 1);
       reusedNodes.add(leavingEl);
       leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
-    } else if (
-      (prevSibling && leavingEl === prevSibling) ||
-      (leavingParent && newParent && leavingParent !== newParent)
-    ) {
+    } else if (prevSibling && leavingEl === prevSibling) {
       nodes.splice(i, 1);
       leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
       leavingEl.parentNode?.removeChild(leavingEl);
+    } else if (leavingParent && newParent && leavingParent !== newParent) {
+      // The leaving element is in a different DOM parent than the entering one.
+      // This is ambiguous: it can be the same logical view re-rendered into a new
+      // container (e.g. a dynamic component re-created in a fresh CDK overlay
+      // pane), which must be de-duplicated by removing it immediately; or it can
+      // be a *distinct* instance of the same template (accordions, exclusive-
+      // expansion menus, master/detail nav) that merely shares this `TNode` and
+      // is legitimately leaving in its own parent. Only force-remove when the
+      // entering element belongs to the SAME declaration view as the leaving one
+      // — i.e. a true re-render of the same logical view. Distinct instances are
+      // left alone so their `animate.leave` runs to completion.
+      const sameLogicalView =
+        newDeclarationView === null ||
+        leavingDeclarationView === null ||
+        newDeclarationView === leavingDeclarationView;
+      if (sameLogicalView) {
+        nodes.splice(i, 1);
+        leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+        leavingEl.parentNode?.removeChild(leavingEl);
+      }
     }
+  }
+  if (nodes.length === 0) {
+    leavingNodes.delete(tNode);
   }
 }
 
@@ -180,17 +237,20 @@ export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void 
  * and remove the node before adding a new entering instance of the DOM node. This prevents
  * duplicates from showing up on screen mid-animation.
  */
-export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
+export function trackLeavingNodes(tNode: TNode, el: HTMLElement, lView?: LView): void {
   // We need to track this tNode's element just to be sure we don't add
   // a new RNode for this TNode while this one is still animating away.
   // once the animation is complete, we remove this reference.
+  // The declaration view is recorded so `cancelLeavingNodes` can tell apart two
+  // separate instances of the same template from the same view re-rendered.
+  const declarationView = getDeclarationView(lView);
   const nodes = leavingNodes.get(tNode);
   if (nodes) {
-    if (!nodes.includes(el)) {
-      nodes.push(el);
+    if (!nodes.some((node) => node.el === el)) {
+      nodes.push({el, declarationView});
     }
   } else {
-    leavingNodes.set(tNode, [el]);
+    leavingNodes.set(tNode, [{el, declarationView}]);
   }
 }
 
@@ -213,8 +273,13 @@ export function getLViewLeaveAnimations(lView: LView): Map<number, LeaveNodeAnim
 /**
  * Gets the list of classes from a passed in value
  */
-export function getClassListFromValue(value: string | AnimationClassBindingFn): string[] | null {
-  const classes = typeof value === 'function' ? value() : value;
+export function getClassListFromValue(
+  value: string | AnimationClassBindingFn | AnimationClassValue,
+): string[] | null {
+  let classes: AnimationClassValue = typeof value === 'function' ? value() : value;
+  while (typeof classes === 'function') {
+    classes = classes();
+  }
   let classList: string[] | null = Array.isArray(classes) ? classes : null;
   if (typeof classes === 'string') {
     classList = classes
@@ -223,6 +288,24 @@ export function getClassListFromValue(value: string | AnimationClassBindingFn): 
       .filter((k) => k);
   }
   return classList;
+}
+
+/**
+ * Removes a list of CSS classes from an element using the provided renderer.
+ */
+export function removeClasses(renderer: Renderer, el: RElement, classList: string[]): void {
+  for (const item of classList) {
+    renderer.removeClass(el, item);
+  }
+}
+
+/**
+ * Adds a list of CSS classes to an element using the provided renderer.
+ */
+export function addClasses(renderer: Renderer, el: RElement, classList: string[]): void {
+  for (const item of classList) {
+    renderer.addClass(el, item);
+  }
 }
 
 /**
@@ -237,9 +320,7 @@ export function cancelAnimationsIfRunning(element: HTMLElement, renderer: Render
     elementData.classList.length > 0 &&
     elementHasClassList(element, elementData.classList)
   ) {
-    for (const klass of elementData.classList) {
-      renderer.removeClass(element as unknown as RElement, klass);
-    }
+    removeClasses(renderer, element, elementData.classList);
   }
   // We need to prevent any enter animation listeners from firing if they exist.
   cleanupEnterClassData(element);
@@ -278,14 +359,42 @@ export function isLongestAnimation(
   // If we don't have any record of a longest animation, then we shouldn't
   // block the animationend/transitionend event from doing its work.
   if (longestAnimation === undefined) return true;
-  return (
-    nativeElement === getEventTarget(event) &&
-    ((longestAnimation.animationName !== undefined &&
-      (event as AnimationEvent).animationName === longestAnimation.animationName) ||
-      (longestAnimation.propertyName !== undefined &&
-        (longestAnimation.propertyName === 'all' ||
-          (event as TransitionEvent).propertyName === longestAnimation.propertyName)))
-  );
+
+  if (nativeElement !== getEventTarget(event)) return false;
+
+  // Distinct CSS animations can share a name. Chrome 151 stable exposes their instance:
+  // https://developer.chrome.com/release-notes/151#animation_accessor_on_animation_and_transition_events
+  const eventAnimation = (
+    event as (AnimationEvent | TransitionEvent) & {readonly animation?: Animation | null}
+  ).animation;
+
+  // Compare the event animation's duration instead of retaining the Animation object. This also
+  // disambiguates records obtained from computed styles when getAnimations() was empty.
+  if (eventAnimation) {
+    const eventAnimationDuration = getAnimationDuration(eventAnimation);
+    // CSSOM can round serialized times while Web Animations retains more precision. Only reject an
+    // event when it is shorter by more than the tolerance so the longest event is not ignored.
+    if (
+      eventAnimationDuration !== undefined &&
+      eventAnimationDuration + ANIMATION_DURATION_TOLERANCE_MS < longestAnimation.duration
+    ) {
+      return false;
+    }
+  }
+
+  // Fall back to strings for older browsers.
+  if (longestAnimation.animationName !== undefined) {
+    return (event as AnimationEvent).animationName === longestAnimation.animationName;
+  }
+
+  if (longestAnimation.propertyName !== undefined) {
+    return (
+      longestAnimation.propertyName === 'all' ||
+      (event as TransitionEvent).propertyName === longestAnimation.propertyName
+    );
+  }
+
+  return false;
 }
 
 /**

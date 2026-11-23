@@ -30,14 +30,16 @@ The command updates the application code and adds extra files to the project str
 src
 ├── app
 │ ├── app.config.server.ts # server application configuration
+│ ├── app.routes.server.ts # server routes configuration
 │ └── app-shell # app-shell component
-│   ├── app-shell.component.html
-│   ├── app-shell.component.scss
-│   ├── app-shell.component.spec.ts
-│   └── app-shell.component.ts
+│   ├── app-shell.css
+│   ├── app-shell.html
+│   ├── app-shell.spec.ts
+│   └── app-shell.ts
 └── main.server.ts # main server application bootstrapping
 ```
 
+</docs-step>
 <docs-step title="Verify the application is built with the shell content">
 
 ```shell

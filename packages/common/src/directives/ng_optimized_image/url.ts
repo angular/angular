@@ -46,3 +46,17 @@ export function normalizePath(path: string): string {
 export function normalizeSrc(src: string): string {
   return src.startsWith('/') ? src.slice(1) : src;
 }
+
+export function escapeCssUrl(input: string): string {
+  return (
+    input
+      // Backslash first — later replacements must not have their own \ escaped again.
+      .replace(/\\/g, '\\\\')
+      // \n, \r, \f and null terminate a CSS string (CSS Syntax 3 §4.3.5,
+      // https://www.w3.org/TR/css-syntax-3/#consume-string-token) and are also
+      // invalid in URLs, so stripping them is safe.
+      .replace(/[\n\r\f\0]/g, '')
+      // A bare " would close the url("...") wrapper early.
+      .replace(/"/g, '\\"')
+  );
+}

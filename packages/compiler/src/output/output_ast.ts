@@ -119,6 +119,8 @@ export interface TypeVisitor {
 export enum UnaryOperator {
   Minus,
   Plus,
+  Increment,
+  Decrement,
 }
 
 export enum BinaryOperator {
@@ -442,6 +444,7 @@ export class InvokeFunctionExpr extends Expression {
     sourceSpan?: ParseSourceSpan | null,
     public pure = false,
     leadingComments?: LeadingComment[],
+    public isOptional = false,
   ) {
     super(type, sourceSpan, leadingComments);
   }
@@ -475,6 +478,8 @@ export class InvokeFunctionExpr extends Expression {
       this.type,
       this.sourceSpan,
       this.pure,
+      [],
+      this.isOptional,
     );
   }
 }
@@ -1131,6 +1136,7 @@ export class UnaryOperatorExpr extends Expression {
     sourceSpan?: ParseSourceSpan | null,
     public parens: boolean = true,
     leadingComments?: LeadingComment[],
+    public isPrefix = true,
   ) {
     super(type || NUMBER_TYPE, sourceSpan, leadingComments);
   }
@@ -1139,7 +1145,8 @@ export class UnaryOperatorExpr extends Expression {
     return (
       e instanceof UnaryOperatorExpr &&
       this.operator === e.operator &&
-      this.expr.isEquivalent(e.expr)
+      this.expr.isEquivalent(e.expr) &&
+      this.isPrefix === e.isPrefix
     );
   }
 
@@ -1158,6 +1165,8 @@ export class UnaryOperatorExpr extends Expression {
       this.type,
       this.sourceSpan,
       this.parens,
+      this.leadingComments,
+      this.isPrefix,
     );
   }
 }
@@ -1255,6 +1264,10 @@ export class ReadPropExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     leadingComments?: LeadingComment[],
+    /**
+     * Whether the property access uses the optional-chaining operator (`?.`).
+     */
+    public isOptional = false,
   ) {
     super(type, sourceSpan, leadingComments);
   }
@@ -1266,7 +1279,10 @@ export class ReadPropExpr extends Expression {
 
   override isEquivalent(e: Expression): boolean {
     return (
-      e instanceof ReadPropExpr && this.receiver.isEquivalent(e.receiver) && this.name === e.name
+      e instanceof ReadPropExpr &&
+      this.receiver.isEquivalent(e.receiver) &&
+      this.name === e.name &&
+      this.isOptional === e.isOptional
     );
   }
 
@@ -1289,7 +1305,14 @@ export class ReadPropExpr extends Expression {
   }
 
   override clone(): ReadPropExpr {
-    return new ReadPropExpr(this.receiver.clone(), this.name, this.type, this.sourceSpan);
+    return new ReadPropExpr(
+      this.receiver.clone(),
+      this.name,
+      this.type,
+      this.sourceSpan,
+      [],
+      this.isOptional,
+    );
   }
 }
 
@@ -1300,6 +1323,10 @@ export class ReadKeyExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     leadingComments?: LeadingComment[],
+    /**
+     * Whether the property access uses the optional-chaining operator (`?.[`).
+     */
+    public isOptional = false,
   ) {
     super(type, sourceSpan, leadingComments);
   }
@@ -1308,7 +1335,8 @@ export class ReadKeyExpr extends Expression {
     return (
       e instanceof ReadKeyExpr &&
       this.receiver.isEquivalent(e.receiver) &&
-      this.index.isEquivalent(e.index)
+      this.index.isEquivalent(e.index) &&
+      this.isOptional === e.isOptional
     );
   }
 
@@ -1331,7 +1359,14 @@ export class ReadKeyExpr extends Expression {
   }
 
   override clone(): ReadKeyExpr {
-    return new ReadKeyExpr(this.receiver.clone(), this.index.clone(), this.type, this.sourceSpan);
+    return new ReadKeyExpr(
+      this.receiver.clone(),
+      this.index.clone(),
+      this.type,
+      this.sourceSpan,
+      [],
+      this.isOptional,
+    );
   }
 }
 
@@ -1372,6 +1407,7 @@ export class LiteralMapPropertyAssignment {
     public key: string,
     public value: Expression,
     public quoted: boolean,
+    public leadingComments?: LeadingComment[],
   ) {}
 
   isEquivalent(e: LiteralMapPropertyAssignment): boolean {
@@ -1379,7 +1415,12 @@ export class LiteralMapPropertyAssignment {
   }
 
   clone(): LiteralMapPropertyAssignment {
-    return new LiteralMapPropertyAssignment(this.key, this.value.clone(), this.quoted);
+    return new LiteralMapPropertyAssignment(
+      this.key,
+      this.value.clone(),
+      this.quoted,
+      this.leadingComments ? [...this.leadingComments] : undefined,
+    );
   }
 
   isConstant() {
@@ -1585,7 +1626,7 @@ export class DeclareVarStmt extends Statement {
     leadingComments?: LeadingComment[],
   ) {
     super(modifiers, sourceSpan, leadingComments);
-    this.type = type || (value && value.type) || null;
+    this.type = type || null;
   }
   override isEquivalent(stmt: Statement): boolean {
     return (

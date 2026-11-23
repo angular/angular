@@ -16,7 +16,7 @@ declare let jest: any;
 export function patchJasmine(Zone: ZoneType): void {
   Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     const __extends = function (d: any, b: any) {
-      for (const p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+      for (const p in b) if (Object.hasOwn(b, p)) d[p] = b[p];
       function __(this: Object) {
         this.constructor = d;
       }

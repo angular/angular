@@ -96,6 +96,16 @@ export interface CompilerFacade {
     sourceMapUrl: string,
     meta: R3DeclareFactoryFacade,
   ): any;
+  compileService(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    meta: R3ServiceMetadataFacade,
+  ): any;
+  compileServiceDeclaration(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    meta: R3DeclareServiceFacade,
+  ): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
@@ -123,6 +133,7 @@ export enum FactoryTarget {
   Injectable = 2,
   Pipe = 3,
   NgModule = 4,
+  Service = 5,
 }
 
 export interface R3DependencyMetadataFacade {
@@ -161,6 +172,14 @@ export interface R3InjectableMetadataFacade {
   useExisting?: OpaqueValue;
   useValue?: OpaqueValue;
   deps?: R3DependencyMetadataFacade[];
+}
+
+export interface R3ServiceMetadataFacade {
+  name: string;
+  type: Type;
+  typeArgumentCount: number;
+  autoProvided?: boolean;
+  factory?: OpaqueValue;
 }
 
 export interface R3NgModuleMetadataFacade {
@@ -204,7 +223,7 @@ export interface R3DirectiveMetadataFacade {
   viewQueries: R3QueryMetadataFacade[];
   isStandalone: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[] | null;
-  isSignal: boolean;
+  legacyOptionalChaining: boolean;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -222,8 +241,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
 // TODO(legacy-partial-output-inputs): Remove in v18.
 // https://github.com/angular/angular/blob/d4b423690210872b5c32a322a6090beda30b05a3/packages/core/src/compiler/compiler_facade_interface.ts#L197-L199
 export type LegacyInputPartialMapping =
-  | string
-  | [bindingPropertyName: string, classPropertyName: string, transformFunction?: Function];
+  string | [bindingPropertyName: string, classPropertyName: string, transformFunction?: Function];
 
 export interface R3DeclareDirectiveFacade {
   selector?: string;
@@ -256,8 +274,8 @@ export interface R3DeclareDirectiveFacade {
   usesOnChanges?: boolean;
   controlCreate?: {passThroughInput: string | null};
   isStandalone?: boolean;
-  isSignal?: boolean;
   hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
+  legacyOptionalChaining?: boolean;
 }
 
 export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
@@ -341,6 +359,12 @@ export interface R3DeclareInjectableFacade {
   useExisting?: OpaqueValue;
   useValue?: OpaqueValue;
   deps?: R3DeclareDependencyMetadataFacade[];
+}
+
+export interface R3DeclareServiceFacade {
+  type: Type;
+  autoProvided?: boolean;
+  factory?: OpaqueValue;
 }
 
 export enum ViewEncapsulation {

@@ -27,7 +27,8 @@ export function isDirectiveDeclaration(node: ts.Node): node is ts.TypeNode | ts.
   return (
     (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
     ts.isVariableDeclaration(node.parent) &&
-    hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE)
+    (hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE) ||
+      hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.HOST_DIRECTIVE))
   );
 }
 
@@ -80,4 +81,13 @@ export function isSymbolAliasOf(
   }
 
   return false;
+}
+
+/**
+ * Check if a node is a class declaration or the identifier of a class declaration.
+ */
+export function isClassDeclarationOrName(node: ts.Node): boolean {
+  return (
+    ts.isClassDeclaration(node) || (ts.isIdentifier(node) && ts.isClassDeclaration(node.parent))
+  );
 }

@@ -118,6 +118,25 @@ const DEFAULT_NAMESPACE_ID = 'id';
         expect(engine.players.length).toEqual(1);
       });
 
+      it('should read the value from a trigger object whose own key shadows hasOwnProperty', () => {
+        const engine = makeEngine();
+
+        const trig = trigger('myTrigger', [
+          transition('* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))]),
+        ]);
+
+        registerTrigger(element, engine, trig);
+
+        // A bound trigger value in the `{value, params}` object form can come from
+        // untrusted data (e.g. a parsed JSON payload) and carry an own `hasOwnProperty`
+        // key that shadows the method. Detecting the object form must not depend on it.
+        const value = JSON.parse('{"value": "matched", "hasOwnProperty": "x"}');
+        expect(() => setProperty(element, engine, 'myTrigger', value)).not.toThrow();
+
+        engine.flush();
+        expect(engine.players.length).toEqual(1);
+      });
+
       it('should throw an error if an animation property without a matching trigger is changed', () => {
         const engine = makeEngine();
         expect(() => {

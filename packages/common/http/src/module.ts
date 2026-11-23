@@ -113,7 +113,7 @@ export class HttpClientModule {}
  * with method JSONP, where they are rejected.
  *
  * @publicApi
- * @deprecated `withJsonpSupport()` as providers instead
+ * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Intent to remove in future versions of Angular.
  */
 @NgModule({
   providers: [withJsonpSupport().ɵproviders],

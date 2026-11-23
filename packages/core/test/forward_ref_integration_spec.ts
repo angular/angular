@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
+import {NgForOf} from '@angular/common';
+import {expect} from '@angular/private/testing/matchers';
 import {
   asNativeElements,
   Component,
@@ -15,11 +16,9 @@ import {
   forwardRef,
   Inject,
   NgModule,
-  NO_ERRORS_SCHEMA,
   QueryList,
 } from '../src/core';
 import {TestBed} from '../testing';
-import {expect} from '@angular/private/testing/matchers';
 
 class Frame {
   name: string = 'frame';
@@ -35,7 +34,7 @@ describe('forwardRef integration', function () {
   });
 
   it('should instantiate components which are declared using forwardRef', () => {
-    const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
+    const a = TestBed.createComponent(App);
     a.detectChanges();
     expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
     expect(TestBed.inject(ModuleFrame)).toBeDefined();
@@ -43,7 +42,7 @@ describe('forwardRef integration', function () {
 });
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [NgForOf],
   providers: [forwardRef(() => ModuleFrame)],
   declarations: [forwardRef(() => Door), forwardRef(() => Lock)],
   exports: [forwardRef(() => Door), forwardRef(() => Lock)],
@@ -51,7 +50,6 @@ describe('forwardRef integration', function () {
 class Module {}
 
 @Component({
-  selector: 'app',
   viewProviders: [forwardRef(() => Frame)],
   template: `<door><lock></lock></door>`,
   standalone: false,

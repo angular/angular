@@ -8,3 +8,10 @@
 
 export * from './src/metadata';
 export * from './src/update_declaration';
+export {
+  extractHmrDependenciesFromOutput,
+  PotentialTopLevelReadsVisitor,
+  type HmrCompiledOutput,
+  type HmrDependencies,
+  type HmrReadResolver,
+} from './src/extract_dependencies';

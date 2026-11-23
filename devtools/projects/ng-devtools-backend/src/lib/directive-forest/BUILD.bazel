@@ -1,22 +1,36 @@
 load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
     name = "directive-forest",
-    srcs = glob(
-        include = ["*.ts"],
-        exclude = ["*.spec.ts"],
-    ),
+    srcs = [
+        "index.ts",
+    ],
     deps = [
-        "//:node_modules/@angular/core",
-        "//:node_modules/semver-dsl",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib:version",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/tree-strategies",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:app-roots",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "core-enums",
+    srcs = ["core-enums.ts"],
+)
+
+ts_project(
+    name = "manager",
+    srcs = [
+        "manager.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
         "//devtools/projects/protocol",
     ],
 )
@@ -24,13 +38,12 @@ ts_project(
 ts_test_library(
     name = "test_lib",
     srcs = [
-        "render-tree.spec.ts",
+        "directive-forest.spec.ts",
     ],
     deps = [
         ":directive-forest",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//:node_modules/jasmine",
     ],
 )
 

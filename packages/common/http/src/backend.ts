@@ -8,28 +8,28 @@
 
 import {Observable} from 'rxjs';
 
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
-import {FetchBackend} from './fetch';
-import {HttpXhrBackend} from './xhr';
 import {
   EnvironmentInjector,
   inject,
   Injectable,
+  untracked,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,
 } from '@angular/core';
 import {finalize} from 'rxjs/operators';
+import {FetchBackend} from './fetch';
+import {HttpRequest} from './request';
+import {HttpEvent} from './response';
 
 import {RuntimeErrorCode} from './errors';
 import {
   ChainedInterceptorFn,
+  chainedInterceptorFn,
   HTTP_INTERCEPTOR_FNS,
   HTTP_ROOT_INTERCEPTOR_FNS,
-  REQUESTS_CONTRIBUTE_TO_STABILITY,
-  chainedInterceptorFn,
   interceptorChainEndFn,
+  REQUESTS_CONTRIBUTE_TO_STABILITY,
 } from './interceptor';
 
 /**
@@ -42,7 +42,7 @@ import {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useExisting: HttpXhrBackend})
+@Injectable({providedIn: 'root', useExisting: FetchBackend})
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
@@ -90,8 +90,7 @@ export class HttpInterceptorHandler implements HttpHandler {
                 "to use `fetch` APIs. It's strongly recommended to " +
                 'enable `fetch` for applications that use Server-Side Rendering ' +
                 'for better performance and compatibility. ' +
-                'To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` ' +
-                'call at the root of the application.',
+                'To enable `fetch`, remove the `withXhr()` feature from the `provideHttpClient()` call',
             ),
           );
       }
@@ -100,11 +99,15 @@ export class HttpInterceptorHandler implements HttpHandler {
 
   handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
+      const parentHandler = this.injector.get(HttpHandler, null, {skipSelf: true});
+      const isDelegating = parentHandler !== null && this.backend === parentHandler;
+      const rootInterceptorFns = this.injector.get(
+        HTTP_ROOT_INTERCEPTOR_FNS,
+        [],
+        isDelegating ? {self: true} : undefined,
+      );
       const dedupedInterceptorFns = Array.from(
-        new Set([
-          ...this.injector.get(HTTP_INTERCEPTOR_FNS),
-          ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
-        ]),
+        new Set([...this.injector.get(HTTP_INTERCEPTOR_FNS), ...rootInterceptorFns]),
       );
 
       // Note: interceptors are wrapped right-to-left so that final execution order is
@@ -118,14 +121,20 @@ export class HttpInterceptorHandler implements HttpHandler {
       );
     }
 
+    const chain = this.chain;
     if (this.contributeToStability) {
       const removeTask = this.pendingTasks.add();
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
-      ).pipe(finalize(removeTask));
+      try {
+        return untracked(() =>
+          chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
+        ).pipe(finalize(removeTask));
+      } catch (error) {
+        removeTask();
+        throw error;
+      }
     } else {
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
+      return untracked(() =>
+        chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
       );
     }
   }

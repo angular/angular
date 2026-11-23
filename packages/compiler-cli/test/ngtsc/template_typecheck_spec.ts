@@ -29,7 +29,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({fullTemplateTypeCheck: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'node_modules/@angular/animations/index.d.ts',
         `
@@ -84,7 +84,7 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
-    it('should not fail with a runtime error when generating TCB', () => {
+    it('should type check templates using a non-exported dependency from the same file', () => {
       env.tsconfig({strictTemplates: true});
       env.write(
         'test.ts',
@@ -107,17 +107,40 @@ runInEachFileSystem(() => {
       `,
       );
 
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should report binding errors on a non-exported dependency from the same file', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write(
+        'test.ts',
+        `
+        import {Component, input} from '@angular/core';
+
+        @Component({
+          selector: 'sub-cmp',
+          template: '',
+        })
+        class Sub { // intentionally not exported
+          someInput = input.required<string>();
+        }
+
+        @Component({
+          template: \`<sub-cmp [someInput]="1" />\`,
+          imports: [Sub],
+        })
+        export class MyComponent {}
+      `,
+      );
+
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([
-        jasmine.objectContaining({
-          messageText: jasmine.objectContaining({messageText: 'Unable to import symbol Sub.'}),
-        }),
-      ]);
+      expect(diagnostics.length).toBe(1);
+      expect(diagnostics[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
     it('should check regular attributes that are directive inputs', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictAttributeTypes: true,
       });
@@ -158,7 +181,7 @@ runInEachFileSystem(() => {
     // This is not supported at runtime
     xit('should produce diagnostics when mapping to multiple fields and bound types are incorrect', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictAttributeTypes: true,
       });
@@ -198,7 +221,7 @@ runInEachFileSystem(() => {
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictOutputEventTypes: true,
       });
@@ -276,7 +299,7 @@ runInEachFileSystem(() => {
     });
 
     it('should check event bindings', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+      env.tsconfig({strictTemplates: true, strictOutputEventTypes: true});
       env.write(
         'test.ts',
         `
@@ -307,18 +330,17 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(3);
+      expect(diags.length).toBe(4);
       expect(diags[0].messageText).toEqual(
         `Argument of type 'number' is not assignable to parameter of type 'string'.`,
       );
       expect(diags[1].messageText).toEqual(
         `Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`,
       );
-      // Disabled because `checkTypeOfDomEvents` is disabled by default
-      // expect(diags[2].messageText)
-      //     .toEqual(
-      //         `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
-      expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
+      expect(diags[2].messageText).toEqual(
+        `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`,
+      );
+      expect(diags[3].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
     });
 
     // https://github.com/angular/angular/issues/35073
@@ -544,7 +566,7 @@ runInEachFileSystem(() => {
     });
 
     it('should type check a two-way binding to a generic property', () => {
-      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'test.ts',
         `
@@ -567,21 +589,16 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
+      expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(
         jasmine.objectContaining({
           messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
         }),
       );
-      expect(diags[1].messageText).toEqual(
-        jasmine.objectContaining({
-          messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
-        }),
-      );
     });
 
     it('should use the setter type when assigning using a two-way binding to an input with different getter and setter types', () => {
-      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'test.ts',
         `
@@ -616,7 +633,7 @@ runInEachFileSystem(() => {
     });
 
     it('should type check a two-way binding to a function value', () => {
-      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'test.ts',
         `
@@ -641,21 +658,16 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
+      expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(
         jasmine.objectContaining({
           messageText: `Type '(val: string) => number' is not assignable to type 'TestFn'.`,
         }),
       );
-      expect(diags[1].messageText).toEqual(
-        jasmine.objectContaining({
-          messageText: `Type 'TestFn' is not assignable to type '(val: string) => number'.`,
-        }),
-      );
     });
 
     it('should be able to cast to any in a two-way binding', () => {
-      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'test.ts',
         `
@@ -679,34 +691,6 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
-    });
-
-    it('should type check a two-way binding to input/output pair where the input has a wider type than the output', () => {
-      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
-      env.write(
-        'test.ts',
-        `
-          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
-
-          @Directive({selector: '[dir]'})
-          export class Dir {
-            @Input() value: string | number;
-            @Output() valueChange = new EventEmitter<number>();
-          }
-
-          @Component({
-            template: '<div dir [(value)]="value"></div>',
-            imports: [Dir],
-          })
-          export class App {
-            value = 'hello';
-          }
-        `,
-      );
-
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
     it('should check the fallback content of ng-content', () => {
@@ -869,7 +853,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and their type when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -891,7 +875,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not their type when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -935,7 +919,7 @@ runInEachFileSystem(() => {
 
       it('should check expressions and their nullability when enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
           strictInputTypes: true,
           strictNullInputTypes: true,
         });
@@ -964,7 +948,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not their nullability when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: true, strictNullInputTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1008,7 +992,7 @@ runInEachFileSystem(() => {
 
       it('should infer result type for safe navigation expressions when enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
           strictInputTypes: true,
           strictNullInputTypes: true,
           strictSafeNavigationTypes: true,
@@ -1039,7 +1023,8 @@ runInEachFileSystem(() => {
 
       it('should not infer result type for safe navigation expressions when not enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
+          strictSafeNavigationTypes: false,
           strictInputTypes: true,
         });
 
@@ -1048,6 +1033,82 @@ runInEachFileSystem(() => {
         expect(diags[0].messageText).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
+      });
+
+      it('should narrow the type of safe navigation expressions in an if guard when enabled', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictNullInputTypes: true,
+          strictSafeNavigationTypes: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '@if (user?.isMember) { {{user.isMember}} }',
+            standalone: false,
+          })
+          class TestCmp {
+            user?: {isMember: boolean};
+          }
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should properly short-circuit safe navigation chains', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictTemplates: true,
+          strictSafeNavigationTypes: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          type MyType = {
+            data: {
+              foo: {
+                bar: () => boolean;
+              };
+              0: {
+                bar: boolean;
+              };
+            };
+          };
+
+          @Component({
+            selector: 'test',
+            template: '{{ value?.data.foo.bar() }} {{ value?.data["foo"] }} {{ value?.data[0].bar }}',
+            standalone: false,
+          })
+          class TestCmp {
+            value: MyType | null = null;
+          }
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
       });
     });
 
@@ -1084,7 +1145,7 @@ runInEachFileSystem(() => {
       });
 
       it('should expressions and infer type of $event when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -1110,7 +1171,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not infer type of $event when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1145,7 +1206,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and let $event be of type AnimationEvent when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -1171,7 +1232,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and let $event be of type any when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1204,7 +1265,7 @@ runInEachFileSystem(() => {
       });
 
       it('should infer the type of DOM references when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictDomLocalRefTypes: true});
+        env.tsconfig({strictTemplates: true, strictDomLocalRefTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1224,7 +1285,7 @@ runInEachFileSystem(() => {
       });
 
       it('should let the type of DOM references be any when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictDomLocalRefTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -1264,7 +1325,7 @@ runInEachFileSystem(() => {
 
       it('should produce an error for text attributes when enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
           strictInputTypes: true,
           strictAttributeTypes: true,
         });
@@ -1285,7 +1346,7 @@ runInEachFileSystem(() => {
       });
 
       it('should not produce an error for text attributes when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictAttributeTypes: false, strictInputTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -1317,7 +1378,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and infer type of $event when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictDomEventTypes: true});
+        env.tsconfig({strictTemplates: true, strictDomEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -1343,13 +1404,238 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not infer type of $event when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictDomEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
+      });
+    });
+
+    describe('strictUnclaimedEventNames', () => {
+      function writeTestComponent(
+        template: string,
+        imports: string = '[TargetCmp]',
+        extraMetadata: string = '',
+      ): void {
+        env.write(
+          'test.ts',
+          `
+          import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, NO_ERRORS_SCHEMA, Output} from '@angular/core';
+
+          @Component({
+            selector: 'target-cmp',
+            template: '',
+          })
+          export class TargetCmp {
+            @Output() someOutput = new EventEmitter<string>();
+            @Output('publicName') internalProp = new EventEmitter<string>();
+          }
+
+          @Directive({
+            selector: '[some-dir]',
+          })
+          export class SomeDir {}
+
+          @Component({
+            selector: 'test',
+            template: '${template}',
+            imports: ${imports},
+            ${extraMetadata}
+          })
+          export class TestCmp {
+            handle(value: unknown) {}
+          }
+        `,
+        );
+      }
+
+      function expectNoDiagnostics(): void {
+        expect(env.driveDiagnostics().map((diag) => diag.messageText)).toEqual([]);
+      }
+
+      it('should report events matching neither an output nor a native DOM event', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someOutptu)="handle($event)"></target-cmp>');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'someOutptu' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should report unclaimed camelCase events on elements with matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<div some-dir (myEvent)="handle($event)"></div>', '[SomeDir]');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'myEvent' is not emitted by any directive applied to 'div' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report outputs of matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someOutput)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report native DOM events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (click)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report dash-separated custom events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (my-custom-event)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report key pseudo-events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (keyup.ArrowDown)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events with a target prefix', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (window:resize)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events on elements without matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<div (myEvent)="handle($any($event))"></div>', '[]');
+
+        expectNoDiagnostics();
+      });
+
+      it('should report output typos on components even when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<target-cmp (someOutptu)="handle($any($event))"></target-cmp>',
+          '[TargetCmp]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'someOutptu' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report events on elements without a matched component when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (itemSelected)="handle($any($event))"><my-web-component></my-web-component></div>',
+          '[SomeDir]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events on customized built-in elements when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<button is="fancy-button" some-dir (buttonCustomEvent)="handle($any($event))"></button>',
+          '[SomeDir]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report vendor-prefixed native events with camelCase names', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (webkitAnimationEnd)="handle($event)"></div>',
+          '[SomeDir]',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report any events when using NO_ERRORS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<target-cmp (someOutptu)="handle($any($event))"></target-cmp>',
+          '[TargetCmp]',
+          'schemas: [NO_ERRORS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report unclaimed events when explicitly disabled', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: false});
+        writeTestComponent('<target-cmp (someOutptu)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report unclaimed events when not enabled', () => {
+        env.tsconfig({strictTemplates: true});
+        writeTestComponent('<target-cmp (someOutptu)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report the public name of an aliased output', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (publicName)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should report the internal property name of an aliased output', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (internalProp)="handle($event)"></target-cmp>');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'internalProp' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should report camelCase bubbling custom events listened to via event delegation', () => {
+        // Event delegation of camelCase custom events dispatched by descendants is valid DOM
+        // behavior, but it's statically indistinguishable from a misspelled output name. Not
+        // reporting it would require dropping the check entirely, so reporting it is the
+        // documented trade-off of this opt-in option: such projects should use dash-separated
+        // event names or leave the option disabled.
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (cardSwipe)="handle($event)"><button>Action</button></div>',
+          '[SomeDir]',
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'cardSwipe' is not emitted by any directive applied to 'div' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report all-lowercase unclaimed events', () => {
+        // All-lowercase names could be custom events dispatched by a descendant element, so
+        // they're intentionally not reported, even when they're likely misspelled outputs.
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someoutput)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
       });
     });
 
@@ -1491,7 +1777,7 @@ runInEachFileSystem(() => {
     });
 
     it('should report an error inside the NgFor template', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -1730,7 +2016,7 @@ runInEachFileSystem(() => {
     });
 
     it('should allow the implicit value of an NgFor to be invoked', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -1810,7 +2096,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(diags[0].messageText).toMatch(
+        /No directive found with exportAs 'unknownTarget'\. Find more at .*/,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
@@ -1837,7 +2125,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(diags[0].messageText).toMatch(
+        /No directive found with exportAs 'unknownTarget'\. Find more at .*/,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
@@ -1868,8 +2158,8 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknown');
     });
 
-    it('should report an error with an unknown pipe even if `fullTemplateTypeCheck` is disabled', () => {
-      env.tsconfig({fullTemplateTypeCheck: false});
+    it('should report an error with an unknown pipe even if `strictTemplates` is disabled', () => {
+      env.tsconfig({strictTemplates: false});
       env.write(
         'test.ts',
         `
@@ -1956,7 +2246,7 @@ runInEachFileSystem(() => {
 
     it('should constrain types using type parameter bounds', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictContextGenerics: true,
       });
@@ -1987,6 +2277,44 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(`Property 'does_not_exist' does not exist on type 'T'.`);
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
+    });
+
+    it('should type check increment/decrement operations', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<button (click)="name++"></button>'})
+        class TestCmp {
+          name = 'frodo';
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.`,
+      );
+    });
+
+    it('should type check increment/decrement targets', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<button (click)="doesNotExist++"></button>'})
+        class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `Property 'doesNotExist' does not exist on type 'TestCmp'.`,
+      );
     });
 
     describe('microsyntax variables', () => {
@@ -2020,7 +2348,7 @@ runInEachFileSystem(() => {
       });
 
       it("should be treated as 'any' without strictTemplates", () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: false});
+        env.tsconfig({strictTemplates: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -2038,7 +2366,7 @@ runInEachFileSystem(() => {
     });
 
     it('should properly type-check inherited directives', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -2090,7 +2418,7 @@ runInEachFileSystem(() => {
     });
 
     it('should properly type-check inherited directives from external libraries', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
 
       env.write(
         'node_modules/external/index.d.ts',
@@ -2181,9 +2509,610 @@ runInEachFileSystem(() => {
         export class Module {}
       `,
       );
+      const diags = env
+        .driveDiagnostics()
+        .map((d) => [getSourceCodeForDiagnostic(d), d.messageText])
+        .sort(([, a], [, b]) => (a as string).localeCompare(b as string));
+      expect(diags).toEqual([
+        [
+          'y = !y',
+          `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+        ],
+        ['y', `Type 'false' is not assignable to type 'true'.`],
+      ]);
+    });
+
+    it('should detect an illegal write to a template variable through update operators', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="y++">Increment</button>
+              <button (click)="--y">Decrement</button>
+            </div>
+          \`,
+          imports: [CommonModule]
+        })
+        export class TestCmp {
+          x!: number;
+        }
+      `,
+      );
       const diags = env.driveDiagnostics();
-      expect(diags.length).toEqual(1);
-      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y = !y');
+      expect(diags.length).toBe(2);
+      expect(diags.map((d) => getSourceCodeForDiagnostic(d))).toEqual(['y++', '--y']);
+      expect(diags.map((d) => d.messageText)).toEqual([
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      ]);
+    });
+
+    it('should detect an illegal write to a template variable through an update operator on the right-hand side of an assignment', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="prop = y++">Increment</button>
+            </div>
+          \`,
+          imports: [CommonModule]
+        })
+        export class TestCmp {
+          x!: number;
+          prop = 0;
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('prop = y++');
+      expect(diags[0].messageText).toBe(
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      );
+    });
+
+    describe('foreign component template semantics', () => {
+      const foreignSetupCode = `
+        // We must redeclare foreignImports and ForeignComponent to test them since they are marked @internal.
+        declare module '@angular/core' {
+          export interface ForeignComponent<TProps> {}
+          export function foreignImport<TProps>(render: (props: TProps) => any): ForeignComponent<TProps>;
+
+          interface Component {
+            foreignImports?: ForeignComponent<any>[];
+          }
+        }
+
+        import {Component, ForeignComponent, foreignImport} from '@angular/core';
+
+
+        function FancyButton() {}
+
+        function frameworkImport(component: unknown): ForeignComponent<any> {
+          return foreignImport(() => {});
+        }
+      `;
+
+      it('should detect an unsupported event binding on a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton (click)="click()"></FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            click() {}
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING));
+        expect(diags[0].messageText).toEqual('Foreign components do not support event bindings.');
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual(
+          '<FancyButton (click)="click()"></FancyButton>',
+        );
+      });
+
+      it('should detect an unsupported template reference on a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton #btn></FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING));
+        expect(diags[0].messageText).toEqual('Foreign components do not support references.');
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('<FancyButton #btn></FancyButton>');
+      });
+
+      it('should detect unsupported non-property bindings on a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton [class.blue]="true"></FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING));
+        expect(diags[0].messageText).toEqual(
+          'Foreign components only support static attributes and property bindings.',
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual(
+          '<FancyButton [class.blue]="true"></FancyButton>',
+        );
+      });
+
+      it('should allow static attributes and property bindings on a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton title="Click me" [disabled]="false"></FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(0);
+      });
+
+      it('should support import aliases for matching foreign components', () => {
+        env.write(
+          'original.ts',
+          `
+          export function Original() {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+          import {Original as Alias} from './original';
+
+          @Component({
+            selector: 'test',
+            template: '<Alias />',
+            foreignImports: [frameworkImport(Alias)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        env.driveMain();
+      });
+
+      it('should allow @content block when used as a direct child of a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (icon) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(0);
+      });
+
+      it('should detect @content block used outside of a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<div> @content (icon) {} </div>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_CONTENT_PLACEMENT));
+        expect(diags[0].messageText).toEqual(
+          '@content blocks are only valid as direct children of foreign components.',
+        );
+      });
+
+      it('should detect @content block nested inside a foreign component but not as a direct child', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> <div> @content (icon) {} </div> </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_CONTENT_PLACEMENT));
+        expect(diags[0].messageText).toEqual(
+          '@content blocks are only valid as direct children of foreign components.',
+        );
+      });
+
+      it('should detect @content block nested inside a block (like @if) within a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @if (true) { @content (icon) {} } </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_CONTENT_PLACEMENT));
+        expect(diags[0].messageText).toEqual(
+          '@content blocks are only valid as direct children of foreign components.',
+        );
+      });
+
+      it('should detect unnecessary @content (children) block on a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (children) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(
+          ngErrorCode(ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN),
+        );
+        expect(diags[0].messageText).toEqual(
+          'Defining a @content (children) block with no parameters is unnecessary. ' +
+            'Pass children as direct nested content of the foreign component instead.',
+        );
+      });
+
+      it('should allow @content (children, let ...) with parameters', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (children; let arg) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should detect duplicate @content blocks under the same foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (icon) {} @content (icon) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_DECLARATION));
+        expect(diags[0].messageText).toEqual(
+          "A @content block with the name 'icon' has already been defined for this component.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The @content block 'icon' was first defined here.",
+        );
+      });
+
+      it('should allow the same @content block name under different foreign components', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <FancyButton> @content (icon) {} </FancyButton>
+              <FancyButton> @content (icon) {} </FancyButton>
+            \`,
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(0);
+      });
+
+      it('should detect a conflict between a @content block name and an input property binding', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton [icon]="myIcon"> @content (icon) {square} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myIcon = document.createTextNode('circle');
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A @content block with the name 'icon' conflicts with a property on the parent component.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between a @content block name and a static attribute', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton icon="circle"> @content (icon) {square} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A @content block with the name 'icon' conflicts with a property on the parent component.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between implicit children and a [children] property binding', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton [children]="myChildren"> <div>child</div> </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myChildren = [];
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A foreign component cannot have both a 'children' property and child nodes.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[children]="myChildren"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
+
+      it('should detect a conflict between implicit children and a children static attribute', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton children="Hello, property!">Hello, content!</FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A foreign component cannot have both a 'children' property and child nodes.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('children="Hello, property!"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
+
+      it('should detect duplicate @content blocks in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton> @content (icon) {} @content (icon) {} </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_DECLARATION));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '@content (icon) {}',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The @content block 'icon' was first defined here.",
+        );
+      });
+
+      it('should detect a conflict between a @content block and property binding in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myIcon = document.createTextNode('circle');
+          }
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton [icon]="myIcon"> @content (icon) {square} </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '[icon]="myIcon"',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between implicit children and [children] binding in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myChildren = [];
+          }
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton [children]="myChildren"> <div>child</div> </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[children]="myChildren"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '<div>child</div>',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
     });
 
     it('should detect a duplicate variable declaration', () => {
@@ -2234,7 +3163,7 @@ runInEachFileSystem(() => {
         '_useHostForImportGeneration': true,
         // Because the tsconfig is overridden, template type-checking needs to be turned back on
         // explicitly as well.
-        'fullTemplateTypeCheck': true,
+        'strictTemplates': true,
       });
 
       // 'alpha' declares the directive which will ultimately be imported.
@@ -2296,7 +3225,7 @@ runInEachFileSystem(() => {
 
     describe('input coercion', () => {
       beforeEach(() => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: true});
         env.write(
           'node_modules/@angular/material/index.d.ts',
           `
@@ -3046,7 +3975,7 @@ runInEachFileSystem(() => {
       });
 
       it('should type check a two-way binding to an input with a transform', () => {
-        env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+        env.tsconfig({strictTemplates: true});
         env.write(
           'test.ts',
           `
@@ -3142,7 +4071,7 @@ runInEachFileSystem(() => {
       describe('with strictInputAccessModifiers', () => {
         beforeEach(() => {
           env.tsconfig({
-            fullTemplateTypeCheck: true,
+            strictTemplates: true,
             strictInputTypes: true,
             strictInputAccessModifiers: true,
           });
@@ -3207,7 +4136,7 @@ runInEachFileSystem(() => {
 
       describe('with strict inputs', () => {
         beforeEach(() => {
-          env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+          env.tsconfig({strictTemplates: true, strictInputTypes: true});
         });
 
         it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields', () => {
@@ -3218,6 +4147,38 @@ runInEachFileSystem(() => {
 
         it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields inherited from a base class', () => {
           env.write('test.ts', correctInputsToRestrictedFieldsFromBaseClass);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should widen the inferred literal type of readonly fields', () => {
+          env.write(
+            'test.ts',
+            `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [showBadge]="true"></div>',
+              standalone: false,
+            })
+            export class FooCmp {}
+
+            @Directive({
+              selector: '[dir]',
+              standalone: false,
+            })
+            export class TestDir {
+              // Inferred as the literal type \`false\`; the binding must widen it to \`boolean\`.
+              @Input() readonly showBadge = false;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+          `,
+          );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(0);
         });
@@ -3255,7 +4216,7 @@ runInEachFileSystem(() => {
     });
 
     it('should not produce diagnostics for undeclared inputs', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -3289,7 +4250,7 @@ runInEachFileSystem(() => {
     });
 
     it('should produce diagnostics for invalid expressions when assigned into an undeclared input', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -3323,7 +4284,7 @@ runInEachFileSystem(() => {
     });
 
     it('should not produce diagnostics for undeclared inputs inherited from a base class', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -3611,7 +4572,7 @@ runInEachFileSystem(() => {
 
     describe('legacy schema checking with the DOM schema', () => {
       beforeEach(() => {
-        env.tsconfig({fullTemplateTypeCheck: false});
+        env.tsconfig({strictTemplates: false});
       });
 
       it('should check for unknown elements', () => {
@@ -3633,9 +4594,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is part of this module.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is part of this module\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown elements in standalone components', () => {
@@ -3656,9 +4617,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown properties in standalone components', () => {
@@ -3708,9 +4669,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
-1. If 'my-foo' is an Angular component, then verify that it is part of this module.
-2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
+        expect(diags[0].messageText).toMatch(
+          /^'my-foo' is not a known element:\n1\. If 'my-foo' is an Angular component, then verify that it is part of this module\.\n2\. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
       });
 
       it('should have a descriptive error for unknown elements that contain a dash in standalone components', () => {
@@ -3731,9 +4692,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
-1. If 'my-foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`);
+        expect(diags[0].messageText).toMatch(
+          /^'my-foo' is not a known element:\n1\. If 'my-foo' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown properties', () => {
@@ -3755,8 +4716,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
-          `Can't bind to 'foo' since it isn't a known property of 'div'.`,
+        expect(diags[0].messageText).toMatch(
+          /Can't bind to 'foo' since it isn't a known property of 'div'\. Find more at .*/,
         );
       });
 
@@ -3779,9 +4740,357 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
-          `Can't bind to 'foo' since it isn't a known property of 'div'.`,
+        expect(diags[0].messageText).toMatch(
+          /Can't bind to 'foo' since it isn't a known property of 'div'\. Find more at .*/,
         );
+      });
+
+      describe('strictNgTemplateTypes', () => {
+        beforeEach(() => env.tsconfig({strictNgTemplateTypes: true}));
+
+        it('should check for unknown properties on an ng-template', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template [foo]="1"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+            .toBe(`Can't bind to 'foo' since it isn't a known property of 'ng-template'.
+1. If 'foo' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
+2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. Find more at https://next.angular.dev/errors/NG8002`);
+        });
+
+        it('should not check for unknown properties on an ng-template when NO_ERRORS_SCHEMA is used', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template [foo]="1"></ng-template>',
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report properties on an ng-template that are claimed by a directive', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive, Input} from '@angular/core';
+        @Directive({selector: '[foo]'})
+        export class FooDir {
+          @Input() foo: number = 0;
+        }
+        @Component({
+          selector: 'blah',
+          imports: [FooDir],
+          template: '<ng-template [foo]="1"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report a binding that matches a directive selector without a corresponding input', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[foobar]'})
+        export class FoobarDirective {}
+        @Component({
+          selector: 'blah',
+          imports: [FoobarDirective],
+          template: '<ng-template #foo [foobar]>foo</ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report an ng-template inside an SVG element', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[ngTemplateOutlet]'})
+        export class NgTemplateOutlet {}
+        @Component({
+          selector: 'blah',
+          imports: [NgTemplateOutlet],
+          template: '<svg><ng-template [ngTemplateOutlet]="foo"></ng-template></svg>',
+        })
+        export class FooCmp {
+          foo: any;
+        }
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should type-check the bound expression even when the binding only matches a directive selector', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[foobar]'})
+        export class FoobarDirective {}
+        @Component({
+          selector: 'blah',
+          imports: [FoobarDirective],
+          template: '<ng-template [foobar]="missingProp"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Property 'missingProp' does not exist on type 'FooCmp'",
+          );
+        });
+
+        it('should type-check inputs on directives matching namespaced ng-template elements', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive, input} from '@angular/core';
+        @Directive({selector: '[svgDir]'})
+        export class SvgDir {
+          readonly req = input.required<string>();
+        }
+        @Component({
+          selector: 'blah',
+          imports: [SvgDir],
+          template: '<svg><ng-template svgDir></ng-template></svg>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Required input 'req' from directive SvgDir must be specified",
+          );
+        });
+
+        it('should report standard DOM properties on ng-template', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template [id]="\\'my-id\\'"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'id' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should report unknown properties on ng-template even when CUSTOM_ELEMENTS_SCHEMA is present', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          template: '<ng-template [foo]="1"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'foo' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should check nested ng-template schema in template bodies with deep schema checks', () => {
+          env.tsconfig({
+            strictTemplates: false,
+            annotateForClosureCompiler: true,
+            strictNgTemplateTypes: true,
+          });
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template><ng-template [foo]="1"></ng-template></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'foo' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should check unclaimed inputs on nested ng-template matching a directive with deep schema checks', () => {
+          env.tsconfig({
+            strictTemplates: false,
+            annotateForClosureCompiler: true,
+            strictNgTemplateTypes: true,
+          });
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[myDir]'})
+        export class MyDir {}
+        @Component({
+          selector: 'blah',
+          imports: [MyDir],
+          template: '<ng-template><ng-template myDir [foo]="1"></ng-template></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'foo' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should not report an ng-template inside an XHTML element', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[ngIf]'})
+        export class NgIf {}
+        @Component({
+          selector: 'blah',
+          imports: [NgIf],
+          template: '<xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"><ng-template [ngIf]="true"></ng-template></xhtml:div>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report an ng-template error for unknown structural directives', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<div *unknown="1"></div>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toMatch(
+            /A structural directive \`unknown\` was used in the template/,
+          );
+        });
+
+        it('should report unclaimed properties on an ng-template that matches a directive', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive, Input} from '@angular/core';
+        @Directive({selector: '[foo]'})
+        export class FooDir {
+          @Input() foo: number = 0;
+        }
+        @Component({
+          selector: 'blah',
+          imports: [FooDir],
+          template: '<ng-template [foo]="1" [bar]="2"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+            .toBe(`Can't bind to 'bar' since it isn't a known property of 'ng-template'.
+1. If 'bar' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
+2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. Find more at https://next.angular.dev/errors/NG8002`);
+        });
+
+        it('should not report properties on an ng-template inside an explicitly namespaced element', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          selector: 'blah',
+          imports: [CommonModule],
+          template: \`
+            <ng-template>
+              <xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml">
+                <ng-template [ngIf]="true"> </ng-template>
+              </xhtml:div>
+            </ng-template>
+          \`,
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report properties on an ng-template inside an svg element', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          selector: 'blah',
+          imports: [CommonModule],
+          template: \`
+            <ng-template #foo>foo</ng-template>
+            <svg>
+              <ng-template [ngTemplateOutlet]="foo"></ng-template>
+            </svg>
+          \`,
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
       });
 
       it('should convert property names when binding special properties', () => {
@@ -3828,14 +5137,12 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
-1. If 'custom-element' is an Angular component, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
-        expect(diags[1].messageText)
-          .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
-1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'custom-element' is not a known element:\n1\. If 'custom-element' is an Angular component, then verify that it is part of this module\.\n2\. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
+        expect(diags[1].messageText).toMatch(
+          /^Can't bind to 'foo' since it isn't a known property of 'custom-element'\.\n1\. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module\.\n2\. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\.\n3\. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA', () => {
@@ -3857,6 +5164,122 @@ runInEachFileSystem(() => {
             })
             export class FooModule {}
           `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should report unknown element error when matched only by an attribute directive', () => {
+        env.tsconfig({strictTemplates: true, strictUnknownElements: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[formControl]',
+          })
+          export class FormControlDir {
+            @Input() formControl!: any;
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [FormControlDir],
+            template: '<tn-uploader [formControl]="ctrl"></tn-uploader>',
+          })
+          export class TestCmp {
+            ctrl = {};
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toMatch(
+          /^'tn-uploader' is not a known element:\n1\. If 'tn-uploader' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. If 'tn-uploader' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
+      });
+
+      it('should not report unknown element error when matched by a directive targeting the tag name', () => {
+        env.tsconfig({strictTemplates: true, strictUnknownElements: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: 'router-outlet',
+          })
+          export class RouterOutletDir {
+            @Input() name: string = '';
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [RouterOutletDir],
+            template: '<router-outlet [name]="outletName"></router-outlet>',
+          })
+          export class TestCmp {
+            outletName = 'main';
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should not report unknown element error when matched by attribute directive with CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnknownElements: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+
+          @Directive({
+            selector: '[formControl]',
+          })
+          export class FormControlDir {
+            @Input() formControl!: any;
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [FormControlDir],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            template: '<tn-uploader [formControl]="ctrl"></tn-uploader>',
+          })
+          export class TestCmp {
+            ctrl = {};
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should not report unknown element error for standard HTML element with attribute directive', () => {
+        env.tsconfig({strictTemplates: true, strictUnknownElements: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[matButton]',
+          })
+          export class MatButtonDir {
+            @Input() color: string = '';
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [MatButtonDir],
+            template: '<button matButton [color]="btnColor">Click</button>',
+          })
+          export class TestCmp {
+            btnColor = 'primary';
+          }
+        `,
         );
         const diags = env.driveDiagnostics();
         expect(diags).toEqual([]);
@@ -3964,9 +5387,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is part of this module.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is part of this module\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown elements without explicit namespace inside an SVG foreignObject', () => {
@@ -3994,9 +5417,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is part of this module.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is part of this module\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should allow math elements', () => {
@@ -4125,35 +5548,6 @@ runInEachFileSystem(() => {
 
     describe('option compatibility verification', () => {
       beforeEach(() => env.write('index.ts', `export const a = 1;`));
-
-      it('should error if "fullTemplateTypeCheck" is false when "strictTemplates" is true', () => {
-        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: true});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
-          'Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.',
-        );
-      });
-      it('should not error if "fullTemplateTypeCheck" is false when "strictTemplates" is false', () => {
-        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: false});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
-      it('should not error if "fullTemplateTypeCheck" is not set when "strictTemplates" is true', () => {
-        env.tsconfig({strictTemplates: true});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
-      it('should not error if "fullTemplateTypeCheck" is true set when "strictTemplates" is true', () => {
-        env.tsconfig({strictTemplates: true});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
-
       it('should error if "strictTemplates" is false when "extendedDiagnostics" is configured', () => {
         env.tsconfig({strictTemplates: false, extendedDiagnostics: {}});
 
@@ -4178,6 +5572,7 @@ runInEachFileSystem(() => {
 
       it('should error if "extendedDiagnostics.defaultCategory" is set to an unknown value', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             defaultCategory: 'does-not-exist',
           },
@@ -4199,6 +5594,7 @@ suppress
       });
       it('should not error if "extendedDiagnostics.defaultCategory" is set to a known value', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             defaultCategory: DiagnosticCategoryLabel.Error,
           },
@@ -4210,6 +5606,7 @@ suppress
 
       it('should error if "extendedDiagnostics.checks" contains an unknown check', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               doesNotExist: DiagnosticCategoryLabel.Error,
@@ -4225,6 +5622,7 @@ suppress
       });
       it('should not error if "extendedDiagnostics.checks" contains all known checks', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               [invalidBananaInBoxFactory.name]: DiagnosticCategoryLabel.Error,
@@ -4238,6 +5636,7 @@ suppress
 
       it('should error if "extendedDiagnostics.checks" contains an unknown diagnostic category', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               [invalidBananaInBoxFactory.name]: 'does-not-exist',
@@ -4261,6 +5660,7 @@ suppress
       });
       it('should not error if "extendedDiagnostics.checks" contains all known diagnostic categories', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               [invalidBananaInBoxFactory.name]: DiagnosticCategoryLabel.Error,
@@ -4296,7 +5696,7 @@ suppress
       it('should accept a program with a flat index', () => {
         // This test asserts that flat indices don't have any negative interactions with the
         // generation of template type-checking code in the program.
-        env.tsconfig({fullTemplateTypeCheck: true, flatModuleOutFile: 'flat.js'});
+        env.tsconfig({strictTemplates: true, flatModuleOutFile: 'flat.js'});
 
         expect(env.driveDiagnostics()).toEqual([]);
       });
@@ -4465,13 +5865,18 @@ suppress
         `,
         );
 
-        const messages = env.driveDiagnostics().map((d) => d.messageText);
+        const messages = env
+          .driveDiagnostics()
+          .map((d) => d.messageText as string)
+          .sort((a, b) => a.localeCompare(b));
 
         // These messages are expected to refer to the native
         // typings since the inputs/outputs haven't been exposed.
         expect(messages).toEqual([
           `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
-          `Can't bind to 'input' since it isn't a known property of 'div'.`,
+          jasmine.stringMatching(
+            /Can't bind to 'input' since it isn't a known property of 'div'\. Find more at .*/,
+          ),
         ]);
       });
 
@@ -4717,11 +6122,15 @@ suppress
       });
 
       it('generates diagnostic when the library does not export the host directive', () => {
-        env.tsconfig({
-          paths: {'post': ['./dist/post']},
-          strictTemplates: true,
-          _enableTemplateTypeChecker: true,
-        });
+        env.tsconfig(
+          {
+            strictTemplates: true,
+            _enableTemplateTypeChecker: true,
+          },
+          {
+            paths: {'post': ['./dist/post']},
+          },
+        );
 
         // export post module and component but not the host directive. This is not valid. We won't
         // be able to import the host directive for template type checking.
@@ -4942,7 +6351,7 @@ suppress
 
           @Component({
             template: \`
-              @defer (prefetch when isVisible() || does_not_exist) {Hello}
+              @defer (on idle; prefetch when isVisible() || does_not_exist) {Hello}
             \`,
           })
           export class Main {
@@ -4967,7 +6376,7 @@ suppress
 
           @Component({
             template: \`
-              @defer (hydrate when isVisible() || does_not_exist) {Hello}
+              @defer (on idle; hydrate when isVisible() || does_not_exist) {Hello}
             \`,
           })
           export class Main {
@@ -5011,7 +6420,7 @@ suppress
           import {Component, signal} from '@angular/core';
 
           @Component({
-            template: \`@defer (prefetch when flag) {Hello}\`,
+            template: \`@defer (on idle; prefetch when flag) {Hello}\`,
           })
           export class Main {
             flag = signal(false);
@@ -5100,7 +6509,7 @@ suppress
 
           @Component({
             template: \`
-              @defer (on viewport({trigger: target, rootMargin: '10px', doesNotExist: true})) {
+              @defer (on viewport({trigger: target, rootMargin: '10px', scrollMargin: '20px', doesNotExist: true})) {
                 Content
               }
 
@@ -5907,8 +7316,8 @@ suppress
 
     describe('for loop blocks', () => {
       beforeEach(() => {
-        // `fullTemplateTypeCheck: true` is necessary so content inside `ng-template` is checked.
-        env.tsconfig({fullTemplateTypeCheck: true});
+        // `strictTemplates: true` is necessary so content inside `ng-template` is checked.
+        env.tsconfig({strictTemplates: true});
       });
 
       it('should check bindings inside of for loop blocks', () => {
@@ -6562,6 +7971,206 @@ suppress
         ]);
       });
 
+      it('should report diagnostics within sub-expressions of compound @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items && does_not_exist; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            items = [1, 2, 3];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Property 'does_not_exist' does not exist on type 'Main'.",
+        ]);
+      });
+
+      it('should report diagnostics on invalid arguments in compound @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items && items.slice('not_a_number'); track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            items = [1, 2, 3];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Argument of type 'string' is not assignable to parameter of type 'number'.",
+        ]);
+      });
+
+      it('should report diagnostics on ternary expressions in @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of condition ? not_found : items; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            condition = true;
+            items = [1, 2, 3];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Property 'not_found' does not exist on type 'Main'.",
+        ]);
+      });
+
+      it('should report diagnostics on nested property reads in @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of nested.does_not_exist; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            nested = {a: 1};
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Property 'does_not_exist' does not exist on type '{ a: number; }'.",
+        ]);
+      });
+
+      it('should report diagnostics when calling functions with invalid arguments in @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of getItems('invalid'); track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            getItems(count: number): string[] {
+              return [];
+            }
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Argument of type 'string' is not assignable to parameter of type 'number'.",
+        ]);
+      });
+
+      it('should report diagnostics when iterating over an un-narrowed async pipe result with empty array fallback', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Pipe} from '@angular/core';
+
+          interface Subscribable<T> {
+            subscribe(observer: any): any;
+          }
+
+          @Pipe({name: 'async'})
+          export class AsyncPipe {
+            transform<T>(value: Subscribable<T> | Promise<T> | null | undefined): T | null {
+              return null;
+            }
+          }
+
+          @Component({
+            template: \`
+              @for (a of (x | async) || []; track a) {
+                {{a}}
+              }
+            \`,
+            imports: [AsyncPipe],
+          })
+          export class Main {
+            x: any;
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Type '{}' must have a '[Symbol.iterator]()' method that returns an iterator.`,
+        ]);
+      });
+
+      it('should not report diagnostics when iterating over a typed async pipe result with empty array fallback', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Pipe} from '@angular/core';
+
+          interface Subscribable<T> {
+            subscribe(observer: any): any;
+          }
+
+          @Pipe({name: 'async'})
+          export class AsyncPipe {
+            transform<T>(value: Subscribable<T> | Promise<T> | null | undefined): T | null {
+              return null;
+            }
+          }
+
+          @Component({
+            template: \`
+              @for (a of (x | async) || []; track a) {
+                {{a}}
+              }
+            \`,
+            imports: [AsyncPipe],
+          })
+          export class Main {
+            x!: Subscribable<number[]>;
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([]);
+      });
+
       it('should check for loop variables with the same name as built-in globals', () => {
         // strictTemplates are necessary so the event listener is checked.
         env.tsconfig({strictTemplates: true});
@@ -6595,6 +8204,34 @@ suppress
         expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
           `Type 'number' is not assignable to type 'string'.`,
         ]);
+      });
+
+      it('should type check a @for loop without a `track` expression', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items) {
+                {{does_not_exist}}
+              }
+            \`,
+          })
+          export class Main {
+            items = [];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '')).sort()).toEqual(
+          [
+            `@for loop must have a "track" expression`,
+            `Property 'does_not_exist' does not exist on type 'Main'.`,
+          ],
+        );
       });
     });
 
@@ -6634,6 +8271,42 @@ suppress
           `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
             `not be projected into the specific slot because the surrounding @if has more than one node at its root.`,
         );
+      });
+
+      it('should suggest ngProjectAs in the error message for targeted slots', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/> <ng-content/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  <span>other content</span>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(`ngProjectAs="[foo]"`);
+        expect(diags[0]).toContain(`all nodes in the block should be projected into the same slot`);
+        expect(diags[0]).toContain(`nodes in the block target different slots`);
       });
 
       it('should report when an @if block prevents a template from being projected', () => {
@@ -7011,6 +8684,75 @@ suppress
         expect(diags.length).toBe(0);
       });
 
+      it('should not report when there are @let declarations at the root of the control flow node', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="[foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  @let value = 1;
+                  <div foo>{{value}}</div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report when there are @let declarations and multiple nodes at the root of the control flow node', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="[foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  @let value = 1;
+                  <div foo>{{value}}</div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "[foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`,
+        );
+      });
+
       it('should not report when the component only has a catch-all slot', () => {
         env.write(
           'test.ts',
@@ -7044,6 +8786,7 @@ suppress
 
       it('should allow the content projection diagnostic to be disabled individually', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               controlFlowPreventingContentProjection: DiagnosticCategoryLabel.Suppress,
@@ -7082,6 +8825,7 @@ suppress
 
       it('should allow the content projection diagnostic to be disabled via `defaultCategory`', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             defaultCategory: DiagnosticCategoryLabel.Suppress,
           },
@@ -7198,6 +8942,237 @@ suppress
         expect(diags[0]).toContain(
           `Node matches the "[bar]" slot of the "Comp" component, but will ` +
             `not be projected into the specific slot because the surrounding @default has more than one node at its root.`,
+        );
+      });
+
+      it('should report when an @boundary block prevents an element from being projected', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @boundary {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @boundary has more than one node at its root.`,
+        );
+      });
+
+      it('should not report when an @boundary block has only one root node', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @boundary {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when an @boundary block with one root node has an @error block', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @boundary {
+                  <div foo></div>
+                } @error {
+                  <div foo></div>
+                  fallback
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report when the component being projected into is declared in another file', () => {
+        env.write(
+          'comp.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          export class Comp {}
+        `,
+        );
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {Comp} from './comp';
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`,
+        );
+      });
+
+      it('should report when the component being projected into has an external template', () => {
+        env.write('comp.html', '<ng-content/> <ng-content select="bar, [foo]"/>');
+        env.write(
+          'comp.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            templateUrl: './comp.html',
+          })
+          export class Comp {}
+        `,
+        );
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {Comp} from './comp';
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`,
+        );
+      });
+
+      it('should report when the component being projected into comes from a .d.ts file', () => {
+        env.write(
+          'node_modules/external/index.d.ts',
+          `
+          import * as i0 from '@angular/core';
+
+          export declare class Comp {
+            static ɵcmp: i0.ɵɵComponentDeclaration<Comp, "comp", never, {}, {}, never, ["*", "bar, [foo]"], true, never>;
+          }
+        `,
+        );
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {Comp} from 'external';
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`,
         );
       });
 
@@ -7867,6 +9842,55 @@ suppress
         expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
       });
 
+      it('should not allow a let declaration value to be changed through update operators', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              <button (click)="value++">Click me</button>
+              <button (click)="--value">Click me</button>
+            \`,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+        expect(diags[1].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+      });
+
+      it('should not allow update operators to be used on a readonly signal', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal} from '@angular/core';
+
+          @Component({
+            template: \`
+              <button (click)="count++">Click me</button>
+              <button (click)="--count">Click me</button>
+            \`,
+          })
+          export class Main {
+            readonly count = signal(0);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => d.messageText)).toEqual([
+          `Cannot assign to 'count' because it is a read-only property.`,
+          `Cannot assign to 'count' because it is a read-only property.`,
+        ]);
+      });
+
       it('should not allow a let declaration value to be changed through a `this` access', () => {
         env.write(
           'test.ts',
@@ -8232,6 +10256,7 @@ suppress
 
       it('should be able to opt out for checking for unused imports via the tsconfig', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               unusedStandaloneImports: DiagnosticCategoryLabel.Suppress,
@@ -8603,6 +10628,31 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should not report unused directives on ng-template nested in an svg element', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {CommonModule} from '@angular/common';
+
+
+          @Component({
+            template: \`
+              <ng-template #foo>foo</ng-template>
+              <svg>
+                <ng-template [ngTemplateOutlet]="foo"></ng-template>
+              </svg>
+            \`,
+            imports: [CommonModule]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('DOM event target type inference', () => {
@@ -8790,6 +10840,116 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should report errors that start at an arrow function parameter', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div (click)="takes((value) => () => 1)"></div>',
+            })
+            class TestCmp {
+              takes(fn: (x: number) => number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+      });
+
+      it('should report arrow functions with more parameters than the callback receives', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<button (click)="retry((attempt) => load(attempt))"></button>',
+            })
+            class TestCmp {
+              retry(fn: () => void) {}
+              load(attempt: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
+      });
+
+      it('should map errors at an unparenthesized parameter in an interpolation', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        const template = '{{retry(attempt => load(attempt))}}';
+        env.write('test.html', template);
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({templateUrl: './test.html'})
+            class TestCmp {
+              retry(fn: () => void) {}
+              load(attempt: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(diags[0].file!.text).toBe(template);
+        expect(diags[0].start).toBe(template.indexOf('attempt'));
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
+      });
+
+      it('should not report implicit any errors on arrow functions without a contextual type', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div (click)="handler = (a, b) => a"></div>',
+            })
+            class TestCmp {
+              handler: unknown;
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report errors on contextually typed arrow function parameters', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: '<div (click)="sig.update((prev) => prev + 1)"></div>',
+            })
+            class TestCmp {
+              sig = signal(0);
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('multiple matching components', () => {
@@ -8900,6 +11060,66 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+    });
+
+    it('should report a diagnostic when binding an incompatible type to an input inherited through an intermediate variable declaration in .d.ts', () => {
+      env.tsconfig(
+        {
+          strictTemplates: true,
+        },
+        {
+          paths: {'external': ['./dist/external']},
+        },
+      );
+      env.write(
+        'dist/external/index.d.ts',
+        `
+          import * as i0 from '@angular/core';
+
+          export interface ExpectedContext {
+            renderConfig: {component: unknown};
+            data: string;
+          }
+
+          export declare class BaseElement {
+            readonly contentInput: i0.InputSignal<ExpectedContext>;
+            static ɵdir: i0.ɵɵDirectiveDeclaration<BaseElement, "[base]", never, {"contentInput": {"alias": "context", "required": true, "isSignal": true}}, {}, never, never, true, never>;
+          }
+
+          declare const baseElement: typeof BaseElement;
+
+          export declare class ReproChildComponent extends baseElement {
+            static ɵcmp: i0.ɵɵComponentDeclaration<ReproChildComponent, "repro-child", never, {}, {}, never, never, true, never>;
+          }
+        `,
+      );
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {ReproChildComponent} from 'external';
+
+          export interface IncompatibleContext {
+            renderConfig?: {component: unknown};
+            data: string;
+          }
+
+          @Component({
+            selector: 'repro-parent',
+            imports: [ReproChildComponent],
+            template: '<repro-child [context]="context" />',
+          })
+          export class ReproParentComponent {
+            context: IncompatibleContext = {data: 'test'};
+          }
+        `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      const text = ts.flattenDiagnosticMessageText(diags[0].messageText, ' ');
+      expect(text).toContain(
+        "Type 'IncompatibleContext' is not assignable to type 'ExpectedContext'",
+      );
     });
   });
 });

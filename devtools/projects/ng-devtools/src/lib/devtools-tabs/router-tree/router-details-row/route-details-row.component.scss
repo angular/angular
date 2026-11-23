@@ -2,6 +2,7 @@
 
 .tag-active,
 .tag-inactive {
+  display: inline-block;
   border-radius: 1rem;
   padding: 0.15rem 0.5rem;
   border: 1px solid;
@@ -46,7 +47,7 @@ button {
   }
 }
 
-td {
+dd {
   width: 100%;
 }
 

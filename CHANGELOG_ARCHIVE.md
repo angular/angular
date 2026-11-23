@@ -4967,9 +4967,9 @@ To learn about the release highlights and our CLI-powered automated update workf
 - **ivy:** i18n - render legacy message ids in `$localize` if requested ([#32937](https://github.com/angular/angular/issues/32937)) ([bcbf3e4](https://github.com/angular/angular/commit/bcbf3e4))
 - **language-service:** module definitions on directive hover ([#32763](https://github.com/angular/angular/issues/32763)) ([0d186dd](https://github.com/angular/angular/commit/0d186dd)), closes [#32565](https://github.com/angular/angular/issues/32565)
 - **ngcc:** expose `--create-ivy-entry-points` option on ivy-ngcc ([#33049](https://github.com/angular/angular/issues/33049)) ([b2b917d](https://github.com/angular/angular/commit/b2b917d)), closes [/github.com/angular/angular/pull/32999#issuecomment-539937368](https://github.com/angular/angular/pull/32999/issues/issuecomment-539937368)
-- update rxjs peerDependencies minimum requirment to 6.5.3 ([#32812](https://github.com/angular/angular/issues/32812)) ([66658c4](https://github.com/angular/angular/commit/66658c4))
+- update rxjs peerDependencies minimum requirement to 6.5.3 ([#32812](https://github.com/angular/angular/issues/32812)) ([66658c4](https://github.com/angular/angular/commit/66658c4))
 - **ivy:** support ng-add in localize package ([#32791](https://github.com/angular/angular/issues/32791)) ([e41cbfb](https://github.com/angular/angular/commit/e41cbfb))
-- **language-service:** allow retreiving synchronized analyzed NgModules ([#32779](https://github.com/angular/angular/issues/32779)) ([98feee7](https://github.com/angular/angular/commit/98feee7))
+- **language-service:** allow retrieving synchronized analyzed NgModules ([#32779](https://github.com/angular/angular/issues/32779)) ([98feee7](https://github.com/angular/angular/commit/98feee7))
 - **service-worker:** remove deprecated `versionedFiles` option ([#32862](https://github.com/angular/angular/issues/32862)) ([5d5c94d](https://github.com/angular/angular/commit/5d5c94d))
 - **language-service:** expose determining the NgModule of a Directive ([#32710](https://github.com/angular/angular/issues/32710)) ([2846505](https://github.com/angular/angular/commit/2846505)), closes [#32565](https://github.com/angular/angular/issues/32565)
 - **bazel:** support ts_library targets as entry-points for ng_package ([#32610](https://github.com/angular/angular/issues/32610)) ([217db9b](https://github.com/angular/angular/commit/217db9b))
@@ -5114,7 +5114,7 @@ To learn about the release highlights and our CLI-powered automated update workf
   We assume you will fetch rules_nodejs in your WORKSPACE file, and no other dependencies remain here.
   Simply remove any calls to this function and the corresponding load statement.
 - typescript 3.4 and 3.5 are no longer supported, please update to typescript 3.6
-- We no longer directly have a direct depedency on `tslib`. Instead it is now listed a `peerDependency`.
+- We no longer directly have a direct dependency on `tslib`. Instead it is now listed a `peerDependency`.
 
 Users not using the CLI will need to manually install `tslib` via;
 
@@ -6617,7 +6617,7 @@ For example:
 - **forms:** properly handle special properties in FormGroup.get ([#22249](https://github.com/angular/angular/issues/22249)) ([dc3e8aa](https://github.com/angular/angular/commit/dc3e8aa)), closes [#17195](https://github.com/angular/angular/issues/17195)
 - **platform-server:** avoid clash between server and client style encapsulation attributes ([#24158](https://github.com/angular/angular/issues/24158)) ([e9f2203](https://github.com/angular/angular/commit/e9f2203))
 - **platform-server:** avoid dependency cycle when using http interceptor ([#24229](https://github.com/angular/angular/issues/24229)) ([2991b1b](https://github.com/angular/angular/commit/2991b1b)), closes [#23023](https://github.com/angular/angular/issues/23023)
-- **platform-server:** don't reflect innerHTML property to attibute ([#24213](https://github.com/angular/angular/issues/24213)) ([c17098d](https://github.com/angular/angular/commit/c17098d)), closes [#19278](https://github.com/angular/angular/issues/19278)
+- **platform-server:** don't reflect innerHTML property to attribute ([#24213](https://github.com/angular/angular/issues/24213)) ([c17098d](https://github.com/angular/angular/commit/c17098d)), closes [#19278](https://github.com/angular/angular/issues/19278)
 - **platform-server:** provide Domino DOM types globally ([#24116](https://github.com/angular/angular/issues/24116)) ([906b3ec](https://github.com/angular/angular/commit/906b3ec)), closes [#23280](https://github.com/angular/angular/issues/23280) [#23133](https://github.com/angular/angular/issues/23133)
 
 <!-- CHANGELOG SPLIT MARKER -->
@@ -9193,7 +9193,7 @@ Note: 4.0.0-beta.0 release also contains all the changes present in the 2.3.1 re
 - **compiler:** support dotted property binding ([8db184d](https://github.com/angular/angular/commit/8db184d)), closes [angular/flex-layout#34](https://github.com/angular/flex-layout/issues/34)
 - **compiler:** update to metadata version 3 ([#13464](https://github.com/angular/angular/issues/13464)) ([b9b557c](https://github.com/angular/angular/commit/b9b557c))
 - **core:** detectChanges() doesn't work on detached instance ([4d6ac9d](https://github.com/angular/angular/commit/4d6ac9d)), closes [#13426](https://github.com/angular/angular/issues/13426) [#13472](https://github.com/angular/angular/issues/13472)
-- **core:** properly destroy embedded Views attatched to ApplicationRef ([#13459](https://github.com/angular/angular/issues/13459)) ([d40bbf4](https://github.com/angular/angular/commit/d40bbf4)), closes [#13062](https://github.com/angular/angular/issues/13062)
+- **core:** properly destroy embedded Views attached to ApplicationRef ([#13459](https://github.com/angular/angular/issues/13459)) ([d40bbf4](https://github.com/angular/angular/commit/d40bbf4)), closes [#13062](https://github.com/angular/angular/issues/13062)
 - **core:** remove logError from logGroup ([#12925](https://github.com/angular/angular/issues/12925)) ([5fab871](https://github.com/angular/angular/commit/5fab871))
 - **forms:** ensure `select[multiple]` retains selections ([b3dcff0](https://github.com/angular/angular/commit/b3dcff0)), closes [#12527](https://github.com/angular/angular/issues/12527) [#12654](https://github.com/angular/angular/issues/12654)
 - **forms:** fix Validators.min/maxLength with FormArray ([#13095](https://github.com/angular/angular/issues/13095)) ([7383e4a](https://github.com/angular/angular/commit/7383e4a)), closes [#13089](https://github.com/angular/angular/issues/13089)

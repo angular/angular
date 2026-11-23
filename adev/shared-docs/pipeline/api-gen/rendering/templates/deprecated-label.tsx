@@ -11,8 +11,7 @@ import {PARAM_KEYWORD_CLASS_NAME} from '../styling/css-classes.mjs';
 
 export function DeprecatedLabel(props: {
   entry:
-    | {deprecated: {version: string | undefined} | undefined}
-    | {deprecationMessage: string | null};
+    {deprecated: {version: string | undefined} | undefined} | {deprecationMessage: string | null};
   hideLabel?: true;
 }) {
   const entry = props.entry;
@@ -26,7 +25,7 @@ export function DeprecatedLabel(props: {
         <span dangerouslySetInnerHTML={{__html: entry.deprecationMessage}}></span>
       </div>
     );
-  } else if ('isDeprecated' in entry && entry.isDeprecated) {
+  } else if ('deprecated' in entry && entry.deprecated) {
     return <span className={`${PARAM_KEYWORD_CLASS_NAME} docs-deprecated`}>@deprecated</span>;
   }
 

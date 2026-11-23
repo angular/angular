@@ -10,6 +10,7 @@ import '@angular/compiler';
 import {animate, AnimationBuilder, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, ɵgetDOM as getDOM, isPlatformServer, PlatformLocation} from '@angular/common';
 import {
+  ɵHTTP_FETCH_MAX_RESPONSE_SIZE as HTTP_FETCH_MAX_RESPONSE_SIZE,
   HTTP_INTERCEPTORS,
   HttpClient,
   HttpClientModule,
@@ -90,8 +91,9 @@ function getStandaloneBootstrapFn(
 
 function createMyServerApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: `Works!`,
   })
   class MyServerApp {}
@@ -110,8 +112,8 @@ export class MyServerAppModule {}
 
 function createAppWithPendingTask(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: `Completed: {{ completed() }}`,
   })
   class PendingTasksApp {
@@ -348,6 +350,7 @@ function createAsyncServerModule(zoneless: boolean) {
 function createSVGComponent(standalone: boolean) {
   @Component({
     selector: 'app',
+
     template: '<svg><use xlink:href="#clear"></use></svg>',
     standalone,
   })
@@ -368,8 +371,8 @@ class SVGServerModule {}
 
 function createMyAnimationApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: ` <div [@myAnimation]="state">
       <svg *ngIf="true"></svg>
       {{ text }}
@@ -414,8 +417,8 @@ class AnimationServerModule {}
 
 function createMyStylesApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: ` <div>Works!</div>`,
     styles: ['div {color: blue; } :host { color: red; }'],
   })
@@ -436,8 +439,9 @@ class ExampleStylesModule {}
 
 function createMyTransferStateApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: ` <div>Works!</div>`,
   })
   class MyStylesApp {
@@ -513,8 +517,8 @@ class ImageExampleModule {}
 
 function createShadowDomEncapsulationApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: 'Shadow DOM works',
     encapsulation: ViewEncapsulation.ShadowDom,
     styles: [':host { color: red; }'],
@@ -547,8 +551,9 @@ function createFalseAttributesComponents(standalone: boolean) {
   }
 
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<my-child [attr]="false"></my-child>',
     imports: standalone ? [MyChildComponent] : [],
   })
@@ -572,8 +577,9 @@ class FalseAttributesModule {}
 
 function createMyInputComponent(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<input [name]="name">',
   })
   class MyInputComponent {
@@ -595,8 +601,9 @@ class NameModule {}
 
 function createHTMLTypesApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<div [innerHTML]="html"></div>',
   })
   class HTMLTypesApp {
@@ -620,8 +627,9 @@ class HTMLTypesModule {}
 
 function createMyHiddenComponent(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<input [hidden]="true"><input [hidden]="false">',
   })
   class MyHiddenComponent {
@@ -963,6 +971,56 @@ class HiddenModule {}
           );
 
           it(
+            `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
+              `should report to ErrorHandler when TransferState contains an unserializable value (zoneless:${zoneless})`,
+            async () => {
+              // A circular reference causes JSON.stringify (called inside toJson())
+              // to throw. Previously this was silently swallowed, causing the server
+              // to return a 200 OK without the <script id="ng-state"> tag.
+              function createCircularTransferStateApp(s: boolean) {
+                @Component({
+                  selector: 'app',
+                  standalone: s,
+                  template: '',
+                })
+                class CircularApp {
+                  constructor() {
+                    const circular: Record<string, unknown> = {};
+                    circular['self'] = circular;
+                    coreInject(TransferState).set(makeStateKey<unknown>('key'), circular);
+                  }
+                }
+                return CircularApp;
+              }
+
+              const consoleSpy = spyOn(console, 'error');
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(createCircularTransferStateApp(true)),
+                    options,
+                  )
+                : renderModule(
+                    (() => {
+                      const CircularApp = createCircularTransferStateApp(false);
+                      @NgModule({
+                        declarations: [CircularApp],
+                        imports: [BrowserModule, ServerModule],
+                        bootstrap: [CircularApp],
+                      })
+                      class M {}
+                      return M;
+                    })(),
+                    options,
+                  );
+              await bootstrap;
+              // The circular reference error is forwarded to ErrorHandler rather
+              // than thrown, so the render completes but the error is still reported.
+              expect(consoleSpy).toHaveBeenCalled();
+            },
+          );
+
+          it(
             'uses `other` as the `serverContext` value when all symbols are removed after sanitization' +
               `(standalone:${isStandalone}, zoneless:${zoneless})`,
             async () => {
@@ -997,6 +1055,7 @@ class HiddenModule {}
             async () => {
               @Component({
                 selector: 'app',
+
                 template: ``,
               })
               class SimpleApp {}
@@ -1102,7 +1161,7 @@ class HiddenModule {}
             'should call multiple render hooks' +
               `(standalone:${isStandalone}, zoneless:${zoneless})`,
             async () => {
-              const consoleSpy = spyOn(console, 'warn');
+              const consoleSpy = spyOn(console, 'error');
               const options = {document: doc};
               const bootstrap = isStandalone
                 ? renderApplication(
@@ -1116,6 +1175,8 @@ class HiddenModule {}
                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
                   '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
               );
+              // Errors from callbacks are forwarded to ErrorHandler (console.error by default)
+              // rather than swallowed silently or thrown.
               expect(consoleSpy).toHaveBeenCalled();
             },
           );
@@ -1143,7 +1204,7 @@ class HiddenModule {}
             'should call multiple async and sync render hooks' +
               `(standalone:${isStandalone}, zoneless:${zoneless})`,
             async () => {
-              const consoleSpy = spyOn(console, 'warn');
+              const consoleSpy = spyOn(console, 'error');
               const options = {document: doc};
               const bootstrap = isStandalone
                 ? renderApplication(
@@ -1293,8 +1354,9 @@ class HiddenModule {}
               }
 
               @Component({
-                standalone: isStandalone,
                 selector: 'app',
+
+                standalone: isStandalone,
                 template: `Works!`,
               })
               class MyServerFailingConstructorApp {
@@ -1337,6 +1399,7 @@ class HiddenModule {}
 
         @Component({
           selector: 'lazy',
+
           template: `LazyCmp content`,
         })
         class LazyCmp {}
@@ -1355,12 +1418,12 @@ class HiddenModule {}
         ];
 
         @Component({
-          standalone: false,
           selector: 'app',
           template: `
             Works!
             <router-outlet />
           `,
+          standalone: false,
         })
         class MyServerApp {}
 
@@ -1403,6 +1466,29 @@ class HiddenModule {}
               expect(body).toEqual('success!');
             });
             mock.expectOne('http://localhost/testing').flush('success!');
+          });
+        });
+      });
+
+      it('prevents SSRF bypasses via backslash URLs in HttpClient by throwing a suspicious origin error', async () => {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {document: '<app></app>', url: 'http://localhost:4000/base'},
+          },
+        ]);
+        await platform.bootstrapModule(HttpClientExampleModule).then((ref) => {
+          const mock = ref.injector.get(HttpTestingController);
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get(NgZone).run(() => {
+            http.get('/\\evil.com/api').subscribe({
+              next: () => fail('Expected request to fail, but it succeeded.'),
+              error: (err) => {
+                expect(err.message).toMatch(/NG05703/);
+              },
+            });
+
+            mock.verify();
           });
         });
       });
@@ -1500,7 +1586,172 @@ class HiddenModule {}
             mock.expectOne('http://localhost/testing').flush('success!');
           });
         });
+
+        it('should allow legitimate protocol-relative URLs', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('//example.com/testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://example.com/testing').flush('success!');
+          });
+        });
+
+        it('should resolve non-breaking space prefixed URLs as relative paths on the same origin', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('\u00A0//attacker.example/collect').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock
+              .expectOne('http://localhost:4000/%C2%A0//attacker.example/collect')
+              .flush('success!');
+          });
+        });
+
+        it('should resolve unicode whitespace prefixed scheme URLs as relative paths on the same origin', async () => {
+          const urls = [
+            ['\u00A0http://attacker.example/collect', '%C2%A0'],
+            ['\uFEFFhttp://attacker.example/collect', '%EF%BB%BF'],
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const [url, encodedWhitespace] of urls) {
+              http.get(url).subscribe((body) => {
+                expect(body).toEqual('success!');
+              });
+              mock
+                .expectOne(
+                  `http://localhost:4000/${encodedWhitespace}http://attacker.example/collect`,
+                )
+                .flush('success!');
+            }
+          });
+        });
+
+        it('should resolve scheme URLs without authority as relative paths on the same origin', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('http:/localhost:9999/steal-a').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/localhost:9999/steal-a').flush('success!');
+
+            http.get('http:localhost:9999/steal-b').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/localhost:9999/steal-b').flush('success!');
+          });
+        });
+
+        it('should reject backslash bypass SSRF attempts in relative requests and throw a suspicious origin error', async () => {
+          const badUrls = [
+            '/\\attacker.com',
+            '\\\\attacker.com',
+            '  /\\attacker.com',
+            '\r\n/\\attacker.com',
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe({
+                next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
+                error: (err) => {
+                  expect(err.message).toMatch(/NG05703/);
+                },
+              });
+            }
+
+            mock.verify();
+          });
+        });
+
+        it('should reject obfuscated protocal SSRF attempts in relative requests and throw a suspicious origin error', async () => {
+          const badUrls = [
+            'htt\rps://evil.com/path',
+            ' htt\rps://evil.com/path',
+            '\r\nhtt\rps://evil.com/path',
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe({
+                next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
+                error: (err) => {
+                  expect(err.message).toMatch(/NG05703/);
+                },
+              });
+            }
+
+            mock.verify();
+          });
+        });
+
+        it('should resolve safe path-relative URLs containing backslashes without origin change', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('\\testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/testing').flush('success!');
+          });
+        });
+
+        it('should resolve backslashes inside path-relative segments without origin change', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('/foo\\bar').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/foo/bar').flush('success!');
+          });
+        });
+
+        it('should resolve relative request URLs without leading slash relative to parent path', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/testing').flush('success!');
+          });
+        });
       });
+
+      describe(`given 'url' is provided in 'INITIAL_CONFIG' with a trailing slash`, () => {
+        let mock: HttpTestingController;
+        let ref: NgModuleRef<HttpInterceptorExampleModule>;
+        let http: HttpClient;
+
+        beforeEach(async () => {
+          const platform = platformServer([
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '<app></app>',
+                url: 'http://localhost:4000/foo/',
+              },
+            },
+          ]);
+
+          ref = await platform.bootstrapModule(HttpInterceptorExampleModule);
+          mock = ref.injector.get(HttpTestingController);
+          http = ref.injector.get(HttpClient);
+        });
+
+        it('should resolve sub-path relative request URLs relative to trailing-slash base URL', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/foo/testing').flush('success!');
+          });
+        });
+      });
+    });
+
+    it('should configure max response body size when specified', () => {
+      const maxResponseBodySize = 2048;
+
+      TestBed.configureTestingModule({
+        providers: [provideServerRendering({maxResponseBodySize})],
+      });
+
+      expect(TestBed.inject(HTTP_FETCH_MAX_RESPONSE_SIZE)).toBe(maxResponseBodySize);
     });
   });
 })();

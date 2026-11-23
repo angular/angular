@@ -1,4 +1,4 @@
-A type of [block](api/core/@defer) that can be used to defer load the JavaScript for components,
+The `@defer` block can be used to lazy load components,
 directives and pipes used inside a component template.
 
 ## Syntax

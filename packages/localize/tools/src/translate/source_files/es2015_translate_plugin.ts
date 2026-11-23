@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
+import {NodePath, PluginObject, types as t} from '@babel/core';
 import {ɵParsedTranslation} from '../../../../index';
-import {NodePath, PluginObj, types as t} from '@babel/core';
 
 import {Diagnostics} from '../../diagnostics';
 import {
@@ -31,7 +31,7 @@ export function makeEs2015TranslatePlugin(
   translations: Record<string, ɵParsedTranslation>,
   {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
   fs: PathManipulation = getFileSystem(),
-): PluginObj {
+): PluginObject {
   return {
     visitor: {
       TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>, state) {

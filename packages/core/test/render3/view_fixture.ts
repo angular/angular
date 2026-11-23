@@ -115,9 +115,10 @@ export class ViewFixture {
       {
         rendererFactory,
         sanitizer: sanitizer || null,
-        changeDetectionScheduler: null,
+        changeDetectionScheduler: {notify: noop, runningTick: false},
         ngReflect: false,
         tracingService: null,
+        locale: 'en-us',
       },
       hostRenderer,
       null,

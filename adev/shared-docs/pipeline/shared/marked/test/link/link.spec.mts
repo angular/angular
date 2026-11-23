@@ -38,6 +38,10 @@ describe('markdown to html', () => {
     );
   });
 
+  it('should not auto-link a code symbol used as link text', () => {
+    expect(parsedMarkdown).toContain('<a href="../other/page"><code>CommonModule</code></a>');
+  });
+
   it('should throw if on absolute links to adev', async () => {
     try {
       parsedMarkdown = await parseMarkdown(

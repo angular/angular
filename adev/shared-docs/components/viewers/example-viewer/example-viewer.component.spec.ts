@@ -166,6 +166,147 @@ describe('ExampleViewer', () => {
     expect(hiddenLine).toBeNull();
   });
 
+  it('keeps the expand control after switching tabs while expanded', async () => {
+    const collapsible = {
+      name: 'example.ts',
+      sanitizedContent:
+        '<pre><code><div class="line">one</div><div class="line">two</div></code></pre>',
+      visibleLinesRange: '1',
+    };
+
+    componentRef.setInput(
+      'metadata',
+      getMetadata({files: [collapsible, {name: 'example.css', sanitizedContent: ''}]}),
+    );
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    expect(component.expandable()).toBeTrue();
+
+    component.toggleExampleVisibility();
+    await fixture.whenStable();
+
+    const tabGroup = await loader.getHarness(MatTabGroupHarness);
+    await (await tabGroup.getTabs())[1].select();
+    await fixture.whenStable();
+    await (await tabGroup.getTabs())[0].select();
+    await fixture.whenStable();
+
+    expect(component.expandable()).toBeTrue();
+  });
+
+  it('hides only the lines outside the visible range, and adds no gap within one range', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {
+            name: 'example.ts',
+            sanitizedContent:
+              '<pre><code><div class="line">one</div><div class="line">two</div><div class="line">three</div></code></pre>',
+            visibleLinesRange: '2,3',
+          },
+        ],
+      }),
+    );
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    const lines = fixture.debugElement
+      .queryAll(By.css('.line'))
+      .map((line) => (line.nativeElement as HTMLElement).className);
+
+    expect(lines).toEqual(['line hidden', 'line', 'line']);
+  });
+
+  it('hides the line numbers that pair with the hidden lines', async () => {
+    const numbered = (n: number, text: string) =>
+      `<span class="shiki-ln-number">${n}</span><div class="line">${text}</div>`;
+
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {
+            name: 'example.ts',
+            sanitizedContent: `<pre><code>${numbered(1, 'one')}${numbered(2, 'two')}${numbered(3, 'three')}</code></pre>`,
+            visibleLinesRange: '2,3',
+          },
+        ],
+      }),
+    );
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    const visibleNumbers = fixture.debugElement
+      .queryAll(By.css('.shiki-ln-number'))
+      .filter((el) => !(el.nativeElement as HTMLElement).classList.contains('hidden'))
+      .map((el) => (el.nativeElement as HTMLElement).textContent);
+
+    expect(visibleNumbers).toEqual(['2', '3']);
+  });
+
+  it('restores the selected tab and its collapsed lines after hiding and reshowing the code', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {name: 'example.ts', sanitizedContent: ''},
+          {
+            name: 'example.css',
+            sanitizedContent:
+              '<pre><code><div class="line">one</div><div class="line">two</div></code></pre>',
+            visibleLinesRange: '2',
+          },
+        ],
+      }),
+    );
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    const tabGroup = await loader.getHarness(MatTabGroupHarness);
+    await (await tabGroup.getTabs())[1].select();
+    await fixture.whenStable();
+
+    component.toggleCodeVisibility();
+    await fixture.whenStable();
+    component.toggleCodeVisibility();
+    await fixture.whenStable();
+
+    expect(
+      await (await (await loader.getHarness(MatTabGroupHarness)).getSelectedTab()).getLabel(),
+    ).toBe('CSS');
+    const lines = fixture.debugElement
+      .queryAll(By.css('.line'))
+      .map((line) => (line.nativeElement as HTMLElement).className);
+    expect(lines).toEqual(['line hidden', 'line']);
+  });
+
+  it('offers no expand control when the range covers the whole file', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {
+            name: 'example.ts',
+            sanitizedContent:
+              '<pre><code><div class="line">one</div><div class="line">two</div></code></pre>',
+            visibleLinesRange: '1,2',
+          },
+        ],
+      }),
+    );
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    expect(component.expandable()).toBeFalse();
+  });
+
   it('should set exampleComponent when metadata contains path and preview is true', async () => {
     exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
     componentRef.setInput(

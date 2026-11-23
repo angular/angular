@@ -37,7 +37,7 @@ process.
       </td>
     </tr>
     <tr>
-      <td rowspan="7">Change<p>Detection</td>
+      <td rowspan="7">Change<br>Detection</td>
       <td><code>ngOnInit</code>
       </td>
       <td>Runs once after Angular has initialized all the component's inputs.</td>
@@ -111,9 +111,7 @@ has changed.
 You can optionally pass the current class or this as the first generic argument for stronger type checking.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserProfile {
   name = input('');
 
@@ -143,9 +141,7 @@ register a callback to be invoked upon the component's destruction by calling th
 of `DestroyRef`.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserProfile {
   constructor() {
     inject(DestroyRef).onDestroy(() => {
@@ -187,8 +183,9 @@ _content_) have been initialized.
 
 You can use this lifecycle hook to read the results of
 [content queries](guide/components/queries#content-queries). While you can access the initialized
-state of these queries, attempting to change any state in this method results in an
-[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
+state of these queries, avoid changing non-signal state that an ancestor's template has already
+rendered. Doing so can result in an
+[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### ngAfterContentChecked
 
@@ -199,8 +196,8 @@ This method runs very frequently and can significantly impact your page's perfor
 defining this hook whenever possible, only using it when you have no alternative.
 
 While you can access the updated state
-of [content queries](guide/components/queries#content-queries) here, attempting to
-change any state in this method results in
+of [content queries](guide/components/queries#content-queries) here, avoid changing non-signal
+state that an ancestor's template has already rendered. Doing so can result in
 an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### ngAfterViewInit
@@ -210,8 +207,8 @@ _view_) have been initialized.
 
 You can use this lifecycle hook to read the results of
 [view queries](guide/components/queries#view-queries). While you can access the initialized state of
-these queries, attempting to change any state in this method results in an
-[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
+these queries, avoid changing non-signal state that a template has already rendered. Doing so can
+result in an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### ngAfterViewChecked
 
@@ -222,9 +219,8 @@ This method runs very frequently and can significantly impact your page's perfor
 defining this hook whenever possible, only using it when you have no alternative.
 
 While you can access the updated state of [view queries](guide/components/queries#view-queries)
-here, attempting to
-change any state in this method results in
-an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
+here, avoid changing non-signal state that a template has already rendered. Doing so can result
+in an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### afterEveryRender and afterNextRender
 
@@ -254,11 +250,9 @@ communicate across phases, a phase function may return a result value that can b
 next phase.
 
 ```ts
-import {Component, ElementRef, afterNextRender} from '@angular/core';
+import {Component, ElementRef, afterNextRender, inject} from '@angular/core';
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
@@ -308,9 +302,7 @@ Each interface has the same name as the corresponding method without the `ng` pr
 the interface for `ngOnInit` is `OnInit`.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserProfile implements OnInit {
   ngOnInit() {
     /* ... */

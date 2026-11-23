@@ -16,7 +16,6 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/@babel/core",
-        "//:node_modules/@types/babel__core",
         "//packages/compiler",
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/src/ngtsc/file_system",

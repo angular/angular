@@ -1,5 +1,4 @@
-<docs-decorative-header title="Tabs">
-</docs-decorative-header>
+# Tabs
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="Tabs ARIA pattern"/>
@@ -60,7 +59,7 @@ Tabs work well for organizing related content into distinct sections where users
 - **Selection modes** - Tabs activate automatically on focus or require manual activation
 - **Keyboard navigation** - Arrow keys, Home, and End for efficient tab navigation
 - **Orientation** - Horizontal or vertical tab list layouts
-- **Lazy content** - Tab panels render only when first activated
+- **Lazy content** - Tab panels render only when activated
 - **Disabled tabs** - Disable individual tabs with focus management
 - **Focus modes** - Roving tabindex or activedescendant focus strategies
 - **RTL support** - Right-to-left language navigation
@@ -165,7 +164,7 @@ Set `[orientation]="'vertical'"` on the tab list. Navigation changes to Up/Down 
 
 ### Lazy content rendering
 
-Use the `ngTabContent` directive on an `ng-template` to defer rendering tab panels until they're first shown.
+Use the `ngTabContent` directive on an `ng-template` to defer rendering tab panels until they're shown.
 
 ```angular-html
 <div ngTabs>
@@ -176,21 +175,21 @@ Use the `ngTabContent` directive on an `ng-template` to defer rendering tab pane
 
   <div ngTabPanel value="tab1">
     <ng-template ngTabContent>
-      <!-- This content only renders when Tab 1 is first shown -->
+      <!-- This content only renders when Tab 1 is shown -->
       <app-heavy-component />
     </ng-template>
   </div>
 
   <div ngTabPanel value="tab2">
     <ng-template ngTabContent>
-      <!-- This content only renders when Tab 2 is first shown -->
+      <!-- This content only renders when Tab 2 is shown -->
       <app-another-component />
     </ng-template>
   </div>
 </div>
 ```
 
-By default, content remains in the DOM after the panel is hidden. Set `[preserveContent]="false"` to remove content when the panel is deactivated.
+By default, content is removed from the DOM when the panel is hidden. Set `[preserveContent]="true"` to keep it, for example when the panel contains a video that shouldn't reset when switching tabs.
 
 ### Disabled tabs
 
@@ -224,73 +223,72 @@ Disable specific tabs to prevent user interaction. Control whether disabled tabs
 
 When `[softDisabled]="true"` on the tab list, disabled tabs can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled tabs are skipped during keyboard navigation.
 
-## APIs
+## Testing
 
-### Tabs
+Angular Aria provides component harnesses for testing tabs components.
+Here is an example of how to use the harnesses in a component test:
 
-The container directive that coordinates tab lists and panels.
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
+import {TabsHarness} from '@angular/aria/tabs/testing';
+import {MyTabsComponent} from './my-tabs'; // Your component
 
-This directive has no inputs or outputs. It serves as the root container for `ngTabList`, `ngTab`, and `ngTabPanel` directives.
+// A simple harness to help query content inside the tab panel
+class TestContentHarness extends ComponentHarness {
+  static hostSelector = '.test-content';
+  async getText(): Promise<string> {
+    return (await this.host()).text();
+  }
+}
 
-### TabList
+describe('MyTabsComponent', () => {
+  let fixture: ComponentFixture<MyTabsComponent>;
+  let loader: HarnessLoader;
 
-The container for tab buttons that manages selection and keyboard navigation.
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyTabsComponent],
+    });
 
-#### Inputs
+    fixture = TestBed.createComponent(MyTabsComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-| Property        | Type                         | Default        | Description                                                        |
-| --------------- | ---------------------------- | -------------- | ------------------------------------------------------------------ |
-| `orientation`   | `'horizontal' \| 'vertical'` | `'horizontal'` | Tab list layout direction                                          |
-| `wrap`          | `boolean`                    | `false`        | Whether keyboard navigation wraps from last to first tab           |
-| `softDisabled`  | `boolean`                    | `true`         | When `true`, disabled tabs are focusable but not activatable       |
-| `selectionMode` | `'follow' \| 'explicit'`     | `'follow'`     | Whether tabs activate on focus or require explicit activation      |
-| `selectedTab`   | `any`                        | —              | The value of the currently selected tab (supports two-way binding) |
+  it('should switch tabs and scope panel queries', async () => {
+    const tabs = await loader.getHarness(TabsHarness);
 
-### Tab
+    // Get all tabs
+    const tabItems = await tabs.getTabs();
+    expect(tabItems.length).toBe(3);
 
-An individual tab button.
+    // Verify initial selection
+    expect(await tabItems[0].isSelected()).toBe(true);
+    expect(await tabItems[1].isSelected()).toBe(false);
 
-#### Inputs
+    // Query content inside the active tab panel
+    // TabHarness automatically scopes queries to its associated panel
+    const content = await tabItems[0].getHarness(TestContentHarness);
+    expect(await content.getText()).toBe('Content 1');
 
-| Property   | Type      | Default | Description                             |
-| ---------- | --------- | ------- | --------------------------------------- |
-| `value`    | `any`     | —       | **Required.** Unique value for this tab |
-| `disabled` | `boolean` | `false` | Disables this tab                       |
+    // Switch to the second tab
+    await tabItems[1].select();
 
-#### Signals
-
-| Property   | Type              | Description                           |
-| ---------- | ----------------- | ------------------------------------- |
-| `selected` | `Signal<boolean>` | Whether the tab is currently selected |
-| `active`   | `Signal<boolean>` | Whether the tab currently has focus   |
-
-### TabPanel
-
-The content panel associated with a tab.
-
-#### Inputs
-
-| Property          | Type      | Default | Description                                                |
-| ----------------- | --------- | ------- | ---------------------------------------------------------- |
-| `value`           | `any`     | —       | **Required.** Must match the `value` of the associated tab |
-| `preserveContent` | `boolean` | `true`  | Whether to keep panel content in DOM after deactivation    |
-
-#### Signals
-
-| Property  | Type              | Description                            |
-| --------- | ----------------- | -------------------------------------- |
-| `visible` | `Signal<boolean>` | Whether the panel is currently visible |
-
-### TabContent
-
-A structural directive for lazy rendering tab panel content.
-
-This directive has no inputs, outputs, or methods. Apply it to an `ng-template` element inside a tab panel:
-
-```angular-html
-<div ngTabPanel value="tab1">
-  <ng-template ngTabContent>
-    <!-- Content here is lazily rendered -->
-  </ng-template>
-</div>
+    // Verify selection updated
+    expect(await tabItems[0].isSelected()).toBe(false);
+    expect(await tabItems[1].isSelected()).toBe(true);
+  });
+});
 ```
+
+## API reference
+
+For detailed API documentation, inspect the following API references:
+
+- [`Tabs`](/api/aria/tabs/Tabs)
+- [`TabList`](/api/aria/tabs/TabList)
+- [`Tab`](/api/aria/tabs/Tab)
+- [`TabPanel`](/api/aria/tabs/TabPanel)
+- [`TabContent`](/api/aria/tabs/TabContent)

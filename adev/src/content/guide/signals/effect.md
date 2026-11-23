@@ -1,8 +1,10 @@
-## Effects
+# Effects
 
 Signals are useful because they notify interested consumers when they change. An **effect** is an operation that runs whenever one or more signal values change. You can create an effect with the `effect` function:
 
 ```ts
+import {effect} from '@angular/core';
+
 effect(() => {
   console.log(`The current count is: ${count()}`);
 });
@@ -12,14 +14,14 @@ Effects always run **at least once.** When an effect runs, it tracks any signal 
 
 Effects always execute **asynchronously**, during the change detection process.
 
-### Use cases for effects
+## Use cases for effects
 
 Effects should be the last API you reach for. Always prefer `computed()` for derived values and `linkedSignal()` for values that can be both derived and manually set. If you find yourself copying data from one signal to another with an effect, it's a sign you should move your source-of-truth higher up and use `computed()` or `linkedSignal()` instead. Effects are best for syncing signal state to imperative, non-signal APIs.
 
 TIP: There are no situations where effect is good, only situations where it is appropriate.
 
 - Logging signal values, either for analytics or as a debugging tool.
-- Keeping data in sync with different kind of storages: `window.localStorage`, session storage, cookies etc.
+- Keeping data in sync with different kinds of storage: `window.localStorage`, session storage, cookies, etc.
 - Adding custom DOM behavior that can't be expressed with template syntax.
 - Performing custom rendering to a `<canvas>` element, charting library, or other third party UI library.
 
@@ -29,14 +31,12 @@ Avoid using effects for propagation of state changes. This can result in `Expres
 Instead, use `computed` signals to model state that depends on other state.
 </docs-callout>
 
-### Injection context
+## Injection context
 
 By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class EffectiveCounter {
   readonly count = signal(0);
 
@@ -52,9 +52,7 @@ export class EffectiveCounter {
 To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class EffectiveCounter {
   readonly count = signal(0);
   private injector = inject(Injector);
@@ -70,7 +68,7 @@ export class EffectiveCounter {
 }
 ```
 
-### Execution of effects
+## Execution of effects
 
 Angular implicitly defines two implicit behaviors for its effects depending on the context they were created in.
 
@@ -84,7 +82,7 @@ The execution of both kinds of `effect` are tied to the change detection process
 
 In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process.
 
-### Destroying effects
+## Destroying effects
 
 When a component or directive is destroyed, Angular automatically cleans up any associated effects.
 
@@ -95,7 +93,7 @@ An `effect` can be created in two different contexts that will affect when it's 
 
 Effects return an `EffectRef`. You can use the ref's `destroy` method to manually dispose of an effect. You can combine this with the `manualCleanup` option when creating an effect to disable automatic cleanup. Be careful to actually destroy such effects when they're no longer required.
 
-### Effect cleanup functions
+## Effect cleanup functions
 
 When a component or directive is destroyed, Angular automatically cleans up any associated effects.
 Effects might start long-running operations, which you should cancel if the effect is destroyed or runs again before the first operation finished. When you create an effect, your function can optionally accept an `onCleanup` function as its first parameter. This `onCleanup` function lets you register a callback that is invoked before the next run of the effect begins, or when the effect is destroyed.
@@ -121,9 +119,7 @@ The `effect` function is a general-purpose tool for running code in reaction to 
 For these situations, you can use `afterRenderEffect`. It functions like `effect`, but runs after Angular has finished rendering and committed its changes to the DOM.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class MyFancyChart {
   chartData = input.required<ChartData>();
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
@@ -133,7 +129,7 @@ export class MyFancyChart {
     // Run a single time to create the chart instance
     afterNextRender({
       write: () => {
-        this.chart = initializeChart(this.canvas().nativeElement(), this.chartData());
+        this.chart = initializeChart(this.canvas().nativeElement, this.chartData());
       },
     });
 
@@ -166,7 +162,7 @@ The phases are:
 
 Using these phases helps prevent layout thrashing and ensures that your DOM operations are performed in a safe and efficient manner.
 
-You can specify the phase by passing an object with a `phase` property to `afterRender` or `afterNextRender`:
+You can specify the phases by passing an object with a callback for each phase to `afterRenderEffect`:
 
 ```ts
 afterRenderEffect({
@@ -189,7 +185,7 @@ CRITICAL: If you don't specify the phase, `afterRenderEffect` runs callbacks dur
 
 #### Phase executions
 
-The `earlyRead` phase callback receives no parameters. Each subsequent phase receives the return value of the previous phase's callback as a Signal. You can use this to coordinate work across phases.
+The `earlyRead` phase callback receives only the cleanup function. Each subsequent phase receives the return value of the previous phase's callback as a Signal. You can use this to coordinate work across phases.
 
 Effects run in the following phase order:
 

@@ -25,7 +25,7 @@ Additional testing environments require custom bindings. See the [adding harness
 
 ### Using the loader from `TestbedHarnessEnvironment` for unit tests
 
-For unit tests you can create a harness loader from [TestbedHarnessEnvironment](/api/cdk/testing/TestbedHarnessEnvironment). This environment uses a [component fixture](api/core/testing/ComponentFixture) created by Angular's `TestBed`.
+For unit tests you can create a harness loader from [TestbedHarnessEnvironment](/api/cdk/testing/testbed/TestbedHarnessEnvironment). This environment uses a [component fixture](api/core/testing/ComponentFixture) created by Angular's `TestBed`.
 
 To create a harness loader rooted at the fixture's root element, use the `loader()` method:
 
@@ -68,7 +68,7 @@ To get `ComponentHarness` for the first instance of the element, use the `getHar
 const myComponentHarness = await loader.getHarness(MyComponent);
 
 // Get harnesses for all instances of the element
-const myComponentHarnesses = await loader.getHarnesses(MyComponent);
+const myComponentHarnesses = await loader.getAllHarnesses(MyComponent);
 ```
 
 In addition to `getHarness` and `getAllHarnesses`, `HarnessLoader` has several other useful methods for querying for harnesses:
@@ -129,10 +129,10 @@ To interact with elements below the root element of this harness loader, use the
 const myComponentHarness = await loader.getHarness(MyComponent);
 
 // Get loader for first instance of child element with '.child' selector
-const childLoader = await myComponentHarness.getLoader('.child');
+const childLoader = await loader.getChildLoader('.child');
 
 // Get loaders for all instances of child elements with '.child' selector
-const allChildLoaders = await myComponentHarness.getAllChildLoaders('.child');
+const allChildLoaders = await loader.getAllChildLoaders('.child');
 ```
 
 ### Filtering harnesses
@@ -187,7 +187,7 @@ There may be times that you need finer-grained control over change detection in 
 
 ```ts
 it('checks state while async action is in progress', async () => {
-  const buttonHarness = loader.getHarness(MyButtonHarness);
+  const buttonHarness = await loader.getHarness(MyButtonHarness);
   await manualChangeDetection(async () => {
     await buttonHarness.click();
     fixture.detectChanges();
@@ -212,7 +212,7 @@ Occasionally, you may want to perform multiple actions simultaneously and wait u
 
 ```ts
 it('reads properties in parallel', async () => {
-  const checkboxHarness = loader.getHarness(MyCheckboxHarness);
+  const checkboxHarness = await loader.getHarness(MyCheckboxHarness);
   // Read the checked and intermediate properties simultaneously.
   const [checked, indeterminate] = await parallel(() => [
     checkboxHarness.isChecked(),

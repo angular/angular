@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   destroyPlatform,
   Directive,
@@ -20,9 +21,9 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {timeout} from '@angular/private/testing';
 
 import * as angular from '../../../src/common/src/angular1';
 import {$EXCEPTION_HANDLER, $SCOPE} from '../../../src/common/src/constants';
@@ -41,7 +42,7 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     describe('template/templateUrl', () => {
-      it('should support `template` (string)', waitForAsync(() => {
+      it('should support `template` (string)', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {template: 'Hello, Angular!'};
 
@@ -82,12 +83,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-          expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
+      });
 
-      it('should support `template` (function)', waitForAsync(() => {
+      it('should support `template` (function)', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {template: () => 'Hello, Angular!'};
 
@@ -107,6 +107,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -128,12 +129,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
+      });
 
-      it('should pass $element to `template` function and not $attrs', waitForAsync(() => {
+      it('should pass $element to `template` function and not $attrs', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {
           template: ($attrs: angular.IAttributes, $element: angular.IAugmentedJQuery) => {
@@ -160,6 +160,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -181,12 +182,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
+      });
 
-      it('should support `templateUrl` (string) fetched from `$templateCache`', waitForAsync(() => {
+      it('should support `templateUrl` (string) fetched from `$templateCache`', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {templateUrl: 'ng1.component.html'};
 
@@ -206,6 +206,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -230,12 +231,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
+      });
 
-      it('should support `templateUrl` (function) fetched from `$templateCache`', waitForAsync(() => {
+      it('should support `templateUrl` (function) fetched from `$templateCache`', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {templateUrl: () => 'ng1.component.html'};
 
@@ -255,6 +255,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -279,12 +280,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
+      });
 
-      it('should pass $element to `templateUrl` function and not $attrs', waitForAsync(() => {
+      it('should pass $element to `templateUrl` function and not $attrs', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {
           templateUrl: ($attrs: angular.IAttributes, $element: angular.IAugmentedJQuery) => {
@@ -311,6 +311,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -335,13 +336,12 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
+      });
 
       // NOT SUPPORTED YET
-      xit('should support `templateUrl` (string) fetched from the server', fakeAsync(() => {
+      xit('should support `templateUrl` (string) fetched from the server', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {templateUrl: 'ng1.component.html'};
 
@@ -361,6 +361,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -370,7 +371,7 @@ withEachNg1Version(() => {
           .component('ng1', ng1Component)
           .directive('ng2', downgradeComponent({component: Ng2Component}))
           .value('$httpBackend', (method: string, url: string, post: any, callback: Function) =>
-            setTimeout(() => callback(200, `${method}:${url}`.toLowerCase()), 1000),
+            setTimeout(() => callback(200, `${method}:${url}`.toLowerCase()), 20),
           );
 
         // Define `Ng2Module`
@@ -385,17 +386,16 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          tick(500);
-          expect(multiTrim(element.textContent)).toBe('');
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        await timeout(5);
+        expect(multiTrim(element.textContent)).toBe('');
 
-          tick(500);
-          expect(multiTrim(element.textContent)).toBe('get:ng1.component.html');
-        });
-      }));
+        await timeout(20);
+        expect(multiTrim(element.textContent)).toBe('get:ng1.component.html');
+      });
 
       // NOT SUPPORTED YET
-      xit('should support `templateUrl` (function) fetched from the server', fakeAsync(() => {
+      xit('should support `templateUrl` (function) fetched from the server', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {templateUrl: () => 'ng1.component.html'};
 
@@ -415,6 +415,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -424,7 +425,7 @@ withEachNg1Version(() => {
           .component('ng1', ng1Component)
           .directive('ng2', downgradeComponent({component: Ng2Component}))
           .value('$httpBackend', (method: string, url: string, post: any, callback: Function) =>
-            setTimeout(() => callback(200, `${method}:${url}`.toLowerCase()), 1000),
+            setTimeout(() => callback(200, `${method}:${url}`.toLowerCase()), 20),
           );
 
         // Define `Ng2Module`
@@ -439,16 +440,15 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          tick(500);
-          expect(multiTrim(element.textContent)).toBe('');
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        await timeout(5);
+        expect(multiTrim(element.textContent)).toBe('');
 
-          tick(500);
-          expect(multiTrim(element.textContent)).toBe('get:ng1.component.html');
-        });
-      }));
+        await timeout(20);
+        expect(multiTrim(element.textContent)).toBe('get:ng1.component.html');
+      });
 
-      it('should support empty templates', waitForAsync(() => {
+      it('should support empty templates', async () => {
         // Define `ng1Component`s
         const ng1ComponentA: angular.IComponent = {template: ''};
         const ng1ComponentB: angular.IComponent = {template: () => ''};
@@ -503,6 +503,7 @@ withEachNg1Version(() => {
             <ng1D>Ignore this</ng1D>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -537,14 +538,13 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('');
+      });
     });
 
     describe('bindings', () => {
-      it('should support `@` bindings', fakeAsync(() => {
+      it('should support `@` bindings', async () => {
         let ng2ComponentInstance: Ng2Component;
 
         // Define `ng1Component`
@@ -575,6 +575,7 @@ withEachNg1Version(() => {
             | Outside: {{ dataA }}, {{ dataB }}
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -603,28 +604,27 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const ng1 = element.querySelector('ng1')!;
-          const ng1Controller = angular.element(ng1).controller?.('ng1');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const ng1 = element.querySelector('ng1')!;
+        const ng1Controller = angular.element(ng1).controller?.('ng1');
 
-          expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
+        expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
 
-          ng1Controller.inputA = 'baz';
-          ng1Controller.inputB = 'qux';
-          tick();
+        ng1Controller.inputA = 'baz';
+        ng1Controller.inputB = 'qux';
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: foo, bar');
+        expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: foo, bar');
 
-          ng2ComponentInstance.dataA = 'foo2';
-          ng2ComponentInstance.dataB = 'bar2';
-          $digest(adapter);
-          tick();
+        ng2ComponentInstance!.dataA = 'foo2';
+        ng2ComponentInstance!.dataB = 'bar2';
+        $digest(adapter);
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
+      });
 
-      it('should support `<` bindings', fakeAsync(() => {
+      it('should support `<` bindings', async () => {
         let ng2ComponentInstance: Ng2Component;
 
         // Define `ng1Component`
@@ -655,6 +655,7 @@ withEachNg1Version(() => {
             | Outside: {{ dataA.value }}, {{ dataB.value }}
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -683,28 +684,27 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const ng1 = element.querySelector('ng1')!;
-          const ng1Controller = angular.element(ng1).controller?.('ng1');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const ng1 = element.querySelector('ng1')!;
+        const ng1Controller = angular.element(ng1).controller?.('ng1');
 
-          expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
+        expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
 
-          ng1Controller.inputA = {value: 'baz'};
-          ng1Controller.inputB = {value: 'qux'};
-          tick();
+        ng1Controller.inputA = {value: 'baz'};
+        ng1Controller.inputB = {value: 'qux'};
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: foo, bar');
+        expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: foo, bar');
 
-          ng2ComponentInstance.dataA = {value: 'foo2'};
-          ng2ComponentInstance.dataB = {value: 'bar2'};
-          $digest(adapter);
-          tick();
+        ng2ComponentInstance!.dataA = {value: 'foo2'};
+        ng2ComponentInstance!.dataB = {value: 'bar2'};
+        $digest(adapter);
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
+      });
 
-      it('should support `=` bindings', fakeAsync(() => {
+      it('should support `=` bindings', async () => {
         let ng2ComponentInstance: Ng2Component;
 
         // Define `ng1Component`
@@ -736,6 +736,7 @@ withEachNg1Version(() => {
             <ng1 [(inputAttrA)]="dataA" [(inputB)]="dataB"></ng1>
             | Outside: {{ dataA.value }}, {{ dataB.value }}
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
           standalone: false,
         })
         class Ng2Component {
@@ -765,28 +766,27 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const ng1 = element.querySelector('ng1')!;
-          const ng1Controller = angular.element(ng1).controller?.('ng1');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const ng1 = element.querySelector('ng1')!;
+        const ng1Controller = angular.element(ng1).controller?.('ng1');
 
-          expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
+        expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
 
-          ng1Controller.inputA = {value: 'baz'};
-          ng1Controller.inputB = {value: 'qux'};
-          tick();
+        ng1Controller.inputA = {value: 'baz'};
+        ng1Controller.inputB = {value: 'qux'};
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: baz, qux');
+        expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: baz, qux');
 
-          ng2ComponentInstance.dataA = {value: 'foo2'};
-          ng2ComponentInstance.dataB = {value: 'bar2'};
-          $digest(adapter);
-          tick();
+        ng2ComponentInstance!.dataA = {value: 'foo2'};
+        ng2ComponentInstance!.dataB = {value: 'bar2'};
+        $digest(adapter);
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
+      });
 
-      it('should support `&` bindings', fakeAsync(() => {
+      it('should support `&` bindings', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {
           template: 'Inside: -',
@@ -815,6 +815,7 @@ withEachNg1Version(() => {
             | Outside: {{ dataA }}, {{ dataB }}
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -839,21 +840,20 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          const ng1 = element.querySelector('ng1')!;
-          const ng1Controller = angular.element(ng1).controller?.('ng1');
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const ng1 = element.querySelector('ng1')!;
+        const ng1Controller = angular.element(ng1).controller?.('ng1');
 
-          expect(multiTrim(element.textContent)).toBe('Inside: - | Outside: foo, bar');
+        expect(multiTrim(element.textContent)).toBe('Inside: - | Outside: foo, bar');
 
-          ng1Controller.outputA('baz');
-          ng1Controller.outputB('qux');
-          tick();
+        ng1Controller.outputA('baz');
+        ng1Controller.outputB('qux');
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe('Inside: - | Outside: baz, qux');
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe('Inside: - | Outside: baz, qux');
+      });
 
-      it('should bind properties, events', fakeAsync(() => {
+      it('should bind properties, events', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {
           template: `
@@ -914,6 +914,7 @@ withEachNg1Version(() => {
             {{ event }} - {{ last }}, {{ first }}, {{ city }}
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           first = 'Victor';
@@ -940,25 +941,24 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe(
-            'Hello Savkin, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
-              'Hello TEST; A: First; B: Last; C: City | ' +
-              'WORKS - SAVKIN, Victor, SF',
-          );
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe(
+          'Hello Savkin, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
+            'Hello TEST; A: First; B: Last; C: City | ' +
+            'WORKS - SAVKIN, Victor, SF',
+        );
 
-          // Detect changes
-          tick();
+        // Detect changes
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe(
-            'Hello SAVKIN, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
-              'Hello TEST; A: First; B: Last; C: City | ' +
-              'WORKS - SAVKIN, Victor, SF',
-          );
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe(
+          'Hello SAVKIN, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
+            'Hello TEST; A: First; B: Last; C: City | ' +
+            'WORKS - SAVKIN, Victor, SF',
+        );
+      });
 
-      it('should bind optional properties', fakeAsync(() => {
+      it('should bind optional properties', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {
           template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB }}',
@@ -993,6 +993,7 @@ withEachNg1Version(() => {
             {{ dataB.value }}
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -1021,39 +1022,38 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const ng1s = element.querySelectorAll('ng1')!;
-          const ng1Controller0 = angular.element(ng1s[0]).controller?.('ng1');
-          const ng1Controller1 = angular.element(ng1s[1]).controller?.('ng1');
-          const ng1Controller2 = angular.element(ng1s[2]).controller?.('ng1');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const ng1s = element.querySelectorAll('ng1')!;
+        const ng1Controller0 = angular.element(ng1s[0]).controller?.('ng1');
+        const ng1Controller1 = angular.element(ng1s[1]).controller?.('ng1');
+        const ng1Controller2 = angular.element(ng1s[2]).controller?.('ng1');
 
-          expect(multiTrim(element.textContent)).toBe(
-            'Inside: foo, bar | Inside: , Bar | Inside: , | Inside: , | Outside: foo, bar',
-          );
+        expect(multiTrim(element.textContent)).toBe(
+          'Inside: foo, bar | Inside: , Bar | Inside: , | Inside: , | Outside: foo, bar',
+        );
 
-          ng1Controller0.inputA.value = 'baz';
-          ng1Controller0.inputB = 'qux';
-          tick();
+        ng1Controller0.inputA.value = 'baz';
+        ng1Controller0.inputB = 'qux';
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe(
-            'Inside: baz, qux | Inside: , Bar | Inside: , | Inside: , | Outside: baz, qux',
-          );
+        expect(multiTrim(element.textContent)).toBe(
+          'Inside: baz, qux | Inside: , Bar | Inside: , | Inside: , | Outside: baz, qux',
+        );
 
-          ng1Controller1.outputA({value: 'foo again'});
-          ng1Controller2.outputB('bar again');
-          $digest(adapter);
-          tick();
+        ng1Controller1.outputA({value: 'foo again'});
+        ng1Controller2.outputB('bar again');
+        $digest(adapter);
+        await timeout();
 
-          expect(ng1Controller0.inputA).toEqual({value: 'foo again'});
-          expect(ng1Controller0.inputB).toEqual('bar again');
-          expect(multiTrim(element.textContent)).toBe(
-            'Inside: foo again, bar again | Inside: , Bar | Inside: , | Inside: , | ' +
-              'Outside: foo again, bar again',
-          );
-        });
-      }));
+        expect(ng1Controller0.inputA).toEqual({value: 'foo again'});
+        expect(ng1Controller0.inputB).toEqual('bar again');
+        expect(multiTrim(element.textContent)).toBe(
+          'Inside: foo again, bar again | Inside: , Bar | Inside: , | Inside: , | ' +
+            'Outside: foo again, bar again',
+        );
+      });
 
-      it('should bind properties, events to scope when bindToController is not used', fakeAsync(() => {
+      it('should bind properties, events to scope when bindToController is not used', async () => {
         // Define `ng1Directive`
         const ng1Directive: angular.IDirective = {
           template: '{{ someText }} - Data: {{ inputA }} - Length: {{ inputA.length }}',
@@ -1087,6 +1087,7 @@ withEachNg1Version(() => {
             | {{ someText }} - Data: {{ dataA }} - Length: {{ dataA.length }}
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           someText = 'ng2';
@@ -1111,35 +1112,34 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const ng1 = element.querySelector('[ng1]')!;
-          const ng1Controller = angular.element(ng1).controller?.('ng1');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const ng1 = element.querySelector('[ng1]')!;
+        const ng1Controller = angular.element(ng1).controller?.('ng1');
 
-          expect(multiTrim(element.textContent)).toBe(
-            'ng1 - Data: [1,2,3] - Length: 3 | ng2 - Data: 1,2,3 - Length: 3',
-          );
+        expect(multiTrim(element.textContent)).toBe(
+          'ng1 - Data: [1,2,3] - Length: 3 | ng2 - Data: 1,2,3 - Length: 3',
+        );
 
-          ng1Controller.$scope.inputA = [4, 5];
-          tick();
+        ng1Controller.$scope.inputA = [4, 5];
+        await timeout();
 
-          expect(multiTrim(element.textContent)).toBe(
-            'ng1 - Data: [4,5] - Length: 2 | ng2 - Data: 4,5 - Length: 2',
-          );
+        expect(multiTrim(element.textContent)).toBe(
+          'ng1 - Data: [4,5] - Length: 2 | ng2 - Data: 4,5 - Length: 2',
+        );
 
-          ng1Controller.$scope.outputA(6);
-          $digest(adapter);
-          tick();
+        ng1Controller.$scope.outputA(6);
+        $digest(adapter);
+        await timeout();
 
-          expect(ng1Controller.$scope.inputA).toEqual([4, 5, 6]);
-          expect(multiTrim(element.textContent)).toBe(
-            'ng1 - Data: [4,5,6] - Length: 3 | ng2 - Data: 4,5,6 - Length: 3',
-          );
-        });
-      }));
+        expect(ng1Controller.$scope.inputA).toEqual([4, 5, 6]);
+        expect(multiTrim(element.textContent)).toBe(
+          'ng1 - Data: [4,5,6] - Length: 3 | ng2 - Data: 4,5,6 - Length: 3',
+        );
+      });
     });
 
     describe('compiling', () => {
-      it('should compile the ng1 template in the correct DOM context', waitForAsync(() => {
+      it('should compile the ng1 template in the correct DOM context', async () => {
         let grandParentNodeName: string;
 
         // Define `ng1Component`
@@ -1167,6 +1167,7 @@ withEachNg1Version(() => {
           selector: 'ng2-x',
           template: 'ng2X(<ng1A></ng1A>)',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentX {}
 
@@ -1189,14 +1190,13 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-x></ng2-x>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(grandParentNodeName).toBe('NG2-X');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(grandParentNodeName!).toBe('NG2-X');
+      });
     });
 
     describe('linking', () => {
-      it('should run the pre-linking after instantiating the controller', waitForAsync(() => {
+      it('should run the pre-linking after instantiating the controller', async () => {
         const log: string[] = [];
 
         // Define `ng1Directive`
@@ -1226,6 +1226,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -1247,12 +1248,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(log).toEqual(['ng1-ctrl', 'ng1-pre']);
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(log).toEqual(['ng1-ctrl', 'ng1-pre']);
+      });
 
-      it('should run the pre-linking function before linking', waitForAsync(() => {
+      it('should run the pre-linking function before linking', async () => {
         const log: string[] = [];
 
         // Define `ng1Directive`
@@ -1278,6 +1278,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<ng1A></ng1A>',
+          changeDetection: ChangeDetectionStrategy.Eager,
           standalone: false,
         })
         class Ng2Component {}
@@ -1301,12 +1302,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(log).toEqual(['ng1A-pre', 'ng1B-post']);
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(log).toEqual(['ng1A-pre', 'ng1B-post']);
+      });
 
-      it('should run the post-linking function after linking (link: object)', waitForAsync(() => {
+      it('should run the post-linking function after linking (link: object)', async () => {
         const log: string[] = [];
 
         // Define `ng1Directive`
@@ -1332,6 +1332,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<ng1A></ng1A>',
+          changeDetection: ChangeDetectionStrategy.Eager,
           standalone: false,
         })
         class Ng2Component {}
@@ -1355,12 +1356,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(log).toEqual(['ng1B-post', 'ng1A-post']);
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(log).toEqual(['ng1B-post', 'ng1A-post']);
+      });
 
-      it('should run the post-linking function after linking (link: function)', waitForAsync(() => {
+      it('should run the post-linking function after linking (link: function)', async () => {
         const log: string[] = [];
 
         // Define `ng1Directive`
@@ -1386,6 +1386,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<ng1A></ng1A>',
+          changeDetection: ChangeDetectionStrategy.Eager,
           standalone: false,
         })
         class Ng2Component {}
@@ -1409,12 +1410,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(log).toEqual(['ng1B-post', 'ng1A-post']);
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(log).toEqual(['ng1B-post', 'ng1A-post']);
+      });
 
-      it('should run the post-linking function before `$postLink`', waitForAsync(() => {
+      it('should run the post-linking function before `$postLink`', async () => {
         const log: string[] = [];
 
         // Define `ng1Directive`
@@ -1444,6 +1444,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -1465,14 +1466,13 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(log).toEqual(['ng1-post', 'ng1-$post']);
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(log).toEqual(['ng1-post', 'ng1-$post']);
+      });
     });
 
     describe('controller', () => {
-      it('should support `controllerAs`', waitForAsync(() => {
+      it('should support `controllerAs`', async () => {
         // Define `ng1Directive`
         const ng1Directive: angular.IDirective = {
           template: '{{ vm.scope }}; {{ vm.isClass }}; {{ vm.hasElement }}; {{ vm.isPublished() }}',
@@ -1519,6 +1519,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -1540,12 +1541,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('scope; isClass; NG1; published');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('scope; isClass; NG1; published');
+      });
 
-      it('should support `bindToController` (boolean)', waitForAsync(() => {
+      it('should support `bindToController` (boolean)', async () => {
         // Define `ng1Directive`
         const ng1DirectiveA: angular.IDirective = {
           template: 'Scope: {{ title }}; Controller: {{ $ctrl.title }}',
@@ -1596,6 +1596,7 @@ withEachNg1Version(() => {
             <ng1B title="WORKS"></ng1B>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -1619,14 +1620,13 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe(
-            'Scope: WORKS; Controller: | Scope: ; Controller: WORKS',
-          );
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe(
+          'Scope: WORKS; Controller: | Scope: ; Controller: WORKS',
+        );
+      });
 
-      it('should support `bindToController` (object)', waitForAsync(() => {
+      it('should support `bindToController` (object)', async () => {
         // Define `ng1Directive`
         const ng1Directive: angular.IDirective = {
           template: '{{ $ctrl.title }}',
@@ -1654,6 +1654,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1 title="WORKS"></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -1678,12 +1679,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('WORKS');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('WORKS');
+      });
 
-      it('should support `controller` as string', waitForAsync(() => {
+      it('should support `controller` as string', async () => {
         // Define `ng1Directive`
         const ng1Directive: angular.IDirective = {
           template: '{{ $ctrl.title }} {{ $ctrl.text }}',
@@ -1710,6 +1710,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1 title="WORKS"></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -1737,12 +1738,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('WORKS GREAT');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('WORKS GREAT');
+      });
 
-      it('should insert the compiled content before instantiating the controller', waitForAsync(() => {
+      it('should insert the compiled content before instantiating the controller', async () => {
         let compiledContent: string;
         let getCurrentContent: () => string;
 
@@ -1775,6 +1775,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -1796,17 +1797,16 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(compiledContent)).toBe('Hello, {{ $ctrl.name }}!');
-          expect(multiTrim(getCurrentContent())).toBe('Hello, world!');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(compiledContent!)).toBe('Hello, {{ $ctrl.name }}!');
+        expect(multiTrim(getCurrentContent!())).toBe('Hello, world!');
+      });
     });
 
     describe('require', () => {
       // NOT YET SUPPORTED
       xdescribe('in pre-/post-link', () => {
-        it('should resolve to its own controller if falsy', waitForAsync(() => {
+        it('should resolve to its own controller if falsy', async () => {
           // Define `ng1Directive`
           const ng1Directive: angular.IDirective = {
             template: 'Pre: {{ pre }} | Post: {{ post }}',
@@ -1839,6 +1839,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: '<ng1></ng1>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -1860,16 +1861,15 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng2></ng2>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(multiTrim(document.body.textContent)).toBe('Pre: foo | Post: foo');
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(multiTrim(document.body.textContent)).toBe('Pre: foo | Post: foo');
+        });
 
         // TODO: Add more tests
       });
 
       describe('in controller', () => {
-        it('should be available to children', waitForAsync(() => {
+        it('should be available to children', async () => {
           // Define `ng1Component`
           const ng1ComponentA: angular.IComponent = {
             template: '<ng1-b></ng1-b>',
@@ -1899,6 +1899,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: '<ng1A></ng1A>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -1921,12 +1922,11 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng2></ng2>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(multiTrim(element.textContent)).toBe('Required: ng1A');
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(multiTrim(element.textContent)).toBe('Required: ng1A');
+        });
 
-        it('should throw if required controller cannot be found', waitForAsync(() => {
+        it('should throw if required controller cannot be found', async () => {
           // Define `ng1Component`
           const ng1ComponentA: angular.IComponent = {require: {foo: 'iDoNotExist'}};
           const ng1ComponentB: angular.IComponent = {require: {foo: '^iDoNotExist'}};
@@ -1968,6 +1968,7 @@ withEachNg1Version(() => {
             selector: 'ng2-a',
             template: '<ng1A></ng1A>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2ComponentA {}
 
@@ -1975,6 +1976,7 @@ withEachNg1Version(() => {
             selector: 'ng2-b',
             template: '<ng1B></ng1B>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2ComponentB {}
 
@@ -1982,6 +1984,7 @@ withEachNg1Version(() => {
             selector: 'ng2-c',
             template: '<ng1C></ng1C>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2ComponentC {}
 
@@ -2018,26 +2021,23 @@ withEachNg1Version(() => {
           const elementB = html(`<ng2-b></ng2-b>`);
           const elementC = html(`<ng2-c></ng2-c>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, elementA, ng1Module).then(() => {
-            expect(mockExceptionHandler).toHaveBeenCalledWith(
-              new Error("Unable to find required 'iDoNotExist' in upgraded directive 'ng1A'."),
-            );
-          });
+          await bootstrap(platformBrowserDynamic(), Ng2Module, elementA, ng1Module);
+          expect(mockExceptionHandler).toHaveBeenCalledWith(
+            new Error("Unable to find required 'iDoNotExist' in upgraded directive 'ng1A'."),
+          );
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, elementB, ng1Module).then(() => {
-            expect(mockExceptionHandler).toHaveBeenCalledWith(
-              new Error("Unable to find required '^iDoNotExist' in upgraded directive 'ng1B'."),
-            );
-          });
+          await bootstrap(platformBrowserDynamic(), Ng2Module, elementB, ng1Module);
+          expect(mockExceptionHandler).toHaveBeenCalledWith(
+            new Error("Unable to find required '^iDoNotExist' in upgraded directive 'ng1B'."),
+          );
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, elementC, ng1Module).then(() => {
-            expect(mockExceptionHandler).toHaveBeenCalledWith(
-              new Error("Unable to find required '^^iDoNotExist' in upgraded directive 'ng1C'."),
-            );
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, elementC, ng1Module);
+          expect(mockExceptionHandler).toHaveBeenCalledWith(
+            new Error("Unable to find required '^^iDoNotExist' in upgraded directive 'ng1C'."),
+          );
+        });
 
-        it('should not throw if missing required controller is optional', waitForAsync(() => {
+        it('should not throw if missing required controller is optional', async () => {
           // Define `ng1Component`
           const ng1Component: angular.IComponent = {
             require: {
@@ -2063,6 +2063,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: '<ng1></ng1>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -2086,12 +2087,11 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng2></ng2>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(mockExceptionHandler).not.toHaveBeenCalled();
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(mockExceptionHandler).not.toHaveBeenCalled();
+        });
 
-        it('should assign resolved values to the controller instance (if `require` is not object)', waitForAsync(() => {
+        it('should assign resolved values to the controller instance (if `require` is not object)', async () => {
           // Define `ng1Component`
           const ng1ComponentA: angular.IComponent = {
             template: 'ng1A(<div><ng2></ng2></div>)',
@@ -2148,6 +2148,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: 'ng2(<div><ng1B></ng1B> | <ng1C></ng1C></div>)',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -2171,12 +2172,11 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng1-a></ng1-a>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(multiTrim(element.textContent)).toBe('ng1A(ng2(ng1B() | ng1C()))');
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(multiTrim(element.textContent)).toBe('ng1A(ng2(ng1B() | ng1C()))');
+        });
 
-        it('should assign resolved values to the controller instance (if `require` is object)', waitForAsync(() => {
+        it('should assign resolved values to the controller instance (if `require` is object)', async () => {
           // Define `ng1Component`
           const ng1ComponentA: angular.IComponent = {
             template: 'ng1A(<div><ng2></ng2></div>)',
@@ -2223,6 +2223,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: 'ng2(<div><ng1B></ng1B></div>)',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -2245,14 +2246,13 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng1-a></ng1-a>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(multiTrim(element.textContent)).toBe(
-              'ng1A(ng2(ng1B( ng1A: | ^ng1A: A | ^^ng1A: A | ng1B: B | ^ng1B: B | ^^ng1B: )))',
-            );
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(multiTrim(element.textContent)).toBe(
+            'ng1A(ng2(ng1B( ng1A: | ^ng1A: A | ^^ng1A: A | ng1B: B | ^ng1B: B | ^^ng1B: )))',
+          );
+        });
 
-        it('should assign to controller before calling `$onInit()`', waitForAsync(() => {
+        it('should assign to controller before calling `$onInit()`', async () => {
           // Define `ng1Component`
           const ng1ComponentA: angular.IComponent = {
             template: '<ng2></ng2>',
@@ -2288,6 +2288,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: '<ng1B></ng1B>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -2310,12 +2311,11 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng1-a></ng1-a>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(multiTrim(element.textContent)).toBe('$onInit: ng1A');
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(multiTrim(element.textContent)).toBe('$onInit: ng1A');
+        });
 
-        it('should use the key as name if the required controller name is omitted', waitForAsync(() => {
+        it('should use the key as name if the required controller name is omitted', async () => {
           // Define `ng1Component`
           const ng1ComponentA: angular.IComponent = {
             template: '<ng1-b></ng1-b>',
@@ -2360,6 +2360,7 @@ withEachNg1Version(() => {
             selector: 'ng2',
             template: '<ng1C></ng1C>',
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Ng2Component {}
 
@@ -2383,15 +2384,14 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html('<ng1-a></ng1-a>');
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-            expect(multiTrim(element.textContent)).toBe('ng1A: A | ng1B: B | ng1C: C');
-          });
-        }));
+          await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+          expect(multiTrim(element.textContent)).toBe('ng1A: A | ng1B: B | ng1C: C');
+        });
       });
     });
 
     describe('transclusion', () => {
-      it('should support single-slot transclusion', waitForAsync(() => {
+      it('should support single-slot transclusion', async () => {
         let ng2ComponentAInstance: Ng2ComponentA;
         let ng2ComponentBInstance: Ng2ComponentB;
 
@@ -2417,6 +2417,7 @@ withEachNg1Version(() => {
           selector: 'ng2A',
           template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentA {
           value = 'foo';
@@ -2430,6 +2431,7 @@ withEachNg1Version(() => {
           selector: 'ng2B',
           template: 'ng2B({{ value }})',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentB {
           value = 'bar';
@@ -2456,23 +2458,22 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
 
-          ng2ComponentAInstance.value = 'baz';
-          ng2ComponentAInstance.showB = true;
-          $digest(adapter);
+        ng2ComponentAInstance!.value = 'baz';
+        ng2ComponentAInstance!.showB = true;
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(bar)))');
+        expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(bar)))');
 
-          ng2ComponentBInstance.value = 'qux';
-          $digest(adapter);
+        ng2ComponentBInstance!.value = 'qux';
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(qux)))');
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(qux)))');
+      });
 
-      it('should support single-slot transclusion with fallback content', waitForAsync(() => {
+      it('should support single-slot transclusion with fallback content', async () => {
         let ng1ControllerInstances: any[] = [];
         let ng2ComponentInstance: Ng2Component;
 
@@ -2504,6 +2505,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: 'ng2(<ng1>{{ value }}</ng1> | <ng1></ng1>)',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           value = 'from-ng2';
@@ -2530,18 +2532,17 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(multiTrim(element.textContent)).toBe('ng2(ng1(from-ng2) | ng1(from-ng1))');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('ng2(ng1(from-ng2) | ng1(from-ng1))');
 
-          ng1ControllerInstances.forEach((ctrl) => (ctrl.value = 'ng1-foo'));
-          ng2ComponentInstance.value = 'ng2-bar';
-          $digest(adapter);
+        ng1ControllerInstances.forEach((ctrl) => (ctrl.value = 'ng1-foo'));
+        ng2ComponentInstance!.value = 'ng2-bar';
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent)).toBe('ng2(ng1(ng2-bar) | ng1(ng1-foo))');
-        });
-      }));
+        expect(multiTrim(element.textContent)).toBe('ng2(ng1(ng2-bar) | ng1(ng1-foo))');
+      });
 
-      it('should support multi-slot transclusion', waitForAsync(() => {
+      it('should support multi-slot transclusion', async () => {
         let ng2ComponentInstance: Ng2Component;
 
         // Define `ng1Component`
@@ -2574,6 +2575,7 @@ withEachNg1Version(() => {
             </ng1>
             )`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           x = 'foo';
@@ -2602,18 +2604,17 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1foo2)|y(bar1bar2)))');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1foo2)|y(bar1bar2)))');
 
-          ng2ComponentInstance.x = 'baz';
-          ng2ComponentInstance.y = 'qux';
-          $digest(adapter);
+        ng2ComponentInstance!.x = 'baz';
+        ng2ComponentInstance!.y = 'qux';
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz1baz2)|y(qux1qux2)))');
-        });
-      }));
+        expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz1baz2)|y(qux1qux2)))');
+      });
 
-      it('should support default slot (with fallback content)', waitForAsync(() => {
+      it('should support default slot (with fallback content)', async () => {
         let ng1ControllerInstances: any[] = [];
         let ng2ComponentInstance: Ng2Component;
 
@@ -2659,6 +2660,7 @@ withEachNg1Version(() => {
             <ng1><content-x>ignored x</content-x><content-y>ignored y</content-y></ng1>
             )`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           x = 'foo';
@@ -2687,23 +2689,22 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(multiTrim(element.textContent, true)).toBe(
-            'ng2(ng1(default((foo)foo-bar(bar)))|ng1(default(fallback-ng1)))',
-          );
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent, true)).toBe(
+          'ng2(ng1(default((foo)foo-bar(bar)))|ng1(default(fallback-ng1)))',
+        );
 
-          ng1ControllerInstances.forEach((ctrl) => (ctrl.value = 'ng1-plus'));
-          ng2ComponentInstance.x = 'baz';
-          ng2ComponentInstance.y = 'qux';
-          $digest(adapter);
+        ng1ControllerInstances.forEach((ctrl) => (ctrl.value = 'ng1-plus'));
+        ng2ComponentInstance!.x = 'baz';
+        ng2ComponentInstance!.y = 'qux';
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent, true)).toBe(
-            'ng2(ng1(default((baz)baz-qux(qux)))|ng1(default(fallback-ng1-plus)))',
-          );
-        });
-      }));
+        expect(multiTrim(element.textContent, true)).toBe(
+          'ng2(ng1(default((baz)baz-qux(qux)))|ng1(default(fallback-ng1-plus)))',
+        );
+      });
 
-      it('should support optional transclusion slots (with fallback content)', waitForAsync(() => {
+      it('should support optional transclusion slots (with fallback content)', async () => {
         let ng1ControllerInstances: any[] = [];
         let ng2ComponentInstance: Ng2Component;
 
@@ -2748,6 +2749,7 @@ withEachNg1Version(() => {
             >
             )`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           x = 'ng2X';
@@ -2776,26 +2778,25 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(multiTrim(element.textContent, true)).toBe(
-            'ng2(ng1(x(ng2X)|y(ng1Y))|ng1(x(ng1X)|y(ng2Y)))',
-          );
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent, true)).toBe(
+          'ng2(ng1(x(ng2X)|y(ng1Y))|ng1(x(ng1X)|y(ng2Y)))',
+        );
 
-          ng1ControllerInstances.forEach((ctrl) => {
-            ctrl.x = 'ng1X-foo';
-            ctrl.y = 'ng1Y-bar';
-          });
-          ng2ComponentInstance.x = 'ng2X-baz';
-          ng2ComponentInstance.y = 'ng2Y-qux';
-          $digest(adapter);
-
-          expect(multiTrim(element.textContent, true)).toBe(
-            'ng2(ng1(x(ng2X-baz)|y(ng1Y-bar))|ng1(x(ng1X-foo)|y(ng2Y-qux)))',
-          );
+        ng1ControllerInstances.forEach((ctrl) => {
+          ctrl.x = 'ng1X-foo';
+          ctrl.y = 'ng1Y-bar';
         });
-      }));
+        ng2ComponentInstance!.x = 'ng2X-baz';
+        ng2ComponentInstance!.y = 'ng2Y-qux';
+        $digest(adapter);
 
-      it('should throw if a non-optional slot is not filled', waitForAsync(() => {
+        expect(multiTrim(element.textContent, true)).toBe(
+          'ng2(ng1(x(ng2X-baz)|y(ng1Y-bar))|ng1(x(ng1X-foo)|y(ng2Y-qux)))',
+        );
+      });
+
+      it('should throw if a non-optional slot is not filled', async () => {
         let errorMessage: string;
 
         // Define `ng1Component`
@@ -2820,6 +2821,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -2842,12 +2844,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(errorMessage).toContain("Required transclusion slot 'slotY' on directive: ng1");
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(errorMessage!).toContain("Required transclusion slot 'slotY' on directive: ng1");
+      });
 
-      it('should support structural directives in transcluded content', waitForAsync(() => {
+      it('should support structural directives in transcluded content', async () => {
         let ng2ComponentInstance: Ng2Component;
 
         // Define `ng1Component`
@@ -2884,6 +2885,7 @@ withEachNg1Version(() => {
             </ng1>
             )`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           x = 'foo';
@@ -2913,26 +2915,25 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1)|default(bar2)))');
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1)|default(bar2)))');
 
-          ng2ComponentInstance.x = 'baz';
-          ng2ComponentInstance.y = 'qux';
-          ng2ComponentInstance.show = false;
-          $digest(adapter);
+        ng2ComponentInstance!.x = 'baz';
+        ng2ComponentInstance!.y = 'qux';
+        ng2ComponentInstance!.show = false;
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz2)|default(qux1)))');
+        expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz2)|default(qux1)))');
 
-          ng2ComponentInstance.show = true;
-          $digest(adapter);
+        ng2ComponentInstance!.show = true;
+        $digest(adapter);
 
-          expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz1)|default(qux2)))');
-        });
-      }));
+        expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz1)|default(qux2)))');
+      });
     });
 
     describe('lifecycle hooks', () => {
-      it('should call `$onChanges()` on binding destination (prototype)', fakeAsync(() => {
+      it('should call `$onChanges()` on binding destination (prototype)', async () => {
         const scopeOnChanges = jasmine.createSpy('scopeOnChanges');
         const controllerOnChangesA = jasmine.createSpy('controllerOnChangesA');
         const controllerOnChangesB = jasmine.createSpy('controllerOnChangesB');
@@ -2993,6 +2994,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A [inputA]="data"></ng1A> | <ng1B [inputB]="data"></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           data = {foo: 'bar'};
@@ -3024,74 +3026,73 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          // Initial change
-          expect(scopeOnChanges.calls.count()).toBe(1);
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(1);
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        // Initial change
+        expect(scopeOnChanges.calls.count()).toBe(1);
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(1);
 
-          expect(scopeOnChanges.calls.argsFor(0)[0]).toEqual({inputA: jasmine.any(Object)});
-          expect(scopeOnChanges.calls.argsFor(0)[0].inputA.currentValue).toEqual({foo: 'bar'});
-          expect(scopeOnChanges.calls.argsFor(0)[0].inputA.isFirstChange()).toBe(true);
-          expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.currentValue).toEqual({
-            foo: 'bar',
-          });
-          expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.isFirstChange()).toBe(true);
-
-          // Change: Re-assign `data`
-          ng2ComponentInstance.data = {foo: 'baz'};
-          $digest(adapter);
-          tick();
-
-          expect(scopeOnChanges.calls.count()).toBe(2);
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(2);
-
-          expect(scopeOnChanges.calls.argsFor(1)[0]).toEqual({inputA: jasmine.any(Object)});
-          expect(scopeOnChanges.calls.argsFor(1)[0].inputA.previousValue).toEqual({foo: 'bar'});
-          expect(scopeOnChanges.calls.argsFor(1)[0].inputA.currentValue).toEqual({foo: 'baz'});
-          expect(scopeOnChanges.calls.argsFor(1)[0].inputA.isFirstChange()).toBe(false);
-          expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.previousValue).toEqual({
-            foo: 'bar',
-          });
-          expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.currentValue).toEqual({
-            foo: 'baz',
-          });
-          expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.isFirstChange()).toBe(false);
-
-          // No change: Update internal property
-          ng2ComponentInstance.data.foo = 'qux';
-          $digest(adapter);
-          tick();
-
-          expect(scopeOnChanges.calls.count()).toBe(2);
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(2);
-
-          // Change: Re-assign `data` (even if it looks the same)
-          ng2ComponentInstance.data = {foo: 'qux'};
-          $digest(adapter);
-          tick();
-
-          expect(scopeOnChanges.calls.count()).toBe(3);
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(3);
-
-          expect(scopeOnChanges.calls.argsFor(2)[0]).toEqual({inputA: jasmine.any(Object)});
-          expect(scopeOnChanges.calls.argsFor(2)[0].inputA.previousValue).toEqual({foo: 'qux'});
-          expect(scopeOnChanges.calls.argsFor(2)[0].inputA.currentValue).toEqual({foo: 'qux'});
-          expect(scopeOnChanges.calls.argsFor(2)[0].inputA.isFirstChange()).toBe(false);
-          expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.previousValue).toEqual({
-            foo: 'qux',
-          });
-          expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.currentValue).toEqual({
-            foo: 'qux',
-          });
-          expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.isFirstChange()).toBe(false);
+        expect(scopeOnChanges.calls.argsFor(0)[0]).toEqual({inputA: jasmine.any(Object)});
+        expect(scopeOnChanges.calls.argsFor(0)[0].inputA.currentValue).toEqual({foo: 'bar'});
+        expect(scopeOnChanges.calls.argsFor(0)[0].inputA.isFirstChange()).toBe(true);
+        expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.currentValue).toEqual({
+          foo: 'bar',
         });
-      }));
+        expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.isFirstChange()).toBe(true);
 
-      it('should call `$onChanges()` on binding destination (instance)', fakeAsync(() => {
+        // Change: Re-assign `data`
+        ng2ComponentInstance!.data = {foo: 'baz'};
+        $digest(adapter);
+        await timeout();
+
+        expect(scopeOnChanges.calls.count()).toBe(2);
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(2);
+
+        expect(scopeOnChanges.calls.argsFor(1)[0]).toEqual({inputA: jasmine.any(Object)});
+        expect(scopeOnChanges.calls.argsFor(1)[0].inputA.previousValue).toEqual({foo: 'bar'});
+        expect(scopeOnChanges.calls.argsFor(1)[0].inputA.currentValue).toEqual({foo: 'baz'});
+        expect(scopeOnChanges.calls.argsFor(1)[0].inputA.isFirstChange()).toBe(false);
+        expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.previousValue).toEqual({
+          foo: 'bar',
+        });
+        expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.currentValue).toEqual({
+          foo: 'baz',
+        });
+        expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.isFirstChange()).toBe(false);
+
+        // No change: Update internal property
+        ng2ComponentInstance!.data.foo = 'qux';
+        $digest(adapter);
+        await timeout();
+
+        expect(scopeOnChanges.calls.count()).toBe(2);
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(2);
+
+        // Change: Re-assign `data` (even if it looks the same)
+        ng2ComponentInstance!.data = {foo: 'qux'};
+        $digest(adapter);
+        await timeout();
+
+        expect(scopeOnChanges.calls.count()).toBe(3);
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(3);
+
+        expect(scopeOnChanges.calls.argsFor(2)[0]).toEqual({inputA: jasmine.any(Object)});
+        expect(scopeOnChanges.calls.argsFor(2)[0].inputA.previousValue).toEqual({foo: 'qux'});
+        expect(scopeOnChanges.calls.argsFor(2)[0].inputA.currentValue).toEqual({foo: 'qux'});
+        expect(scopeOnChanges.calls.argsFor(2)[0].inputA.isFirstChange()).toBe(false);
+        expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.previousValue).toEqual({
+          foo: 'qux',
+        });
+        expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.currentValue).toEqual({
+          foo: 'qux',
+        });
+        expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.isFirstChange()).toBe(false);
+      });
+
+      it('should call `$onChanges()` on binding destination (instance)', async () => {
         const scopeOnChangesA = jasmine.createSpy('scopeOnChangesA');
         const scopeOnChangesB = jasmine.createSpy('scopeOnChangesB');
         const controllerOnChangesA = jasmine.createSpy('controllerOnChangesA');
@@ -3155,6 +3156,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A [inputA]="data"></ng1A> | <ng1B [inputB]="data"></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           data = {foo: 'bar'};
@@ -3183,75 +3185,74 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          // Initial change
-          expect(scopeOnChangesA.calls.count()).toBe(1);
-          expect(scopeOnChangesB).not.toHaveBeenCalled();
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(1);
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        // Initial change
+        expect(scopeOnChangesA.calls.count()).toBe(1);
+        expect(scopeOnChangesB).not.toHaveBeenCalled();
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(1);
 
-          expect(scopeOnChangesA.calls.argsFor(0)[0].inputA.currentValue).toEqual({foo: 'bar'});
-          expect(scopeOnChangesA.calls.argsFor(0)[0].inputA.isFirstChange()).toBe(true);
-          expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.currentValue).toEqual({
-            foo: 'bar',
-          });
-          expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.isFirstChange()).toBe(true);
-
-          // Change: Re-assign `data`
-          ng2ComponentInstance.data = {foo: 'baz'};
-          $digest(adapter);
-          tick();
-
-          expect(scopeOnChangesA.calls.count()).toBe(2);
-          expect(scopeOnChangesB).not.toHaveBeenCalled();
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(2);
-
-          expect(scopeOnChangesA.calls.argsFor(1)[0].inputA.previousValue).toEqual({foo: 'bar'});
-          expect(scopeOnChangesA.calls.argsFor(1)[0].inputA.currentValue).toEqual({foo: 'baz'});
-          expect(scopeOnChangesA.calls.argsFor(1)[0].inputA.isFirstChange()).toBe(false);
-          expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.previousValue).toEqual({
-            foo: 'bar',
-          });
-          expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.currentValue).toEqual({
-            foo: 'baz',
-          });
-          expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.isFirstChange()).toBe(false);
-
-          // No change: Update internal property
-          ng2ComponentInstance.data.foo = 'qux';
-          $digest(adapter);
-          tick();
-
-          expect(scopeOnChangesA.calls.count()).toBe(2);
-          expect(scopeOnChangesB).not.toHaveBeenCalled();
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(2);
-
-          // Change: Re-assign `data` (even if it looks the same)
-          ng2ComponentInstance.data = {foo: 'qux'};
-          $digest(adapter);
-          tick();
-
-          expect(scopeOnChangesA.calls.count()).toBe(3);
-          expect(scopeOnChangesB).not.toHaveBeenCalled();
-          expect(controllerOnChangesA).not.toHaveBeenCalled();
-          expect(controllerOnChangesB.calls.count()).toBe(3);
-
-          expect(scopeOnChangesA.calls.argsFor(2)[0].inputA.previousValue).toEqual({foo: 'qux'});
-          expect(scopeOnChangesA.calls.argsFor(2)[0].inputA.currentValue).toEqual({foo: 'qux'});
-          expect(scopeOnChangesA.calls.argsFor(2)[0].inputA.isFirstChange()).toBe(false);
-          expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.previousValue).toEqual({
-            foo: 'qux',
-          });
-          expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.currentValue).toEqual({
-            foo: 'qux',
-          });
-          expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.isFirstChange()).toBe(false);
+        expect(scopeOnChangesA.calls.argsFor(0)[0].inputA.currentValue).toEqual({foo: 'bar'});
+        expect(scopeOnChangesA.calls.argsFor(0)[0].inputA.isFirstChange()).toBe(true);
+        expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.currentValue).toEqual({
+          foo: 'bar',
         });
-      }));
+        expect(controllerOnChangesB.calls.argsFor(0)[0].inputB.isFirstChange()).toBe(true);
 
-      it('should call `$onInit()` on controller', waitForAsync(() => {
+        // Change: Re-assign `data`
+        ng2ComponentInstance!.data = {foo: 'baz'};
+        $digest(adapter);
+        await timeout();
+
+        expect(scopeOnChangesA.calls.count()).toBe(2);
+        expect(scopeOnChangesB).not.toHaveBeenCalled();
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(2);
+
+        expect(scopeOnChangesA.calls.argsFor(1)[0].inputA.previousValue).toEqual({foo: 'bar'});
+        expect(scopeOnChangesA.calls.argsFor(1)[0].inputA.currentValue).toEqual({foo: 'baz'});
+        expect(scopeOnChangesA.calls.argsFor(1)[0].inputA.isFirstChange()).toBe(false);
+        expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.previousValue).toEqual({
+          foo: 'bar',
+        });
+        expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.currentValue).toEqual({
+          foo: 'baz',
+        });
+        expect(controllerOnChangesB.calls.argsFor(1)[0].inputB.isFirstChange()).toBe(false);
+
+        // No change: Update internal property
+        ng2ComponentInstance!.data.foo = 'qux';
+        $digest(adapter);
+        await timeout();
+
+        expect(scopeOnChangesA.calls.count()).toBe(2);
+        expect(scopeOnChangesB).not.toHaveBeenCalled();
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(2);
+
+        // Change: Re-assign `data` (even if it looks the same)
+        ng2ComponentInstance!.data = {foo: 'qux'};
+        $digest(adapter);
+        await timeout();
+
+        expect(scopeOnChangesA.calls.count()).toBe(3);
+        expect(scopeOnChangesB).not.toHaveBeenCalled();
+        expect(controllerOnChangesA).not.toHaveBeenCalled();
+        expect(controllerOnChangesB.calls.count()).toBe(3);
+
+        expect(scopeOnChangesA.calls.argsFor(2)[0].inputA.previousValue).toEqual({foo: 'qux'});
+        expect(scopeOnChangesA.calls.argsFor(2)[0].inputA.currentValue).toEqual({foo: 'qux'});
+        expect(scopeOnChangesA.calls.argsFor(2)[0].inputA.isFirstChange()).toBe(false);
+        expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.previousValue).toEqual({
+          foo: 'qux',
+        });
+        expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.currentValue).toEqual({
+          foo: 'qux',
+        });
+        expect(controllerOnChangesB.calls.argsFor(2)[0].inputB.isFirstChange()).toBe(false);
+      });
+
+      it('should call `$onInit()` on controller', async () => {
         // Define `ng1Directive`
         const ng1DirectiveA: angular.IDirective = {
           template: 'Called: {{ called }}',
@@ -3304,6 +3305,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A></ng1A> | <ng1B></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -3326,12 +3328,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Called: yes | Called: yes');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Called: yes | Called: yes');
+      });
 
-      it('should not call `$onInit()` on scope', waitForAsync(() => {
+      it('should not call `$onInit()` on scope', async () => {
         // Define `ng1Directive`
         const ng1DirectiveA: angular.IDirective = {
           template: 'Called: {{ called }}',
@@ -3383,6 +3384,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A></ng1A> | <ng1B></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -3405,12 +3407,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Called: no | Called: no');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Called: no | Called: no');
+      });
 
-      it('should call `$postLink()` on controller', waitForAsync(() => {
+      it('should call `$postLink()` on controller', async () => {
         // Define `ng1Directive`
         const ng1DirectiveA: angular.IDirective = {
           template: 'Called: {{ called }}',
@@ -3463,6 +3464,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A></ng1A> | <ng1B></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -3485,12 +3487,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Called: yes | Called: yes');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Called: yes | Called: yes');
+      });
 
-      it('should not call `$postLink()` on scope', waitForAsync(() => {
+      it('should not call `$postLink()` on scope', async () => {
         // Define `ng1Directive`
         const ng1DirectiveA: angular.IDirective = {
           template: 'Called: {{ called }}',
@@ -3542,6 +3543,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A></ng1A> | <ng1B></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -3564,12 +3566,11 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe('Called: no | Called: no');
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('Called: no | Called: no');
+      });
 
-      it('should call `$doCheck()` on controller', waitForAsync(() => {
+      it('should call `$doCheck()` on controller', async () => {
         const controllerDoCheckA = jasmine.createSpy('controllerDoCheckA');
         const controllerDoCheckB = jasmine.createSpy('controllerDoCheckB');
 
@@ -3620,6 +3621,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A></ng1A> | <ng1B></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -3642,30 +3644,29 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          // Get to a stable `$digest` state.
-          $digest(adapter);
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        // Get to a stable `$digest` state.
+        $digest(adapter);
 
-          // Initial change.
-          // (Do not use a specific number due to differences between AngularJS 1.5/1.6.)
-          expect(controllerDoCheckA.calls.count()).toBeGreaterThan(0);
-          expect(controllerDoCheckB.calls.count()).toBeGreaterThan(0);
-          controllerDoCheckA.calls.reset();
-          controllerDoCheckB.calls.reset();
+        // Initial change.
+        // (Do not use a specific number due to differences between AngularJS 1.5/1.6.)
+        expect(controllerDoCheckA.calls.count()).toBeGreaterThan(0);
+        expect(controllerDoCheckB.calls.count()).toBeGreaterThan(0);
+        controllerDoCheckA.calls.reset();
+        controllerDoCheckB.calls.reset();
 
-          // Run a `$digest`
-          $digest(adapter);
-          expect(controllerDoCheckA.calls.count()).toBe(1);
-          expect(controllerDoCheckB.calls.count()).toBe(1);
+        // Run a `$digest`
+        $digest(adapter);
+        expect(controllerDoCheckA.calls.count()).toBe(1);
+        expect(controllerDoCheckB.calls.count()).toBe(1);
 
-          // Run another `$digest`
-          $digest(adapter);
-          expect(controllerDoCheckA.calls.count()).toBe(2);
-          expect(controllerDoCheckB.calls.count()).toBe(2);
-        });
-      }));
+        // Run another `$digest`
+        $digest(adapter);
+        expect(controllerDoCheckA.calls.count()).toBe(2);
+        expect(controllerDoCheckB.calls.count()).toBe(2);
+      });
 
-      it('should not call `$doCheck()` on scope', waitForAsync(() => {
+      it('should not call `$doCheck()` on scope', async () => {
         const scopeDoCheck = jasmine.createSpy('scopeDoCheck');
 
         // Define `ng1Directive`
@@ -3715,6 +3716,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1A></ng1A> | <ng1B></ng1B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -3737,21 +3739,20 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          // Initial change
-          expect(scopeDoCheck).not.toHaveBeenCalled();
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        // Initial change
+        expect(scopeDoCheck).not.toHaveBeenCalled();
 
-          // Run a `$digest`
-          $digest(adapter);
-          expect(scopeDoCheck).not.toHaveBeenCalled();
+        // Run a `$digest`
+        $digest(adapter);
+        expect(scopeDoCheck).not.toHaveBeenCalled();
 
-          // Run another `$digest`
-          $digest(adapter);
-          expect(scopeDoCheck).not.toHaveBeenCalled();
-        });
-      }));
+        // Run another `$digest`
+        $digest(adapter);
+        expect(scopeDoCheck).not.toHaveBeenCalled();
+      });
 
-      it('should call `$onDestroy()` on controller', waitForAsync(() => {
+      it('should call `$onDestroy()` on controller', async () => {
         const controllerOnDestroyA = jasmine.createSpy('controllerOnDestroyA');
         const controllerOnDestroyB = jasmine.createSpy('controllerOnDestroyB');
 
@@ -3806,6 +3807,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           @Input() show: boolean = false;
@@ -3830,36 +3832,35 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html('<ng2 [show]="!destroyFromNg2" ng-if="!destroyFromNg1"></ng2>');
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const $rootScope = adapter.$injector.get('$rootScope') as angular.IRootScopeService;
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const $rootScope = adapter.$injector.get('$rootScope') as angular.IRootScopeService;
 
-          expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
-          expect(controllerOnDestroyA).not.toHaveBeenCalled();
-          expect(controllerOnDestroyB).not.toHaveBeenCalled();
+        expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
+        expect(controllerOnDestroyA).not.toHaveBeenCalled();
+        expect(controllerOnDestroyB).not.toHaveBeenCalled();
 
-          $rootScope.$apply('destroyFromNg1 = true');
+        $rootScope.$apply('destroyFromNg1 = true');
 
-          expect(multiTrim(document.body.textContent)).toBe('');
-          expect(controllerOnDestroyA).toHaveBeenCalled();
-          expect(controllerOnDestroyB).toHaveBeenCalled();
+        expect(multiTrim(document.body.textContent)).toBe('');
+        expect(controllerOnDestroyA).toHaveBeenCalled();
+        expect(controllerOnDestroyB).toHaveBeenCalled();
 
-          controllerOnDestroyA.calls.reset();
-          controllerOnDestroyB.calls.reset();
-          $rootScope.$apply('destroyFromNg1 = false');
+        controllerOnDestroyA.calls.reset();
+        controllerOnDestroyB.calls.reset();
+        $rootScope.$apply('destroyFromNg1 = false');
 
-          expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
-          expect(controllerOnDestroyA).not.toHaveBeenCalled();
-          expect(controllerOnDestroyB).not.toHaveBeenCalled();
+        expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
+        expect(controllerOnDestroyA).not.toHaveBeenCalled();
+        expect(controllerOnDestroyB).not.toHaveBeenCalled();
 
-          $rootScope.$apply('destroyFromNg2 = true');
+        $rootScope.$apply('destroyFromNg2 = true');
 
-          expect(multiTrim(document.body.textContent)).toBe('');
-          expect(controllerOnDestroyA).toHaveBeenCalled();
-          expect(controllerOnDestroyB).toHaveBeenCalled();
-        });
-      }));
+        expect(multiTrim(document.body.textContent)).toBe('');
+        expect(controllerOnDestroyA).toHaveBeenCalled();
+        expect(controllerOnDestroyB).toHaveBeenCalled();
+      });
 
-      it('should not call `$onDestroy()` on scope', waitForAsync(() => {
+      it('should not call `$onDestroy()` on scope', async () => {
         const scopeOnDestroy = jasmine.createSpy('scopeOnDestroy');
 
         // Define `ng1Directive`
@@ -3915,6 +3916,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           @Input() show: boolean = false;
@@ -3939,30 +3941,29 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html('<ng2 [show]="!destroyFromNg2" ng-if="!destroyFromNg1"></ng2>');
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const $rootScope = adapter.$injector.get('$rootScope') as angular.IRootScopeService;
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const $rootScope = adapter.$injector.get('$rootScope') as angular.IRootScopeService;
 
-          expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
-          expect(scopeOnDestroy).not.toHaveBeenCalled();
+        expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
+        expect(scopeOnDestroy).not.toHaveBeenCalled();
 
-          $rootScope.$apply('destroyFromNg1 = true');
+        $rootScope.$apply('destroyFromNg1 = true');
 
-          expect(multiTrim(document.body.textContent)).toBe('');
-          expect(scopeOnDestroy).not.toHaveBeenCalled();
+        expect(multiTrim(document.body.textContent)).toBe('');
+        expect(scopeOnDestroy).not.toHaveBeenCalled();
 
-          $rootScope.$apply('destroyFromNg1 = false');
+        $rootScope.$apply('destroyFromNg1 = false');
 
-          expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
-          expect(scopeOnDestroy).not.toHaveBeenCalled();
+        expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
+        expect(scopeOnDestroy).not.toHaveBeenCalled();
 
-          $rootScope.$apply('destroyFromNg2 = true');
+        $rootScope.$apply('destroyFromNg2 = true');
 
-          expect(multiTrim(document.body.textContent)).toBe('');
-          expect(scopeOnDestroy).not.toHaveBeenCalled();
-        });
-      }));
+        expect(multiTrim(document.body.textContent)).toBe('');
+        expect(scopeOnDestroy).not.toHaveBeenCalled();
+      });
 
-      it('should be called in order `$onChanges()` > `$onInit()` > `$doCheck()` > `$postLink()`', waitForAsync(() => {
+      it('should be called in order `$onChanges()` > `$onInit()` > `$doCheck()` > `$postLink()`', async () => {
         // Define `ng1Component`
         const ng1Component: angular.IComponent = {
           // `$doCheck()` will keep getting called as long as the interpolated value keeps
@@ -4008,6 +4009,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1 value="foo"></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {}
 
@@ -4029,16 +4031,13 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe(
-            '$onChanges > $onInit > $doCheck > $postLink',
-          );
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe('$onChanges > $onInit > $doCheck > $postLink');
+      });
     });
 
     describe('destroying the upgraded component', () => {
-      it('should destroy `$componentScope`', waitForAsync(() => {
+      it('should destroy `$componentScope`', async () => {
         const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
         let ng2ComponentAInstance: Ng2ComponentA;
 
@@ -4067,6 +4066,7 @@ withEachNg1Version(() => {
           selector: 'ng2A',
           template: '<ng2B *ngIf="!destroyIt"></ng2B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentA {
           destroyIt = false;
@@ -4080,6 +4080,7 @@ withEachNg1Version(() => {
           selector: 'ng2B',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentB {}
 
@@ -4101,17 +4102,16 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(scopeDestroyListener).not.toHaveBeenCalled();
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(scopeDestroyListener).not.toHaveBeenCalled();
 
-          ng2ComponentAInstance.destroyIt = true;
-          $digest(adapter);
+        ng2ComponentAInstance!.destroyIt = true;
+        $digest(adapter);
 
-          expect(scopeDestroyListener).toHaveBeenCalledTimes(1);
-        });
-      }));
+        expect(scopeDestroyListener).toHaveBeenCalledTimes(1);
+      });
 
-      it('should emit `$destroy` on `$element` and descendants', waitForAsync(() => {
+      it('should emit `$destroy` on `$element` and descendants', async () => {
         const elementDestroyListener = jasmine.createSpy('elementDestroyListener');
         const descendantDestroyListener = jasmine.createSpy('descendantDestroyListener');
         let ng2ComponentAInstance: Ng2ComponentA;
@@ -4143,6 +4143,7 @@ withEachNg1Version(() => {
           selector: 'ng2A',
           template: '<ng2B *ngIf="!destroyIt"></ng2B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentA {
           destroyIt = false;
@@ -4156,6 +4157,7 @@ withEachNg1Version(() => {
           selector: 'ng2B',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentB {}
 
@@ -4177,19 +4179,18 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(elementDestroyListener).not.toHaveBeenCalled();
-          expect(descendantDestroyListener).not.toHaveBeenCalled();
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(elementDestroyListener).not.toHaveBeenCalled();
+        expect(descendantDestroyListener).not.toHaveBeenCalled();
 
-          ng2ComponentAInstance.destroyIt = true;
-          $digest(adapter);
+        ng2ComponentAInstance!.destroyIt = true;
+        $digest(adapter);
 
-          expect(elementDestroyListener).toHaveBeenCalledTimes(1);
-          expect(descendantDestroyListener).toHaveBeenCalledTimes(1);
-        });
-      }));
+        expect(elementDestroyListener).toHaveBeenCalledTimes(1);
+        expect(descendantDestroyListener).toHaveBeenCalledTimes(1);
+      });
 
-      it('should clear data on `$element` and descendants`', waitForAsync(() => {
+      it('should clear data on `$element` and descendants`', async () => {
         let ng1ComponentElement: angular.IAugmentedJQuery;
         let ng2ComponentAInstance: Ng2ComponentA;
 
@@ -4222,6 +4223,7 @@ withEachNg1Version(() => {
           selector: 'ng2A',
           template: '<ng2B *ngIf="!destroyIt"></ng2B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentA {
           destroyIt = false;
@@ -4235,6 +4237,7 @@ withEachNg1Version(() => {
           selector: 'ng2B',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentB {}
 
@@ -4256,19 +4259,18 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          expect(ng1ComponentElement.data!('test')).toBe(1);
-          expect(ng1ComponentElement.contents!().data!('test')).toBe(2);
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(ng1ComponentElement!.data!('test')).toBe(1);
+        expect(ng1ComponentElement!.contents!().data!('test')).toBe(2);
 
-          ng2ComponentAInstance.destroyIt = true;
-          $digest(adapter);
+        ng2ComponentAInstance!.destroyIt = true;
+        $digest(adapter);
 
-          expect(ng1ComponentElement.data!('test')).toBeUndefined();
-          expect(ng1ComponentElement.contents!().data!('test')).toBeUndefined();
-        });
-      }));
+        expect(ng1ComponentElement!.data!('test')).toBeUndefined();
+        expect(ng1ComponentElement!.contents!().data!('test')).toBeUndefined();
+      });
 
-      it('should clear dom listeners on `$element` and descendants`', waitForAsync(() => {
+      it('should clear dom listeners on `$element` and descendants`', async () => {
         const elementClickListener = jasmine.createSpy('elementClickListener');
         const descendantClickListener = jasmine.createSpy('descendantClickListener');
         let ng1DescendantElement: angular.IAugmentedJQuery;
@@ -4303,6 +4305,7 @@ withEachNg1Version(() => {
           selector: 'ng2A',
           template: '<ng2B *ngIf="!destroyIt"></ng2B>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentA {
           destroyIt = false;
@@ -4316,6 +4319,7 @@ withEachNg1Version(() => {
           selector: 'ng2B',
           template: '<ng1></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2ComponentB {}
 
@@ -4337,21 +4341,20 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          (ng1DescendantElement[0] as HTMLElement).click();
-          expect(elementClickListener).toHaveBeenCalledTimes(1);
-          expect(descendantClickListener).toHaveBeenCalledTimes(1);
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        (ng1DescendantElement![0] as HTMLElement).click();
+        expect(elementClickListener).toHaveBeenCalledTimes(1);
+        expect(descendantClickListener).toHaveBeenCalledTimes(1);
 
-          ng2ComponentAInstance.destroyIt = true;
-          $digest(adapter);
+        ng2ComponentAInstance!.destroyIt = true;
+        $digest(adapter);
 
-          (ng1DescendantElement[0] as HTMLElement).click();
-          expect(elementClickListener).toHaveBeenCalledTimes(1);
-          expect(descendantClickListener).toHaveBeenCalledTimes(1);
-        });
-      }));
+        (ng1DescendantElement![0] as HTMLElement).click();
+        expect(elementClickListener).toHaveBeenCalledTimes(1);
+        expect(descendantClickListener).toHaveBeenCalledTimes(1);
+      });
 
-      it('should clean up `$doCheck()` watchers from the parent scope', waitForAsync(() => {
+      it('should clean up `$doCheck()` watchers from the parent scope', async () => {
         let ng2Component: Ng2Component;
 
         // Define `ng1Component`
@@ -4378,6 +4381,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: '<ng1 *ngIf="doShow"></ng1>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component {
           doShow: boolean = false;
@@ -4404,32 +4408,30 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-          const getWatcherCount: () => number = () =>
-            (ng2Component.$scope as any).$$watchers.length;
-          const baseWatcherCount = getWatcherCount();
+        const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        const getWatcherCount: () => number = () => (ng2Component!.$scope as any).$$watchers.length;
+        const baseWatcherCount = getWatcherCount();
 
-          expect(multiTrim(document.body.textContent)).toBe('');
+        expect(multiTrim(document.body.textContent)).toBe('');
 
-          ng2Component.doShow = true;
-          $digest(adapter);
-          expect(multiTrim(document.body.textContent)).toBe('ng1');
-          expect(getWatcherCount()).toBe(baseWatcherCount + 1);
+        ng2Component!.doShow = true;
+        $digest(adapter);
+        expect(multiTrim(document.body.textContent)).toBe('ng1');
+        expect(getWatcherCount()).toBe(baseWatcherCount + 1);
 
-          ng2Component.doShow = false;
-          $digest(adapter);
-          expect(multiTrim(document.body.textContent)).toBe('');
-          expect(getWatcherCount()).toBe(baseWatcherCount);
+        ng2Component!.doShow = false;
+        $digest(adapter);
+        expect(multiTrim(document.body.textContent)).toBe('');
+        expect(getWatcherCount()).toBe(baseWatcherCount);
 
-          ng2Component.doShow = true;
-          $digest(adapter);
-          expect(multiTrim(document.body.textContent)).toBe('ng1');
-          expect(getWatcherCount()).toBe(baseWatcherCount + 1);
-        });
-      }));
+        ng2Component!.doShow = true;
+        $digest(adapter);
+        expect(multiTrim(document.body.textContent)).toBe('ng1');
+        expect(getWatcherCount()).toBe(baseWatcherCount + 1);
+      });
     });
 
-    it('should support ng2 > ng1 > ng2 (no inputs/outputs)', waitForAsync(() => {
+    it('should support ng2 > ng1 > ng2 (no inputs/outputs)', async () => {
       // Define `ng1Component`
       const ng1Component: angular.IComponent = {template: 'ng1X(<ng2-b></ng2-b>)'};
 
@@ -4449,6 +4451,7 @@ withEachNg1Version(() => {
         selector: 'ng2-a',
         template: 'ng2A(<ng1X></ng1X>)',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2ComponentA {}
 
@@ -4456,6 +4459,7 @@ withEachNg1Version(() => {
         selector: 'ng2-b',
         template: 'ng2B',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2ComponentB {}
 
@@ -4479,12 +4483,11 @@ withEachNg1Version(() => {
       // Bootstrap
       const element = html(`<ng2-a></ng2-a>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-        expect(multiTrim(document.body.textContent)).toBe('ng2A(ng1X(ng2B))');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toBe('ng2A(ng1X(ng2B))');
+    });
 
-    it('should support ng2 > ng1 > ng2 (with inputs/outputs)', fakeAsync(() => {
+    it('should support ng2 > ng1 > ng2 (with inputs/outputs)', async () => {
       let ng2ComponentAInstance: Ng2ComponentA;
       let ng2ComponentBInstance: Ng2ComponentB;
       let ng1ControllerXInstance: Ng1ControllerX;
@@ -4551,6 +4554,7 @@ withEachNg1Version(() => {
           </ng1X>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2ComponentA {
         ng2ADataA = {value: 'foo'};
@@ -4566,6 +4570,7 @@ withEachNg1Version(() => {
         selector: 'ng2-b',
         template: 'ng2B({{ ng2BInputA }}, {{ ng2BInputC }})',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2ComponentB {
         @Input('ng2BInput1') ng2BInputA: any;
@@ -4597,103 +4602,102 @@ withEachNg1Version(() => {
       // Bootstrap
       const element = html(`<ng2-a></ng2-a>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
-        // Initial value propagation.
-        // (ng2A > ng1X > ng2B)
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo, baz)',
-        );
+      const adapter = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      // Initial value propagation.
+      // (ng2A > ng1X > ng2B)
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo, baz)',
+      );
 
-        // Update `ng2BInputA`/`ng2BInputC`.
-        // (Should not propagate upwards.)
-        ng2ComponentBInstance.ng2BInputA = 'foo2';
-        ng2ComponentBInstance.ng2BInputC = 'baz2';
-        $digest(adapter);
-        tick();
+      // Update `ng2BInputA`/`ng2BInputC`.
+      // (Should not propagate upwards.)
+      ng2ComponentBInstance!.ng2BInputA = 'foo2';
+      ng2ComponentBInstance!.ng2BInputC = 'baz2';
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo2, baz2)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo2, baz2)',
+      );
 
-        // Emit from `ng2BOutputC`.
-        // (Should propagate all the way up to `ng1ADataC` and back all the way down to
-        // `ng2BInputC`.)
-        ng2ComponentBInstance.ng2BOutputC.emit('baz3');
-        $digest(adapter);
-        tick();
+      // Emit from `ng2BOutputC`.
+      // (Should propagate all the way up to `ng1ADataC` and back all the way down to
+      // `ng2BInputC`.)
+      ng2ComponentBInstance!.ng2BOutputC.emit('baz3');
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo, bar, baz3) | ng1X(foo, bar, baz3) | ng2B(foo2, baz3)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo, bar, baz3) | ng1X(foo, bar, baz3) | ng2B(foo2, baz3)',
+      );
 
-        // Update `ng1XInputA`/`ng1XInputB`.
-        // (Should not propagate upwards, only downwards.)
-        ng1ControllerXInstance.ng1XInputA = 'foo4';
-        ng1ControllerXInstance.ng1XInputB = {value: 'bar4'};
-        $digest(adapter);
-        tick();
+      // Update `ng1XInputA`/`ng1XInputB`.
+      // (Should not propagate upwards, only downwards.)
+      ng1ControllerXInstance!.ng1XInputA = 'foo4';
+      ng1ControllerXInstance!.ng1XInputB = {value: 'bar4'};
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo, bar, baz3) | ng1X(foo4, bar4, baz3) | ng2B(foo4, baz3)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo, bar, baz3) | ng1X(foo4, bar4, baz3) | ng2B(foo4, baz3)',
+      );
 
-        // Update `ng1XInputC`.
-        // (Should propagate upwards and downwards.)
-        ng1ControllerXInstance.ng1XInputC = {value: 'baz5'};
-        $digest(adapter);
-        tick();
+      // Update `ng1XInputC`.
+      // (Should propagate upwards and downwards.)
+      ng1ControllerXInstance!.ng1XInputC = {value: 'baz5'};
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo, bar, baz5) | ng1X(foo4, bar4, baz5) | ng2B(foo4, baz5)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo, bar, baz5) | ng1X(foo4, bar4, baz5) | ng2B(foo4, baz5)',
+      );
 
-        // Update a property on `ng1XInputC`.
-        // (Should propagate upwards and downwards.)
-        ng1ControllerXInstance.ng1XInputC.value = 'baz6';
-        $digest(adapter);
-        tick();
+      // Update a property on `ng1XInputC`.
+      // (Should propagate upwards and downwards.)
+      ng1ControllerXInstance!.ng1XInputC.value = 'baz6';
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo, bar, baz6) | ng1X(foo4, bar4, baz6) | ng2B(foo4, baz6)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo, bar, baz6) | ng1X(foo4, bar4, baz6) | ng2B(foo4, baz6)',
+      );
 
-        // Emit from `ng1XOutputA`.
-        // (Should propagate upwards to `ng1ADataA` and back all the way down to
-        // `ng2BInputA`.)
-        (ng1ControllerXInstance as any).ng1XOutputA({value: 'foo7'});
-        $digest(adapter);
-        tick();
+      // Emit from `ng1XOutputA`.
+      // (Should propagate upwards to `ng1ADataA` and back all the way down to
+      // `ng2BInputA`.)
+      (ng1ControllerXInstance! as any).ng1XOutputA({value: 'foo7'});
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo7, bar, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo7, bar, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)',
+      );
 
-        // Emit from `ng1XOutputB`.
-        // (Should propagate upwards to `ng1ADataB`, but not downwards,
-        //  since `ng1XInputB` has been re-assigned (i.e. `ng2ADataB !== ng1XInputB`).)
-        (ng1ControllerXInstance as any).ng1XOutputB('bar8');
-        $digest(adapter);
-        tick();
+      // Emit from `ng1XOutputB`.
+      // (Should propagate upwards to `ng1ADataB`, but not downwards,
+      //  since `ng1XInputB` has been re-assigned (i.e. `ng2ADataB !== ng1XInputB`).)
+      (ng1ControllerXInstance! as any).ng1XOutputB('bar8');
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo7, bar8, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)',
-        );
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo7, bar8, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)',
+      );
 
-        // Update `ng2ADataA`/`ng2ADataB`/`ng2ADataC`.
-        // (Should propagate everywhere.)
-        ng2ComponentAInstance.ng2ADataA = {value: 'foo9'};
-        ng2ComponentAInstance.ng2ADataB = {value: 'bar9'};
-        ng2ComponentAInstance.ng2ADataC = {value: 'baz9'};
-        $digest(adapter);
-        tick();
+      // Update `ng2ADataA`/`ng2ADataB`/`ng2ADataC`.
+      // (Should propagate everywhere.)
+      ng2ComponentAInstance!.ng2ADataA = {value: 'foo9'};
+      ng2ComponentAInstance!.ng2ADataB = {value: 'bar9'};
+      ng2ComponentAInstance!.ng2ADataC = {value: 'baz9'};
+      $digest(adapter);
+      await timeout();
 
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(foo9, bar9, baz9) | ng1X(foo9, bar9, baz9) | ng2B(foo9, baz9)',
-        );
-      });
-    }));
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(foo9, bar9, baz9) | ng1X(foo9, bar9, baz9) | ng2B(foo9, baz9)',
+      );
+    });
 
-    it('should support ng2 > ng1 > ng2 > ng1 (with `require`)', waitForAsync(() => {
+    it('should support ng2 > ng1 > ng2 > ng1 (with `require`)', async () => {
       // Define `ng1Component`
       const ng1ComponentA: angular.IComponent = {
         template: 'ng1A(<ng2-b></ng2-b>)',
@@ -4737,6 +4741,7 @@ withEachNg1Version(() => {
         selector: 'ng2-a',
         template: 'ng2A(<ng1A></ng1A>)',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2ComponentA {}
 
@@ -4744,6 +4749,7 @@ withEachNg1Version(() => {
         selector: 'ng2-b',
         template: 'ng2B(<ng1B></ng1B>)',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2ComponentB {}
 
@@ -4768,15 +4774,14 @@ withEachNg1Version(() => {
       // Bootstrap
       const element = html(`<ng2-a></ng2-a>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-        expect(multiTrim(document.body.textContent)).toBe(
-          'ng2A(ng1A(ng2B(ng1B(^^ng1A: ng1A | ?^^ng1B: | ^ng1B: ng1B))))',
-        );
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toBe(
+        'ng2A(ng1A(ng2B(ng1B(^^ng1A: ng1A | ?^^ng1B: | ^ng1B: ng1B))))',
+      );
+    });
 
     describe('standalone', () => {
-      it('should upgrade to a standalone component in NgModule-bootstrapped application', waitForAsync(() => {
+      it('should upgrade to a standalone component in NgModule-bootstrapped application', async () => {
         const ng1Component: angular.IComponent = {template: `I'm from AngularJS!`};
 
         // Define `Ng1ComponentFacade` (standalone)
@@ -4788,7 +4793,12 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>', standalone: false})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -4809,10 +4819,9 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-          expect(multiTrim(element.textContent)).toBe(`I'm from AngularJS!`);
-        });
-      }));
+        await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+        expect(multiTrim(element.textContent)).toBe(`I'm from AngularJS!`);
+      });
     });
   });
 });

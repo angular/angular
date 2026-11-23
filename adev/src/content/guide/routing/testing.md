@@ -20,9 +20,8 @@ The following example shows how to test a `UserProfile` component that displays 
 
 ```ts { header: 'user-profile.spec.ts'}
 import {TestBed} from '@angular/core/testing';
-import {Router} from '@angular/router';
+import {provideRouter, Router} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
-import {provideRouter} from '@angular/router';
 import {UserProfile} from './user-profile';
 
 describe('UserProfile', () => {
@@ -60,7 +59,7 @@ Route guards control access to routes based on conditions like authentication or
 The following example tests an `authGuard` that allows navigation for authenticated users and redirects unauthenticated users to a login page.
 
 ```ts {header: 'auth.guard.spec.ts'}
-import {vi, type Mocked} from 'vitest';
+import {describe, expect, it, vi, type Mocked} from 'vitest';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter, Router} from '@angular/router';
 import {authGuard} from './auth.guard';
@@ -291,6 +290,18 @@ describe('Search', () => {
 
     expect(component.searchTerm()).toBe('angular');
   });
+
+  it('should read search term and fragment passed as navigation extras', async () => {
+    component = await harness.navigate(
+      ['/search'],
+      {queryParams: {q: 'angular'}, fragment: 'results'},
+      Search,
+    );
+
+    expect(component.searchTerm()).toBe('angular');
+    expect(component.fragment()).toBe('results');
+    expect(TestBed.inject(Router).url).toBe('/search?q=angular#results');
+  });
 });
 ```
 
@@ -300,13 +311,17 @@ import {ActivatedRoute} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
-  template: '<div>Search term: {{searchTerm()}}</div>',
+  template: `
+    <div>Search term: {{ searchTerm() }}</div>
+    <div>Fragment: {{ fragment() }}</div>
+  `,
 })
 export class Search {
   private route = inject(ActivatedRoute);
   private queryParams = toSignal(this.route.queryParams, {initialValue: {}});
 
   searchTerm = computed(() => this.queryParams()['q'] || null);
+  fragment = toSignal(this.route.fragment, {initialValue: null});
 }
 ```
 

@@ -10,7 +10,6 @@ import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
-import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
 /**
  * A PotentialImport for some Angular trait has a TypeScript module specifier, which can be
@@ -56,15 +55,20 @@ export interface TsCompletionEntryInfo {
 }
 
 /**
+ * A reference to a symbol in a source file, without holding heavy AST nodes.
+ */
+export interface SymbolReference {
+  filePath: string;
+  position: number;
+  name: string;
+  moduleSpecifier?: string;
+}
+
+/**
  * Metadata on a directive which is available in a template.
  */
 export interface PotentialDirective {
-  ref: Reference<ClassDeclaration>;
-
-  /**
-   * The `ts.Symbol` for the directive class.
-   */
-  tsSymbol: SymbolWithValueDeclaration;
+  ref: SymbolReference;
 
   /**
    * The module which declares the directive.
@@ -104,12 +108,7 @@ export interface PotentialDirective {
  * Metadata for a pipe which is available in a template.
  */
 export interface PotentialPipe {
-  ref: Reference<ClassDeclaration>;
-
-  /**
-   * The `ts.Symbol` for the pipe class.
-   */
-  tsSymbol: ts.Symbol;
+  ref: SymbolReference;
 
   /**
    * Name of the pipe.

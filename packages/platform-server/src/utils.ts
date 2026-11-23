@@ -17,17 +17,21 @@ import {
   StaticProvider,
   Type,
   ɵannotateForHydration as annotateForHydration,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {BootstrapContext} from '@angular/platform-browser';
 
+import {RuntimeErrorCode} from './errors';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {createScript} from './transfer_state';
+import {resolveUrl} from './url';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -39,9 +43,8 @@ import {createScript} from './transfer_state';
  */
 export const EVENT_DISPATCH_SCRIPT_ID = 'ng-event-dispatch-contract';
 
-interface PlatformOptions {
+interface PlatformOptions extends Omit<PlatformConfig, 'document'> {
   document?: string | Document;
-  url?: string;
   platformProviders?: Provider[];
 }
 
@@ -53,9 +56,16 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
   const measuringLabel = 'createServerPlatform';
   startMeasuring(measuringLabel);
+  const {document, url} = options;
 
   const platform = platformServer([
-    {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
+    {
+      provide: INITIAL_CONFIG,
+      useValue: {
+        document,
+        url,
+      },
+    },
     extraProviders,
   ]);
 
@@ -194,6 +204,7 @@ export async function renderInternal(
 
   // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
   const environmentInjector = applicationRef.injector;
+  const errorHandler = environmentInjector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
   const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
   if (callbacks) {
     const asyncCallbacks: Promise<void>[] = [];
@@ -204,15 +215,16 @@ export async function renderInternal(
           asyncCallbacks.push(callbackResult);
         }
       } catch (e) {
-        // Ignore exceptions.
-        console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+        // Delegate to the application's ErrorHandler so custom handlers
+        // (e.g. Sentry) are notified, rather than writing directly to console.
+        errorHandler(e);
       }
     }
 
     if (asyncCallbacks.length) {
       for (const result of await Promise.allSettled(asyncCallbacks)) {
         if (result.status === 'rejected') {
-          console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', result.reason);
+          errorHandler(result.reason);
         }
       }
     }
@@ -265,14 +277,20 @@ function sanitizeServerContext(serverContext: string): string {
  *                 as a reference to the `document` instance.
  *  - `url` - the URL for the current render request.
  *  - `extraProviders` - set of platform level providers for the current render request.
- *
+ *  - `allowedHosts` - the allowed hosts list for host validation in server-side rendering.
  * @publicApi
  */
 export async function renderModule<T>(
   moduleType: Type<T>,
-  options: {document?: string | Document; url?: string; extraProviders?: StaticProvider[]},
+  options: {
+    document?: string | Document;
+    url?: string;
+    extraProviders?: StaticProvider[];
+    allowedHosts?: Readonly<string>[];
+  },
 ): Promise<string> {
-  const {document, url, extraProviders: platformProviders} = options;
+  const {document, url, extraProviders: platformProviders, allowedHosts} = options;
+  validateAllowedHosts(url, allowedHosts);
   const platformRef = createServerPlatform({document, url, platformProviders});
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
@@ -315,6 +333,7 @@ export async function renderModule<T>(
  *                 as a reference to the `document` instance.
  *  - `url` - the URL for the current render request.
  *  - `platformProviders` - the platform level providers for the current render request.
+ *  - `allowedHosts` - the allowed hosts list for host validation in server-side rendering.
  *
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
  *
@@ -322,11 +341,19 @@ export async function renderModule<T>(
  */
 export async function renderApplication(
   bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>,
-  options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
+  options: {
+    document?: string | Document;
+    url?: string;
+    platformProviders?: Provider[];
+    allowedHosts?: Readonly<string>[];
+  },
 ): Promise<string> {
   const renderAppLabel = 'renderApplication';
   const bootstrapLabel = 'bootstrap';
   const _renderLabel = '_render';
+  const {url, allowedHosts} = options;
+
+  validateAllowedHosts(url, allowedHosts);
 
   startMeasuring(renderAppLabel);
   const platformRef = createServerPlatform(options);
@@ -350,4 +377,49 @@ export async function renderApplication(
     await asyncDestroyPlatform(platformRef);
     stopMeasuring(renderAppLabel);
   }
+}
+
+function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
+  if (typeof url === 'string') {
+    const parsedUrl = resolveUrl(url);
+    if (parsedUrl !== null) {
+      const hostname = parsedUrl.hostname;
+      const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
+      if (!isHostAllowed(hostname, allowedHostsSet)) {
+        throw new RuntimeError(
+          RuntimeErrorCode.HOST_NOT_ALLOWED,
+          typeof ngDevMode === 'undefined' || ngDevMode
+            ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
+            : url,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Checks if the hostname is allowed.
+ * @param hostname - The hostname to check.
+ * @param allowedHosts - A set of allowed hostnames.
+ * @returns `true` if the hostname is allowed, `false` otherwise.
+ * @note Used also in `@angular/ssr`.
+ * @private
+ */
+export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string>): boolean {
+  if (allowedHosts.has('*') || allowedHosts.has(hostname)) {
+    return true;
+  }
+
+  for (const allowedHost of allowedHosts) {
+    if (!allowedHost.startsWith('*.')) {
+      continue;
+    }
+
+    const domain = allowedHost.slice(1);
+    if (hostname.endsWith(domain)) {
+      return true;
+    }
+  }
+
+  return false;
 }

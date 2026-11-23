@@ -7,9 +7,16 @@
  */
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Injector, resource, signal, type Signal} from '@angular/core';
+import {
+  ApplicationRef,
+  assertNotInReactiveContext,
+  Injector,
+  resource,
+  signal,
+  type Signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {isNode} from '@angular/private/testing';
+import {isNode, timeout, useAutoTick} from '@angular/private/testing';
 
 import {
   applyEach,
@@ -36,6 +43,8 @@ interface Address {
 }
 
 describe('resources', () => {
+  useAutoTick();
+
   let appRef: ApplicationRef;
   let backend: HttpTestingController;
   let injector: Injector;
@@ -57,7 +66,7 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const RES = createManagedMetadataKey((params: Signal<{x: string} | undefined>) =>
+      const RES = createManagedMetadataKey((_state, params: Signal<{x: string} | undefined>) =>
         resource({
           params,
           loader: async ({params}) => `got: ${params.x}`,
@@ -102,7 +111,7 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const RES = createManagedMetadataKey((params: Signal<{x: string} | undefined>) =>
+        const RES = createManagedMetadataKey((_state, params: Signal<{x: string} | undefined>) =>
           resource({
             params,
             loader: async ({params}) => `got: ${params.x}`,
@@ -388,13 +397,77 @@ describe('resources', () => {
   });
 
   it('should not allow accessing resource metadata on a field that does not define its params', () => {
-    const RES = createManagedMetadataKey((params: Signal<string | undefined>) =>
+    const RES = createManagedMetadataKey((_state, params: Signal<string | undefined>) =>
       resource({params, loader: async () => 'hi'}),
     );
 
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
 
     expect(f().metadata(RES)).toBe(undefined);
+  });
+
+  it('should support debounce in validateHttp', async () => {
+    const usernameForm = form(
+      signal('unique-user'),
+      (p) => {
+        validateHttp(p, {
+          request: ({value}) => `/api/check?username=${value()}`,
+          debounce: 50, // Short debounce
+          onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    const req1 = backend.expectOne('/api/check?username=unique-user');
+    req1.flush(true);
+    await appRef.whenStable();
+    expect(usernameForm().valid()).toBe(true);
+    usernameForm().value.set('taken-user');
+    TestBed.tick();
+
+    // Should not have triggered a new request yet
+    backend.expectNone('/api/check?username=taken-user');
+
+    // Wait for debounce
+    await timeout(80);
+    TestBed.tick();
+    const req2 = backend.expectOne('/api/check?username=taken-user');
+    req2.flush(false);
+    await appRef.whenStable();
+
+    expect(usernameForm().valid()).toBe(false);
+  });
+
+  it('should cancel async HTTP validation when its field is removed', async () => {
+    const model = signal([{username: 'alice'}]);
+    const f = form(
+      model,
+      (p) => {
+        applyEach(p, (item) => {
+          required(item.username);
+          validateHttp(item.username, {
+            request: ({value}) => `/api/check?username=${value()}`,
+            onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+            onError: () => null,
+          });
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    const request = backend.expectOne('/api/check?username=alice');
+    expect(f[0].username().pending()).toBe(true);
+    expect(request.cancelled).toBe(false);
+
+    model.set([]);
+    await appRef.whenStable();
+
+    expect(request.cancelled).toBe(true);
+    backend.verify();
   });
 
   describe('reloadValidation', () => {
@@ -438,5 +511,57 @@ describe('resources', () => {
       expect(usernameForm().invalid()).toBe(true);
       expect(usernameForm().pending()).toBe(false);
     });
+  });
+
+  it('should allow accessing basic field state properties during creation without reading them', () => {
+    let success = false;
+
+    const RES = createManagedMetadataKey((state, _params: Signal<string | undefined>) => {
+      // We shouldn't be captured in the reactive context of node creation here.
+      assertNotInReactiveContext(createManagedMetadataKey);
+
+      state.value();
+      state.disabled();
+
+      success = true;
+    });
+
+    form(
+      signal(''),
+      (p) => {
+        metadata(p, RES, () => 'trigger');
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(success).toBeTrue();
+  });
+
+  it('should not throw NG0992 when using validateAsync on parent and lazily-created child', () => {
+    const model = signal({child: ''});
+    const injector = TestBed.inject(Injector);
+    function createForm() {
+      form(
+        model,
+        (p) => {
+          validateAsync(p, {
+            params: () => 1,
+            factory: () => resource({loader: async () => []}),
+            onSuccess: () => null,
+            onError: () => null,
+          });
+
+          validateAsync(p.child, {
+            params: () => 1,
+            factory: () => resource({loader: async () => []}),
+            onSuccess: () => null,
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+    }
+
+    expect(() => createForm()).not.toThrow();
   });
 });

@@ -17,7 +17,7 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {MetadataRegistry, MetaKind} from '../../metadata';
@@ -44,6 +44,7 @@ import {
   getValidConstructorDependencies,
   InjectableClassRegistry,
   makeDuplicateDeclarationError,
+  parseStandaloneOption,
   toFactoryMetadata,
   unwrapExpression,
   wrapTypeReference,
@@ -123,6 +124,10 @@ export class PipeDecoratorHandler implements DecoratorHandler<
     }
   }
 
+  isStandalone(decorator: Readonly<Decorator>): boolean {
+    return parseStandaloneOption(decorator, this.evaluator, this.implicitStandaloneValue);
+  }
+
   analyze(
     clazz: ClassDeclaration,
     decorator: Readonly<Decorator>,
@@ -152,6 +157,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<
     let pipeNameExpr: ts.Expression | null = null;
     let pure = true;
     let isStandalone = this.implicitStandaloneValue;
+    let diagnostics: ts.Diagnostic[] | undefined;
 
     if (meta !== null) {
       if (!ts.isObjectLiteralExpression(meta)) {
@@ -199,16 +205,19 @@ export class PipeDecoratorHandler implements DecoratorHandler<
         isStandalone = resolved;
 
         if (!isStandalone && this.strictStandalone) {
-          throw new FatalDiagnosticError(
-            ErrorCode.NON_STANDALONE_NOT_ALLOWED,
-            expr,
-            `Only standalone pipes are allowed when 'strictStandalone' is enabled.`,
-          );
+          diagnostics = [
+            makeDiagnostic(
+              ErrorCode.NON_STANDALONE_NOT_ALLOWED,
+              expr,
+              `Only standalone pipes are allowed when 'strictStandalone' is enabled.`,
+            ),
+          ];
         }
       }
     }
 
     return {
+      diagnostics,
       analysis: {
         meta: {
           name,
@@ -242,6 +251,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<
       isStandalone: analysis.meta.isStandalone,
       decorator: analysis.decorator,
       isExplicitlyDeferred: false,
+      deferredBlocks: null,
       isPure: analysis.meta.pure,
     });
 

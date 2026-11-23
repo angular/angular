@@ -72,8 +72,8 @@ class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<ErrorCod
     );
     if (!controlFlowAttr) return [];
 
-    const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-    if (symbol === null || symbol.directives.length > 0) {
+    const directives = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
+    if (directives?.length) {
       return [];
     }
 

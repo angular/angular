@@ -12,6 +12,12 @@
 
   @if (loadingProgressValue() < loadingEnum.READY && loadingProgressValue() !== loadingEnum.ERROR) {
     <div class="adev-embedded-editor-preview-loading">
+      <img
+        class="adev-embedded-editor-preview-loading-angie"
+        [src]="bootPoseSrc()"
+        alt=""
+        aria-hidden="true"
+      />
       @switch (loadingProgressValue()) {
         @case (loadingEnum.NOT_STARTED) {
           <span class="adev-embedded-editor-preview-loading-starting">Starting</span>

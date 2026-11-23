@@ -6,25 +6,25 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan, R3Identifiers} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  ParseSourceSpan,
+  R3Identifiers,
+  TcbTypeParameter,
+  TypeCheckId,
+  HOST_BINDING_GUARD_COMMENT_TEXT,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {
-  FullSourceMapping,
-  SourceLocation,
-  TypeCheckId,
-  SourceMapping,
-  TcbTypeParameter,
-} from '../api';
+import {FullSourceMapping, SourceLocation, SourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
-import {isHostBindingsBlockGuard} from './host_bindings';
-import {tempPrint} from './ops/codegen';
+import {tempPrint} from './tcb_print';
 
 /**
  * External modules/identifiers that always should exist for type check
@@ -102,7 +102,7 @@ export enum TcbInliningRequirement {
 export function requiresInlineTypeCheckBlock(
   ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
   env: ReferenceEmitEnvironment,
-  usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[],
+  usedDependencies: Reference<ClassDeclaration<ts.ClassDeclaration>>[],
   reflector: ReflectionHost,
 ): TcbInliningRequirement {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
@@ -111,13 +111,15 @@ export function requiresInlineTypeCheckBlock(
   if (!env.canReferenceType(ref)) {
     // Condition 1 is false, the class is not exported.
     return TcbInliningRequirement.MustInline;
-  } else if (!checkIfGenericTypeBoundsCanBeEmitted(ref.node, reflector, env)) {
+  } else if (
+    !checkIfGenericTypeBoundsCanBeEmitted(ref.node, reflector, (r) => env.canReferenceType(r))
+  ) {
     // Condition 2 is false, the class has constrained generic types. It should be checked with an
     // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
     return TcbInliningRequirement.ShouldInlineForGenericBounds;
-  } else if (usedPipes.some((pipeRef) => !env.canReferenceType(pipeRef))) {
-    // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
-    // to import it, so this requires an inline TCB.
+  } else if (usedDependencies.some((ref) => !env.canReferenceType(ref))) {
+    // If one of the pipes or directives used by the component is not exported,
+    // a non-inline TCB will not be able to import it, so this requires an inline TCB.
     return TcbInliningRequirement.MustInline;
   } else {
     return TcbInliningRequirement.None;
@@ -159,7 +161,8 @@ export function getSourceMapping(
   };
 }
 
-function isInHostBindingTcb(node: ts.Node): boolean {
+/** Whether `node` is inside the host bindings block of a type check block. */
+export function isInHostBindingTcb(node: ts.Node): boolean {
   let current = node;
   while (current && !ts.isFunctionDeclaration(current)) {
     if (isHostBindingsBlockGuard(current)) {
@@ -276,11 +279,11 @@ export function ensureTypeCheckFilePreparationImports(env: ReferenceEmitEnvironm
 export function checkIfGenericTypeBoundsCanBeEmitted(
   node: ClassDeclaration<ts.ClassDeclaration>,
   reflector: ReflectionHost,
-  env: ReferenceEmitEnvironment,
+  canReferenceType: (ref: Reference) => boolean,
 ): boolean {
   // Generic type parameters are considered context free if they can be emitted into any context.
   const emitter = new TypeParameterEmitter(node.typeParameters, reflector);
-  return emitter.canEmit((ref) => env.canReferenceType(ref));
+  return emitter.canEmit(canReferenceType);
 }
 
 export function findNodeInFile<T extends ts.Node>(
@@ -316,4 +319,31 @@ export function generateTcbTypeParameters(
       representationWithDefault: p.default ? representation : `${representation} = any`,
     };
   });
+}
+
+/**
+ * Determines if a given node is a guard that indicates that descendant nodes are used to check
+ * host bindings.
+ */
+function isHostBindingsBlockGuard(node: ts.Node): boolean {
+  if (!ts.isIfStatement(node)) {
+    return false;
+  }
+
+  // Needs to be kept in sync with `createHostBindingsMarker`.
+  const expr = node.expression;
+  if (!ts.isParenthesizedExpression(expr) || expr.expression.kind !== ts.SyntaxKind.TrueKeyword) {
+    return false;
+  }
+
+  const text = expr.getSourceFile().text;
+  return (
+    ts.forEachTrailingCommentRange(
+      text,
+      expr.expression.getEnd(),
+      (pos, end, kind) =>
+        kind === ts.SyntaxKind.MultiLineCommentTrivia &&
+        text.substring(pos + 2, end - 2) === HOST_BINDING_GUARD_COMMENT_TEXT,
+    ) || false
+  );
 }

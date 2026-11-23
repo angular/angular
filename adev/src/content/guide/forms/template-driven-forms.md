@@ -10,7 +10,7 @@ Angular supports two design approaches for interactive forms. Template-driven fo
 Template-driven forms are a great choice for small or simple forms, while reactive forms are more scalable and suitable for complex forms. For a comparison of the two approaches, see [Choosing an approach](guide/forms#choosing-an-approach)
 </docs-callout>
 
-You can build almost any kind of form with an Angular template —login forms, contact forms, and pretty much any business form.
+You can build almost any kind of form with an Angular template — login forms, contact forms, and pretty much any business form.
 You can lay out the controls creatively and bind them to the data in your object model.
 You can specify validation rules and display validation errors, conditionally allow input from specific controls, trigger built-in visual feedback, and much more.
 
@@ -48,7 +48,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    - Add custom CSS to provide visual feedback on the status
    - Show and hide validation-error messages
 1. Respond to a native HTML button-click event by adding to the model data.
-1. Handle form submission using the [`ngSubmit`](api/forms/NgForm#properties) output property of the form.
+1. Handle form submission using the [`ngSubmit`](api/forms/NgForm#ngSubmit) output property of the form.
    - Disable the **Submit** button until the form is valid
    - After submit, swap out the finished form for different content on the page
 
@@ -182,8 +182,7 @@ The following table describes the class names that Angular applies based on the 
 | The control's value has changed. | `ng-dirty`    | `ng-pristine`  |
 | The control's value is valid.    | `ng-valid`    | `ng-invalid`   |
 
-Angular also applies the `ng-submitted` class to `form` elements upon submission,
-but not to the controls inside the `form` element.
+Angular also applies the `ng-submitted` class to `form` elements upon submission, but not to the controls inside the `form` element.
 
 You use these CSS classes to define the styles for your control based on its status.
 
@@ -197,7 +196,7 @@ To see how the classes are added and removed by the framework, open the browser'
 1. When you first bring it up, the classes indicate that it has a valid value, that the value has not been changed since initialization or reset, and that the control has not been visited since initialization or reset.
 
    ```html
-   <input class="form-control ng-untouched ng-pristine ng-valid" />;
+   <input class="form-control ng-untouched ng-pristine ng-valid" />
    ```
 
 1. Take the following actions on the **Name** `<input>` box, and observe which classes appear.
@@ -322,7 +321,7 @@ To respond to this event, take the following steps.
 <docs-workflow>
 
 <docs-step title="Listen to ngOnSubmit">
-Bind the form's [`ngSubmit`](api/forms/NgForm#properties) event property to the actor-form component's `onSubmit()` method.
+Bind the form's [`ngSubmit`](api/forms/NgForm#ngSubmit) event property to the actor-form component's `onSubmit()` method.
 
 <docs-code header="actor-form.component.html (ngSubmit)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" region="ngSubmit"/>
 </docs-step>
@@ -336,7 +335,7 @@ You will bind the form property that indicates its overall validity to the **Sub
 </docs-step>
 
 <docs-step title="Run the application">
-Notice that the button is enabled —although it doesn't do anything useful yet.
+Notice that the button is enabled — although it doesn't do anything useful yet.
 </docs-step>
 
 <docs-step title="Delete the Name value">

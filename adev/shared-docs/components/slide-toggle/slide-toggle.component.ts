@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input, model} from '@angular/core';
+import {Component, input, model} from '@angular/core';
 import {FormCheckboxControl} from '@angular/forms/signals';
 
 @Component({
   selector: 'docs-slide-toggle',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './slide-toggle.component.html',
   styleUrls: ['./slide-toggle.component.scss'],
 })

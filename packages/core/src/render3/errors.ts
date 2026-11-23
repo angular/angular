@@ -7,7 +7,7 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 
 import {getComponentDef} from './def_getters';
 import {getDeclarationComponentDef} from './instructions/element_validation';
@@ -37,7 +37,7 @@ export function assertStandaloneComponentType(type: Type<unknown>) {
 }
 
 /** Verifies whether a given type is a component */
-export function assertComponentDef(type: Type<unknown>) {
+export function assertComponentDef(type: Type<unknown> | AbstractType<unknown>) {
   if (!getComponentDef(type)) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_GENERATED_DEF,
@@ -50,8 +50,8 @@ export function assertComponentDef(type: Type<unknown>) {
 /** Called when there are multiple component selectors that match a given node */
 export function throwMultipleComponentError(
   tNode: TNode,
-  first: Type<unknown>,
-  second: Type<unknown>,
+  first: Type<unknown> | AbstractType<unknown>,
+  second: Type<unknown> | AbstractType<unknown>,
 ): never {
   throw new RuntimeError(
     RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,

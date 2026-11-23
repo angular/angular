@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import ts from 'typescript';
 
 const testFiles = loadStandardTestFiles();
 
@@ -153,8 +153,8 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'ng-component'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[foo]');
     });
@@ -175,8 +175,8 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'input'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'input'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[foo]');
     });
@@ -198,8 +198,8 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'value' since it isn't a known property of 'div'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'value' since it isn't a known property of 'div'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[value]');
     });
@@ -278,7 +278,7 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
 
-    it('should check host animation event listeners', () => {
+    it('should check legacy host animation event listeners', () => {
       env.write(
         'test.ts',
         `
@@ -299,6 +299,56 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`Expected 1 arguments, but got 0.`);
       expect(getDiagnosticSourceCode(diags[0])).toBe('handleEvent');
+    });
+
+    it('should check animation event listeners in `host` object', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'button[foo]',
+          host: {'(animate.leave)': 'handleEvent($event)'},
+        })
+        export class Comp {
+          handleEvent(event: Event) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toContain(
+        `Argument of type 'AnimationCallbackEvent' is not assignable to parameter of type 'Event'.`,
+      );
+      expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
+    });
+
+    it('should check animation event listeners in `@HostListener`', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, HostListener} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'button[foo]',
+        })
+        export class Comp {
+          @HostListener('animate.leave', ['$event'])
+          handleEvent(event: Event) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toContain(
+        `Argument of type 'AnimationCallbackEvent' is not assignable to parameter of type 'Event'.`,
+      );
+      expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
 
     it('should not leak @let from the template into the host bindings', () => {
@@ -446,8 +496,8 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'ng-component'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('foo');
     });
@@ -467,8 +517,8 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'ng-component'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('foo');
     });
@@ -553,7 +603,7 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[0])).toBe('two');
     });
 
-    it('should report host decorators on private members', () => {
+    it('should not report host decorators on private members', () => {
       env.write(
         'test.ts',
         `
@@ -568,18 +618,10 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
-        `Property 'id' is private and only accessible within class 'Comp'.`,
-      );
-      expect(diags[1].messageText).toBe(
-        `Property 'handleClick' is private and only accessible within class 'Comp'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[0])).toBe('id');
-      expect(getDiagnosticSourceCode(diags[1])).toBe('handleClick');
+      expect(diags.length).toBe(0);
     });
 
-    it('should report diagnostic on the entire initializer of property binding if node contains escaped string', () => {
+    it('should report diagnostic on the entire expression of property binding if node contains escaped string', () => {
       env.write(
         'test.ts',
         `
@@ -599,10 +641,10 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Dir'.`);
-      expect(getDiagnosticSourceCode(diags[0])).toBe(`'prefix + \\'123\\' + doesNotExist'`);
+      expect(getDiagnosticSourceCode(diags[0])).toBe(`prefix + \\'123\\' + doesNotExist`);
     });
 
-    it('should report diagnostic on the entire initializer of event binding if node contains escaped string', () => {
+    it('should report diagnostic on the entire expression of event binding if node contains escaped string', () => {
       env.write(
         'test.ts',
         `
@@ -624,7 +666,7 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
-      expect(getDiagnosticSourceCode(diags[0])).toBe(`'handleClick(\\'foo\\')'`);
+      expect(getDiagnosticSourceCode(diags[0])).toBe(`handleClick(\\'foo\\')`);
     });
 
     it('should preserve diagnostic location of nodes that occur before escaped string', () => {
@@ -700,22 +742,27 @@ runInEachFileSystem(() => {
       `,
       );
 
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(4);
-      expect(diags[0].messageText).toBe(
-        `Property 'literalBindingDoesNotExist' does not exist on type 'SomeDir'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[0])).toBe('literalBindingDoesNotExist');
-      expect(diags[1].messageText).toBe(
-        `Property 'literalListenerDoesNotExist' does not exist on type 'SomeDir'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[1])).toBe('literalListenerDoesNotExist');
-      expect(diags[2].messageText).toBe(`Expected 1 arguments, but got 0.`);
-      expect(getDiagnosticSourceCode(diags[2])).toBe('directiveDecoratorHostListener');
-      expect(diags[3].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'button'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[3])).toBe('foo');
+      const diags = env
+        .driveDiagnostics()
+        .map((d) => [getDiagnosticSourceCode(d), d.messageText])
+        .sort(([, a], [, b]) => (a as string).localeCompare(b as string));
+      expect(diags).toEqual([
+        [
+          'foo',
+          jasmine.stringMatching(
+            /Can't bind to 'foo' since it isn't a known property of 'button'\. Find more at .*/,
+          ),
+        ],
+        ['directiveDecoratorHostListener', `Expected 1 arguments, but got 0.`],
+        [
+          'literalBindingDoesNotExist',
+          `Property 'literalBindingDoesNotExist' does not exist on type 'SomeDir'.`,
+        ],
+        [
+          'literalListenerDoesNotExist',
+          `Property 'literalListenerDoesNotExist' does not exist on type 'SomeDir'.`,
+        ],
+      ]);
     });
 
     it('should not check host bindings if the compiler flag is disabled', () => {

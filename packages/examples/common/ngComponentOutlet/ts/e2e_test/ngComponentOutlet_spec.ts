@@ -6,25 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {$, browser, by, element, ExpectedConditions} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../test-utils';
-
-function waitForElement(selector: string) {
-  const EC = ExpectedConditions;
-  // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
-}
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
 describe('ngComponentOutlet', () => {
-  const URL = '/ngComponentOutlet';
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
   describe('ng-component-outlet-example', () => {
-    it('should render simple', () => {
-      browser.get(URL);
-      waitForElement('ng-component-outlet-simple-example');
-      expect(element.all(by.css('hello-world')).getText()).toEqual(['Hello World!']);
+    it('should render simple', async () => {
+      await driver.get(`${baseUrl}/ngComponentOutlet`);
+      await waitForAngular(driver);
+      const helloWorlds = await driver.findElements(webdriver.By.css('hello-world'));
+      const texts = await Promise.all(helloWorlds.map((el) => el.getText()));
+      expect(texts).toEqual(['Hello World!']);
     });
   });
 });

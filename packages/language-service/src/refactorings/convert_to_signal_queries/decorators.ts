@@ -7,8 +7,8 @@
  */
 
 import type ts from 'typescript';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {ReflectionHost, getAngularDecorators} from '@angular/compiler-cli';
+
 import {isDirectiveOrComponent} from '../../utils/decorators';
 
 export function isDecoratorQueryClassField(

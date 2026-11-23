@@ -1,7 +1,7 @@
 import {JsonPipe} from '@angular/common';
 import {Component, computed, signal} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {FormField} from '@angular/forms/signals';
+import {FormField, required} from '@angular/forms/signals';
 import {compatForm} from '@angular/forms/signals/compat';
 
 @Component({
@@ -25,7 +25,9 @@ export class App {
   });
 
   // 3. Create the form
-  readonly f = compatForm(this.checkoutModel);
+  readonly f = compatForm(this.checkoutModel, (p) => {
+    required(p.customerName);
+  });
 
   // We have to manually extract values, because JSON pipe can't serialize FormControl
   readonly formValue = computed(() => ({

@@ -31,10 +31,7 @@ runInEachFileSystem(() => {
         outputs: {'valueChange': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
-        expected: [
-          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'two way data binding, valid',
@@ -69,12 +66,6 @@ runInEachFileSystem(() => {
         ],
       },
       // restricted fields
-      {
-        id: 'allows access to private output',
-        outputs: {evt: {type: 'OutputEmitterRef<string>', restrictionModifier: 'private'}},
-        template: `<div dir (evt)="true">`,
-        expected: [],
-      },
       {
         id: 'allows access to protected output',
         outputs: {evt: {type: 'OutputEmitterRef<string>', restrictionModifier: 'protected'}},

@@ -13,7 +13,7 @@ import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {By} from '@angular/platform-browser';
 
 import UpdateComponent from './update.component';
-import {ApplicationComplexity} from './recommendations';
+import {ApplicationComplexity, RECOMMENDATIONS} from './recommendations';
 
 describe('UpdateComponent', () => {
   let component: UpdateComponent;
@@ -31,6 +31,18 @@ describe('UpdateComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should read the versions and level from the query param inputs', async () => {
+    const queryParamFixture = TestBed.createComponent(UpdateComponent);
+    queryParamFixture.componentRef.setInput('v', '20.0-21.0');
+    queryParamFixture.componentRef.setInput('l', '3');
+    await queryParamFixture.whenStable();
+
+    const queryParamComponent = queryParamFixture.componentInstance;
+    expect(queryParamComponent['from']().name).toBe('20.0');
+    expect(queryParamComponent['to']().name).toBe('21.0');
+    expect(queryParamComponent['level']()).toBe(3);
   });
 
   describe('getComplexityLevelName', () => {
@@ -88,6 +100,16 @@ describe('UpdateComponent', () => {
         // If no recommendations exist for these versions, that's acceptable
         // The test verifies the component renders without errors
         expect(badges.length).toBe(0);
+      }
+    });
+  });
+
+  describe('RECOMMENDATIONS data', () => {
+    it('should use Markdown links instead of raw <a> HTML tags', () => {
+      for (const step of RECOMMENDATIONS) {
+        expect(step.action)
+          .withContext(`step "${step.step}" should use [text](url), not raw <a> HTML`)
+          .not.toMatch(/<a\s/i);
       }
     });
   });

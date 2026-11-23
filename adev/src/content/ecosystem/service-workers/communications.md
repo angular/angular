@@ -14,15 +14,14 @@ The `SwUpdate` service supports three separate operations:
 
 ### Version updates
 
-The `versionUpdates` is an `Observable` property of `SwUpdate` and emits five event types:
+The `versionUpdates` is an `Observable` property of `SwUpdate` and emits four event types:
 
-| Event types                      | Details                                                                                                                                                                               |
-| :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `VersionDetectedEvent`           | Emitted when the service worker has detected a new version of the app on the server and is about to start downloading it.                                                             |
-| `NoNewVersionDetectedEvent`      | Emitted when the service worker has checked the version of the app on the server and did not find a new version.                                                                      |
-| `VersionReadyEvent`              | Emitted when a new version of the app is available to be activated by clients. It may be used to notify the user of an available update or prompt them to refresh the page.           |
-| `VersionInstallationFailedEvent` | Emitted when the installation of a new version failed. It may be used for logging/monitoring purposes.                                                                                |
-| `VersionFailedEvent`             | Emitted when a version encounters a critical failure (such as broken hash errors) that affects all clients using that version. Provides error details for debugging and transparency. |
+| Event types                      | Details                                                                                                                                                                     |
+| :------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VersionDetectedEvent`           | Emitted when the service worker has detected a new version of the app on the server and is about to start downloading it.                                                   |
+| `NoNewVersionDetectedEvent`      | Emitted when the service worker has checked the version of the app on the server and did not find a new version.                                                            |
+| `VersionReadyEvent`              | Emitted when a new version of the app is available to be activated by clients. It may be used to notify the user of an available update or prompt them to refresh the page. |
+| `VersionInstallationFailedEvent` | Emitted when the installation of a new version failed. It may be used for logging/monitoring purposes.                                                                      |
 
 <docs-code header="log-update.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/log-update.service.ts" region="sw-update"/>
 

@@ -98,4 +98,11 @@ describe('TypingsLoader', () => {
       expect(path.includes(libraryThatIsNotADependency)).toBe(false);
     }
   });
+
+  it('should not contain duplicate type definition files', async () => {
+    await service.retrieveTypeDefinitions(fakeWebContainer);
+
+    const paths = service.typings().map(({path}) => path);
+    expect(paths.length).toBe(new Set(paths).size);
+  });
 });

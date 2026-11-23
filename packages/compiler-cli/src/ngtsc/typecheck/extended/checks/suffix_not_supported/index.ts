@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, TmplAstBoundAttribute, TmplAstNode} from '@angular/compiler';
+import {AST, BindingType, TmplAstBoundAttribute, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -19,6 +19,11 @@ import {
 } from '../../api';
 
 const STYLE_SUFFIXES = ['px', '%', 'em'];
+
+const SUFFIX_ERROR_MSG = formatExtendedError(
+  ErrorCode.SUFFIX_NOT_SUPPORTED,
+  `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(', ')} suffixes are only supported on style bindings`,
+);
 
 /**
  * A check which detects when the `.px`, `.%`, and `.em` suffixes are used with an attribute
@@ -35,22 +40,13 @@ class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<ErrorCode.SUFFIX_
     if (!(node instanceof TmplAstBoundAttribute)) return [];
 
     if (
-      !node.keySpan.toString().startsWith('attr.') ||
+      node.type !== BindingType.Attribute ||
       !STYLE_SUFFIXES.some((suffix) => node.name.endsWith(`.${suffix}`))
     ) {
       return [];
     }
 
-    const diagnostic = ctx.makeTemplateDiagnostic(
-      node.keySpan,
-      formatExtendedError(
-        ErrorCode.SUFFIX_NOT_SUPPORTED,
-        `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(
-          ', ',
-        )} suffixes are only supported on style bindings`,
-      ),
-    );
-    return [diagnostic];
+    return [ctx.makeTemplateDiagnostic(node.keySpan, SUFFIX_ERROR_MSG)];
   }
 }
 

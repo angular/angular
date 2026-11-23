@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as chars from './chars';
+import {namespaceCssVariable} from './util';
 
 /**
  * The following set contains all keywords that can be used in the animation css shorthand
@@ -186,22 +187,16 @@ export class ShadowCss {
         // Replace non hash comments with empty lines.
         // This is done so that we do not leak any sensitive data in comments.
         const newLinesMatches = m.match(_newLinesRe);
-        comments.push((newLinesMatches?.join('') ?? '') + '\n');
+        comments.push(newLinesMatches?.join('') ?? '');
       }
 
       return COMMENT_PLACEHOLDER;
     });
 
-    cssText = this._insertDirectives(cssText);
     const scopedCssText = this._scopeCssText(cssText, selector, hostSelector);
     // Add back comments at the original position.
     let commentIdx = 0;
     return scopedCssText.replace(_commentWithHashPlaceHolderRe, () => comments[commentIdx++]);
-  }
-
-  private _insertDirectives(cssText: string): string {
-    cssText = this._insertPolyfillDirectivesInCssText(cssText);
-    return this._insertPolyfillRulesInCssText(cssText);
   }
 
   /**
@@ -367,7 +362,7 @@ export class ShadowCss {
     unscopedKeyframesSet: ReadonlySet<string>,
   ): CssRule {
     let content = rule.content.replace(
-      /((?:^|\s+|;)(?:-webkit-)?animation\s*:\s*),*([^;]+)/g,
+      /((?:^|[\s;{])(?:-webkit-)?animation\s*:\s*)([^;}]+)/g,
       (_, start, animationDeclarations) =>
         start +
         animationDeclarations.replace(
@@ -398,7 +393,7 @@ export class ShadowCss {
         ),
     );
     content = content.replace(
-      /((?:^|\s+|;)(?:-webkit-)?animation-name(?:\s*):(?:\s*))([^;]+)/g,
+      /((?:^|[\s;{])(?:-webkit-)?animation-name(?:\s*):(?:\s*))([^;}]+)/g,
       (_match, start, commaSeparatedKeyframes) =>
         `${start}${commaSeparatedKeyframes
           .split(',')
@@ -410,48 +405,6 @@ export class ShadowCss {
     return {...rule, content};
   }
 
-  /*
-   * Process styles to convert native ShadowDOM rules that will trip
-   * up the css parser; we rely on decorating the stylesheet with inert rules.
-   *
-   * For example, we convert this rule:
-   *
-   * polyfill-next-selector { content: ':host menu-item'; }
-   * ::content menu-item {
-   *
-   * to this:
-   *
-   * scopeName menu-item {
-   *
-   **/
-  private _insertPolyfillDirectivesInCssText(cssText: string): string {
-    return cssText.replace(_cssContentNextSelectorRe, function (...m: string[]) {
-      return m[2] + '{';
-    });
-  }
-
-  /*
-   * Process styles to add rules which will only apply under the polyfill
-   *
-   * For example, we convert this rule:
-   *
-   * polyfill-rule {
-   *   content: ':host menu-item';
-   * ...
-   * }
-   *
-   * to this:
-   *
-   * scopeName menu-item {...}
-   *
-   **/
-  private _insertPolyfillRulesInCssText(cssText: string): string {
-    return cssText.replace(_cssContentRuleRe, (...m: string[]) => {
-      const rule = m[0].replace(m[1], '').replace(m[2], '');
-      return m[4] + rule;
-    });
-  }
-
   /* Ensure styles are scoped. Pseudo-scoping takes a rule like:
    *
    *  .foo {... }
@@ -461,44 +414,15 @@ export class ShadowCss {
    *  scopeName .foo { ... }
    */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
-    const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
     // replace :host and :host-context with -shadowcsshost and -shadowcsshostcontext respectively
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
     cssText = this._convertColonHostContext(cssText);
-    cssText = this._convertShadowDOMSelectors(cssText);
     if (scopeSelector) {
       cssText = this._scopeKeyframesRelatedCss(cssText, scopeSelector);
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
     }
-    cssText = cssText + '\n' + unscopedRules;
     return cssText.trim();
-  }
-
-  /*
-   * Process styles to add rules which will only apply under the polyfill
-   * and do not process via CSSOM. (CSSOM is destructive to rules on rare
-   * occasions, e.g. -webkit-calc on Safari.)
-   * For example, we convert this rule:
-   *
-   * @polyfill-unscoped-rule {
-   *   content: 'menu-item';
-   * ... }
-   *
-   * to this:
-   *
-   * menu-item {...}
-   *
-   **/
-  private _extractUnscopedRulesFromCssText(cssText: string): string {
-    let r = '';
-    let m: RegExpExecArray | null;
-    _cssContentUnscopedRuleRe.lastIndex = 0;
-    while ((m = _cssContentUnscopedRuleRe.exec(cssText)) !== null) {
-      const rule = m[0].replace(m[2], '').replace(m[1], m[4]);
-      r += rule + '\n\n';
-    }
-    return r;
   }
 
   /*
@@ -511,20 +435,20 @@ export class ShadowCss {
   private _convertColonHost(cssText: string): string {
     return cssText.replace(_cssColonHostRe, (_, hostSelectors: string, otherSelectors: string) => {
       if (hostSelectors) {
-        const convertedSelectors: string[] = [];
-        for (const hostSelector of this._splitOnTopLevelCommas(hostSelectors, true)) {
-          const trimmedHostSelector = hostSelector.trim();
-          if (!trimmedHostSelector) break;
-          const convertedSelector =
+        const parts = [...this._splitOnTopLevelCommas(hostSelectors, true)];
+        if (parts.length > 1) {
+          return ':host(' + hostSelectors + ')' + otherSelectors;
+        }
+        const trimmedHostSelector = parts[0].trim();
+        if (trimmedHostSelector) {
+          return (
             _polyfillHostNoCombinator +
             trimmedHostSelector.replace(_polyfillHost, '') +
-            otherSelectors;
-          convertedSelectors.push(convertedSelector);
+            otherSelectors
+          );
         }
-        return convertedSelectors.join(',');
-      } else {
-        return _polyfillHostNoCombinator + otherSelectors;
       }
+      return _polyfillHostNoCombinator + otherSelectors;
     });
   }
 
@@ -666,32 +590,36 @@ export class ShadowCss {
     });
   }
 
-  /*
-   * Convert combinators like ::shadow and pseudo-elements like ::content
-   * by replacing with space.
-   */
-  private _convertShadowDOMSelectors(cssText: string): string {
-    return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
-  }
-
   // change a selector like 'div' to 'name div'
   private _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
       if (rule.selector[0] !== '@') {
-        selector = this._scopeSelector({
-          selector,
-          scopeSelector,
-          hostSelector,
-          isParentSelector: true,
-        });
+        if (rule.isBlock) {
+          const selectorParts = selector.split(_selectorSplitRe);
+          const containsDeep = selectorParts.some((part) => _shadowDeepSelectorRe.test(part));
+
+          selector = this._scopeSelector({
+            selector,
+            scopeSelector,
+            hostSelector,
+            isParentSelector: true,
+          });
+
+          content =
+            // Only recurse into content if there might be any child blocks.
+            // TODO: support something like `.parent { ::ng-deep { .child {} } }`
+            !containsDeep && rule.content.includes('{')
+              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector)
+              : this._stripScopingSelectors(rule.content);
+        }
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
       }
-      return new CssRule(selector, content);
+      return new CssRule(selector, content, rule.isBlock);
     });
   }
 
@@ -721,7 +649,7 @@ export class ShadowCss {
       const selector = rule.selector
         .replace(_shadowDeepSelectors, ' ')
         .replace(_polyfillHostNoCombinatorRe, ' ');
-      return new CssRule(selector, rule.content);
+      return new CssRule(selector, rule.content, rule.isBlock);
     });
   }
 
@@ -743,15 +671,8 @@ export class ShadowCss {
     hostSelector: string;
     isParentSelector?: boolean;
   }): string {
-    // Split the selector into independent parts by `,` (comma) unless
-    // comma is within parenthesis, for example `:is(.one, two)`.
-    // Negative lookup after comma allows not splitting inside nested parenthesis,
-    // up to three levels (((,))).
-    const selectorSplitRe =
-      / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
-
     return selector
-      .split(selectorSplitRe)
+      .split(_selectorSplitRe)
       .map((part) => part.split(_shadowDeepSelectors))
       .map((deepParts) => {
         const [shallowPart, ...otherParts] = deepParts;
@@ -832,7 +753,9 @@ export class ShadowCss {
     const _scopeSelectorPart = (p: string) => {
       let scopedP = p.trim();
 
-      if (!scopedP) {
+      // Comments are replaced with placeholders before scoping. A part that only consists of
+      // comments is not a selector and must be left untouched.
+      if (!scopedP || scopedP === '&' || _onlyCommentPlaceholdersRe.test(scopedP)) {
         return p;
       }
 
@@ -1062,11 +985,6 @@ class SafeSelector {
 
 const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\()?';
 const _cssPrefixWithPseudoSelectorFunction = /:(where|is)\(/gi;
-const _cssContentNextSelectorRe =
-  /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
-const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
-const _cssContentUnscopedRuleRe =
-  /(polyfill-unscoped-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
@@ -1081,7 +999,7 @@ const nthRegex = new RegExp(String.raw`(:nth-[-\w]+)` + _parenSuffix, 'g');
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix + '?([^,{]*)', 'gim');
 // note: :host-context patterns are terminated with `{`, as opposed to :host which
 // is both `{` and `,` because :host-context handles top-level commas differently.
-const _hostContextPattern = _polyfillHostContext + _parenSuffix + '?([^{]*)';
+const _hostContextPattern = _polyfillHostContext + _parenSuffix + '([^{]*)';
 const _cssColonHostContextReGlobal = new RegExp(
   `${_cssScopedPseudoFunctionPrefix}(${_hostContextPattern})`,
   'gim',
@@ -1092,32 +1010,34 @@ const _polyfillHostNoCombinatorOutsidePseudoFunction = new RegExp(
   'g',
 );
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
-const _shadowDOMSelectorsRe = [
-  /::shadow/g,
-  /::content/g,
-  // Deprecated selectors
-  /\/shadow-deep\//g,
-  /\/shadow\//g,
-];
 
 // The deep combinator is deprecated in the CSS spec
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
 // see https://github.com/angular/angular/pull/17677
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
+// Non-global copy for `.test()`, which would otherwise carry `lastIndex` over to the next rule.
+const _shadowDeepSelectorRe = new RegExp(_shadowDeepSelectors.source);
+
+// Splits the selector into independent parts by `,` (comma) unless comma is within parenthesis,
+// for example `:is(.one, two)`. Negative lookup after comma allows not splitting inside nested
+// parenthesis, up to three levels (((,))).
+const _selectorSplitRe =
+  / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
 const _selectorReSuffix = '([>\\s~+[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
-const _colonHostRe = /:host/gim;
-const _colonHostContextRe = /:host-context/gim;
+const _colonHostRe = /:host(?!\-context)/gim;
+const _colonHostContextRe = /:host-context(?=\(\s*[^)\s])/gim;
 
 const _newLinesRe = /\r?\n/g;
 const _commentRe = /\/\*[\s\S]*?\*\//g;
 const _commentWithHashRe = /\/\*\s*#\s*source(Mapping)?URL=/g;
 const COMMENT_PLACEHOLDER = '%COMMENT%';
 const _commentWithHashPlaceHolderRe = new RegExp(COMMENT_PLACEHOLDER, 'g');
+const _onlyCommentPlaceholdersRe = new RegExp(`^(?:${COMMENT_PLACEHOLDER})+$`);
 
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 const _ruleRe = new RegExp(
-  `(\\s*(?:${COMMENT_PLACEHOLDER}\\s*)*)([^;\\{\\}]+?)(\\s*)((?:{%BLOCK%}?\\s*;?)|(?:\\s*;))`,
+  `(\\s*(?:${COMMENT_PLACEHOLDER}\\s*)*)([^;\\{\\}]+?)(\\s*)((?:{%BLOCK%}?\\s*;?)|(?:\\s*;)|$)`,
   'g',
 );
 const CONTENT_PAIRS = new Map([['{', '}']]);
@@ -1125,15 +1045,52 @@ const CONTENT_PAIRS = new Map([['{', '}']]);
 const COMMA_IN_PLACEHOLDER = '%COMMA_IN_PLACEHOLDER%';
 const SEMI_IN_PLACEHOLDER = '%SEMI_IN_PLACEHOLDER%';
 const COLON_IN_PLACEHOLDER = '%COLON_IN_PLACEHOLDER%';
+const LBRACE_IN_PLACEHOLDER = '%LBRACE_IN_PLACEHOLDER%';
+const RBRACE_IN_PLACEHOLDER = '%RBRACE_IN_PLACEHOLDER%';
 
 const _cssCommaInPlaceholderReGlobal = new RegExp(COMMA_IN_PLACEHOLDER, 'g');
 const _cssSemiInPlaceholderReGlobal = new RegExp(SEMI_IN_PLACEHOLDER, 'g');
 const _cssColonInPlaceholderReGlobal = new RegExp(COLON_IN_PLACEHOLDER, 'g');
+const _cssLbraceInPlaceholderReGlobal = new RegExp(LBRACE_IN_PLACEHOLDER, 'g');
+const _cssRbraceInPlaceholderReGlobal = new RegExp(RBRACE_IN_PLACEHOLDER, 'g');
+
+// Matches any CSS variable name, defined by a double-hyphen followed by any valid ident.
+// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
+const _cssVariableRe = /(var\(\s*|@property\s+)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
+
+/**
+ * Transforms CSS variables within a stylesheet to include a namespace placeholder.
+ *
+ * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
+ * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
+ * E.g. `@property --foo` becomes `@property --%NS%foo`
+ *
+ * If a variable is prefixed with `--global--`, it is NOT namespaced and the prefix is removed.
+ * E.g. `--global--mycolor: red;` becomes `--mycolor: red;`
+ */
+export function namespaceCssVariables(cssText: string): string {
+  return cssText.replace(_cssVariableRe, (match, prefix, varName, trailingColon) => {
+    // Check for a leading `var(`, `@property`, or trailing `:` to approximate whether we're
+    // operating on a real CSS variable, not another piece of syntax that resembles it.
+    // For example, this guards against:
+    // - `.foo--bar {}`
+    // - `/* --foo */`
+    // - `p { content: "--foo" }`
+    // - `[data---bar] {}`
+    // - `[data-status=foo--bar] {}`
+    // etc.
+    if (!prefix && !trailingColon) {
+      return match;
+    }
+    return (prefix ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
+  });
+}
 
 export class CssRule {
   constructor(
-    public selector: string,
-    public content: string,
+    readonly selector: string,
+    readonly content: string,
+    readonly isBlock: boolean,
   ) {}
 }
 
@@ -1146,12 +1103,14 @@ export function processRules(input: string, ruleCallback: (rule: CssRule) => Css
     let content = '';
     let suffix = m[4];
     let contentPrefix = '';
+    let hasBlock = false;
     if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
       content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
       suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
       contentPrefix = '{';
+      hasBlock = true;
     }
-    const rule = ruleCallback(new CssRule(selector, content));
+    const rule = ruleCallback(new CssRule(selector, content, hasBlock));
     return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
   });
   return unescapeInStrings(escapedResult);
@@ -1220,6 +1179,8 @@ const ESCAPE_IN_STRING_MAP: {[key: string]: string} = {
   ';': SEMI_IN_PLACEHOLDER,
   ',': COMMA_IN_PLACEHOLDER,
   ':': COLON_IN_PLACEHOLDER,
+  '{': LBRACE_IN_PLACEHOLDER,
+  '}': RBRACE_IN_PLACEHOLDER,
 };
 
 /**
@@ -1290,6 +1251,8 @@ function unescapeInStrings(input: string): string {
   let result = input.replace(_cssCommaInPlaceholderReGlobal, ',');
   result = result.replace(_cssSemiInPlaceholderReGlobal, ';');
   result = result.replace(_cssColonInPlaceholderReGlobal, ':');
+  result = result.replace(_cssLbraceInPlaceholderReGlobal, '{');
+  result = result.replace(_cssRbraceInPlaceholderReGlobal, '}');
   return result;
 }
 

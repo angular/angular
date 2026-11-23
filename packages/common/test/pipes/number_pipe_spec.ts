@@ -78,9 +78,8 @@ describe('Number pipes', () => {
       });
     });
 
-    it('should be available as a standalone pipe', () => {
+    it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [DecimalPipe],
         template: '{{ value | number }}',
       })
@@ -89,7 +88,7 @@ describe('Number pipes', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('12,345');
@@ -130,9 +129,8 @@ describe('Number pipes', () => {
       });
     });
 
-    it('should be available as a standalone pipe', () => {
+    it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [PercentPipe],
         template: '{{ value | percent }}',
       })
@@ -141,7 +139,7 @@ describe('Number pipes', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('1,500%');
@@ -227,9 +225,8 @@ describe('Number pipes', () => {
       });
     });
 
-    it('should be available as a standalone pipe', () => {
+    it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [CurrencyPipe],
         template: '{{ value | currency }}',
       })
@@ -238,7 +235,7 @@ describe('Number pipes', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('$15.00');

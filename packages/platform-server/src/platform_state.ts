@@ -14,8 +14,10 @@ import {
   Injector,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
+import {RuntimeErrorCode} from './errors';
 import {serializeDocument} from './domino_adapter';
 import {ENABLE_DOM_EMULATION} from './tokens';
 
@@ -36,7 +38,11 @@ export class PlatformState {
    */
   renderToString(): string {
     if (ngDevMode && !this._enableDomEmulation && !window?.document) {
-      throw new Error('Disabled DOM emulation should only run in browser environments');
+      throw new RuntimeError(
+        RuntimeErrorCode.DISABLED_DOM_EMULATION_IN_NON_BROWSER,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Disabled DOM emulation should only run in browser environments',
+      );
     }
 
     const measuringLabel = 'renderToString';

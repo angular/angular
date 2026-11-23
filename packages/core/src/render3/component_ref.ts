@@ -17,19 +17,15 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {
-  ComponentFactory as AbstractComponentFactory,
-  ComponentRef as AbstractComponentRef,
-} from '../linker/component_factory';
-import {ComponentFactoryResolver as AbstractComponentFactoryResolver} from '../linker/component_factory_resolver';
+import {ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../sanitization/dom_security_schema';
 import {Sanitizer} from '../sanitization/sanitizer';
 
-import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
-import {getComponentDef, getDirectiveDef, getDirectiveDefOrThrow} from './def_getters';
+import {getDirectiveDef, getDirectiveDefOrThrow} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {NodeInjector} from './di';
 import {reportUnknownPropertyError} from './instructions/element_validation';
@@ -47,6 +43,7 @@ import {
   TElementContainerNode,
   TElementNode,
   TNode,
+  TNodeName,
   TNodeType,
 } from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
@@ -60,45 +57,37 @@ import {
   TVIEW,
   TViewType,
 } from './interfaces/view';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
+import {ProfilerEvent} from '../../primitives/devtools';
+import {TracingService} from '../application/tracing';
+import {DOCUMENT} from '../document';
 import {retrieveHydrationInfo} from '../hydration/utils';
+import {getComponentName} from '../internal/get_closest_component_name';
+import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 import {ChainedInjector} from './chained_injector';
 import {createElementNode, setupStaticAttributes} from './dom_node_manipulation';
+import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
+import {getDocument} from './interfaces/document';
 import {unregisterLView} from './interfaces/lview_tracking';
 import {Renderer} from './interfaces/renderer';
+import {SHARED_STYLES_HOST} from './interfaces/shared_styles_host';
 import {
   extractAttrsAndClassesFromSelector,
   stringifyCSSSelectorList,
 } from './node_selector_matcher';
 import {profiler} from './profiler';
-import {ProfilerEvent} from '../../primitives/devtools';
 import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
-import {getComponentLViewByIndex, getTNode} from './util/view_utils';
+import {getComponentLViewByIndex, getTNode, storeLViewOnDestroy} from './util/view_utils';
+import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
-import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
-import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
-import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
-import {TracingService} from '../application/tracing';
-import {getComponentName} from '../internal/get_closest_component_name';
+import {DEFAULT_LOCALE_ID} from '../i18n/localization';
+import {LOCALE_ID} from '../i18n/tokens';
 
-export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
-  /**
-   * @param ngModule The NgModuleRef to which all resolved factories are bound.
-   */
-  constructor(private ngModule?: NgModuleRef<any>) {
-    super();
-  }
-
-  override resolveComponentFactory<T>(component: Type<T>): AbstractComponentFactory<T> {
-    ngDevMode && assertComponentType(component);
-    const componentDef = getComponentDef(component)!;
-    return new ComponentFactory(componentDef, this.ngModule);
-  }
-}
+const shadowRootSupported = typeof ShadowRoot !== 'undefined';
+const documentSupported = typeof Document !== 'undefined';
 
 function toInputRefArray<T>(map: DirectiveDef<T>['inputs']): ComponentFactory<T>['inputs'] {
   return Object.keys(map).map((name) => {
@@ -125,7 +114,7 @@ function verifyNotAnOrphanComponent(componentDef: ComponentDef<unknown>) {
     (typeof ngJitMode === 'undefined' || ngJitMode) &&
     componentDef.debugInfo?.forbidOrphanRendering
   ) {
-    if (depsTracker.isOrphanComponent(componentDef.type)) {
+    if (depsTracker.isOrphanComponent(componentDef.type as Type<any>)) {
       throw new RuntimeError(
         RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
         `Orphan component found! Trying to render the component ${debugStringifyTypeForError(
@@ -184,17 +173,40 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     changeDetectionScheduler,
     ngReflect,
     tracingService,
+    locale: rootLViewInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID),
   };
 }
 
-function createHostElement(componentDef: ComponentDef<unknown>, renderer: Renderer): RElement {
+function createHostElement(
+  componentDef: ComponentDef<unknown>,
+  renderer: Renderer,
+  hostElementNamespace: string | null,
+): RElement {
   // Determine a tag name used for creating host elements when this component is created
   // dynamically. Default to 'div' if this component did not specify any tag name in its
   // selector.
   const tagName = inferTagNameFromDefinition(componentDef);
   const namespace =
-    tagName === 'svg' ? SVG_NAMESPACE : tagName === 'math' ? MATH_ML_NAMESPACE : null;
+    tagName === 'svg'
+      ? SVG_NAMESPACE
+      : tagName === 'math'
+        ? MATH_ML_NAMESPACE
+        : hostElementNamespace;
   return createElementNode(renderer, tagName, namespace);
+}
+
+function assertNotScriptHostElement(element: RElement | null | undefined): void {
+  const elementName =
+    element && 'localName' in element && typeof element.localName === 'string'
+      ? element.localName
+      : element?.tagName;
+
+  if (elementName?.toLowerCase() === 'script') {
+    throw new RuntimeError(
+      RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
+      ngDevMode && `"<script>" tag is not allowed as a component host element.`,
+    );
+  }
 }
 
 /**
@@ -210,10 +222,10 @@ export function inferTagNameFromDefinition(componentDef: ComponentDef<unknown>):
 /**
  * ComponentFactory interface implementation.
  */
-export class ComponentFactory<T> extends AbstractComponentFactory<T> {
-  override selector: string;
-  override componentType: Type<any>;
-  override ngContentSelectors: string[];
+export class ComponentFactory<T> {
+  selector: string;
+  componentType: Type<any>;
+  ngContentSelectors: string[];
   isBoundToModule: boolean;
   private cachedInputs:
     | {
@@ -225,7 +237,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     | null = null;
   private cachedOutputs: {propName: string; templateName: string}[] | null = null;
 
-  override get inputs(): {
+  get inputs(): {
     propName: string;
     templateName: string;
     isSignal: boolean;
@@ -235,7 +247,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     return this.cachedInputs;
   }
 
-  override get outputs(): {propName: string; templateName: string}[] {
+  get outputs(): {propName: string; templateName: string}[] {
     this.cachedOutputs ??= toOutputRefArray(this.componentDef.outputs);
     return this.cachedOutputs;
   }
@@ -248,20 +260,21 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     private componentDef: ComponentDef<any>,
     private ngModule?: NgModuleRef<any>,
   ) {
-    super();
-    this.componentType = componentDef.type;
+    this.componentType = componentDef.type as Type<any>;
     this.selector = stringifyCSSSelectorList(componentDef.selectors);
     this.ngContentSelectors = componentDef.ngContentSelectors ?? [];
     this.isBoundToModule = !!ngModule;
   }
 
-  override create(
+  create(
     injector: Injector,
     projectableNodes?: any[][] | undefined,
     rootSelectorOrNode?: any,
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    hostElementNamespace?: string | null,
+    allowNonStandaloneDirectives?: boolean,
   ): AbstractComponentRef<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
@@ -286,6 +299,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             rootSelectorOrNode,
             directives,
             componentBindings,
+            hostElementNamespace,
+            allowNonStandaloneDirectives,
           ),
         );
       } else {
@@ -296,6 +311,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           rootSelectorOrNode,
           directives,
           componentBindings,
+          hostElementNamespace,
+          allowNonStandaloneDirectives,
         );
       }
     } finally {
@@ -310,14 +327,31 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     rootSelectorOrNode?: any,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    hostElementNamespace?: string | null,
+    allowNonStandaloneDirectives?: boolean,
   ) {
     const cmpDef = this.componentDef;
-    const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
+    const rootTView = createRootTView(
+      rootSelectorOrNode,
+      cmpDef,
+      componentBindings,
+      directives,
+      allowNonStandaloneDirectives,
+    );
 
     const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
-      : createHostElement(cmpDef, hostRenderer);
+      : createHostElement(cmpDef, hostRenderer, hostElementNamespace ?? null);
+    assertNotScriptHostElement(hostElement);
+
+    const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);
+    const styleHost = getStyleHost(
+      hostElement,
+      () => rootViewInjector.get(DOCUMENT, null) ?? getDocument(),
+    );
+    if (sharedStylesHost) sharedStylesHost.addHost(styleHost);
+
     const hasInputBindings =
       componentBindings?.some(isInputBinding) ||
       directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));
@@ -336,6 +370,20 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       retrieveHydrationInfo(hostElement, rootViewInjector, true /* isRootView */),
     );
 
+    // Since we don't reference count host usage, calling `removeHost` is potentially
+    // breaking since other root components on the page might rely on it (ex. a dialog,
+    // multiple `ApplicationRef.prototype.bootstrap` calls, etc.).
+    //
+    // Instead we only remove shadow roots, under the assumption that a shadow root will
+    // only contain one Angular root component. This is true for MicA, but not in general.
+    // Styles in the document light DOM are effectively leaked, since we can't easily
+    // assume no other components exist on the page outside this one root.
+    if (sharedStylesHost && shadowRootSupported && styleHost instanceof ShadowRoot) {
+      storeLViewOnDestroy(rootLView, () => {
+        sharedStylesHost.removeHost(styleHost);
+      });
+    }
+
     rootLView[HEADER_OFFSET] = hostElement;
 
     // rootView is the parent when bootstrapping
@@ -352,7 +400,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         HEADER_OFFSET,
         rootLView,
         TNodeType.Element,
-        '#host',
+        TNodeName.DynamicHost,
         () => rootTView.directiveRegistry,
         true,
         0,
@@ -399,6 +447,7 @@ function createRootTView(
   componentDef: ComponentDef<unknown>,
   componentBindings: Binding[] | undefined,
   directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] | undefined,
+  allowNonStandaloneDirectives?: boolean,
 ): TView {
   const tAttributes = rootSelectorOrNode
     ? ['ng-version', '0.0.0-PLACEHOLDER']
@@ -413,12 +462,12 @@ function createRootTView(
       varsToAllocate += binding[BINDING].requiredVars;
 
       if (binding.create) {
-        (binding as BindingInternal).targetIdx = 0;
+        binding.targetIdx = 0;
         (creationBindings ??= []).push(binding);
       }
 
       if (binding.update) {
-        (binding as BindingInternal).targetIdx = 0;
+        binding.targetIdx = 0;
         (updateBindings ??= []).push(binding);
       }
     }
@@ -431,13 +480,14 @@ function createRootTView(
         for (const binding of directive.bindings as BindingInternal[]) {
           varsToAllocate += binding[BINDING].requiredVars;
           const targetDirectiveIdx = i + 1;
+
           if (binding.create) {
-            (binding as BindingInternal).targetIdx = targetDirectiveIdx;
+            binding.targetIdx = targetDirectiveIdx;
             (creationBindings ??= []).push(binding);
           }
 
           if (binding.update) {
-            (binding as BindingInternal).targetIdx = targetDirectiveIdx;
+            binding.targetIdx = targetDirectiveIdx;
             (updateBindings ??= []).push(binding);
           }
         }
@@ -453,7 +503,7 @@ function createRootTView(
         ? getDirectiveDefOrThrow(directiveType)
         : getDirectiveDef(directiveType)!;
 
-      if (ngDevMode && !directiveDef.standalone) {
+      if (ngDevMode && !allowNonStandaloneDirectives && !directiveDef.standalone) {
         throw new RuntimeError(
           RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
           `The ${stringifyForError(directiveType)} directive must be standalone in ` +
@@ -480,6 +530,20 @@ function createRootTView(
   );
 
   return rootTView;
+}
+
+function getStyleHost(node: RNode, doc: () => Document): Node {
+  const rootNode = node.getRootNode?.();
+
+  if (documentSupported && rootNode instanceof Document) {
+    return rootNode.head; // Connected to document.
+  } else if (!rootNode) {
+    return doc().head; // `getRootNode` not supported, Node.js use case.
+  } else if (shadowRootSupported && rootNode instanceof ShadowRoot) {
+    return rootNode; // Shadow root
+  } else {
+    return doc().head; // Disconnected element, use fallback document.
+  }
 }
 
 function getRootTViewTemplate(

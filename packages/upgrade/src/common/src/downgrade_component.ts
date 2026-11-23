@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
+import {EnvironmentInjector, Injector, NgZone, Type} from '@angular/core';
 
 import {
   IAnnotatedFunction,
@@ -123,6 +123,9 @@ export function downgradeComponent(info: {
     // When downgrading multiple modules, special handling is needed wrt injectors.
     const hasMultipleDowngradedModules = isNgUpgradeLite && getDowngradedModuleCount($injector) > 1;
 
+    // A copy of the contents of each element, taken before anything on the element is linked.
+    const templates = new WeakMap<Node, Node[]>();
+
     return {
       restrict: 'E',
       terminal: true,
@@ -131,8 +134,21 @@ export function downgradeComponent(info: {
       // configuration properties can be made available. See:
       // See G3: javascript/angular2/angular1_router_lib.js
       // https://github.com/angular/angular.js/blob/47bf11ee94664367a26ed8c91b9b586d3dd420f5/src/ng/compile.js#L1670-L1691.
-      controller: function () {},
+      controller: [
+        '$element',
+        function (element: IAugmentedJQuery) {
+          // Controllers are instantiated before anything on the element is linked, so the contents
+          // are still the template. A fragment keeps the copies as siblings, as multi-element
+          // directives (e.g. `ng-repeat-start`) need.
+          const fragment = document.createDocumentFragment();
+          element[0].childNodes.forEach((node) => fragment.appendChild(node.cloneNode(true)));
+          templates.set(element[0], Array.from(fragment.childNodes));
+        },
+      ],
       link: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, required: any[]) => {
+        const template = templates.get(element[0]) ?? [];
+        templates.delete(element[0]);
+
         // We might have to compile the contents asynchronously, because this might have been
         // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
         // been compiled.
@@ -195,32 +211,22 @@ export function downgradeComponent(info: {
         const finalModuleInjector = moduleInjector || parentInjector!;
 
         const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
-          // Retrieve `ComponentFactoryResolver` from the injector tied to the `NgModule` this
-          // component belongs to.
-          const componentFactoryResolver: ComponentFactoryResolver =
-            moduleInjector.get(ComponentFactoryResolver);
-          const componentFactory: ComponentFactory<any> =
-            componentFactoryResolver.resolveComponentFactory(info.component)!;
-
-          if (!componentFactory) {
-            throw new Error(`Expecting ComponentFactory for: ${getTypeName(info.component)}`);
-          }
-
           const injectorPromise = new ParentInjectorPromise(element);
           const facade = new DowngradeComponentAdapter(
             element,
             attrs,
             scope,
             ngModel,
+            moduleInjector.get(EnvironmentInjector),
             injector,
             $compile,
             $parse,
-            componentFactory,
+            info.component,
             wrapCallback,
             unsafelyOverwriteSignalInputs,
           );
 
-          const projectableNodes = facade.compileContents();
+          const projectableNodes = facade.compileContents(template);
           const componentRef = facade.createComponentAndSetup(
             projectableNodes,
             isNgUpgradeLite,

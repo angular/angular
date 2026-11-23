@@ -96,7 +96,10 @@ export const mapNavigationItemsToRoutes = (
   additionalRouteProperties: Partial<Route>,
 ): Route[] =>
   navigationItems
-    .filter((route): route is NavigationItem & {path: string} => Boolean(route.path))
+    .filter(
+      (route): route is NavigationItem & {path: string} =>
+        Boolean(route.path) && !isExternalLink(route.path!),
+    )
     .map((navigationItem) => {
       const route = {
         path: navigationItem.path,

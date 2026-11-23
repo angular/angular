@@ -8,6 +8,7 @@
 name: Deploying adev preview to Firebase
 
 on:
+  # zizmor: ignore[dangerous-triggers] - {Trigger is safe as workflow does not checkout untrusted code}
   workflow_run:
     workflows: ['Build adev for preview deployment']
     types: [completed]
@@ -29,18 +30,23 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           token: '${{secrets.GITHUB_TOKEN}}'
-
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.nvmrc'
+          package-manager-cache: false
       - name: Configure Firebase deploy target
         working-directory: ./
         run: |
           # We can use `npx` as the Firebase deploy actions uses it too.
-          npx -y firebase-tools@latest target:clear --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs
-          npx -y firebase-tools@latest target:apply --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs ${{env.PREVIEW_SITE}}
+          # Use stable version release
+          npx -y firebase-tools@15.15.0 target:clear --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs
+          npx -y firebase-tools@15.15.0 target:apply --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs ${{env.PREVIEW_SITE}}
 
-      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@aba3adc53489fee586e2375ee4367ff30c947390 # main
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'adev-preview'

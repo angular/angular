@@ -8,9 +8,9 @@
 
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   signal,
@@ -55,6 +55,7 @@ import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
 import {DocsRefButtonComponent} from '../../shared/docs-ref-button/docs-ref-button.component';
+import {AngieComponent} from '../../shared/angie/angie.component';
 
 const ENV_HIERARCHY_VER_SIZE = 35;
 const EL_HIERARCHY_VER_SIZE = 65;
@@ -62,6 +63,9 @@ const HIERARCHY_HOR_SIZE = 50;
 
 const INIT_SNAP_ZOOM_SCALE = 0.7;
 const SNAP_ZOOM_SCALE = 0.8;
+
+const HIGHLIGHTED_NODE_CLASS = 'it-highlighted';
+const SELECTED_NODE_CLASS = 'it-selected';
 
 @Component({
   selector: 'ng-injector-tree',
@@ -72,13 +76,13 @@ const SNAP_ZOOM_SCALE = 0.8;
     TreeVisualizerComponent,
     ResponsiveSplitDirective,
     DocsRefButtonComponent,
+    AngieComponent,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
   host: {
     '[hidden]': 'hidden()',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorTreeComponent {
   private readonly elementTree = viewChild<InjectorTreeVisualizer>('elementTree');
@@ -118,7 +122,7 @@ export class InjectorTreeComponent {
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
-    aspectRatioBreakpoint: 1.5,
+    aspectRatioBreakpoint: '>=1.5',
     breakpointDirection: 'horizontal',
   };
 
@@ -139,6 +143,8 @@ export class InjectorTreeComponent {
   };
 
   constructor() {
+    this.subscribeToBackendEvents();
+
     afterRenderEffect({
       write: () => {
         const view = this.componentExplorerView();
@@ -146,7 +152,6 @@ export class InjectorTreeComponent {
           return;
         }
 
-        this.init();
         this.rawDirectiveForest = view.forest;
         untracked(() => this.updateInjectorTreeVisualization(view.forest));
       },
@@ -196,8 +201,8 @@ export class InjectorTreeComponent {
     }
   }
 
-  private init() {
-    this.messageBus.on('highlightComponent', (id: number) => {
+  private subscribeToBackendEvents(): void {
+    const unregisterHighlight = this.messageBus.on('highlightComponent', (id: number) => {
       const elementTree = this.elementTree();
       if (!elementTree) {
         return;
@@ -208,6 +213,10 @@ export class InjectorTreeComponent {
       }
 
       this.selectInjectorByNode(injectorNode);
+    });
+
+    inject(DestroyRef).onDestroy(() => {
+      unregisterHighlight();
     });
   }
 
@@ -380,9 +389,9 @@ export class InjectorTreeComponent {
       return;
     }
     if (this.selectedNode()!.data.injector.id === id) {
-      node.classList.add('selected');
+      node.classList.add(SELECTED_NODE_CLASS);
     }
-    node.classList.add('highlighted');
+    node.classList.add(HIGHLIGHTED_NODE_CLASS);
   }
 
   private highlightEdgeById(tree: InjectorTreeVisualizer, id: string): void {
@@ -391,21 +400,21 @@ export class InjectorTreeComponent {
       return;
     }
 
-    edge.classList.add('highlighted');
+    edge.classList.add(HIGHLIGHTED_NODE_CLASS);
   }
 
   private unhighlightAllEdges(tree: InjectorTreeVisualizer): void {
     const edges = tree.svg.querySelectorAll('.link');
     for (const edge of edges) {
-      edge.classList.remove('highlighted');
+      edge.classList.remove(HIGHLIGHTED_NODE_CLASS);
     }
   }
 
   private unhighlightAllNodes(tree: InjectorTreeVisualizer): void {
     const nodes = tree.svg.querySelectorAll('.node');
     for (const node of nodes) {
-      node.classList.remove('selected');
-      node.classList.remove('highlighted');
+      node.classList.remove(SELECTED_NODE_CLASS);
+      node.classList.remove(HIGHLIGHTED_NODE_CLASS);
     }
   }
 

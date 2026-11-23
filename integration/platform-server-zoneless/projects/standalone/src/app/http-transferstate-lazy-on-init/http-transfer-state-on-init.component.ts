@@ -11,7 +11,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} f
 
 @Component({
   selector: 'transfer-state-http',
-  standalone: true,
   template: ` <div class="one">{{ responseOne }}</div> `,
   providers: [HttpClient],
   changeDetection: ChangeDetectionStrategy.OnPush,

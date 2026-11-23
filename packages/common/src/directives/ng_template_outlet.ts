@@ -41,6 +41,8 @@ import {
  * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}
  *
  * @publicApi
+ *
+ * @see [Using NgTemplateOutlet](guide/templates/ng-template#using-ngtemplateoutlet)
  */
 @Directive({
   selector: '[ngTemplateOutlet]',

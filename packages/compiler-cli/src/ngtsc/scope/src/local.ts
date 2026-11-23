@@ -151,10 +151,12 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   registerPipeMetadata(pipe: PipeMeta): void {}
 
   getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope | null {
-    const scope = !this.declarationToModule.has(clazz)
-      ? null
-      : this.getScopeOfModule(this.declarationToModule.get(clazz)!.ngModule);
-    return scope;
+    if (!this.declarationToModule.has(clazz)) {
+      return null;
+    }
+
+    const module = this.declarationToModule.get(clazz)!.ngModule;
+    return this.getScopeOfModule(module);
   }
 
   /**
@@ -181,9 +183,12 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    * defined, or the string `'error'` if the scope contained errors.
    */
   getScopeOfModule(clazz: ClassDeclaration): LocalModuleScope | null {
-    return this.moduleToRef.has(clazz)
-      ? this.getScopeOfModuleReference(this.moduleToRef.get(clazz)!)
-      : null;
+    if (!this.moduleToRef.has(clazz)) {
+      return null;
+    }
+
+    const scope = this.getScopeOfModuleReference(this.moduleToRef.get(clazz)!);
+    return scope === 'cycle' ? null : scope;
   }
 
   /**
@@ -249,13 +254,17 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   /**
    * Implementation of `getScopeOfModule` which accepts a reference to a class.
    */
-  private getScopeOfModuleReference(ref: Reference<ClassDeclaration>): LocalModuleScope | null {
+  private getScopeOfModuleReference(
+    ref: Reference<ClassDeclaration>,
+  ): LocalModuleScope | null | 'cycle' {
     if (this.cache.has(ref.node)) {
       const cachedValue = this.cache.get(ref.node);
 
-      if (cachedValue !== IN_PROGRESS_RESOLUTION) {
-        return cachedValue as LocalModuleScope | null;
+      if (cachedValue === IN_PROGRESS_RESOLUTION) {
+        return 'cycle';
       }
+
+      return cachedValue as LocalModuleScope | null;
     }
 
     this.cache.set(ref.node, IN_PROGRESS_RESOLUTION);
@@ -593,7 +602,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       }
       return this.dependencyScopeReader.resolve(ref);
     } else {
-      if (this.cache.get(ref.node) === IN_PROGRESS_RESOLUTION) {
+      const scope = this.getScopeOfModuleReference(ref);
+      if (scope === 'cycle') {
         diagnostics.push(
           makeDiagnostic(
             type === 'import'
@@ -603,11 +613,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
             `NgModule "${type}" field contains a cycle`,
           ),
         );
-        return 'cycle';
       }
 
       // The NgModule is declared locally in the current program. Resolve it from the registry.
-      return this.getScopeOfModuleReference(ref);
+      return scope;
     }
   }
 

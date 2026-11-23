@@ -9,14 +9,9 @@
 import {readFile, writeFile} from 'fs/promises';
 import path from 'path';
 import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
+import {type ApiManifest, mapManifestToEntries} from '../shared/linking.mjs';
 import {initHighlighter} from '../shared/shiki.mjs';
 import {hasUnknownAnchors} from './helpers.mjs';
-
-type ApiManifest = ApiManifestPackage[];
-interface ApiManifestPackage {
-  moduleName: string;
-  entries: {name: string; aliases?: string[]}[];
-}
 
 async function main() {
   const [paramFilePath] = process.argv.slice(2);
@@ -55,6 +50,16 @@ async function main() {
       }
 
       const markdownContent = await readFile(filePath, {encoding: 'utf8'});
+
+      // A leading byte order mark (U+FEFF) stops the first Markdown heading from being
+      // recognized, so the page title renders as a paragraph and loses its header. Fail
+      // the build so the BOM has to be removed from the source file instead.
+      if (markdownContent.charCodeAt(0) === 0xfeff) {
+        throw new Error(
+          `The file "${filePath}" starts with a byte order mark (BOM). Remove it so the leading heading is parsed correctly.`,
+        );
+      }
+
       const htmlOutputContent = await parseMarkdownAsync(markdownContent, {
         markdownFilePath: filePath,
         apiEntries: mapManifestToEntries(apiManifest),
@@ -79,36 +84,3 @@ async function main() {
 }
 
 main();
-
-function mapManifestToEntries(
-  apiManifest: ApiManifest,
-): Record<string, {moduleName: string; targetSymbol?: string}> {
-  const duplicateEntries = new Set<string>();
-
-  const entryToModuleMap: Record<string, {moduleName: string; targetSymbol?: string}> = {};
-  for (const pkg of apiManifest) {
-    for (const entry of pkg.entries) {
-      if (duplicateEntries.has(entry.name)) {
-        continue;
-      } else if (entryToModuleMap[entry.name]) {
-        delete entryToModuleMap[entry.name];
-        duplicateEntries.add(entry.name);
-      } else {
-        const normalizedModuleName = pkg.moduleName.replace(/^@angular\//, '');
-
-        entryToModuleMap[entry.name] = {moduleName: normalizedModuleName};
-
-        // If there are aliases, create entries for each alias
-        if (entry.aliases) {
-          for (const alias of entry.aliases) {
-            entryToModuleMap[alias] = {
-              moduleName: normalizedModuleName,
-              targetSymbol: entry.name,
-            };
-          }
-        }
-      }
-    }
-  }
-  return entryToModuleMap;
-}

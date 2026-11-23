@@ -1,4 +1,4 @@
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {form} from '@angular/forms/signals';
 
 interface LoginData {
@@ -11,7 +11,6 @@ interface LoginData {
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   loginModel = signal<LoginData>({

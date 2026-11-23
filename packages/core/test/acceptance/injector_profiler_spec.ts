@@ -11,8 +11,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {Router, RouterModule, RouterOutlet} from '@angular/router';
 import {
   afterEveryRender,
+  ChangeDetectorRef,
   ClassProvider,
   Component,
+  DestroyRef,
   Directive,
   ElementRef,
   inject,
@@ -22,8 +24,10 @@ import {
   NgModule,
   NgModuleRef,
   QueryList,
+  Renderer2,
   ViewChild,
   ViewChildren,
+  ViewContainerRef,
 } from '../../src/core';
 import {InternalInjectFlags} from '../../src/di/interface/injector';
 import {NullInjector} from '../../src/di/null_injector';
@@ -55,7 +59,7 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from '../../src/render3/util/injector_discovery_utils';
-import {fakeAsync} from '../../testing';
+
 import {TestBed} from '../../testing/src/test_bed';
 
 describe('setProfiler', () => {
@@ -112,16 +116,13 @@ describe('setProfiler', () => {
     class MyService {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [MyService],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
     }
 
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     const fixture = TestBed.createComponent(MyComponent);
     const myComp = fixture.componentInstance;
 
@@ -161,10 +162,8 @@ describe('setProfiler', () => {
     class MyServiceC {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [MyService, {provide: MyServiceB, useValue: 0}],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService, {self: true});
@@ -174,7 +173,6 @@ describe('setProfiler', () => {
 
     TestBed.configureTestingModule({
       providers: [MyServiceB, MyServiceC, {provide: MyServiceB, useValue: 1}],
-      declarations: [MyComponent],
     });
     TestBed.createComponent(MyComponent);
 
@@ -205,7 +203,6 @@ describe('setProfiler', () => {
     class MyServiceE {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [
         MyService,
@@ -214,13 +211,11 @@ describe('setProfiler', () => {
         {provide: MyServiceD, useValue: 'hello world'},
         {provide: MyServiceE, useClass: class MyExampleClass {}},
       ],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
     }
 
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     TestBed.createComponent(MyComponent);
 
     // MyService should have been configured
@@ -260,20 +255,16 @@ describe('setProfiler', () => {
     class MyService {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [
         {provide: MyService, useClass: MyService, multi: true},
         {provide: MyService, useFactory: () => new MyService(), multi: true},
         {provide: MyService, useValue: 'hello world', multi: true},
       ],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
     }
-
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     TestBed.createComponent(MyComponent);
 
     // MyService should have been configured
@@ -305,9 +296,7 @@ describe('setProfiler', () => {
     });
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
-      standalone: false,
     })
     class MyComponent {
       rootService = inject(RootService);
@@ -316,7 +305,6 @@ describe('setProfiler', () => {
       fromPlatform = inject(providedInPlatformToken);
     }
 
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     TestBed.createComponent(MyComponent);
 
     // MyService should have been configured
@@ -567,43 +555,41 @@ describe('getInjectorProviders', () => {
   it('should be able to get the providers from a components injector', () => {
     class MyService {}
     @Component({
-      selector: 'my-comp',
       template: ` {{ b | percent: '4.3-5' }} `,
       providers: [MyService],
-      standalone: false,
+      imports: [PercentPipe],
     })
     class MyComponent {
       b = 1.3495;
     }
-    TestBed.configureTestingModule({declarations: [MyComponent], imports: [PercentPipe]});
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
-    expect(providers.length).toBe(1);
-    expect(providers[0].token).toBe(MyService);
-    expect(providers[0].provider).toBe(MyService);
-    expect(providers[0].isViewProvider).toBe(false);
+    const myServiceProvider = providers.find((p) => p.token === MyService)!;
+    expect(myServiceProvider).toBeDefined();
+    expect(myServiceProvider.token).toBe(MyService);
+    expect(myServiceProvider.provider).toBe(MyService);
+    expect(myServiceProvider.isViewProvider).toBe(false);
   });
 
   it('should be able to get determine if a provider is a view provider', () => {
     class MyService {}
     @Component({
-      selector: 'my-comp',
       template: ` {{ b | percent: '4.3-5' }} `,
       viewProviders: [MyService],
-      standalone: false,
+      imports: [PercentPipe],
     })
     class MyComponent {
       b = 1.3495;
     }
-    TestBed.configureTestingModule({declarations: [MyComponent], imports: [PercentPipe]});
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
-    expect(providers.length).toBe(1);
-    expect(providers[0].token).toBe(MyService);
-    expect(providers[0].provider).toBe(MyService);
-    expect(providers[0].isViewProvider).toBe(true);
+    const myServiceProvider = providers.find((p) => p.token === MyService)!;
+    expect(myServiceProvider).toBeDefined();
+    expect(myServiceProvider.token).toBe(MyService);
+    expect(myServiceProvider.provider).toBe(MyService);
+    expect(myServiceProvider.isViewProvider).toBe(true);
   });
 
   it('should be able to determine import paths after module provider flattening in the NgModule bootstrap case', () => {
@@ -647,7 +633,6 @@ describe('getInjectorProviders', () => {
     class ModuleD {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       standalone: false,
     })
@@ -825,7 +810,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: `<router-outlet />`,
       imports: [MyStandaloneComponentB, RouterOutlet],
     })
@@ -888,7 +872,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: `<router-outlet />`,
       imports: [MyStandaloneComponentB, RouterOutlet],
     })
@@ -930,14 +913,14 @@ describe('getInjectorProviders', () => {
     expect(myServiceProviderRecord!.token).toBe(MyService);
   });
 
-  it('should be able to determine providers in an injector that was created manually', fakeAsync(() => {
+  it('should be able to determine providers in an injector that was created manually', () => {
     class MyService {}
     const injector = Injector.create({providers: [MyService]}) as EnvironmentInjector;
     const providers = getInjectorProviders(injector);
     expect(providers.length).toBe(1);
     expect(providers[0].token).toBe(MyService);
     expect(providers[0].provider).toBe(MyService);
-  }));
+  });
 
   it('should be able to get injector providers for element injectors created by components rendering in an ngFor', () => {
     class MyService {}
@@ -948,7 +931,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: ` <item-cmp *ngFor="let item of items"></item-cmp> `,
       imports: [ItemComponent, NgForOf],
     })
@@ -968,11 +950,12 @@ describe('getInjectorProviders', () => {
     expect(itemComponents?.length).toBe(3);
     itemComponents!.forEach((item) => {
       const itemProviders = getInjectorProviders(item.injector);
+      const myServiceProvider = itemProviders.find((p) => p.token === MyService)!;
       expect(itemProviders).toBeInstanceOf(Array);
-      expect(itemProviders.length).toBe(1);
-      expect(itemProviders[0].token).toBe(MyService);
-      expect(itemProviders[0].provider).toBe(MyService);
-      expect(itemProviders[0].isViewProvider).toBe(false);
+      expect(myServiceProvider).toBeDefined();
+      expect(myServiceProvider.token).toBe(MyService);
+      expect(myServiceProvider.provider).toBe(MyService);
+      expect(myServiceProvider.isViewProvider).toBe(false);
     });
   });
 
@@ -985,7 +968,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: `
         @for (item of items; track item) {
           <item-cmp></item-cmp>
@@ -1009,12 +991,31 @@ describe('getInjectorProviders', () => {
     expect(itemComponents?.length).toBe(3);
     itemComponents!.forEach((item) => {
       const itemProviders = getInjectorProviders(item.injector);
+      const myServiceProvider = itemProviders.find((p) => p.token === MyService)!;
       expect(itemProviders).toBeInstanceOf(Array);
-      expect(itemProviders.length).toBe(1);
-      expect(itemProviders[0].token).toBe(MyService);
-      expect(itemProviders[0].provider).toBe(MyService);
-      expect(itemProviders[0].isViewProvider).toBe(false);
+      expect(myServiceProvider).toBeDefined();
+      expect(myServiceProvider.token).toBe(MyService);
+      expect(myServiceProvider.provider).toBe(MyService);
+      expect(myServiceProvider.isViewProvider).toBe(false);
     });
+  });
+
+  it('should include special providers in NodeInjector', () => {
+    @Component({
+      template: 'hello',
+    })
+    class MyComponent {}
+    const fixture = TestBed.createComponent(MyComponent);
+
+    const providers = getInjectorProviders(fixture.debugElement.injector);
+    const tokens = providers.map((p) => p.token);
+
+    expect(tokens).toContain(ElementRef);
+    expect(tokens).toContain(Renderer2);
+    expect(tokens).toContain(ViewContainerRef);
+    expect(tokens).toContain(DestroyRef);
+    expect(tokens).toContain(ChangeDetectorRef);
+    expect(tokens).toContain(Injector);
   });
 });
 
@@ -1247,7 +1248,7 @@ describe('getDependenciesFromInjectable', () => {
     @NgModule({imports: [ModuleB, ModuleC]})
     class ModuleD {}
 
-    @Component({selector: 'my-comp', template: 'hello world', imports: [ModuleD]})
+    @Component({template: 'hello world', imports: [ModuleD]})
     class MyStandaloneComponent {
       myService = inject(MyService);
     }

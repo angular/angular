@@ -5,7 +5,6 @@ package(default_visibility = ["//visibility:public"])
 copy_to_bin(
     name = "js_lib_files",
     srcs = [
-        "ensure-no-linker-decl.mjs",
         "esbuild-plugin.d.ts",
         "esbuild-plugin.mjs",
     ],
@@ -16,8 +15,5 @@ js_library(
     srcs = [":js_lib_files"],
     deps = [
         "//:node_modules/@angular/build",
-        "//:node_modules/@babel/core",
-        "//:node_modules/@babel/plugin-transform-async-generator-functions",
-        "//packages/compiler-cli",
     ],
 )

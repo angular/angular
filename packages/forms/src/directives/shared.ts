@@ -25,19 +25,25 @@ import type {FormArrayName} from './reactive_directives/form_group_name';
 import {ngModelWarning} from './reactive_errors';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
+export interface ɵFormControlIntegration {
+  readonly setParseErrors: (
+    value: Signal<ReadonlyArray<{readonly kind: string}>> | undefined,
+  ) => void;
+  onReset?: (value?: any) => void;
+}
+
 /**
- * DI token that provides a writable signal that controls can use to set the signal of parse errors
- * for the `FormField` directive or reactive directives. Used internally by `transformedValue`.
+ * DI token that provides the ɵFormControlIntegration context for FVC/UI controls.
  */
-export const ɵFORM_FIELD_PARSE_ERRORS = new InjectionToken<{
-  readonly set: (value: Signal<ReadonlyArray<{readonly kind: string}>> | undefined) => void;
-}>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_FIELD_PARSE_ERRORS' : '');
+export const ɵFORM_CONTROL_INTEGRATION = new InjectionToken<ɵFormControlIntegration>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_CONTROL_INTEGRATION' : '',
+);
 
 /**
  * Token to provide to allow SetDisabledState to always be called when a CVA is added, regardless of
  * whether the control is disabled or enabled.
  *
- * @see {@link FormsModule#withconfig}
+ * @see {@link FormsModule#withConfig}
  */
 export const CALL_SET_DISABLED_STATE = new InjectionToken(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'CallSetDisabledState' : '',
@@ -52,14 +58,15 @@ export const CALL_SET_DISABLED_STATE = new InjectionToken(
  * called when disabled, which is the legacy behavior for compatibility.
  *
  * @publicApi
- * @see {@link FormsModule#withconfig}
+ * @see {@link FormsModule#withConfig}
  */
 export type SetDisabledStateOption = 'whenDisabledForLegacyCode' | 'always';
 
 /**
  * Whether to use the fixed setDisabledState behavior by default.
  */
-export const setDisabledStateDefault: SetDisabledStateOption = 'always';
+// g3-only export const setDisabledStateDefault: SetDisabledStateOption = 'whenDisabledForLegacyCode';
+export const setDisabledStateDefault: SetDisabledStateOption = 'always'; // 3p-only
 
 export function controlPath(name: string | null, parent: ControlContainer): string[] {
   return [...parent.path!, name!];
@@ -363,7 +370,7 @@ function _throwInvalidValueAccessorError(dir: AbstractControlDirective) {
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
-  if (!changes.hasOwnProperty('model')) return false;
+  if (!Object.hasOwn(changes, 'model')) return false;
   const change = changes['model'];
 
   if (change.isFirstChange()) return true;
@@ -393,7 +400,7 @@ export function syncPendingControls(
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
   dir: NgControl,
-  valueAccessors: ControlValueAccessor[] | null | undefined,
+  valueAccessors: readonly ControlValueAccessor[] | null | undefined,
 ): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 

@@ -1,27 +1,35 @@
-import {browser, by, element} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 export class AppPage {
-  navigateTo() {
-    return browser.get(browser.baseUrl) as Promise<any>;
+  private driver: webdriver.WebDriver;
+  private baseUrl: string;
+
+  constructor(driver: webdriver.WebDriver, baseUrl: string) {
+    this.driver = driver;
+    this.baseUrl = baseUrl;
   }
 
-  getGreetText() {
-    return element(by.css('.greet-text')).getText() as Promise<string>;
+  async navigateTo(): Promise<void> {
+    await this.driver.get(this.baseUrl);
   }
 
-  getUnboundLastNameGreetText() {
-    return element(by.css('.unbound-last-name .greet-text')).getText() as Promise<string>;
+  async getGreetText(): Promise<string> {
+    return this.driver.findElement(webdriver.By.css('.greet-text')).getText();
   }
 
-  setLastName() {
-    return element(by.css('.set-last-name-btn')).click();
+  async getUnboundLastNameGreetText(): Promise<string> {
+    return this.driver.findElement(webdriver.By.css('.unbound-last-name .greet-text')).getText();
   }
 
-  unsetLastName() {
-    return element(by.css('.unset-last-name-btn')).click();
+  async setLastName(): Promise<void> {
+    await this.driver.findElement(webdriver.By.css('.set-last-name-btn')).click();
   }
 
-  getGreetCount() {
-    return element(by.id('greet-count')).getText() as Promise<string>;
+  async unsetLastName(): Promise<void> {
+    await this.driver.findElement(webdriver.By.css('.unset-last-name-btn')).click();
+  }
+
+  async getGreetCount(): Promise<string> {
+    return this.driver.findElement(webdriver.By.id('greet-count')).getText();
   }
 }

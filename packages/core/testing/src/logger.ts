@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '../../src/core';
+import {Service} from '../../src/core';
 
-@Injectable()
+@Service()
 export class Log<T = string> {
   logItems: T[];
 

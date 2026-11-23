@@ -101,6 +101,27 @@ describe('HttpXsrfInterceptor', () => {
     req.flush({});
   });
 
+  it('does not apply XSRF protection when request uses backslashes or whitespace and is cross-origin', () => {
+    // Browsers read `\` as `/`, drop leading spaces and control characters, and remove tabs and
+    // newlines anywhere, so all of these URLs point to `example.com`.
+    const urls = [
+      '/\\example.com/test',
+      '\\\\example.com/test',
+      'http:\\\\example.com/test',
+      ' //example.com/test',
+      '\u0000//example.com/test',
+      '\t//example.com/test',
+      '/\n/example.com/test',
+      'ht\ttp://example.com/test',
+    ];
+    for (const url of urls) {
+      interceptor.intercept(new HttpRequest('POST', url, {}), backend).subscribe();
+      const req = backend.expectOne(url);
+      expect(req.request.headers.has('X-XSRF-TOKEN')).withContext(JSON.stringify(url)).toBeFalse();
+      req.flush({});
+    }
+  });
+
   it('does apply XSRF protection when request is same-origin', () => {
     interceptor
       .intercept(new HttpRequest('POST', 'http://sub.example.com/test', {}), backend)
@@ -135,6 +156,7 @@ describe('HttpXsrfInterceptor', () => {
     expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('blah');
     req.flush({});
   });
+
   it('does not set the header for a null token', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -160,10 +182,12 @@ describe('HttpXsrfInterceptor', () => {
     expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
     req.flush({});
   });
+
   afterEach(() => {
     backend.verify();
   });
 });
+
 describe('HttpXsrfCookieExtractor', () => {
   let document: {[key: string]: string};
   let extractor: HttpXsrfCookieExtractor;
@@ -181,19 +205,37 @@ describe('HttpXsrfCookieExtractor', () => {
     });
     extractor = TestBed.inject(HttpXsrfCookieExtractor);
   });
+
   it('parses the cookie from document.cookie', () => {
     expect(extractor.getToken()).toEqual('test');
   });
+
   it('does not re-parse if document.cookie has not changed', () => {
     expect(extractor.getToken()).toEqual('test');
     expect(extractor.getToken()).toEqual('test');
     expect(getParseCount(extractor)).toEqual(1);
   });
+
   it('re-parses if document.cookie changes', () => {
     expect(extractor.getToken()).toEqual('test');
     document['cookie'] = 'XSRF-TOKEN=blah';
     expect(extractor.getToken()).toEqual('blah');
     expect(getParseCount(extractor)).toEqual(2);
+  });
+
+  it('extracts token without quotes when value is enclosed in DQUOTE characters', () => {
+    document['cookie'] = 'XSRF-TOKEN="quoted-token-value"';
+    expect(extractor.getToken()).toEqual('quoted-token-value');
+  });
+
+  it('extracts token without quotes when value is enclosed in URL-encoded DQUOTE characters (%22)', () => {
+    document['cookie'] = 'XSRF-TOKEN=%22quoted-token-value%22';
+    expect(extractor.getToken()).toEqual('quoted-token-value');
+  });
+
+  it('extracts token without crashing when value has malformed percent-encoding', () => {
+    document['cookie'] = 'XSRF-TOKEN=%ZZ';
+    expect(extractor.getToken()).toEqual('%ZZ');
   });
 });
 

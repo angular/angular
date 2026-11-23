@@ -7,15 +7,19 @@
  */
 
 import {
+  CUSTOM_ELEMENTS_SCHEMA,
   DomElementSchemaRegistry,
+  DomSchemaChecker,
+  NO_ERRORS_SCHEMA,
   ParseSourceSpan,
   SchemaMetadata,
   TmplAstHostElement,
+  TypeCheckId,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {TemplateDiagnostic, TypeCheckId} from '../api';
+import {TemplateDiagnostic} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';
@@ -24,82 +28,17 @@ export const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
 
 /**
- * Checks every non-Angular element/property processed in a template and potentially produces
- * `ts.Diagnostic`s related to improper usage.
- *
- * A `DomSchemaChecker`'s job is to check DOM nodes and their attributes written used in templates
- * and produce `ts.Diagnostic`s if the nodes don't conform to the DOM specification. It acts as a
- * collector for these diagnostics, and can be queried later to retrieve the list of any that have
- * been generated.
+ * Shape of event names that are candidates for the unclaimed event name check: a single
+ * identifier. Names with `.`, `-` or other separators (key pseudo-events like `keydown.enter`,
+ * custom events like `my-event`) never match.
  */
-export interface DomSchemaChecker {
-  /**
-   * Get the `ts.Diagnostic`s that have been generated via `checkElement` and `checkProperty` calls
-   * thus far.
-   */
-  readonly diagnostics: ReadonlyArray<TemplateDiagnostic>;
-
-  /**
-   * Check a non-Angular element and record any diagnostics about it.
-   *
-   * @param id Template ID, suitable for resolution with a `TcbSourceResolver`.
-   * @param tagName Tag name of the element in question
-   * @param sourceSpanForDiagnostics Span that should be used when reporting diagnostics.
-   * @param schemas Any active schemas for the template, which might affect the validity of the
-   * element.
-   * @param hostIsStandalone Indicates whether the element's host is a standalone component.
-   */
-  checkElement(
-    id: TypeCheckId,
-    tagName: string,
-    sourceSpanForDiagnostics: ParseSourceSpan,
-    schemas: SchemaMetadata[],
-    hostIsStandalone: boolean,
-  ): void;
-
-  /**
-   * Check a property binding on an element and record any diagnostics about it.
-   *
-   * @param id the type check ID, suitable for resolution with a `TcbSourceResolver`.
-   * @param tagName tag name of the element.
-   * @param name the name of the property being checked.
-   * @param span the source span of the binding. This is redundant with `element.attributes` but is
-   * passed separately to avoid having to look up the particular property name.
-   * @param schemas any active schemas for the template, which might affect the validity of the
-   * property.
-   */
-  checkTemplateElementProperty(
-    id: string,
-    tagName: string,
-    name: string,
-    span: ParseSourceSpan,
-    schemas: SchemaMetadata[],
-    hostIsStandalone: boolean,
-  ): void;
-
-  /**
-   * Check a property binding on a host element and record any diagnostics about it.
-   * @param id the type check ID, suitable for resolution with a `TcbSourceResolver`.
-   * @param element the element node in question.
-   * @param name the name of the property being checked.
-   * @param span the source span of the binding.
-   * @param schemas any active schemas for the template, which might affect the validity of the
-   * property.
-   */
-  checkHostElementProperty(
-    id: string,
-    element: TmplAstHostElement,
-    name: string,
-    span: ParseSourceSpan,
-    schemas: SchemaMetadata[],
-  ): void;
-}
+const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
 
 /**
  * Checks non-Angular elements and properties against the `DomElementSchemaRegistry`, a schema
  * maintained by the Angular team via extraction from a browser IDL.
  */
-export class RegistryDomSchemaChecker implements DomSchemaChecker {
+export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
   private _diagnostics: TemplateDiagnostic[] = [];
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
@@ -156,26 +95,44 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
   ): void {
+    const report = REGISTRY.validateProperty(name);
+    if (report.error) {
+      const mapping = this.resolver.getTemplateSourceMapping(id);
+      const diag = makeTemplateDiagnostic(
+        id,
+        mapping,
+        span,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        report.msg!,
+      );
+      this._diagnostics.push(diag);
+      return;
+    }
+
     if (!REGISTRY.hasProperty(tagName, name, schemas)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemas = `'${decorator}.schemas'`;
-      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${tagName}'.`;
-      if (tagName.startsWith('ng-')) {
+      const localTagName = tagName.startsWith(':')
+        ? tagName.slice(tagName.indexOf(':', 1) + 1)
+        : tagName;
+      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${localTagName}'.`;
+      if (localTagName.startsWith('ng-')) {
         errorMsg +=
           `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '${decorator}.imports' of this component.` +
           `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
-      } else if (tagName.indexOf('-') > -1) {
+      } else if (localTagName.indexOf('-') > -1) {
         errorMsg +=
           `\n1. If '${
-            tagName
+            localTagName
           }' is an Angular component and it has '${name}' input, then verify that it is ${
             hostIsStandalone
               ? "included in the '@Component.imports' of this component"
               : 'part of this module'
           }.` +
-          `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.` +
+          `\n2. If '${localTagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.` +
           `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
 
@@ -191,6 +148,61 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     }
   }
 
+  checkTemplateElementEvent(
+    id: TypeCheckId,
+    tagName: string,
+    eventName: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[],
+    hasComponent: boolean,
+  ): void {
+    // Native DOM events are almost all lowercase and custom events conventionally use
+    // dash-separated names, so only names that look like misspelled directive outputs (single
+    // camelCase identifiers) are candidates for this check.
+    if (!UNCLAIMED_EVENT_CANDIDATE_REGEX.test(eventName) || !/[A-Z]/.test(eventName)) {
+      return;
+    }
+
+    // Events bubble, so a native event of any element may legitimately be observed on this
+    // element, regardless of its tag. Some native events do have camelCase names (e.g. the
+    // vendor-prefixed `webkitAnimationEnd`, which the schema stores in lowercase), so they have
+    // to be exempted explicitly.
+    if (REGISTRY.isKnownEventOfAnyElement(eventName)) {
+      return;
+    }
+
+    // `CUSTOM_ELEMENTS_SCHEMA` signals that custom elements are in use, whose custom events may
+    // bubble up to any element in the template. It doesn't exempt elements with a matched
+    // component though: those are Angular components rather than custom elements, no matter
+    // their tag name.
+    if (
+      schemas.some(
+        (schema) =>
+          schema.name === NO_ERRORS_SCHEMA.name ||
+          (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
+      )
+    ) {
+      return;
+    }
+
+    const errorMsg =
+      `Event '${eventName}' is not emitted by any directive applied to '${tagName}' and it isn't a known native DOM event.` +
+      `\n1. If '${eventName}' is an output of a directive, make sure the directive is applied to the element and check the output's name for typos.` +
+      `\n2. If you're listening to a custom event dispatched by a descendant element, dash-separated event names (e.g. 'my-event') are exempt from this check.` +
+      `\n3. To disable this check entirely, set 'strictUnclaimedEventNames' to false or remove it from the compiler options.`;
+
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const diag = makeTemplateDiagnostic(
+      id,
+      mapping,
+      span,
+      ts.DiagnosticCategory.Error,
+      ngErrorCode(ErrorCode.UNCLAIMED_EVENT_BINDING),
+      errorMsg,
+    );
+    this._diagnostics.push(diag);
+  }
+
   checkHostElementProperty(
     id: TypeCheckId,
     element: TmplAstHostElement,
@@ -198,6 +210,21 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
   ): void {
+    const report = REGISTRY.validateProperty(name);
+    if (report.error) {
+      const mapping = this.resolver.getHostBindingsMapping(id);
+      const diag = makeTemplateDiagnostic(
+        id,
+        mapping,
+        span,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        report.msg!,
+      );
+      this._diagnostics.push(diag);
+      return;
+    }
+
     for (const tagName of element.tagNames) {
       if (REGISTRY.hasProperty(tagName, name, schemas)) {
         continue;

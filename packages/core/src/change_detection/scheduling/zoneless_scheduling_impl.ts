@@ -9,7 +9,6 @@
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
-import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders, Provider} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
@@ -20,8 +19,12 @@ import {
   scheduleCallbackWithRafRace,
 } from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
-import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
+import {NgZone, NgZonePrivate, NoopNgZone} from '../../zone/ng_zone';
 
+import {TracingService} from '../../application/tracing';
+import {Service} from '../../di';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
@@ -29,9 +32,6 @@ import {
   SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
 } from './zoneless_scheduling';
-import {TracingService} from '../../application/tracing';
-import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
-import {OnDestroy} from '../lifecycle_hooks';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -56,7 +56,7 @@ function trackMicrotaskNotificationForDebugging() {
   }
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, OnDestroy {
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
@@ -67,8 +67,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
-  private readonly angularZoneId = this.zoneIsDefined
-    ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
+  private readonly innerNgZone = this.zoneIsDefined
+    ? ((this.ngZone as NgZonePrivate)._inner ?? null)
     : null;
   private readonly scheduleInRootZone =
     !this.zonelessEnabled &&
@@ -232,17 +232,24 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
     if (this.pendingRenderTaskId !== null || this.runningTick || this.appRef._runningTick) {
       return false;
     }
-    // If we're inside the zone don't bother with scheduler. Zone will stabilize
+    // If we're inside this app's Angular zone don't bother with scheduler. Zone will stabilize
     // eventually and run change detection.
-    if (
-      !this.zonelessEnabled &&
-      this.zoneIsDefined &&
-      Zone.current.get(angularZoneInstanceIdProperty + this.angularZoneId)
-    ) {
+    if (!this.zonelessEnabled && this.innerNgZone !== null && this.isInNgZone()) {
       return false;
     }
 
     return true;
+  }
+
+  private isInNgZone(): boolean {
+    let zone: Zone | null = Zone.current;
+    while (zone) {
+      if (zone === this.innerNgZone) {
+        return true;
+      }
+      zone = zone.parent;
+    }
+    return false;
   }
 
   /**
@@ -331,6 +338,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
 /**
  * Provides change detection without ZoneJS for the application bootstrapped using
  * `bootstrapApplication`.
+ *
+ * NOTE: Zoneless is enabled by default in Angular v21+. Ensure `provideZoneChangeDetection` is not used to override this default.
  *
  * This function allows you to configure the application to not use the state/state changes of
  * ZoneJS to schedule change detection in the application. This will work when ZoneJS is not present

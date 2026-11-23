@@ -1,0 +1,506 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
+load(":framework_api_docs.bzl", "generate_framework_api_docs")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+# This target captures common dependencies needed for all `generate_api_docs` targets
+# throughout Angular's public API surface.
+filegroup(
+    name = "common_files_and_deps_for_docs",
+    srcs = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages:types",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+        "//packages/core:files_for_docgen",
+        "//packages/core/primitives/signals:files_for_docgen",
+        "//packages/core/src/compiler:files_for_docgen",
+        "//packages/core/src/di/interface:files_for_docgen",
+        "//packages/core/src/interface:files_for_docgen",
+        "//packages/core/src/reflection:files_for_docgen",
+        "//packages/core/src/util:files_for_docgen",
+        "//packages/examples:files_for_docgen",
+        "//packages/platform-browser:files_for_docgen",
+        "//packages/platform-browser-dynamic:files_for_docgen",
+    ],
+)
+
+generate_framework_api_docs(
+    name = "animations_docs",
+    srcs = [
+        "//packages/animations:files_for_docgen",
+    ],
+    entry_point = "//packages/animations:index.ts",
+    module_name = "@angular/animations",
+)
+
+generate_framework_api_docs(
+    name = "animations_browser_docs",
+    srcs = [
+        "//packages/animations:files_for_docgen",
+        "//packages/animations/browser:files_for_docgen",
+    ],
+    entry_point = "//packages/animations/browser:index.ts",
+    module_name = "@angular/animations/browser",
+)
+
+generate_framework_api_docs(
+    name = "animations_browser_testing_docs",
+    srcs = [
+        "//packages/animations/browser/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/animations/browser/testing:index.ts",
+    module_name = "@angular/animations/browser/testing",
+)
+
+generate_framework_api_docs(
+    name = "common_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/platform-browser:files_for_docgen",
+    ],
+    entry_point = "//packages/common:index.ts",
+    module_name = "@angular/common",
+)
+
+generate_framework_api_docs(
+    name = "http_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+    ],
+    entry_point = "//packages/common/http:index.ts",
+    module_name = "@angular/common/http",
+)
+
+generate_api_docs(
+    name = "http_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common/http/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/common/http/testing:index.ts",
+    module_name = "@angular/common/http/testing",
+)
+
+generate_framework_api_docs(
+    name = "common_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/common/testing:index.ts",
+    module_name = "@angular/common/testing",
+)
+
+generate_framework_api_docs(
+    name = "common_upgrade_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common/upgrade:files_for_docgen",
+    ],
+    entry_point = "//packages/common/upgrade:index.ts",
+    module_name = "@angular/common/upgrade",
+)
+
+generate_api_docs(
+    name = "core_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+    ],
+    entry_point = "//packages/core:index.ts",
+    module_name = "@angular/core",
+    private_modules = [
+        "//packages/core/primitives/di",
+        "core/primitives/signals",
+        "core/primitives/event-dispatch",
+    ],
+)
+
+generate_framework_api_docs(
+    name = "core_global_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/core/global:files_for_docgen",
+    ],
+    entry_point = "//packages/core/global:index.ts",
+    module_label = "window.ng globals",
+    module_name = "@angular/core/globals",
+)
+
+generate_framework_api_docs(
+    name = "core_rxjs-interop_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+        "//packages/core/rxjs-interop:files_for_docgen",
+    ],
+    entry_point = "//packages/core/rxjs-interop:index.ts",
+    module_name = "@angular/core/rxjs-interop",
+)
+
+generate_framework_api_docs(
+    name = "core_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/core/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/core/testing:index.ts",
+    module_name = "@angular/core/testing",
+)
+
+generate_framework_api_docs(
+    name = "elements_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/elements:files_for_docgen",
+    ],
+    entry_point = "//packages/elements:index.ts",
+    module_name = "@angular/elements",
+)
+
+generate_framework_api_docs(
+    name = "forms_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/forms:files_for_docgen",
+    ],
+    entry_point = "//packages/forms:index.ts",
+    module_name = "@angular/forms",
+)
+
+generate_framework_api_docs(
+    name = "forms_signals_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/forms/signals:files_for_docgen",
+    ],
+    entry_point = "//packages/forms/signals:index.ts",
+    module_name = "@angular/forms/signals",
+)
+
+generate_framework_api_docs(
+    name = "forms_signals_compat_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/forms/signals/compat:files_for_docgen",
+    ],
+    entry_point = "//packages/forms/signals/compat:index.ts",
+    module_name = "@angular/forms/signals/compat",
+)
+
+generate_framework_api_docs(
+    name = "localize_docs",
+    srcs = [
+        "//packages/localize:files_for_docgen",
+        "//packages/localize/src/utils:files_for_docgen",
+    ],
+    entry_point = "//packages/localize:index.ts",
+    module_name = "@angular/localize",
+)
+
+generate_framework_api_docs(
+    name = "localize_init_docs",
+    srcs = [
+        "//packages/localize/src/localize:files_for_docgen",
+    ],
+    entry_point = "//packages/localize/src/localize:doc_index.ts",
+    module_name = "@angular/localize/init",
+)
+
+generate_framework_api_docs(
+    name = "platform-browser_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-browser:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-browser:index.ts",
+    module_name = "@angular/platform-browser",
+)
+
+generate_framework_api_docs(
+    name = "platform-browser_dynamic_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-browser-dynamic:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-browser-dynamic:index.ts",
+    module_name = "@angular/platform-browser-dynamic",
+)
+
+generate_framework_api_docs(
+    name = "platform-browser_dynamic_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-browser-dynamic/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-browser-dynamic/testing:index.ts",
+    module_name = "@angular/platform-browser-dynamic/testing",
+)
+
+generate_framework_api_docs(
+    name = "platform-browser_animations_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-browser/animations:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-browser/animations:index.ts",
+    module_name = "@angular/platform-browser/animations",
+)
+
+generate_api_docs(
+    name = "platform-browser_animations_async_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-browser/animations/async:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-browser/animations/async:index.ts",
+    module_name = "@angular/platform-browser/animations/async",
+)
+
+generate_framework_api_docs(
+    name = "platform-browser_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-browser/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-browser/testing:index.ts",
+    module_name = "@angular/platform-browser/testing",
+)
+
+generate_framework_api_docs(
+    name = "platform-server_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-server:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-server:index.ts",
+    module_name = "@angular/platform-server",
+)
+
+generate_framework_api_docs(
+    name = "platform-server_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/platform-server/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/platform-server/testing:index.ts",
+    module_name = "@angular/platform-server/testing",
+)
+
+generate_framework_api_docs(
+    name = "router_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+        "//packages/router:files_for_docgen",
+    ],
+    entry_point = "//packages/router:index.ts",
+    module_name = "@angular/router",
+)
+
+generate_framework_api_docs(
+    name = "router_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/router/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/router/testing:index.ts",
+    module_name = "@angular/router/testing",
+)
+
+generate_framework_api_docs(
+    name = "router_upgrade_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/router/upgrade:files_for_docgen",
+    ],
+    entry_point = "//packages/router/upgrade:index.ts",
+    module_name = "@angular/router/upgrade",
+)
+
+generate_framework_api_docs(
+    name = "service-worker_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/service-worker:files_for_docgen",
+    ],
+    entry_point = "//packages/service-worker:index.ts",
+    module_name = "@angular/service-worker",
+)
+
+### @angular/ssr package located in the Angular/CLI repository
+generate_framework_api_docs(
+    name = "ssr_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//:node_modules/@angular/ssr",
+        "//packages/ssr/docs:ssr_docs_lib",
+        "//packages/ssr/docs:ssr_docs_lib_types",
+    ],
+    entry_point = "//packages/ssr/docs:_index.d.ts",
+    module_name = "@angular/ssr",
+)
+
+generate_framework_api_docs(
+    name = "ssr_node_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//:node_modules/@angular/ssr",
+        "//:node_modules/@types/node",
+        "//packages/ssr/docs:ssr_docs_lib",
+        "//packages/ssr/docs:ssr_docs_lib_types",
+    ],
+    entry_point = "//packages/ssr/docs:_node.d.ts",
+    module_name = "@angular/ssr/node",
+)
+
+generate_framework_api_docs(
+    name = "upgrade_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/upgrade:files_for_docgen",
+        "//packages/upgrade/src/common:files_for_docgen",
+    ],
+    entry_point = "//packages/upgrade:index.ts",
+    module_name = "@angular/upgrade",
+)
+
+generate_framework_api_docs(
+    name = "upgrade_static_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/upgrade:files_for_docgen",
+        "//packages/upgrade/src/common:files_for_docgen",
+        "//packages/upgrade/static:files_for_docgen",
+    ],
+    entry_point = "//packages/upgrade/static:index.ts",
+    module_name = "@angular/upgrade/static",
+)
+
+generate_framework_api_docs(
+    name = "upgrade_static_testing_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "//packages/upgrade/static/testing:files_for_docgen",
+    ],
+    entry_point = "//packages/upgrade/static/testing:index.ts",
+    module_name = "@angular/upgrade/static/testing",
+)
+
+render_api_to_html(
+    name = "blocks_docs",
+    srcs = [
+        "//tools/manual_api_docs/blocks",
+    ],
+)
+
+render_api_to_html(
+    name = "manual_elements_docs",
+    srcs = [
+        "//tools/manual_api_docs/elements",
+    ],
+)
+
+filegroup(
+    name = "docs_extracted_apis",
+    srcs = [
+        ":animations_browser_docs_extraction",
+        ":animations_browser_testing_docs_extraction",
+        ":animations_docs_extraction",
+        ":common_docs_extraction",
+        ":common_testing_docs_extraction",
+        ":common_upgrade_docs_extraction",
+        ":core_docs_extraction",
+        ":core_global_docs_extraction",
+        ":core_rxjs-interop_docs_extraction",
+        ":core_testing_docs_extraction",
+        ":elements_docs_extraction",
+        ":forms_docs_extraction",
+        ":forms_signals_compat_docs_extraction",
+        ":forms_signals_docs_extraction",
+        ":http_docs_extraction",
+        ":http_testing_docs_extraction",
+        ":localize_docs_extraction",
+        ":localize_init_docs_extraction",
+        ":platform-browser_animations_async_docs_extraction",
+        ":platform-browser_animations_docs_extraction",
+        ":platform-browser_docs_extraction",
+        ":platform-browser_dynamic_docs_extraction",
+        ":platform-browser_dynamic_testing_docs_extraction",
+        ":platform-browser_testing_docs_extraction",
+        ":platform-server_docs_extraction",
+        ":platform-server_testing_docs_extraction",
+        ":router_docs_extraction",
+        ":router_testing_docs_extraction",
+        ":router_upgrade_docs_extraction",
+        ":service-worker_docs_extraction",
+        ":ssr_docs_extraction",
+        ":ssr_node_docs_extraction",
+        ":upgrade_docs_extraction",
+        ":upgrade_static_docs_extraction",
+        ":upgrade_static_testing_docs_extraction",
+        "//tools/manual_api_docs/blocks",
+        "//tools/manual_api_docs/elements",
+    ],
+)
+
+filegroup(
+    name = "api_docs",
+    srcs = [
+        ":animations_browser_docs",
+        ":animations_browser_testing_docs",
+        ":animations_docs",
+        ":blocks_docs",
+        ":common_docs",
+        ":common_testing_docs",
+        ":common_upgrade_docs",
+        ":core_docs",
+        ":core_global_docs",
+        ":core_rxjs-interop_docs",
+        ":core_testing_docs",
+        ":elements_docs",
+        ":forms_docs",
+        ":forms_signals_compat_docs",
+        ":forms_signals_docs",
+        ":http_docs",
+        ":http_testing_docs",
+        ":localize_docs",
+        ":localize_init_docs",
+        ":manual_elements_docs",
+        ":platform-browser_animations_async_docs",
+        ":platform-browser_animations_docs",
+        ":platform-browser_docs",
+        ":platform-browser_dynamic_docs",
+        ":platform-browser_dynamic_testing_docs",
+        ":platform-browser_testing_docs",
+        ":platform-server_docs",
+        ":platform-server_testing_docs",
+        ":router_docs",
+        ":router_testing_docs",
+        ":router_upgrade_docs",
+        ":service-worker_docs",
+        ":ssr_docs",
+        ":ssr_node_docs",
+        ":upgrade_docs",
+        ":upgrade_static_docs",
+        ":upgrade_static_testing_docs",
+    ],
+)
+
+build_test(
+    name = "api_docs_test",
+    targets = [
+        ":api_docs",
+        ":docs_extracted_apis",
+    ],
+)

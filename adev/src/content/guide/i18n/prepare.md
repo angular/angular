@@ -35,7 +35,7 @@ The following `<div>` tag will display translated text as part of `div` and `ari
 
 <docs-code-multifile>
     <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  region="i18n-conditional"/>
-    <docs-code header="app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,21],[33,37]]"/>
+    <docs-code header="app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[13,18],[32,34]]"/>
 </docs-code-multifile>
 
 ### Translate inline text without HTML element
@@ -47,6 +47,26 @@ To avoid creating a new DOM element, wrap the text in an `<ng-container>` elemen
 The following example shows the `<ng-container>` element transformed into a non-displayed HTML comment.
 
 <docs-code path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-ng-container"/>
+
+### Name the interpolation placeholder
+
+By default, Angular generates a placeholder name for each interpolation in a translated message. To give it a meaningful name that helps translators understand the context, add an `//i18n(ph="name")` comment inside the interpolation.
+
+```html
+<element i18n>{{ expression //i18n(ph="placeholder_name") }}</element>
+```
+
+For example:
+
+```html
+<p i18n>Hello, {{ username //i18n(ph="name") }}!</p>
+```
+
+This is the template equivalent of naming a placeholder in component code with [`$localize`][ApiLocalizeInitLocalize]:
+
+```ts
+$localize`Hello, ${username}:name:!`;
+```
 
 ## Mark element attributes for translations
 
@@ -104,7 +124,7 @@ Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-i
 $localize`string_to_translate ${variable_name}`;
 ```
 
-### Name the interpolation placeholder
+### Name the interpolation placeholder {#name-the-interpolation-placeholder-in-code}
 
 ```ts
 $localize`string_to_translate ${variable_name}:placeholder_name:`;
@@ -170,7 +190,7 @@ $localize`:site header|An introduction header for this sample:Hello i18n!`;
 <docs-callout title="How meanings control text extraction and merges">
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
-The Angular extraction tool assigns each translation unit a unique ID based on the _meaning_ and _description_.
+The Angular extraction tool assigns each translation unit a unique ID based on its source text and _meaning_. The _description_ does not affect the ID.
 
 HELPFUL: For more information about the Angular extraction tool, see [Work with translation files](guide/i18n/translation-files).
 
@@ -245,7 +265,7 @@ other { default_quantity }
 
 HELPFUL: For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the [CLDR - Unicode Common Locale Data Repository][UnicodeCldrMain].
 
-<docs-callout header='Background: Locales may not support some pluralization categories'>
+<docs-callout title="Background: Locales may not support some pluralization categories">
 
 Many locales don't support some of the pluralization categories.
 The default locale \(`en-US`\) uses a very simple `plural()` function that doesn't support the `few` pluralization category.
@@ -383,5 +403,5 @@ The following code example shows nested clauses based on the `gender` and `minut
 [GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18 'Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub'
 [GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages 'ICU Message Format - ICU Documentation | Unicode | GitHub'
 [UnicodeCldrMain]: https://cldr.unicode.org 'Unicode CLDR Project'
-[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules 'Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'
-[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names 'Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'
+[UnicodeCldrIndexCldrSpecPluralRules]: https://cldr.unicode.org/index/cldr-spec/plural-rules 'Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'
+[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: https://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names 'Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'

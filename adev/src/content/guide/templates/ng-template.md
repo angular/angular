@@ -188,12 +188,10 @@ export class ComponentWithFragment { }
 })
 export class MyOutlet {
   private viewContainer = inject(ViewContainerRef);
-  fragment = input<TemplateRef<unknown> | undefined>();
+  fragment = input.required<TemplateRef<unknown>>();
 
   showFragment() {
-    if (this.fragment()) {
-      this.viewContainer.createEmbeddedView(this.fragment());
-    }
+    this.viewContainer.createEmbeddedView(this.fragment());
   }
 }
 ```
@@ -202,7 +200,7 @@ In the example above, clicking the "Show" button results in the following output
 
 ```angular-html
 <component-with-fragment>
-  <h2>Component with a fragment>
+  <h2>Component with a fragment</h2>
   <my-outlet>
     <button>Show</button>
   </my-outlet>

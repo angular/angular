@@ -18,9 +18,15 @@ def _render_api_to_html(ctx):
     args.add(html_output_directory.path)
     outputs = [html_output_directory]
 
+    # Path to the defined-routes manifest used to validate guide links in JSDoc and markdown.
+    # The manifest is a flat JSON array of route paths and `route#anchor` entries derived from
+    # the application's navigation tree.
+    args.add(ctx.file.defined_routes.path)
+    inputs = ctx.files.srcs + [ctx.file.defined_routes]
+
     # Define an action that runs the executable.
     ctx.actions.run(
-        inputs = depset(ctx.files.srcs),
+        inputs = depset(inputs),
         executable = ctx.executable._render_api_to_html,
         outputs = outputs,
         arguments = [args],
@@ -44,6 +50,13 @@ render_api_to_html = rule(
     attrs = {
         # The source files for this rule. This must include one or more json data files.
         "srcs": attr.label_list(allow_empty = False, allow_files = True),
+
+        # Defined-routes manifest produced by //adev/scripts/routes:run_generate_route. Used
+        # to validate `/guide/...` URLs in `{@link}` JSDoc tags and markdown links.
+        "defined_routes": attr.label(
+            default = Label("//adev/scripts/routes:defined-routes.json"),
+            allow_single_file = [".json"],
+        ),
 
         # The executable for this rule (private).
         "_render_api_to_html": attr.label(

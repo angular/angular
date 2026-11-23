@@ -10,6 +10,7 @@
 
 import {AngularDetection} from '../../../protocol';
 import {TabManager} from './tab_manager';
+import {BreakpointManager} from './breakpoint_manager';
 
 function getPopUpName(ng: AngularDetection): string {
   if (!ng.isAngular) {
@@ -24,7 +25,27 @@ function getPopUpName(ng: AngularDetection): string {
   return 'supported.html';
 }
 
+/**
+ * Probes an internal Google-only domain (g3doc.corp.google.com) using `mode: 'no-cors'`.
+ * Connectivity success vs. network/transport error is used as a heuristic to detect
+ * if the user is connected to the internal Google corp network/VPN.
+ */
+function checkGoogler(): void {
+  fetch('https://g3doc.corp.google.com/does/not/exist/for/angular/devtools', {
+    mode: 'no-cors',
+    method: 'HEAD',
+  })
+    .then((response) => {
+      // For non Googlers the Promise will resolve with status: 0/ok: false.
+      chrome.storage.local.set({isGoogler: response.status !== 0});
+    })
+    .catch(() => chrome.storage.local.set({isGoogler: false}));
+}
+
 if (chrome !== undefined && chrome.runtime !== undefined) {
+  // Check Googler status on background service worker startup/wake-up.
+  checkGoogler();
+
   const isManifestV3 = chrome.runtime.getManifest().manifest_version === 3;
 
   const browserAction = (() => {
@@ -81,4 +102,5 @@ if (chrome !== undefined && chrome.runtime !== undefined) {
 
   const tabs = {};
   TabManager.initialize(tabs);
+  BreakpointManager.initialize();
 }

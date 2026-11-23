@@ -9,6 +9,7 @@ import type * as vscode from 'vscode';
 import {DocumentUri, TextDocument} from 'vscode-languageserver-textdocument';
 
 import {
+  isInsideStringLiteral,
   isNotTypescriptOrSupportedDecoratorField,
   isNotTypescriptOrSupportedDecoratorRange,
 } from '../embedded_support';
@@ -89,6 +90,144 @@ describe('embedded language support', () => {
         isNotTypescriptOrSupportedDecoratorField,
         false,
       );
+    });
+
+    it('inside styles declared before template', () => {
+      test(
+        `const foo = {styles: ['h1 { col¦or: red; }'], template: '<div></div>'}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside a string of another property after template', () => {
+      test(
+        `const foo = {template: '<div></div>', selector: 'app¦-root'}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        false,
+      );
+    });
+
+    it('inside a string in the class body after a template in the decorator', () => {
+      test(
+        `@Component({template: '<div></div>'})
+        export class AppComponent {
+          private property = 'd¦oe';
+        }`,
+        isNotTypescriptOrSupportedDecoratorField,
+        false,
+      );
+    });
+
+    it('inside a string of a nested host property', () => {
+      test(
+        `const foo = {host: {'[class.foo]': 'is¦Foo'}, selector: 'app-root'}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside a @HostListener decorator string', () => {
+      test(
+        `@Component({template: '<div></div>'})
+        export class AppComponent {
+          @HostListener('cl¦ick', ['$event']) onClick(event: Event) {}
+        }`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside a @HostBinding decorator string of a directive without template', () => {
+      test(
+        `@Directive({selector: '[foo]'})
+        export class FooDirective {
+          @HostBinding('class.f¦oo') isFoo = true;
+        }`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside a string after a @HostListener decorator', () => {
+      test(
+        `@Component({template: '<div></div>'})
+        export class AppComponent {
+          @HostListener('click', ['$event']) onClick(event: Event) {
+            console.log('cli¦cked');
+          }
+        }`,
+        isNotTypescriptOrSupportedDecoratorField,
+        false,
+      );
+    });
+
+    it('inside a string argument of a plain function call named like a decorator', () => {
+      test(`HostListener('cl¦ick');`, isNotTypescriptOrSupportedDecoratorField, false);
+    });
+
+    it('after a template literal with substitutions', () => {
+      test(
+        `@Component({template: \`\`})
+        export class AppComponent {
+          private property = 'doe';
+          private method(): void {
+            console.log(\`\${this.property}\`);
+            this.¦
+          }
+        }`,
+        isNotTypescriptOrSupportedDecoratorField,
+        false,
+      );
+    });
+
+    it('after a template literal with nested braces in a substitution', () => {
+      test(
+        `@Component({template: \`\`})
+        export class AppComponent {
+          private method(): void {
+            console.log(\`\${{a: 1}.a} and \${[1, 2].map((x) => { return x; })}\`);
+            this.¦
+          }
+        }`,
+        isNotTypescriptOrSupportedDecoratorField,
+        false,
+      );
+    });
+
+    it('inside a template literal template with substitutions', () => {
+      test(
+        `const foo = {template: \`<div>\${value}</d¦iv>\`}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        false,
+      );
+    });
+
+    it('inside a template literal template after a template literal with substitutions', () => {
+      test(
+        `const prefix = \`\${getPrefix()}-\`;
+        const foo = {template: \`<div>¦</div>\`}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+  });
+
+  describe('isInsideStringLiteral', () => {
+    it('inside a string literal', () => {
+      test(`const foo = 'ba¦r';`, isInsideStringLiteral, true);
+    });
+
+    it('outside of a string literal', () => {
+      test(`const foo = 'bar'; const baz = 1¦;`, isInsideStringLiteral, false);
+    });
+
+    it('after a template literal with substitutions', () => {
+      test(`const foo = \`\${bar}\`; const baz = 1¦;`, isInsideStringLiteral, false);
+    });
+
+    it('inside a string literal after a template literal with substitutions', () => {
+      test(`const foo = \`\${bar}\`; const baz = 'qu¦x';`, isInsideStringLiteral, true);
     });
   });
 

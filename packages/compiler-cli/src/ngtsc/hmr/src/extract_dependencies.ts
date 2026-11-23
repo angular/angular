@@ -7,20 +7,31 @@
  */
 
 import {
-  DeferBlockDepsEmitMode,
+  extractHmrDependenciesFromOutput,
+  PotentialTopLevelReadsVisitor,
   R3CompiledExpression,
   R3ComponentDeferMetadata,
-  R3HmrNamespaceDependency,
   outputAst as o,
+  type HmrCompiledOutput,
+  type HmrDependencies,
+  type HmrReadResolver,
 } from '@angular/compiler';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {CompileResult} from '../../transform';
 import ts from 'typescript';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 
+export {
+  extractHmrDependenciesFromOutput,
+  PotentialTopLevelReadsVisitor,
+  type HmrCompiledOutput,
+  type HmrDependencies,
+  type HmrReadResolver,
+};
+
 /**
  * Determines the file-level dependencies that the HMR initializer needs to capture and pass along.
- * @param sourceFile File in which the file is being compiled.
+ * @param node Class for which we're extracting the dependencies.
  * @param definition Compiled component definition.
  * @param factory Compiled component factory.
  * @param deferBlockMetadata Metadata about the defer blocks in the component.
@@ -36,58 +47,20 @@ export function extractHmrDependencies(
   debugInfo: o.Statement | null,
   reflection: ReflectionHost,
   evaluator: PartialEvaluator,
-): {
-  local: {name: string; runtimeRepresentation: o.Expression}[];
-  external: R3HmrNamespaceDependency[];
-} | null {
+): HmrDependencies | null {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
-  const visitor = new PotentialTopLevelReadsVisitor();
   const sourceFile = ts.getOriginalNode(node).getSourceFile();
 
-  // Visit all of the compiled expressions to look for potential
-  // local references that would have to be retained.
-  definition.expression.visitExpression(visitor, null);
-  definition.statements.forEach((statement) => statement.visitStatement(visitor, null));
-  factory.initializer?.visitExpression(visitor, null);
-  factory.statements.forEach((statement) => statement.visitStatement(visitor, null));
-  classMetadata?.visitStatement(visitor, null);
-  debugInfo?.visitStatement(visitor, null);
-
-  if (deferBlockMetadata.mode === DeferBlockDepsEmitMode.PerBlock) {
-    deferBlockMetadata.blocks.forEach((loader) => loader?.visitExpression(visitor, null));
-  } else {
-    deferBlockMetadata.dependenciesFn?.visitExpression(visitor, null);
-  }
-
-  // Filter out only the references to defined top-level symbols. This allows us to ignore local
-  // variables inside of functions. Note that we filter out the class name since it is always
-  // defined and it saves us having to repeat this logic wherever the locals are consumed.
-  const availableTopLevel = getTopLevelDeclarationNames(sourceFile);
-  const local: {name: string; runtimeRepresentation: o.Expression}[] = [];
-  const seenLocals = new Set<string>();
-
-  for (const readNode of visitor.allReads) {
-    const readName = readNode instanceof o.ReadVarExpr ? readNode.name : readNode.text;
-
-    if (readName !== name && !seenLocals.has(readName) && availableTopLevel.has(readName)) {
-      const runtimeRepresentation = getRuntimeRepresentation(readNode, reflection, evaluator);
-
-      if (runtimeRepresentation === null) {
-        return null;
-      }
-
-      local.push({name: readName, runtimeRepresentation});
-      seenLocals.add(readName);
-    }
-  }
-
-  return {
-    local,
-    external: Array.from(visitor.namespaceReads, (name, index) => ({
-      moduleName: name,
-      assignedName: `ɵhmr${index}`,
-    })),
-  };
+  return extractHmrDependenciesFromOutput(
+    name,
+    {definition, factory, deferBlockMetadata, classMetadata, debugInfo},
+    new TypeScriptPotentialTopLevelReadsVisitor(),
+    getTopLevelDeclarationNames(sourceFile),
+    {
+      getName: (read) => (read instanceof o.ReadVarExpr ? read.name : read.text),
+      getRuntimeRepresentation: (read) => getRuntimeRepresentation(read, reflection, evaluator),
+    },
+  );
 }
 
 /**
@@ -221,33 +194,11 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
   }
 }
 
-/**
- * Visitor that will traverse an AST looking for potential top-level variable reads.
- * The reads are "potential", because the visitor doesn't account for local variables
- * inside functions.
- */
-class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
-  readonly allReads = new Set<o.ReadVarExpr | ts.Identifier>();
-  readonly namespaceReads = new Set<string>();
-
-  override visitExternalExpr(ast: o.ExternalExpr, context: any) {
-    if (ast.value.moduleName !== null) {
-      this.namespaceReads.add(ast.value.moduleName);
+class TypeScriptPotentialTopLevelReadsVisitor extends PotentialTopLevelReadsVisitor<ts.Identifier> {
+  protected override addWrappedNodeReads(node: unknown): void {
+    if (this.isTypeScriptNode(node)) {
+      this.addAllTopLevelIdentifiers(node);
     }
-    super.visitExternalExpr(ast, context);
-  }
-
-  override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
-    this.allReads.add(ast);
-    super.visitReadVarExpr(ast, context);
-  }
-
-  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<unknown>, context: any) {
-    if (this.isTypeScriptNode(ast.node)) {
-      this.addAllTopLevelIdentifiers(ast.node);
-    }
-
-    super.visitWrappedNodeExpr(ast, context);
   }
 
   /**

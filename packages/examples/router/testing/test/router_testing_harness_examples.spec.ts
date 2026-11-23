@@ -15,7 +15,7 @@ import {RouterTestingHarness} from '@angular/router/testing';
 describe('navigate for test examples', () => {
   // #docregion RoutedComponent
   it('navigates to routed component', async () => {
-    @Component({standalone: true, template: 'hello {{name}}'})
+    @Component({template: 'hello {{name}}'})
     class TestCmp {
       name = 'world';
     }
@@ -32,9 +32,9 @@ describe('navigate for test examples', () => {
   // #enddocregion
 
   it('testing a guard', async () => {
-    @Component({standalone: true, template: ''})
+    @Component({template: ''})
     class AdminComponent {}
-    @Component({standalone: true, template: ''})
+    @Component({template: ''})
     class LoginComponent {}
 
     // #docregion Guard

@@ -18,6 +18,7 @@ APPLICATION_FILES = [
 
 APPLICATION_DEPS = [
     ":node_modules/typescript",
+    ":node_modules/beasties",
 ]
 
 TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])

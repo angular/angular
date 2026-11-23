@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '../src/core';
+
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 
 export function dashCaseToCamelCase(input: string): string {
@@ -32,10 +34,6 @@ function _splitAt(
 
 export function noUndefined<T>(val: T | undefined): T {
   return val === undefined ? null! : val;
-}
-
-export function error(msg: string): never {
-  throw new Error(`Internal Error: ${msg}`);
 }
 
 // Escape characters that have a special meaning in Regular Expressions
@@ -139,12 +137,9 @@ const _global: {[name: string]: any} = globalThis;
 export {_global as global};
 
 const V1_TO_18 = /^([1-9]|1[0-8])\./;
+const V1_TO_21 = /^([1-9]|1[0-9]|2[0-1])\./;
 
 export function getJitStandaloneDefaultForVersion(version: string): boolean {
-  if (version.startsWith('0.')) {
-    // 0.0.0 is always "latest", default is true.
-    return true;
-  }
   if (V1_TO_18.test(version)) {
     // Angular v2 - v18 default is false.
     return false;
@@ -152,4 +147,40 @@ export function getJitStandaloneDefaultForVersion(version: string): boolean {
 
   // All other Angular versions (v19+) default to true.
   return true;
+}
+
+export function getJitChangeDetectionDefaultForVersion(version: string): ChangeDetectionStrategy {
+  if (V1_TO_21.test(version)) {
+    // Angular v2 - v21 default is false.
+    return ChangeDetectionStrategy.Eager;
+  }
+
+  // All other Angular versions (v22+) default to true.
+  return ChangeDetectionStrategy.OnPush;
+}
+
+/**
+ * Namespaces a CSS variable name and validates its syntax.
+ *
+ * @param varName The CSS variable name starting with `--`.
+ * @throws An Error if the CSS variable is invalid (e.g. has a single hyphen after "--global").
+ * @returns The namespaced CSS variable name.
+ */
+export function namespaceCssVariable(varName: string): string {
+  // TODO: Enforce this in v23. This is a breaking change.
+  //       Enable tests under platform-browser and compiler matching "has a single hyphen".
+  // g3-only-start
+  // if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
+  //   throw new Error(
+  //     `CSS variable "${varName}" has a single hyphen after "--global". ` +
+  //       `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
+  //   );
+  // }
+  // g3-only-end
+
+  if (varName.startsWith('--global--')) {
+    return '--' + varName.substring('--global--'.length);
+  } else {
+    return '--%NS%' + varName.substring('--'.length);
+  }
 }

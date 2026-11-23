@@ -8,22 +8,13 @@
 
 import {InputFlags} from '../../core';
 import {BindingType} from '../../expression_parser/ast';
-import {splitNsName} from '../../ml_parser/tags';
+import {isNgTemplate, splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 import {CssSelector} from '../../directive_matching';
 import * as t from '../r3_ast';
 
 import {isI18nAttribute} from './i18n/util';
-
-/**
- * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
- * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
- * not work in some cases when object keys are mangled by a minifier.
- *
- * TODO(FW-1136): this is a temporary solution, we need to come up with a better way of working with
- * inputs that contain potentially unsafe chars.
- */
-export const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
+import {isUnsafeObjectKey} from '../util';
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
@@ -51,12 +42,6 @@ export function temporaryAllocator(
     }
     return temp;
   };
-}
-
-export function invalid<T>(this: t.Visitor, arg: o.Expression | o.Statement | t.Node): never {
-  throw new Error(
-    `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`,
-  );
 }
 
 export function asLiteral(value: any): o.Expression {
@@ -147,7 +132,7 @@ export function conditionallyCreateDirectiveBindingLiteral(
       return {
         key: minifiedName,
         // put quotes around keys that contain potentially unsafe characters
-        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
+        quoted: isUnsafeObjectKey(minifiedName),
         value: expressionValue,
       };
     }),
@@ -216,7 +201,7 @@ export function createCssSelectorFromNode(node: t.Element | t.Template): CssSele
 function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
-  if (elOrTpl instanceof t.Template && elOrTpl.tagName !== 'ng-template') {
+  if (elOrTpl instanceof t.Template && (!elOrTpl.tagName || !isNgTemplate(elOrTpl.tagName))) {
     elOrTpl.templateAttrs.forEach((a) => (attributesMap[a.name] = ''));
   } else {
     elOrTpl.attributes.forEach((a) => {

@@ -26,6 +26,7 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
+  signal,
   ViewChild,
 } from '../../src/core';
 
@@ -65,15 +66,12 @@ describe('profiler', () => {
   describe('change detection hooks', () => {
     it('should call the profiler for creation and change detection', () => {
       @Component({
-        selector: 'my-comp',
         template: '<button (click)="onClick()"></button>',
-        standalone: false,
       })
       class MyComponent {
         onClick() {}
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent]});
       const fixture = TestBed.createComponent(MyComponent);
 
       expect(profilerSpy).toHaveBeenCalled();
@@ -106,14 +104,14 @@ describe('profiler', () => {
     });
 
     it('should invoke the profiler when the template throws', () => {
-      @Component({selector: 'my-comp', template: '{{ throw() }}', standalone: false})
+      @Component({
+        template: '{{ throw() }}',
+      })
       class MyComponent {
         throw() {
           throw new Error();
         }
       }
-
-      TestBed.configureTestingModule({declarations: [MyComponent]});
 
       let myComp: MyComponent;
       expect(() => {
@@ -139,15 +137,12 @@ describe('profiler', () => {
   describe('outputs and events', () => {
     it('should invoke the profiler on event handler', () => {
       @Component({
-        selector: 'my-comp',
         template: '<button (click)="onClick()"></button>',
-        standalone: false,
       })
       class MyComponent {
         onClick() {}
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent]});
       const fixture = TestBed.createComponent(MyComponent);
       const myComp = fixture.componentInstance;
 
@@ -167,9 +162,7 @@ describe('profiler', () => {
 
     it('should invoke the profiler on event handler even when it throws', () => {
       @Component({
-        selector: 'my-comp',
         template: '<button (click)="onClick()"></button>',
-        standalone: false,
       })
       class MyComponent {
         onClick() {
@@ -182,7 +175,6 @@ describe('profiler', () => {
 
       TestBed.configureTestingModule({
         rethrowApplicationErrors: false,
-        declarations: [MyComponent],
         providers: [{provide: ErrorHandler, useValue: handler}],
       });
 
@@ -202,22 +194,23 @@ describe('profiler', () => {
     });
 
     it('should invoke the profiler on output handler execution', async () => {
-      @Component({selector: 'child', template: '', standalone: false})
+      @Component({
+        selector: 'child',
+        template: '',
+      })
       class Child {
         @Output() childEvent = new EventEmitter();
       }
 
       @Component({
-        selector: 'my-comp',
         template: '<child (childEvent)="onEvent()"></child>',
-        standalone: false,
+        imports: [Child],
       })
       class MyComponent {
         @ViewChild(Child) child!: Child;
         onEvent() {}
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent, Child]});
       const fixture = TestBed.createComponent(MyComponent);
       const myComp = fixture.componentInstance;
 
@@ -242,7 +235,6 @@ describe('profiler', () => {
         selector: 'my-comp',
         template: '{{prop}}',
         providers: [Service],
-        standalone: false,
       })
       class MyComponent
         implements
@@ -270,16 +262,14 @@ describe('profiler', () => {
       }
 
       @Component({
-        selector: 'my-parent',
-        template: '<my-comp [prop]="prop"></my-comp>',
-        standalone: false,
+        template: '<my-comp [prop]="prop()"></my-comp>',
+        imports: [MyComponent],
       })
       class MyParent {
-        prop = 1;
+        prop = signal(1);
         @ViewChild(MyComponent) child!: MyComponent;
       }
 
-      TestBed.configureTestingModule({declarations: [MyParent, MyComponent]});
       const fixture = TestBed.createComponent(MyParent);
 
       fixture.detectChanges();
@@ -361,7 +351,7 @@ describe('profiler', () => {
       const onChangesSpy = spyOn(myComp, 'ngOnChanges');
       profilerSpy.calls.reset();
 
-      myParent.prop = 2;
+      myParent.prop.set(2);
       fixture.detectChanges();
 
       const ngOnChangesStart = findProfilerCall(
@@ -410,19 +400,18 @@ describe('profiler', () => {
     });
 
     it('should call the profiler on lifecycle execution even after error', () => {
-      @Component({selector: 'my-comp', template: '', standalone: false})
+      @Component({
+        template: '',
+      })
       class MyComponent implements OnInit {
         ngOnInit() {
           throw new Error();
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent]});
       const fixture = TestBed.createComponent(MyComponent);
 
-      expect(() => {
-        fixture.detectChanges();
-      }).toThrow();
+      expect(() => fixture.detectChanges()).toThrow();
 
       const lifecycleStart = findProfilerCall(ProfilerEvent.LifecycleHookStart);
       const lifecycleEnd = findProfilerCall(ProfilerEvent.LifecycleHookEnd);
@@ -467,7 +456,9 @@ describe('profiler', () => {
     });
 
     it('should capture component creation and change detection entry points', () => {
-      @Component({selector: 'my-comp', template: ''})
+      @Component({
+        template: '',
+      })
       class MyComponent {}
 
       const fixture = TestBed.createComponent(MyComponent);
@@ -493,13 +484,19 @@ describe('profiler', () => {
     });
 
     it('should capture child component creation events when a template error occurs', () => {
-      @Component({selector: 'my-child', template: '{{ error() }}'})
+      @Component({
+        selector: 'my-child',
+        template: '{{ error() }}',
+      })
       class ChildComponent {
         constructor() {
           throw new Error('Simulated error');
         }
       }
-      @Component({selector: 'my-comp', imports: [ChildComponent], template: '<my-child/>'})
+      @Component({
+        imports: [ChildComponent],
+        template: '<my-child/>',
+      })
       class MyComponent {}
 
       expect(() => TestBed.createComponent(MyComponent)).toThrow();
@@ -508,13 +505,19 @@ describe('profiler', () => {
     });
 
     it('should capture child component change detection events when a template error occurs (has start & end)', () => {
-      @Component({selector: 'my-child', template: '{{ error() }}'})
+      @Component({
+        selector: 'my-child',
+        template: '{{ error() }}',
+      })
       class ChildComponent {
         error() {
           throw new Error('Simulated error');
         }
       }
-      @Component({selector: 'my-comp', imports: [ChildComponent], template: '<my-child/>'})
+      @Component({
+        imports: [ChildComponent],
+        template: '<my-child/>',
+      })
       class MyComponent {}
 
       const fixture = TestBed.createComponent(MyComponent);
@@ -527,13 +530,19 @@ describe('profiler', () => {
     });
 
     it('should capture child component change detection events when a template error occurs (extensive check)', () => {
-      @Component({selector: 'my-child', template: '{{ error() }}'})
+      @Component({
+        selector: 'my-child',
+        template: '{{ error() }}',
+      })
       class ChildComponent {
         error() {
           throw new Error('Simulated error');
         }
       }
-      @Component({selector: 'my-comp', imports: [ChildComponent], template: '<my-child/>'})
+      @Component({
+        imports: [ChildComponent],
+        template: '<my-child/>',
+      })
       class MyComponent {}
 
       TestBed.createComponent(MyComponent);
@@ -558,7 +567,10 @@ describe('profiler', () => {
     });
 
     it('should capture host binding events when an error occurs', () => {
-      @Component({selector: 'my-comp', host: {'[a]': 'error()'}, template: ''})
+      @Component({
+        host: {'[a]': 'error()'},
+        template: '',
+      })
       class MyComponent {
         error() {
           throw new Error('Simulated error');
@@ -577,7 +589,9 @@ describe('profiler', () => {
     });
 
     it('should capture symmetric tick events when incorrectly called recursively', () => {
-      @Component({selector: 'my-comp', template: '{{ illegalTick() }}'})
+      @Component({
+        template: '{{ illegalTick() }}',
+      })
       class MyComponent {
         illegalTick() {
           TestBed.tick();
@@ -605,7 +619,6 @@ describe('profiler', () => {
 
     it('should invoke a profiler when host bindings are evaluated', () => {
       @Component({
-        selector: 'my-comp',
         host: {
           '[id]': '"someId"',
         },
@@ -623,7 +636,6 @@ describe('profiler', () => {
 
     it('should invoke a profiler when after render hooks are executing', () => {
       @Component({
-        selector: 'my-comp',
         template: '',
       })
       class MyComponent {
@@ -640,7 +652,6 @@ describe('profiler', () => {
 
     it('should invoke a profiler when defer block transitions between states', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           @defer (on immediate) {
             nothing to see here...

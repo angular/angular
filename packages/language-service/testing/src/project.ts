@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  InternalOptions,
-  LegacyNgcOptions,
-  TypeCheckingOptions,
-} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {InternalOptions, TypeCheckingOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
   AbsoluteFsPath,
@@ -21,8 +17,8 @@ import {
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
-import {LanguageService} from '../../src/language_service';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
+import {LanguageService} from '../../src/language_service';
 
 import {OpenBuffer} from './buffer';
 import {patchLanguageServiceProjectsWithTestHost} from './language_service_test_cache';
@@ -79,12 +75,7 @@ function writeTsconfig(
   );
 }
 
-export type TestableOptions = TypeCheckingOptions &
-  InternalOptions &
-  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'> & {
-    // This already exists in `InternalOptions`, but it's `internal` so it's stripped away.
-    _enableSelectorless?: boolean;
-  };
+export type TestableOptions = TypeCheckingOptions & InternalOptions;
 
 export class Project {
   private tsProject: ts.server.Project;
@@ -221,6 +212,7 @@ export class Project {
     start: number,
     end: number,
     errorCodes: readonly number[],
+    preferences: ts.UserPreferences = {},
   ): readonly ts.CodeFixAction[] {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return this.ngLS.getCodeFixesAtPosition(
@@ -231,6 +223,7 @@ export class Project {
       {},
       {
         includeCompletionsForModuleExports: true,
+        ...preferences,
       },
     );
   }

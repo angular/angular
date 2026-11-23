@@ -7,16 +7,19 @@
 >
   <as-split-area size="40">
     <iframe
-      #ref
       src="demo-app/todos/app"
       id="sample-app"
       title="todos-app"
       [style.pointer-events]="resizingDevtools() ? 'none' : 'auto'"
+      (load)="iframeLoaded.set(true)"
     ></iframe>
   </as-split-area>
   <as-split-area size="60">
     <div class="devtools-wrapper">
-      <ng-devtools></ng-devtools>
+      @if (iframeLoaded()) {
+        <!-- We want to ensure that the extension is loaded after the client app. -->
+        <ng-devtools />
+      }
     </div>
   </as-split-area>
 </as-split>

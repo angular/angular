@@ -20,6 +20,28 @@
       ]
     },
     {
+      "description": "should handle safe keyed reads inside templates with legacyOptionalChaining",
+      "inputFiles": ["safe_keyed_read_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_keyed_read_template_use_null.js",
+              "generated": "safe_keyed_read_use_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
       "description": "should handle deep safe property reads inside templates",
       "inputFiles": ["safe_access_deep.ts"],
       "expectations": [
@@ -32,6 +54,24 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle deep safe property reads inside templates with legacyOptionalChaining",
+      "inputFiles": ["safe_access_deep_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_deep_template_use_null.js",
+              "generated": "safe_access_deep_use_null.js"
+            }
+          ]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
     },
     {
       "description": "should handle property reads requiring temporary variables",
@@ -47,6 +87,25 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle property reads requiring temporary variables with legacyOptionalChaining",
+      "inputFiles": ["safe_access_temporaries_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_temporaries_template_use_null.js",
+              "generated": "safe_access_temporaries_use_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
     },
     {
       "description": "should handle safe method calls inside templates",
@@ -67,6 +126,28 @@
       ]
     },
     {
+      "description": "should handle safe method calls inside templates with legacyOptionalChaining",
+      "inputFiles": ["safe_method_call_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_method_call_use_null.js",
+              "generated": "safe_method_call_use_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
       "description": "should handle safe calls inside templates",
       "inputFiles": ["safe_call.ts"],
       "compilerOptions": {
@@ -85,6 +166,28 @@
       ]
     },
     {
+      "description": "should handle safe calls inside templates with legacyOptionalChaining",
+      "inputFiles": ["safe_call_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_call_template_use_null.js",
+              "generated": "safe_call_use_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
       "description": "should handle non-null assertions after a safe access",
       "inputFiles": ["safe_access_non_null.ts"],
       "expectations": [
@@ -98,6 +201,25 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle non-null assertions after a safe access with legacyOptionalChaining",
+      "inputFiles": ["safe_access_non_null_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_non_null_template_use_null.js",
+              "generated": "safe_access_non_null_use_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
     }
   ]
 }

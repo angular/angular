@@ -168,7 +168,7 @@ function extractParams(
 }
 
 /**
- * Find the the interface usually suffixed with "Decorator" that describes the decorator.
+ * Find the interface usually suffixed with "Decorator" that describes the decorator.
  */
 function getDecoratorInterface(declaration: ts.VariableDeclaration, typeChecker: ts.TypeChecker) {
   const name = declaration.name.getText();

@@ -24,7 +24,7 @@ Time to customize some pipe output:
 
 In `app.ts`, update the template to include parameter for the `decimal` pipe.
 
-```angular-html {highlight:[3]}
+```angular-html {highlight:[2]}
 template: ` ...
 <li>Number with "decimal" {{ num | number: '3.2-2' }}</li>
 `
@@ -38,7 +38,7 @@ NOTE: What's that format? The parameter for the `DecimalPipe` is called `digitsI
 
 Now, update the template to use the `date` pipe.
 
-```angular-html {highlight:[3]}
+```angular-html {highlight:[2]}
 template: ` ...
 <li>Date with "date" {{ birthday | date: 'medium' }}</li>
 `
@@ -52,7 +52,7 @@ For extra fun, try some different parameters for `date`. More information can be
 
 For your last task, update the template to use the `currency` pipe.
 
-```angular-html {highlight:[3]}
+```angular-html {highlight:[2]}
 template: ` ...
 <li>Currency with "currency" {{ cost | currency }}</li>
 `

@@ -3,7 +3,7 @@
   [attr.id]="PRIMARY_NAV_ID"
   class="wrapper"
   (docsClickOutside)="closeMobileNav()"
-  [docsClickOutsideIgnore]="[SECONDARY_NAV_ID]"
+  [docsClickOutsideIgnore]="[SECONDARY_NAV_ID, SEARCH_DIALOG_ID]"
 >
   <!-- Mobile nav bar -->
   <div class="adev-mobile-nav-bar">
@@ -170,7 +170,7 @@
           </button>
 
           <ng-template #docsVersionMiniMenu>
-            <ul class="adev-mini-menu adev-version-picker" cdkMenu>
+            <ul class="adev-mini-menu adev-mini-menu--version adev-version-picker" cdkMenu>
               @for (item of versions(); track item) {
                 <li>
                   <a type="button" cdkMenuItem [href]="item.url" [aria-label]="item.displayName">
@@ -296,16 +296,17 @@
         <button
           type="button"
           [cdkMenuTriggerFor]="socialMiniMenu"
-          [cdkMenuPosition]="miniMenuPositions"
+          [cdkMenuPosition]="bottomMiniMenuPositions"
           aria-label="Open social media links"
           (cdkMenuClosed)="closeMenu()"
           (cdkMenuOpened)="openMenu('social')"
+          aria-controls="social-mini-menu"
         >
           <docs-icon role="presentation">more_horiz</docs-icon>
         </button>
 
         <ng-template #socialMiniMenu>
-          <ul class="adev-mini-menu" cdkMenu>
+          <ul class="adev-mini-menu adev-mini-menu--social" cdkMenu id="social-mini-menu">
             <li>
               <a
                 [href]="ngLinks.YOUTUBE"
@@ -317,7 +318,7 @@
                 <!-- Youtube Icon -->
                 <svg
                   width="20"
-                  height="15"
+                  height="20"
                   viewBox="0 0 20 15"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -338,8 +339,8 @@
               >
                 <!-- X Icon -->
                 <svg
-                  width="17"
-                  height="16"
+                  width="20"
+                  height="20"
                   viewBox="0 0 17 16"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -360,8 +361,8 @@
               >
                 <!-- Bluesky Icon -->
                 <svg
-                  width="16"
-                  height="16"
+                  width="20"
+                  height="20"
                   viewBox="0 0 16 16"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -392,11 +393,11 @@
               <a
                 [href]="ngLinks.GITHUB"
                 cdkMenuItem
-                title="Angular Github"
+                title="Angular GitHub"
                 target="_blank"
                 rel="noopener"
               >
-                <!-- Github Icon -->
+                <!-- GitHub Icon -->
                 <svg
                   width="20"
                   height="20"
@@ -436,6 +437,28 @@
                 </svg>
               </a>
             </li>
+            <li>
+              <a
+                [href]="ngLinks.STACKOVERFLOW"
+                cdkMenuItem
+                title="Angular Stack Overflow"
+                target="_blank"
+                rel="noopener"
+              >
+                <!-- Stack Overflow Icon -->
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 26 31"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m22.18 16.32.05.02-.02.01za19 19 0 0 0-2.45 4.14l-.03.07q-.94 2.19-1.29 4.6v.03a18 18 0 0 0-.05 4.85H.01v-4.88h15.94l.1-.6L.69 20.48l1.28-4.7 15.55 4.1.22-.46-13.96-7.96 2.47-4.22 14.16 8.07.34-.4L9.15 3.47 12.65 0l11.78 11.64 1.25 1.23q-1.97 1.5-3.5 3.44"
+                  />
+                </svg>
+              </a>
+            </li>
           </ul>
         </ng-template>
       </div>
@@ -444,7 +467,7 @@
         <button
           type="button"
           [cdkMenuTriggerFor]="themeMiniMenu"
-          [cdkMenuPosition]="miniMenuPositions"
+          [cdkMenuPosition]="bottomMiniMenuPositions"
           [aria-label]="'Change theme. Current theme: ' + theme()"
           aria-controls="theme-mini-menu"
           [aria-expanded]="openedMenu() === 'theme-picker'"
@@ -469,7 +492,7 @@
 
         <ng-template #themeMiniMenu>
           <ul
-            class="adev-mini-menu"
+            class="adev-mini-menu adev-mini-menu--theme"
             cdkMenu
             id="theme-mini-menu"
             role="menu"

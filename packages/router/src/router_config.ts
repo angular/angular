@@ -81,11 +81,11 @@ export interface RouterConfigOptions {
    * Defines how the router merges parameters, data, and resolved data from parent to child
    * routes.
    *
-   * By default ('emptyOnly'), a route inherits the parent route's parameters when the route itself
-   * has an empty path (meaning its configured with path: '') or when the parent route doesn't have
-   * any component set.
+   * By default ('always'), a route inherits all parameters from its parent routes.
    *
-   * Set to 'always' to enable unconditional inheritance of parent parameters.
+   * Set to 'emptyOnly' to preserve the legacy behavior where a route only inherits the parent
+   * route's parameters when the route itself has an empty path or when the parent route doesn't
+   * have any component set.
    *
    * Note that when dealing with matrix parameters, "parent" refers to the parent `Route`
    * config which does not necessarily mean the "URL segment to the left". When the `Route` `path`
@@ -169,20 +169,20 @@ export interface InMemoryScrollingOptions {
    * in the following example.
    *
    * ```ts
-   * class AppComponent {
-   *   movieData: any;
+   * class App {
+   *   movieData = signal<MovieData | null>(null);
+   *   private router = inject(Router);
+   *   private viewportScroller = inject(ViewportScroller);
+   *   private changeDetectorRef = inject(ChangeDetectorRef);
    *
-   *   constructor(private router: Router, private viewportScroller: ViewportScroller,
-   * changeDetectorRef: ChangeDetectorRef) {
-   *   router.events.pipe(filter((event: Event): event is Scroll => event instanceof Scroll)
+   *   constructor() {
+   *    this.router.events.pipe(filter((event: Event): event is Scroll => event instanceof Scroll)
    *     ).subscribe(e => {
    *       fetch('http://example.com/movies.json').then(response => {
-   *         this.movieData = response.json();
-   *         // update the template with the data before restoring scroll
-   *         changeDetectorRef.detectChanges();
+   *         this.movieData.set(response.json());
    *
    *         if (e.position) {
-   *           viewportScroller.scrollToPosition(e.position);
+   *           this.viewportScroller.scrollToPosition(e.position);
    *         }
    *       });
    *     });
@@ -200,6 +200,7 @@ export interface InMemoryScrollingOptions {
  * @publicApi
  * @see withComponentInputBinding
  * @see RouterModule#forRoot
+ * @see [Disable query parameter binding](guide/routing/common-router-tasks#disable-query-parameter-binding)
  */
 export interface ComponentInputBindingOptions {
   /**
@@ -207,13 +208,24 @@ export interface ComponentInputBindingOptions {
    * inputs.
    */
   queryParams?: boolean;
+
+  /**
+   * Configures the behavior when an input is not matched by any key in the router data.
+   *
+   * - `'alwaysUndefined'`: (Default) Binds `undefined` to the input. This ensures that stale data
+   *   is not retained.
+   * - `'undefinedIfStale'`: Binds `undefined` only if the input was previously available
+   *   in the router data during the lifetime of the active route in this outlet. This avoids
+   *   setting `undefined` for inputs that were never expected to be set by the router.
+   */
+  unmatchedInputBehavior?: 'alwaysUndefined' | 'undefinedIfStale';
 }
 
 /**
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
- * @see {@link /api/router/routerModule#forRoot forRoot}
+ * @see {@link /api/router/RouterModule#forRoot forRoot}
  *
  *
  * @publicApi
@@ -258,7 +270,6 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    *
    * @see https://developer.chrome.com/docs/web-platform/view-transitions/
    * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
-   * @experimental 17.0
    */
   enableViewTransitions?: boolean;
 

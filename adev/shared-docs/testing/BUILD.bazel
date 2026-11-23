@@ -21,8 +21,10 @@ ts_project(
             "index.ts",
         ],
     ),
+    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
         "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@types/jasmine",
         "//adev:node_modules/@webcontainer/api",
     ],
 )

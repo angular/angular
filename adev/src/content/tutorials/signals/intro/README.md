@@ -1,5 +1,10 @@
 # Learn Angular signals
 
+<div class="docs-tutorial-mascot">
+  <img class="docs-tutorial-mascot__angie" src="assets/images/angie/greeting.svg" aria-hidden="true">
+  <p class="docs-tutorial-mascot__bubble">Welcome! Let's explore signals.</p>
+</div>
+
 This interactive tutorial will teach you the fundamentals of Angular signals and how to use them to build reactive applications.
 
 ## How to use this tutorial

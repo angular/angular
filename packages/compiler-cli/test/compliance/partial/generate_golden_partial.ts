@@ -28,6 +28,9 @@ export function generateGoldenPartial(
   const files: PartiallyCompiledFile[] = [];
   const tests = getComplianceTests(absTestConfigPath);
   for (const test of tests) {
+    if (test.compilationModeFilter.every((mode) => mode === 'local compile')) {
+      continue;
+    }
     const fs = initMockTestFileSystem(test.realTestPath);
     for (const file of compilePartials(fs, test)) {
       files.push(file);

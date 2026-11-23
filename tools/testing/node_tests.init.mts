@@ -19,7 +19,7 @@ import {NgModule, provideZonelessChangeDetection} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing';
 import {ɵDominoAdapter as DominoAdapter} from '@angular/platform-server';
-import domino from '../../packages/platform-server/src/bundled-domino';
+import domino from '../../packages/platform-server/third_party/domino/bundled-domino';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],

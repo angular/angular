@@ -51,9 +51,7 @@ Finally, to make sure your app is ready to use the Angular Router, you need to t
 
 Update the template for `App` by adding `<router-outlet />`
 
-```angular-ts {highlight:[11]}
-import {RouterOutlet} from '@angular/router';
-
+```angular-ts {highlight:[9]}
 @Component({
 ...
 template: `

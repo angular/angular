@@ -8,6 +8,7 @@
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {RuntimeErrorCode} from '../errors';
+import type {AbstractControl} from '../model/abstract_model';
 
 import {
   formArrayNameExample,
@@ -54,17 +55,6 @@ export function ngModelGroupException(): Error {
       Option 2: Use ngModel instead of formControlName (template-driven strategy)
 
       ${ngModelGroupExample}`,
-  );
-}
-
-export function missingFormException(): Error {
-  return new RuntimeError(
-    RuntimeErrorCode.FORM_GROUP_MISSING_INSTANCE,
-    `formGroup expects a FormGroup instance. Please pass one in.
-
-      Example:
-
-      ${formControlNameExample}`,
   );
 }
 
@@ -160,4 +150,15 @@ export function missingControlError(isFormGroup: boolean, key: string | number):
 
 export function missingControlValueError(isFormGroup: boolean, key: string | number): string {
   return `Must supply a value for form control ${describeKey(isFormGroup, key)}`;
+}
+
+/** Message for a `formControlName` whose path does not match any control in the form model. */
+export function missingControlForPathError(form: AbstractControl, path: string[]): string {
+  const parent = path.length > 1 ? form.get(path.slice(0, -1)) : form;
+  const controls = parent && (parent as any).controls;
+  const siblingKeys = controls ? Object.keys(controls) : [];
+  const siblings = siblingKeys.length
+    ? `Controls that do exist at this level: ${siblingKeys.join(', ')}.`
+    : `No controls are registered at this level.`;
+  return `Cannot find control with path: '${path.join(' -> ')}'. ${siblings}`;
 }

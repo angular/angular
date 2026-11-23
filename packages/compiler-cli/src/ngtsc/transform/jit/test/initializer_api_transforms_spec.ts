@@ -111,7 +111,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput", required: false })
           ], MyDir.prototype, "someInput", void 0);
       `),
       );
@@ -130,7 +130,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput", required: true, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput", required: true })
           ], MyDir.prototype, "someInput", void 0);
       `),
       );
@@ -150,10 +150,10 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "public1", required: false, transform: undefined })
+          i0.Input({ isSignal: true, alias: "public1", required: false })
           ], MyDir.prototype, "someInput", void 0);
         __decorate([
-          i0.Input({ isSignal: true, alias: "public2", required: true, transform: undefined })
+          i0.Input({ isSignal: true, alias: "public2", required: true })
           ], MyDir.prototype, "someInput2", void 0);
       `),
       );
@@ -175,10 +175,10 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput", required: false })
           ], MyDir.prototype, "someInput", void 0);
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput2", required: true, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput2", required: true })
           ], MyDir.prototype, "someInput2", void 0);
       `),
       );
@@ -198,7 +198,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput", required: true, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput", required: true })
           ], MyDir.prototype, "someInput", void 0);
         __decorate([
           Input({ someOptionIndicatingThatNothingChanged: true })
@@ -245,7 +245,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
       __decorate([
-        i0.Input({ isSignal: true, alias: "someInput", required: true, transform: undefined }),
+        i0.Input({ isSignal: true, alias: "someInput", required: true }),
         MyCustomDecorator()
         ], MyDir.prototype, "someInput", void 0);
       `),
@@ -268,7 +268,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         static propDecorators = {
-          someInput: [{ type: i0.Input, args: [{ isSignal: true, alias: "someInput", required: false, transform: undefined },] }]
+          someInput: [{ type: i0.Input, args: [{ isSignal: true, alias: "someInput", required: false },] }]
         };
       `),
       );
@@ -310,7 +310,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput", required: false })
           ], MyDir.prototype, "someInput", void 0);
       `),
       );
@@ -356,7 +356,7 @@ describe('initializer API metadata transform', () => {
       expect(result).toContain(
         omitLeadingWhitespace(`
         __decorate([
-          i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
+          i0.Input({ isSignal: true, alias: "someInput", required: false })
           ], MyDir.prototype, "someInput", void 0);
       `),
       );

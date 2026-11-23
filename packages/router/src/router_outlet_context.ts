@@ -28,6 +28,14 @@ export class OutletContext {
   constructor(private readonly rootInjector: EnvironmentInjector) {
     this.children = new ChildrenOutletContexts(this.rootInjector);
   }
+
+  /**
+   * Replaces `children` with a fresh instance, keeping the same root injector.
+   * @internal
+   */
+  resetChildren(): void {
+    this.children = new ChildrenOutletContexts(this.rootInjector);
+  }
 }
 
 /**
@@ -37,8 +45,11 @@ export class OutletContext {
  */
 @Injectable({providedIn: 'root'})
 export class ChildrenOutletContexts {
-  // contexts for child outlets, by name.
-  private contexts = new Map<string, OutletContext>();
+  /**
+   * Contexts for child outlets, keyed by outlet name.
+   * @internal
+   */
+  contexts = new Map<string, OutletContext>();
 
   /** @docs-private */
   constructor(private rootInjector: EnvironmentInjector) {}

@@ -27,14 +27,14 @@ import {minLengthError} from './validation_errors';
  * @param path Path of the field to validate
  * @param minLength The minimum length, or a LogicFn that returns the minimum length.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.minLength(minLength)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `minLengthError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @see [Signal Form Min Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minLength<
   TValue extends ValueWithLengthOrSize,
@@ -44,9 +44,12 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
-    typeof minLength === 'number' ? minLength : minLength(ctx),
-  );
+  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof minLength === 'number' ? minLength : minLength(ctx);
+  });
   metadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {

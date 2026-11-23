@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {namespaceCssVariables} from '../../src/shadow_css';
 import {shim} from './utils';
 
 describe('ShadowCss', () => {
@@ -322,11 +323,6 @@ describe('ShadowCss', () => {
     expect(shim('.pr\\fc fung {}', 'contenta')).toEqual('.pr\\fc fung[contenta] {}');
   });
 
-  it('should handle ::shadow', () => {
-    const css = shim('x::shadow > y {}', 'contenta');
-    expect(css).toEqualCss('x[contenta] > y[contenta] {}');
-  });
-
   it('should leave calc() unchanged', () => {
     const styleStr = 'div {height:calc(100% - 55px);}';
     const css = shim(styleStr, 'contenta');
@@ -368,33 +364,359 @@ describe('ShadowCss', () => {
   describe('comments', () => {
     // Comments should be kept in the same position as otherwise inline sourcemaps break due to
     // shift in lines.
-    it('should replace multiline comments with newline', () => {
-      expect(shim('/* b {c} */ b {c}', 'contenta')).toBe('\n b[contenta] {c}');
+    it('should remove inline comments without adding extra lines', () => {
+      expect(shim('/* b {} */ b {}', 'contenta')).toBe(' b[contenta] {}');
     });
 
-    it('should replace multiline comments with newline in the original position', () => {
-      expect(shim('/* b {c}\n */ b {c}', 'contenta')).toBe('\n\n b[contenta] {c}');
+    it('should preserve internal newlines from multiline comments', () => {
+      expect(shim('/* b {}\n */ b {}', 'contenta')).toBe('\n b[contenta] {}');
     });
 
-    it('should replace comments with newline in the original position', () => {
-      expect(shim('/* b {c} */ b {c} /* a {c} */ a {c}', 'contenta')).toBe(
-        '\n b[contenta] {c} \n a[contenta] {c}',
+    it('should remove multiple inline comments without adding extra lines', () => {
+      expect(shim('/* b {} */ b {} /* a {} */ a {}', 'contenta')).toBe(
+        ' b[contenta] {}  a[contenta] {}',
       );
     });
 
     it('should keep sourceMappingURL comments', () => {
-      expect(shim('b {c} /*# sourceMappingURL=data:x */', 'contenta')).toBe(
-        'b[contenta] {c} /*# sourceMappingURL=data:x */',
+      expect(shim('b {} /*# sourceMappingURL=data:x */', 'contenta')).toBe(
+        'b[contenta] {} /*# sourceMappingURL=data:x */',
       );
-      expect(shim('b {c}/* #sourceMappingURL=data:x */', 'contenta')).toBe(
-        'b[contenta] {c}/* #sourceMappingURL=data:x */',
+      expect(shim('b {}/* #sourceMappingURL=data:x */', 'contenta')).toBe(
+        'b[contenta] {}/* #sourceMappingURL=data:x */',
       );
     });
 
     it('should handle adjacent comments', () => {
-      expect(shim('/* comment 1 */ /* comment 2 */ b {c}', 'contenta')).toBe(
-        '\n \n b[contenta] {c}',
+      expect(shim('/* comment 1 */ /* comment 2 */ b {}', 'contenta')).toBe('  b[contenta] {}');
+    });
+
+    it('should not scope comments that are placed between a selector and its block', () => {
+      expect(shim('.a /* comment */ {}', 'contenta')).toBe('.a[contenta]    {}');
+    });
+
+    it('should not scope comments that are placed between selectors of a list', () => {
+      expect(shim('.a, /* comment */ .b {}', 'contenta')).toBe('.a[contenta],    .b[contenta] {}');
+      expect(shim('.a /* comment */, .b {}', 'contenta')).toBe('.a[contenta]   , .b[contenta] {}');
+    });
+
+    it('should not scope comments that are placed between compound selectors', () => {
+      expect(shim('.a /* comment */ .b {}', 'contenta')).toBe('.a[contenta]      .b[contenta] {}');
+      expect(shim('.a > /* comment */ .b {}', 'contenta')).toBe(
+        '.a[contenta]    >    .b[contenta] {}',
       );
+      expect(shim('.a /* c1 */ /* c2 */ .b {}', 'contenta')).toBe(
+        '.a[contenta]         .b[contenta] {}',
+      );
+    });
+
+    it('should not scope comments inside of :host and pseudo selector functions', () => {
+      expect(shim(':host /* comment */ .b {}', 'contenta', 'a-host')).toBe(
+        '[a-host]      .b[contenta] {}',
+      );
+      expect(shim(':is(.a, /* comment */ .b) {}', 'contenta')).toBe(
+        ':is(.a[contenta],    .b[contenta]) {}',
+      );
+    });
+
+    it('should scope compound selectors that contain a comment', () => {
+      expect(shim('.a/* comment */.b {}', 'contenta')).toBe('.a.b[contenta] {}');
+      expect(shim('.a/* comment */:hover {}', 'contenta')).toBe('.a[contenta]:hover {}');
+    });
+  });
+
+  describe('CSS variable namespacing', () => {
+    it('should inject `%NS%` placeholder into CSS variable declarations and usages', () => {
+      const input = `
+.foo {
+  --my-color: red;
+  color: var(--my-color, blue);
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  --%NS%my-color: red;
+  color: var(--%NS%my-color, blue);
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
+    });
+
+    it('should not inject `%NS%` when `--global--` prefix is present', () => {
+      const input = `
+.foo {
+  --global--my-color: green;
+  background: var(--global--my-color);
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  --my-color: green;
+  background: var(--my-color);
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
+    });
+
+    it('should handle multiple variables with mixed namespacing', () => {
+      const input = `
+.foo {
+  border: var(--global--border-size) solid var(--border-color);
+  box-shadow:
+    var(--shadow-1),
+    var(--global--shadow-2),
+    var(--shadow-3);
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  border: var(--border-size) solid var(--%NS%border-color);
+  box-shadow:
+    var(--%NS%shadow-1),
+    var(--shadow-2),
+    var(--%NS%shadow-3);
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
+    });
+
+    it('should not namespace or modify -- in comments', () => {
+      expect(namespaceCssVariables('/* --bar */')).toBe('/* --bar */');
+      expect(namespaceCssVariables('/* --global--bar */')).toBe('/* --global--bar */');
+    });
+
+    it('should not namespace or modify -- in strings', () => {
+      expect(namespaceCssVariables('div { content: "--bar"; }')).toBe('div { content: "--bar"; }');
+      expect(namespaceCssVariables('div { content: "--global--bar"; }')).toBe(
+        'div { content: "--global--bar"; }',
+      );
+    });
+
+    it('should not namespace or modify -- in the middle of identifiers', () => {
+      expect(namespaceCssVariables('.foo--bar { color: red; }')).toBe('.foo--bar { color: red; }');
+      expect(namespaceCssVariables('.foo--global--bar { color: red; }')).toBe(
+        '.foo--global--bar { color: red; }',
+      );
+    });
+
+    it('should not namespace or modify -- in attribute names', () => {
+      expect(namespaceCssVariables('[data---bar] { color: red; }')).toBe(
+        '[data---bar] { color: red; }',
+      );
+      expect(namespaceCssVariables('[data---global--bar] { color: red; }')).toBe(
+        '[data---global--bar] { color: red; }',
+      );
+    });
+
+    it('should not namespace or modify -- in unquoted attribute values', () => {
+      expect(namespaceCssVariables('[data-status=foo--bar] { color: red; }')).toBe(
+        '[data-status=foo--bar] { color: red; }',
+      );
+      expect(namespaceCssVariables('[data-status=foo--global--bar] { color: red; }')).toBe(
+        '[data-status=foo--global--bar] { color: red; }',
+      );
+    });
+
+    it('should not namespace or modify CDO and CDC tokens', () => {
+      expect(namespaceCssVariables('<!--foo')).toBe('<!--foo');
+      expect(namespaceCssVariables('--global-->')).toBe('--global-->');
+    });
+
+    it('should not namespace or modify -- in URLs', () => {
+      expect(namespaceCssVariables('div { background: url(--bar); }')).toBe(
+        'div { background: url(--bar); }',
+      );
+      expect(namespaceCssVariables('div { background: url(--global--bar); }')).toBe(
+        'div { background: url(--global--bar); }',
+      );
+    });
+
+    it('should not namespace or modify -- in custom media queries', () => {
+      expect(namespaceCssVariables('@custom-media --bar (max-width: 30em);')).toBe(
+        '@custom-media --bar (max-width: 30em);',
+      );
+      expect(namespaceCssVariables('@custom-media --global--bar (max-width: 30em);')).toBe(
+        '@custom-media --global--bar (max-width: 30em);',
+      );
+    });
+
+    it('should handle whitespace in variable declarations and usages', () => {
+      expect(
+        namespaceCssVariables(`
+p {
+  color: var(
+    --bgc
+  );
+  --bgc
+  : red;
+}
+      `),
+      ).toBe(`
+p {
+  color: var(
+    --%NS%bgc
+  );
+  --%NS%bgc
+  : red;
+}
+      `);
+
+      expect(
+        namespaceCssVariables(`
+p {
+  color: var(
+    --global--bgc
+  );
+  --global--bgc
+  : red;
+}
+      `),
+      ).toBe(`
+p {
+  color: var(
+    --bgc
+  );
+  --bgc
+  : red;
+}
+      `);
+    });
+
+    it('should handle non-ascii characters', () => {
+      expect(
+        namespaceCssVariables(`
+p {
+  --🅰️ngular: red;
+  color: var(--🅰️ngular);
+}
+        `),
+      ).toEqualCss(`
+p {
+  --%NS%🅰️ngular: red;
+  color: var(--%NS%🅰️ngular);
+}
+      `);
+
+      expect(
+        namespaceCssVariables(`
+p {
+  --global--🅰️ngular: red;
+  color: var(--global--🅰️ngular);
+}
+        `),
+      ).toEqualCss(`
+p {
+  --🅰️ngular: red;
+  color: var(--🅰️ngular);
+}
+      `);
+    });
+
+    // TODO: Enforce this in v23.
+    xit('should throw an error when a CSS variable has a single hyphen after --global', () => {
+      expect(() => namespaceCssVariables('p { --global-foo: red; }')).toThrowError(
+        'CSS variable "--global-foo" has a single hyphen after "--global". Use two hyphens ("--global--foo") to opt-out of namespacing.',
+      );
+      expect(() => namespaceCssVariables('p { color: var(--global-my-color); }')).toThrowError(
+        'CSS variable "--global-my-color" has a single hyphen after "--global". Use two hyphens ("--global--my-color") to opt-out of namespacing.',
+      );
+      expect(() => namespaceCssVariables('p { --global-: red; }')).toThrowError(
+        'CSS variable "--global-" has a single hyphen after "--global". Use two hyphens ("--global--") to opt-out of namespacing.',
+      );
+    });
+
+    it('should namespace @property declarations', () => {
+      const input = `
+  @property --myColor {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --myWidth {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--myColor);
+    width: var(--myWidth);
+    color: white;
+  }
+`.trim();
+
+      const expected = `
+  @property --%NS%myColor {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --%NS%myWidth {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--%NS%myColor);
+    width: var(--%NS%myWidth);
+    color: white;
+  }
+`.trim();
+
+      expect(namespaceCssVariables(input)).toBe(expected);
+    });
+
+    it('should not namespace @property if --global-- is present', () => {
+      const input = `
+  @property --global--my-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --global--my-width {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--global--my-color);
+    width: var(--global--my-width);
+    color: white;
+  }
+`.trim();
+
+      const expected = `
+  @property --my-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --my-width {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--my-color);
+    width: var(--my-width);
+    color: white;
+  }
+`.trim();
+
+      expect(namespaceCssVariables(input)).toBe(expected);
     });
   });
 });

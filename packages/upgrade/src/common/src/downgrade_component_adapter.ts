@@ -9,19 +9,22 @@
 import {
   ApplicationRef,
   ChangeDetectorRef,
-  ComponentFactory,
   ComponentRef,
+  createComponent,
+  EnvironmentInjector,
   type EventEmitter,
   Injector,
+  type ɵInputSignalNode as InputSignalNode,
   OnChanges,
+  type OutputEmitterRef,
+  reflectComponentType,
+  ɵSIGNAL as SIGNAL,
   SimpleChange,
   SimpleChanges,
   StaticProvider,
   Testability,
   TestabilityRegistry,
-  type OutputEmitterRef,
-  type ɵInputSignalNode as InputSignalNode,
-  ɵSIGNAL as SIGNAL,
+  Type,
 } from '@angular/core';
 
 import {
@@ -51,19 +54,31 @@ export class DowngradeComponentAdapter {
     private attrs: IAttributes,
     private scope: IScope,
     private ngModel: INgModelController,
+    private environmentInjector: EnvironmentInjector,
     private parentInjector: Injector,
     private $compile: ICompileService,
     private $parse: IParseService,
-    private componentFactory: ComponentFactory<any>,
+    private component: Type<any>,
     private wrapCallback: <T>(cb: () => T) => () => T,
     private readonly unsafelyOverwriteSignalInputs: boolean,
   ) {
     this.componentScope = scope.$new();
   }
 
-  compileContents(): Node[][] {
+  compileContents(template: Node[]): Node[][] {
+    if (!template.length) {
+      // There is no template to compile, so whatever is in the element was put there by AngularJS
+      // (e.g. through `ng-transclude`): project it as it is.
+      const projectableNodes = this.groupProjectableNodes(this.element.contents!());
+      projectableNodes.forEach((nodes) =>
+        nodes.forEach((node) => this.element[0].removeChild(node)),
+      );
+      this.element.empty!();
+      return projectableNodes;
+    }
+
     const compiledProjectableNodes: Node[][] = [];
-    const projectableNodes: Node[][] = this.groupProjectableNodes();
+    const projectableNodes: Node[][] = this.groupProjectableNodes(template);
     const linkFns = projectableNodes.map((nodes) => this.$compile(nodes));
 
     this.element.empty!();
@@ -99,11 +114,12 @@ export class DowngradeComponentAdapter {
       name: 'DowngradeComponentAdapter',
     });
 
-    const componentRef = this.componentFactory.create(
-      childInjector,
+    const componentRef = createComponent(this.component, {
+      elementInjector: childInjector,
+      environmentInjector: this.environmentInjector,
       projectableNodes,
-      this.element[0],
-    );
+      hostElement: this.element[0] as Element,
+    });
     const viewChangeDetector = componentRef.injector.get(ChangeDetectorRef);
     const changeDetector = componentRef.changeDetectorRef;
 
@@ -129,12 +145,12 @@ export class DowngradeComponentAdapter {
     {componentRef, changeDetector, viewChangeDetector}: ComponentInfo,
   ): void {
     const attrs = this.attrs;
-    const inputs = this.componentFactory.inputs || [];
+    const inputs = reflectComponentType(this.component)?.inputs ?? [];
     for (const input of inputs) {
       const inputBinding = new PropertyBinding(input.propName, input.templateName);
       let expr: string | null = null;
 
-      if (attrs.hasOwnProperty(inputBinding.attr)) {
+      if (Object.hasOwn(attrs, inputBinding.attr)) {
         const observeFn = ((prop, isSignal) => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
@@ -159,13 +175,13 @@ export class DowngradeComponentAdapter {
           unwatch = null;
           observeFn(attrs[inputBinding.attr]);
         });
-      } else if (attrs.hasOwnProperty(inputBinding.bindAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bindAttr)) {
         expr = attrs[inputBinding.bindAttr];
-      } else if (attrs.hasOwnProperty(inputBinding.bracketAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bracketAttr)) {
         expr = attrs[inputBinding.bracketAttr];
-      } else if (attrs.hasOwnProperty(inputBinding.bindonAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bindonAttr)) {
         expr = attrs[inputBinding.bindonAttr];
-      } else if (attrs.hasOwnProperty(inputBinding.bracketParenAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bracketParenAttr)) {
         expr = attrs[inputBinding.bracketParenAttr];
       }
       if (expr != null) {
@@ -179,7 +195,7 @@ export class DowngradeComponentAdapter {
 
     // Invoke `ngOnChanges()` and Change Detection (when necessary)
     const detectChanges = () => changeDetector.detectChanges();
-    const prototype = this.componentFactory.componentType.prototype;
+    const prototype = this.component.prototype;
     this.implementsOnChanges = !!(prototype && (<OnChanges>prototype).ngOnChanges);
 
     this.componentScope.$watch(
@@ -221,7 +237,7 @@ export class DowngradeComponentAdapter {
 
   private setupOutputs(componentRef: ComponentRef<any>) {
     const attrs = this.attrs;
-    const outputs = this.componentFactory.outputs || [];
+    const outputs = reflectComponentType(this.component)?.outputs ?? [];
     for (const output of outputs) {
       const outputBindings = new PropertyBinding(output.propName, output.templateName);
       const bindonAttr = outputBindings.bindonAttr.substring(
@@ -233,16 +249,16 @@ export class DowngradeComponentAdapter {
         outputBindings.bracketParenAttr.length - 8,
       )})]`;
       // order below is important - first update bindings then evaluate expressions
-      if (attrs.hasOwnProperty(bindonAttr)) {
+      if (Object.hasOwn(attrs, bindonAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[bindonAttr], true);
       }
-      if (attrs.hasOwnProperty(bracketParenAttr)) {
+      if (Object.hasOwn(attrs, bracketParenAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[bracketParenAttr], true);
       }
-      if (attrs.hasOwnProperty(outputBindings.onAttr)) {
+      if (Object.hasOwn(attrs, outputBindings.onAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[outputBindings.onAttr]);
       }
-      if (attrs.hasOwnProperty(outputBindings.parenAttr)) {
+      if (Object.hasOwn(attrs, outputBindings.parenAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[outputBindings.parenAttr]);
       }
     }
@@ -269,9 +285,7 @@ export class DowngradeComponentAdapter {
       componentRef.onDestroy(() => subscription.unsubscribe());
     } else {
       throw new Error(
-        `Missing emitter '${output.prop}' on component '${getTypeName(
-          this.componentFactory.componentType,
-        )}'!`,
+        `Missing emitter '${output.prop}' on component '${getTypeName(this.component)}'!`,
       );
     }
   }
@@ -325,24 +339,38 @@ export class DowngradeComponentAdapter {
     }
 
     this.inputChangeCount++;
-    if (isSignal && !this.unsafelyOverwriteSignalInputs) {
-      const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
-      node.applyValueToInputSignal(node, currValue);
+    const instanceProp = componentRef.instance[prop];
+    const node = instanceProp?.[SIGNAL] as InputSignalNode<unknown, unknown> | undefined;
+    // Model signals are writable signal inputs (they expose `.set()` and `applyValueToInputSignal`).
+    // Overwriting them would destroy the internal OutputEmitterRef that setupOutputs() already
+    // subscribed to, severing the Angular→AngularJS two-way binding. Always use
+    // applyValueToInputSignal for model signals regardless of the unsafelyOverwriteSignalInputs
+    // flag. Check applyValueToInputSignal (not just .set) to distinguish model() from a plain
+    // WritableSignal used with @Input(), which also has .set() but does not support this method.
+    const isModelSignal =
+      node != null &&
+      typeof instanceProp.set === 'function' &&
+      typeof node.applyValueToInputSignal === 'function';
+    if (isModelSignal || (isSignal && !this.unsafelyOverwriteSignalInputs)) {
+      node!.applyValueToInputSignal(node!, currValue);
     } else {
       componentRef.instance[prop] = currValue;
     }
   }
 
-  private groupProjectableNodes() {
-    let ngContentSelectors = this.componentFactory.ngContentSelectors;
-    return groupNodesBySelector(ngContentSelectors, this.element.contents!());
+  private groupProjectableNodes(nodes: Node[]) {
+    let ngContentSelectors = reflectComponentType(this.component)?.ngContentSelectors ?? [];
+    return groupNodesBySelector(ngContentSelectors, nodes);
   }
 }
 
 /**
  * Group a set of DOM nodes into `ngContent` groups, based on the given content selectors.
  */
-export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
+export function groupNodesBySelector(
+  ngContentSelectors: readonly string[],
+  nodes: Node[],
+): Node[][] {
   const projectableNodes: Node[][] = [];
 
   for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
@@ -360,7 +388,10 @@ export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]
   return projectableNodes;
 }
 
-function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number | null {
+function findMatchingNgContentIndex(
+  element: any,
+  ngContentSelectors: readonly string[],
+): number | null {
   const ngContentIndices: number[] = [];
   let wildcardNgContentIndex: number = -1;
   for (let i = 0; i < ngContentSelectors.length; i++) {

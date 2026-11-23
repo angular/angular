@@ -337,12 +337,11 @@ function serializeLContainer(
       // host element was used as a ViewContainerRef anchor (e.g. a `ViewContainerRef`
       // was injected within the component class). This case requires special handling.
       if (isLContainer(childLView)) {
-        // Calculate the number of root nodes in all views in a given container
-        // and increment by one to account for an anchor node itself, i.e. in this
-        // scenario we'll have a layout that would look like this:
+        // Calculate the number of root nodes in all attached views and add 2 to account for the
+        // component's host node and the container's anchor node. i.e. in this scenario we'll have a
+        // layout that would look like this:
         // `<app-root /><#VIEW1><#VIEW2>...<!--container-->`
-        // The `+1` is to capture the `<app-root />` element.
-        numRootNodes = calcNumRootNodesInLContainer(childLView) + 1;
+        numRootNodes = calcNumRootNodesInLContainer(childLView) + 2;
 
         annotateLContainerForHydration(childLView, context);
 
@@ -442,10 +441,24 @@ function serializeLContainer(
       }
 
       if (!isHydrateNeverBlock) {
-        Object.assign(
-          serializedView,
-          serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
-        );
+        // Skip serialization for component views that opted out of hydration via
+        // ngSkipHydration. This mirrors the guard in serializeLView for inline
+        // child components (see the Array.isArray branch below), but applies to
+        // components hosted inside an LContainer (e.g. created via
+        // ViewContainerRef.createComponent). Without this check, NG0503 is thrown
+        // when such a component receives projectable nodes even if ngSkipHydration
+        // is present on its host element (#67928).
+        const childHostElement = unwrapRNode(childLView[HOST]!);
+        if (
+          childLView[TVIEW].type !== TViewType.Component ||
+          childHostElement === null ||
+          !(childHostElement as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)
+        ) {
+          Object.assign(
+            serializedView,
+            serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
+          );
+        }
       }
     }
 

@@ -477,7 +477,7 @@ function addCommentForEmptyEmit(
   if (!propertyDeclaration) return;
 
   const eventEmitterType = getEventEmitterArgumentType(propertyDeclaration);
-  if (!eventEmitterType) return;
+  if (!eventEmitterType || eventEmitterType === 'void') return;
 
   const id = getUniqueIdForProperty(info, propertyDeclaration);
   const file = projectFile(node.getSourceFile(), info);

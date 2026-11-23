@@ -22,5 +22,9 @@
   styles:  `.example { width: 100px; }` ,
   styles:  ".example { width: 100px; }" ,
   styles:  '.example { width: 100px; }' ,
+
+//// Escaped delimiter tests
+  styles: [ `.example::before { content: '\`'; }` ],
+  styles: [ '.example::before { content: "\'"; }' ],
 })
 export class TMComponent{}

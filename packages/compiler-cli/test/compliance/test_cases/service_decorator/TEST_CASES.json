@@ -1,0 +1,80 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should compile a basic service",
+      "inputFiles": ["basic_service.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_service.js",
+              "generated": "basic_service.js"
+            }
+          ],
+          "failureMessage": "Incorrect service"
+        }
+      ]
+    },
+    {
+      "description": "should compile a service with a factory",
+      "inputFiles": ["service_with_factory.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "service_with_factory.js",
+              "generated": "service_with_factory.js"
+            }
+          ],
+          "failureMessage": "Incorrect service"
+        }
+      ]
+    },
+    {
+      "description": "should compile a service with `autoProvided: false`",
+      "inputFiles": ["not_provided_service.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "not_provided_service.js",
+              "generated": "not_provided_service.js"
+            }
+          ],
+          "failureMessage": "Incorrect service"
+        }
+      ]
+    },
+    {
+      "description": "should compile a service with `autoProvided: true`",
+      "inputFiles": ["explicitly_provided_service.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "explicitly_provided_service.js",
+              "generated": "explicitly_provided_service.js"
+            }
+          ],
+          "failureMessage": "Incorrect service"
+        }
+      ]
+    },
+    {
+      "description": "should compile a service with generic arguments",
+      "inputFiles": ["generic_service.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "generic_service.js",
+              "generated": "generic_service.js"
+            }
+          ],
+          "failureMessage": "Incorrect service"
+        }
+      ]
+    }
+  ]
+}

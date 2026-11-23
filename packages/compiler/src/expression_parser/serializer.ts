@@ -15,7 +15,14 @@ export function serialize(expression: expr.ASTWithSource): string {
 
 class SerializeExpressionVisitor implements expr.AstVisitor {
   visitUnary(ast: expr.Unary, context: any): string {
-    return `${ast.operator}${ast.expr.visit(this, context)}`;
+    const inner = ast.expr.visit(this, context);
+
+    if (ast.isPrefix) {
+      const space = inner.startsWith(ast.operator[0]) ? ' ' : '';
+      return `${ast.operator}${space}${inner}`;
+    }
+
+    return `${inner}${ast.operator}`;
   }
 
   visitBinary(ast: expr.Binary, context: any): string {

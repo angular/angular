@@ -48,14 +48,9 @@
   overflow-y: auto;
   box-sizing: border-box;
 
-  mat-icon {
-    display: block;
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
+  ng-angie {
     margin-inline: auto;
-    margin-block-start: 0.5rem;
-    color: var(--quinary-contrast);
+    margin-block: 1.5rem 0rem;
   }
 
   .text-message {

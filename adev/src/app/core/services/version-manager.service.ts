@@ -6,21 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, Injectable, VERSION, computed, inject} from '@angular/core';
 import {httpResource} from '@angular/common/http';
+import {DOCUMENT, Service, VERSION, computed, inject} from '@angular/core';
 
 import versionJson from '../../../assets/others/versions.json';
+import {ANGULAR_DEV} from '../constants/links';
 
-export interface Version {
-  displayName: string;
-  url: string;
-}
-
-export type VersionMode = 'stable' | 'deprecated' | 'rc' | 'next' | number;
-
-export const INITIAL_ADEV_DOCS_VERSION = 18;
-export const VERSION_PLACEHOLDER = '{{version}}';
-export const MODE_PLACEHOLDER = '{{prefix}}';
+type VersionMode = 'stable' | 'deprecated' | 'rc' | 'next' | number;
 
 type VersionJson = {version: string; url: string};
 
@@ -30,9 +22,7 @@ type VersionJson = {version: string; url: string};
  * To have an up-to-date list of versions, it will fetch a json from the deployed website.
  * As fallback it will use a local json file that is bundled with the app.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class VersionManager {
   private document = inject(DOCUMENT);
 
@@ -62,7 +52,7 @@ export class VersionManager {
   // which is the most up-to-date anyway.
   remoteVersions = httpResource(
     () => ({
-      url: 'https://angular.dev/assets/others/versions.json',
+      url: `${ANGULAR_DEV}/assets/others/versions.json`,
       transferCache: false,
       cache: 'no-cache',
     }),

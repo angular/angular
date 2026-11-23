@@ -27,5 +27,5 @@ jasmine_test(
         ":test_lib",
     ],
     flaky = True,
-    shard_count = 2,
+    shard_count = 10,
 )

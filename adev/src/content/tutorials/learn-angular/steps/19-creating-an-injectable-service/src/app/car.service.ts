@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
 export class CarService {
   cars = ['Sunflower GT', 'Flexus Sport', 'Sprout Mach One'];

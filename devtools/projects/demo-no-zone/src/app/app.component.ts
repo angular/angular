@@ -15,10 +15,10 @@ import {ChangeDetectorRef, Component} from '@angular/core';
 export class AppComponent {
   counter = 0;
 
-  constructor(private _cd: ChangeDetectorRef) {}
+  constructor(private cd: ChangeDetectorRef) {}
 
   increment(): void {
     this.counter++;
-    this._cd.detectChanges();
+    this.cd.detectChanges();
   }
 }

@@ -1,6 +1,29 @@
+import { Injectable, NgModule } from "@angular/core";
+import * as i0 from "@angular/core";
+export class Service {
+  static ɵfac = function Service_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || Service)();
+  };
+  static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: Service, factory: Service.ɵfac });
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      Service,
+      [
+        {
+          type: Injectable
+        }
+      ],
+      null,
+      null
+    );
+})();
 export class BaseModule {
-  …
-  constructor(service) { this.service = service; }
+  service;
+  constructor(service) {
+    this.service = service;
+  }
   static ɵfac = function BaseModule_Factory(__ngFactoryType__) {
     /* @ts-ignore */
     return new (__ngFactoryType__ || BaseModule)(i0.ɵɵinject(Service));
@@ -9,27 +32,43 @@ export class BaseModule {
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [Service] });
 }
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BaseModule, [{
-    type: NgModule,
-    args: [{ providers: [Service] }]
-  }], () => [{ type: Service }], null);
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      BaseModule,
+      [
+        {
+          type: NgModule,
+          args: [{ providers: [Service] }]
+        }
+      ],
+      () => [{ type: Service }],
+      null
+    );
 })();
-…
 export class BasicModule extends BaseModule {
   static ɵfac = /*@__PURE__*/ (() => {
     let ɵBasicModule_BaseFactory;
     return function BasicModule_Factory(__ngFactoryType__) {
-      return (ɵBasicModule_BaseFactory || (ɵBasicModule_BaseFactory = i0.ɵɵgetInheritedFactory(BasicModule)))(__ngFactoryType__ || BasicModule);
+      return (
+        ɵBasicModule_BaseFactory ||
+        (ɵBasicModule_BaseFactory = i0.ɵɵgetInheritedFactory(BasicModule))
+      )(__ngFactoryType__ || BasicModule);
     };
   })();
-
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BasicModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 }
-
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BasicModule, [{
-    type: NgModule,
-    args: [{}]
-  }], null, null);
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      BasicModule,
+      [
+        {
+          type: NgModule,
+          args: [{}]
+        }
+      ],
+      null,
+      null
+    );
 })();

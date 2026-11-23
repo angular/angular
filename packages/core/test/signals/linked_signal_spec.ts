@@ -7,8 +7,9 @@
  */
 
 import {isSignal, linkedSignal, signal, computed} from '../../src/core';
-import {defaultEquals, setPostProducerCreatedFn} from '../../primitives/signals';
-import {testingEffect} from './effect_util';
+import {defaultEquals, setPostProducerCreatedFn, SIGNAL} from '../../primitives/signals';
+import {global} from '../../src/util/global';
+import {flushEffects, testingEffect} from './effect_util';
 
 describe('linkedSignal', () => {
   it('should conform to the writable signals contract', () => {
@@ -56,6 +57,51 @@ describe('linkedSignal', () => {
 
     expect(choice()).toBe('apple');
     expect(choice.toString()).toBe('[LinkedSignal (TestChoice): apple]');
+  });
+
+  it('should support debugName in shorthand options', () => {
+    const choice = linkedSignal(() => 'apple', {debugName: 'TestChoice'});
+
+    expect(choice.toString()).toBe('[LinkedSignal (TestChoice): apple]');
+  });
+
+  describe('in production mode', () => {
+    let previousNgDevMode: typeof ngDevMode;
+
+    beforeEach(() => {
+      previousNgDevMode = global['ngDevMode'];
+      global['ngDevMode'] = false;
+    });
+
+    afterEach(() => {
+      global['ngDevMode'] = previousNgDevMode;
+    });
+
+    it('should not read debugName from the options object', () => {
+      const debugName = jasmine.createSpy('debugName').and.returnValue('TestChoice');
+      const choice = linkedSignal({
+        source: () => 'apple',
+        computation: (value) => value,
+        get debugName() {
+          return debugName();
+        },
+      });
+
+      expect(choice()).toBe('apple');
+      expect(debugName).not.toHaveBeenCalled();
+    });
+
+    it('should not read debugName from shorthand options', () => {
+      const debugName = jasmine.createSpy('debugName').and.returnValue('TestChoice');
+      const choice = linkedSignal(() => 'apple', {
+        get debugName() {
+          return debugName();
+        },
+      });
+
+      expect(choice()).toBe('apple');
+      expect(debugName).not.toHaveBeenCalled();
+    });
   });
 
   it('should update when the source changes', () => {
@@ -439,5 +485,102 @@ describe('linkedSignal', () => {
       source.set(2);
       expect(derived()).toBe('2, hasPrevious: false');
     });
+  });
+
+  describe('with custom setter', () => {
+    it('should run custom setter on set()', () => {
+      const customCalls: any[] = [];
+      const source = signal(10);
+      const derived = linkedSignal(() => source() * 2, {
+        set: (value, rawSet) => {
+          customCalls.push({value});
+          rawSet(value);
+        },
+      });
+
+      expect(derived()).toBe(20);
+
+      derived.set(30);
+      expect(customCalls).toEqual([{value: 30}]);
+      expect(derived()).toBe(30);
+    });
+
+    it('should support routing set() to the source signal', () => {
+      const tempC = signal(0);
+      const tempF = linkedSignal(() => (tempC() * 9) / 5 + 32, {
+        set: (valF) => tempC.set(((valF - 32) * 5) / 9),
+      });
+
+      expect(tempF()).toBe(32);
+
+      // Setting Fahrenheit should update Celsius, which reactively updates Fahrenheit
+      tempF.set(212);
+      expect(tempC()).toBe(100);
+      expect(tempF()).toBe(212);
+    });
+
+    it('should run custom setter on update() and pass updated value', () => {
+      const customCalls: any[] = [];
+      const source = signal(10);
+      const derived = linkedSignal(() => source() * 2, {
+        set: (value, rawSet) => {
+          customCalls.push({value});
+          rawSet(value);
+        },
+      });
+
+      expect(derived()).toBe(20);
+
+      derived.update((v) => v + 5);
+      expect(customCalls).toEqual([{value: 25}]);
+      expect(derived()).toBe(25);
+    });
+
+    it('should untrack current value read during update()', () => {
+      const source = signal(10);
+      const derived = linkedSignal(() => source() * 2, {
+        set: (value, rawSet) => {
+          rawSet(value);
+        },
+      });
+
+      const effectRuns: number[] = [];
+      const trigger = signal(0);
+      const watchDestroy = testingEffect(() => {
+        trigger();
+        derived.update((v) => v + 1);
+        effectRuns.push(derived());
+      });
+
+      try {
+        flushEffects();
+        expect(derived()).toBe(21);
+        expect(effectRuns).toEqual([21]);
+
+        trigger.set(1);
+        flushEffects();
+        expect(derived()).toBe(22);
+        expect(effectRuns).toEqual([21, 22]);
+      } finally {
+        watchDestroy();
+      }
+    });
+  });
+
+  it('should clear stored error on node after recovering from an error', () => {
+    const shouldThrow = signal(true);
+    const state = linkedSignal(() => {
+      if (shouldThrow()) {
+        throw new Error('computation failed');
+      }
+      return 'ok';
+    });
+
+    expect(() => state()).toThrowError('computation failed');
+    expect((state as any)[SIGNAL].error).toEqual(jasmine.any(Error));
+
+    shouldThrow.set(false);
+    expect(state()).toBe('ok');
+    expect((state as any)[SIGNAL].error).toBeNull();
   });
 });

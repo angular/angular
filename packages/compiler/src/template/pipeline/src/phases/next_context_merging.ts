@@ -39,11 +39,12 @@ export function mergeNextContextExpressions(job: CompilationJob): void {
         mergeNextContextsInOps(op.handlerOps);
       }
     }
+    mergeNextContextsInOps(unit.create);
     mergeNextContextsInOps(unit.update);
   }
 }
 
-function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
+function mergeNextContextsInOps(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
   for (const op of ops) {
     // Look for a candidate operation to maybe merge.
     if (
@@ -82,7 +83,7 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
           case ir.ExpressionKind.NextContext:
             // Merge the previous `ir.NextContextExpr` into this one.
             expr.steps += mergeSteps;
-            ir.OpList.remove(op as ir.UpdateOp);
+            ir.OpList.remove(op as ir.CreateOp | ir.UpdateOp);
             tryToMerge = false;
             break;
           case ir.ExpressionKind.GetCurrentView:

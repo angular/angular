@@ -6,115 +6,90 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as e from '../../../src/expression_parser/ast';
-import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
-import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
-import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
 import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/directive_matching';
+import * as e from '../../../src/expression_parser/ast';
+import {ClassPropertyMapping} from '../../../src/property_mapping';
+import * as a from '../../../src/render3/r3_ast';
+import {DirectiveMeta, ForeignComponentMeta, MatchSource} from '../../../src/render3/view/t2_api';
+import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
+import {parseTemplate} from '../../../src/render3/view/template';
 
 import {findExpression} from './util';
 
-/**
- * A `InputOutputPropertySet` which only uses an identity mapping for fields and properties.
- */
-class IdentityInputMapping implements InputOutputPropertySet {
-  private names: Set<string>;
+let keyCounter = 0;
 
-  constructor(names: string[]) {
-    this.names = new Set(names);
-  }
-
-  hasBindingPropertyName(propertyName: string): boolean {
-    return this.names.has(propertyName);
-  }
+function makeDirectiveMeta(config: {
+  name: string;
+  selector: string | null;
+  inputs?: Record<string, string>;
+  outputs?: Record<string, string>;
+  exportAs?: string[];
+  isComponent?: boolean;
+  isStructural?: boolean;
+  matchSource?: MatchSource;
+}): DirectiveMeta {
+  return {
+    name: config.name,
+    ref: {
+      key: `${config.name}#${keyCounter++}`,
+    },
+    exportAs: config.exportAs ?? null,
+    inputs: ClassPropertyMapping.fromMappedObject(config.inputs || {}),
+    outputs: ClassPropertyMapping.fromMappedObject(config.outputs || {}),
+    isComponent: !!config.isComponent,
+    isStructural: !!config.isStructural,
+    selector: config.selector,
+    animationTriggerNames: null,
+    ngContentSelectors: null,
+    preserveWhitespaces: false,
+    matchSource: config.matchSource ?? MatchSource.Selector,
+  };
 }
 
 function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
   const matcher = new SelectorMatcher<DirectiveMeta[]>();
   matcher.addSelectables(CssSelector.parse('[ngFor][ngForOf]'), [
-    {
+    makeDirectiveMeta({
       name: 'NgFor',
-      exportAs: null,
-      inputs: new IdentityInputMapping(['ngForOf']),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: true,
+      inputs: {ngForOf: 'ngForOf'},
       selector: '[ngFor][ngForOf]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-    },
+      isStructural: true,
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[dir]'), [
-    {
+    makeDirectiveMeta({
       name: 'Dir',
       exportAs: ['dir'],
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: false,
       selector: '[dir]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), [
-    {
+    makeDirectiveMeta({
       name: 'HasOutput',
-      exportAs: null,
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping(['outputBinding']),
-      isComponent: false,
-      isStructural: false,
+      outputs: {outputBinding: 'outputBinding'},
       selector: '[hasOutput]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[hasInput]'), [
-    {
+    makeDirectiveMeta({
       name: 'HasInput',
-      exportAs: null,
-      inputs: new IdentityInputMapping(['inputBinding']),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: false,
+      inputs: {inputBinding: 'inputBinding'},
       selector: '[hasInput]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[sameSelectorAsInput]'), [
-    {
+    makeDirectiveMeta({
       name: 'SameSelectorAsInput',
-      exportAs: null,
-      inputs: new IdentityInputMapping(['sameSelectorAsInput']),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: false,
+      inputs: {sameSelectorAsInput: 'sameSelectorAsInput'},
       selector: '[sameSelectorAsInput]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('comp'), [
-    {
+    makeDirectiveMeta({
       name: 'Comp',
-      exportAs: null,
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping([]),
       isComponent: true,
-      isStructural: false,
       selector: 'comp',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-    },
+    }),
   ]);
 
   const simpleDirectives = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -122,18 +97,11 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
   for (const dir of [...simpleDirectives, ...deferBlockDirectives]) {
     const name = dir[0].toUpperCase() + dir.slice(1).toLowerCase();
     matcher.addSelectables(CssSelector.parse(`[${dir}]`), [
-      {
+      makeDirectiveMeta({
         name: `Dir${name}`,
-        exportAs: null,
-        inputs: new IdentityInputMapping([]),
-        outputs: new IdentityInputMapping([]),
-        isComponent: false,
         isStructural: true,
         selector: `[${dir}]`,
-        animationTriggerNames: null,
-        ngContentSelectors: null,
-        preserveWhitespaces: false,
-      },
+      }),
     ]);
   }
 
@@ -271,18 +239,10 @@ describe('t2 binding', () => {
     const template = parseTemplate('<svg><text dir>SVG</text></svg>', '', {});
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
     matcher.addSelectables(CssSelector.parse('text[dir]'), [
-      {
+      makeDirectiveMeta({
         name: 'Dir',
-        exportAs: null,
-        inputs: new IdentityInputMapping([]),
-        outputs: new IdentityInputMapping([]),
-        isComponent: false,
-        isStructural: false,
         selector: 'text[dir]',
-        animationTriggerNames: null,
-        ngContentSelectors: null,
-        preserveWhitespaces: false,
-      },
+      }),
     ]);
     const binder = new R3TargetBinder(matcher);
     const res = binder.bind({template: template.nodes});
@@ -292,6 +252,22 @@ describe('t2 binding', () => {
     expect(directives).not.toBeNull();
     expect(directives.length).toBe(1);
     expect(directives[0].name).toBe('Dir');
+  });
+
+  it('should match directives on ng-template nested in namespaced elements', () => {
+    const template = parseTemplate(
+      '<svg><ng-template [hasInput]="true"></ng-template></svg>',
+      '',
+      {},
+    );
+    const binder = new R3TargetBinder(makeSelectorMatcher());
+    const res = binder.bind({template: template.nodes});
+    const svgNode = template.nodes[0] as a.Element;
+    const tmplNode = svgNode.children[0] as a.Template;
+    const directives = res.getDirectivesOfNode(tmplNode)!;
+    expect(directives).not.toBeNull();
+    expect(directives.length).toBe(1);
+    expect(directives[0].name).toBe('HasInput');
   });
 
   it('should not match directives intended for an element on a microsyntax template', () => {
@@ -447,7 +423,7 @@ describe('t2 binding', () => {
     const template = parseTemplate('<div #foo></div>', '');
     const binder = new R3TargetBinder(null);
     const res = binder.bind({template: template.nodes});
-    const node = template.nodes[0] as a.Component;
+    const node = template.nodes[0] as a.Element;
     const reference = node.references[0];
     const result = res.getReferenceTarget(reference) as a.Element;
     expect(result instanceof a.Element).toBe(true);
@@ -707,6 +683,80 @@ describe('t2 binding', () => {
 
       expect(allDirs).toEqual(['DirA', 'DirB', 'DirC']);
       expect(eagerDirs).toEqual([]);
+    });
+
+    it('should track enclosing defer blocks for pipes', () => {
+      const template = parseTemplate(
+        `
+          {{ 'outside' | pipeA }}
+          @defer (name blockA) {
+            {{ 'in A' | pipeB }}
+            @defer (name blockB) {
+              {{ 'in B' | pipeC }}
+            }
+          }
+        `,
+        '',
+      );
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const deferBlocks = bound.getDeferBlocks();
+      expect(deferBlocks.length).toBe(2);
+
+      const pipes: e.BindingPipe[] = [];
+      class AstVisitor extends e.RecursiveAstVisitor {
+        override visitPipe(ast: e.BindingPipe, context: any) {
+          pipes.push(ast);
+          super.visitPipe(ast, context);
+        }
+      }
+      const astVisitor = new AstVisitor();
+      class TemplateVisitor extends a.RecursiveVisitor {
+        override visitBoundText(text: a.BoundText) {
+          text.value.visit(astVisitor);
+        }
+      }
+      a.visitAll(new TemplateVisitor(), template.nodes);
+
+      const pipeA = pipes.find((p) => p.name === 'pipeA')!;
+      const pipeB = pipes.find((p) => p.name === 'pipeB')!;
+      const pipeC = pipes.find((p) => p.name === 'pipeC')!;
+
+      expect(bound.getDeferBlocksOfPipe(pipeA)).toEqual([]);
+      expect(bound.getDeferBlocksOfPipe(pipeB)).toEqual([deferBlocks[0]]);
+      expect(bound.getDeferBlocksOfPipe(pipeC)).toEqual([deferBlocks[0], deferBlocks[1]]);
+    });
+
+    it('should track enclosing defer blocks for element and template nodes', () => {
+      const template = parseTemplate(
+        `
+          <div id="outside"></div>
+          @defer (name blockA) {
+            <div id="insideA"></div>
+            <div *a id="templateInsideA"></div>
+            @defer (name blockB) {
+              <div id="insideB"></div>
+            }
+          }
+        `,
+        '',
+      );
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const bound = binder.bind({template: template.nodes});
+      const deferBlocks = bound.getDeferBlocks();
+      expect(deferBlocks.length).toBe(2);
+
+      const divOutside = template.nodes[0] as a.Element;
+      const blockA = template.nodes[1] as a.DeferredBlock;
+      const divInsideA = blockA.children[0] as a.Element;
+      const templateInsideA = blockA.children[1] as a.Template;
+      const blockB = blockA.children[2] as a.DeferredBlock;
+      const divInsideB = blockB.children[0] as a.Element;
+
+      expect(bound.getDeferBlocksOfNode(divOutside)).toEqual([]);
+      expect(bound.getDeferBlocksOfNode(divInsideA)).toEqual([deferBlocks[0]]);
+      expect(bound.getDeferBlocksOfNode(templateInsideA)).toEqual([deferBlocks[0]]);
+      expect(bound.getDeferBlocksOfNode(divInsideB)).toEqual([deferBlocks[0], deferBlocks[1]]);
     });
 
     it('should identify a trigger element that is a parent of the deferred block', () => {
@@ -1027,349 +1077,311 @@ describe('t2 binding', () => {
     });
   });
 
-  describe('selectorless', () => {
-    const options: ParseTemplateOptions = {enableSelectorless: true};
-    const baseMeta = {
-      selector: null,
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping([]),
-      exportAs: null,
-      isStructural: false,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      animationTriggerNames: null,
-      isComponent: false,
-    };
-
-    function makeSelectorlessMatcher(
-      directives: (DirectiveMeta | {root: DirectiveMeta; additionalDirectives: DirectiveMeta[]})[],
-    ): SelectorlessMatcher<DirectiveMeta> {
-      const registry = new Map<string, DirectiveMeta[]>();
-      const isSingleDirective = (value: any): value is DirectiveMeta =>
-        !value.root && !value.additionalDirectives;
-
-      for (const dir of directives) {
-        if (isSingleDirective(dir)) {
-          registry.set(dir.name, [dir]);
-        } else {
-          registry.set(dir.root.name, [dir.root, ...dir.additionalDirectives]);
-        }
-      }
-
-      return new SelectorlessMatcher(registry);
+  describe('directive de-duplication', () => {
+    function formatMatches(matches: DirectiveMeta[]): string[] {
+      return matches.map((dir) => `${dir.name}:${MatchSource[dir.matchSource]}`);
     }
 
-    it('should resolve directives applied on a component node', () => {
-      const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            root: {
-              ...baseMeta,
-              name: 'MyComp',
-              isComponent: true,
-            },
-            additionalDirectives: [
-              {
-                ...baseMeta,
-                name: 'MyHostDir',
-              },
-            ],
-          },
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-          {
-            ...baseMeta,
-            name: 'OtherDir',
-          },
-        ]),
-      );
+    it('should give precedence to the template-matched directive over a host-directive-based match', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: '[dir]',
+        matchSource: MatchSource.HostDirective,
+      });
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        {
+          ...hostDir,
+          matchSource: MatchSource.Selector,
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        makeDirectiveMeta({name: 'Dir', selector: '[dir]'}),
+        hostDir,
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
       const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Component;
-      expect(res.getDirectivesOfNode(node)?.map((d) => d.name)).toEqual(['MyComp', 'MyHostDir']);
+      const element = template.nodes[0] as a.Element;
+      const directives = res.getDirectivesOfNode(element)!;
+
+      expect(formatMatches(directives)).toEqual(['HostDir:Selector', 'Dir:Selector']);
     });
 
-    it('should resolve directives applied on a directive node', () => {
-      const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-          },
-          {
-            root: {
-              ...baseMeta,
-              name: 'Dir',
-            },
-            additionalDirectives: [
-              {
-                ...baseMeta,
-                name: 'HostDir',
-              },
-            ],
-          },
-          {
-            ...baseMeta,
-            name: 'OtherDir',
-          },
-        ]),
-      );
+    it('should de-duplicate directives that match multiple times as host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [oneDir, hostDir]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [twoDir, hostDir]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
       const res = binder.bind({template: template.nodes});
-      const dirs = (template.nodes[0] as a.Component).directives;
-      expect(res.getDirectivesOfNode(dirs[0])?.map((d) => d.name)).toEqual(['Dir', 'HostDir']);
-      expect(res.getDirectivesOfNode(dirs[1])?.map((d) => d.name)).toEqual(['OtherDir']);
-    });
+      const element = template.nodes[0] as a.Element;
+      const directives = res.getDirectivesOfNode(element)!;
 
-    it('should not apply selectorless directives on an element node', () => {
-      const template = parseTemplate('<div @Dir @OtherDir></div>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-          {
-            ...baseMeta,
-            name: 'OtherDir',
-          },
-        ]),
-      );
-      const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Element;
-      expect(res.getDirectivesOfNode(node)).toBe(null);
-    });
-
-    it('should resolve a reference on a component node to the component', () => {
-      const template = parseTemplate('<MyComp #foo/>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-          },
-        ]),
-      );
-      const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Component;
-      const reference = node.references[0];
-      const result = res.getReferenceTarget(reference) as {node: a.Node; directive: DirectiveMeta};
-      expect(result.node).toBe(node);
-      expect(result.directive.name).toBe('MyComp');
-    });
-
-    it('should resolve a reference on a directive node to the component', () => {
-      const template = parseTemplate('<div @Dir(#foo)></div>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-        ]),
-      );
-      const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Element;
-      const directive = node.directives[0];
-      const reference = directive.references[0];
-      const result = res.getReferenceTarget(reference) as {node: a.Node; directive: DirectiveMeta};
-      expect(result.node).toBe(directive);
-      expect(result.directive.name).toBe('Dir');
-    });
-
-    it('should resolve a reference on an element when using a selectorless matcher', () => {
-      const template = parseTemplate('<div #foo></div>', '', options);
-      const binder = new R3TargetBinder(makeSelectorlessMatcher([]));
-      const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Component;
-      const reference = node.references[0];
-      const result = res.getReferenceTarget(reference) as a.Element;
-      expect(result instanceof a.Element).toBe(true);
-      expect(result.name).toBe('div');
-    });
-
-    it('should get consumer of component bindings', () => {
-      const template = parseTemplate(
-        '<MyComp [input]="value" static="value" (output)="doStuff()" [doesNotExist]="value" [attr.input]="value"/>',
-        '',
-        options,
-      );
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-            inputs: new IdentityInputMapping(['input', 'static']),
-            outputs: new IdentityInputMapping(['output']),
-          },
-        ]),
-      );
-      const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Component;
-      const input = node.inputs[0];
-      const staticAttr = node.attributes[0];
-      const output = node.outputs[0];
-      const doesNotExist = node.inputs[1];
-      const attrBinding = node.attributes[1];
-
-      expect((res.getConsumerOfBinding(input) as DirectiveMeta)?.name).toBe('MyComp');
-      expect((res.getConsumerOfBinding(staticAttr) as DirectiveMeta)?.name).toBe('MyComp');
-      expect((res.getConsumerOfBinding(output) as DirectiveMeta)?.name).toBe('MyComp');
-      expect(res.getConsumerOfBinding(doesNotExist)).toBe(null);
-      expect(res.getConsumerOfBinding(attrBinding)).toBe(null);
-    });
-
-    it('should get consumer of directive bindings', () => {
-      const template = parseTemplate(
-        '<div @Dir([input]="value" static="value" (output)="doStuff()" [doesNotExist]="value")></div>',
-        '',
-        options,
-      );
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'Dir',
-            inputs: new IdentityInputMapping(['input', 'static']),
-            outputs: new IdentityInputMapping(['output']),
-          },
-        ]),
-      );
-      const res = binder.bind({template: template.nodes});
-      const node = template.nodes[0] as a.Element;
-      const directive = node.directives[0];
-      const input = directive.inputs[0];
-      const staticAttr = directive.attributes[0];
-      const output = directive.outputs[0];
-      const doesNotExist = directive.inputs[1];
-
-      expect((res.getConsumerOfBinding(input) as DirectiveMeta)?.name).toBe('Dir');
-      expect((res.getConsumerOfBinding(staticAttr) as DirectiveMeta)?.name).toBe('Dir');
-      expect((res.getConsumerOfBinding(output) as DirectiveMeta)?.name).toBe('Dir');
-      expect(res.getConsumerOfBinding(doesNotExist)).toBe(null);
-    });
-
-    it('should get eagerly-used selectorless directives', () => {
-      const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-          },
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-          {
-            ...baseMeta,
-            name: 'OtherDir',
-          },
-          {
-            ...baseMeta,
-            name: 'UnusedDir',
-          },
-        ]),
-      );
-      const res = binder.bind({template: template.nodes});
-      expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir', 'OtherDir']);
-      expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual([
-        'MyComp',
-        'Dir',
-        'OtherDir',
+      expect(formatMatches(directives)).toEqual([
+        'OneDir:Selector',
+        'HostDir:HostDirective',
+        'TwoDir:Selector',
       ]);
     });
 
-    it('should get deferred selectorless directives', () => {
-      const template = parseTemplate('@defer {<MyComp @Dir @OtherDir/>}', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-          },
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-          {
-            ...baseMeta,
-            name: 'OtherDir',
-          },
-        ]),
-      );
+    it('should merge the `inputs` of duplicated host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({two: 'twoAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
       const res = binder.bind({template: template.nodes});
-      expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir', 'OtherDir']);
-      expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual([]);
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.inputs.toDirectMappedObject()).toEqual({
+        one: 'one',
+        two: 'twoAlias',
+      });
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
     });
 
-    it('should get selectorless directives nested in other code', () => {
-      const template = parseTemplate(
-        `
-        <section>
-          @if (someCond) {
-            <MyComp>
-              <div>
-                <h1>
-                  <span @Dir></span>
-                </h1>
-              </div>
-            </MyComp>
-          }
-        </section>
-      `,
-        '',
-        options,
-      );
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-          },
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-          {
-            ...baseMeta,
-            name: 'UnusedDir',
-          },
-        ]),
-      );
+    it('should merge the `outputs` of duplicated host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({two: 'twoAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
       const res = binder.bind({template: template.nodes});
-      expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
-      expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.outputs.toDirectMappedObject()).toEqual({
+        one: 'one',
+        two: 'twoAlias',
+      });
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
     });
 
-    it('should check whether a referenced directive exists', () => {
-      const template = parseTemplate('<MyComp @MissingDir/><MissingComp @Dir/>', '', options);
-      const binder = new R3TargetBinder(
-        makeSelectorlessMatcher([
-          {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
-          },
-          {
-            ...baseMeta,
-            name: 'Dir',
-          },
-        ]),
-      );
+    it('should capture conflicting input bindings in host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
       const res = binder.bind({template: template.nodes});
-      expect(res.referencedDirectiveExists('MyComp')).toBe(true);
-      expect(res.referencedDirectiveExists('Dir')).toBe(true);
-      expect(res.referencedDirectiveExists('MissingDir')).toBe(false);
-      expect(res.referencedDirectiveExists('MissingComp')).toBe(false);
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+      const conflict = res.getConflictingHostDirectiveBindings(element)![0];
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.inputs.toDirectMappedObject()).toEqual({one: 'one'});
+      expect(conflict.kind).toBe('input');
+      expect(conflict.classPropertyName).toBe('one');
+      expect(Array.from(conflict.conflictingAliases)).toEqual(['one', 'oneAlias']);
+    });
+
+    it('should not capture conflicting input bindings if they are equivalent', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.inputs.toDirectMappedObject()).toEqual({one: 'oneAlias'});
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+
+    it('should capture conflicting output bindings in host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+      const conflict = res.getConflictingHostDirectiveBindings(element)![0];
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.outputs.toDirectMappedObject()).toEqual({one: 'one'});
+      expect(conflict.kind).toBe('output');
+      expect(conflict.classPropertyName).toBe('one');
+      expect(Array.from(conflict.conflictingAliases)).toEqual(['one', 'oneAlias']);
+    });
+
+    it('should not capture conflicting output bindings if they are equivalent', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.outputs.toDirectMappedObject()).toEqual({one: 'oneAlias'});
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+
+    it('should match foreign components by tag name', () => {
+      const template = parseTemplate('<FancyButton></FancyButton>', '', {});
+      const registry = new Map<string, ForeignComponentMeta[]>();
+      registry.set('FancyButton', [{name: 'FancyButton'}]);
+      const foreignMatcher = new SelectorlessMatcher(registry);
+
+      const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>(), foreignMatcher);
+      const res = binder.bind({template: template.nodes});
+
+      const el = template.nodes[0] as a.Element;
+      const foreignComp = res.getForeignComponent(el);
+      expect(foreignComp).not.toBeNull();
+      expect(foreignComp?.name).toBe('FancyButton');
+    });
+
+    it('should throw an error when tag matches both directive and foreign component', () => {
+      const template = parseTemplate('<comp></comp>', '', {});
+      const registry = new Map<string, ForeignComponentMeta[]>();
+      registry.set('comp', [{name: 'comp'}]);
+      const foreignMatcher = new SelectorlessMatcher(registry);
+
+      const binder = new R3TargetBinder(makeSelectorMatcher(), foreignMatcher);
+
+      expect(() => binder.bind({template: template.nodes})).toThrowError(
+        "Conflict: Element 'comp' matches both an Angular directive and a foreign component.",
+      );
     });
   });
 });

@@ -1,4 +1,4 @@
-import {Component, NgModule, Pipe} from '@angular/core';
+import { Component, NgModule, Pipe } from '@angular/core';
 
 @Component({
     selector: 'host-binding-comp',
@@ -15,7 +15,7 @@ export class HostBindingComp {
     standalone: false
 })
 class MyForwardPipe {
-  transform() {}
+  transform(param:unknown) {}
 }
 
 @NgModule({declarations: [HostBindingComp, MyForwardPipe]})

@@ -6,19 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, provideZonelessChangeDetection, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl} from '@angular/forms';
 import {compatForm} from '../../compat';
 import {FormField} from '../../public_api';
+import {act} from '@angular/private/testing';
 
 describe('compatForm with [formField] directive', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   it('should bind compat form to input with [formField] directive', () => {
     @Component({
       imports: [FormField],
@@ -87,11 +82,3 @@ describe('compatForm with [formField] directive', () => {
     expect(fixture.componentInstance.f().value().species).toBe('cat');
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}

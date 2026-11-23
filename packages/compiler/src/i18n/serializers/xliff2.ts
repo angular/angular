@@ -271,7 +271,7 @@ class Xliff2Parser implements ml.Visitor {
           this._addError(element, `<${_UNIT_TAG}> misses the "id" attribute`);
         } else {
           const id = idAttr.value;
-          if (this._msgIdToHtml.hasOwnProperty(id)) {
+          if (Object.hasOwn(this._msgIdToHtml, id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
             ml.visitAll(this, element.children, null);
@@ -335,10 +335,6 @@ class Xliff2Parser implements ml.Visitor {
   visitBlockParameter(parameter: ml.BlockParameter, context: any) {}
 
   visitLetDeclaration(decl: ml.LetDeclaration, context: any) {}
-
-  visitComponent(component: ml.Component, context: any) {}
-
-  visitDirective(directive: ml.Directive, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new ParseError(node.sourceSpan, message));
@@ -435,14 +431,6 @@ class XmlToI18n implements ml.Visitor {
   visitBlockParameter(parameter: ml.BlockParameter, context: any) {}
 
   visitLetDeclaration(decl: ml.LetDeclaration, context: any) {}
-
-  visitComponent(component: ml.Component, context: any) {
-    this._addError(component, 'Unexpected node');
-  }
-
-  visitDirective(directive: ml.Directive, context: any) {
-    this._addError(directive, 'Unexpected node');
-  }
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new ParseError(node.sourceSpan, message));

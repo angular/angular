@@ -191,7 +191,7 @@ runInNativeFileSystem('makeEs2015Plugin', () => {
     const cwd = fs.resolve('/');
     const filename = fs.resolve(cwd, 'app/dist/test.js');
     return transformSync(input, {
-      plugins: [makeEs2015TranslatePlugin(diagnostics, translations, pluginOptions)],
+      plugins: [() => makeEs2015TranslatePlugin(diagnostics, translations, pluginOptions)],
       filename,
       cwd,
     })!.code!;

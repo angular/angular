@@ -27,10 +27,6 @@
     "elements/schematics",
     "examples/**",
     "http/**",
-    "platform-server/integrationtest",
-
-    // Additional exclusion since tests for the language-service never run within the
-    // Saucelabs job and the package is not compatible with ESM TS compilation anyway.
-    "language-service/**"
+    "platform-server/integrationtest"
   ]
 }

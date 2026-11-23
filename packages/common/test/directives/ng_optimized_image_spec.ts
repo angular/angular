@@ -6,12 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  PLATFORM_ID,
+  Provider,
+  signal,
+  Type,
+  WritableSignal,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {isBrowser, isNode, withHead} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
-import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '../../index';
+import {DOCUMENT, IMAGE_CONFIG, ImageConfig} from '../../index';
 import {RuntimeErrorCode} from '../../src/errors';
 import {PLATFORM_SERVER_ID} from '../../src/platform_id';
 
@@ -32,6 +40,7 @@ import {
   resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
+import {escapeCssUrl} from '../../src/directives/ng_optimized_image/url';
 
 describe('Image directive', () => {
   const PLACEHOLDER_BLUR_AMOUNT = 15;
@@ -46,7 +55,7 @@ describe('Image directive', () => {
         globalThis['ngServerMode'] = undefined;
       });
 
-      it('should create `<link>` element when the image priority attr is true', () => {
+      it('should create `<link>` element when the image priority attr is true', async () => {
         // Only run this test in a browser since the Node-based DOM mocks don't
         // allow to override `HTMLImageElement.prototype.setAttribute` easily.
         if (!isBrowser) return;
@@ -66,7 +75,7 @@ describe('Image directive', () => {
           ],
         });
 
-        const template = `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w">`;
+        const template = `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w" crossorigin="anonymous">`;
         TestBed.overrideComponent(TestComponent, {set: {template: template}});
 
         const _document = TestBed.inject(DOCUMENT);
@@ -77,7 +86,7 @@ describe('Image directive', () => {
         ).and.callThrough();
 
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const head = _document.head;
 
@@ -97,11 +106,12 @@ describe('Image directive', () => {
         expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
         expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
         expect(preloadLink!.getAttribute('fetchpriority')).toEqual('high');
+        expect(preloadLink!.getAttribute('crossorigin')).toEqual('anonymous');
 
         preloadLink!.remove();
       });
 
-      it('should not create a preload `<link>` element when src is already preloaded.', () => {
+      it('should not create a preload `<link>` element when src is already preloaded.', async () => {
         // Only run this test in a browser since the Node-based DOM mocks don't
         // allow to override `HTMLImageElement.prototype.setAttribute` easily.
         if (!isBrowser) return;
@@ -126,13 +136,13 @@ describe('Image directive', () => {
         const _document = TestBed.inject(DOCUMENT);
 
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const head = _document.head;
 
         const preloadImages = TestBed.inject(PRELOADED_IMAGES);
 
-        expect(preloadImages.has(rewrittenSrc)).toBeTruthy();
+        expect(preloadImages.has(`${rewrittenSrc}:null`)).toBeTruthy();
 
         const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
 
@@ -141,7 +151,41 @@ describe('Image directive', () => {
         preloadLinks[0]!.remove();
       });
 
-      it('should warn when the number of preloaded images is larger than the limit', () => {
+      it('should create separate preload links for images with different CORS modes', async () => {
+        if (!isBrowser) return;
+
+        const src = 'preload-cors/img.png';
+        const rewrittenSrc = `https://angular.dev/${src}`;
+
+        setupTestingModule({
+          extraProviders: [
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+            {
+              provide: IMAGE_LOADER,
+              useValue: (config: ImageLoaderConfig) => `https://angular.dev/${config.src}`,
+            },
+          ],
+        });
+
+        const template = `
+          <img ngSrc="${src}" width="150" height="50" priority>
+          <img ngSrc="${src}" width="150" height="50" priority crossorigin="anonymous">
+        `;
+        TestBed.overrideComponent(TestComponent, {set: {template}});
+
+        const _document = TestBed.inject(DOCUMENT);
+        const fixture = TestBed.createComponent(TestComponent);
+        await fixture.whenStable();
+
+        const preloadLinks = _document.head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
+        expect(preloadLinks.length).toEqual(2);
+        expect(preloadLinks[0]!.hasAttribute('crossorigin')).toBeFalse();
+        expect(preloadLinks[1]!.getAttribute('crossorigin')).toEqual('anonymous');
+
+        preloadLinks.forEach((link) => link.remove());
+      });
+
+      it('should warn when the number of preloaded images is larger than the limit', async () => {
         // Only run this test in a browser since the Node-based DOM mocks don't
         // allow to override `HTMLImageElement.prototype.setAttribute` easily.
         if (!isBrowser) return;
@@ -170,7 +214,7 @@ describe('Image directive', () => {
 
         const consoleWarnSpy = spyOn(console, 'warn');
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
         expect(consoleWarnSpy.calls.count()).toBe(1);
         expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
           /NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority/,
@@ -178,7 +222,7 @@ describe('Image directive', () => {
       });
     });
 
-    it('should not hit max preload limit when not on the server', () => {
+    it('should not hit max preload limit when not on the server', async () => {
       // Only run this test in a browser since the Node-based DOM mocks don't
       // allow to override `HTMLImageElement.prototype.setAttribute` easily.
       if (!isBrowser) return;
@@ -209,7 +253,7 @@ describe('Image directive', () => {
       const _document = TestBed.inject(DOCUMENT);
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const head = _document.head;
 
@@ -222,7 +266,7 @@ describe('Image directive', () => {
     });
   });
 
-  it('should set `loading` and `fetchpriority` attributes before `src`', () => {
+  it('should set `loading` and `fetchpriority` attributes before `src`', async () => {
     // Only run this test in a browser since the Node-based DOM mocks don't
     // allow to override `HTMLImageElement.prototype.setAttribute` easily.
     if (!isBrowser) return;
@@ -240,7 +284,7 @@ describe('Image directive', () => {
     ).and.callThrough();
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const nativeElement = fixture.nativeElement as HTMLElement;
 
@@ -274,12 +318,12 @@ describe('Image directive', () => {
     expect(_fetchpriorityAttrId).toBeLessThan(_srcAttrId); // was set after `src`
   });
 
-  it('should always reflect the width/height attributes if bound', () => {
+  it('should always reflect the width/height attributes if bound', async () => {
     setupTestingModule();
 
     const template = '<img ngSrc="path/img.png" [width]="width" [height]="height">';
     const fixture = createTestComponent(template);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const nativeElement = fixture.nativeElement as HTMLElement;
     const img = nativeElement.querySelector('img')!;
@@ -288,14 +332,12 @@ describe('Image directive', () => {
   });
 
   describe('setup error handling', () => {
-    it('should throw if both `src` and `ngSrc` are present', () => {
+    it('should throw if both `src` and `ngSrc` are present', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" src="path/img2.png" width="100" height="50">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02950: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="path/img.png"`) has detected that both ' +
           '`src` and `ngSrc` have been set. Supplying both of these attributes ' +
@@ -305,15 +347,13 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if both `ngSrcet` and `srcset` is present', () => {
+    it('should throw if both `ngSrcet` and `srcset` is present', async () => {
       setupTestingModule();
 
       const template =
         '<img ngSrc="img-100.png" ngSrcset="100w, 200w" srcset="img-100.png 100w, img-200.png 200w" width="100" height="50">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02951: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img-100.png"`) has detected that both ' +
           '`srcset` and `ngSrcset` have been set. Supplying both of these ' +
@@ -324,14 +364,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `ngSrc` contains a Base64-encoded image (that starts with `data:`)', () => {
+    it('should throw if `ngSrc` contains a Base64-encoded image (that starts with `data:`)', async () => {
       setupTestingModule();
 
-      expect(() => {
-        const template = '<img ngSrc="' + ANGULAR_LOGO_BASE64 + '" width="50" height="50">';
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const template = '<img ngSrc="' + ANGULAR_LOGO_BASE64 + '" width="50" height="50">';
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive has detected that `ngSrc` ' +
           'is a Base64-encoded string (data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDov...). ' +
           'NgOptimizedImage does not support Base64-encoded strings. ' +
@@ -349,7 +387,7 @@ describe('Image directive', () => {
       }
 
       const canvas = document.createElement('canvas');
-      canvas.toBlob(function (blob) {
+      canvas.toBlob(async function (blob) {
         const blobURL = URL.createObjectURL(blob!);
 
         setupTestingModule();
@@ -358,23 +396,19 @@ describe('Image directive', () => {
         // is created dynamically, so it might be different for each invocation.
         const errorMessageRegExp =
           /NG02952: The NgOptimizedImage directive (.*?) has detected that `ngSrc` was set to a blob URL \(blob:/;
-        expect(() => {
-          const template = '<img ngSrc="' + blobURL + '" width="50" height="50">';
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(errorMessageRegExp);
+        const template = '<img ngSrc="' + blobURL + '" width="50" height="50">';
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(errorMessageRegExp);
         done();
       });
     });
 
-    it('should throw if `width` and `height` are not set', () => {
+    it('should throw if `width` and `height` are not set', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img.png"`) has detected that these ' +
           'required attributes are missing: "width", "height". Including "width" and ' +
@@ -384,14 +418,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `width` is not set', () => {
+    it('should throw if `width` is not set', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png" height="10">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img.png"`) has detected that these ' +
           'required attributes are missing: "width". Including "width" and ' +
@@ -401,14 +433,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `width` is 0', () => {
+    it('should throw if `width` is 0', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png" width="0" height="10">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img.png"`) has detected that `width` ' +
           'has an invalid value. To fix this, provide `width` as ' +
@@ -416,14 +446,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `width` has an invalid value', () => {
+    it('should throw if `width` has an invalid value', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png" width="10px" height="10">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img.png"`) has detected that `width` ' +
           'has an invalid value. To fix this, provide `width` ' +
@@ -431,14 +459,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `height` is not set', () => {
+    it('should throw if `height` is not set', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png" width="10">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img.png"`) has detected that these required ' +
           'attributes are missing: "height". Including "width" and "height" ' +
@@ -448,14 +474,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `height` is 0', () => {
+    it('should throw if `height` is 0', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png" width="10" height="0">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc="img.png"`) has detected that `height` ' +
           'has an invalid value. To fix this, provide `height` as a number ' +
@@ -463,28 +487,24 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `height` has an invalid value', () => {
+    it('should throw if `height` has an invalid value', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="img.png" width="10" height="10%">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
           'with the `ngSrc="img.png"`) has detected that `height` has an invalid ' +
           'value. To fix this, provide `height` as a number greater than 0.',
       );
     });
 
-    it('should throw if `ngSrc` value is not provided', () => {
+    it('should throw if `ngSrc` value is not provided', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc>';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
           'element with the `ngSrc=""`) has detected that `ngSrc` has an ' +
           'invalid value (``). ' +
@@ -492,14 +512,12 @@ describe('Image directive', () => {
       );
     });
 
-    it('should throw if `ngSrc` value is set to an empty string', () => {
+    it('should throw if `ngSrc` value is set to an empty string', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="  ">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
           'with the `ngSrc="  "`) has detected that `ngSrc` has an invalid value ' +
           '(`  `). To fix this, change the value to a non-empty string.',
@@ -509,7 +527,7 @@ describe('Image directive', () => {
     describe('invalid `ngSrcset` values', () => {
       const mockDirectiveInstance = {ngSrc: 'img.png'} as NgOptimizedImage;
 
-      it('should throw for empty ngSrcSet', () => {
+      it('should throw for empty ngSrcSet', async () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
           return window.location.origin + `/path/${config.src}${width}.png`;
@@ -519,10 +537,8 @@ describe('Image directive', () => {
         const template = `
             <img ngSrc="img" ngSrcset="" width="100" height="50">
           `;
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
             'element with the `ngSrc="img"`) has detected that `ngSrcset` ' +
             'has an invalid value (``). ' +
@@ -530,7 +546,7 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw for invalid ngSrcSet', () => {
+      it('should throw for invalid ngSrcSet', async () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
           return window.location.origin + `/path/${config.src}${width}.png`;
@@ -540,10 +556,8 @@ describe('Image directive', () => {
         const template = `
             <img ngSrc="img" ngSrcset="100q, 200q" width="100" height="50">
           `;
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
             'with the `ngSrc="img"`) has detected that `ngSrcset` has an invalid value ' +
             '(`100q, 200q`). To fix this, supply `ngSrcset` using a comma-separated list ' +
@@ -552,7 +566,7 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw if ngSrcset exceeds the density cap', () => {
+      it('should throw if ngSrcset exceeds the density cap', async () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
           return window.location.origin + `/path/${config.src}${width}.png`;
@@ -562,10 +576,8 @@ describe('Image directive', () => {
         const template = `
             <img ngSrc="img" ngSrcset="1x, 2x, 3x, 4x, 5x" width="100" height="50">
           `;
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           `NG0${RuntimeErrorCode.INVALID_INPUT}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="img"\`) ` +
             `has detected that the \`ngSrcset\` contains an unsupported image density:` +
             `\`1x, 2x, 3x, 4x, 5x\`. NgOptimizedImage generally recommends a max image density of ` +
@@ -577,7 +589,7 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw if ngSrcset exceeds the density cap with multiple digits', () => {
+      it('should throw if ngSrcset exceeds the density cap with multiple digits', async () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
           return window.location.origin + `/path/${config.src}${width}.png`;
@@ -587,10 +599,8 @@ describe('Image directive', () => {
         const template = `
             <img ngSrc="img" ngSrcset="1x, 200x" width="100" height="50">
           `;
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           `NG0${RuntimeErrorCode.INVALID_INPUT}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="img"\`) ` +
             `has detected that the \`ngSrcset\` contains an unsupported image density:` +
             `\`1x, 200x\`. NgOptimizedImage generally recommends a max image density of ` +
@@ -680,55 +690,53 @@ describe('Image directive', () => {
       ['loaderParams', '{foo: "test1"}'],
     ];
     inputs.forEach(([inputName, value]) => {
-      it(`should throw if the \`${inputName}\` input changed after directive initialized the input`, () => {
+      it(`should throw if the \`${inputName}\` input changed after directive initialized the input`, async () => {
         @Component({
-          selector: 'test-cmp',
           template: `<img
-            [ngSrc]="ngSrc"
-            [width]="width"
-            [height]="height"
-            [priority]="priority"
-            [fill]="fill"
-            [loading]="loading"
-            [sizes]="sizes"
-            [disableOptimizedSrcset]="disableOptimizedSrcset"
-            [loaderParams]="loaderParams"
+            [ngSrc]="ngSrc()"
+            [width]="width()"
+            [height]="height()"
+            [priority]="priority()"
+            [fill]="fill()"
+            [loading]="loading()"
+            [sizes]="sizes()"
+            [disableOptimizedSrcset]="disableOptimizedSrcset()"
+            [loaderParams]="loaderParams()"
           />`,
-          standalone: false,
+          imports: [NgOptimizedImage],
         })
         class TestComponent {
-          width = 100;
-          height = 50;
-          ngSrc = 'img.png';
-          priority = false;
-          fill = false;
-          loading = false;
-          sizes = '100vw';
-          disableOptimizedSrcset = false;
-          loaderParams = {bar: 'test2'};
+          width = signal(100);
+          height = signal(50);
+          ngSrc = signal('img.png');
+          priority = signal(false);
+          fill = signal(false);
+          loading = signal<any>(false);
+          sizes = signal('100vw');
+          disableOptimizedSrcset = signal(false);
+          loaderParams = signal<any>({bar: 'test2'});
         }
 
         setupTestingModule({component: TestComponent});
 
         // Initial render
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const expectedErrorMessage = //
           `NG02953: The NgOptimizedImage directive (.*)? ` +
           `has detected that \`${inputName}\` was updated after initialization`;
-        expect(() => {
-          // Update input (expect to throw)
-          (fixture.componentInstance as unknown as {[key: string]: unknown})[inputName as string] =
-            value;
-          fixture.changeDetectorRef.markForCheck();
-          fixture.detectChanges();
-        }).toThrowError(new RegExp(expectedErrorMessage));
+        // Update input (expect to throw)
+        (fixture.componentInstance as unknown as {[key: string]: WritableSignal<unknown>})[
+          inputName as string
+        ].set(value);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+          new RegExp(expectedErrorMessage),
+        );
       });
     });
-    it(`should not throw if ngSrc changed after directive is initialized`, () => {
+    it(`should not throw if ngSrc changed after directive is initialized`, async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img
           [ngSrc]="ngSrc"
           [width]="width"
@@ -736,7 +744,7 @@ describe('Image directive', () => {
           [loading]="loading"
           [sizes]="sizes"
         />`,
-        standalone: false,
+        imports: [NgOptimizedImage],
       })
       class TestComponent {
         width = 100;
@@ -750,17 +758,15 @@ describe('Image directive', () => {
 
       // Initial render
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-      expect(() => {
-        fixture.componentInstance.ngSrc = 'newImg.png';
-        fixture.detectChanges();
-      }).not.toThrowError(new RegExp('was updated after initialization'));
+      await fixture.whenStable();
+      fixture.componentInstance.ngSrc = 'newImg.png';
+      fixture.changeDetectorRef.markForCheck();
+      await expectAsync(fixture.whenStable()).toBeResolved();
     });
-    it('should accept a safeUrl ngSrc value', () => {
+    it('should accept a safeUrl ngSrc value', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img [ngSrc]="bypassImage" width="400" height="600" />`,
-        standalone: false,
+        imports: [NgOptimizedImage],
       })
       class TestComponent {
         rawImage = `javascript:alert("Hi there")`;
@@ -771,7 +777,7 @@ describe('Image directive', () => {
       }
       setupTestingModule({component: TestComponent});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       let nativeElement = fixture.nativeElement as HTMLElement;
       let img = nativeElement.querySelector('img')!;
@@ -780,24 +786,24 @@ describe('Image directive', () => {
   });
 
   describe('lazy loading', () => {
-    it('should eagerly load priority images', () => {
+    it('should eagerly load priority images', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50" priority>';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('loading')).toBe('eager');
     });
 
-    it('should lazily load non-priority images', () => {
+    it('should lazily load non-priority images', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -806,15 +812,13 @@ describe('Image directive', () => {
   });
 
   describe('decoding attribute', () => {
-    it('should throw for invalid loading inputs', () => {
+    it('should throw for invalid loading inputs', async () => {
       setupTestingModule();
 
       const template =
         '<img ngSrc="path/img.png" width="150" height="150" decoding="unknown_value">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive ' +
           '(activated on an <img> element with the `ngSrc="path/img.png"`) has detected ' +
           'that the `decoding` attribute has an invalid value (`unknown_value`). ' +
@@ -822,36 +826,36 @@ describe('Image directive', () => {
       );
     });
 
-    it('should set the decoding to "auto" by default', () => {
+    it('should set the decoding to "auto" by default', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="150">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('decoding')).toEqual('auto');
     });
 
-    it('should set the decoding to sync for priority images', () => {
+    it('should set the decoding to sync for priority images', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50" priority>';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('decoding')).toEqual('sync');
     });
 
-    it('should override the default decoding behavior', () => {
+    it('should override the default decoding behavior', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="150" decoding="async">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -860,27 +864,25 @@ describe('Image directive', () => {
   });
 
   describe('loading attribute', () => {
-    it('should override the default loading behavior for non-priority images', () => {
+    it('should override the default loading behavior for non-priority images', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50" loading="eager">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('loading')).toBe('eager');
     });
 
-    it('should throw if used with priority images', () => {
+    it('should throw if used with priority images', async () => {
       setupTestingModule();
 
       const template =
         '<img ngSrc="path/img.png" width="150" height="50" loading="eager" priority>';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
           'with the `ngSrc="path/img.png"`) has detected that the `loading` attribute ' +
           'was used on an image that was marked "priority". Setting `loading` on priority ' +
@@ -889,26 +891,24 @@ describe('Image directive', () => {
       );
     });
 
-    it('should support setting loading priority to "auto"', () => {
+    it('should support setting loading priority to "auto"', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50" loading="auto">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('loading')).toBe('auto');
     });
 
-    it('should throw for invalid loading inputs', () => {
+    it('should throw for invalid loading inputs', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="150" loading="fast">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
           'with the `ngSrc="path/img.png"`) has detected that the `loading` attribute ' +
           'has an invalid value (`fast`). To fix this, provide a valid value ("lazy", ' +
@@ -918,24 +918,24 @@ describe('Image directive', () => {
   });
 
   describe('fetch priority', () => {
-    it('should be "high" for priority images', () => {
+    it('should be "high" for priority images', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50" priority>';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('fetchpriority')).toBe('high');
     });
 
-    it('should be "auto" for non-priority images', () => {
+    it('should be "auto" for non-priority images', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="50">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -976,8 +976,6 @@ describe('Image directive', () => {
         const consoleWarnSpy = spyOn(console, 'warn');
 
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
-
         await fixture.whenStable();
 
         // trick to wait for the whenStable() to fire in the directive
@@ -999,22 +997,22 @@ describe('Image directive', () => {
   });
 
   describe('meta data', () => {
-    it('should add a data attribute to the element for identification', () => {
+    it('should add a data attribute to the element for identification', async () => {
       setupTestingModule();
       const template = '<img ngSrc="a.png" width="100" height="50">';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('ng-img')).not.toBeNull();
     });
-    it('should add a data attribute to the element for identification, when ngSrc bound', () => {
+    it('should add a data attribute to the element for identification, when ngSrc bound', async () => {
       setupTestingModule();
       const template = `<img [ngSrc]="'a.png'" width="100" height="50">`;
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('ng-img')).not.toBeNull();
@@ -1022,134 +1020,128 @@ describe('Image directive', () => {
   });
 
   describe('fill mode', () => {
-    it('should allow unsized images in fill mode', () => {
+    it('should allow unsized images in fill mode', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" fill>';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).not.toThrow();
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeResolved();
     });
-    it('should throw if width is provided for fill mode image', () => {
+    it('should throw if width is provided for fill mode image', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="500" fill>';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> element with the ' +
           '`ngSrc="path/img.png"`) has detected that the attributes `height` and/or `width` ' +
           'are present along with the `fill` attribute. Because `fill` mode causes an image ' +
           'to fill its containing element, the size attributes have no effect and should be removed.',
       );
     });
-    it('should throw if height is provided for fill mode image', () => {
+    it('should throw if height is provided for fill mode image', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" height="500" fill>';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         'NG02952: The NgOptimizedImage directive (activated on an <img> element with the ' +
           '`ngSrc="path/img.png"`) has detected that the attributes `height` and/or `width` ' +
           'are present along with the `fill` attribute. Because `fill` mode causes an image ' +
           'to fill its containing element, the size attributes have no effect and should be removed.',
       );
     });
-    it('should apply appropriate styles in fill mode', () => {
+    it('should apply appropriate styles in fill mode', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" fill>';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('style')?.replace(/\s/g, '')).toMatch(
         'position:absolute;width:100%;height:100%;inset:0',
       );
     });
-    it('should augment existing styles in fill mode', () => {
+    it('should augment existing styles in fill mode', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" style="border-radius: 5px; padding: 10px" fill>';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('style')?.replace(/\s/g, '')).toMatch(
         'border-radius:5px;padding:10px;position:absolute;width:100%;height:100%;inset:0',
       );
     });
-    it('should not add fill styles if not in fill mode', () => {
+    it('should not add fill styles if not in fill mode', async () => {
       setupTestingModule();
 
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" style="position: relative; border-radius: 5px">';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('style')?.replace(/\s/g, '')).toBe(
         'position:relative;border-radius:5px;',
       );
     });
-    it('should add default sizes value in fill mode', () => {
+    it('should add default sizes value in fill mode', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" fill priority>';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('sizes')).toBe('100vw');
     });
-    it('should add auto sizes to default in fill mode when lazy', () => {
+    it('should add auto sizes to default in fill mode when lazy', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" fill>';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('sizes')).toBe('auto, 100vw');
     });
-    it('should not overwrite sizes value in fill mode', () => {
+    it('should not overwrite sizes value in fill mode', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" sizes="50vw" fill loading="eager">';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('sizes')).toBe('50vw');
     });
-    it('should prepend "auto" to sizes in fill mode when lazy', () => {
+    it('should prepend "auto" to sizes in fill mode when lazy', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" sizes="50vw" fill>';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('sizes')).toBe('auto, 50vw');
     });
-    it('should cause responsive srcset to be generated in fill mode', () => {
+    it('should cause responsive srcset to be generated in fill mode', async () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" fill>';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('srcset')).toBe(
@@ -1170,13 +1162,13 @@ describe('Image directive', () => {
       return `${IMG_BASE_URL}/${config.src}?${queryString}`;
     };
 
-    it('should add background size, position, and repeat styling if the placeholder attribute is present', () => {
+    it('should add background size, position, and repeat styling if the placeholder attribute is present', async () => {
       setupTestingModule();
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" placeholder="path/img.png" />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
@@ -1185,12 +1177,12 @@ describe('Image directive', () => {
       expect(styles.get('background-repeat')).toBe('no-repeat');
     });
 
-    it('should not add background styles if the placeholder attribute is not present', () => {
+    it('should not add background styles if the placeholder attribute is not present', async () => {
       setupTestingModule();
       const template = '<img ngSrc="path/img.png" width="400" height="300">';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
@@ -1200,12 +1192,12 @@ describe('Image directive', () => {
       expect(styles.get('background-image')).toBeUndefined();
     });
 
-    it('should add a background-image tag when placeholder is provided as a boolean', () => {
+    it('should add a background-image tag when placeholder is provided as a boolean', async () => {
       setupTestingModule({imageLoader});
       const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
@@ -1215,15 +1207,34 @@ describe('Image directive', () => {
       );
     });
 
+    it('should escape loader output when placeholder is provided as a boolean (security regression)', async () => {
+      const maliciousLoader = (config: ImageLoaderConfig) => {
+        if (config.isPlaceholder) {
+          return 'https://mysite.com/img.png"); color: red;/*';
+        }
+        return `${IMG_BASE_URL}/${config.src}`;
+      };
+      setupTestingModule({imageLoader: maliciousLoader});
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
+
+      const fixture = createTestComponent(template);
+      await fixture.whenStable();
+
+      const imageDirective = fixture.debugElement.children[0].injector.get(NgOptimizedImage);
+      const placeholderValue = (imageDirective as any).generatePlaceholder(true) as string;
+
+      expect(placeholderValue).toBe('url("https://mysite.com/img.png\\"); color: red;/*")');
+    });
+
     if (!isNode) {
       // DataURLs get stripped from background-image attribute in Node, but not browsers.
-      it('should add a background-image tag when placeholder is provided as a data URL', () => {
+      it('should add a background-image tag when placeholder is provided as a data URL', async () => {
         setupTestingModule({imageLoader});
         const template =
           '<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEU" />';
 
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         // Double quotes removed to account for different browser behavior.
@@ -1233,13 +1244,13 @@ describe('Image directive', () => {
       });
     }
 
-    it('should add a background-image tag when placeholder is provided as a URL', () => {
+    it('should add a background-image tag when placeholder is provided as a URL', async () => {
       setupTestingModule({imageLoader});
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" placeholder="https://mysite.com/assets/my-image.png" />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       // Double quotes removed to account for different browser behavior.
@@ -1249,13 +1260,13 @@ describe('Image directive', () => {
     });
 
     // DataURLs get stripped from background-image attribute in Node, but not browsers.
-    it('should add a background-image tag when placeholder is provided as relative URL', () => {
+    it('should add a background-image tag when placeholder is provided as relative URL', async () => {
       setupTestingModule({imageLoader});
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" placeholder="../../assets/my-image.png" />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       // Double quotes removed to account for different browser behavior.
@@ -1264,12 +1275,28 @@ describe('Image directive', () => {
       );
     });
 
-    it('should add a background-image tag when placeholder is provided without value', () => {
+    it('should prevent CSS injection through placeholder URL values', async () => {
+      setupTestingModule({imageLoader});
+      const maliciousPlaceholder = 'https://mysite.com/img.png"); color: red;';
+      const template = `<img ngSrc="path/img.png" width="400" height="300" placeholder='${maliciousPlaceholder}' />`;
+
+      const fixture = createTestComponent(template);
+      await fixture.whenStable();
+
+      const imageDirective = fixture.debugElement.children[0].injector.get(NgOptimizedImage);
+      const placeholderValue = (imageDirective as any).generatePlaceholder(
+        maliciousPlaceholder,
+      ) as string;
+
+      expect(placeholderValue).toBe('url("https://mysite.com/img.png\\"); color: red;")');
+    });
+
+    it('should add a background-image tag when placeholder is provided without value', async () => {
       setupTestingModule({imageLoader});
       const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
@@ -1279,14 +1306,14 @@ describe('Image directive', () => {
       );
     });
 
-    it('should remove placeholder event listeners once view is removed', () => {
+    it('should remove placeholder event listeners once view is removed', async () => {
       const addEventListenerSpy = spyOn(HTMLImageElement.prototype, 'addEventListener');
       const removeEventListenerSpy = spyOn(HTMLImageElement.prototype, 'removeEventListener');
       setupTestingModule();
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" placeholder="https://mysite.com/assets/my-image.png" />';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       // The `load` event listener is being set up twice: once in
       // `assertNoImageDistortion` and once in `removePlaceholderOnLoad`.
       expect(
@@ -1300,20 +1327,20 @@ describe('Image directive', () => {
       ).toEqual(2);
     });
 
-    it('should replace the placeholder with the actual image on load', () => {
+    it('should replace the placeholder with the actual image on load', async () => {
       setupTestingModule();
       const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
       const fixture = createTestComponent(template, ChangeDetectionStrategy.OnPush);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(parseInlineStyles(img).has('background-image')).toBe(true);
       img.dispatchEvent(new Event('load'));
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(parseInlineStyles(img).has('background-image')).toBe(false);
     });
 
-    it('should use the placeholderResolution set in imageConfig', () => {
+    it('should use the placeholderResolution set in imageConfig', async () => {
       const imageConfig = {
         placeholderResolution: 30,
       };
@@ -1321,7 +1348,7 @@ describe('Image directive', () => {
       const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
@@ -1331,7 +1358,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should pass calculated height to placeholder loader based on aspect ratio', () => {
+    it('should pass calculated height to placeholder loader based on aspect ratio', async () => {
       const placeholderLoaderWithHeight = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `w=${config.width}` : '';
         const heightStr = config.height ? `h=${config.height}` : '';
@@ -1346,7 +1373,7 @@ describe('Image directive', () => {
       const template = '<img ngSrc="path/img.png" width="400" height="200" placeholder />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
@@ -1358,90 +1385,82 @@ describe('Image directive', () => {
       );
     });
 
-    it('should apply a background blur to images with a placeholder', () => {
+    it('should apply a background blur to images with a placeholder', async () => {
       setupTestingModule({imageLoader});
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEU" />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
       expect(styles.get('filter')).toBe(`blur(${PLACEHOLDER_BLUR_AMOUNT}px)`);
     });
 
-    it('should not apply a background blur to placeholders with blur=false', () => {
+    it('should not apply a background blur to placeholders with blur=false', async () => {
       setupTestingModule({imageLoader});
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEU" [placeholderConfig]="{blur: false}" />';
 
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       const styles = parseInlineStyles(img);
       expect(styles.get('filter')).toBeUndefined();
     });
 
-    it('should throw if placeholderConfig is provided without placeholder', () => {
+    it('should throw if placeholderConfig is provided without placeholder', async () => {
       setupTestingModule();
 
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" [placeholderConfig]="{blur: false}">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         `NG02952: The NgOptimizedImage directive has detected that \`placeholderConfig\` options were ` +
           `provided for an image that does not use the \`placeholder\` attribute, and will have no effect.`,
       );
     });
 
-    it('should throw if placeholderConfig with blur=true is provided without placeholder', () => {
+    it('should throw if placeholderConfig with blur=true is provided without placeholder', async () => {
       setupTestingModule();
 
       const template =
         '<img ngSrc="path/img.png" width="400" height="300" [placeholderConfig]="{blur: true}">';
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         `NG02952: The NgOptimizedImage directive has detected that \`placeholderConfig\` options were ` +
           `provided for an image that does not use the \`placeholder\` attribute, and will have no effect.`,
       );
     });
 
-    it('should throw if there is no image loader but `ngSrcset` is present', () => {
+    it('should throw if there is no image loader but `ngSrcset` is present', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="img.png" width="150" height="50" placeholder="true">`;
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         `NG0${RuntimeErrorCode.MISSING_NECESSARY_LOADER}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="img.png"\`) ` +
           `has detected that the \`placeholder\` attribute is set to true but no image loader is configured (i.e. the default one is being used), which ` +
           `would result in the same image being used for the primary image and its placeholder. To fix this, provide a loader or remove the \`placeholder\` attribute from the image.`,
       );
     });
 
-    it('should throw if a very large inline placeholder is supplied', () => {
+    it('should throw if a very large inline placeholder is supplied', async () => {
       setupTestingModule();
 
       const template = `<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,${'a'.repeat(
         DATA_URL_ERROR_LIMIT + 100,
       )}">`;
-      expect(() => {
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-      }).toThrowError(
+      const fixture = createTestComponent(template);
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         `NG0${RuntimeErrorCode.OVERSIZED_PLACEHOLDER}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="path/img.png"\`) ` +
           `has detected that the \`placeholder\` attribute is set to a data URL which is longer than ${DATA_URL_ERROR_LIMIT} characters. This is strongly ` +
           `discouraged, as large inline placeholders directly increase the bundle size of Angular and hurt page load performance. To fix this, generate a smaller data URL placeholder.`,
       );
     });
-    it('should warn if a large inline placeholder is supplied', () => {
+    it('should warn if a large inline placeholder is supplied', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,${'a'.repeat(
@@ -1449,7 +1468,7 @@ describe('Image directive', () => {
       )}">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
@@ -1470,7 +1489,7 @@ describe('Image directive', () => {
           globalThis['ngServerMode'] = undefined;
         });
 
-        it('should throw if the placeholder height exceeds the threshold', () => {
+        it('should throw if the placeholder height exceeds the threshold', async () => {
           setUpModuleNoLoader();
 
           const template = `<img ngSrc="path/img.png" width="100" height="100" style="width:1001px; height: 300px" placeholder="data:image/png;base64,${'a'.repeat(
@@ -1479,14 +1498,14 @@ describe('Image directive', () => {
 
           const consoleWarnSpy = spyOn(console, 'warn');
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
           expect(consoleWarnSpy.calls.count()).toBe(1);
           expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
             new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
           );
         });
 
-        it('should throw if the placeholder width exceeds the threshold', () => {
+        it('should throw if the placeholder width exceeds the threshold', async () => {
           setUpModuleNoLoader();
 
           const template = `<img ngSrc="path/img.png" width="100" height="100" style="height:1001px; width: 300px" placeholder="data:image/png;base64,${'a'.repeat(
@@ -1495,7 +1514,7 @@ describe('Image directive', () => {
 
           const consoleWarnSpy = spyOn(console, 'warn');
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
           expect(consoleWarnSpy.calls.count()).toBe(1);
           expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
             new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
@@ -1514,7 +1533,7 @@ describe('Image directive', () => {
 
     it(
       'should log a warning if there is no preconnect link for a priority image',
-      withHead('', () => {
+      withHead('', async () => {
         // The warning is only logged on the client
         if (!isBrowser) return;
 
@@ -1523,7 +1542,7 @@ describe('Image directive', () => {
         const consoleWarnSpy = spyOn(console, 'warn');
         const template = '<img ngSrc="a.png" width="100" height="50" priority>';
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(consoleWarnSpy.calls.count()).toBe(1);
         expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
@@ -1540,13 +1559,13 @@ describe('Image directive', () => {
 
     it(
       'should not log a warning if there is no preconnect link, but the image is not set as a priority',
-      withHead('', () => {
+      withHead('', async () => {
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
         const template = '<img ngSrc="a.png" width="100" height="50">';
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         // Expect no warnings in the console.
         expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1555,7 +1574,7 @@ describe('Image directive', () => {
 
     it(
       "should log a warning if there is a preconnect, but it doesn't match the priority image",
-      withHead('<link rel="preconnect" href="http://angular.dev">', () => {
+      withHead('<link rel="preconnect" href="http://angular.dev">', async () => {
         // The warning is only logged on the client
         if (!isBrowser) return;
 
@@ -1564,7 +1583,7 @@ describe('Image directive', () => {
         const consoleWarnSpy = spyOn(console, 'warn');
         const template = '<img ngSrc="a.png" width="100" height="50" priority>';
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(consoleWarnSpy.calls.count()).toBe(1);
         expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
@@ -1582,7 +1601,7 @@ describe('Image directive', () => {
       'should log a warning if there is no matching preconnect link for a priority image, but there is a preload tag',
       withHead(
         '<link rel="preload" href="https://angular.dev/assets/images/logos/angular/angular.svg" as="image">',
-        () => {
+        async () => {
           // The warning is only logged on the client
           if (!isBrowser) return;
 
@@ -1591,7 +1610,7 @@ describe('Image directive', () => {
           const consoleWarnSpy = spyOn(console, 'warn');
           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
 
           expect(consoleWarnSpy.calls.count()).toBe(1);
           expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
@@ -1608,13 +1627,13 @@ describe('Image directive', () => {
 
     it(
       'should not log a warning if there is a matching preconnect link for a priority image (with an extra `/` at the end)',
-      withHead('<link rel="preconnect" href="https://angular.dev/">', () => {
+      withHead('<link rel="preconnect" href="https://angular.dev/">', async () => {
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
         const template = '<img ngSrc="a.png" width="100" height="50" priority>';
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         // Expect no warnings in the console.
         expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1625,7 +1644,7 @@ describe('Image directive', () => {
       it(
         `should not log a warning if an origin domain is blocklisted ` +
           `(checking ${blocklistedHostname})`,
-        withHead('', () => {
+        withHead('', async () => {
           const imageLoader = () => {
             return `http://${blocklistedHostname}/a.png`;
           };
@@ -1634,7 +1653,7 @@ describe('Image directive', () => {
           const consoleWarnSpy = spyOn(console, 'warn');
           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
 
           // Expect no warnings in the console.
           expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1645,14 +1664,14 @@ describe('Image directive', () => {
     describe('PRECONNECT_CHECK_BLOCKLIST token', () => {
       it(
         `should allow passing host names`,
-        withHead('', () => {
+        withHead('', async () => {
           const providers = [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.dev'}];
           setupTestingModule({imageLoader, extraProviders: providers});
 
           const consoleWarnSpy = spyOn(console, 'warn');
           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
 
           // Expect no warnings in the console.
           expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1661,7 +1680,7 @@ describe('Image directive', () => {
 
       it(
         `should allow passing origins`,
-        withHead('', () => {
+        withHead('', async () => {
           const providers = [
             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.dev'},
           ];
@@ -1670,7 +1689,7 @@ describe('Image directive', () => {
           const consoleWarnSpy = spyOn(console, 'warn');
           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
 
           // Expect no warnings in the console.
           expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1679,7 +1698,7 @@ describe('Image directive', () => {
 
       it(
         `should allow passing arrays of host names`,
-        withHead('', () => {
+        withHead('', async () => {
           const providers = [
             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.dev']},
           ];
@@ -1688,7 +1707,7 @@ describe('Image directive', () => {
           const consoleWarnSpy = spyOn(console, 'warn');
           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
 
           // Expect no warnings in the console.
           expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1697,7 +1716,7 @@ describe('Image directive', () => {
 
       it(
         `should allow passing nested arrays of host names`,
-        withHead('', () => {
+        withHead('', async () => {
           const providers = [
             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.dev']]},
           ];
@@ -1706,7 +1725,7 @@ describe('Image directive', () => {
           const consoleWarnSpy = spyOn(console, 'warn');
           const template = '<img ngSrc="a.png" width="100" height="50" priority>';
           const fixture = createTestComponent(template);
-          fixture.detectChanges();
+          await fixture.whenStable();
 
           // Expect no warnings in the console.
           expect(consoleWarnSpy.calls.count()).toBe(0);
@@ -1736,25 +1755,25 @@ describe('Image directive', () => {
       return `${config.src}/${config.loaderParams?.['transforms1'].example1}/${config.loaderParams?.['transforms2'].example2}`;
     };
 
-    it('should set `src` to match `ngSrc` if image loader is not provided', () => {
+    it('should set `src` to match `ngSrc` if image loader is not provided', async () => {
       setupTestingModule();
 
       const template = `<img ngSrc="${IMG_BASE_URL}/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
 
-    it('should warn if there is no image loader but using Imgix URL', () => {
+    it('should warn if there is no image loader but using Imgix URL', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="https://some.imgix.net/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
@@ -1762,13 +1781,13 @@ describe('Image directive', () => {
       );
     });
 
-    it('should warn if there is no image loader but using ImageKit URL', () => {
+    it('should warn if there is no image loader but using ImageKit URL', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="https://some.imagekit.io/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
@@ -1776,13 +1795,13 @@ describe('Image directive', () => {
       );
     });
 
-    it('should warn if there is no image loader but using Cloudinary URL', () => {
+    it('should warn if there is no image loader but using Cloudinary URL', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="https://some.cloudinary.com/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
@@ -1790,13 +1809,13 @@ describe('Image directive', () => {
       );
     });
 
-    it('should warn if there is no image loader but using Netlify URL', () => {
+    it('should warn if there is no image loader but using Netlify URL', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="https://example.netlify.app/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
@@ -1804,24 +1823,24 @@ describe('Image directive', () => {
       );
     });
 
-    it('should NOT warn if there is a custom loader but using CDN URL', () => {
+    it('should NOT warn if there is a custom loader but using CDN URL', async () => {
       setupTestingModule();
 
       const template = `<img ngSrc="https://some.cloudinary.com/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(0);
     });
 
-    it('should warn if there is no image loader but `ngSrcset` is present', () => {
+    it('should warn if there is no image loader but `ngSrcset` is present', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="img.png" ngSrcset="100w, 200w" width="150" height="50">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
@@ -1833,13 +1852,13 @@ describe('Image directive', () => {
       );
     });
 
-    it('should warn if there is no image loader but `loaderParams` is present', () => {
+    it('should warn if there is no image loader but `loaderParams` is present', async () => {
       setUpModuleNoLoader();
 
       const template = `<img ngSrc="img.png" width="150" height="50" [loaderParams]="{foo: 'test'}">`;
       const fixture = createTestComponent(template);
       const consoleWarnSpy = spyOn(console, 'warn');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(consoleWarnSpy.calls.count()).toBe(1);
       expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
@@ -1851,7 +1870,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL', () => {
+    it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL', async () => {
       const imageLoader = (config: ImageLoaderConfig) => `${IMG_BASE_URL}/${config.src}`;
       setupTestingModule({imageLoader});
 
@@ -1860,7 +1879,7 @@ describe('Image directive', () => {
          <img ngSrc="img-2.png" width="150" height="50">
        `;
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const imgs = nativeElement.querySelectorAll('img')!;
@@ -1868,38 +1887,35 @@ describe('Image directive', () => {
       expect(imgs[1].src.trim()).toBe(`${IMG_BASE_URL}/img-2.png`);
     });
 
-    it('should use the image loader to update `src` if `ngSrc` updated', () => {
+    it('should use the image loader to update `src` if `ngSrc` updated', async () => {
       @Component({
-        selector: 'test-cmp',
-        template: `<img [ngSrc]="ngSrc" width="300" height="300" />`,
-        standalone: false,
+        template: `<img [ngSrc]="ngSrc()" width="300" height="300" />`,
+        imports: [NgOptimizedImage],
       })
       class TestComponent {
-        ngSrc = `img.png`;
+        ngSrc = signal(`img.png`);
       }
       const imageLoader = (config: ImageLoaderConfig) => `${IMG_BASE_URL}/${config.src}`;
       setupTestingModule({imageLoader, component: TestComponent});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       let nativeElement = fixture.nativeElement as HTMLElement;
       let imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png`);
 
-      fixture.componentInstance.ngSrc = 'updatedImg.png';
-      fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      fixture.componentInstance.ngSrc.set('updatedImg.png');
+      await fixture.whenStable();
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/updatedImg.png`);
     });
 
-    it('should use the image loader to update `srcset` if `ngSrc` updated', () => {
+    it('should use the image loader to update `srcset` if `ngSrc` updated', async () => {
       @Component({
-        selector: 'test-cmp',
-        template: `<img [ngSrc]="ngSrc" width="300" height="300" sizes="100vw" />`,
-        standalone: false,
+        template: `<img [ngSrc]="ngSrc()" width="300" height="300" sizes="100vw" />`,
+        imports: [NgOptimizedImage],
       })
       class TestComponent {
-        ngSrc = `img.png`;
+        ngSrc = signal(`img.png`);
       }
       const imageLoader = (config: ImageLoaderConfig) => {
         const width = config.width ? `?w=${config.width}` : ``;
@@ -1907,7 +1923,7 @@ describe('Image directive', () => {
       };
       setupTestingModule({imageLoader, component: TestComponent});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       let nativeElement = fixture.nativeElement as HTMLElement;
       let imgs = nativeElement.querySelectorAll('img')!;
@@ -1915,17 +1931,16 @@ describe('Image directive', () => {
         `${IMG_BASE_URL}/img.png?w=640 640w, ${IMG_BASE_URL}/img.png?w=750 750w, ${IMG_BASE_URL}/img.png?w=828 828w, ${IMG_BASE_URL}/img.png?w=1080 1080w, ${IMG_BASE_URL}/img.png?w=1200 1200w, ${IMG_BASE_URL}/img.png?w=1920 1920w, ${IMG_BASE_URL}/img.png?w=2048 2048w, ${IMG_BASE_URL}/img.png?w=3840 3840w`,
       );
 
-      fixture.componentInstance.ngSrc = 'updatedImg.png';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.ngSrc.set('updatedImg.png');
       nativeElement = fixture.nativeElement as HTMLElement;
       imgs = nativeElement.querySelectorAll('img')!;
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(imgs[0].getAttribute('srcset')).toBe(
         `${IMG_BASE_URL}/updatedImg.png?w=640 640w, ${IMG_BASE_URL}/updatedImg.png?w=750 750w, ${IMG_BASE_URL}/updatedImg.png?w=828 828w, ${IMG_BASE_URL}/updatedImg.png?w=1080 1080w, ${IMG_BASE_URL}/updatedImg.png?w=1200 1200w, ${IMG_BASE_URL}/updatedImg.png?w=1920 1920w, ${IMG_BASE_URL}/updatedImg.png?w=2048 2048w, ${IMG_BASE_URL}/updatedImg.png?w=3840 3840w`,
       );
     });
 
-    it('should pass absolute URLs defined in the `ngSrc` to custom image loaders provided via the `IMAGE_LOADER` token', () => {
+    it('should pass absolute URLs defined in the `ngSrc` to custom image loaders provided via the `IMAGE_LOADER` token', async () => {
       const imageLoader = (config: ImageLoaderConfig) => `${config.src}?rewritten=true`;
       setupTestingModule({imageLoader});
 
@@ -1933,36 +1948,35 @@ describe('Image directive', () => {
             <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50">
           `;
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].src.trim()).toBe(`${IMG_BASE_URL}/img.png?rewritten=true`);
     });
 
-    it('should pass data payload from loaderParams to custom image loaders', () => {
+    it('should pass data payload from loaderParams to custom image loaders', async () => {
       setupTestingModule({imageLoader: imageLoaderWithData});
       const template = `
         <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50"
           [loaderParams]="{testProp1: 'testValue1', testProp2: 'testValue2'}" />
       `;
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png?testProp1=testValue1&testProp2=testValue2`);
     });
 
-    it('should pass nested data payloads from loaderParams to custom image loaders', () => {
+    it('should pass nested data payloads from loaderParams to custom image loaders', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img
           [ngSrc]="ngSrc"
           [width]="width"
           [height]="height"
           [loaderParams]="params"
         />`,
-        standalone: false,
+        imports: [NgOptimizedImage],
       })
       class TestComponent {
         ngSrc = `${IMG_BASE_URL}/img.png`;
@@ -1972,20 +1986,20 @@ describe('Image directive', () => {
       }
       setupTestingModule({imageLoader: nestedImageLoader, component: TestComponent});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png/foo/bar`);
     });
 
-    it('should pass data payload from loaderParams to loader when generating srcsets', () => {
+    it('should pass data payload from loaderParams to loader when generating srcsets', async () => {
       setupTestingModule({imageLoader: imageLoaderWithData});
       const template = `
         <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50"
           [loaderParams]="{testProp1: 'testValue1', testProp2: 'testValue2'}" />
       `;
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].srcset).toBe(
@@ -1993,14 +2007,14 @@ describe('Image directive', () => {
       );
     });
 
-    it('should pass data payload from loaderParams to loader when generating responsive srcsets', () => {
+    it('should pass data payload from loaderParams to loader when generating responsive srcsets', async () => {
       setupTestingModule({imageLoader: imageLoaderWithData});
       const template = `
         <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50" sizes="100vw"
           [loaderParams]="{testProp1: 'testValue1', testProp2: 'testValue2'}" />
       `;
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].srcset).toBe(
@@ -2008,7 +2022,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should pass height to custom image loader based on aspect ratio', () => {
+    it('should pass height to custom image loader based on aspect ratio', async () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `w=${config.width}` : '';
         const heightStr = config.height ? `h=${config.height}` : '';
@@ -2019,7 +2033,7 @@ describe('Image directive', () => {
 
       const template = '<img ngSrc="img.png" width="150" height="50">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -2027,7 +2041,7 @@ describe('Image directive', () => {
       expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
 
-    it('should pass calculated height to custom image loader when generating srcsets', () => {
+    it('should pass calculated height to custom image loader when generating srcsets', async () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `w=${config.width}` : '';
         const heightStr = config.height ? `h=${config.height}` : '';
@@ -2038,7 +2052,7 @@ describe('Image directive', () => {
 
       const template = '<img ngSrc="img.png" width="150" height="50">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -2049,7 +2063,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should pass calculated height to custom image loader when generating responsive srcsets', () => {
+    it('should pass calculated height to custom image loader when generating responsive srcsets', async () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `w=${config.width}` : '';
         const heightStr = config.height ? `h=${config.height}` : '';
@@ -2060,7 +2074,7 @@ describe('Image directive', () => {
 
       const template = '<img ngSrc="img.png" width="150" height="50" sizes="100vw">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -2071,7 +2085,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should not pass height to custom image loader when height is not provided', () => {
+    it('should not pass height to custom image loader when height is not provided', async () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `w=${config.width}` : '';
         const heightStr = config.height ? `h=${config.height}` : '';
@@ -2082,7 +2096,7 @@ describe('Image directive', () => {
 
       const template = '<img ngSrc="img.png" fill>';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -2093,10 +2107,9 @@ describe('Image directive', () => {
       );
     });
 
-    it('should pass height to custom image loaders', () => {
+    it('should pass height to custom image loaders', async () => {
       @Component({
-        selector: 'test-cmp',
-        standalone: false,
+        imports: [NgOptimizedImage],
         template: `<img [ngSrc]="ngSrc" width="300" height="150" sizes="100vw" />`,
       })
       class TestComponent {
@@ -2115,7 +2128,7 @@ describe('Image directive', () => {
       };
       setupTestingModule({imageLoader, component: TestComponent});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       let nativeElement = fixture.nativeElement as HTMLElement;
       let imgs = nativeElement.querySelectorAll('img')!;
@@ -2124,7 +2137,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should set `src` to an image URL that does not include a default width parameter', () => {
+    it('should set `src` to an image URL that does not include a default width parameter', async () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `?w=${config.width}` : ``;
         return `${IMG_BASE_URL}/${config.src}${widthStr}`;
@@ -2133,7 +2146,7 @@ describe('Image directive', () => {
 
       const template = '<img ngSrc="img.png" width="150" height="50">';
       const fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
@@ -2142,15 +2155,14 @@ describe('Image directive', () => {
 
     it(
       `should allow providing image loaders via Component providers`,
-      withHead('', () => {
+      withHead('', async () => {
         const createImgUrl = (path: string, config: ImageLoaderConfig) => `${path}/${config.src}`;
         const loaderWithPath = createImageLoader(createImgUrl);
 
         @Component({
-          selector: 'test-cmp',
           template: '<img ngSrc="a.png" width="100" height="50" priority>',
           providers: [loaderWithPath('https://component.io')],
-          standalone: false,
+          imports: [NgOptimizedImage],
         })
         class TestComponent {}
 
@@ -2160,7 +2172,7 @@ describe('Image directive', () => {
         });
 
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const defaultLoader = TestBed.inject(IMAGE_LOADER);
         const nativeElement = fixture.nativeElement as HTMLElement;
@@ -2181,14 +2193,14 @@ describe('Image directive', () => {
         };
       });
 
-      it('should set the `srcset` using the `ngSrcset` value with width descriptors', () => {
+      it('should set the `srcset` using the `ngSrcset` value with width descriptors', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="100w, 200w" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2198,14 +2210,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should set the `srcset` using the `ngSrcset` value with density descriptors', () => {
+      it('should set the `srcset` using the `ngSrcset` value with density descriptors', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="1x, 2x" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2215,14 +2227,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should set the `srcset` if `ngSrcset` has only one src defined', () => {
+      it('should set the `srcset` if `ngSrcset` has only one src defined', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="100w" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2230,14 +2242,14 @@ describe('Image directive', () => {
         expect(img.srcset.trim()).toBe(`${IMG_BASE_URL}/img.png?w=100 100w`);
       });
 
-      it('should set the `srcset` if `ngSrcSet` has extra spaces', () => {
+      it('should set the `srcset` if `ngSrcSet` has extra spaces', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="  100w,  200w   " width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2247,14 +2259,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should set the `srcset` if `ngSrcSet` has a trailing comma', () => {
+      it('should set the `srcset` if `ngSrcSet` has a trailing comma', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="1x, 2x," width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2264,14 +2276,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should set the `srcset` if `ngSrcSet` has 3+ srcs', () => {
+      it('should set the `srcset` if `ngSrcSet` has 3+ srcs', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="100w, 200w, 300w" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2283,14 +2295,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should set the `srcset` if `ngSrcSet` has decimal density descriptors', () => {
+      it('should set the `srcset` if `ngSrcSet` has decimal density descriptors', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="1.75x, 2.5x, 3x" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2301,28 +2313,28 @@ describe('Image directive', () => {
             `${IMG_BASE_URL}/img.png?w=300 3x`,
         );
       });
-      it('should automatically set a default sizes attribute when ngSrcset is used with a responsive srcset and is lazy', () => {
+      it('should automatically set a default sizes attribute when ngSrcset is used with a responsive srcset and is lazy', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="100w, 200w, 300w" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.sizes).toBe(`auto, 100vw`);
       });
-      it('should not automatically set a default sizes attribute when ngSrcset is used with a responsive srcset and is not lazy', () => {
+      it('should not automatically set a default sizes attribute when ngSrcset is used with a responsive srcset and is not lazy', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
            <img ngSrc="img.png" ngSrcset="100w, 200w, 300w" width="100" height="50" priority>
          `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2332,14 +2344,14 @@ describe('Image directive', () => {
     });
 
     describe('sizes attribute', () => {
-      it('should pass through the sizes attribute', () => {
+      it('should pass through the sizes attribute', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="150" height="50" ' +
           'sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" priority>';
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2349,14 +2361,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should prepend sizes="auto" to a lazy-loaded image', () => {
+      it('should prepend sizes="auto" to a lazy-loaded image', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="150" height="50" ' +
           'sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw">';
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2366,43 +2378,37 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw if a complex `sizes` is used', () => {
+      it('should throw if a complex `sizes` is used', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw">';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
             'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
             '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
         );
       });
-      it('should throw if a complex `sizes` is used with srcset', () => {
+      it('should throw if a complex `sizes` is used with srcset', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
             'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
             '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
         );
       });
-      it('should not throw if a complex `sizes` is used with ngSrcset', () => {
+      it('should not throw if a complex `sizes` is used with ngSrcset', async () => {
         setupTestingModule();
 
         const template =
           '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" ngSrcset="100w, 200w">';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).not.toThrow();
+        const fixture = createTestComponent(template);
+        await expectAsync(fixture.whenStable()).toBeResolved();
       });
     });
 
@@ -2412,28 +2418,28 @@ describe('Image directive', () => {
         return `${IMG_BASE_URL}/${config.src}${width}`;
       };
 
-      it('should not generate a srcset if the default noop loader is used', () => {
+      it('should not generate a srcset if the default noop loader is used', async () => {
         setupTestingModule({noLoader: true});
 
         const template = `
           <img ngSrc="img" width="100" height="50" sizes="100vw">
         `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBeNull();
       });
 
-      it('should add a responsive srcset to the img element if sizes attribute exists', () => {
+      it('should add a responsive srcset to the img element if sizes attribute exists', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
       <img ngSrc="img" width="100" height="50" sizes="100vw">
     `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2442,14 +2448,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should use the long responsive srcset if sizes attribute exists and is less than 100vw', () => {
+      it('should use the long responsive srcset if sizes attribute exists and is less than 100vw', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
       <img ngSrc="img" width="100" height="50" sizes="2vw">
     `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2458,14 +2464,14 @@ describe('Image directive', () => {
         );
       });
 
-      it('should add a fixed srcset to the img element if sizes attribute does not exist', () => {
+      it('should add a fixed srcset to the img element if sizes attribute does not exist', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
       <img ngSrc="img" width="100" height="50">
     `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2474,36 +2480,36 @@ describe('Image directive', () => {
         );
       });
 
-      it('should not add a fixed srcset to the img element if height is too large', () => {
+      it('should not add a fixed srcset to the img element if height is too large', async () => {
         setupTestingModule({imageLoader});
 
         const template = `<img ngSrc="img" width="1100" height="2400">`;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBeNull();
       });
 
-      it('should not add a fixed srcset to the img element if width is too large', () => {
+      it('should not add a fixed srcset to the img element if width is too large', async () => {
         setupTestingModule({imageLoader});
 
         const template = `<img ngSrc="img" width="3000" height="400">`;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBeNull();
       });
 
-      it('should add a responsive srcset to the img element if height is too large', () => {
+      it('should add a responsive srcset to the img element if height is too large', async () => {
         setupTestingModule({imageLoader});
 
         const template = `<img ngSrc="img" width="1100" height="2400" sizes="100vw">`;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2512,12 +2518,12 @@ describe('Image directive', () => {
         );
       });
 
-      it('should add a responsive srcset to the img element if width is too large', () => {
+      it('should add a responsive srcset to the img element if width is too large', async () => {
         setupTestingModule({imageLoader});
 
         const template = `<img ngSrc="img" width="3000" height="400" sizes="100vw">`;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
@@ -2526,7 +2532,7 @@ describe('Image directive', () => {
         );
       });
 
-      it('should use a custom breakpoint set if one is provided', () => {
+      it('should use a custom breakpoint set if one is provided', async () => {
         const imageConfig = {
           breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 1280, 3840],
         };
@@ -2536,7 +2542,7 @@ describe('Image directive', () => {
       <img ngSrc="img" width="100" height="50" sizes="2vw">
     `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBe(
@@ -2544,7 +2550,7 @@ describe('Image directive', () => {
         );
       });
 
-      it('should sort custom breakpoint set', () => {
+      it('should sort custom breakpoint set', async () => {
         const imageConfig = {
           breakpoints: [48, 16, 3840, 640, 1280],
         };
@@ -2554,7 +2560,7 @@ describe('Image directive', () => {
       <img ngSrc="img" width="100" height="50" sizes="2vw">
     `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBe(
@@ -2562,19 +2568,59 @@ describe('Image directive', () => {
         );
       });
 
-      it('should disable automatic srcset generation if "disableOptimizedSrcset" attribute is set', () => {
+      it('should disable automatic srcset generation if "disableOptimizedSrcset" attribute is set', async () => {
         setupTestingModule({imageLoader});
 
         const template = `
       <img ngSrc="img" width="100" height="50" sizes="50vw" disableOptimizedSrcset>
     `;
         const fixture = createTestComponent(template);
-        fixture.detectChanges();
+        await fixture.whenStable();
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBeNull();
       });
+
+      it('should pass a `[srcset]` binding through to the DOM when "disableOptimizedSrcset" is set', async () => {
+        // https://github.com/angular/angular/issues/49335
+        setupTestingModule({imageLoader});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" disableOptimizedSrcset
+           [srcset]="'https://example.com/a.png 1x, https://example.com/b.png 2x'">
+    `;
+        const fixture = createTestComponent(template);
+        await fixture.whenStable();
+        const img = (fixture.nativeElement as HTMLElement).querySelector('img')!;
+        expect(img.getAttribute('srcset')).toBe(
+          'https://example.com/a.png 1x, https://example.com/b.png 2x',
+        );
+      });
     });
+  });
+});
+
+describe('escapeCssUrl', () => {
+  it('strips characters that are invalid in URLs and break CSS quoted strings', () => {
+    // \n, \r, \f and \0 all terminate a CSS string per the spec, and none of
+    // them are valid URL characters either, so we just drop them.
+    expect(escapeCssUrl('http://x.com/img\n.jpg')).toBe('http://x.com/img.jpg'); // newline
+    expect(escapeCssUrl('http://x.com/img\r.jpg')).toBe('http://x.com/img.jpg'); // carriage return
+    expect(escapeCssUrl('http://x.com/img\f.jpg')).toBe('http://x.com/img.jpg'); // form feed
+    expect(escapeCssUrl('http://x.com/img\0.jpg')).toBe('http://x.com/img.jpg'); // null byte
+  });
+
+  it('escapes characters that break the CSS url("...") wrapper', () => {
+    // A bare " would end the url("...") string prematurely, so it becomes \".
+    expect(escapeCssUrl('http://x.com/img".jpg')).toBe('http://x.com/img\\".jpg');
+    // A bare \ starts a CSS escape sequence, so it must be doubled to \\.
+    expect(escapeCssUrl('http://x.com/img\\.jpg')).toBe('http://x.com/img\\\\.jpg');
+  });
+
+  it('does not double-escape backslashes', () => {
+    // The \ → \\ replacement runs first, so backslashes introduced by later
+    // replacements are never accidentally escaped a second time.
+    expect(escapeCssUrl('a\\b')).toBe('a\\\\b');
   });
 });
 
@@ -2593,7 +2639,7 @@ const ANGULAR_LOGO_BASE64 =
 @Component({
   selector: 'test-cmp',
   template: '',
-  standalone: false,
+  imports: [NgOptimizedImage],
 })
 class TestComponent {
   width = 100;
@@ -2625,10 +2671,7 @@ function setupTestingModule(config?: {
   }
 
   TestBed.configureTestingModule({
-    declarations: [config?.component ?? TestComponent],
-    // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
-    // `CommonModule` yet, so it's imported separately.
-    imports: [CommonModule, NgOptimizedImage],
+    imports: [config?.component ?? TestComponent],
     providers,
   });
 }
@@ -2637,8 +2680,7 @@ function setupTestingModule(config?: {
 // so the noopImageLoader should be used.
 function setUpModuleNoLoader() {
   TestBed.configureTestingModule({
-    declarations: [TestComponent],
-    imports: [CommonModule, NgOptimizedImage],
+    imports: [TestComponent],
     providers: [{provide: DOCUMENT, useValue: window.document}],
   });
 }

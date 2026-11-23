@@ -11,8 +11,8 @@ import {Terminal, ITerminalOptions, ITerminalInitOnlyOptions} from '@xterm/xterm
 
 import {CommandValidator} from './command-validator.service';
 
-export const NOT_VALID_COMMAND_MSG = 'Angular Documentation - Not allowed command!';
-export const ALLOWED_KEYS: Array<KeyboardEvent['key']> = [
+const NOT_VALID_COMMAND_MSG = 'Angular Documentation - Not allowed command!';
+const ALLOWED_KEYS: Array<KeyboardEvent['key']> = [
   // Allow Backspace to delete what was typed
   'Backspace',
   // Allow ArrowUp to interact with CLI

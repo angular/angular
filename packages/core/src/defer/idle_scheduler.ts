@@ -102,25 +102,29 @@ export class IdleScheduler implements OnDestroy {
 
     const key = getIdleRequestKey(options);
     const callback = (deadline?: IdleDeadline) => {
-      this.cancelBucket(bucket);
-
+      // Keep idleId set during the drain to prevent re-entrant add() from scheduling redundant callbacks.
       for (const cb of bucket.queue) {
-        cb();
-        // _tick here is an optimized change detection check and is safe to call here.
-        // We also account for the time it takes to run change detection
-        // for the newly-created view as a part of the same idle callback.
-        this.applicationRef._tick();
-        bucket.queue.delete(cb);
-        this.callbackBucket.delete(cb);
+        try {
+          cb();
+          // _tick here is an optimized change detection check and is safe to call here.
+          // We also account for the time it takes to run change detection
+          // for the newly-created view as a part of the same idle callback.
+          this.applicationRef._tick();
+        } finally {
+          bucket.queue.delete(cb);
+          this.callbackBucket.delete(cb);
 
-        if (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout) {
-          break;
+          if (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout) {
+            break;
+          }
         }
       }
 
+      bucket.idleId = null;
+
       if (bucket.queue.size > 0) {
         this.scheduleBucket(bucket, options);
-      } else {
+      } else if (this.buckets.get(key) === bucket) {
         this.buckets.delete(key);
       }
     };

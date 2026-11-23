@@ -6,7 +6,10 @@ create_upgrade_example_targets(
     name = "full",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*_spec.ts"],
+        exclude = [
+            "**/*_spec.ts",
+            "**/*.spec.ts",
+        ],
     ),
     assets = ["styles.css"],
     e2e_srcs = glob(["e2e_test/*_spec.ts"]),

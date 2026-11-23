@@ -10,7 +10,12 @@ import {ɵɵi18nApply, ɵɵi18nExp} from '../../../src/core';
 import {applyCreateOpCodes} from '../../../src/render3/i18n/i18n_apply';
 import {i18nStartFirstCreatePass} from '../../../src/render3/i18n/i18n_parse';
 import {getTIcu} from '../../../src/render3/i18n/i18n_util';
-import {I18nUpdateOpCodes, IcuType, TI18n} from '../../../src/render3/interfaces/i18n';
+import {
+  I18nUpdateOpCodes,
+  IcuCreateOpCode,
+  IcuType,
+  TI18n,
+} from '../../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, HOST} from '../../../src/render3/interfaces/view';
 
 import {matchTI18n, matchTIcu} from '../matchers';
@@ -340,6 +345,28 @@ describe('i18n_parse', () => {
         ɵɵi18nApply(0);
         expect(fixture.host.innerHTML).toEqual(`<div></div><!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
+    });
+
+    it('should throw if an ICU expression exceeds the maximum reference node index', () => {
+      fixture = new ViewFixture({
+        decls: IcuCreateOpCode.MAX_REF - HEADER_OFFSET - 2,
+        vars: 1,
+      });
+
+      expect(() => {
+        toT18n(`{\uFFFD0\uFFFD, select, other {<br><br>}}`);
+      }).toThrowError(/ICU node index out of range/);
+    });
+
+    it('should throw if an ICU expression exceeds the maximum parent node index', () => {
+      fixture = new ViewFixture({
+        decls: IcuCreateOpCode.MAX_PARENT - HEADER_OFFSET - 2,
+        vars: 1,
+      });
+
+      expect(() => {
+        toT18n(`{\uFFFD0\uFFFD, select, other {<div><span></span></div>}}`);
+      }).toThrowError(/ICU node index out of range/);
     });
   });
 

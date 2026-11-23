@@ -25,6 +25,10 @@ export class Identifiers {
 
   static elementEnd: o.ExternalReference = {name: 'ɵɵelementEnd', moduleName: CORE};
 
+  static foreignComponent: o.ExternalReference = {name: 'ɵɵforeignComponent', moduleName: CORE};
+  static foreignContent: o.ExternalReference = {name: 'ɵɵforeignContent', moduleName: CORE};
+  static foreignContentFn: o.ExternalReference = {name: 'ɵɵforeignContentFn', moduleName: CORE};
+
   static domElement: o.ExternalReference = {name: 'ɵɵdomElement', moduleName: CORE};
   static domElementStart: o.ExternalReference = {name: 'ɵɵdomElementStart', moduleName: CORE};
   static domElementEnd: o.ExternalReference = {name: 'ɵɵdomElementEnd', moduleName: CORE};
@@ -187,6 +191,10 @@ export class Identifiers {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
   };
+  static enableIncrementalHydrationRuntime: o.ExternalReference = {
+    name: 'ɵɵenableIncrementalHydrationRuntime',
+    moduleName: CORE,
+  };
 
   static conditionalCreate: o.ExternalReference = {name: 'ɵɵconditionalCreate', moduleName: CORE};
   static conditionalBranchCreate: o.ExternalReference = {
@@ -194,6 +202,9 @@ export class Identifiers {
     moduleName: CORE,
   };
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
+  static boundaryCreate: o.ExternalReference = {name: 'ɵɵboundaryCreate', moduleName: CORE};
+  static boundaryUpdate: o.ExternalReference = {name: 'ɵɵboundaryUpdate', moduleName: CORE};
+  static getBoundary: o.ExternalReference = {name: 'ɵɵgetBoundary', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
   static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};
   static repeaterTrackByIndex: o.ExternalReference = {
@@ -277,6 +288,7 @@ export class Identifiers {
   static projectionDef: o.ExternalReference = {name: 'ɵɵprojectionDef', moduleName: CORE};
 
   static reference: o.ExternalReference = {name: 'ɵɵreference', moduleName: CORE};
+  static invalid: o.ExternalReference = {name: 'ɵɵinvalid', moduleName: CORE};
 
   static inject: o.ExternalReference = {name: 'ɵɵinject', moduleName: CORE};
 
@@ -306,6 +318,9 @@ export class Identifiers {
     name: 'ɵɵInjectableDeclaration',
     moduleName: CORE,
   };
+
+  static defineService: o.ExternalReference = {name: 'ɵɵdefineService', moduleName: CORE};
+  static declareService: o.ExternalReference = {name: 'ɵɵngDeclareService', moduleName: CORE};
 
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};

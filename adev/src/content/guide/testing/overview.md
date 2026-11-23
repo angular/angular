@@ -21,12 +21,11 @@ The `ng test` command builds the application in _watch mode_ and launches the [V
 The console output looks like this:
 
 ```shell
- ✓ src/app/app.spec.ts (3)
-   ✓ AppComponent should create the app
-   ✓ AppComponent should have as title 'my-app'
-   ✓ AppComponent should render title
+ ✓ src/app/app.spec.ts (2)
+   ✓ App should create the app
+   ✓ App should render title
  Test Files  1 passed (1)
-      Tests  3 passed (3)
+      Tests  2 passed (2)
    Start at  18:18:01
    Duration  2.46s (transform 615ms, setup 2ms, collect 2.21s, tests 5ms)
 ```
@@ -53,11 +52,10 @@ The `setupFiles` and `providersFile` options are particularly useful for managin
 For example, you could create a `src/test-providers.ts` file to provide `provideHttpClientTesting` to all your tests:
 
 ```typescript {header: "src/test-providers.ts"}
-import {Provider} from '@angular/core';
-import {provideHttpClient} from '@angular/common/http';
+import {EnvironmentProviders, Provider} from '@angular/core';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 
-const testProviders: Provider[] = [provideHttpClient(), provideHttpClientTesting()];
+const testProviders: (Provider | EnvironmentProviders)[] = [provideHttpClientTesting()];
 
 export default testProviders;
 ```
@@ -85,11 +83,11 @@ HELPFUL: When creating new TypeScript files for test setup or providers, like `s
 
 ### Advanced Vitest configuration
 
-For advanced use cases, you can provide a custom Vitest configuration file using the `configFile` option in `angular.json`.
+For advanced use cases, you can provide a custom Vitest configuration file using the `runnerConfig` option in `angular.json`.
 
 IMPORTANT: While using a custom configuration enables advanced options, the Angular team does not provide support for the contents of the configuration file or for any third-party plugins. The CLI will also override certain properties (`test.projects`, `test.include`) to ensure proper integration.
 
-You can create a Vitest configuration file (e.g., `vitest-base.config.ts`) and reference it in your `angular.json`:
+You can create a Vitest configuration file (e.g., `vitest-base.config.mts`) and reference it in your `angular.json`:
 
 ```json
 {
@@ -99,7 +97,7 @@ You can create a Vitest configuration file (e.g., `vitest-base.config.ts`) and r
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "runnerConfig": "vitest-base.config.ts"
+            "runnerConfig": "vitest-base.config.mts"
           }
         }
       }
@@ -114,7 +112,7 @@ You can also generate a base configuration file using the CLI:
 ng generate config vitest
 ```
 
-This creates a `vitest-base.config.ts` file that you can customize.
+This creates a `vitest-base.config.mts` file that you can customize.
 
 HELPFUL: Read more about Vitest configuration in the [official Vitest documentation](https://vitest.dev/config/).
 
@@ -188,7 +186,7 @@ Choose one of the following browser providers based on your needs:
 
 ### Preview
 
-The `@vitest/browser-preview` provider is designed for Webcontainer environments like StackBlitz and is not intended for use in CI/CD.
+The `@vitest/browser-preview` provider is designed for WebContainer environments like StackBlitz and is not intended for use in CI/CD.
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">

@@ -7,6 +7,7 @@
  */
 import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
 
+import {isNgpTestMode} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
 
 class TestSourceFile {
@@ -77,7 +78,8 @@ export async function getMappedSegments(
   env: NgtscTestEnvironment,
   generatedFileName: string,
 ): Promise<SegmentMapping[]> {
-  const generated = new TestSourceFile(generatedFileName, env.getContents(generatedFileName));
+  // The map's positions refer to the file as written, so don't normalize it.
+  const generated = new TestSourceFile(generatedFileName, env.getRawContents(generatedFileName));
   const sourceMapFileName = generated.getSourceMapFileName(generated.contents);
 
   const sources = new Map<string, TestSourceFile>();
@@ -103,7 +105,9 @@ export async function getMappedSegments(
         source: source.getSegment('original', currentMapping, nextMapping),
         sourceUrl: source.url,
       };
-      if (segment.generated !== segment.source) {
+      // Segments that map text to itself are noise, except under NGP: its printer keeps the
+      // template's quote style, so a mapped string literal can read the same as its source.
+      if (segment.generated !== segment.source || isNgpTestMode()) {
         segments.push(segment);
       }
     }

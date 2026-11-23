@@ -366,9 +366,7 @@ describe('createCustomElement', () => {
   }
 
   @Component({
-    selector: 'test-component',
     template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
-    standalone: false,
   })
   class TestComponent {
     @Input() fooFoo: string = 'foo';
@@ -384,9 +382,7 @@ describe('createCustomElement', () => {
   }
 
   @Component({
-    selector: 'test-signal-component',
     template: 'TestSignalComponent|foo({{ fooFoo() }})|signal({{ fooSignal() }})',
-    standalone: false,
   })
   class TestSignalComponent {
     @Input() fooFoo = signal<string | null>(null);
@@ -395,8 +391,7 @@ describe('createCustomElement', () => {
     @Input({isSignal: true} as Input) fooSignal = input<string | null>(null);
   }
   @NgModule({
-    imports: [BrowserModule],
-    declarations: [TestComponent, TestSignalComponent],
+    imports: [BrowserModule, TestComponent, TestSignalComponent],
   })
   class TestModule implements DoBootstrap {
     ngDoBootstrap() {}

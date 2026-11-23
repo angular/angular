@@ -3,8 +3,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/e2e",
-    "module": "commonjs",
-    "target": "es2019",
-    "types": ["jasmine", "node"]
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "types": ["jasmine", "node", "selenium-webdriver"]
   }
 }

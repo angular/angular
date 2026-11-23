@@ -85,7 +85,6 @@ async function createPrWorkflow(): Promise<void> {
   await updatingPackageJsonVersion(newVersion);
 
   // Generate changelog
-  // pnpm gulp changelog:zonejs
   console.log(chalk.blue('Generating changelog...'));
   await execAndStream('pnpm', ['gulp', 'changelog:zonejs'], {
     env: {
@@ -124,11 +123,14 @@ async function createPrWorkflow(): Promise<void> {
   console.log(chalk.blue(`Pushing to ${forkRemote}...`));
   await exec(`git push ${forkRemote} "${releaseBranch}"`);
 
-  console.log(
-    chalk.yellow(
-      `Please create a pull request by visiting: https://github.com/angular/angular/pull/new/${releaseBranch}`,
-    ),
-  );
+  const {stdout: remoteUrl} = await exec(`git remote get-url ${forkRemote}`);
+  const {owner, repo} = getRepoDetails(remoteUrl);
+  const prUrl =
+    owner === 'angular'
+      ? `https://github.com/angular/angular/compare/main...${releaseBranch}`
+      : `https://github.com/angular/angular/compare/main...${owner}:${repo}:${releaseBranch}`;
+
+  console.log(chalk.yellow(`Please create a pull request by visiting: ${prUrl}`));
 
   const continueToPublish = await select({
     message: 'Do you want to continue to the publish step once the PR is merged?',
@@ -177,7 +179,7 @@ async function cutReleaseWorkflow(): Promise<void> {
   console.log(chalk.blue(`Looking for release commit for ${tagName}...`));
   const commitMessagePattern = `release: cut the ${tagName} release`;
   const {stdout: sha} = await exec(
-    `git log FETCH_HEAD --oneline -n 1000 | grep "${commitMessagePattern}" | cut -f 1 -d " "`,
+    `git log FETCH_HEAD --grep="^${commitMessagePattern}" --format=format:%H -n 1`,
   );
 
   const trimmedSha = sha.trim();
@@ -230,7 +232,7 @@ async function cutReleaseWorkflow(): Promise<void> {
 async function cleanAndInstall() {
   console.log(chalk.blue('Cleaning and installing dependencies...'));
   await exec('git clean -dxf');
-  await execAndStream('pnpm', ['install', , '--frozen-lockfile']);
+  await execAndStream('pnpm', ['install', '--frozen-lockfile']);
 }
 
 async function checkCleanWorkingDirectory(): Promise<void> {
@@ -374,7 +376,7 @@ async function getForkRemoteName(): Promise<string> {
 }
 
 function getRepoDetails(remoteUrl: string): {owner: string; repo: string} {
-  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
+  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+?)(?:\.git)?$/);
   return {
     owner: match ? match[1] : 'angular',
     repo: match ? match[2] : 'angular',

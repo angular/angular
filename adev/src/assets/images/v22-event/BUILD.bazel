@@ -1,0 +1,14 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+package(default_visibility = ["//visibility:public"])
+
+js_library(
+    name = "v22-event-images",
+    srcs = glob(
+        [
+            "*.png",
+            "*.jpg",
+        ],
+        allow_empty = True,
+    ),
+)

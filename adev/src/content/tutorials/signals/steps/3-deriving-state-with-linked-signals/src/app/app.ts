@@ -1,4 +1,4 @@
-import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 
 // TODO: Import linkedSignal from @angular/core
 
@@ -42,7 +42,6 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   userStatus = signal<'online' | 'away' | 'offline'>('offline');
@@ -71,7 +70,7 @@ export class App {
     const now = new Date();
     const hour = now.getHours();
     const isWeekday = now.getDay() > 0 && now.getDay() < 6;
-    return isWeekday && hour >= 9 && hour < 17 && this.userStatus() !== 'offline';
+    return this.userStatus() !== 'offline' && isWeekday && hour >= 9 && hour < 17;
   });
 
   // TODO: Add toggleNotifications method to manually set notificationsEnabled

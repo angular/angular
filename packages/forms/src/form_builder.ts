@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions} from './model/abstract_model';
@@ -136,7 +136,7 @@ export type ɵElement<T, N extends null> =
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class FormBuilder {
   private useNonNullable: boolean = false;
 
@@ -194,7 +194,15 @@ export class FormBuilder {
    * containing all the keys and corresponding inner control types.
    *
    * @param controls A collection of child controls. The key for each child is the name
-   * under which it is registered.
+   * under which it is registered. Each value can be one of:
+   * * An `AbstractControl` instance — passed through as-is.
+   * * A raw value — shorthand for `fb.control(value)`.
+   * * A `FormControlState` object (`{value, disabled}`) — initializes the control with a value
+   *   and disabled status.
+   * * A `ControlConfig` tuple — `[value | FormControlState, validatorOrOpts?, asyncValidator?]`.
+   *   The second element accepts a `ValidatorFn`, an array of `ValidatorFn`, or an
+   *   `AbstractControlOptions` object (use this to set `updateOn`). The optional third element
+   *   accepts an `AsyncValidatorFn` or an array of `AsyncValidatorFn`.
    *
    * @param options Configuration options object for the `FormGroup`. The object should have the
    * `AbstractControlOptions` type and might contain the following fields:
@@ -202,6 +210,34 @@ export class FormBuilder {
    * * `asyncValidators`: A single async validator or array of async validator functions.
    * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur'
    * | submit').
+   *
+   * @usageNotes
+   *
+   * ### Different ways to specify a control value
+   *
+   * ```ts
+   * const fb = new FormBuilder();
+   *
+   * fb.group({
+   *   // Raw value — equivalent to fb.control('Ada')
+   *   name: 'Ada',
+   *
+   *   // FormControlState — sets initial value and disabled status
+   *   city: {value: 'London', disabled: true},
+   *
+   *   // ControlConfig tuple — value with a sync validator
+   *   email: ['ada@example.com', Validators.email],
+   *
+   *   // ControlConfig tuple — value, sync validator, and async validator
+   *   username: ['ada', Validators.required, checkUsernameAvailable],
+   *
+   *   // ControlConfig tuple — disabled value with updateOn option
+   *   role: [{value: 'admin', disabled: true}, {updateOn: 'blur'}],
+   *
+   *   // Pre-built control — passed through unchanged
+   *   address: new FormControl('', Validators.required),
+   * });
+   * ```
    */
   group<T extends {}>(
     controls: T,
@@ -415,10 +451,7 @@ export class FormBuilder {
  *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'root',
-  useFactory: () => inject(FormBuilder).nonNullable,
-})
+@Service({factory: () => inject(FormBuilder).nonNullable})
 export abstract class NonNullableFormBuilder {
   /**
    * Similar to `FormBuilder#group`, except any implicitly constructed `FormControl`
@@ -465,7 +498,7 @@ export abstract class NonNullableFormBuilder {
 /**
  * UntypedFormBuilder is the same as `FormBuilder`, but it provides untyped controls.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class UntypedFormBuilder extends FormBuilder {
   /**
    * Like `FormBuilder#group`, except the resulting group is untyped.

@@ -1,5 +1,4 @@
-<docs-decorative-header title="Toolbar">
-</docs-decorative-header>
+# Toolbar
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>
@@ -55,7 +54,7 @@ Avoid toolbar when:
 
 Angular's toolbar provides a fully accessible toolbar implementation with:
 
-- **Keyboard Navigation** - Navigate widgets with arrow keys, activate with Enter or Space
+- **Keyboard Navigation** - Navigate widgets with arrow keys, Home, and End using roving tabindex, while controls retain native activation
 - **Screen Reader Support** - Built-in ARIA attributes for assistive technologies
 - **Widget Groups** - Organize related widgets like radio button groups or toggle button groups
 - **Flexible Orientation** - Horizontal or vertical layouts with automatic keyboard navigation
@@ -127,25 +126,55 @@ Vertical toolbars stack controls top to bottom, useful for side panels or vertic
 
 ### Widget groups
 
-Widget groups contain related controls that work together, like text alignment options or list formatting choices. Groups maintain their own internal state while participating in toolbar navigation.
+Widget groups organize related controls that work together, such as text alignment options or formatting toggles. Groups maintain roving tabindex navigation while presenting the appropriate semantic structure to assistive technologies.
 
-In the examples above, the alignment buttons are wrapped in `ngToolbarWidgetGroup` with `role="radiogroup"` to create a mutually exclusive selection group.
+In the examples above, the alignment buttons are wrapped in `ngToolbarWidgetGroup` with `role="radiogroup"`. Selection is decoupled from the toolbar container, allowing you to manage state using Angular signals or custom directives:
 
-The `multi` input controls whether multiple widgets within a group can be selected simultaneously:
-
-```html {highlight: [15]}
-<!-- Single selection (radio group) -->
+```angular-html
+<!-- Mutually exclusive radio group -->
 <div ngToolbarWidgetGroup role="radiogroup" aria-label="Alignment">
-  <button ngToolbarWidget value="left">Left</button>
-  <button ngToolbarWidget value="center">Center</button>
-  <button ngToolbarWidget value="right">Right</button>
+  <button
+    ngToolbarWidget
+    role="radio"
+    type="button"
+    [attr.aria-checked]="alignment() === 'left'"
+    (click)="alignment.set('left')"
+  >
+    Left
+  </button>
+  <button
+    ngToolbarWidget
+    role="radio"
+    type="button"
+    [attr.aria-checked]="alignment() === 'center'"
+    (click)="alignment.set('center')"
+  >
+    Center
+  </button>
+  <button
+    ngToolbarWidget
+    role="radio"
+    type="button"
+    [attr.aria-checked]="alignment() === 'right'"
+    (click)="alignment.set('right')"
+  >
+    Right
+  </button>
 </div>
 
-<!-- Multiple selection (toggle group) -->
-<div ngToolbarWidgetGroup [multi]="true" aria-label="Formatting">
-  <button ngToolbarWidget value="bold">Bold</button>
-  <button ngToolbarWidget value="italic">Italic</button>
-  <button ngToolbarWidget value="underline">Underline</button>
+<!-- Toggle button group -->
+<div class="group" role="group" aria-label="Text styling">
+  <button ngToolbarWidget type="button" [attr.aria-pressed]="bold()" (click)="bold.set(!bold())">
+    Bold
+  </button>
+  <button
+    ngToolbarWidget
+    type="button"
+    [attr.aria-pressed]="italic()"
+    (click)="italic.set(!italic())"
+  >
+    Italic
+  </button>
 </div>
 ```
 
@@ -214,56 +243,53 @@ Toolbars automatically support right-to-left languages. Wrap the toolbar in a co
   </docs-tab>
 </docs-tab-group>
 
-## APIs
+## Testing
 
-### Toolbar Directive
+Angular Aria provides component harnesses for testing toolbar components.
+Here is an example of how to use the harnesses in a component test:
 
-The `ngToolbar` directive provides the container for toolbar functionality.
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ToolbarHarness} from '@angular/aria/toolbar/testing';
+import {MyToolbarComponent} from './my-toolbar'; // Your component
 
-#### Inputs
+describe('MyToolbarComponent', () => {
+  let fixture: ComponentFixture<MyToolbarComponent>;
+  let loader: HarnessLoader;
 
-| Property       | Type                           | Default        | Description                                            |
-| -------------- | ------------------------------ | -------------- | ------------------------------------------------------ |
-| `orientation`  | `'vertical'` \| `'horizontal'` | `'horizontal'` | Whether toolbar is vertically or horizontally oriented |
-| `disabled`     | `boolean`                      | `false`        | Disables the entire toolbar                            |
-| `softDisabled` | `boolean`                      | `true`         | Whether disabled items can receive focus               |
-| `wrap`         | `boolean`                      | `true`         | Whether focus should wrap at the edges                 |
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyToolbarComponent],
+    });
 
-### ToolbarWidget Directive
+    fixture = TestBed.createComponent(MyToolbarComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-The `ngToolbarWidget` directive marks an element as a navigable widget within the toolbar.
+  it('should have widgets and update toggle state on click', async () => {
+    // Load the toolbar harness
+    const toolbar = await loader.getHarness(ToolbarHarness);
 
-#### Inputs
+    // Get all widgets
+    const widgets = await toolbar.getWidgets();
+    expect(widgets.length).toBe(3);
 
-| Property   | Type      | Default | Description                                     |
-| ---------- | --------- | ------- | ----------------------------------------------- |
-| `id`       | `string`  | auto    | Unique identifier for the widget                |
-| `disabled` | `boolean` | `false` | Disables the widget                             |
-| `value`    | `V`       | -       | The value associated with the widget (required) |
+    // Click the first widget
+    await widgets[0].click();
 
-#### Signals
+    // Verify pressed state updated via click handler
+    expect(await widgets[0].isSelected()).toBe(true);
+  });
+});
+```
 
-| Property   | Type              | Description                                 |
-| ---------- | ----------------- | ------------------------------------------- |
-| `active`   | `Signal<boolean>` | Whether the widget is currently focused     |
-| `selected` | `Signal<boolean>` | Whether the widget is selected (in a group) |
+## API reference
 
-### ToolbarWidgetGroup Directive
+For detailed API documentation, inspect the following API references:
 
-The `ngToolbarWidgetGroup` directive groups related widgets together.
-
-#### Inputs
-
-| Property   | Type      | Default | Description                              |
-| ---------- | --------- | ------- | ---------------------------------------- |
-| `disabled` | `boolean` | `false` | Disables all widgets in the group        |
-| `multi`    | `boolean` | `false` | Whether multiple widgets can be selected |
-
-### Related components
-
-Toolbar can contain various widget types including buttons, trees, and comboboxes. See individual component documentation for specific widget implementations.
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>
-  <docs-pill href="/api/aria/toolbar/Toolbar" title="Toolbar API Reference"/>
-</docs-pill-row>
+- [`Toolbar`](/api/aria/toolbar/Toolbar)
+- [`ToolbarWidget`](/api/aria/toolbar/ToolbarWidget)
+- [`ToolbarWidgetGroup`](/api/aria/toolbar/ToolbarWidgetGroup)

@@ -6,19 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, provideZoneChangeDetection} from '../../src/core';
-import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {Component, inject, signal} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('attribute creation', () => {
   it('should create an element', () => {
     @Component({
       template: `<div id="test" title="Hello"></div>`,
-      standalone: false,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     const div = fixture.debugElement.query(By.css('div')).nativeElement;
@@ -29,11 +27,9 @@ describe('attribute creation', () => {
   it('should allow for setting xlink namespaced attributes', () => {
     @Component({
       template: `<div id="test" xlink:href="bar" title="Hello"></div>`,
-      standalone: false,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -55,21 +51,14 @@ describe('attribute creation', () => {
 });
 
 describe('attribute binding', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
   it('should set attribute values', () => {
     @Component({
       template: `<a [attr.href]="url"></a>`,
-      standalone: false,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -81,14 +70,12 @@ describe('attribute binding', () => {
   it('should be able to bind multiple attribute values per element', () => {
     @Component({
       template: `<a [attr.id]="id" [attr.href]="url" [attr.tabindex]="'-1'"></a>`,
-      standalone: false,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
       id = 'my-link';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -102,14 +89,12 @@ describe('attribute binding', () => {
   it('should be able to bind multiple attributes in the presence of other bindings', () => {
     @Component({
       template: `<a [id]="id" [attr.href]="url" [title]="'hello'"></a>`,
-      standalone: false,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
       id = 'my-link';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -127,14 +112,12 @@ describe('attribute binding', () => {
         [attr.title]="title"
         attr.tabindex="{{ 1 + 3 + 7 }}"
       ></button>`,
-      standalone: false,
     })
     class Comp {
       title = 'hello';
       id = 'custom';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -152,14 +135,12 @@ describe('attribute binding', () => {
           <span attr.title="span-{{ title }}" id="custom-span" [attr.tabindex]="-1"></span>
         </button>
       `,
-      standalone: false,
     })
     class Comp {
       title = 'hello';
       id = 'custom';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -175,31 +156,113 @@ describe('attribute binding', () => {
     expect(span.getAttribute('title')).toBe('span-hello');
   });
 
-  it('should sanitize attribute values', () => {
+  it('should sanitize attribute values', async () => {
     @Component({
-      template: `<a [attr.href]="badUrl"></a>`,
-      standalone: false,
+      template: `<a [attr.href]="badUrl()"></a>`,
     })
     class Comp {
-      badUrl: string | SafeUrl = 'javascript:true';
+      badUrl = signal<string | SafeUrl>('javascript:true');
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const a = fixture.debugElement.query(By.css('a')).nativeElement;
     // NOTE: different browsers will add `//` into the URI.
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
     const domSanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
-    fixture.componentInstance.badUrl = domSanitizer.bypassSecurityTrustUrl(
-      'javascript:alert("this is fine")',
+    fixture.componentInstance.badUrl.set(
+      domSanitizer.bypassSecurityTrustUrl('javascript:alert("this is fine")'),
     );
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // should not start with `unsafe:`.
     expect(a.href.indexOf('unsafe:')).toBe(-1);
+  });
+
+  it('should bind attribute src and not expose a safe value', () => {
+    @Component({
+      template: `<img [attr.src]="badUrl" />`,
+    })
+    class Comp {
+      badUrl = inject(DomSanitizer).bypassSecurityTrustUrl('javascript:true');
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const img = fixture.debugElement.query(By.css('img')).nativeElement;
+    expect(img.getAttribute('src')).toBe('javascript:true');
+  });
+
+  it('should remove the src attribute when [attr.src] is bound to null or undefined', async () => {
+    @Component({
+      template: `
+        <img [attr.src]="src()" />
+        <video [attr.src]="src()"></video>
+      `,
+    })
+    class Comp {
+      src = signal<string | null | undefined>('https://example.com/test.png');
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    await fixture.whenStable();
+
+    const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+
+    expect(img.getAttribute('src')).toBe('https://example.com/test.png');
+    expect(video.getAttribute('src')).toBe('https://example.com/test.png');
+
+    // Act: Update to null
+    fixture.componentInstance.src.set(null);
+    await fixture.whenStable();
+
+    // Assert: Attribute should be removed completely
+    expect(img.hasAttribute('src')).toBe(false);
+    expect(video.hasAttribute('src')).toBe(false);
+
+    // Act: Update to undefined
+    fixture.componentInstance.src.set(undefined);
+    await fixture.whenStable();
+
+    // Assert: Attribute should still be absent
+    expect(img.hasAttribute('src')).toBe(false);
+    expect(video.hasAttribute('src')).toBe(false);
+
+    // Act: Update back to valid URL
+    fixture.componentInstance.src.set('https://example.com/updated.png');
+    await fixture.whenStable();
+
+    // Assert: Attribute is restored
+    expect(img.getAttribute('src')).toBe('https://example.com/updated.png');
+    expect(video.getAttribute('src')).toBe('https://example.com/updated.png');
+  });
+
+  it('should not add src attribute when initial [attr.src] value is null or undefined', async () => {
+    @Component({
+      template: `
+        <img [attr.src]="nullSrc()" />
+        <img [attr.src]="undefinedSrc()" />
+        <video [attr.src]="nullSrc()"></video>
+      `,
+    })
+    class Comp {
+      nullSrc = signal<string | null>(null);
+      undefinedSrc = signal<string | undefined>(undefined);
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    await fixture.whenStable();
+
+    const imgs = fixture.nativeElement.querySelectorAll('img');
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+
+    expect(imgs[0].hasAttribute('src')).toBe(false);
+    expect(imgs[1].hasAttribute('src')).toBe(false);
+    expect(video.hasAttribute('src')).toBe(false);
   });
 });
 
@@ -220,7 +283,6 @@ describe('attribute interpolation', () => {
         <div attr.title="a{{ a }}b"></div>
         <div attr.title="{{ a }}"></div>
       `,
-      standalone: false,
     })
     class App {
       a = 1;
@@ -234,9 +296,6 @@ describe('attribute interpolation', () => {
       i = 9;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 

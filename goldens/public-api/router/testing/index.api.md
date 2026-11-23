@@ -9,6 +9,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
+import { DefaultExport } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
@@ -25,9 +26,11 @@ import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
+import { Resource } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Type } from '@angular/core';
+import { WritableResource } from '@angular/core';
 import { WritableSignal } from '@angular/core';
 
 // @public
@@ -37,6 +40,9 @@ export class RouterTestingHarness {
     readonly fixture: ComponentFixture<{
         routerOutletData: WritableSignal<unknown>;
     }>;
+    navigate(commands: readonly any[], extras?: NavigationExtras): Promise<null | {}>;
+    navigate<T>(commands: readonly any[], requiredRoutedComponentType: Type<T>): Promise<T>;
+    navigate<T>(commands: readonly any[], extras: NavigationExtras, requiredRoutedComponentType: Type<T>): Promise<T>;
     navigateByUrl(url: string): Promise<null | {}>;
     navigateByUrl<T>(url: string, requiredRoutedComponentType: Type<T>): Promise<T>;
     get routeDebugElement(): DebugElement | null;

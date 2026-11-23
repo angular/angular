@@ -52,6 +52,7 @@
       padding-left: 0.75rem;
       margin-bottom: 0.25rem;
       color: var(--quaternary-contrast);
+      white-space: nowrap;
     }
 
     .token-filter {
@@ -82,8 +83,20 @@
   }
 
   .no-providers-label {
-    padding-block: 0.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+
+    ng-angie {
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+    }
   }
 
   table {

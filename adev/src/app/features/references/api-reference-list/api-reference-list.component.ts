@@ -9,7 +9,6 @@
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {KeyValuePipe} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   EnvironmentInjector,
   afterNextRender,
@@ -56,7 +55,6 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
   ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiReferenceList {
   // services
@@ -165,9 +163,9 @@ export default class ApiReferenceList {
         queryParams: params,
         replaceUrl: true,
         preserveFragment: true,
-        info: {
-          disableScrolling: true,
-        },
+        scroll: 'manual',
+        // Keeps focus in the filter field with the Navigation API integration.
+        focusReset: 'manual',
       });
     });
   }

@@ -16,7 +16,7 @@ import {assertDefined} from '../util/assert';
 import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
 import {TNode} from './interfaces/node';
-import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES} from './interfaces/view';
+import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES} from './interfaces/view';
 import {createLView} from './view/construction';
 
 export function createAndRenderEmbeddedLView<T>(
@@ -35,14 +35,11 @@ export function createAndRenderEmbeddedLView<T>(
     ngDevMode && assertDefined(embeddedTView, 'TView must be defined for a template node.');
     ngDevMode && assertTNodeForLView(templateTNode, declarationLView);
 
-    // Embedded views follow the change detection strategy of the view they're declared in.
-    const isSignalView = declarationLView[FLAGS] & LViewFlags.SignalView;
-    const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
     const embeddedLView = createLView<T>(
       declarationLView,
       embeddedTView,
       context,
-      viewFlags,
+      LViewFlags.CheckAlways,
       null,
       templateTNode,
       null,

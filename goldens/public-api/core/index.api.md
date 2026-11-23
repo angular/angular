@@ -48,7 +48,7 @@ export function afterNextRender<E = never, W = never, M = never>(spec: {
 export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
-export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: AfterRenderOptions): AfterRenderRef;
+export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: AfterRenderEffectOptions): AfterRenderRef;
 
 // @public
 export function afterRenderEffect<E = never, W = never, M = never>(spec: {
@@ -56,7 +56,12 @@ export function afterRenderEffect<E = never, W = never, M = never>(spec: {
     write?: (...args: [...ɵFirstAvailableSignal<[E]>, EffectCleanupRegisterFn]) => W;
     mixedReadWrite?: (...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]) => M;
     read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
-}, options?: AfterRenderOptions): AfterRenderRef;
+}, options?: AfterRenderEffectOptions): AfterRenderRef;
+
+// @public
+export interface AfterRenderEffectOptions extends AfterRenderOptions {
+    debugName?: string;
+}
 
 // @public
 export interface AfterRenderOptions {
@@ -80,7 +85,7 @@ export interface AfterViewInit {
 }
 
 // @public
-export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
+export const ANIMATION_MODULE_TYPE: InjectionToken<"BrowserAnimations" | "NoopAnimations">;
 
 // @public
 export type AnimationCallbackEvent = {
@@ -115,7 +120,7 @@ export class ApplicationInitStatus {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<ApplicationInitStatus, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<ApplicationInitStatus>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -133,9 +138,13 @@ export class ApplicationModule {
 export class ApplicationRef {
     constructor();
     attachView(viewRef: ViewRef): void;
-    bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
-    // @deprecated
-    bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+    bootstrap<C>(component: Type<C>, options?: {
+        hostElement?: Element | string;
+        directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+        bindings?: Binding[];
+    }): ComponentRef<C>;
+    // (undocumented)
+    bootstrap<C>(component: Type<C>, hostElement?: Element | string): ComponentRef<C>;
     readonly components: ComponentRef<any>[];
     readonly componentTypes: Type<any>[];
     destroy(): void;
@@ -151,7 +160,7 @@ export class ApplicationRef {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<ApplicationRef, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<ApplicationRef>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public (undocumented)
@@ -185,6 +194,7 @@ export interface AttributeDecorator {
 export interface BaseResourceOptions<T, R> {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
+    id?: string;
     injector?: Injector;
     params?: (ctx: ResourceParamsContext) => R;
 }
@@ -239,15 +249,13 @@ export interface ClassSansProvider {
 export class Compiler {
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
-    compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<Compiler, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<Compiler>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -291,31 +299,6 @@ export const Component: ComponentDecorator;
 export interface ComponentDecorator {
     (obj: Component): TypeDecorator;
     new (obj: Component): Component;
-}
-
-// @public @deprecated
-export abstract class ComponentFactory<C> {
-    abstract get componentType(): Type<any>;
-    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, environmentInjector?: EnvironmentInjector | NgModuleRef<any>, directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[], bindings?: Binding[]): ComponentRef<C>;
-    abstract get inputs(): {
-        propName: string;
-        templateName: string;
-        transform?: (value: any) => any;
-        isSignal: boolean;
-    }[];
-    abstract get ngContentSelectors(): string[];
-    abstract get outputs(): {
-        propName: string;
-        templateName: string;
-    }[];
-    abstract get selector(): string;
-}
-
-// @public @deprecated
-export abstract class ComponentFactoryResolver {
-    // (undocumented)
-    static NULL: ComponentFactoryResolver;
-    abstract resolveComponentFactory<T>(component: Type<T>): ComponentFactory<T>;
 }
 
 // @public
@@ -457,6 +440,7 @@ export function createComponent<C>(component: Type<C>, options: {
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    onError?: (error: Error, details: ErrorDetails) => void;
 }): ComponentRef<C>;
 
 // @public
@@ -499,13 +483,16 @@ export const CSP_NONCE: InjectionToken<string | null>;
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 // @public
-export function debounced<T>(source: () => T, wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
+export function debounced<T>(source: () => T, wait: NoInfer<DebounceTimer<T>>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
 
 // @public
 export interface DebouncedOptions<T> {
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
 }
+
+// @public
+export type DebounceTimer<T> = number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void);
 
 // @public (undocumented)
 export class DebugElement extends DebugNode {
@@ -560,7 +547,15 @@ export class DebugNode {
 }
 
 // @public
+export function declareExperimentalWebMcpTool<const InputSchema extends object>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): Promise<void>;
+
+// @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
+
+// @public
+export interface DefaultExport<T> {
+    default: T;
+}
 
 // @public @deprecated (undocumented)
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
@@ -721,9 +716,21 @@ export type EnvironmentProviders = {
 };
 
 // @public
+export interface ErrorDetails {
+    readonly boundary?: {
+        readonly type: Type<unknown>;
+        readonly reset: () => void;
+    };
+    readonly caughtBy?: Function;
+    readonly declarationInstance: unknown;
+    readonly declarationType: Type<unknown>;
+}
+
+// @public
 export class ErrorHandler {
     // (undocumented)
     handleError(error: any): void;
+    onViewError?(error: Error, details: ErrorDetails): void;
 }
 
 // @public
@@ -928,6 +935,17 @@ export interface InjectableType<T> extends Type<T> {
 }
 
 // @public
+export function injectAsync<T>(loader: () => Promise<ProviderToken<T>>, options?: InjectAsyncOptions): () => Promise<T>;
+
+// @public (undocumented)
+export function injectAsync<T>(loader: () => Promise<DefaultExport<ProviderToken<T>>>, options?: InjectAsyncOptions): () => Promise<T>;
+
+// @public
+export interface InjectAsyncOptions {
+    prefetch?: PrefetchTrigger;
+}
+
+// @public
 export interface InjectDecorator {
     (token: string): any;
     (token: any): any;
@@ -1029,6 +1047,8 @@ export interface InputFunction {
     <T>(initialValue: undefined, opts: InputOptionsWithoutTransform<T>): InputSignal<T | undefined>;
     <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
     <T, TransformT>(initialValue: undefined, opts: InputOptionsWithTransform<T | undefined, TransformT>): InputSignalWithTransform<T | undefined, TransformT>;
+    <T>(initialValue: T, opts: InputOptionsWithTransform<T, unknown>): InputSignalWithTransform<T, unknown>;
+    <T>(initialValue: undefined, opts: InputOptionsWithTransform<T | undefined, unknown>): InputSignalWithTransform<T | undefined, unknown>;
     required: {
         <T>(opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
         <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
@@ -1166,6 +1186,7 @@ export class KeyValueDiffers {
 export function linkedSignal<D>(computation: () => D, options?: {
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1177,6 +1198,7 @@ export function linkedSignal<S, D>(options: {
     }) => D;
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1239,15 +1261,6 @@ export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, Outpu
     [SIGNAL]: InputSignalNode<T, T>;
 }
 
-// @public @deprecated
-export class ModuleWithComponentFactories<T> {
-    constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
-    // (undocumented)
-    componentFactories: ComponentFactory<any>[];
-    // (undocumented)
-    ngModuleFactory: NgModuleFactory<T>;
-}
-
 // @public
 export interface ModuleWithProviders<T> {
     // (undocumented)
@@ -1291,8 +1304,6 @@ export abstract class NgModuleFactory<T> {
 
 // @public
 export abstract class NgModuleRef<T> {
-    // @deprecated
-    abstract get componentFactoryResolver(): ComponentFactoryResolver;
     abstract destroy(): void;
     abstract get injector(): EnvironmentInjector;
     abstract get instance(): T;
@@ -1345,6 +1356,11 @@ export interface OnChanges {
 export interface OnDestroy {
     ngOnDestroy(): void;
 }
+
+// @public
+export function onIdle(options?: {
+    timeout?: number;
+}): Promise<void>;
 
 // @public
 export interface OnInit {
@@ -1468,11 +1484,14 @@ export class PlatformRef {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<PlatformRef, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<PlatformRef>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
 export type Predicate<T> = (value: T) => boolean;
+
+// @public
+export type PrefetchTrigger = () => Promise<void>;
 
 // @public
 export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
@@ -1499,6 +1518,9 @@ export function provideCheckNoChangesConfig(options: {
 
 // @public
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
+
+// @public
+export function provideExperimentalWebMcpTools<const InputSchema extends object>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
 
 // @public
 export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
@@ -1686,7 +1708,7 @@ export interface ResourceLoaderParams<R> {
     };
 }
 
-// @public (undocumented)
+// @public
 export type ResourceOptions<T, R> = (PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>) & {
     debugName?: string;
 };
@@ -1730,9 +1752,9 @@ export type ResourceSnapshot<T> = {
 export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
 
 // @public
-export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<ResourceStreamItem<T>>>;
+export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => Signal<ResourceStreamItem<T>> | PromiseLike<Signal<ResourceStreamItem<T>>> | undefined;
 
-// @public (undocumented)
+// @public
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
@@ -1752,12 +1774,13 @@ export { ResponseInit_2 as ResponseInit }
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
 
 // @public
-export abstract class Sanitizer {
+abstract class Sanitizer_2 {
     // (undocumented)
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
     // (undocumented)
     static ɵprov: _angular_core.ɵɵInjectableDeclaration<null>;
 }
+export { Sanitizer_2 as Sanitizer }
 
 // @public
 export interface SchemaMetadata {
@@ -1767,6 +1790,8 @@ export interface SchemaMetadata {
 
 // @public
 export enum SecurityContext {
+    // (undocumented)
+    ATTRIBUTE_NO_BINDING = 6,
     // (undocumented)
     HTML = 1,
     // (undocumented)
@@ -1793,6 +1818,30 @@ export interface SelfDecorator {
     (): any;
     // (undocumented)
     new (): Self;
+}
+
+// @public
+export interface Service {
+    autoProvided?: boolean;
+    factory?: () => unknown;
+}
+
+// @public
+export const Service: ServiceDecorator;
+
+// @public
+export interface ServiceDecorator {
+    (): TypeDecorator;
+    (options: {
+        autoProvided: false;
+    }): TypeDecorator;
+    <T>(options: {
+        autoProvided?: true;
+        factory: () => T;
+    }): <C extends Type<unknown> | AbstractType<unknown>>(target: C) => C extends Type<unknown> ? Type<T> : abstract new (...args: any[]) => T;
+    (options?: {
+        autoProvided?: true;
+    }): TypeDecorator;
 }
 
 // @public
@@ -1883,7 +1932,7 @@ export class Testability implements PublicTestability {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<Testability, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<Testability>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1898,7 +1947,7 @@ export class TestabilityRegistry {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<TestabilityRegistry, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<TestabilityRegistry>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -2068,12 +2117,12 @@ export abstract class ViewContainerRef {
         projectableNodes?: Node[][];
         directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
         bindings?: Binding[];
+        onError?: (error: Error, context: ErrorDetails) => void;
     }): ComponentRef<C>;
-    // @deprecated
-    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], environmentInjector?: EnvironmentInjector | NgModuleRef<any>, directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[], bindings?: Binding[]): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
         index?: number;
         injector?: Injector;
+        onError?: (error: Error, details: ErrorDetails) => void;
     }): EmbeddedViewRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;
@@ -2103,6 +2152,19 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract get destroyed(): boolean;
     abstract onDestroy(callback: Function): void;
 }
+
+// @public
+export type WebMcpClient = ToolExecuteCallbackOptions;
+
+// @public
+export interface WebMcpToolDescriptor<InputSchema extends object = object, OutputSchema extends object = object> extends Omit<ModelContextTool, 'execute'> {
+    execute: WebMcpToolExecute<InputSchema>;
+    inputSchema?: InputSchema;
+    outputSchema?: OutputSchema;
+}
+
+// @public
+export type WebMcpToolExecute<InputSchema extends object = object> = ModelContextToolFromSchema<InputSchema>['execute'];
 
 // @public
 export interface WritableResource<T> extends Resource<T> {

@@ -29,6 +29,7 @@
 @use 'docs/pill';
 @use 'docs/steps';
 @use 'docs/table';
+@use 'docs/tutorial-mascot';
 @use 'docs/video';
 @use 'docs/mermaid';
 
@@ -81,6 +82,7 @@ $theme: mat.m2-define-light-theme(
 @include pill.docs-pill();
 @include steps.docs-steps();
 @include table.docs-table();
+@include tutorial-mascot.docs-tutorial-mascot();
 @include video.docs-video();
 
 // Include custom angular.dev styles

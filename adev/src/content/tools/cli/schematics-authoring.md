@@ -37,12 +37,12 @@ When you create a new blank schematic with the [Schematics CLI](#schematics-cli)
 A `RuleFactory` object defines a higher-order function that creates a `Rule`.
 
 ```ts {header: "index.ts"}
-import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
 // You can also have more than one rule factory per file.
-export function helloWorld(\_options: any): Rule {
-   return (tree: Tree,\_context: SchematicContext) => {
+export function helloWorld(_options: any): Rule {
+  return (tree: Tree, _context: SchematicContext) => {
     return tree;
   };
 }
@@ -258,7 +258,7 @@ The following JSON schema is a complete description of the long-form syntax for 
 ## Schematics CLI
 
 Schematics come with their own command-line tool.
-Using Node 6.9 or later, install the Schematics command line tool globally:
+Install the Schematics command line tool globally:
 
 ```shell
 

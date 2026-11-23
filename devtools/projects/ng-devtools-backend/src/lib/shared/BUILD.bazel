@@ -1,0 +1,11 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "interfaces",
+    srcs = ["interfaces.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+    ],
+)

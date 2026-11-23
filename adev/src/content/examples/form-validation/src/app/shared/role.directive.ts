@@ -1,16 +1,15 @@
-import {Directive, forwardRef, inject, Injectable} from '@angular/core';
+import {Directive, forwardRef, inject, Service} from '@angular/core';
 import {
   AsyncValidator,
   AbstractControl,
   NG_ASYNC_VALIDATORS,
   ValidationErrors,
 } from '@angular/forms';
-import {catchError, map} from 'rxjs/operators';
 import {ActorsService} from './actors.service';
-import {Observable, of} from 'rxjs';
+import {Observable, of, catchError, map} from 'rxjs';
 
 // #docregion async-validator
-@Injectable({providedIn: 'root'})
+@Service()
 export class UniqueRoleValidator implements AsyncValidator {
   private readonly actorsService = inject(ActorsService);
 

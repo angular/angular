@@ -3,15 +3,10 @@
   "cases": [
     {
       "description": "should add the meaning and description as JsDoc comments and metadata blocks",
-      "inputFiles": [
-        "meaning_description.ts"
-      ],
+      "inputFiles": ["meaning_description.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "meaning_description_template.js",
@@ -23,43 +18,28 @@
     },
     {
       "description": "should support i18n attributes on explicit <ng-template> elements",
-      "inputFiles": [
-        "ng-template_basic.ts"
-      ],
+      "inputFiles": ["ng-template_basic.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support i18n attributes on explicit <ng-template> with structural directives",
-      "inputFiles": [
-        "ng-template_structural.ts"
-      ],
+      "inputFiles": ["ng-template_structural.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support i18n attributes with interpolations on explicit <ng-template> elements",
-      "inputFiles": [
-        "ng-template_interpolation.ts"
-      ],
+      "inputFiles": ["ng-template_interpolation.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "ng-template_interpolation_template.js",
@@ -71,15 +51,10 @@
     },
     {
       "description": "should support i18n attributes with interpolations on explicit <ng-template> elements with structural directives",
-      "inputFiles": [
-        "ng-template_interpolation_structural.ts"
-      ],
+      "inputFiles": ["ng-template_interpolation_structural.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "ng-template_interpolation_structural_template.js",
@@ -91,57 +66,37 @@
     },
     {
       "description": "should not create translations for empty attributes",
-      "inputFiles": [
-        "empty_attributes.ts"
-      ],
+      "inputFiles": ["empty_attributes.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should not create translations for bound attributes",
-      "inputFiles": [
-        "bound_attributes.ts"
-      ],
+      "inputFiles": ["bound_attributes.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should translate static attributes",
-      "inputFiles": [
-        "static_attributes.ts"
-      ],
+      "inputFiles": ["static_attributes.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should translate static attributes when used on an element with structural directive",
-      "inputFiles": [
-        "static_attributes_structural.ts"
-      ],
+      "inputFiles": ["static_attributes_structural.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "static_attributes_structural_template.js",
@@ -153,15 +108,10 @@
     },
     {
       "description": "should support interpolation",
-      "inputFiles": [
-        "interpolation_basic.ts"
-      ],
+      "inputFiles": ["interpolation_basic.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "interpolation_basic_template.js",
@@ -173,15 +123,10 @@
     },
     {
       "description": "should correctly bind to context in nested template",
-      "inputFiles": [
-        "interpolation_nested_context.ts"
-      ],
+      "inputFiles": ["interpolation_nested_context.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "interpolation_nested_context_template.js",
@@ -193,15 +138,10 @@
     },
     {
       "description": "should support complex expressions in interpolation",
-      "inputFiles": [
-        "interpolation_complex_expressions.ts"
-      ],
+      "inputFiles": ["interpolation_complex_expressions.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "interpolation_complex_expressions_template.js",
@@ -212,16 +152,30 @@
       ]
     },
     {
-      "description": "should work correctly when placed on i18n root node",
-      "inputFiles": [
-        "i18n_root_node.ts"
-      ],
+      "description": "should support complex expressions in interpolation with legacyOptionalChaining",
+      "inputFiles": ["interpolation_complex_expressions_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
+          "files": [
+            {
+              "expected": "interpolation_complex_expressions_template_use_null.js",
+              "generated": "interpolation_complex_expressions_use_null.js"
+            }
+          ]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
+      "description": "should work correctly when placed on i18n root node",
+      "inputFiles": ["i18n_root_node.ts"],
+      "expectations": [
+        {
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "i18n_root_node_template.js",
@@ -233,18 +187,13 @@
     },
     {
       "description": "should sanitize ids and generate proper variable names",
-      "inputFiles": [
-        "invalid_i18n_meta.ts"
-      ],
+      "inputFiles": ["invalid_i18n_meta.ts"],
       "angularCompilerOptions": {
         "i18nUseExternalIds": false
       },
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     }

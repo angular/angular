@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   Component,
   createComponent,
@@ -41,10 +40,10 @@ import {TestBed} from '../../testing';
 describe('createComponent', () => {
   it('should create an instance of a standalone component', () => {
     @Component({
-      template: 'Hello {{ name }}!',
+      template: 'Hello {{ name() }}!',
     })
     class StandaloneComponent {
-      name = 'Angular';
+      name = signal('Angular');
     }
 
     const hostElement = document.createElement('div');
@@ -55,7 +54,7 @@ describe('createComponent', () => {
     expect(hostElement.textContent).toBe('Hello Angular!');
 
     // Verify basic change detection works.
-    componentRef.instance.name = 'ZoneJS';
+    componentRef.instance.name.set('ZoneJS');
     componentRef.changeDetectorRef.detectChanges();
     expect(hostElement.textContent).toBe('Hello ZoneJS!');
     componentRef.destroy();
@@ -63,11 +62,11 @@ describe('createComponent', () => {
 
   it('should create an instance of an NgModule-based component', () => {
     @Component({
-      template: 'Hello {{ name }}!',
+      template: 'Hello {{ name() }}!',
       standalone: false,
     })
     class NgModuleBasedComponent {
-      name = 'Angular';
+      name = signal('Angular');
     }
 
     @NgModule({
@@ -86,7 +85,7 @@ describe('createComponent', () => {
     expect(hostElement.textContent).toBe('Hello Angular!');
 
     // Verify basic change detection works.
-    componentRef.instance.name = 'ZoneJS';
+    componentRef.instance.name.set('ZoneJS');
     componentRef.changeDetectorRef.detectChanges();
     expect(hostElement.textContent).toBe('Hello ZoneJS!');
   });
@@ -386,7 +385,6 @@ describe('createComponent', () => {
       }
 
       @Component({
-        selector: 'my-comp',
         template: '',
         hostDirectives: [Chain1, Chain2, Chain3],
       })
@@ -639,7 +637,9 @@ describe('createComponent', () => {
 
   describe('root component inputs', () => {
     it('should be able to bind to inputs of the root component', () => {
-      @Component({template: '{{one}} - {{two}} - {{other}}'})
+      @Component({
+        template: '{{one}} - {{two}} - {{other}}',
+      })
       class RootComp {
         @Input() one = '';
         @Input({alias: 'twoAlias'}) two = '';
@@ -1114,7 +1114,6 @@ describe('createComponent', () => {
 
     it('should update view of component set with the onPush strategy after input change', () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: 'Value: {{ value }}',
       })
       class DisplayOnPushComponent {

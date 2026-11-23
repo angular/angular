@@ -7,7 +7,17 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {NavigationStart, provideRouter, Event, Router} from '../src';
+import {
+  NavigationStart,
+  provideRouter,
+  Event,
+  Router,
+  RouterOutlet,
+  UrlSerializer,
+  DefaultUrlSerializer,
+  UrlTree,
+  Params,
+} from '../src';
 import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody, useAutoTick, timeout} from '@angular/private/testing';
 import {
@@ -21,8 +31,9 @@ import {
   ɵFakeNavigation as FakeNavigation,
   ɵFakeNavigationPlatformLocation as FakeNavigationPlatformLocation,
   provideLocationMocks,
+  MOCK_PLATFORM_LOCATION_CONFIG,
 } from '@angular/common/testing';
-import {inject} from '@angular/core';
+import {Component, DestroyRef, inject, Provider} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
@@ -93,7 +104,7 @@ describe('withPlatformNavigation feature', () => {
 
       location.go('/c');
       expect(changed).toBeFalse();
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      await timeout(1);
       expect(changed).toBeTrue();
     });
   });
@@ -144,7 +155,9 @@ describe('withPlatformNavigation feature', () => {
         {once: true},
       );
 
-      navigation.navigate('/blocked');
+      const navRes = navigation.navigate('/blocked');
+      navRes.committed.catch(() => {});
+      navRes.finished.catch(() => {});
       await timeout();
       expect(navigation.transition).not.toBeNull();
       expect(router.currentNavigation()).not.toBeNull();
@@ -188,6 +201,40 @@ describe('withPlatformNavigation feature', () => {
       await navPromise;
       expect(navigateEvents.length).toBe(1);
     });
+
+    it('handles redirects during traversal navigations by committing and replacing', async () => {
+      router.resetConfig([
+        {path: 'first', children: []},
+        {path: 'second', children: []},
+        {path: 'redirected', children: []},
+        {path: '**', children: []},
+      ]);
+
+      await router.navigateByUrl('/first');
+      await timeout();
+      await router.navigateByUrl('/second');
+      await timeout();
+
+      expect(navigation.entries().length).toBe(3);
+      expect(navigation.currentEntry!.url).toContain('/second');
+
+      router.resetConfig([
+        {path: 'first', canActivate: [() => inject(Router).parseUrl('/redirected')], children: []},
+        {path: 'second', children: []},
+        {path: 'redirected', children: []},
+        {path: '**', children: []},
+      ]);
+
+      const backRes = navigation.back();
+      backRes.committed.catch(() => {});
+      backRes.finished.catch(() => {});
+      await timeout();
+      await navigation.transition?.finished;
+
+      expect(router.url).toBe('/redirected');
+      expect(navigation.currentEntry!.url).toContain('/redirected');
+      expect(navigation.currentEntry!.index).toBe(1);
+    });
   });
 
   describe('eager url update', () => {
@@ -225,6 +272,152 @@ describe('withPlatformNavigation feature', () => {
       await timeout(10);
       expect(navigation.transition).toBeNull();
       await expectAsync(finished).toBeResolved();
+    });
+  });
+
+  class TrailingSlashNormalizingUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      return super.parse(url);
+    }
+    override serialize(tree: UrlTree): string {
+      let url = super.serialize(tree);
+      if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      return url;
+    }
+  }
+
+  class QueryParamSortingUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      const tree = super.parse(url);
+      const sorted: Params = {};
+      for (const key of Object.keys(tree.queryParams).sort()) {
+        sorted[key] = tree.queryParams[key];
+      }
+      tree.queryParams = sorted;
+      return tree;
+    }
+    override serialize(tree: UrlTree): string {
+      const sorted: Params = {};
+      for (const key of Object.keys(tree.queryParams).sort()) {
+        sorted[key] = tree.queryParams[key];
+      }
+      const newTree = new UrlTree(tree.root, sorted, tree.fragment);
+      return super.serialize(newTree);
+    }
+  }
+
+  describe('URL comparison and extraction bugs', () => {
+    useAutoTick();
+    let router: Router;
+    let navigation: PlatformNavigation;
+
+    it('should not trigger new navigation when traversing back to a URL with trailing slash mismatch (with custom serializer)', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: UrlSerializer, useClass: TrailingSlashNormalizingUrlSerializer},
+          {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
+          provideRouter(
+            [
+              {path: 'foo', children: []},
+              {path: 'bar', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      navigation.navigate('/foo/');
+      await timeout();
+      navigation.navigate('/bar');
+      await timeout();
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      const navigateSpy = spyOn(navigation, 'navigate').and.callThrough();
+
+      await navigation.back().finished;
+      await timeout();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not trigger new navigation when traversing back to a URL with query param order mismatch (with custom serializer)', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: UrlSerializer, useClass: QueryParamSortingUrlSerializer},
+          {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
+          provideRouter(
+            [
+              {path: 'foo', children: []},
+              {path: 'bar', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      navigation.navigate('/foo?b=2&a=1');
+      await timeout();
+      navigation.navigate('/bar');
+      await timeout();
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      const navigateSpy = spyOn(navigation, 'navigate').and.callThrough();
+
+      await navigation.back().finished;
+      await timeout();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not intercept navigations outside the app root', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: MOCK_PLATFORM_LOCATION_CONFIG,
+            useValue: {
+              startUrl: 'http://localhost/my-app/',
+              appBaseHref: '/my-app/',
+            },
+          },
+          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      let interceptCalled = false;
+      navigation.addEventListener('navigate', (e: any) => {
+        const originalIntercept = e.intercept;
+        e.intercept = function (...args: any[]) {
+          interceptCalled = true;
+          originalIntercept.apply(this, args);
+        };
+      });
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      interceptCalled = false;
+      navigation.navigate('http://localhost/other-app/foo');
+      await timeout();
+
+      expect(interceptCalled).toBeFalse();
     });
   });
 });
@@ -292,5 +485,162 @@ if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
       await timeout(3);
       expect(routerEvents).toEqual([]);
     });
+
+    /**
+     * Cancels the next `navigate` event so the browser doesn't download the file.
+     * The listener is added after the router's own listener, so the router has already handled
+     * the event when it runs.
+     */
+    function preventNextNavigation() {
+      TestBed.inject(PlatformNavigation).addEventListener(
+        'navigate',
+        (e: NavigateEvent) => e.preventDefault(),
+        {once: true},
+      );
+    }
+
+    it(
+      'should not convert downloads to SPA navigations',
+      withBody('<a href="/file.txt" download>download</a>', async () => {
+        preventNextNavigation();
+        const routerEvents: Event[] = [];
+        router.events.subscribe((e) => routerEvents.push(e));
+        document.querySelector('a')!.click();
+        await timeout();
+        expect(routerEvents).toEqual([]);
+      }),
+    );
+
+    /**
+     * Cancels the navigations that nothing intercepted and that would load a new document, so the
+     * test page stays where it is. Returns the URLs of those navigations.
+     */
+    function preventCrossDocumentNavigations(): string[] {
+      const urls: string[] = [];
+      const intercept = spyOn(NavigateEvent.prototype, 'intercept').and.callThrough();
+      const controller = new AbortController();
+      TestBed.inject(PlatformNavigation).addEventListener(
+        'navigate',
+        (e: NavigateEvent) => {
+          const intercepted = intercept.calls.all().some((call) => call.object === e);
+          if (!intercepted && !e.destination.sameDocument) {
+            urls.push(e.destination.url);
+            e.preventDefault();
+          }
+        },
+        {signal: controller.signal},
+      );
+      TestBed.inject(DestroyRef).onDestroy(() => controller.abort());
+      return urls;
+    }
+
+    it('should restore the URL without reloading the page when activation fails', async () => {
+      @Component({template: '<router-outlet />', imports: [RouterOutlet]})
+      class RootCmp {}
+
+      @Component({template: ''})
+      class ThrowingCmp {
+        constructor() {
+          throw new Error('error during activation');
+        }
+      }
+
+      router.resetConfig([
+        {path: 'throwing', component: ThrowingCmp},
+        {path: '**', children: []},
+      ]);
+      const fixture = TestBed.createComponent(RootCmp);
+      await fixture.whenStable();
+      const urlBefore = window.location.href;
+      const crossDocumentNavigations = preventCrossDocumentNavigations();
+
+      // The URL is committed right before activation, so the router has to restore it.
+      await expectAsync(router.navigateByUrl('/throwing')).toBeRejected();
+      await timeout();
+
+      expect(crossDocumentNavigations).toEqual([]);
+      expect(window.location.href).toBe(urlBefore);
+    });
+  });
+
+  describe('focusReset with real platform navigation', () => {
+    const navigation = window.navigation as Navigation;
+
+    async function setup(providers: Provider[] = []) {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [
+              {
+                path: 'guarded',
+                canActivate: [() => inject(Router).parseUrl('/search?q=redirected')],
+                children: [],
+              },
+              {path: '**', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+          {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+          {provide: PlatformNavigation, useFactory: () => navigation},
+          ...providers,
+        ],
+      });
+      const router = TestBed.inject(Router);
+      router.initialNavigation();
+      await timeout();
+      return router;
+    }
+
+    it(
+      'resets focus by default',
+      withBody('<input>', async () => {
+        const router = await setup();
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        // Each test uses its own URL: these tests share the page URL, and navigating to the
+        // current URL again would be skipped by the router.
+        await router.navigate(['/search'], {queryParams: {q: 'default'}});
+        // The browser resets focus when it finishes the navigate event, after the next render.
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=default');
+        expect(document.activeElement).toBe(document.body);
+      }),
+    );
+
+    it(
+      "keeps focus with focusReset: 'manual'",
+      withBody('<input>', async () => {
+        const router = await setup();
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        await router.navigate(['/search'], {queryParams: {q: 'manual'}, focusReset: 'manual'});
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=manual');
+        expect(document.activeElement).toBe(input);
+      }),
+    );
+
+    it(
+      "keeps focusReset: 'manual' when a guard redirects",
+      withBody('<input>', async () => {
+        // Without precommitHandler, the browser navigation is created for the redirect.
+        const router = await setup([{provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false}]);
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        await router.navigateByUrl('/guarded', {focusReset: 'manual'});
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=redirected');
+        expect(document.activeElement).toBe(input);
+      }),
+    );
   });
 }

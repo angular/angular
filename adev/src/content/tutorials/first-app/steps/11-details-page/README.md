@@ -33,7 +33,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
 
-    For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
+    For the `routerLink` to work in the template, add a file level import of `RouterLink` from '@angular/router', then update the component `imports` array to include `RouterLink`.
 
 1.  At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "Learn More" button for a housing location.
 
@@ -58,11 +58,11 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
 
          ```ts
          export class Details {
-            route: ActivatedRoute = inject(ActivatedRoute);
-            housingLocationId = -1;
-            constructor() {
-            this.housingLocationId = Number(this.route.snapshot.params['id']);
-            }
+           route: ActivatedRoute = inject(ActivatedRoute);
+           housingLocationId = -1;
+           constructor() {
+             this.housingLocationId = Number(this.route.snapshot.params['id']);
+           }
          }
          ```
 
@@ -92,12 +92,9 @@ To access the data you will add a call to the `HousingService`.
 
 1. Copy the following styles into the `src/app/details/details.css` file:
 
-   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
+   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,72]"/>
 
    and save your changes
-
-1. In `Details` use the just created `details.css` file as the source for the styles:
-   <docs-code language="angular-ts" header="Update details.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[30]"/>
 
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
@@ -110,7 +107,7 @@ In a previous lesson you updated the `App` template to include a `routerLink`. A
 
 1.  Confirm that your code matches the following:
 
-      <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
+      <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[7,18]"/>
 
     Your code should already be up-to-date but confirm to be sure.
 

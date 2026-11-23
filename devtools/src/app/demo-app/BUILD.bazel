@@ -23,8 +23,8 @@ _STYLE_LABELS = [
 npm_sass_library(
     name = "todo_mvc",
     deps = [
-        "//:node_modules/todomvc-app-css",
-        "//:node_modules/todomvc-common",
+        "//devtools:node_modules/todomvc-app-css",
+        "//devtools:node_modules/todomvc-common",
     ],
 )
 

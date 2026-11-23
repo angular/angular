@@ -9,7 +9,7 @@
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
@@ -17,7 +17,6 @@ import {FactoryFn} from '../definition_factory';
 import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
 import type {TView} from './view';
-import {InputFlags} from './input_flags';
 import type {ControlDirectiveDef} from './control';
 
 /**
@@ -119,7 +118,7 @@ export interface DirectiveDef<T> {
    */
   readonly inputs: Record<
     string,
-    [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
+    [minifiedName: string, flags: number, transform: InputTransformFunction | null]
   >;
 
   /**
@@ -127,7 +126,7 @@ export interface DirectiveDef<T> {
    * used to do further processing after the `inputs` have been inverted.
    */
   readonly inputConfig: {
-    [P in keyof T]?: string | [InputFlags, string, string?, InputTransformFunction?];
+    [P in keyof T]?: string | [number, string, string?, InputTransformFunction?];
   };
 
   /**
@@ -201,7 +200,7 @@ export interface DirectiveDef<T> {
   readonly hostAttrs: TAttributes | null;
 
   /** Token representing the directive. Used by DI. */
-  readonly type: Type<T>;
+  readonly type: Type<T> | AbstractType<T>;
 
   /** Function that resolves `providers` and publishes them into the DI system. */
   providersResolver: ProvidersResolver | null;
@@ -221,11 +220,6 @@ export interface DirectiveDef<T> {
    * Whether this directive (or component) is standalone.
    */
   readonly standalone: boolean;
-
-  /**
-   * Whether this directive (or component) uses the signals authoring experience.
-   */
-  readonly signals: boolean;
 
   /**
    * Factory function used to create a new directive instance. Will be null initially.
@@ -264,6 +258,12 @@ export interface DirectiveDef<T> {
   hostDirectives: (HostDirectiveDef | (() => HostDirectiveConfig[]))[] | null;
 
   controlDef: ControlDirectiveDef | null;
+
+  /**
+   * Cache of inputs that this custom control directive covers,
+   * used by the signal forms system.
+   */
+  signalFormsInputPresence: Record<string, boolean> | null;
 
   setInput:
     | (<U extends T>(
@@ -359,9 +359,6 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
 
-  /** Whether or not this component is signal-based. */
-  readonly signals: boolean;
-
   /**
    * Registry of directives and components that may be found in this view.
    *
@@ -398,8 +395,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * A function used by the framework to create standalone injectors.
    */
   getStandaloneInjector:
-    | ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)
-    | null;
+    ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null) | null;
 
   /**
    * A function used by the framework to create the list of external runtime style URLs.
@@ -427,7 +423,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  */
 export interface PipeDef<T> {
   /** Token representing the pipe. */
-  type: Type<T>;
+  type: Type<T> | AbstractType<T>;
 
   /**
    * Pipe name.
@@ -618,4 +614,4 @@ export type RawScopeInfoFromDecorator =
   | ModuleWithProviders<any>
   | (() => Type<any>)
   | (() => ModuleWithProviders<any>)
-  | any[];
+  | readonly any[];

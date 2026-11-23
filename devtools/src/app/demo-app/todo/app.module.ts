@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, NgModule, signal} from '@angular/core';
+import {inject, NgModule, signal, Service} from '@angular/core';
 import {MatDialogModule} from '@angular/material/dialog';
 import {
   ActivatedRouteSnapshot,
@@ -21,7 +21,7 @@ import {AppTodoComponent} from './app-todo.component';
 /**
  * Service to manage the allowGuard state for testing router tree visualization.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class AllowGuardService {
   readonly allowGuard = signal<boolean>(false);
 

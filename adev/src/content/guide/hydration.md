@@ -6,7 +6,7 @@ Hydration is the process that restores the server-side rendered application on t
 
 ## Why is hydration important?
 
-Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First Input Delay ([FID](https://web.dev/fid/)) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
+Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the application's structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First Input Delay ([FID](https://web.dev/fid/)) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
 
 Without hydration enabled, server-side rendered Angular applications will destroy and re-render the application's DOM, which may result in a visible UI flicker. This re-rendering can negatively impact [Core Web Vitals](https://web.dev/learn-core-web-vitals/) like [LCP](https://web.dev/lcp/) and cause a layout shift. Enabling hydration allows the existing DOM to be re-used and prevents a flicker.
 
@@ -63,13 +63,20 @@ You can also use [Angular DevTools browser extension](tools/devtools) to see hyd
 
 ## Capturing and replaying events
 
-When an application is rendered on the server, it is visible in a browser as soon as produced HTML loads. Users may assume that they can interact with the page, but event listeners are not attached until hydration completes. Starting from v18, you can enable the Event Replay feature that allows to capture all events that happen before hydration and replay those events once hydration has completed. You can enable it using the `withEventReplay()` function, for example:
+When an application is rendered on the server, it is visible in a browser as soon as produced HTML loads. Users may assume that they can interact with the page, but event listeners are not attached until hydration completes. The Event Replay feature captures all events that happen before hydration and replays those events once hydration has completed.
+
+Event replay is enabled alongside [incremental hydration](guide/incremental-hydration). If you opt out of incremental hydration with `withNoIncrementalHydration()`, you can still enable event replay using the `withEventReplay()` function:
 
 ```typescript
-import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withNoIncrementalHydration,
+  bootstrapApplication,
+} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
-  providers: [provideClientHydration(withEventReplay())],
+  providers: [provideClientHydration(withNoIncrementalHydration(), withEventReplay())],
 });
 ```
 
@@ -90,11 +97,7 @@ The Event Replay is divided into three main phases:
 
 Event replay supports _native browser events_, for example `click`, `mouseover`, and `focusin`. If you'd like to learn more about JSAction, the library that powers event replay, you can read more [on the readme](https://github.com/angular/angular/tree/main/packages/core/primitives/event-dispatch#readme).
 
----
-
-This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored.
-
-NOTE: If you have [incremental hydration](guide/incremental-hydration) enabled, event replay is automatically enabled under the hood.
+This feature ensures a consistent user experience, preventing user actions performed before hydration from being ignored.
 
 ## Constraints
 
@@ -142,7 +145,7 @@ Providing a custom or a "noop" Zone.js implementation may lead to a different ti
 
 ## Errors
 
-There are several hydration related errors you may encounter ranging from node mismatches to cases when the `ngSkipHydration` was used on an invalid host node. The most common error case that may occur is due to direct DOM manipulation using native APIs that results in hydration being unable to find or match the expected DOM tree structure on the client that was rendered by the server. The other case you may encounter this type of error was mentioned in the [Valid HTML structure](#valid-html-structure) section earlier. So, make sure the HTML in your templates are using valid structure, and you'll avoid that error case.
+There are several hydration related errors you may encounter ranging from node mismatches to cases when the `ngSkipHydration` was used on an invalid host node. The most common error case that may occur is due to direct DOM manipulation using native APIs that results in hydration being unable to find or match the expected DOM tree structure on the client that was rendered by the server. The other case where you may encounter this type of error was mentioned in the [Valid HTML structure](#valid-html-structure) section earlier. So, make sure the HTML in your templates is using valid structure, and you'll avoid that error case.
 
 For a full reference on hydration related errors, visit the [Errors Reference Guide](/errors).
 
@@ -224,6 +227,21 @@ There are a number of third party libraries that depend on DOM manipulation to b
 ## Third Party Scripts with DOM Manipulation
 
 Many third party scripts, such as ad trackers and analytics, modify the DOM before hydration can occur. These scripts may cause hydration errors because the page no longer matches the structure expected by Angular. Prefer deferring this type of script until after hydration whenever possible. Consider using [`AfterNextRender`](api/core/afterNextRender) to delay the script until post-hydration processes have occurred.
+
+### CDNs and browser extensions
+
+Code outside your application can change the HTML from the server before hydration starts. You often can't see these errors on your computer, because they don't happen on your local server.
+
+**CDNs that change HTML.** Some CDN features change HTML on its way to the browser. For example, some features remove comment nodes and whitespace, but hydration needs them. Another example is Email Address Obfuscation from Cloudflare, which is on by default. This feature changes email addresses to elements like `<span class="__cf_email__" data-cfemail="...">`. It also changes `mailto:` links and adds a script that changes the content back. If this script doesn't run before hydration starts, Angular finds an element where it expects text. Your local server doesn't use the CDN, so your application works on your computer and fails only in production.
+
+**Browser extensions.** Some browser extensions change the page before hydration starts. Examples are click-to-call tools, translators, and password managers. You can't control these extensions. Only users who install them have the problem, so you may see errors from only some users.
+
+To fix these errors:
+
+- Add `ngSkipHydration` to the component host around the changed content. Add it in the template where you write that content, like this: `<app-contact ngSkipHydration><a href="tel:...">...</a></app-contact>`. Angular then renders this content again in the browser, and this removes the changes. You can use this attribute only on component host elements, so you can't add it to the `<a>` element. Read more in [how to skip hydration](#how-to-skip-hydration-for-particular-components).
+- Turn off the CDN feature for your application. In Cloudflare, turn off [Email Address Obfuscation](https://developers.cloudflare.com/waf/tools/scrape-shield/email-address-obfuscation/) in the security settings, or use a [Configuration Rule](https://developers.cloudflare.com/rules/configuration-rules/settings/) to turn it off for the hostnames of your application.
+
+NOTE: The `<!--email_off-->` comments from Cloudflare don't help in Angular templates, because the compiler removes comments from templates.
 
 ## Incremental Hydration
 

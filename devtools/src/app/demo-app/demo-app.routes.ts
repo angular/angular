@@ -44,4 +44,7 @@ export const DEMO_ROUTES: Routes = [
 
 initializeMessageBus(
   new ZoneUnawareIFrameMessageBus(DEVTOOLS_BACKEND_URI, DEVTOOLS_FRONTEND_URI, () => window.parent),
+  {
+    devtoolsDevMode: true,
+  },
 );

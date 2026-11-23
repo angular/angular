@@ -18,7 +18,7 @@ Most developers prefer to format their templates with newlines and indentation t
 
 This template contains whitespace between all of the elements. The following snippet shows the same HTML with each whitespace character replaced with the hash (`#`) character to highlight how much whitespace is present:
 
-<!-- prettier-ignore>
+<!-- prettier-ignore -->
 ```html
 <!-- Total Whitespace: 20 -->
 <section>###<h3>User profile</h3>###<label>#####User name#####<input>###</label>#</section>

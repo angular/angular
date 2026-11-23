@@ -161,7 +161,7 @@ export function isResolvedModuleWithProviders(
   return (
     typeof sv.value === 'object' &&
     sv.value != null &&
-    sv.value.hasOwnProperty('ngModule' as keyof ResolvedModuleWithProviders) &&
-    sv.value.hasOwnProperty('mwpCall' as keyof ResolvedModuleWithProviders)
+    Object.hasOwn(sv.value, 'ngModule' as keyof ResolvedModuleWithProviders) &&
+    Object.hasOwn(sv.value, 'mwpCall' as keyof ResolvedModuleWithProviders)
   );
 }

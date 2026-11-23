@@ -8,40 +8,64 @@
 
 import {inject} from '@angular/core';
 import {SettingsStore} from './settings_store';
-import {ThemePreference} from './theme_types';
+import {SettingsDataV2} from '../application-providers/settings_versions';
 
-// Note: Any changes to the settings items should be accompanied by a migration.
-// Check settings_provider.ts
+// If you need to update an item, please refer to `settings_versions.ts` and this doc:
+// https://github.com/angular/angular/blob/main/devtools/docs/settings.md
 export class Settings {
-  private readonly settingsStore = inject(SettingsStore);
+  private readonly settingsStore = inject(SettingsStore<SettingsDataV2>);
 
   readonly showCommentNodes = this.settingsStore.create({
     key: 'show_comment_nodes',
-    category: 'general',
+    category: 'components',
     initialValue: false,
   });
 
-  readonly timingAPIEnabled = this.settingsStore.create({
-    key: 'timing_api_enabled',
-    category: 'general',
+  readonly showCdInExplorer = this.settingsStore.create({
+    key: 'show_cd_in_explorer',
+    category: 'components',
     initialValue: false,
   });
 
-  readonly transferStateEnabled = this.settingsStore.create({
-    key: 'transfer_state_enabled',
-    category: 'general',
+  readonly showDeferBlocks = this.settingsStore.create({
+    key: 'show_defer_blocks',
+    category: 'components',
+    initialValue: true,
+  });
+
+  readonly showForBlocks = this.settingsStore.create({
+    key: 'show_for_blocks',
+    category: 'components',
+    initialValue: true,
+  });
+
+  readonly performanceTrack = this.settingsStore.create({
+    key: 'performance_track',
+    category: 'profiling',
     initialValue: false,
   });
 
-  readonly theme = this.settingsStore.create<ThemePreference>({
+  readonly highlightChangeDetection = this.settingsStore.create({
+    key: 'highlight_change_detection',
+    category: 'profiling',
+    initialValue: false,
+  });
+
+  readonly theme = this.settingsStore.create({
     key: 'theme',
     category: 'general',
     initialValue: 'system',
   });
 
   readonly activeTab = this.settingsStore.create({
-    key: 'activeTab',
+    key: 'active_tab',
     category: 'general',
     initialValue: 'Components',
+  });
+
+  readonly showHydrationOverlays = this.settingsStore.create({
+    key: 'show_hydration_overlays',
+    category: 'components',
+    initialValue: false,
   });
 }

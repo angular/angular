@@ -11,6 +11,7 @@ export {provideServerRendering} from './provide_server';
 export {platformServer, ServerModule} from './server';
 export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 export {renderApplication, renderModule} from './utils';
+export {RuntimeErrorCode} from './errors';
 
 export * from './private_export';
 export {VERSION} from './version';

@@ -8,18 +8,18 @@
 
 import {
   Component,
-  afterRenderEffect,
-  ElementRef,
   inject,
   input,
   output,
   signal,
   viewChild,
-  ChangeDetectionStrategy,
   computed,
   DestroyRef,
+  untracked,
+  linkedSignal,
 } from '@angular/core';
 import {
+  CdElementData,
   ComponentExplorerView,
   ComponentExplorerViewQuery,
   DevToolsNode,
@@ -34,10 +34,10 @@ import {
 import {ApplicationOperations} from '../../application-operations/index';
 import {FrameManager} from '../../application-services/frame_manager';
 
-import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
+import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
-import {findNodeByPosition, IndexedNode, indexForest} from './directive-forest/index-forest';
+import {IndexedNode} from './directive-forest/index-forest';
 import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {FlatNode as PropertyFlatNode} from '../../shared/object-tree-explorer/object-tree-types';
@@ -55,6 +55,7 @@ import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../shared/signal-graph';
+import {Settings} from '../../application-services/settings';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -68,7 +69,13 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if (a.component && b.component && a.component.id !== b.component.id) {
     return false;
   }
-  const aDirectives = new Set(a.directives.map((d) => d.id));
+  if (!a.directives && !b.directives) {
+    return true;
+  }
+  if (!a.directives || !b.directives) {
+    return false;
+  }
+  const aDirectives = new Set(a.directives.map((d) => d.id) ?? []);
   for (const dir of b.directives) {
     if (!aDirectives.has(dir.id)) {
       return false;
@@ -99,74 +106,66 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     SignalGraphPaneComponent,
     ResponsiveSplitDirective,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DirectiveExplorerComponent {
   readonly showCommentNodes = input(false);
-  readonly isHydrationEnabled = input(false);
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild.required(DirectiveForestComponent);
-  readonly splitElementRef = viewChild.required(SplitComponent, {read: ElementRef});
-  readonly directiveForestSplitArea = viewChild.required('directiveForestSplitArea', {
-    read: ElementRef,
-  });
 
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);
-  readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
 
   readonly signalsOpen = signal(false);
 
-  private _clickedElement: IndexedNode | null = null;
-  private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
-  private showHydrationNodeHighlights = false;
+  private clickedElement: IndexedNode | null = null;
+  private refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
 
-  private readonly _appOperations = inject(ApplicationOperations);
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _propResolver = inject(ElementPropertyResolver);
-  private readonly _frameManager = inject(FrameManager);
+  private readonly appOperations = inject(ApplicationOperations);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly propResolver = inject(ElementPropertyResolver);
+  private readonly frameManager = inject(FrameManager);
 
+  private readonly settings = inject(Settings);
   private readonly platform = inject(Platform);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly signalGraph = inject(SignalGraphManager);
 
   protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
 
-  protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
+  // Responsible for splitting behavior of the explorer and the props pane.
+  protected readonly tabSplitConfig: ResponsiveSplitConfig = {
+    defaultDirection: 'horizontal',
+    widthBreakpoint: '<500px',
+    breakpointDirection: 'vertical',
+  };
+
+  // Responsible for splitting behavior of the forest and the signal graph pane.
+  protected readonly forestSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
-    aspectRatioBreakpoint: 1.5,
+    aspectRatioBreakpoint: '>=1.5',
     breakpointDirection: 'horizontal',
   };
 
   protected readonly forestSplitSize = signal<number>(FOREST_VER_SPLIT_SIZE);
   protected readonly signalGraphSplitSize = signal<number>(SIGNAL_GRAPH_VER_SPLIT_SIZE);
 
+  protected readonly cdData = linkedSignal<boolean, CdElementData[] | null>({
+    source: this.settings.showCdInExplorer,
+    computation: (showCdInExplorer, prev) => {
+      // We reset the `cdData` if the feature
+      // is disabled from the settings.
+      if (!showCdInExplorer) {
+        return null;
+      }
+      return prev?.value ?? null;
+    },
+  });
+
   private readonly currentElementPos = computed(() => this.currentSelectedElement()?.position);
 
   constructor() {
-    afterRenderEffect((cleanup) => {
-      const splitElement = this.splitElementRef().nativeElement;
-      const directiveForestSplitArea = this.directiveForestSplitArea().nativeElement;
-      const resizeObserver = new ResizeObserver((entries) => {
-        this.refreshHydrationNodeHighlightsIfNeeded();
-
-        const resizedEntry = entries[0];
-        if (resizedEntry.target === splitElement) {
-          this.splitDirection.set(
-            resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal',
-          );
-        }
-      });
-
-      resizeObserver.observe(splitElement);
-      resizeObserver.observe(directiveForestSplitArea);
-      cleanup(() => {
-        resizeObserver.disconnect();
-      });
-    });
-
     this.subscribeToBackendEvents();
     this.refresh();
     this.signalGraph.listen(this.currentElementPos);
@@ -177,7 +176,7 @@ export class DirectiveExplorerComponent {
   }
 
   private isNonTopLevelFirefoxFrame() {
-    return this.platform.FIREFOX && !this._frameManager.topLevelFrameIsActive();
+    return this.platform.FIREFOX && !this.frameManager.topLevelFrameIsActive();
   }
 
   handleNodeSelection(node: IndexedNode | null): void {
@@ -186,47 +185,48 @@ export class DirectiveExplorerComponent {
       // That's possible if the user has selected an NgForOf and after that
       // they select another NgForOf instance. In this case, we don't want to diff the props
       // we want to render from scratch.
-      if (this._clickedElement && !sameDirectives(this._clickedElement, node)) {
-        this._propResolver.clearProperties();
+      if (this.clickedElement && !sameDirectives(this.clickedElement, node)) {
+        this.propResolver.clearProperties();
       }
-      this._clickedElement = node;
-      this._messageBus.emit('setSelectedComponent', [node.position]);
+      this.clickedElement = node;
+      this.messageBus.emit('setSelectedComponent', [node.position]);
       this.refresh();
     } else {
-      this._clickedElement = null;
+      this.clickedElement = null;
       this.currentSelectedElement.set(null);
     }
   }
 
   subscribeToBackendEvents(): void {
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest.set(view.forest);
 
-      this.currentSelectedElement.set(this._clickedElement);
-      if (view.properties && this._clickedElement) {
-        this._propResolver.setProperties(this._clickedElement, view.properties);
+      this.currentSelectedElement.set(this.clickedElement);
+      if (view.properties && this.clickedElement) {
+        this.propResolver.setProperties(this.clickedElement, view.properties);
       }
     });
 
-    this._messageBus.on('componentTreeDirty', () => this.refresh());
+    this.messageBus.on('componentTreeDirty', () => this.refresh());
+
+    this.messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
   }
 
   refresh(): void {
-    const success = this._messageBus.emit('getLatestComponentExplorerView', [
-      this._constructViewQuery(),
+    const success = this.messageBus.emit('getLatestComponentExplorerView', [
+      this.constructViewQuery(),
     ]);
-    this._messageBus.emit('getRoutes');
+    this.messageBus.emit('getRoutes');
     // If the event was not throttled, we no longer need to retry.
     if (success) {
-      this._refreshRetryTimeout && clearTimeout(this._refreshRetryTimeout);
-      this._refreshRetryTimeout = null;
+      this.refreshRetryTimeout && clearTimeout(this.refreshRetryTimeout);
+      this.refreshRetryTimeout = null;
       return;
     }
     // If the event was throttled and we haven't scheduled a retry yet.
-    if (!this._refreshRetryTimeout) {
-      this._refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
+    if (!this.refreshRetryTimeout) {
+      this.refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
     }
-    this.refreshHydrationNodeHighlightsIfNeeded();
   }
 
   viewSource(directiveName: string): void {
@@ -234,24 +234,23 @@ export class DirectiveExplorerComponent {
     const selectedEl = this.currentSelectedElement();
     if (!selectedEl) return;
 
-    const directiveIndex = selectedEl.directives.findIndex(
-      (directive) => directive.name === directiveName,
-    );
+    const directiveIndex =
+      selectedEl.directives?.findIndex((directive) => directive.name === directiveName) ?? -1;
 
-    const selectedFrame = this._frameManager.selectedFrame();
-    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+    const selectedFrame = this.frameManager.selectedFrame();
+    if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique url on this page. Cannot view source.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Viewing source is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
-      this._appOperations.viewSource(
+      this.appOperations.viewSource(
         selectedEl.position,
         selectedFrame!,
         directiveIndex !== -1 ? directiveIndex : undefined,
@@ -260,53 +259,53 @@ export class DirectiveExplorerComponent {
   }
 
   handleSelectDomElement(node: IndexedNode): void {
-    const selectedFrame = this._frameManager.selectedFrame();
-    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+    const selectedFrame = this.frameManager.selectedFrame();
+    if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Inspecting a component's DOM element is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
-      this._appOperations.selectDomElement(node.position, selectedFrame!);
+      this.appOperations.selectDomElement(node.position, selectedFrame!);
     }
   }
 
   highlight(node: FlatNode): void {
-    if (!node.original.component) {
+    if (!node.hasNativeElement) {
       return;
     }
-    this._messageBus.emit('createHighlightOverlay', [node.position]);
+    this.messageBus.emit('createHighlightOverlay', [node.position]);
   }
 
   unhighlight(): void {
-    this._messageBus.emit('removeHighlightOverlay');
+    this.messageBus.emit('removeHighlightOverlay');
   }
 
-  private _constructViewQuery(): ComponentExplorerViewQuery | undefined {
-    if (!this._clickedElement) {
+  private constructViewQuery(): ComponentExplorerViewQuery | undefined {
+    if (!this.clickedElement) {
       return;
     }
     return {
-      selectedElement: this._clickedElement.position,
-      propertyQuery: this._getPropertyQuery(),
+      selectedElement: this.clickedElement.position,
+      propertyQuery: this.getPropertyQuery(),
     };
   }
 
-  private _getPropertyQuery(): PropertyQuery {
+  private getPropertyQuery(): PropertyQuery {
     // Here we handle the case when a given element has already been selected.
     // We check if we're dealing with the same instance (i.e., if we have the same
     // set of directives and component on it), if we do, we want to get the same
     // set of properties which are already expanded.
     if (
-      !this._clickedElement ||
+      !this.clickedElement ||
       !this.currentSelectedElement() ||
-      !sameDirectives(this._clickedElement, this.currentSelectedElement()!)
+      !sameDirectives(this.clickedElement, this.currentSelectedElement()!)
     ) {
       return {
         type: PropertyQueryTypes.All,
@@ -314,16 +313,16 @@ export class DirectiveExplorerComponent {
     }
     return {
       type: PropertyQueryTypes.Specified,
-      properties: this._propResolver.getExpandedProperties() || {},
+      properties: this.propResolver.getExpandedProperties() || {},
     };
   }
 
   highlightComponent(position: ElementPosition): void {
-    this._messageBus.emit('createHighlightOverlay', [position]);
+    this.messageBus.emit('createHighlightOverlay', [position]);
   }
 
   removeComponentHighlight(): void {
-    this._messageBus.emit('removeHighlightOverlay');
+    this.messageBus.emit('removeHighlightOverlay');
   }
 
   handleSelect(node: FlatNode): void {
@@ -343,45 +342,21 @@ export class DirectiveExplorerComponent {
   }): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
 
-    const selectedFrame = this._frameManager.selectedFrame();
+    const selectedFrame = this.frameManager.selectedFrame();
 
-    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+    if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Inspecting object is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
-      this._appOperations.inspect(directivePosition, objectPath, selectedFrame!);
-    }
-  }
-
-  toggleHydrationNodesHighlights(toggle: boolean) {
-    if (toggle) {
-      this.hightlightHydrationNodes();
-    } else {
-      this.removeHydrationNodesHightlights();
-    }
-    this.showHydrationNodeHighlights = toggle;
-  }
-
-  hightlightHydrationNodes() {
-    this._messageBus.emit('createHydrationOverlay');
-  }
-
-  removeHydrationNodesHightlights() {
-    this._messageBus.emit('removeHydrationOverlay');
-  }
-
-  private refreshHydrationNodeHighlightsIfNeeded() {
-    if (this.showHydrationNodeHighlights) {
-      this.removeHydrationNodesHightlights();
-      this.hightlightHydrationNodes();
+      this.appOperations.inspect(directivePosition, objectPath, selectedFrame!);
     }
   }
 

@@ -189,6 +189,9 @@ function tree(
 ): UrlTree {
   const qp: Params = {};
   for (const [key, value] of Object.entries(queryParams ?? {})) {
+    if (value === null || value === undefined) {
+      continue;
+    }
     // This retains old behavior where each item in the array was stringified individually This
     // helps remove special-case handling for empty and single-item arrays where the default
     // serializer removes empty arrays when serialized then parsed or converts them to non-arrays
@@ -225,7 +228,8 @@ function replaceSegment(
   oldSegment: UrlSegmentGroup,
   newSegment: UrlSegmentGroup,
 ): UrlSegmentGroup {
-  const children: {[key: string]: UrlSegmentGroup} = {};
+  // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
+  const children: {[key: string]: UrlSegmentGroup} = Object.create(null);
   Object.entries(current.children).forEach(([outletName, c]) => {
     if (c === oldSegment) {
       children[outletName] = newSegment;
@@ -419,7 +423,8 @@ function updateSegmentGroupChildren(
     return new UrlSegmentGroup(segmentGroup.segments, {});
   } else {
     const outlets = getOutlets(commands);
-    const children: {[key: string]: UrlSegmentGroup} = {};
+    // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
+    const children: {[key: string]: UrlSegmentGroup} = Object.create(null);
     // If the set of commands applies to anything other than the primary outlet and the child
     // segment is an empty path primary segment on its own, we want to apply the commands to the
     // empty child path rather than here. The outcome is that the empty primary child is effectively

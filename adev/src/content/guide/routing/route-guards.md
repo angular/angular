@@ -26,7 +26,9 @@ All route guards share the same possible return types. This gives you flexibilit
 | `UrlTree` or `RedirectCommand`  | Redirects to another route instead of blocking                                    |
 | `Promise<T>` or `Observable<T>` | Router uses the first emitted value and then unsubscribes                         |
 
-NOTE: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
+NOTE: A route guard must emit a value. An `Observable` that completes without emitting, such as `EMPTY` or any `Observable<never>`, leaves the router without a result, so the navigation fails with an RxJS `EmptyError`. This often comes from a request that an interceptor cancels. If your source can complete empty, give it a value with `defaultIfEmpty(false)`.
+
+NOTE: `CanMatch` is different. When it returns `false`, Angular tries other matching routes instead of blocking navigation.
 
 ## Types of route guards
 
@@ -48,7 +50,7 @@ The `CanActivate` guard determines whether a user can access a route. It is most
 It has access to the following default arguments:
 
 - `route`: `ActivatedRouteSnapshot` - Contains information about the route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `state`: `RouterStateSnapshot` - Contains the state the router is navigating to, not the current state (use `Router.routerState` for that)
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -62,18 +64,18 @@ export const authGuard: CanActivateFn = (
 };
 ```
 
-Tip: If you need to redirect the user, return a [`URLTree`](api/router/UrlTree) or [`RedirectCommand`](api/router/RedirectCommand). Do **not** return `false` and then programmatically `navigate` the user.
+TIP: If you need to redirect the user, return a [`URLTree`](api/router/UrlTree) or [`RedirectCommand`](api/router/RedirectCommand). Do **not** return `false` and then programmatically `navigate` the user.
 
 For more information, check out the [API docs for CanActivateFn](api/router/CanActivateFn).
 
 ### CanActivateChild
 
-The `CanActivateChild` guard determines whether a user can access child routes of a particular parent route. This is useful when you want to protect an entire section of nested routes. In other words, `canActivateChild` runs for _all_ children. If there is a child component with another child component underneath of it, `canActivateChild` will run once for both components.
+The `CanActivateChild` guard determines whether a user can access child routes of a particular parent route. This is useful when you want to protect an entire section of nested routes. In other words, `canActivateChild` runs for _all_ children. If there is a child component with another child component underneath of it, `canActivateChild` will run once for each of them.
 
 It has access to the following default arguments:
 
 - `childRoute`: `ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `state`: `RouterStateSnapshot` - Contains the state the router is navigating to, not the current state (use `Router.routerState` for that)
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -125,11 +127,16 @@ It has access to the following default arguments:
 
 - `route`: `Route` - The route configuration being evaluated
 - `segments`: `UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
+- `currentSnapshot: PartialMatchRouteSnapshot` - The current route snapshot up to this point in the matching process
 
 It can return the [standard return guard types](#route-guard-return-types), but when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
 
 ```ts
-export const featureToggleGuard: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
+export const featureToggleGuard: CanMatchFn = (
+  route: Route,
+  segments: UrlSegment[],
+  currentSnapshot: PartialMatchRouteSnapshot,
+) => {
   const featureService = inject(FeatureService);
   return featureService.isFeatureEnabled('newDashboard');
 };
@@ -137,8 +144,7 @@ export const featureToggleGuard: CanMatchFn = (route: Route, segments: UrlSegmen
 
 It can also allow you to use different components for the same path.
 
-```ts
-// 📄 routes.ts
+```ts {header: "routes.ts"}
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -161,7 +167,11 @@ For more information, check out the [API docs for CanMatchFn](api/router/CanMatc
 
 Once you've created your route guards, you need to configure them in your route definitions.
 
-Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. They are executed in the order they appear in the array.
+Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. The router starts the guards in the order they appear in the array, but it does not wait for one guard to finish before starting the next. Guards that return a `Promise` or an `Observable` therefore run concurrently.
+
+The array order determines which result takes priority. Navigation continues only if every guard returns `true`. Otherwise the router uses the result of the first guard in the array that did not return `true`, even if a later guard finished earlier.
+
+NOTE: Because asynchronous guards run concurrently, a guard must not rely on work done by an earlier guard in the same array, such as loading the current user. Put that work in a service that both guards use, or combine the checks into a single guard.
 
 ```ts
 import {Routes} from '@angular/router';

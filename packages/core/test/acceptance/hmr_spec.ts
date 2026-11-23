@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computeMsgId} from '@angular/compiler';
+import {TestBed} from '@angular/core/testing';
+import {clearTranslations, loadTranslations} from '@angular/localize';
+import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {isNode} from '@angular/private/testing';
 import {
+  ChangeDetectionStrategy,
   Component,
   Directive,
   DoCheck,
@@ -20,6 +26,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  Pipe,
+  PipeTransform,
   provideZoneChangeDetection,
   QueryList,
   SimpleChanges,
@@ -32,19 +40,15 @@ import {
   ɵɵreplaceMetadata,
   ɵɵsetComponentScope,
 } from '../../src/core';
-import {TestBed} from '../../testing';
+import {NUM_ROOT_NODES} from '../../src/hydration/interfaces';
+import {ComponentType} from '../../src/render3';
+import {getComponentDef} from '../../src/render3/def_getters';
+import {DEHYDRATED_VIEWS} from '../../src/render3/interfaces/container';
+import {isLContainer} from '../../src/render3/interfaces/type_checks';
+import {HEADER_OFFSET, TVIEW} from '../../src/render3/interfaces/view';
 import {compileComponent} from '../../src/render3/jit/directive';
 import {angularCoreEnv} from '../../src/render3/jit/environment';
-import {clearTranslations, loadTranslations} from '@angular/localize';
-import {computeMsgId} from '@angular/compiler';
-import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
-import {ComponentType} from '../../src/render3';
 import {getComponentLView} from '../../src/render3/util/discovery_utils';
-import {DEHYDRATED_VIEWS} from '../../src/render3/interfaces/container';
-import {HEADER_OFFSET, TVIEW} from '../../src/render3/interfaces/view';
-import {isLContainer} from '../../src/render3/interfaces/type_checks';
-import {NUM_ROOT_NODES} from '../../src/hydration/interfaces';
-import {isNode} from '@angular/private/testing';
 
 describe('hot module replacement', () => {
   beforeEach(() => {
@@ -57,6 +61,7 @@ describe('hot module replacement', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',
       template: 'Hello <strong>{{state}}</strong>',
+      changeDetection: ChangeDetectionStrategy.Eager,
     };
 
     @Component(initialMetadata)
@@ -71,6 +76,7 @@ describe('hot module replacement', () => {
     @Component({
       imports: [ChildCmp],
       template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class RootCmp {}
 
@@ -268,6 +274,7 @@ describe('hot module replacement', () => {
       selector: 'child-cmp',
       template: 'Hello <strong>{{state}}</strong>',
       styles: `strong {color: red;}`,
+      changeDetection: ChangeDetectionStrategy.Eager,
     };
 
     @Component(initialMetadata)
@@ -282,6 +289,7 @@ describe('hot module replacement', () => {
     @Component({
       imports: [ChildCmp],
       template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class RootCmp {}
 
@@ -329,6 +337,7 @@ describe('hot module replacement', () => {
     @Component({
       imports: [ChildCmp],
       template: `<child-cmp staticValue="1" [dynamicValue]="dynamicValue" />`,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class RootCmp {
       dynamicValue = '1';
@@ -415,6 +424,7 @@ describe('hot module replacement', () => {
           <hr />
         }
       `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class RootCmp {
       items = [
@@ -493,6 +503,7 @@ describe('hot module replacement', () => {
     @Component({
       imports: [ChildCmp],
       template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class RootCmp {}
 
@@ -531,24 +542,38 @@ describe('hot module replacement', () => {
 
   it('should carry over dependencies defined by setComponentScope', () => {
     // In some cases the AoT compiler produces a `setComponentScope` for non-standalone
-    // components. We simulate it here by declaring two components that are not standalone
-    // and manually calling `setComponentScope`.
-    @Component({selector: 'child-cmp', template: 'hello', standalone: false})
+    // components. We simulate it here by declaring two components and a pipe that are not
+    // standalone and manually calling `setComponentScope`.
+    @Component({
+      selector: 'child-cmp',
+      template: 'hello',
+      standalone: false,
+    })
     class ChildCmp {}
 
-    @Component({template: 'Initial <child-cmp/>', standalone: false})
+    @Pipe({name: 'upperPipe', standalone: false})
+    class UpperPipe implements PipeTransform {
+      transform(value: string): string {
+        return value.toUpperCase();
+      }
+    }
+
+    @Component({
+      template: 'Initial <child-cmp/> {{ "ok" | upperPipe }}',
+      standalone: false,
+    })
     class RootCmp {}
 
-    ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], []);
+    ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], [UpperPipe]);
 
     const fixture = TestBed.createComponent(RootCmp);
     fixture.detectChanges();
     markNodesAsCreatedInitially(fixture.nativeElement);
-    expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp>');
+    expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp> OK');
 
     replaceMetadata(RootCmp, {
       standalone: false,
-      template: 'Changed <child-cmp/>',
+      template: 'Changed <child-cmp/> {{ "ok" | upperPipe }}',
     });
     fixture.detectChanges();
 
@@ -556,7 +581,157 @@ describe('hot module replacement', () => {
     verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
     verifyNodesWereRecreated(recreatedNodes);
 
-    expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp>');
+    expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp> OK');
+  });
+
+  describe('directiveDefs and pipeDefs replacement', () => {
+    @Directive({
+      selector: '[myDir]',
+      host: {'[attr.data-dir]': '"active"'},
+    })
+    class MyDirective {}
+
+    @Directive({
+      selector: '[otherDir]',
+      host: {'[attr.data-other]': '"other"'},
+    })
+    class OtherDirective {}
+
+    @Pipe({name: 'myPipe'})
+    class MyPipe implements PipeTransform {
+      transform(value: string): string {
+        return value.toUpperCase();
+      }
+    }
+
+    // Use a separate replacement class so JIT `depsTracker` computes a fresh standalone scope.
+    function hmrUpdateFrom(
+      target: Type<unknown>,
+      replacement: Type<unknown>,
+      overrides: Record<string, unknown> = {},
+    ) {
+      const replacementDef = getComponentDef(replacement)!;
+      ɵɵreplaceMetadata(
+        target,
+        (cmp: any) => {
+          cmp.ɵcmp = {...replacementDef, ...overrides, type: cmp};
+        },
+        [],
+        [],
+        null,
+        '',
+      );
+    }
+
+    it('should swap and clear standalone directives during HMR', () => {
+      @Component({
+        selector: 'app-swap',
+        imports: [MyDirective],
+        template: '<div id="box" myDir otherDir>v1</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppSwap {}
+
+      @Component({
+        selector: 'app-swap',
+        imports: [OtherDirective],
+        template: '<div id="box" myDir otherDir>v2</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppSwapV2 {}
+
+      const fixture = TestBed.createComponent(AppSwap);
+      fixture.detectChanges();
+      let box = fixture.nativeElement.querySelector('#box');
+      expect(box.getAttribute('data-dir')).toBe('active');
+      expect(box.getAttribute('data-other')).toBeNull();
+
+      hmrUpdateFrom(AppSwap, AppSwapV2);
+      fixture.detectChanges();
+      box = fixture.nativeElement.querySelector('#box');
+      expect(box.textContent).toBe('v2');
+      expect(box.getAttribute('data-dir')).toBeNull();
+      expect(box.getAttribute('data-other')).toBe('other');
+
+      // Clearing all standalone imports (AoT omits `dependencies`, leaving `directiveDefs: null`)
+      // must not restore the previously active directive defs.
+      hmrUpdateFrom(AppSwap, AppSwapV2, {
+        directiveDefs: null,
+        pipeDefs: null,
+        dependencies: null,
+      });
+      fixture.detectChanges();
+      box = fixture.nativeElement.querySelector('#box');
+      expect(box.getAttribute('data-dir')).toBeNull();
+      expect(box.getAttribute('data-other')).toBeNull();
+    });
+
+    it('should activate newly added directive and pipe on standalone component', () => {
+      @Component({
+        selector: 'app-add',
+        imports: [],
+        template: '<div id="box" myDir>initial</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppAdd {}
+
+      @Component({
+        selector: 'app-add',
+        imports: [MyDirective, MyPipe],
+        template: '<div id="box" myDir>{{ "added" | myPipe }}</div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppAddV2 {}
+
+      const fixture = TestBed.createComponent(AppAdd);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('#box').getAttribute('data-dir')).toBeNull();
+
+      hmrUpdateFrom(AppAdd, AppAddV2);
+      fixture.detectChanges();
+      const box = fixture.nativeElement.querySelector('#box');
+      expect(box.getAttribute('data-dir')).toBe('active');
+      expect(box.textContent).toBe('ADDED');
+    });
+
+    it('should render recursive standalone self-reference added in HMR update', () => {
+      @Component({
+        selector: 'app-tree',
+        template: '<span class="node">{{ label }}</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TreeNode {
+        @Input() label = 'root';
+        @Input() child: string | null = null;
+      }
+
+      // Include `TreeNode` in `imports` so JIT emits `ɵɵelementStart` (matching AoT `ngtsc`).
+      @Component({
+        selector: 'app-tree',
+        imports: [TreeNode],
+        template: '<span class="node">{{ label }}</span>@if (child) {<app-tree [label]="child" />}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TreeNodeV2 {
+        @Input() label = 'root';
+        @Input() child: string | null = null;
+      }
+
+      // Match AoT `ngtsc` output where a non-recursive initial template omits the self-reference.
+      getComponentDef(TreeNode)!.directiveDefs = null;
+
+      const fixture = TestBed.createComponent(TreeNode);
+      fixture.componentInstance.label = 'parent';
+      fixture.componentInstance.child = 'nested-child';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelectorAll('.node').length).toBe(1);
+
+      hmrUpdateFrom(TreeNode, TreeNodeV2, {directiveDefs: [getComponentDef(TreeNode)!]});
+      fixture.detectChanges();
+      const nodes = fixture.nativeElement.querySelectorAll('.node');
+      expect(nodes.length).toBe(2);
+      expect(nodes[1].textContent).toBe('nested-child');
+    });
   });
 
   describe('queries', () => {
@@ -1077,6 +1252,7 @@ describe('hot module replacement', () => {
       @Component({
         template: '',
         selector: 'child-cmp',
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildCmp implements DoCheck {
         @Input() text = '[empty]';
@@ -1090,6 +1266,7 @@ describe('hot module replacement', () => {
         template: `<child-cmp text="A"/>`,
         imports: [ChildCmp],
         selector: 'parent-cmp',
+        changeDetection: ChangeDetectionStrategy.Eager,
       };
       let logs: string[] = [];
 
@@ -1103,6 +1280,7 @@ describe('hot module replacement', () => {
       @Component({
         template: `<parent-cmp />`,
         imports: [ParentCmp],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -1179,6 +1357,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: `<child-cmp [value]="value" />`,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         value = 1;
@@ -1332,7 +1511,9 @@ describe('hot module replacement', () => {
     it('should bind events inside the NgZone after a replacement', () => {
       const calls: {name: string; inZone: boolean}[] = [];
 
-      @Component({template: `<button (click)="clicked()"></button>`})
+      @Component({
+        template: `<button (click)="clicked()"></button>`,
+      })
       class App {
         clicked() {}
       }
@@ -1361,7 +1542,9 @@ describe('hot module replacement', () => {
       fixture.detectChanges();
       expect(calls).toEqual([{name: 'click', inZone: true}]);
 
-      replaceMetadata(App, {template: '<button class="foo" (click)="clicked()"></button>'});
+      replaceMetadata(App, {
+        template: '<button class="foo" (click)="clicked()"></button>',
+      });
       fixture.detectChanges();
 
       expect(calls).toEqual([
@@ -1673,6 +1856,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: `<child-cmp [state]="state" [attr.foo]="'The state is ' + state" />`,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         state = 0;
@@ -1693,7 +1877,10 @@ describe('hot module replacement', () => {
         `<child-cmp foo="The state is 1" bar="1">Hello</child-cmp>`,
       );
 
-      replaceMetadata(ChildCmp, {...initialMetadata, template: `Changed`});
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Changed`,
+      });
       fixture.detectChanges();
       expectHTML(
         fixture.nativeElement,
@@ -1725,6 +1912,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: `<child-cmp class="static" [state]="state" [class.foo]="state" />`,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         state = false;
@@ -1738,7 +1926,10 @@ describe('hot module replacement', () => {
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, `<child-cmp class="static foo bar">Hello</child-cmp>`);
 
-      replaceMetadata(ChildCmp, {...initialMetadata, template: `Changed`});
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Changed`,
+      });
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, `<child-cmp class="static foo bar">Changed</child-cmp>`);
 
@@ -1768,6 +1959,7 @@ describe('hot module replacement', () => {
           [state]="state"
           [style.width]="state ? '3px' : '12px'"
         />`,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         state = false;
@@ -1787,7 +1979,10 @@ describe('hot module replacement', () => {
         `<child-cmp style="opacity: 0.5; width: 3px; height: 5px;">Hello</child-cmp>`,
       );
 
-      replaceMetadata(ChildCmp, {...initialMetadata, template: `Changed`});
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Changed`,
+      });
       fixture.detectChanges();
       expectHTML(
         fixture.nativeElement,
@@ -1832,7 +2027,10 @@ describe('hot module replacement', () => {
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, '<child-cmp><span>здравей</span></child-cmp>');
 
-      replaceMetadata(ChildCmp, {...initialMetadata, template: '<strong i18n>goodbye</strong>!'});
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: '<strong i18n>goodbye</strong>!',
+      });
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, '<child-cmp><strong>довиждане</strong>!</child-cmp>');
     });
@@ -1884,6 +2082,7 @@ describe('hot module replacement', () => {
       const initialMetadata: Component = {
         selector: 'child-cmp',
         template: '<span i18n>Hello {{name}}!</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
       };
 
       @Component(initialMetadata)
@@ -1898,6 +2097,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: '<child-cmp/>',
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -1905,7 +2105,10 @@ describe('hot module replacement', () => {
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, '<child-cmp><span>Здравей Frodo!</span></child-cmp>');
 
-      replaceMetadata(ChildCmp, {...initialMetadata, template: '<strong i18n>hello</strong>'});
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: '<strong i18n>hello</strong>',
+      });
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, '<child-cmp><strong>здравей</strong></child-cmp>');
 
@@ -1943,6 +2146,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: '<child-cmp i18n>Hello {{name}}!</child-cmp>',
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         name = 'Frodo';
@@ -1986,6 +2190,7 @@ describe('hot module replacement', () => {
       const initialMetadata: Component = {
         selector: 'child-cmp',
         template: '<span i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
       };
 
       @Component(initialMetadata)
@@ -2000,6 +2205,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: '<child-cmp/>',
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -2007,7 +2213,10 @@ describe('hot module replacement', () => {
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, '<child-cmp><span>десет</span></child-cmp>');
 
-      replaceMetadata(ChildCmp, {...initialMetadata, template: '<strong i18n>hello</strong>'});
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: '<strong i18n>hello</strong>',
+      });
       fixture.detectChanges();
       expectHTML(fixture.nativeElement, '<child-cmp><strong>здравей</strong></child-cmp>');
 
@@ -2047,6 +2256,7 @@ describe('hot module replacement', () => {
       @Component({
         imports: [ChildCmp],
         template: '<child-cmp i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</child-cmp>',
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         count = 10;

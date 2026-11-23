@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentRef, inject, Injectable} from '@angular/core';
+import {ComponentRef, inject, Service} from '@angular/core';
 
+import {Route} from './models';
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
-import {Route} from './models';
 import {TreeNode} from './utils/tree';
 
 /**
@@ -42,19 +42,20 @@ export type DetachedRouteHandleInternal = {
  *
  * @param handle The detached route handle to destroy.
  *
- * @publicApi
+ * @publicApi 22.2
  * @see [Manually destroying detached route handles](guide/routing/customizing-route-behavior#manually-destroying-detached-route-handles)
  */
 export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
   const internalHandle = handle as DetachedRouteHandleInternal;
   if (internalHandle && internalHandle.componentRef) {
     internalHandle.componentRef.destroy();
+    // It is critical to destroy the `_localInjector` here. When a route is detached
+    // by the `RouteReuseStrategy`, the `_localInjector` is retained because the
+    // ActivatedRoute object is stored and can be attached later.
+    // When the developer drops the handle (e.g., deciding not to reuse it),
+    // they must manually invoke `destroyDetachedRouteHandle` to prevent a memory leak.
+    internalHandle.route.value._localInjector?.destroy();
   }
-}
-
-export interface ExperimentalRouteReuseStrategy {
-  shouldDestroyInjector?(route: Route): boolean;
-  retrieveStoredRouteHandles?(): Array<DetachedRouteHandleInternal>;
 }
 
 /**
@@ -64,7 +65,7 @@ export interface ExperimentalRouteReuseStrategy {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: () => inject(DefaultRouteReuseStrategy)})
+@Service({factory: () => inject(DefaultRouteReuseStrategy)})
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
@@ -82,8 +83,35 @@ export abstract class RouteReuseStrategy {
   /** Retrieves the previously stored route */
   abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
 
-  /** Determines if a route should be reused */
+  /**
+   * Determines if a route should be reused.
+   *
+   * Note: Recreating a component by returning `false` does not automatically rerun guards or
+   * resolvers; rerun behavior for an unchanged route configuration is controlled by
+   * {@link RunGuardsAndResolvers}.
+   *
+   * @see {@link RunGuardsAndResolvers}
+   */
   abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
+
+  /**
+   * Returns a list of all currently stored `DetachedRouteHandle`s.
+   *
+   * This method is called by the router after navigations to identify which injectors
+   * are still needed by detached routes.
+   *
+   * @see {@link withAutoCleanupInjectors}
+   */
+  retrieveStoredRouteHandles?(): Array<DetachedRouteHandle>;
+
+  /**
+   * Determines if the injector for the given route should be destroyed.
+   *
+   * If this method returns `true`, the router will destroy the injector for the given route.
+   *
+   * @see {@link withAutoCleanupInjectors}
+   */
+  shouldDestroyInjector?(route: Route): boolean;
 }
 
 /**
@@ -139,16 +167,15 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
   /**
    * Determines if the injector for the given route should be destroyed.
    *
-   * This method is called by the router when the `RouteReuseStrategy` is destroyed.
+   * This method is called by the router after navigations.
    * If this method returns `true`, the router will destroy the injector for the given route.
    *
-   * @see {@link withExperimentalAutoCleanupInjectors}
-   * @xperimental 21.1
+   * @see {@link withAutoCleanupInjectors}
    */
   shouldDestroyInjector(route: Route): boolean {
     return true;
   }
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {}

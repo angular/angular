@@ -18,7 +18,7 @@ import {Component, input} from '@angular/core';
     'aria-valuemax': '100',
 
     // Binding that updates the current value of the progressbar.
-    '[attr.aria-valuenow]': 'value',
+    '[attr.aria-valuenow]': 'value()',
   },
 })
 export class ExampleProgressbarComponent {

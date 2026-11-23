@@ -1,64 +1,58 @@
-import {Combobox, ComboboxInput, ComboboxPopupContainer} from '@angular/aria/combobox';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
 import {OverlayModule} from '@angular/cdk/overlay';
-import {
-  afterRenderEffect,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  signal,
-  viewChild,
-  viewChildren,
-} from '@angular/core';
+import {afterRenderEffect, Component, computed, effect, signal, viewChild} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-root[theme="highlight-basic"], app-root:not([theme])',
   templateUrl: 'app.html',
   styleUrl: 'app.css',
-  imports: [
-    Combobox,
-    ComboboxInput,
-    ComboboxPopupContainer,
-    Listbox,
-    Option,
-    OverlayModule,
-    FormsModule,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule, FormsModule],
 })
 export class App {
-  /** The combobox listbox popup. */
-  listbox = viewChild<Listbox<string>>(Listbox);
+  clear() {
+    this.query.set('');
+    this.selectedOption.set([]);
+    this.popupExpanded.set(false);
+    this.navigated.set(false);
+  }
 
-  /** The options available in the listbox. */
-  options = viewChildren<Option<string>>(Option);
+  readonly listbox = viewChild(Listbox);
+  readonly combobox = viewChild(Combobox);
 
-  /** A reference to the ng aria combobox. */
-  combobox = viewChild<Combobox<string>>(Combobox);
-
-  /** The query string used to filter the list of countries. */
+  popupExpanded = signal(false);
   query = signal('');
+  selectedOption = signal<string[]>([]);
+  navigated = signal(false);
 
-  /** The list of countries filtered by the query. */
   countries = computed(() =>
     ALL_COUNTRIES.filter((country) => country.toLowerCase().startsWith(this.query().toLowerCase())),
   );
 
   constructor() {
-    // Scrolls to the active item when the active option changes.
-    // The slight delay here is to ensure animations are done before scrolling.
     afterRenderEffect(() => {
-      const option = this.options().find((opt) => opt.active());
-      setTimeout(() => option?.element.scrollIntoView({block: 'nearest'}), 50);
-    });
-
-    // Resets the listbox scroll position when the combobox is closed.
-    afterRenderEffect(() => {
-      if (!this.combobox()?.expanded()) {
-        setTimeout(() => this.listbox()?.element.scrollTo(0, 0), 150);
+      if (this.combobox()?.expanded() === true) {
+        this.listbox()?.scrollActiveItemIntoView();
       }
     });
+
+    effect(() => {
+      if (!this.popupExpanded()) {
+        this.navigated.set(false);
+      }
+    });
+  }
+
+  onCommit() {
+    const selected = this.selectedOption();
+    if (selected.length > 0) {
+      this.query.set(selected[0]);
+    } else {
+      this.query.set('');
+    }
+    this.popupExpanded.set(false);
+    this.combobox()?.element.focus();
   }
 }
 
@@ -119,7 +113,7 @@ const ALL_COUNTRIES = [
   'Equatorial Guinea',
   'Eritrea',
   'Estonia',
-  'Eswatini (fmr. ""Swaziland"")',
+  'Eswatini (fmr. "Swaziland")',
   'Ethiopia',
   'Fiji',
   'Finland',
@@ -242,7 +236,7 @@ const ALL_COUNTRIES = [
   'Tonga',
   'Trinidad and Tobago',
   'Tunisia',
-  'Turkey',
+  'Türkiye',
   'Turkmenistan',
   'Tuvalu',
   'Uganda',

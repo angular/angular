@@ -27,14 +27,14 @@ import {maxLengthError} from './validation_errors';
  * @param path Path of the field to validate
  * @param maxLength The maximum length, or a LogicFn that returns the maximum length.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.maxLength(maxLength)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `maxLengthError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @see [Signal Form Max Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxLength<
   TValue extends ValueWithLengthOrSize,
@@ -44,9 +44,12 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
-    typeof maxLength === 'number' ? maxLength : maxLength(ctx),
-  );
+  const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof maxLength === 'number' ? maxLength : maxLength(ctx);
+  });
   metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {

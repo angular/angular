@@ -1,0 +1,52 @@
+@use '../media-queries' as mq;
+
+@mixin docs-tutorial-mascot() {
+  .docs-tutorial-mascot {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-block: 1.5rem;
+
+    &__angie {
+      flex: none;
+      width: clamp(150px, 18vw, 200px);
+      height: auto;
+      margin: 0;
+    }
+
+    &__bubble {
+      position: relative;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 34ch;
+      margin-block-start: 1rem;
+      margin-inline-start: -0.25rem;
+      padding: 1rem 1.5rem;
+      border-radius: 1.25rem;
+      background: var(--septenary-contrast);
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset-block-start: 1.5rem;
+        inset-inline-start: -0.4rem;
+        width: 1rem;
+        height: 1rem;
+        background: inherit;
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  @include mq.for-phone-only {
+    .docs-tutorial-mascot {
+      &__angie {
+        width: clamp(104px, 28vw, 140px);
+      }
+
+      &__bubble {
+        padding: 0.75rem 1.25rem;
+      }
+    }
+  }
+}

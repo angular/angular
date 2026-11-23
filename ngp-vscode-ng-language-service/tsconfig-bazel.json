@@ -1,0 +1,5 @@
+// Bazel tsconfig for the ngp language server. `pnpm compile`/`typecheck` use
+// `tsconfig.json` instead, which maps `@angular/*` onto in-repo sources for esbuild.
+{
+  "extends": "../packages/compiler-cli/preprocessor/tsconfig.json"
+}

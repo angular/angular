@@ -1,4 +1,4 @@
-import {Component, signal, computed, linkedSignal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, computed, linkedSignal, signal} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -46,7 +46,6 @@ import {Component, signal, computed, linkedSignal, ChangeDetectionStrategy} from
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   userStatus = signal<'online' | 'offline' | 'away'>('offline');
@@ -72,7 +71,7 @@ export class App {
     const now = new Date();
     const hour = now.getHours();
     const isWeekday = now.getDay() > 0 && now.getDay() < 6;
-    return isWeekday && hour >= 9 && hour < 17 && this.userStatus() !== 'offline';
+    return this.userStatus() !== 'offline' && isWeekday && hour >= 9 && hour < 17;
   });
 
   toggleNotifications() {

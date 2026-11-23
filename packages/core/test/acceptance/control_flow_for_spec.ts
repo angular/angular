@@ -12,55 +12,48 @@ import {
   ChangeDetectorRef,
   Component,
   Directive,
+  forwardRef,
   inject,
   Input,
   OnInit,
   Pipe,
   PipeTransform,
-  provideZoneChangeDetection,
   signal,
   TemplateRef,
   ViewContainerRef,
 } from '../../src/core';
+import {global} from '../../src/util/global';
 import {TestBed} from '../../testing';
 
 describe('control flow - for', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
-  it('should create, remove and move views corresponding to items in a collection', () => {
+  it('should create, remove and move views corresponding to items in a collection', async () => {
     @Component({
-      template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',
-      standalone: false,
+      template: '@for ((item of items()); track item; let idx = $index) {{{item}}({{idx}})|}',
     })
     class TestComponent {
-      items = [1, 2, 3];
+      items = signal([1, 2, 3]);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
-    fixture.componentInstance.items.pop();
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([1, 2]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|');
 
-    fixture.componentInstance.items.push(3);
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([1, 2, 3]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
-    fixture.componentInstance.items[0] = 3;
-    fixture.componentInstance.items[2] = 1;
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([3, 2, 1]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('3(0)|2(1)|1(2)|');
   });
 
   it('should loop over iterators that can be iterated over only once', () => {
     @Component({
       template: '@for ((item of items.keys()); track $index) {{{item}}|}',
-      standalone: false,
     })
     class TestComponent {
       items = new Map([
@@ -75,64 +68,61 @@ describe('control flow - for', () => {
     expect(fixture.nativeElement.textContent).toBe('a|b|c|');
   });
 
-  it('should work correctly with trackBy index', () => {
+  it('should work correctly with trackBy index', async () => {
     @Component({
-      template: '@for ((item of items); track idx; let idx = $index) {{{item}}({{idx}})|}',
-      standalone: false,
+      template: '@for ((item of items()); track idx; let idx = $index) {{{item}}({{idx}})|}',
     })
     class TestComponent {
-      items = [1, 2, 3];
+      items = signal([1, 2, 3]);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
-    fixture.componentInstance.items.pop();
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([1, 2]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|');
 
-    fixture.componentInstance.items.push(3);
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([1, 2, 3]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
-    fixture.componentInstance.items[0] = 3;
-    fixture.componentInstance.items[2] = 1;
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([3, 2, 1]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('3(0)|2(1)|1(2)|');
   });
 
-  it('should support empty blocks', () => {
+  it('should support empty blocks', async () => {
     @Component({
-      template: '@for ((item of items); track idx; let idx = $index) {|} @empty {Empty}',
-      standalone: false,
+      template: '@for ((item of items()); track idx; let idx = $index) {|} @empty {Empty}',
     })
     class TestComponent {
-      items: number[] | null | undefined = [1, 2, 3];
+      items = signal<number[] | null | undefined>([1, 2, 3]);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('|||');
 
-    fixture.componentInstance.items = [];
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('Empty');
 
-    fixture.componentInstance.items = [0, 1];
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([0, 1]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('||');
 
-    fixture.componentInstance.items = null;
-    fixture.detectChanges();
+    fixture.componentInstance.items.set(null);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('Empty');
 
-    fixture.componentInstance.items = [0];
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([0]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('|');
 
-    fixture.componentInstance.items = undefined;
-    fixture.detectChanges();
+    fixture.componentInstance.items.set(undefined);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('Empty');
   });
 
@@ -173,7 +163,6 @@ describe('control flow - for', () => {
     }
 
     @Component({
-      selector: 'app-root',
       imports: [Dir],
       template: `
         <div [dir] #dir="dir"></div>
@@ -190,35 +179,109 @@ describe('control flow - for', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('2');
   });
 
-  it('should expose variables both under their real names and aliases', () => {
+  it('should expose variables both under their real names and aliases', async () => {
     @Component({
       template:
-        '@for ((item of items); track item; let idx = $index) {{{item}}({{$index}}/{{idx}})|}',
-      standalone: false,
+        '@for ((item of items()); track item; let idx = $index) {{{item}}({{$index}}/{{idx}})|}',
     })
     class TestComponent {
-      items = [1, 2, 3];
+      items = signal([1, 2, 3]);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0/0)|2(1/1)|3(2/2)|');
 
-    fixture.componentInstance.items.splice(1, 1);
-    fixture.detectChanges();
+    fixture.componentInstance.items.set([1, 3]);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toBe('1(0/0)|3(1/1)|');
   });
 
+  describe('invalid collections', () => {
+    const _global: {ngDevMode: any} = global;
+    let saveNgDevMode!: typeof ngDevMode;
+    beforeEach(() => (saveNgDevMode = ngDevMode));
+    afterEach(() => (_global.ngDevMode = saveNgDevMode));
+
+    function createFixture(initial: unknown) {
+      @Component({
+        template: '@for (item of items(); track $index) {{{item}}|}',
+      })
+      class TestComponent {
+        items = signal<any>(initial);
+      }
+
+      return TestBed.createComponent(TestComponent);
+    }
+
+    it('should throw a coded error when the collection is a plain object', async () => {
+      const fixture = createFixture({0: 'a'});
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /NG0957: @for expected an array or an iterable, but got object/,
+      );
+    });
+
+    it('should throw a coded error when a valid collection is replaced by a plain object', async () => {
+      const fixture = createFixture(['a', 'b']);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+
+      fixture.componentInstance.items.set({0: 'a'});
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG0957/);
+    });
+
+    it('should render a Set', async () => {
+      const fixture = createFixture(new Set(['a', 'b']));
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+    });
+
+    it('should render a Map', async () => {
+      const fixture = createFixture(new Map([['a', 1]]));
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a,1|');
+    });
+
+    it('should render a custom iterable', async () => {
+      const iterable = {
+        *[Symbol.iterator]() {
+          yield 'a';
+          yield 'b';
+        },
+      };
+      const fixture = createFixture(iterable);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+    });
+
+    it('should render a string as its characters', async () => {
+      const fixture = createFixture('ab');
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('a|b|');
+    });
+
+    it('should render nothing for null and undefined', async () => {
+      const fixture = createFixture(null);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      fixture.componentInstance.items.set(undefined);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
+  });
+
   describe('trackBy', () => {
-    it('should have access to the host context in the track function', () => {
+    it('should have access to the host context in the track function', async () => {
       let offsetReads = 0;
 
       @Component({
-        template: '@for ((item of items); track $index + offset) {{{item}}}',
-        standalone: false,
+        template: '@for ((item of items()); track $index + offset) {{{item}}}',
       })
       class TestComponent {
-        items = ['a', 'b', 'c'];
+        items = signal(['a', 'b', 'c']);
 
         get offset() {
           offsetReads++;
@@ -227,7 +290,7 @@ describe('control flow - for', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('abc');
       expect(offsetReads).toBeGreaterThan(0);
 
@@ -235,8 +298,8 @@ describe('control flow - for', () => {
       // explicitly modify the DOM text node to make sure that the list reconciliation algorithm
       // based on tracking indices overrides it.
       fixture.debugElement.childNodes[1].nativeNode.data = 'x';
-      fixture.componentInstance.items.shift();
-      fixture.detectChanges();
+      fixture.componentInstance.items.set(['b', 'c']);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('bc');
       expect(offsetReads).toBeGreaterThan(prevReads);
     });
@@ -248,7 +311,6 @@ describe('control flow - for', () => {
         template: `@for ((item of items); track trackingFn(item, compProp)) {
           {{ item }}
         }`,
-        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -280,7 +342,6 @@ describe('control flow - for', () => {
             }
           }
         `,
-        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -304,7 +365,6 @@ describe('control flow - for', () => {
         template: `@for (item of items; track trackingFn($index, item)) {
           {{ item }}
         }`,
-        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -320,21 +380,22 @@ describe('control flow - for', () => {
       expect(context).toBe(fixture.componentInstance);
     });
 
-    it('should warn about duplicated keys when using arrays', () => {
+    it('should warn about duplicated keys when using arrays', async () => {
       @Component({
-        template: `@for (item of items; track item) {
+        template: `@for (item of items(); track item) {
           {{ item }}
         }`,
-        standalone: false,
+        // The warning is logged during the CheckNoChanges pass
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
-        items = ['a', 'b', 'a', 'c', 'a'];
+        items = signal(['a', 'b', 'a', 'c', 'a']);
       }
 
       spyOn(console, 'warn');
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(' a  b  a  c  a ');
       expect(console.warn).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledWith(
@@ -357,19 +418,22 @@ describe('control flow - for', () => {
 
     it('should warn about duplicated keys when using iterables', () => {
       @Component({
-        template: `@for (item of items.values(); track item) {
+        template: `@for (item of items().values(); track item) {
           {{ item }}
         }`,
-        standalone: false,
+        // The warning is logged during the CheckNoChanges pass
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
-        items = new Map([
-          [1, 'a'],
-          [2, 'b'],
-          [3, 'a'],
-          [4, 'c'],
-          [5, 'a'],
-        ]);
+        items = signal(
+          new Map([
+            [1, 'a'],
+            [2, 'b'],
+            [3, 'a'],
+            [4, 'c'],
+            [5, 'a'],
+          ]),
+        );
       }
 
       spyOn(console, 'warn');
@@ -396,24 +460,27 @@ describe('control flow - for', () => {
       );
     });
 
-    it('should warn about duplicate keys when keys are expressed as symbols', () => {
+    it('should warn about duplicate keys when keys are expressed as symbols', async () => {
       const value = Symbol('a');
 
       @Component({
-        template: `@for (item of items.values(); track item) {}`,
-        standalone: false,
+        template: `@for (item of items().values(); track item) {}`,
+        // The warning is logged during the CheckNoChanges pass
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
-        items = new Map([
-          [1, value],
-          [2, value],
-        ]);
+        items = signal(
+          new Map([
+            [1, value],
+            [2, value],
+          ]),
+        );
       }
 
       spyOn(console, 'warn');
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(console.warn).toHaveBeenCalledWith(
         jasmine.stringContaining(`Symbol(a)" at index "0" and "1".`),
       );
@@ -422,7 +489,6 @@ describe('control flow - for', () => {
     it('should not warn about duplicate keys iterating over the new collection only', () => {
       @Component({
         template: `@for (item of items; track item) {}`,
-        standalone: false,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -439,42 +505,40 @@ describe('control flow - for', () => {
       expect(console.warn).not.toHaveBeenCalled();
     });
 
-    it('should warn about collection re-creation due to identity tracking', () => {
+    it('should warn about collection re-creation due to identity tracking', async () => {
       @Component({
-        template: `@for (item of items; track item) {
+        template: `@for (item of items(); track item) {
           (<span>{{ item.value }}</span
           >)
         }`,
-        standalone: false,
       })
       class TestComponent {
-        items = [{value: 0}, {value: 1}];
+        items = signal([{value: 0}, {value: 1}]);
       }
 
       spyOn(console, 'warn');
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(' (0)  (1) ');
       expect(console.warn).not.toHaveBeenCalled();
 
-      fixture.componentInstance.items = fixture.componentInstance.items.map((item) => ({
-        value: item.value + 1,
-      }));
-      fixture.detectChanges();
+      fixture.componentInstance.items.set(
+        fixture.componentInstance.items().map((item) => ({value: item.value + 1})),
+      );
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(' (1)  (2) ');
       expect(console.warn).toHaveBeenCalled();
     });
 
-    it('should NOT warn about collection re-creation when a view is not considered expensive', () => {
+    it('should NOT warn about collection re-creation when a view is not considered expensive', async () => {
       @Component({
-        template: `@for (item of items; track item) {
+        template: `@for (item of items(); track item) {
           ({{ item.value }})
         }`,
-        standalone: false,
       })
       class TestComponent {
-        items = [{value: 0}, {value: 1}];
+        items = signal([{value: 0}, {value: 1}]);
       }
 
       spyOn(console, 'warn');
@@ -484,49 +548,47 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe(' (0)  (1) ');
       expect(console.warn).not.toHaveBeenCalled();
 
-      fixture.componentInstance.items = fixture.componentInstance.items.map((item) => ({
-        value: item.value + 1,
-      }));
-      fixture.detectChanges();
+      fixture.componentInstance.items.set(
+        fixture.componentInstance.items().map((item) => ({value: item.value + 1})),
+      );
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(' (1)  (2) ');
       expect(console.warn).not.toHaveBeenCalled();
     });
 
-    it('should NOT warn about collection re-creation when a trackBy function is not identity', () => {
+    it('should NOT warn about collection re-creation when a trackBy function is not identity', async () => {
       @Component({
-        template: `@for (item of items; track item.value) {
+        template: `@for (item of items(); track item.value) {
           ({{ item.value }})
         }`,
-        standalone: false,
       })
       class TestComponent {
-        items = [{value: 0}, {value: 1}];
+        items = signal([{value: 0}, {value: 1}]);
       }
 
       spyOn(console, 'warn');
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(' (0)  (1) ');
       expect(console.warn).not.toHaveBeenCalled();
 
-      fixture.componentInstance.items = fixture.componentInstance.items.map((item) => ({
-        value: item.value + 1,
-      }));
-      fixture.detectChanges();
+      fixture.componentInstance.items.set(
+        fixture.componentInstance.items().map((item) => ({value: item.value + 1})),
+      );
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(' (1)  (2) ');
       expect(console.warn).not.toHaveBeenCalled();
     });
   });
 
   describe('list diffing and view operations', () => {
-    it('should delete views in the middle', () => {
+    it('should delete views in the middle', async () => {
       @Component({
-        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
+        template: '@for (item of items(); track item; let idx = $index) {{{item}}({{idx}})|}',
       })
       class TestComponent {
-        items = [1, 2, 3];
+        items = signal([1, 2, 3]);
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -534,18 +596,17 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
       // delete in the middle
-      fixture.componentInstance.items.splice(1, 1);
-      fixture.detectChanges();
+      fixture.componentInstance.items.set([1, 3]);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('1(0)|3(1)|');
     });
 
-    it('should insert views in the middle', () => {
+    it('should insert views in the middle', async () => {
       @Component({
-        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
+        template: '@for (item of items(); track item; let idx = $index) {{{item}}({{idx}})|}',
       })
       class TestComponent {
-        items = [1, 3];
+        items = signal([1, 3]);
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -553,18 +614,17 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('1(0)|3(1)|');
 
       // add in the middle
-      fixture.componentInstance.items.splice(1, 0, 2);
-      fixture.detectChanges();
+      fixture.componentInstance.items.set([1, 2, 3]);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
     });
 
-    it('should replace different items', () => {
+    it('should replace different items', async () => {
       @Component({
-        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
+        template: '@for (item of items(); track item; let idx = $index) {{{item}}({{idx}})|}',
       })
       class TestComponent {
-        items = [1, 2, 3];
+        items = signal([1, 2, 3]);
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -572,31 +632,30 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
 
       // an item in the middle stays the same, the rest gets replaced
-      fixture.componentInstance.items = [5, 2, 7];
-      fixture.detectChanges();
+      fixture.componentInstance.items.set([5, 2, 7]);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('5(0)|2(1)|7(2)|');
     });
 
-    it('should move and delete items', () => {
+    it('should move and delete items', async () => {
       @Component({
-        template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
+        template: '@for (item of items(); track item; let idx = $index) {{{item}}({{idx}})|}',
       })
       class TestComponent {
-        items = [1, 2, 3, 4, 5, 6];
+        items = signal([1, 2, 3, 4, 5, 6]);
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges(false);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|4(3)|5(4)|6(5)|');
 
       // move 5 and do some other delete other operations
-      fixture.componentInstance.items = [5, 3, 7];
-      fixture.detectChanges();
+      fixture.componentInstance.items.set([5, 3, 7]);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('5(0)|3(1)|7(2)|');
     });
 
-    it('should correctly attach and detach views with duplicated keys', () => {
+    it('should correctly attach and detach views with duplicated keys', async () => {
       const BEFORE = [
         {'name': 'Task 14', 'id': 14},
         {'name': 'Task 14', 'id': 14},
@@ -619,13 +678,13 @@ describe('control flow - for', () => {
       @Component({
         imports: [ChildCmp],
         template: `
-          @for (task of tasks; track task.id) {
+          @for (task of tasks(); track task.id) {
             <child-cmp />
           }
         `,
       })
       class TestComponent {
-        tasks = BEFORE;
+        tasks = signal(BEFORE);
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -633,8 +692,8 @@ describe('control flow - for', () => {
 
       const cmp = fixture.componentInstance;
       const nativeElement = fixture.debugElement.nativeElement;
-      cmp.tasks = AFTER;
-      fixture.detectChanges();
+      cmp.tasks.set(AFTER);
+      await fixture.whenStable();
       expect(nativeElement.querySelectorAll('child-cmp').length).toBe(3);
     });
   });
@@ -669,7 +728,7 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
     });
 
-    it('should project an @empty block with a single root node into the root node slot', () => {
+    it('should project an @empty block with a single root node into the root node slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -681,7 +740,7 @@ describe('control flow - for', () => {
         template: `
           <test
             >Before
-            @for (item of items; track $index) {
+            @for (item of items(); track $index) {
             } @empty {
               <span foo>Empty</span>
             }
@@ -690,16 +749,16 @@ describe('control flow - for', () => {
         `,
       })
       class App {
-        items = [];
+        items = signal([]);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: Empty');
     });
 
-    it('should allow @for and @empty blocks to be projected into different slots', () => {
+    it('should allow @for and @empty blocks to be projected into different slots', async () => {
       @Component({
         selector: 'test',
         template:
@@ -712,7 +771,7 @@ describe('control flow - for', () => {
         template: `
           <test
             >Before
-            @for (item of items; track $index) {
+            @for (item of items(); track $index) {
               <span loop>{{ item }}</span>
             } @empty {
               <span empty>Empty</span>
@@ -722,18 +781,18 @@ describe('control flow - for', () => {
         `,
       })
       class App {
-        items = [1, 2, 3];
+        items = signal([1, 2, 3]);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toBe(
         'Main: Before  After Loop slot: 123 Empty slot: ',
       );
 
-      fixture.componentInstance.items = [];
-      fixture.detectChanges();
+      fixture.componentInstance.items.set([]);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe(
         'Main: Before  After Loop slot:  Empty slot: Empty',
       );
@@ -784,6 +843,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        imports: [Foo],
       })
       class TestComponent {}
 
@@ -958,7 +1019,7 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before 1212 After Slot: ');
     });
 
-    it('should project an @for with a single root template node into the root node slot', () => {
+    it('should project an @for with a single root template node into the root node slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -967,25 +1028,25 @@ describe('control flow - for', () => {
 
       @Component({
         imports: [TestComponent, NgIf],
-        template: `<test
-          >Before
-          @for (item of items; track $index) {
+        template: `<test>
+          Before
+          @for (item of items(); track $index) {
             <span *ngIf="true" foo>{{ item }}</span>
           }
-          After</test
-        >`,
+          After
+        </test>`,
       })
       class App {
-        items = [1, 2];
+        items = signal([1, 2]);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 12');
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('Main:  Before  After  Slot: 12');
 
-      fixture.componentInstance.items.push(3);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+      fixture.componentInstance.items.set([1, 2, 3]);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('Main:  Before  After  Slot: 123');
     });
 
     it('should invoke a projected attribute directive at the root of an @for once', () => {
@@ -994,6 +1055,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        imports: [forwardRef(() => FooDirective)],
       })
       class TestComponent {}
 
@@ -1185,7 +1248,6 @@ describe('control flow - for', () => {
       // prettier-ignore
       @Component({
         template: `@for (item of items; track item) {{{item}}|}`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestComponent {
         items = new Proxy([1, 2, 3, 4, 5], {
@@ -1212,7 +1274,6 @@ describe('control flow - for', () => {
     // prettier-ignore
     @Component({
       template: `@for (item of items; track $index) {{{item}}|}`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class TestComponent {
       items = new Proxy(

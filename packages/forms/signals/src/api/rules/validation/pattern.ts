@@ -20,22 +20,25 @@ import {patternError} from './validation_errors';
  * @param path Path of the field to validate
  * @param pattern The RegExp pattern to match, or a LogicFn that returns the RegExp pattern.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.pattern(pattern)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `patternError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @see [Signal Form Pattern Validation](guide/forms/signals/validation#pattern)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function pattern<TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp | undefined>(), (ctx) =>
-    pattern instanceof RegExp ? pattern : pattern(ctx),
-  );
+  const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp | undefined>(), (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return pattern instanceof RegExp ? pattern : pattern(ctx);
+  });
   metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {

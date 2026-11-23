@@ -42,7 +42,7 @@
     {
       "name": "schematic",
       "type": "string",
-      "description": "The [collection:schematic] to run.",
+      "description": "The `[collection:schematic]` to run.",
       "positional": 0
     }
   ],
@@ -50,7 +50,7 @@
     {
       "name": "ai-config",
       "command": "ai-config",
-      "shortDescription": "Generates AI configuration files for Angular projects. This schematic creates configuration files that help AI tools follow Angular best practices, improving the quality of AI-generated code and suggestions.",
+      "shortDescription": "Generates AI configuration files for Angular projects. This schematic creates instruction files (e.g. AGENTS.md, CLAUDE.md) and Angular MCP server configuration, improving the quality of AI-generated code and suggestions.",
       "options": [
         {
           "name": "tool",
@@ -59,16 +59,14 @@
             "none"
           ],
           "enum": [
-            "agents",
-            "claude",
-            "copilot",
+            "claude-code",
             "cursor",
-            "gemini",
-            "jetbrains",
+            "gemini-cli",
             "none",
-            "windsurf"
+            "open-ai-codex",
+            "vscode"
           ],
-          "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
+          "description": "Specifies which AI tools to generate configuration files (AGENTS.md, CLAUDE.md, MCP server config) for."
         }
       ],
       "aliases": [],
@@ -109,7 +107,7 @@
           "aliases": [
             "s"
           ],
-          "description": "Include the styles for the root component directly within the `app.ts` file. Only CSS styles can be included inline. By default, a separate stylesheet file (e.g., `app.css`) is created."
+          "description": "Include the styles for the root component directly within the `app.ts` file. By default, a separate stylesheet file (e.g., `app.css`) is created."
         },
         {
           "name": "inline-template",
@@ -170,7 +168,7 @@
             "S"
           ],
           "default": false,
-          "description": "Skip the generation of a unit test files `spec.ts`."
+          "description": "Skip the generation of unit test files `spec.ts`."
         },
         {
           "name": "ssr",
@@ -206,6 +204,7 @@
         {
           "name": "test-runner",
           "type": "string",
+          "deprecated": "New projects will only be configured with Vitest in a future version.",
           "default": "vitest",
           "enum": [
             "karma",
@@ -495,7 +494,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new directive. This will be used to create the directive's class and spec files (e.g., `my-directive.directive.ts` and `my-directive.directive.spec.ts`).",
+          "description": "The name for the new directive. This will be used to create the directive's class and spec files (e.g., `my-directive.ts` and `my-directive.spec.ts`).",
           "positional": 0
         },
         {
@@ -546,6 +545,58 @@
       "deprecated": false
     },
     {
+      "name": "entry-point",
+      "command": "entry-point [name]",
+      "shortDescription": "Creates a new secondary entry point in an Angular library project.",
+      "options": [
+        {
+          "name": "entry-file",
+          "type": "string",
+          "default": "public-api",
+          "description": "The file name at which to create the secondary entry point's public API file, without the `.ts` extension."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name of the secondary entry point (for example, 'testing' or 'feature/sub').",
+          "positional": 0
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "aliases": [
+            "p"
+          ],
+          "description": "A prefix to apply to generated selectors."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the library project where the secondary entry point should be added. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not create `spec.ts` test files for the new secondary entry point."
+        },
+        {
+          "name": "skip-ts-config",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not update `tsconfig.json` to add a path mapping for the new secondary entry point."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates a secondary entry point based upon the standalone API, without NgModules."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
       "name": "enum",
       "command": "enum [name]",
       "shortDescription": "Creates a new enum in your project. Enums (enumerations) are a way to define a set of named constants, making your code more readable and maintainable. This schematic generates a new enum with the specified name and type.",
@@ -553,7 +604,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new enum. This will be used to create the enum file (e.g., `my-enum.enum.ts`).",
+          "description": "The name for the new enum. This will be used to create the enum file (e.g., `my-enum.ts`).",
           "positional": 0
         },
         {
@@ -623,7 +674,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new route guard. This will be used to create the guard's class and spec files (e.g., `my-guard.guard.ts` and `my-guard.guard.spec.ts`).",
+          "description": "The name for the new route guard. This will be used to create the guard's class and spec files (e.g., `example-guard.ts` and `example-guard.spec.ts`).",
           "positional": 0
         },
         {
@@ -673,7 +724,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new interceptor. This will be used to create the interceptor's class and spec files (e.g., `my-interceptor.interceptor.ts` and `my-interceptor.interceptor.spec.ts`).",
+          "description": "The name for the new interceptor. This will be used to create the interceptor's class and spec files (e.g., `example-interceptor.ts` and `example-interceptor.spec.ts`).",
           "positional": 0
         },
         {
@@ -709,7 +760,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new interface. This will be used to create the interface file (e.g., `my-interface.interface.ts`).",
+          "description": "The name for the new interface. This will be used to create the interface file (e.g., `my-interface.ts`).",
           "positional": 0
         },
         {
@@ -743,7 +794,7 @@
           "name": "entry-file",
           "type": "string",
           "default": "public-api",
-          "description": "The path to the library's public API file, relative to the workspace root. This file defines what parts of the library are accessible to applications that import it."
+          "description": "The name of the library's public API file, without the `.ts` extension, created in the library's `src` directory. This file defines what parts of the library are accessible to applications that import it."
         },
         {
           "name": "name",
@@ -792,6 +843,7 @@
         {
           "name": "test-runner",
           "type": "string",
+          "deprecated": "New projects will only be configured with Vitest in a future version.",
           "default": "vitest",
           "enum": [
             "karma",
@@ -900,7 +952,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new pipe. This will be used to create the pipe's class and spec files (e.g., `my-pipe.pipe.ts` and `my-pipe.pipe.spec.ts`).",
+          "description": "The name for the new pipe. This will be used to create the pipe's class and spec files (e.g., `example-pipe.ts` and `example-pipe.spec.ts`).",
           "positional": 0
         },
         {
@@ -962,7 +1014,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "The name for the new resolver. This will be used to create the resolver's class and spec files (e.g., `my-resolver.resolver.ts` and `my-resolver.resolver.spec.ts`).",
+          "description": "The name for the new resolver. This will be used to create the resolver's class and spec files (e.g., `example-resolver.ts` and `example-resolver.spec.ts`).",
           "positional": 0
         },
         {
@@ -1010,9 +1062,15 @@
           "description": "Creates files at the top level of the project or the given path. If set to false, a new folder with the service's name will be created to contain the files."
         },
         {
+          "name": "injectable",
+          "type": "boolean",
+          "default": false,
+          "description": "When true, generates an `@Injectable` instead of `@Service`."
+        },
+        {
           "name": "name",
           "type": "string",
-          "description": "The name for the new service. This will be used to create the service's class and spec files (e.g., `my-service.service.ts` and `my-service.service.spec.ts`).",
+          "description": "The name for the new service. This will be used to create the service's class and spec files (e.g., `my-service.ts` and `my-service.spec.ts`).",
           "positional": 0
         },
         {

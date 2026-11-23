@@ -22,14 +22,18 @@ export interface ParsedTranslation extends MessageMetadata {
 export type ParsedTranslations = Record<MessageId, ParsedTranslation>;
 
 export class MissingTranslationError extends Error {
-  private readonly type = 'MissingTranslationError';
+  readonly type = 'MissingTranslationError';
   constructor(readonly parsedMessage: ParsedMessage) {
     super(`No translation found for ${describeMessage(parsedMessage)}.`);
   }
 }
 
-export function isMissingTranslationError(e: any): e is MissingTranslationError {
-  return e.type === 'MissingTranslationError';
+export function isMissingTranslationError(e: unknown): e is MissingTranslationError {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    (e as MissingTranslationError).type === 'MissingTranslationError'
+  );
 }
 
 /**
@@ -51,8 +55,8 @@ export function isMissingTranslationError(e: any): e is MissingTranslationError 
 export function translate(
   translations: Record<string, ParsedTranslation>,
   messageParts: TemplateStringsArray,
-  substitutions: readonly any[],
-): [TemplateStringsArray, readonly any[]] {
+  substitutions: readonly unknown[],
+): [TemplateStringsArray, readonly unknown[]] {
   const message = parseMessage(messageParts, substitutions);
   // Look up the translation using the messageId, and then the legacyId if available.
   let translation = translations[message.id];
@@ -68,7 +72,7 @@ export function translate(
   return [
     translation.messageParts,
     translation.placeholderNames.map((placeholder) => {
-      if (message.substitutions.hasOwnProperty(placeholder)) {
+      if (Object.hasOwn(message.substitutions, placeholder)) {
         return message.substitutions[placeholder];
       } else {
         throw new Error(
@@ -91,6 +95,7 @@ export function translate(
  * @param message the message to be parsed.
  */
 export function parseTranslation(messageString: TargetMessage): ParsedTranslation {
+  messageString = messageString.replace(/\uFFFD/g, '');
   const parts = messageString.split(/{\$([^}]*)}/);
   const messageParts = [parts[0]];
   const placeholderNames: string[] = [];
@@ -118,6 +123,7 @@ export function makeParsedTranslation(
   messageParts: string[],
   placeholderNames: string[] = [],
 ): ParsedTranslation {
+  messageParts = messageParts.map((part) => part.replace(/\uFFFD/g, ''));
   let messageString = messageParts[0];
   for (let i = 0; i < placeholderNames.length; i++) {
     messageString += `{$${placeholderNames[i]}}${messageParts[i + 1]}`;
@@ -137,7 +143,7 @@ export function makeParsedTranslation(
  */
 export function makeTemplateObject(cooked: string[], raw: string[]): TemplateStringsArray {
   Object.defineProperty(cooked, 'raw', {value: raw});
-  return cooked as any;
+  return cooked as unknown as TemplateStringsArray;
 }
 
 function describeMessage(message: ParsedMessage): string {

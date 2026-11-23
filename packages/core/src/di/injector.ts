@@ -15,13 +15,14 @@ import {InjectOptions} from './interface/injector';
 import {Provider, StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured
- * with [providers](guide/di/dependency-injection-providers) that associate
- * dependencies of various types with [injection tokens](guide/di/dependency-injection-providers).
+ * with [providers](guide/di/defining-dependency-providers) that associate
+ * dependencies of various types with [injection tokens](guide/di/defining-dependency-providers).
  *
- * @see [DI Providers](guide/di/dependency-injection-providers).
+ * @see [DI Providers](guide/di/defining-dependency-providers).
  * @see {@link StaticProvider}
  *
  * @usageNotes
@@ -129,6 +130,11 @@ export abstract class Injector {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__ = InjectorMarkers.Injector;
+}
+
+if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  // tslint:disable-next-line: no-toplevel-property-access
+  registerSpecialProvider(Injector);
 }
 
 /**

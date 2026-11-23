@@ -49,9 +49,7 @@ describe('Banner', () => {
   let fixture: ComponentFixture<Banner>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Banner],
-    }).compileComponents();
+    TestBed.configureTestingModule({});
 
     fixture = TestBed.createComponent(Banner);
     component = fixture.componentInstance;
@@ -102,7 +100,7 @@ IMPORTANT: Do not re-configure `TestBed` after calling `createComponent`.
 
 The `createComponent` method freezes the current `TestBed` definition, closing it to further configuration.
 
-You cannot call any more `TestBed` configuration methods, not `configureTestingModule()`, nor `get()`, nor any of the `override...` methods.
+You cannot call any more `TestBed` configuration methods, not `configureTestingModule()`, nor any of the `override...` methods.
 If you try, `TestBed` throws an error.
 
 ### `ComponentFixture`
@@ -158,7 +156,7 @@ A setup function has the advantage of being customizable via parameters.
 Here is an example of what a setup function could look like:
 
 ```ts
-function setup(providers?: StaticProviders[]): ComponentFixture<Banner> {
+function setup(providers?: Provider[]): ComponentFixture<Banner> {
   TestBed.configureTestingModule({providers});
   return TestBed.createComponent(Banner);
 }

@@ -14,12 +14,12 @@ import {
   NgModule,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
+import {isBrowser} from '@angular/private/testing';
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
-import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {isBrowser} from '@angular/private/testing';
 @NgModule({
   providers: [provideZonelessChangeDetection()],
 })
@@ -45,22 +45,16 @@ class FancyService {
 if (isBrowser) {
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
-      let actuallyDone: boolean;
-
-      beforeEach(() => {
-        actuallyDone = false;
-      });
-
-      afterEach(() => {
+      it('should run async tests with ResourceLoaders', async () => {
+        let actuallyDone = false;
+        const resourceLoader = new ResourceLoaderImpl();
+        await resourceLoader
+          .get('/packages/platform-browser/test/static_assets/test.html')
+          .then(() => {
+            actuallyDone = true;
+          });
         expect(actuallyDone).toEqual(true);
       });
-
-      it('should run async tests with ResourceLoaders', waitForAsync(() => {
-        const resourceLoader = new ResourceLoaderImpl();
-        resourceLoader.get('/packages/platform-browser/test/static_assets/test.html').then(() => {
-          actuallyDone = true;
-        });
-      }), 10000); // Long timeout here because this test makes an actual ResourceLoader.
     });
 
     describe('using the test injector with the inject helper', () => {
@@ -80,23 +74,19 @@ if (isBrowser) {
           });
         });
 
-        it('provides a real ResourceLoader instance', inject(
-          [ResourceLoader],
-          (resourceLoader: ResourceLoader) => {
-            expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-          },
-        ));
+        it('provides a real ResourceLoader instance', () => {
+          const resourceLoader = TestBed.inject(ResourceLoader);
+          expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+        });
 
-        it('should allow the use of fakeAsync', fakeAsync(
-          inject([FancyService], (service: FancyService) => {
-            let value: string | undefined;
-            service.getAsyncValue().then(function (val: string) {
-              value = val;
-            });
-            tick();
-            expect(value).toEqual('async value');
-          }),
-        ));
+        it('should allow the use of async/await', async () => {
+          const service = TestBed.inject(FancyService);
+          let value: string | undefined;
+          await service.getAsyncValue().then(function (val: string) {
+            value = val;
+          });
+          expect(value).toEqual('async value');
+        });
 
         afterEach(() => {
           getPlatform()?.destroy();
@@ -128,16 +118,32 @@ if (isBrowser) {
 
     describe('errors', () => {
       describe('should fail when an ResourceLoader fails', () => {
-        // TODO(alxhub): figure out why this is failing on saucelabs
-        xit('should fail with an error from a promise', async () => {
+        beforeEach(() => {
+          getPlatform()?.destroy();
+          TestBed.resetTestEnvironment();
+          TestBed.initTestEnvironment(
+            [BrowserDynamicTestingModule],
+            platformBrowserDynamicTesting(),
+          );
+        });
+
+        afterEach(() => {
+          getPlatform()?.destroy();
+          TestBed.resetTestEnvironment();
+          TestBed.initTestEnvironment([BrowserTestingModule], platformBrowserTesting());
+        });
+
+        it('should fail with an error from a promise', async () => {
           @Component({
-            selector: 'bad-template-comp',
             templateUrl: 'non-existent.html',
             standalone: false,
           })
           class BadTemplateUrl {}
 
-          TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+          TestBed.configureTestingModule({
+            declarations: [BadTemplateUrl],
+          });
+
           await expectAsync(TestBed.compileComponents()).toBeRejectedWith(
             'Failed to load non-existent.html',
           );
@@ -146,23 +152,43 @@ if (isBrowser) {
     });
 
     describe('TestBed createComponent', function () {
-      // TODO(alxhub): disable while we figure out how this should work
-      xit('should allow an external templateUrl', waitForAsync(() => {
+      beforeEach(() => {
+        getPlatform()?.destroy();
+        TestBed.resetTestEnvironment();
+        TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting());
+      });
+
+      afterEach(() => {
+        getPlatform()?.destroy();
+        TestBed.resetTestEnvironment();
+        TestBed.initTestEnvironment([BrowserTestingModule], platformBrowserTesting());
+      });
+
+      it('should allow an external templateUrl', async () => {
+        class MockResourceLoader implements ResourceLoader {
+          get(url: string): Promise<string> {
+            return Promise.resolve('from external template');
+          }
+        }
+
         @Component({
-          selector: 'external-template-comp',
           templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
           standalone: false,
         })
         class ExternalTemplateComp {}
 
-        TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
-        TestBed.compileComponents().then(() => {
-          const componentFixture = TestBed.createComponent(ExternalTemplateComp);
-          componentFixture.detectChanges();
-          expect(componentFixture.nativeElement.textContent).toEqual('from external template');
+        TestBed.configureCompiler({
+          providers: [{provide: ResourceLoader, useClass: MockResourceLoader}],
         });
-      }), 10000); // Long timeout here because this test makes an actual ResourceLoader
-      // request, and is slow on Edge.
+        TestBed.configureTestingModule({
+          declarations: [ExternalTemplateComp],
+        });
+
+        await TestBed.compileComponents();
+        const componentFixture = TestBed.createComponent(ExternalTemplateComp);
+        componentFixture.detectChanges();
+        expect(componentFixture.nativeElement.textContent).toEqual('from external template');
+      });
     });
   });
 }

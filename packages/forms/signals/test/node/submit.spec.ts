@@ -51,7 +51,7 @@ describe('submit', () => {
   describe('while pending', () => {
     it('should not block', async () => {
       const data = signal('');
-      const {promise} = promiseWithResolvers();
+      const {promise} = Promise.withResolvers();
       const f = form(
         data,
         (p) => {
@@ -81,7 +81,7 @@ describe('submit', () => {
     it('should retain submit errors after pending validation resolves', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal('foo');
-      const {promise, resolve} = promiseWithResolvers<boolean>();
+      const {promise, resolve} = Promise.withResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -110,7 +110,7 @@ describe('submit', () => {
     it('should resolve pending validation on subfield', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal({first: 'foo', last: 'bar'});
-      const {promise, resolve} = promiseWithResolvers<boolean>();
+      const {promise, resolve} = Promise.withResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -142,7 +142,7 @@ describe('submit', () => {
     it('should resolve pending validation after successful submit', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal('foo');
-      const {promise, resolve} = promiseWithResolvers();
+      const {promise, resolve} = Promise.withResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -287,12 +287,30 @@ describe('submit', () => {
     );
     expect(f().submitting()).toBe(false);
 
-    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+    const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
     const result = submit(f, {action: () => promise});
     expect(f().submitting()).toBe(true);
 
     resolve([]);
     expect(await result).toBe(true);
+  });
+
+  it('prohibits concurrent submits', async () => {
+    const f = form(signal(0), {injector});
+    const {promise, resolve} = Promise.withResolvers<undefined>();
+    const submitSpy = jasmine.createSpy('submit').and.callFake(() => promise);
+
+    const result1 = submit(f, {action: submitSpy});
+    expect(f().submitting()).toBe(true);
+
+    const result2 = submit(f, {action: submitSpy});
+    expect(await result2).toBe(false);
+
+    expect(submitSpy).toHaveBeenCalledTimes(1);
+
+    resolve(undefined);
+    expect(await result1).toBe(true);
+    expect(f().submitting()).toBe(false);
   });
 
   it('marks descendants as submitting', async () => {
@@ -301,7 +319,7 @@ describe('submit', () => {
     const f = form(data, {injector});
     expect(f.a.b().submitting()).toBe(false);
 
-    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+    const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
     const result = submit(f, {action: () => promise});
     expect(f.a.b().submitting()).toBe(true);
 
@@ -365,7 +383,7 @@ describe('submit', () => {
     const f = form(signal(0), {injector});
     expect(f().submitting()).toBe(false);
 
-    const {promise, reject} = promiseWithResolvers<ValidationError[]>();
+    const {promise, reject} = Promise.withResolvers<ValidationError[]>();
     const submitPromise = submit(f, {action: () => promise});
     expect(f().submitting()).toBe(true);
 
@@ -405,7 +423,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Disable first name when last name is empty.
-        disabled(name.first, ({valueOf}) => valueOf(name.last) === '');
+        disabled(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -430,7 +448,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Hide first name when last name is empty.
-        hidden(name.first, ({valueOf}) => valueOf(name.last) === '');
+        hidden(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -455,7 +473,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Make first name readonly when last name is empty.
-        readonly(name.first, ({valueOf}) => valueOf(name.last) === '');
+        readonly(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -522,7 +540,7 @@ describe('submit', () => {
 
   it('fails with pending validators with ignoreValidators: none', async () => {
     const data = signal('');
-    const resolvers = promiseWithResolvers();
+    const resolvers = Promise.withResolvers();
     const f = form(
       data,
       (p) => {
@@ -624,24 +642,3 @@ describe('submit', () => {
     expect(submitSpy).toHaveBeenCalledWith({name: 'Alice'}, {name: 'Alice'}, 'Alice');
   });
 });
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-function promiseWithResolvers<T>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
-}

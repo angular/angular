@@ -31,18 +31,14 @@ import {HttpParams} from './params';
 import {HttpRequest} from './request';
 import {HttpResourceOptions, HttpResourceRef, HttpResourceRequest} from './resource_api';
 import {HttpErrorResponse, HttpEventType, HttpProgressEvent} from './response';
-import {
-  CACHE_OPTIONS,
-  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
-  retrieveStateFromCache,
-} from './transfer_cache';
+import {CACHE_OPTIONS, HTTP_TRANSFER_CACHE_ORIGIN_MAP} from './transfer_cache';
 
 /**
  * Type for the `httpRequest` top-level function, which includes the call signatures for the JSON-
  * based `httpRequest` as well as sub-functions for `ArrayBuffer`, `Blob`, and `string` type
  * requests.
  *
- * @experimental 19.2
+ * @publicApi 22.0
  */
 export interface HttpResourceFn {
   /**
@@ -54,7 +50,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     url: (ctx: ResourceParamsContext) => string | undefined,
@@ -70,7 +66,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     url: (ctx: ResourceParamsContext) => string | undefined,
@@ -86,7 +82,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
@@ -102,7 +98,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
@@ -117,7 +113,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed into an `ArrayBuffer`.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   arrayBuffer: {
     <TResult = ArrayBuffer>(
@@ -149,7 +145,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed into a `Blob`.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   blob: {
     <TResult = Blob>(
@@ -181,7 +177,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed as a `string`.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   text: {
     <TResult = string>(
@@ -212,10 +208,9 @@ export interface HttpResourceFn {
  * request that expects a different kind of data, you can use a sub-constructor of `httpResource`,
  * such as `httpResource.text`.
  *
- * @experimental 19.2
- * @initializerApiFunction
+ * @publicApi 22.0
  */
-export const httpResource: HttpResourceFn = (() => {
+export const httpResource: HttpResourceFn = /* @__PURE__ */ (() => {
   const jsonFn = makeHttpResourceFn<unknown>('json') as HttpResourceFn;
   jsonFn.arrayBuffer = makeHttpResourceFn<ArrayBuffer>('arraybuffer');
   jsonFn.blob = makeHttpResourceFn('blob');
@@ -250,7 +245,7 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
 
     const getInitialStream = (req: HttpRequest<unknown> | undefined) => {
       if (cacheOptions && transferState && req) {
-        const cachedResponse = retrieveStateFromCache(req, cacheOptions, transferState, originMap);
+        const cachedResponse = cacheOptions.readCache(req, cacheOptions, transferState, originMap);
         if (cachedResponse) {
           try {
             const body = cachedResponse.body as TRaw;
@@ -299,8 +294,7 @@ function normalizeRequest(
       ? unwrappedRequest.headers
       : new HttpHeaders(
           unwrappedRequest.headers as
-            | Record<string, string | number | Array<string | number>>
-            | undefined,
+            Record<string, string | number | Array<string | number>> | undefined,
         );
 
   const params =
@@ -315,7 +309,7 @@ function normalizeRequest(
     {
       headers,
       params,
-      reportProgress: unwrappedRequest.reportProgress,
+      reportDownloadProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
       keepalive: unwrappedRequest.keepalive,
       cache: unwrappedRequest.cache as RequestCache,
@@ -371,12 +365,18 @@ class HttpResourceImpl<T>
     super(
       request,
       ({params: request, abortSignal}) => {
-        let sub: Subscription;
+        let sub: Subscription | undefined;
+        // In the unlikely case the request returns synchronously we want to make sure the observable
+        // is subscribe even if it isn't initialized yet.
+        let aborted = false;
 
-        // Track the abort listener so it can be removed if the Observable completes (as a memory
-        // optimization).
-        const onAbort = () => sub.unsubscribe();
-        abortSignal.addEventListener('abort', onAbort);
+        // `once: true`: calling unsubscribe() here (on abort) doesn't trigger the error/complete
+        // callbacks below, so without it this listener wouldn't get removed on the abort path.
+        const onAbort = () => {
+          aborted = true;
+          sub?.unsubscribe();
+        };
+        abortSignal.addEventListener('abort', onAbort, {once: true});
 
         // Start off stream as undefined.
         const stream = signal<ResourceStreamItem<T>>({value: undefined as T});
@@ -428,12 +428,17 @@ class HttpResourceImpl<T>
           },
         });
 
+        if (aborted) {
+          sub.unsubscribe();
+        }
+
         return promise;
       },
       defaultValue,
       equal,
       debugName,
       injector,
+      undefined,
       getInitialStream,
     );
     this.client = injector.get(HttpClient);

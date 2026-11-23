@@ -8,7 +8,6 @@
 
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -18,15 +17,21 @@ import {
   Renderer2,
   viewChild,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
+import {DecimalPipe, DOCUMENT} from '@angular/common';
 
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {FlatNode} from '../component-data-source';
-import {getDirectivesArrayString, getFullNodeNameString} from '../directive-forest-utils';
+import {
+  getDirectivesArrayString,
+  getFullNodeNameString,
+  matchesDirectiveOrComponentId,
+} from '../directive-forest-utils';
 import {BlockType} from '../../../../shared/utils/control-flow';
+import {APP_DATA} from '../../../../application-providers/app_data';
+import {CdElementData} from '../../../../../../../protocol';
+import {ExpansionModel} from '../expansion-model';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -39,13 +44,13 @@ export type NodeTextMatch = {
   selector: 'ng-tree-node',
   templateUrl: './tree-node.component.html',
   styleUrls: ['./tree-node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIcon, MatTooltip],
+  imports: [MatIcon, MatTooltip, DecimalPipe],
   host: {
     '[style.padding-left]': 'paddingLeft()',
     '[class.selected]': 'isSelected',
     '[class.highlighted]': 'isHighlighted',
     '[class.new-node]': 'node().newItem',
+    '[class.static]': 'node().static',
     '(click)': 'selectNode.emit(this.node())',
     '(dblclick)': 'selectDomElement.emit(this.node())',
     '(mouseenter)': 'highlightNode.emit(this.node())',
@@ -55,6 +60,7 @@ export type NodeTextMatch = {
 export class TreeNodeComponent {
   private readonly renderer = inject(Renderer2);
   private readonly doc = inject(DOCUMENT);
+  private readonly appData = inject(APP_DATA);
 
   protected readonly BlockType = BlockType;
 
@@ -63,8 +69,9 @@ export class TreeNodeComponent {
   protected readonly node = input.required<FlatNode>();
   protected readonly selectedNode = input.required<FlatNode | null>();
   protected readonly highlightedId = input.required<number | null>();
-  protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
+  protected readonly expansionModel = input.required<ExpansionModel<FlatNode>>();
   protected readonly textMatches = input<NodeTextMatch[]>([]);
+  protected readonly nodeCdData = input<CdElementData>();
 
   protected readonly selectNode = output<FlatNode>();
   protected readonly selectDomElement = output<FlatNode>();
@@ -79,11 +86,31 @@ export class TreeNodeComponent {
     return cmp && cmp.isElement;
   });
   protected readonly directivesArrayString = computed(() => getDirectivesArrayString(this.node()));
+
+  protected readonly changeDetection = computed(() => {
+    const cd = this.node().changeDetection;
+    const majorVer = this.appData().majorVersion;
+
+    // Based on the client app framework and version, we show the non-default
+    // change detection strategy:
+    // - Show "OnPush" or ACX
+    // - Show "OnPush" for Angular pre-v22
+    // - Show "Eager" for Angular v22+ (or v0)
+    if (cd === 'acx-on-push' || (0 < majorVer && majorVer < 22 && cd === 'ng-on-push')) {
+      return 'OnPush';
+    }
+    if ((majorVer >= 22 || majorVer === 0) && cd === 'ng-eager') {
+      return 'Eager';
+    }
+
+    return undefined;
+  });
+
   private readonly nodeNameString = computed(() => getFullNodeNameString(this.node()));
 
   private matchedText: HTMLElement | null = null;
 
-  protected readonly PADDING_LEFT_STEP = PADDING_LEFT_STEP;
+  protected readonly FPS_60 = 1000 / 60;
 
   constructor() {
     afterRenderEffect({write: () => this.handleMatchedText()});
@@ -95,7 +122,7 @@ export class TreeNodeComponent {
   }
 
   protected get isHighlighted(): boolean {
-    return !!this.highlightedId() && this.highlightedId() === this.node().original.component?.id;
+    return matchesDirectiveOrComponentId(this.node(), this.highlightedId());
   }
 
   private handleMatchedText() {

@@ -103,7 +103,8 @@ function assertExpressionInvoked(
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(expression, component);
 
   if (symbol !== null && symbol.kind === SymbolKind.Expression) {
-    if (symbol.tsType.getCallSignatures()?.length > 0) {
+    const type = ctx.templateTypeChecker.getTypeOfSymbol(symbol);
+    if (type && type.getCallSignatures()?.length > 0) {
       const fullExpressionText = generateStringFromExpression(expression, expressionText);
       const errorString = formatExtendedError(
         ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING,

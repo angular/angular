@@ -10,15 +10,15 @@ import {Location} from '@angular/common';
 import {
   ɵConsole as Console,
   EnvironmentInjector,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
-  Injectable,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Service,
   Signal,
   Type,
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
-  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
@@ -34,7 +34,6 @@ import {
   NavigationCancel,
   NavigationCancellationCode,
   NavigationEnd,
-  NavigationError,
   NavigationTrigger,
   RedirectRequest,
 } from './events';
@@ -54,6 +53,7 @@ import {RouteReuseStrategy} from './route_reuse_strategy';
 
 import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
+import {RouterState} from './router_state';
 import {Params} from './shared';
 import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
@@ -69,7 +69,6 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
-import {RouterState} from './router_state';
 
 /**
  * @description
@@ -85,7 +84,7 @@ import {RouterState} from './router_state';
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class Router {
   private get currentUrlTree() {
     return this.stateManager.getCurrentUrlTree();
@@ -219,6 +218,7 @@ export class Router {
             );
             const extras = {
               scroll: currentTransition.extras.scroll,
+              focusReset: currentTransition.extras.focusReset,
               browserUrl: currentTransition.extras.browserUrl,
               info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,
@@ -234,11 +234,18 @@ export class Router {
               ...opts,
             };
 
-            this.scheduleNavigation(mergedTree, IMPERATIVE_NAVIGATION, null, extras, {
-              resolve: currentTransition.resolve,
-              reject: currentTransition.reject,
-              promise: currentTransition.promise,
-            });
+            this.scheduleNavigation(
+              mergedTree,
+              IMPERATIVE_NAVIGATION,
+              null,
+              extras,
+              currentTransition.hasUAVisualTransition,
+              {
+                resolve: currentTransition.resolve,
+                reject: currentTransition.reject,
+                promise: currentTransition.promise,
+              },
+            );
           }
         }
 
@@ -289,8 +296,8 @@ export class Router {
     // run into ngZone
     this.nonRouterCurrentEntryChangeSubscription ??=
       this.stateManager.registerNonRouterCurrentEntryChangeListener(
-        (url, state, source, extras) => {
-          this.navigateToSyncWithBrowser(url, source, state, extras);
+        (url, state, source, extras, hasUAVisualTransition) => {
+          this.navigateToSyncWithBrowser(url, source, state, extras, hasUAVisualTransition);
         },
       );
   }
@@ -307,6 +314,7 @@ export class Router {
     source: NavigationTrigger,
     state: RestoredState | null | undefined,
     extras: NavigationExtras,
+    hasUAVisualTransition?: boolean,
   ) {
     // TODO: restoredState should always include the entire state, regardless
     // of navigationId. This requires a breaking change to update the type on
@@ -318,24 +326,35 @@ export class Router {
     // position for the page.
     const restoredState = state?.navigationId ? state : null;
 
+    // When `browserUrl` was used during the original navigation, the actual route URL
+    // was stored in history state as `ɵrouterUrl`. Use it for route matching and
+    // preserve the browser URL as the displayed URL.
+    const routerUrl = state?.ɵrouterUrl ?? url;
+    if (state?.ɵrouterUrl) {
+      extras = {...extras, browserUrl: url};
+    }
+
     // Separate to NavigationStart.restoredState, we must also restore the state to
     // history.state and generate a new navigationId, since it will be overwritten
     if (state) {
       const stateCopy = {...state} as Partial<RestoredState>;
       delete stateCopy.navigationId;
       delete stateCopy.ɵrouterPageId;
+      delete stateCopy.ɵrouterUrl;
       if (Object.keys(stateCopy).length !== 0) {
         extras.state = stateCopy;
       }
     }
 
-    const urlTree = this.parseUrl(url);
-    this.scheduleNavigation(urlTree, source, restoredState, extras).catch((e) => {
-      if (this.disposed) {
-        return;
-      }
-      this.injector.get(ɵINTERNAL_APPLICATION_ERROR_HANDLER)(e);
-    });
+    const urlTree = this.parseUrl(routerUrl);
+    this.scheduleNavigation(urlTree, source, restoredState, extras, hasUAVisualTransition).catch(
+      (e) => {
+        if (this.disposed) {
+          return;
+        }
+        this.injector.get(ɵINTERNAL_APPLICATION_ERROR_HANDLER)(e);
+      },
+    );
   }
 
   /** The current URL. */
@@ -465,9 +484,6 @@ export class Router {
         break;
       default:
         q = queryParams || null;
-    }
-    if (q !== null) {
-      q = this.removeEmptyProps(q);
     }
 
     let relativeToUrlSegmentGroup: UrlSegmentGroup | undefined;
@@ -635,20 +651,12 @@ export class Router {
     return containsTree(this.currentUrlTree, urlTree, options);
   }
 
-  private removeEmptyProps(params: Params): Params {
-    return Object.entries(params).reduce((result: Params, [key, value]: [string, any]) => {
-      if (value !== null && value !== undefined) {
-        result[key] = value;
-      }
-      return result;
-    }, {});
-  }
-
   private scheduleNavigation(
     rawUrl: UrlTree,
     source: NavigationTrigger,
     restoredState: RestoredState | null,
     extras: NavigationExtras,
+    hasUAVisualTransition?: boolean,
     priorPromise?: {
       resolve: (result: boolean | PromiseLike<boolean>) => void;
       reject: (reason?: any) => void;
@@ -688,6 +696,7 @@ export class Router {
       currentRawUrl: this.currentUrlTree,
       rawUrl,
       extras,
+      hasUAVisualTransition,
       resolve: resolve!,
       reject: reject!,
       promise,

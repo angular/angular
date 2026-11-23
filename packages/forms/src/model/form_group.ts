@@ -16,6 +16,7 @@ import {
   assertAllValuesPresent,
   assertControlPresent,
   FormResetEvent,
+  hasOwnControl,
   pickAsyncValidators,
   pickValidators,
   ɵRawValue,
@@ -245,7 +246,8 @@ export class FormGroup<
   ): AbstractControl<any>;
 
   registerControl<K extends string & keyof TControl>(name: K, control: TControl[K]): TControl[K] {
-    if (this.controls[name]) return (this.controls as any)[name];
+    const existingControl = this._find(name as string);
+    if (existingControl) return existingControl as TControl[K];
     this.controls[name] = control;
     control.setParent(this as FormGroup);
     control._registerOnCollectionChange(this._onCollectionChange);
@@ -322,8 +324,8 @@ export class FormGroup<
    * removed. When false, no events are emitted.
    */
   removeControl(name: string, options: {emitEvent?: boolean} = {}): void {
-    if ((this.controls as any)[name])
-      (this.controls as any)[name]._registerOnCollectionChange(() => {});
+    const existingControl = this._find(name);
+    if (existingControl) existingControl._registerOnCollectionChange(() => {});
     delete (this.controls as any)[name];
     this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
@@ -364,7 +366,8 @@ export class FormGroup<
       emitEvent?: boolean;
     } = {},
   ): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    const existingControl = this._find(name as string);
+    if (existingControl) existingControl._registerOnCollectionChange(() => {});
     delete this.controls[name];
     if (control) this.registerControl(name, control);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -385,7 +388,7 @@ export class FormGroup<
   contains(this: FormGroup<{[key: string]: AbstractControl<any>}>, controlName: string): boolean;
 
   contains<K extends string & keyof TControl>(controlName: K): boolean {
-    return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
+    return this._find(controlName)?.enabled === true;
   }
 
   /**
@@ -487,11 +490,9 @@ export class FormGroup<
     // `undefined` as a value.
     if (value == null /* both `null` and `undefined` */) return;
     (Object.keys(value) as Array<keyof TControl>).forEach((name) => {
-      // The compiler cannot see through the uninstantiated conditional type of `this.controls`, so
-      // `as any` is required.
-      const control = (this.controls as any)[name];
-      if (control) {
-        control.patchValue(
+      const existingControl = this._find(name as string);
+      if (existingControl) {
+        existingControl.patchValue(
           /* Guaranteed to be present, due to the outer forEach. */ value[
             name as keyof ɵFormGroupValue<TControl>
           ]!,
@@ -664,7 +665,7 @@ export class FormGroup<
 
   /** @internal */
   override _find(name: string | number): AbstractControl | null {
-    return this.controls.hasOwnProperty(name as string)
+    return hasOwnControl(this.controls, name as string)
       ? (this.controls as any)[name as keyof TControl]
       : null;
   }

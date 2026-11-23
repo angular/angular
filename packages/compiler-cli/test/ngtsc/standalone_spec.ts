@@ -212,8 +212,8 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const moduleJs = env.getContents('module.js');
-        expect(moduleJs).toContain(
-          'i0.ɵɵsetComponentScope(ModuleCmp, function () { return [i1.StandaloneCmp]; }, []);',
+        expect(moduleJs).toMatch(
+          /i0\.ɵɵsetComponentScope\(\s*ModuleCmp,\s*function\s*\(\)\s*\{\s*return\s*\[i1\.StandaloneCmp\];\s*\},\s*\[\]\s*\);/,
         );
 
         const cmpJs = env.getContents('component.js');
@@ -1141,6 +1141,38 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
       expect(diags[0].messageText).toContain('component');
+    });
+
+    it('should retain metadata for non-standalone declarations', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
+
+        @Component({selector: 'legacy-cmp', standalone: false, template: ''})
+        export class LegacyCmp {}
+
+        @Pipe({name: 'legacy', standalone: false})
+        export class LegacyPipe implements PipeTransform {
+          transform(value: unknown): unknown { return value; }
+        }
+
+        @NgModule({
+          declarations: [LegacyCmp, LegacyPipe],
+          exports: [LegacyCmp, LegacyPipe],
+        })
+        export class LegacyModule {}
+
+        @Component({imports: [LegacyModule], template: '<legacy-cmp />{{value | legacy}}'})
+        export class TestCmp { value = ''; }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => diag.code)).toEqual([
+        ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED),
+        ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED),
+      ]);
     });
 
     it('should not allow a non-standalone directive', () => {

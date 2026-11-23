@@ -1,3 +1,5 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
 :host {
   display: block;
   padding-top: var(--layout-padding);
@@ -10,6 +12,73 @@
   padding: 0px;
   box-sizing: border-box;
   padding-inline: var(--layout-padding);
+}
+
+.docs-not-found {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-block: 1.5rem 0;
+}
+
+.docs-not-found__angie {
+  flex: none;
+  width: clamp(143px, 16.5vw, 187px);
+  height: auto;
+}
+
+.docs-not-found__bubble {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 56ch;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 1.25rem;
+  background: var(--septenary-contrast);
+
+  // Tail pointing back toward Angie.
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 2.5rem;
+    inset-inline-start: -0.45rem;
+    width: 1rem;
+    height: 1rem;
+    background: inherit;
+    transform: rotate(45deg);
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@include mq.for-phone-only {
+  // Keep Angie and the bubble side by side, just scale both down to fit.
+  .docs-not-found {
+    gap: 0.75rem;
+  }
+
+  .docs-not-found__angie {
+    width: clamp(96px, 27vw, 138px);
+  }
+
+  .docs-not-found__bubble {
+    padding: 1rem 1.25rem;
+
+    // Small Angie is centered against a taller bubble, so center the tail on her.
+    &::before {
+      inset-block-start: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+  }
 }
 
 .enter-animation {

@@ -14,6 +14,7 @@ import {
   CanActivateChildFn,
   CanActivateFn,
   CanMatchFn,
+  PartialMatchRouteSnapshot,
   provideRouter,
   ResolveFn,
   Route,
@@ -111,7 +112,11 @@ bootstrapApplication(App, {
 // #enddocregion
 
 // #docregion CanMatchFn
-const canMatchTeam: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
+const canMatchTeam: CanMatchFn = (
+  route: Route,
+  segments: UrlSegment[],
+  currentSnapshot: PartialMatchRouteSnapshot,
+) => {
   return inject(PermissionsService).canMatch(inject(UserToken));
 };
 

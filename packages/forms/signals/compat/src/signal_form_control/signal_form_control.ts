@@ -31,7 +31,7 @@ import {
 } from '@angular/forms';
 
 import {FormOptions} from '../../../src/api/structure';
-import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
+import {FieldState, FieldTree, SchemaFn, SchemaOrSchemaFn} from '../../../src/api/types';
 import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {RuntimeErrorCode} from '../../../src/errors';
 import {FieldNode} from '../../../src/field/node';
@@ -77,7 +77,9 @@ export type ValueUpdateOptions = {
  *  </form>
  * ```
  *
- * @experimental
+ * @see [Binding SignalFormControl](guide/forms/signals/migration#binding-signalformcontrol)
+ *
+ * @publicApi 22.0
  */
 export class SignalFormControl<T> extends AbstractControl {
   /** Source FieldTree. */
@@ -93,17 +95,33 @@ export class SignalFormControl<T> extends AbstractControl {
   override readonly valueChanges = new EventEmitter<T>();
   override readonly statusChanges = new EventEmitter<FormControlStatus>();
 
-  constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>) {
+  constructor(value: T);
+  constructor(value: T, schema: SchemaOrSchemaFn<T>);
+  constructor(value: T, options: FormOptions<T>);
+  constructor(value: T, schema: SchemaOrSchemaFn<T> | undefined, options: FormOptions<T>);
+  constructor(
+    value: T,
+    schemaOrOptions?: SchemaOrSchemaFn<T> | FormOptions<T>,
+    options?: FormOptions<T>,
+  ) {
     super(null, null);
 
     const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
+    if (
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      (opts as any)?.updateOn &&
+      (opts as any).updateOn !== 'change'
+    ) {
+      throw unsupportedUpdateOnError((opts as any).updateOn);
+    }
     this.sourceValue = model;
     this.initialValue = value;
     const injector = opts?.injector ?? inject(Injector);
 
+    const formOptions = {...opts, injector};
     const rawTree = schema
-      ? compatForm(this.sourceValue, schema, {injector})
-      : compatForm(this.sourceValue, {injector});
+      ? compatForm(this.sourceValue, schema, formOptions)
+      : compatForm(this.sourceValue, formOptions);
 
     this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
       this.parent?.updateValueAndValidity({sourceControl: this} as any),
@@ -401,6 +419,17 @@ export class SignalFormControl<T> extends AbstractControl {
     this.propagateToParent(opts, (parent) => parent.markAsUntouched(opts));
   }
 
+  override setParent(parent: FormGroup | FormArray | null): void {
+    super.setParent(parent);
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && parent && parent.updateOn !== 'change') {
+      throw unsupportedUpdateOnError(parent.updateOn, true);
+    }
+  }
+
+  override get updateOn(): 'change' | 'blur' | 'submit' {
+    return 'change';
+  }
+
   override updateValueAndValidity(_opts?: Object): void {}
 
   /** @internal */
@@ -572,6 +601,14 @@ function unsupportedValidatorsError(): Error {
   return unsupportedFeatureError(
     ngDevMode &&
       'Dynamically adding and removing validators is not supported in signal forms. Instead use the "applyWhen" rule to conditionally apply validators based on a signal.',
+  );
+}
+
+function unsupportedUpdateOnError(updateOn: string, isInherited = false): Error {
+  const source = isInherited ? ' inherited from its parent' : '';
+  return unsupportedFeatureError(
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      `SignalFormControl does not support the "updateOn: '${updateOn}'" option${source}. `,
   );
 }
 

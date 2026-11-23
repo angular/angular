@@ -12,9 +12,8 @@ ts_project(
         "**/*.ts",
     ]),
     deps = [
+        "//:node_modules/@babel/core",
         "//:node_modules/@babel/generator",
-        "//:node_modules/@types/babel__core",
-        "//:node_modules/@types/babel__generator",
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/linker",

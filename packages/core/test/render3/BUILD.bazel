@@ -61,7 +61,6 @@ ts_project(
         "//packages/common",
         "//packages/compiler",
         "//packages/platform-server",
-        "//packages/platform-server:bundled_domino_lib",
     ],
 )
 

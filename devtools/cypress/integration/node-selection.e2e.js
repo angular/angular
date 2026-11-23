@@ -82,8 +82,8 @@ describe('node selection', () => {
         .last()
         .click({force: true})
         .then(() => {
-          cy.get('ng-breadcrumbs')
-            .find('.breadcrumbs')
+          cy.get('ng-breadcrumbs > ng-horizontal-scroller')
+            .find('.content')
             .then((breadcrumbsContainer) => {
               const hasOverflowX = () =>
                 breadcrumbsContainer[0].scrollWidth > breadcrumbsContainer[0].clientWidth;
@@ -98,8 +98,8 @@ describe('node selection', () => {
         .last()
         .click({force: true})
         .then(() => {
-          cy.get('ng-breadcrumbs')
-            .find('.breadcrumbs')
+          cy.get('ng-breadcrumbs > ng-horizontal-scroller')
+            .find('.content')
             .then((el) => {
               el[0].style.scrollBehavior = 'auto';
             })
@@ -107,7 +107,7 @@ describe('node selection', () => {
               const scrollLeft = () => breadcrumbsContainer[0].scrollLeft;
               expect(scrollLeft()).to.eql(0);
 
-              cy.get('ng-breadcrumbs')
+              cy.get('ng-breadcrumbs > ng-horizontal-scroller')
                 .find('.scroll-button')
                 .last()
                 .click({force: true})
@@ -124,8 +124,8 @@ describe('node selection', () => {
         .last()
         .click({force: true})
         .then(() => {
-          cy.get('ng-breadcrumbs')
-            .find('.breadcrumbs')
+          cy.get('ng-breadcrumbs > ng-horizontal-scroller')
+            .find('.content')
             .then((el) => {
               el[0].style.scrollBehavior = 'auto';
             })
@@ -133,14 +133,14 @@ describe('node selection', () => {
               const scrollLeft = () => breadcrumbsContainer[0].scrollLeft;
               expect(scrollLeft()).to.eql(0);
 
-              cy.get('ng-breadcrumbs')
+              cy.get('ng-breadcrumbs > ng-horizontal-scroller')
                 .find('.scroll-button')
                 .last()
                 .click({force: true})
                 .then(() => {
                   expect(scrollLeft()).to.be.greaterThan(0);
 
-                  cy.get('ng-breadcrumbs')
+                  cy.get('ng-breadcrumbs > ng-horizontal-scroller')
                     .find('.scroll-button')
                     .first()
                     .click({force: true})

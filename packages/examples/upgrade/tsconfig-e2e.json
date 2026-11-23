@@ -2,6 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "lib": ["es2015"],
-    "types": ["node", "jasminewd2"]
+    "types": ["node", "jasmine", "selenium-webdriver"]
   }
 }

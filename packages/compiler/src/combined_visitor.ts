@@ -26,7 +26,6 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(element.attributes);
     this.visitAllTemplateNodes(element.inputs);
     this.visitAllTemplateNodes(element.outputs);
-    this.visitAllTemplateNodes(element.directives);
     this.visitAllTemplateNodes(element.references);
     this.visitAllTemplateNodes(element.children);
   }
@@ -35,7 +34,6 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(template.attributes);
     this.visitAllTemplateNodes(template.inputs);
     this.visitAllTemplateNodes(template.outputs);
-    this.visitAllTemplateNodes(template.directives);
     this.visitAllTemplateNodes(template.templateAttrs);
     this.visitAllTemplateNodes(template.variables);
     this.visitAllTemplateNodes(template.references);
@@ -44,6 +42,10 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
 
   visitContent(content: t.Content): void {
     this.visitAllTemplateNodes(content.children);
+  }
+
+  visitContentBlock(block: t.ContentBlock): void {
+    this.visitAllTemplateNodes(block.children);
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute): void {
@@ -90,6 +92,7 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
   visitSwitchBlock(block: t.SwitchBlock): void {
     this.visit(block.expression);
     this.visitAllTemplateNodes(block.groups);
+    block.exhaustiveCheck?.visit(this);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
@@ -125,24 +128,19 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(block.children);
   }
 
+  visitBoundaryBlock(block: t.BoundaryBlock): void {
+    this.visitAllTemplateNodes(block.children);
+    this.visitAllTemplateNodes(block.errorBlocks);
+  }
+
+  visitBoundaryErrorBlock(block: t.BoundaryErrorBlock): void {
+    this.visitAllTemplateNodes(block.contextVariables);
+    block.expression && this.visit(block.expression);
+    this.visitAllTemplateNodes(block.children);
+  }
+
   visitLetDeclaration(decl: t.LetDeclaration): void {
     this.visit(decl.value);
-  }
-
-  visitComponent(component: t.Component): void {
-    this.visitAllTemplateNodes(component.attributes);
-    this.visitAllTemplateNodes(component.inputs);
-    this.visitAllTemplateNodes(component.outputs);
-    this.visitAllTemplateNodes(component.directives);
-    this.visitAllTemplateNodes(component.references);
-    this.visitAllTemplateNodes(component.children);
-  }
-
-  visitDirective(directive: t.Directive): void {
-    this.visitAllTemplateNodes(directive.attributes);
-    this.visitAllTemplateNodes(directive.inputs);
-    this.visitAllTemplateNodes(directive.outputs);
-    this.visitAllTemplateNodes(directive.references);
   }
 
   visitVariable(variable: t.Variable): void {}

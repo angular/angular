@@ -10,9 +10,9 @@ This sample comes from the Angular documentation's "[Example Angular Internation
 
 > See the scripts in `package.json` for an explanation of these commands.
 
-## Run in Stackblitz
+## Run in StackBlitz
 
-Stackblitz compiles and runs the English version by default.
+StackBlitz compiles and runs the English version by default.
 
 To see the example translate to French with Angular i18n:
 
@@ -24,4 +24,4 @@ To see the example translate to French with Angular i18n:
   }
 ```
 
-1. Click the "Fork" button in the stackblitz header. That makes a new copy for you with this change and re-runs the example in French.
+1. Click the "Fork" button in the StackBlitz header. That makes a new copy for you with this change and re-runs the example in French.

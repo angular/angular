@@ -29,6 +29,7 @@ export const SUPPORTED_APIS = new InjectionToken<SupportedApisSignal>('SUPPORTED
       signals: false,
       transferState: false,
       signalPropertiesInspection: false,
+      signalWatch: false,
     });
     const apisReadonlySignal = apis.asReadonly();
 

@@ -41,7 +41,6 @@ import {onViewportWrapper} from './dom_triggers';
 import {onIdle} from './idle_scheduler';
 import {
   DEFER_BLOCK_STATE,
-  DeferBlockBehavior,
   DeferBlockState,
   DeferBlockTrigger,
   DeferDependenciesLoadingState,
@@ -56,11 +55,11 @@ import {
 } from './interfaces';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
 import {
-  DEFER_BLOCK_CONFIG,
   DEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   renderDeferBlockState,
   renderDeferStateAfterResourceLoading,
   renderPlaceholder,
+  shouldTriggerDeferBlock,
 } from './rendering';
 import {onTimer} from './timer_scheduler';
 import {
@@ -222,10 +221,12 @@ export function triggerResourceLoading(
   // Start downloading of defer block dependencies.
   tDetails.loadingPromise = Promise.allSettled(dependenciesFn()).then((results) => {
     let failed = false;
+    let failedReason: Error | null = null;
     const directiveDefs: DirectiveDefList = [];
     const pipeDefs: PipeDefList = [];
 
-    for (const result of results) {
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
       if (result.status === 'fulfilled') {
         const dependency = result.value;
         const directiveDef = getComponentDef(dependency) || getDirectiveDef(dependency);
@@ -239,6 +240,8 @@ export function triggerResourceLoading(
         }
       } else {
         failed = true;
+        failedReason =
+          result.reason instanceof Error ? result.reason : new Error(String(result.reason));
         break;
       }
     }
@@ -248,13 +251,31 @@ export function triggerResourceLoading(
 
       if (tDetails.errorTmplIndex === null) {
         const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';
-        const error = new RuntimeError(
-          RuntimeErrorCode.DEFER_LOADING_FAILED,
-          ngDevMode &&
+        let errorMsg = '';
+
+        if (ngDevMode) {
+          errorMsg =
             'Loading dependencies for `@defer` block failed, ' +
-              `but no \`@error\` block was configured${templateLocation}. ` +
-              'Consider using the `@error` block to render an error state.',
-        );
+            `but no \`@error\` block was configured${templateLocation}. ` +
+            'Consider using the `@error` block to render an error state.';
+
+          const depsFn = tDetails.dependencyResolverFn;
+          const errorReason = failedReason?.message;
+
+          if (depsFn) {
+            errorMsg +=
+              `\n\nAngular tried to invoke the following dependency function (compiler-generated):\n` +
+              `\`\`\`\n${depsFn.toString()}\n\`\`\``;
+          }
+
+          if (errorReason) {
+            errorMsg += depsFn
+              ? `\n\nbut it resulted in the following error:\n\n${errorReason}`
+              : `\n\nThe loading resulted in the following error:\n\n${errorReason}`;
+          }
+        }
+
+        const error = new RuntimeError(RuntimeErrorCode.DEFER_LOADING_FAILED, errorMsg);
         handleUncaughtError(lView, error);
       }
     } else {
@@ -289,24 +310,6 @@ export function triggerResourceLoading(
     tDetails.loadingPromise = null;
     removeTask();
   });
-}
-
-/**
- * Defines whether we should proceed with triggering a given defer block.
- */
-function shouldTriggerDeferBlock(triggerType: TriggerType, lView: LView): boolean {
-  // prevents triggering regular triggers when on the server.
-  if (triggerType === TriggerType.Regular && typeof ngServerMode !== 'undefined' && ngServerMode) {
-    return false;
-  }
-
-  // prevents triggering in the case of a test run with manual defer block configuration.
-  const injector = lView[INJECTOR];
-  const config = injector.get(DEFER_BLOCK_CONFIG, null, {optional: true});
-  if (config?.behavior === DeferBlockBehavior.Manual) {
-    return false;
-  }
-  return true;
 }
 
 /**
@@ -388,12 +391,6 @@ export async function triggerHydrationFromBlockName(
   const {parentBlockPromise, hydrationQueue} = getParentBlockHydrationQueue(blockName, injector);
   if (hydrationQueue.length === 0) return;
 
-  // It's possible that the hydrationQueue topmost item is actually in the process of hydrating and has
-  // a promise already. In that case, we don't want to destroy that promise and queue it again.
-  if (parentBlockPromise !== null) {
-    hydrationQueue.shift();
-  }
-
   // The hydrating map in the registry prevents re-triggering hydration for a block that's already in
   // the hydration queue. Here we generate promises for each of the blocks about to be hydrated
   populateHydratingStateForQueue(dehydratedBlockRegistry, hydrationQueue);
@@ -444,64 +441,89 @@ export async function triggerHydrationForBlockQueue(
   // Indicate that we have some pending async work.
   const pendingTasks = injector.get(PendingTasksInternal);
   const taskId = pendingTasks.add();
+  const lastBlockName = hydrationQueue[hydrationQueue.length - 1];
 
-  // Actually do the triggering and hydration of the queue of blocks
-  for (let blockQueueIdx = 0; blockQueueIdx < hydrationQueue.length; blockQueueIdx++) {
-    const dehydratedBlockId = hydrationQueue[blockQueueIdx];
-    const dehydratedDeferBlock = dehydratedBlockRegistry.get(dehydratedBlockId);
+  try {
+    // Actually do the triggering and hydration of the queue of blocks
+    for (let blockQueueIdx = 0; blockQueueIdx < hydrationQueue.length; blockQueueIdx++) {
+      const dehydratedBlockId = hydrationQueue[blockQueueIdx];
+      const dehydratedDeferBlock = dehydratedBlockRegistry.get(dehydratedBlockId);
 
-    if (dehydratedDeferBlock != null) {
-      // trigger the block resources and await next render for hydration. This should result
-      // in the next block ɵɵdefer instruction being called and that block being added to the dehydrated registry.
-      await triggerResourceLoadingForHydration(dehydratedDeferBlock);
-      await nextRender(injector);
+      if (dehydratedDeferBlock != null) {
+        // trigger the block resources and await next render for hydration. This should result
+        // in the next block ɵɵdefer instruction being called and that block being added to the dehydrated registry.
+        await triggerResourceLoadingForHydration(dehydratedDeferBlock);
+        await nextRender(injector);
 
-      // if the content has changed since server rendering, we need to check for the expected block
-      // being in the registry or if errors occurred. In that case, we need to clean up the remaining expected
-      // content that won't be rendered or fetched.
-      if (deferBlockHasErrored(dehydratedDeferBlock)) {
-        // Either the expected block has not yet had its ɵɵdefer instruction called or the block errored out when fetching
-        // resources. In the former case, either we're hydrating too soon or the client and server differ. In both cases,
-        // we need to clean up child content and promises.
-        removeDehydratedViewList(dehydratedDeferBlock);
+        // if the content has changed since server rendering, we need to check for the expected block
+        // being in the registry or if errors occurred. In that case, we need to clean up the remaining expected
+        // content that won't be rendered or fetched.
+        if (deferBlockHasErrored(dehydratedDeferBlock)) {
+          // Either the expected block has not yet had its ɵɵdefer instruction called or the block errored out when fetching
+          // resources. In the former case, either we're hydrating too soon or the client and server differ. In both cases,
+          // we need to clean up child content and promises.
+          removeDehydratedViewList(dehydratedDeferBlock);
+          cleanupRemainingHydrationQueue(
+            hydrationQueue.slice(blockQueueIdx),
+            dehydratedBlockRegistry,
+          );
+          break;
+        }
+        // The defer block has not errored and we've finished fetching resources and rendering.
+        // At this point it is safe to resolve the hydration promise.
+        blocksBeingHydrated.get(dehydratedBlockId)?.resolve();
+      } else {
+        // The expected block has not yet had its ɵɵdefer instruction called. This is likely due to content changing between
+        // client and server. We need to clean up the dehydrated DOM in the container since it no longer is valid.
+        cleanupParentContainer(blockQueueIdx, hydrationQueue, dehydratedBlockRegistry);
         cleanupRemainingHydrationQueue(
           hydrationQueue.slice(blockQueueIdx),
           dehydratedBlockRegistry,
         );
         break;
       }
-      // The defer block has not errored and we've finished fetching resources and rendering.
-      // At this point it is safe to resolve the hydration promise.
-      blocksBeingHydrated.get(dehydratedBlockId)!.resolve();
-    } else {
-      // The expected block has not yet had its ɵɵdefer instruction called. This is likely due to content changing between
-      // client and server. We need to clean up the dehydrated DOM in the container since it no longer is valid.
-      cleanupParentContainer(blockQueueIdx, hydrationQueue, dehydratedBlockRegistry);
-      cleanupRemainingHydrationQueue(hydrationQueue.slice(blockQueueIdx), dehydratedBlockRegistry);
-      break;
     }
+
+    // Await hydration completion for the last block.
+    await blocksBeingHydrated.get(lastBlockName)?.promise;
+  } finally {
+    // All async work is done, remove the taskId from the registry.
+    pendingTasks.remove(taskId);
   }
-
-  const lastBlockName = hydrationQueue[hydrationQueue.length - 1];
-
-  // Await hydration completion for the last block.
-  await blocksBeingHydrated.get(lastBlockName)?.promise;
-
-  // All async work is done, remove the taskId from the registry.
-  pendingTasks.remove(taskId);
 
   // Replay any queued events, if any exist and the replay operation was requested.
   if (replayQueuedEventsFn) {
     replayQueuedEventsFn(hydrationQueue);
   }
 
+  // `cleanupHydratedDeferBlocks` -> `cleanupDehydratedViews` walks all LViews
+  // registered with ApplicationRef and removes dehydrated views that aren't
+  // associated with a defer block. This is only safe once the app is stable.
+  // There may still be other pending tasks that need one of those views before
+  // they get a chance to hydrate it.
+  //
+  // This block's task is removed above, but other tasks may still be pending.
+  // Wait for those before treating any remaining dehydrated views as orphaned.
+  //
+  // Don't wait if there are no other pending tasks. Calling `whenStable()`
+  // creates another subscription to the stability signal, which can move this
+  // cleanup to a later microtask than callers already waiting on
+  // `appRef.whenStable()`. Keeping this path synchronous preserves the existing
+  // behavior when the app is already stable.
+  const appRef = injector.get(ApplicationRef);
+  // Read the block before waiting, so it is looked up at the same point as before.
+  const lastDeferBlock = dehydratedBlockRegistry.get(lastBlockName);
+  if (pendingTasks.hasPendingTasks) {
+    await appRef.whenStable();
+
+    // The app can be destroyed while we wait. The bootstrap cleanup checks this too.
+    if (appRef.destroyed) {
+      return;
+    }
+  }
+
   // Cleanup after hydration of all affected defer blocks.
-  cleanupHydratedDeferBlocks(
-    dehydratedBlockRegistry.get(lastBlockName),
-    hydrationQueue,
-    dehydratedBlockRegistry,
-    injector.get(ApplicationRef),
-  );
+  cleanupHydratedDeferBlocks(lastDeferBlock, hydrationQueue, dehydratedBlockRegistry, appRef);
 }
 
 export function deferBlockHasErrored(deferBlock: DehydratedDeferBlock): boolean {
@@ -538,7 +560,7 @@ function cleanupRemainingHydrationQueue(
   dehydratedBlockRegistry: DehydratedBlockRegistry,
 ) {
   const blocksBeingHydrated = dehydratedBlockRegistry.hydrating;
-  for (const dehydratedBlockId in hydrationQueue) {
+  for (const dehydratedBlockId of hydrationQueue) {
     blocksBeingHydrated.get(dehydratedBlockId)?.reject();
   }
   dehydratedBlockRegistry.cleanup(hydrationQueue);
@@ -697,36 +719,36 @@ export function processAndInitTriggers(
 }
 
 function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
+  for (const {blockName} of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, blockName);
     const cleanupFn = onIdle(onInvoke, injector);
-    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    registry.addCleanupFn(blockName, cleanupFn);
   }
 }
 
 function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   if (elementTriggers.length > 0) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    for (let elementTrigger of elementTriggers) {
+    for (const {el, blockName, intersectionObserverOptions} of elementTriggers) {
       const cleanupFn = onViewportWrapper(
-        elementTrigger.el,
-        () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
+        el,
+        () => triggerHydrationFromBlockName(injector, blockName),
         injector,
-        elementTrigger.intersectionObserverOptions,
+        intersectionObserverOptions,
       );
-      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+      registry.addCleanupFn(blockName, cleanupFn);
     }
   }
 }
 
 function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
+  for (const {blockName, delay} of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
-    const timerFn = onTimer(elementTrigger.delay!);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, blockName);
+    const timerFn = onTimer(delay!);
     const cleanupFn = timerFn(onInvoke, injector);
-    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    registry.addCleanupFn(blockName, cleanupFn);
   }
 }
 

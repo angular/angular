@@ -14,12 +14,12 @@ import {
   output,
   signal,
   viewChild,
-  ChangeDetectionStrategy,
   linkedSignal,
   computed,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Property} from '../object-tree-types';
+import {PropValueHighlighterDirective} from '../prop-value-highlighter/prop-value-highlighter.directive';
 
 type EditorType = string | number | boolean;
 type EditorResult = EditorType | Array<EditorType>;
@@ -40,9 +40,11 @@ const parseValue = (value: EditorResult): EditorResult => {
 @Component({
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
-  styleUrls: ['./property-editor.component.scss'],
-  imports: [FormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: [
+    './property-editor.component.scss',
+    '../prop-value-highlighter/prop-value-highlighter.scss',
+  ],
+  imports: [FormsModule, PropValueHighlighterDirective],
   host: {
     '(click)': 'onClick()',
   },

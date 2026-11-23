@@ -10,4 +10,5 @@
  * @define Support for the non-bubbling mouseenter and mouseleave events.  This
  * flag can be overridden in a build rule.
  */
-export const MOUSE_SPECIAL_SUPPORT = false;
+// g3-only export const MOUSE_SPECIAL_SUPPORT = goog.define('jsaction.EventContract.MOUSE_SPECIAL_SUPPORT', false,);
+export const MOUSE_SPECIAL_SUPPORT = false; // 3p-only

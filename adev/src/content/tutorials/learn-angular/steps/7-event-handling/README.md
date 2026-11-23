@@ -29,12 +29,10 @@ Alright, your turn to give this a try:
 <docs-workflow>
 
 <docs-step title="Add an event handler">
-Add the `showSecretMessage()` event handler function in the `App` class. Use the following code as the implementation:
+In the `App` class, fill in the body of the existing `showSecretMessage()` method with the following code:
 
 ```ts
-showSecretMessage() {
-  this.message = 'Way to go 🚀';
-}
+this.message = 'Way to go 🚀';
 ```
 
 </docs-step>

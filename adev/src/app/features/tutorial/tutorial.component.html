@@ -28,9 +28,9 @@
   <!-- Embedded Editor -->
   @if (shouldRenderEmbeddedEditor()) {
     <div #editor class="docs-tutorial-editor" [class.adev-split-tutorial]="shouldRenderContent()">
-      @if (embeddedEditorComponent) {
+      @if (embeddedEditorComponent()) {
         <ng-container
-          *ngComponentOutlet="embeddedEditorComponent; inputs: {restrictedMode: restrictedMode()}"
+          *ngComponentOutlet="embeddedEditorComponent(); inputs: {restrictedMode: restrictedMode()}"
         />
       }
     </div>
@@ -64,6 +64,18 @@
         >
           {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
         </button>
+        @if (answerRevealed()) {
+          <button
+            type="button"
+            (click)="handleBackToMyCode()"
+            [disabled]="!canRevealAnswer()"
+            class="docs-reveal-answer-button adev-reveal-desktop-button docs-primary-btn"
+            [attr.text]="'Back to My Code'"
+            aria-label="Back to My Code"
+          >
+            Back to My Code
+          </button>
+        }
       }
 
       <!-- Download code -->
@@ -118,6 +130,18 @@
           >
             {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
           </button>
+          @if (answerRevealed()) {
+            <button
+              type="button"
+              (click)="handleBackToMyCode()"
+              [disabled]="!canRevealAnswer()"
+              class="docs-reveal-answer-button adev-reveal-mobile-button docs-primary-btn"
+              [attr.text]="'Back to My Code'"
+              aria-label="Back to My Code"
+            >
+              Back to My Code
+            </button>
+          }
         }
       </div>
 

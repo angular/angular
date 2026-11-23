@@ -12,3 +12,8 @@
 - doesn't
 - [some link](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 - Code block `SomeClass`
+
+# Resumed Ordered List
+
+3. Third Item
+4. Fourth Item

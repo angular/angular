@@ -21,7 +21,7 @@ export function isI18nAttribute(name: string): boolean {
   return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
 }
 
-export function hasI18nAttrs(node: html.Element | html.Component): boolean {
+export function hasI18nAttrs(node: html.Element): boolean {
   return node.attrs.some((attr: html.Attribute) => isI18nAttribute(attr.name));
 }
 

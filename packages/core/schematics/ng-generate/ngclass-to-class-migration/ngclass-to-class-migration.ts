@@ -33,6 +33,16 @@ export interface NgClassMigrationData {
   replacements: Replacement[];
 }
 
+/** Result of migrating a single class declaration. */
+interface ClassMigrationResult {
+  replacements: Replacement[];
+  replacementCount: number;
+  /** Whether every `[ngClass]` binding in this class's template(s) was migrated. */
+  canRemoveNgClass: boolean;
+  /** Whether this class's template(s) no longer need any `CommonModule` directive. */
+  canRemoveCommonModule: boolean;
+}
+
 export interface NgClassCompilationUnitData {
   ngClassReplacements: Array<NgClassMigrationData>;
   importReplacements: Record<ProjectFileID, {add: Replacement[]; addAndRemove: Replacement[]}>;
@@ -55,17 +65,25 @@ export class NgClassMigration extends TsurgeFunnelMigration<
   ): {
     replacements: Replacement[];
     replacementCount: number;
+    canRemoveNgClass: boolean;
     canRemoveCommonModule: boolean;
-  } | null {
-    const {migrated, changed, replacementCount, canRemoveCommonModule} = migrateNgClassBindings(
-      template.content,
-      this.config,
-      node,
-      typeChecker,
-    );
+  } {
+    const {migrated, changed, replacementCount, canRemoveNgClass, canRemoveCommonModule} =
+      migrateNgClassBindings(template.content, this.config, node, typeChecker);
 
     if (!changed) {
-      return null;
+      // Even when no replacements were made, we must propagate the real `canRemoveNgClass`
+      // value. If the template contained [ngClass] bindings that could not be migrated (e.g.
+      // dynamic variable or array bindings), the visitor's `skippedNgClassCount` will be > 0
+      // and `canRemoveNgClass` will be false. Returning `true` here unconditionally would
+      // cause the migration to incorrectly strip `NgClass` from the component's `imports`
+      // array and from the top-level import statement.
+      return {
+        replacements: [],
+        replacementCount: 0,
+        canRemoveNgClass,
+        canRemoveCommonModule,
+      };
     }
 
     const fileToMigrate = template.inline
@@ -76,8 +94,54 @@ export class NgClassMigration extends TsurgeFunnelMigration<
     return {
       replacements: [prepareTextReplacement(fileToMigrate, migrated, template.start, end)],
       replacementCount,
+      canRemoveNgClass,
       canRemoveCommonModule,
     };
+  }
+
+  /** Migrates a single class declaration, if it has a component template using `[ngClass]`. */
+  private processClass(
+    node: ts.ClassDeclaration,
+    file: ProjectFile,
+    info: ProgramInfo,
+    typeChecker: ts.TypeChecker,
+  ): ClassMigrationResult | null {
+    const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
+    templateVisitor.visitNode(node);
+
+    if (templateVisitor.resolvedTemplates.length === 0) {
+      return null;
+    }
+
+    const replacements: Replacement[] = [];
+    let replacementCount = 0;
+    let canRemoveNgClass = true;
+    let canRemoveCommonModule = true;
+
+    for (const template of templateVisitor.resolvedTemplates) {
+      const result = this.processTemplate(template, node, file, info, typeChecker);
+
+      replacements.push(...result.replacements);
+      replacementCount += result.replacementCount;
+      canRemoveNgClass = canRemoveNgClass && result.canRemoveNgClass;
+      canRemoveCommonModule = canRemoveCommonModule && result.canRemoveCommonModule;
+    }
+
+    // Handle the `@Component({ imports: [...] })` array.
+    // Only remove NgClass from this class's own imports array if all of its [ngClass] bindings were migrated.
+    if (canRemoveNgClass) {
+      const importsRemoval = createNgClassImportsArrayRemoval(
+        node,
+        file,
+        typeChecker,
+        canRemoveCommonModule,
+      );
+      if (importsRemoval) {
+        replacements.push(importsRemoval);
+      }
+    }
+
+    return {replacements, replacementCount, canRemoveNgClass, canRemoveCommonModule};
   }
 
   override async analyze(info: ProgramInfo): Promise<Serializable<NgClassCompilationUnitData>> {
@@ -88,59 +152,42 @@ export class NgClassMigration extends TsurgeFunnelMigration<
     const filesToRemoveCommonModule = new Set<ProjectFileID>();
 
     for (const sf of sourceFiles) {
+      const file = projectFile(sf, info);
+      const classResults: ClassMigrationResult[] = [];
+
       ts.forEachChild(sf, (node: ts.Node) => {
         if (!ts.isClassDeclaration(node)) {
           return;
         }
-
-        const file = projectFile(sf, info);
-
         if (this.config.shouldMigrate && !this.config.shouldMigrate(file)) {
           return;
         }
 
-        const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-        templateVisitor.visitNode(node);
-
-        const replacementsForClass: Replacement[] = [];
-        let replacementCountForClass = 0;
-        let canRemoveCommonModuleForFile = true;
-
-        for (const template of templateVisitor.resolvedTemplates) {
-          const result = this.processTemplate(template, node, file, info, typeChecker);
-          if (result) {
-            replacementsForClass.push(...result.replacements);
-            replacementCountForClass += result.replacementCount;
-            if (!result.canRemoveCommonModule) {
-              canRemoveCommonModuleForFile = false;
-            }
-          }
-        }
-
-        if (replacementsForClass.length > 0) {
-          if (canRemoveCommonModuleForFile) {
-            filesToRemoveCommonModule.add(file.id);
-          }
-
-          // Handle the `@Component({ imports: [...] })` array.
-          const importsRemoval = createNgClassImportsArrayRemoval(
-            node,
-            file,
-            typeChecker,
-            canRemoveCommonModuleForFile,
-          );
-          if (importsRemoval) {
-            replacementsForClass.push(importsRemoval);
-          }
-
-          ngClassReplacements.push({
-            file,
-            replacementCount: replacementCountForClass,
-            replacements: replacementsForClass,
-          });
-          filesWithNgClassDeclarations.add(sf);
+        const result = this.processClass(node, file, info, typeChecker);
+        if (result !== null) {
+          classResults.push(result);
         }
       });
+
+      if (classResults.length === 0) {
+        continue;
+      }
+
+      for (const {replacements, replacementCount} of classResults) {
+        if (replacements.length > 0) {
+          ngClassReplacements.push({file, replacementCount, replacements});
+        }
+      }
+
+      // A single source file may declare multiple classes/components. The top-level
+      // `NgClass`/`CommonModule` import statements are shared across all of them, so they can
+      // only be removed once every class in the file no longer needs them.
+      if (classResults.every((result) => result.canRemoveNgClass)) {
+        filesWithNgClassDeclarations.add(sf);
+      }
+      if (classResults.every((result) => result.canRemoveCommonModule)) {
+        filesToRemoveCommonModule.add(file.id);
+      }
     }
 
     const importReplacements = calculateImportReplacements(

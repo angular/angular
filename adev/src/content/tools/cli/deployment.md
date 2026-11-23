@@ -30,22 +30,27 @@ You can read more by following the links associated with the package names below
 
 | Deployment to                                                     | Setup Command                                                                               |
 | :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
-| [Firebase hosting](https://firebase.google.com/docs/hosting)      | [`ng add @angular/fire`](https://npmjs.org/package/@angular/fire)                           |
+| [Firebase hosting](https://firebase.google.com/docs/hosting)      | [`ng add @angular/fire`](https://www.npmjs.com/package/@angular/fire)                       |
 | [Vercel](https://vercel.com/solutions/angular)                    | [`vercel init angular`](https://github.com/vercel/vercel/tree/main/examples/angular)        |
-| [Netlify](https://www.netlify.com)                                | [`ng add @netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy)       |
-| [GitHub pages](https://pages.github.com)                          | [`ng add angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)               |
+| [Netlify](https://www.netlify.com)                                | [`ng add @netlify-builder/deploy`](https://www.npmjs.com/package/@netlify-builder/deploy)   |
+| [GitHub Pages](https://pages.github.com)                          | [`ng add angular-cli-ghpages`](https://www.npmjs.com/package/angular-cli-ghpages)           |
 | [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`ng add @jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
 
 If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either [create a builder](tools/cli/cli-builder) that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your application.
 
 ## Manual deployment to a remote server
 
-To manually deploy your application, create a production build and copy the output directory to a web server or content delivery network (CDN).
+To manually deploy your application, create a production build and deploy the output artifacts to your hosting environment.
 By default, `ng build` uses the `production` configuration.
 If you have customized your build configurations, you may want to confirm [production optimizations](tools/cli/deployment#production-optimizations) are being applied before deploying.
 
-`ng build` outputs the built artifacts to `dist/my-app/` by default, however this path can be configured with the `outputPath` option in the `@angular-devkit/build-angular:browser` builder.
-Copy this directory to the server and configure it to serve the directory.
+`ng build` outputs the built artifacts to `dist/my-app/` by default, however this path can be configured with the `outputPath` option in the `@angular/build:application` builder.
+What you deploy depends on how your application is rendered:
+
+- **Static hosting (client-side rendering or `outputMode: "static"`):** Copy the `dist/my-app/browser/` directory to a web server or content delivery network (CDN), and configure it to serve that directory.
+- **Server-side rendering (`outputMode: "server"`):** Copy both the `dist/my-app/browser/` and `dist/my-app/server/` directories to the server, then run `node dist/my-app/server/server.mjs`.
+
+For more details, see [Server and hybrid rendering](guide/ssr).
 
 While this is a minimal deployment solution, there are a few requirements for the server to serve your Angular application correctly.
 
@@ -73,6 +78,8 @@ A static server routinely returns `index.html` when it receives a request for `h
 But most servers by default will reject `http://my-app.test/users/42` and returns a `404 - Not Found` error _unless_ it is configured to return `index.html` instead.
 Configure the fallback route or 404 page to `index.html` for your server, so Angular is served for deep links and can display the correct route.
 Some servers call this fallback behavior "Single-Page Application" (SPA) mode.
+
+IMPORTANT: When you prerender your application with `outputMode: "static"`, configure your server to use `index.csr.html` as the fallback instead of `index.html`. The build writes the host page to `index.csr.html`, whereas `index.html` (if generated) contains the prerendered content for the root route (`/`).
 
 Once the browser loads the application, Angular router will read the URL to determine which page it is on and display `/users/42` correctly.
 
@@ -110,7 +117,7 @@ at runtime which enables:
 
 - Extra safety checks such as [`expression-changed-after-checked`](errors/NG0100) detection.
 - More detailed error messages.
-- Additional debugging utilities such as the global `ng` variable with [debugging functions](api#core-global) and [Angular DevTools](tools/devtools) support.
+- Additional debugging utilities such as the global `ng` variable with [debugging functions](api#angular_core_globals) and [Angular DevTools](tools/devtools) support.
 
 These features are helpful during development, but they require extra code in the app, which is
 undesirable in production. To ensure these features do not negatively impact bundle size for end users, Angular CLI
@@ -128,7 +135,7 @@ ng build --deploy-url /my/assets
 
 ```
 
-The effect and purpose of `--deploy-url` overlaps with [`<base href>`](guide/routing/common-router-tasks). Both can be used for initial scripts, stylesheets, lazy scripts, and css resources.
+The effect and purpose of `--deploy-url` overlaps with [`<base href>`](guide/routing/router-reference#base-href). Both can be used for initial scripts, stylesheets, lazy scripts, and css resources.
 
 Unlike `<base href>` which can be defined in a single place at runtime, the `--deploy-url` needs to be hard-coded into an application at build time.
 Prefer `<base href>` where possible.

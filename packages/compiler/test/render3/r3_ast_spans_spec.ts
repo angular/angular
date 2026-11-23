@@ -26,7 +26,6 @@ class R3AstSourceSpans implements t.Visitor<void> {
       element.attributes,
       element.inputs,
       element.outputs,
-      element.directives,
       element.references,
       element.children,
     ]);
@@ -43,7 +42,6 @@ class R3AstSourceSpans implements t.Visitor<void> {
       template.attributes,
       template.inputs,
       template.outputs,
-      template.directives,
       template.templateAttrs,
       template.references,
       template.variables,
@@ -54,6 +52,16 @@ class R3AstSourceSpans implements t.Visitor<void> {
   visitContent(content: t.Content) {
     this.result.push(['Content', humanizeSpan(content.sourceSpan)]);
     this.visitAll([content.attributes, content.children]);
+  }
+
+  visitContentBlock(block: t.ContentBlock) {
+    this.result.push([
+      'ContentBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
+    ]);
+    this.visitAll([block.children]);
   }
 
   visitVariable(variable: t.Variable) {
@@ -209,6 +217,25 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitBoundaryBlock(block: t.BoundaryBlock): void {
+    this.result.push([
+      'BoundaryBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
+    ]);
+    this.visitAll([block.children, block.errorBlocks]);
+  }
+
+  visitBoundaryErrorBlock(block: t.BoundaryErrorBlock): void {
+    this.result.push([
+      'BoundaryErrorBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     let name: string;
 
@@ -278,38 +305,6 @@ class R3AstSourceSpans implements t.Visitor<void> {
     ]);
   }
 
-  visitComponent(component: t.Component) {
-    this.result.push([
-      'Component',
-      humanizeSpan(component.sourceSpan),
-      humanizeSpan(component.startSourceSpan),
-      humanizeSpan(component.endSourceSpan),
-    ]);
-    this.visitAll([
-      component.attributes,
-      component.inputs,
-      component.outputs,
-      component.directives,
-      component.references,
-      component.children,
-    ]);
-  }
-
-  visitDirective(directive: t.Directive) {
-    this.result.push([
-      'Directive',
-      humanizeSpan(directive.sourceSpan),
-      humanizeSpan(directive.startSourceSpan),
-      humanizeSpan(directive.endSourceSpan),
-    ]);
-    this.visitAll([
-      directive.attributes,
-      directive.inputs,
-      directive.outputs,
-      directive.references,
-    ]);
-  }
-
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach((node) => t.visitAll(this, node));
   }
@@ -322,8 +317,8 @@ function humanizeSpan(span: ParseSourceSpan | null | undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string, selectorlessEnabled = false) {
-  return expectFromR3Nodes(parse(html, {selectorlessEnabled}).nodes);
+function expectFromHtml(html: string) {
+  return expectFromR3Nodes(parse(html).nodes);
 }
 
 function expectFromR3Nodes(nodes: t.Node[]) {
@@ -964,123 +959,7 @@ describe('R3 AST source spans', () => {
   describe('@let declaration', () => {
     it('is correct for a let declaration', () => {
       expectFromHtml('@let foo = 123;').toEqual([
-        ['LetDeclaration', '@let foo = 123', 'foo', '123'],
-      ]);
-    });
-  });
-
-  describe('component tags', () => {
-    it('is correct for a simple component', () => {
-      expectFromHtml('<MyComp></MyComp>', true).toEqual([
-        ['Component', '<MyComp></MyComp>', '<MyComp>', '</MyComp>'],
-      ]);
-    });
-
-    it('is correct for a self-closing component', () => {
-      expectFromHtml('<MyComp/>', true).toEqual([
-        ['Component', '<MyComp/>', '<MyComp/>', '<MyComp/>'],
-      ]);
-    });
-
-    it('is correct for a component with a tag name', () => {
-      expectFromHtml('<MyComp:button></MyComp:button>', true).toEqual([
-        ['Component', '<MyComp:button></MyComp:button>', '<MyComp:button>', '</MyComp:button>'],
-      ]);
-    });
-
-    it('is correct for a component with attributes and directives', () => {
-      expectFromHtml(
-        '<MyComp before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123">Hello</MyComp>',
-        true,
-      ).toEqual([
-        [
-          'Component',
-          '<MyComp before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123">Hello</MyComp>',
-          '<MyComp before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123">',
-          '</MyComp>',
-        ],
-        ['TextAttribute', 'before="foo"', 'before', 'foo'],
-        ['TextAttribute', 'middle', 'middle', '<empty>'],
-        ['TextAttribute', 'after="123"', 'after', '123'],
-        ['Directive', '@Dir', '@Dir', '<empty>'],
-        ['Directive', '@OtherDir([a]="a" (b)="b()")', '@OtherDir(', ')'],
-        ['BoundAttribute', '[a]="a"', 'a', 'a'],
-        ['BoundEvent', '(b)="b()"', 'b', 'b()'],
-        ['Text', 'Hello'],
-      ]);
-    });
-
-    it('is correct for a component nested inside other markup', () => {
-      expectFromHtml(
-        '@if (expr) {<div>Hello: <MyComp><span><OtherComp/></span></MyComp></div>}',
-        true,
-      ).toEqual([
-        [
-          'IfBlock',
-          '@if (expr) {<div>Hello: <MyComp><span><OtherComp/></span></MyComp></div>}',
-          '@if (expr) {',
-          '}',
-        ],
-        [
-          'IfBlockBranch',
-          '@if (expr) {<div>Hello: <MyComp><span><OtherComp/></span></MyComp></div>}',
-          '@if (expr) {',
-        ],
-        [
-          'Element',
-          '<div>Hello: <MyComp><span><OtherComp/></span></MyComp></div>',
-          '<div>',
-          '</div>',
-        ],
-        ['Text', 'Hello: '],
-        ['Component', '<MyComp><span><OtherComp/></span></MyComp>', '<MyComp>', '</MyComp>'],
-        ['Element', '<span><OtherComp/></span>', '<span>', '</span>'],
-        ['Component', '<OtherComp/>', '<OtherComp/>', '<OtherComp/>'],
-      ]);
-    });
-  });
-
-  describe('directives', () => {
-    it('is correct for a directive with no attributes', () => {
-      expectFromHtml('<div @Dir></div>', true).toEqual([
-        ['Element', '<div @Dir></div>', '<div @Dir>', '</div>'],
-        ['Directive', '@Dir', '@Dir', '<empty>'],
-      ]);
-    });
-
-    it('is correct for a directive with attributes', () => {
-      expectFromHtml('<div @Dir(a="1" [b]="two" (c)="c()")></div>', true).toEqual([
-        [
-          'Element',
-          '<div @Dir(a="1" [b]="two" (c)="c()")></div>',
-          '<div @Dir(a="1" [b]="two" (c)="c()")>',
-          '</div>',
-        ],
-        ['Directive', '@Dir(a="1" [b]="two" (c)="c()")', '@Dir(', ')'],
-        ['TextAttribute', 'a="1"', 'a', '1'],
-        ['BoundAttribute', '[b]="two"', 'b', 'two'],
-        ['BoundEvent', '(c)="c()"', 'c', 'c()'],
-      ]);
-    });
-
-    it('is correct for directives mixed with other attributes', () => {
-      expectFromHtml(
-        '<div before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123"></div>',
-        true,
-      ).toEqual([
-        [
-          'Element',
-          '<div before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123"></div>',
-          '<div before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123">',
-          '</div>',
-        ],
-        ['TextAttribute', 'before="foo"', 'before', 'foo'],
-        ['TextAttribute', 'middle', 'middle', '<empty>'],
-        ['TextAttribute', 'after="123"', 'after', '123'],
-        ['Directive', '@Dir', '@Dir', '<empty>'],
-        ['Directive', '@OtherDir([a]="a" (b)="b()")', '@OtherDir(', ')'],
-        ['BoundAttribute', '[a]="a"', 'a', 'a'],
-        ['BoundEvent', '(b)="b()"', 'b', 'b()'],
+        ['LetDeclaration', '@let foo = 123;', 'foo', '123'],
       ]);
     });
   });

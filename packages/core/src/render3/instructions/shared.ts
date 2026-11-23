@@ -12,13 +12,13 @@ import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {ViewEncapsulation} from '../../metadata/view';
-import {
-  validateAgainstEventAttributes,
-  validateAgainstEventProperties,
-} from '../../sanitization/sanitization';
+import {unwrapSafeValue} from '../../sanitization/bypass';
+import {validateAgainstEventProperties} from '../../sanitization/sanitization';
+
+import {ProfilerEvent} from '../../../primitives/devtools';
+import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {assertIndexInRange, assertNotSame} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
-import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertHasParent, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -57,7 +57,6 @@ import {
 import {assertTNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler} from '../profiler';
-import {ProfilerEvent} from '../../../primitives/devtools';
 import {
   getCurrentDirectiveIndex,
   getCurrentTNode,
@@ -74,16 +73,19 @@ import {
 } from '../state';
 import {NO_CHANGE} from '../tokens';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
-import {renderStringify} from '../util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapLView} from '../util/view_utils';
 
-import {clearElementContents, setupStaticAttributes} from '../dom_node_manipulation';
+import {isDetachedByI18n} from '../../i18n/utils';
+import {
+  clearElementContents,
+  setElementAttribute,
+  setupStaticAttributes,
+} from '../dom_node_manipulation';
+import {appendChild} from '../node_manipulation';
 import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-import {isDetachedByI18n} from '../../i18n/utils';
-import {appendChild} from '../node_manipulation';
 
 export function executeTemplate<T>(
   tView: TView,
@@ -296,7 +298,9 @@ export function setDomProperty<T>(
     const element = getNativeByTNode(tNode, lView) as RElement | RComment;
 
     if (ngDevMode) {
-      validateAgainstEventProperties(propName);
+      if (lView[TVIEW].firstUpdatePass) {
+        validateAgainstEventProperties(propName);
+      }
       if (!isPropertyValid(element, propName, tNode.value, lView[TVIEW].schemas)) {
         handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
       }
@@ -305,6 +309,15 @@ export function setDomProperty<T>(
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.value || '', propName) as any) : value;
+
+    // The `src` property previously used a sanitizer which mapped `null`/`undefined` to `''`.
+    // Now that `img` and `video` `src` are no longer sanitized, we still need to map `null` and
+    // `undefined` to `''` to avoid stringifying them to `'null'` or `'undefined'` and causing
+    // broken network requests.
+
+    // TODO(v23): Remove this workaround once we can introduce a breaking change
+    value = unwrapImgVideoSrcValue(propName, element as RElement, value);
+
     renderer.setProperty(element as RElement, propName, value);
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
@@ -313,6 +326,33 @@ export function setDomProperty<T>(
       handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
     }
   }
+}
+
+/**
+ * This function allows us to workaround a breaking change introduced by #71095
+ * src attributes/bindings used to be sanitized which was responsible for:
+ * - converting undefined/null to ''
+ * - supporting bypassed values (via bypassSecurityTrustResourceUrl)
+ *
+ * This workaround is intended to be dropped in v23 when the breaking change window opens.
+ */
+function unwrapImgVideoSrcValue(
+  propName: string,
+  element: RElement,
+  value: unknown,
+  isAttribute = false,
+): any {
+  if (
+    propName === 'src' &&
+    ((element as RElement).tagName === 'IMG' || (element as RElement).tagName === 'VIDEO')
+  ) {
+    if (value == null) {
+      return isAttribute ? value : '';
+    }
+
+    return unwrapSafeValue(value);
+  }
+  return value;
 }
 
 /** If node is an OnPush component, marks its LView dirty. */
@@ -506,7 +546,6 @@ export function elementAttributeInternal(
 ) {
   if (ngDevMode) {
     assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
-    validateAgainstEventAttributes(name);
     assertTNodeType(
       tNode,
       TNodeType.Element,
@@ -514,27 +553,11 @@ export function elementAttributeInternal(
         `Host bindings are not valid on ng-container or ng-template.`,
     );
   }
+
   const element = getNativeByTNode(tNode, lView) as RElement;
+  // TODO(v23): Remove this workaround once we can introduce a breaking change
+  value = unwrapImgVideoSrcValue(name, element, value, true);
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
-}
-
-export function setElementAttribute(
-  renderer: Renderer,
-  element: RElement,
-  namespace: string | null | undefined,
-  tagName: string | null,
-  name: string,
-  value: any,
-  sanitizer: SanitizerFn | null | undefined,
-) {
-  if (value == null) {
-    renderer.removeAttribute(element, name, namespace);
-  } else {
-    const strValue =
-      sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
-
-    renderer.setAttribute(element, name, strValue as string, namespace);
-  }
 }
 
 /**
@@ -795,7 +818,8 @@ export function setDirectiveInput(
   if (
     hostDirectivesStart !== null &&
     hostDirectivesEnd !== null &&
-    tNode.hostDirectiveInputs?.hasOwnProperty(publicName)
+    tNode.hostDirectiveInputs &&
+    Object.hasOwn(tNode.hostDirectiveInputs, publicName)
   ) {
     const hostDirectiveInputs = tNode.hostDirectiveInputs[publicName];
 
@@ -815,7 +839,7 @@ export function setDirectiveInput(
     }
   }
 
-  if (hostIndex !== null && target.inputs.hasOwnProperty(publicName)) {
+  if (hostIndex !== null && Object.hasOwn(target.inputs, publicName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     writeToDirectiveInput(target, lView[hostIndex], publicName, value);
     hasSet = true;

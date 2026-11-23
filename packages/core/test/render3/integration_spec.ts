@@ -7,13 +7,24 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, HostBinding, provideZoneChangeDetection} from '../../src/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createComponent,
+  Directive,
+  EnvironmentInjector,
+  HostBinding,
+  inject,
+  provideZoneChangeDetection,
+  signal,
+  ViewContainerRef,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {SecurityContext} from '../../src/sanitization/dom_security_schema';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
 
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
@@ -45,7 +56,6 @@ describe('element discovery', () => {
     class ChildComp {}
 
     @Component({
-      selector: 'parent-comp',
       imports: [ChildComp],
       template: `
         <section>
@@ -106,7 +116,6 @@ describe('element discovery', () => {
 
   it('should return a context object from a given dom node', () => {
     @Component({
-      selector: 'structured-comp',
       template: `
         <section></section>
         <div></div>
@@ -134,7 +143,6 @@ describe('element discovery', () => {
 
   it('should cache the element context on a element was preemptively monkey-patched', () => {
     @Component({
-      selector: 'structured-comp',
       template: ` <section></section> `,
     })
     class StructuredComp {}
@@ -156,7 +164,6 @@ describe('element discovery', () => {
 
   it("should cache the element context on an intermediate element that isn't preemptively monkey-patched", () => {
     @Component({
-      selector: 'structured-comp',
       template: `
         <section>
           <p></p>
@@ -181,7 +188,6 @@ describe('element discovery', () => {
 
   it('should be able to pull in element context data even if the element is decorated using styling', () => {
     @Component({
-      selector: 'structured-comp',
       template: ` <section></section> `,
     })
     class StructuredComp {}
@@ -232,7 +238,6 @@ describe('element discovery', () => {
     class ProjectorComp {}
 
     @Component({
-      selector: 'parent-comp',
       imports: [ProjectorComp],
       template: `
         <section>
@@ -295,7 +300,6 @@ describe('element discovery', () => {
 
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular', () => {
     @Component({
-      selector: 'structured-comp',
       template: ` <section></section> `,
     })
     class StructuredComp {}
@@ -313,7 +317,6 @@ describe('element discovery', () => {
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     @Component({
-      selector: 'structured-comp',
       template: ``,
     })
     class StructuredComp {}
@@ -373,7 +376,6 @@ describe('element discovery', () => {
     }
 
     @Component({
-      selector: 'structured-comp',
       imports: [MyDir1, MyDir2, MyDir3],
       template: `
         <div my-dir-1 my-dir-2></div>
@@ -458,7 +460,6 @@ describe('element discovery', () => {
     }
 
     @Component({
-      selector: 'parent-comp',
       imports: [ChildComp, MyDir1, MyDir2],
       template: ` <child-comp my-dir-1 my-dir-2></child-comp> `,
     })
@@ -520,7 +521,6 @@ describe('element discovery', () => {
     class ChildComp {}
 
     @Component({
-      selector: 'parent-comp',
       imports: [ChildComp],
       template: `
         <section>
@@ -556,14 +556,13 @@ describe('element discovery', () => {
 describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     @Component({
-      selector: 'sanitize-this',
-      template: ` <a [href]="href"></a> `,
+      template: ` <a [href]="href()"></a> `,
     })
     class SanitizationComp {
-      href = '';
+      href = signal<any>('');
 
       updateLink(href: any) {
-        this.href = href;
+        this.href.set(href);
       }
     }
 
@@ -608,9 +607,9 @@ describe('sanitization', () => {
     }
 
     @Component({
-      selector: 'sanitize-this',
       imports: [UnsafeUrlHostBindingDir],
       template: ` <a unsafeUrlHostBindingDir>text</a> `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp {}
 
@@ -636,6 +635,254 @@ describe('sanitization', () => {
     fixture.detectChanges();
 
     expect(anchor.getAttribute('href')).toEqual('http://foo');
+  });
+
+  it('should throw when binding to animate element with attributeName="href"', () => {
+    @Component({
+      template: `<svg><animate attributeName="href" [to]="'foo'"></animate></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
+  // The SVG `attributeName` is case-sensitive when accessed via the DOM API
+  // (i.e. `setAttribute('attributename', ...)` and `setAttribute('attributeName', ...)`
+  // create two distinct attributes). However, the browser tokenizer normalizes
+  // the lowercase form `attributename` to `attributeName` on initial parsing,
+  // which means the client-side sanitizer still ends up seeing `attributeName`.
+  // The SSR renderer (Domino) does not perform this normalization, so we
+  // explicitly look up the lowercase form as well to make sure the sanitizer
+  // is triggered consistently in both environments.
+  for (const attr of ['attributeName', 'attributename', 'attributenAme']) {
+    it(`should throw when binding to set element with ${attr}="href"`, () => {
+      @Component({
+        template: `<svg><set ${attr}="href" [attr.to]="'foo'"></set></svg>`,
+      })
+      class TestComp {}
+
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+      const fixture = TestBed.createComponent(TestComp);
+      expect(() => fixture.detectChanges()).toThrowError(
+        /Angular has detected that the `to` was applied/,
+      );
+    });
+  }
+
+  // One carrier per attribute: directive metadata has to be statically analyzable, so the bound
+  // attribute name cannot be interpolated into `host`.
+  const UNSAFE_VALUE = 'javascript:alert(1)';
+
+  @Directive({selector: '[bind-to]', host: {'[attr.to]': 'value'}})
+  class BindTo {
+    value = UNSAFE_VALUE;
+  }
+
+  @Directive({selector: '[bind-from]', host: {'[attr.from]': 'value'}})
+  class BindFrom {
+    value = UNSAFE_VALUE;
+  }
+
+  @Directive({selector: '[bind-values]', host: {'[attr.values]': 'value'}})
+  class BindValues {
+    value = UNSAFE_VALUE;
+  }
+
+  @Directive({selector: '[bind-attribute-name]', host: {'[attr.attributeName]': 'value'}})
+  class BindAttributeName {
+    value = UNSAFE_VALUE;
+  }
+
+  const attrCarriers = {
+    'to': BindTo,
+    'from': BindFrom,
+    'values': BindValues,
+    'attributeName': BindAttributeName,
+  };
+
+  // Binds one attribute on a host element created in the HTML namespace. Going through a concrete
+  // `hostElement` keeps the tag name out of the template, which lets the cases below be table
+  // driven. Returns the change detection call so the caller can assert on it.
+  function bindAttributeOutsideSvg(
+    tagName: string,
+    attrName: keyof typeof attrCarriers,
+    staticAttributeName: string,
+  ): () => void {
+    @Component({
+      template: '',
+    })
+    class DynamicHost {}
+
+    const hostElement = document.createElement(tagName);
+    hostElement.setAttribute('attributeName', staticAttributeName);
+
+    const componentRef = createComponent(DynamicHost, {
+      hostElement,
+      environmentInjector: TestBed.inject(EnvironmentInjector),
+      directives: [attrCarriers[attrName]],
+    });
+
+    return () => {
+      try {
+        componentRef.changeDetectorRef.detectChanges();
+      } finally {
+        componentRef.destroy();
+      }
+    };
+  }
+
+  // An animation element declared outside of an `<svg>` is created in the HTML namespace, but still
+  // animates once it ends up inside an `<svg>` subtree - for example when it is projected into one
+  // and the server-rendered markup is re-parsed by the browser.
+  const svgAnimationAttrs: Record<string, (keyof typeof attrCarriers)[]> = {
+    'set': ['to', 'attributeName'],
+    'animate': ['to', 'from', 'values', 'attributeName'],
+    'animateMotion': ['attributeName'],
+    'animateTransform': ['attributeName'],
+  };
+
+  for (const [tagName, attrNames] of Object.entries(svgAnimationAttrs)) {
+    for (const attrName of attrNames) {
+      it(`should throw when binding to \`${attrName}\` on a <${tagName}> outside of an svg element`, () => {
+        const detectChanges = bindAttributeOutsideSvg(tagName, attrName, 'href');
+
+        // The tag name is reported as the security check lower-cased it.
+        expect(detectChanges).toThrowError(
+          new RegExp(
+            `Angular has detected that the \`${attrName}\` was applied as a binding ` +
+              `to the <${tagName.toLowerCase()}> element`,
+          ),
+        );
+      });
+    }
+  }
+
+  it('should throw when binding to a set element projected into an svg element', () => {
+    @Component({
+      selector: 'svg-wrapper',
+      template: `
+        <svg>
+          <a>
+            <g>
+              <ng-content></ng-content>
+            </g>
+          </a>
+        </svg>
+      `,
+    })
+    class SvgWrapper {}
+
+    @Component({
+      selector: 'test-comp',
+      imports: [SvgWrapper],
+      template: `
+        <svg-wrapper>
+          <set attributeName="href" [attr.to]="'javascript:alert(1)'"></set>
+        </svg-wrapper>
+      `,
+    })
+    class TestComp {}
+
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
+  it('should throw when binding to a dynamically created set component host', () => {
+    @Component({
+      selector: 'set[drilldown]',
+      template: '',
+      host: {
+        'attributeName': 'href',
+        '[attr.to]': 'target',
+      },
+    })
+    class DynamicSetComp {
+      target = 'javascript:alert(1)';
+    }
+
+    @Component({
+      selector: 'test-comp',
+      template: '',
+    })
+    class TestComp {
+      readonly viewContainerRef = inject(ViewContainerRef);
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    fixture.componentInstance.viewContainerRef.createComponent(DynamicSetComp);
+
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
+  it('should not throw when binding to a set element outside of an svg element when attributeName is not href', () => {
+    expect(bindAttributeOutsideSvg('set', 'to', 'display')).not.toThrow();
+  });
+
+  it('should not throw when binding to animate element when attributeName is not href', () => {
+    @Component({
+      template: `<svg><animate attributeName="display" [to]="'foo'"></animate></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should throw on uppercase iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.src]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <IFRAME unsafeUrlHostBindingDir></IFRAME>`,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
+  });
+
+  it('should throw on uppercase SRC attribute on iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.SRC]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <iframe unsafeUrlHostBindingDir></iframe>`,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
   });
 });
 

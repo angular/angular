@@ -8,6 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/interface/provider';
+import {ForeignComponent} from '../interface/foreign_component';
 import {Type} from '../interface/type';
 import {compileComponent, compileDirective} from '../render3/jit/directive';
 import {compilePipe} from '../render3/jit/pipe';
@@ -337,13 +338,6 @@ export interface Directive {
   standalone?: boolean;
 
   /**
-   * // TODO(signals): Remove internal and add public documentation
-   *
-   * @internal
-   */
-  signals?: boolean;
-
-  /**
    * Standalone directives that should be applied to the host whenever the directive is matched.
    * By default, none of the inputs or outputs of the host directives will be available on the host,
    * unless they are specified in the `inputs` or `outputs` properties.
@@ -548,7 +542,9 @@ export interface Component extends Directive {
    * which is responsible for propagating the component's bindings.
    * The strategy is one of:
    * - `ChangeDetectionStrategy#OnPush` sets the strategy to `CheckOnce` (on demand).
-   * - `ChangeDetectionStrategy#Default` sets the strategy to `CheckAlways`.
+   * - `ChangeDetectionStrategy#Eager` sets the strategy to `CheckAlways`.
+   *
+   * NOTE: OnPush is enabled by default.
    */
   changeDetection?: ChangeDetectionStrategy;
 
@@ -640,15 +636,23 @@ export interface Component extends Directive {
   imports?: (Type<any> | ReadonlyArray<any>)[];
 
   /**
+   * The foreignImports property specifies components from other frameworks that can be used
+   * within this component's template.
+   *
+   * @internal // 3p-only
+   */
+  foreignImports?: ForeignComponent<any, any>[];
+
+  /**
    * The `deferredImports` property specifies a standalone component's template dependencies,
    * which should be defer-loaded as a part of the `@defer` block. Angular *always* generates
    * dynamic imports for such symbols and removes the regular/eager import. Make sure that imports
    * which bring symbols used in the `deferredImports` don't contain other symbols.
    *
    * Note: this is an internal-only field, use regular `@Component.imports` field instead.
-   * @internal
+   * @internal // 3p-only
    */
-  deferredImports?: (Type<any> | ReadonlyArray<any>)[];
+  deferredImports?: {[blockName: string]: (Type<any> | ReadonlyArray<any>)[]};
 
   /**
    * The set of schemas that declare elements to be allowed in a standalone component. Elements and
@@ -668,7 +672,8 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
   'Component',
-  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}),
+  // g3-only (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.OnPush, ...c}),
+  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}), // 3p-only
   Directive,
   undefined,
   (type: Type<any>, meta: Component) => compileComponent(type, meta),
@@ -785,7 +790,7 @@ export interface InputDecorator {
    * class BankAccount {
    *   // This property is bound using its original name.
    *   // Defining argument required as true inside the Input Decorator
-   *   // makes this property deceleration as mandatory
+   *   // makes this property declaration as mandatory
    *   @Input({ required: true }) bankName!: string;
    *   // Argument alias makes this property value is bound to a different property name
    *   // when this component is instantiated in a template.
@@ -1056,6 +1061,11 @@ export interface HostListenerDecorator {
    * https://www.w3.org/TR/DOM-Level-3-Events-key/#named-key-attribute-values
    *
    * NOTE: that keys can also be combined, e.g. `@HostListener('keydown.shift.a')`.
+   *
+   * Key names are matched against `KeyboardEvent.key`, which depends on the user's keyboard
+   * layout and input language. To match a physical key regardless of layout, use the `code`
+   * modifier instead, e.g. `@HostListener('keydown.code.KeyA')`. See
+   * [Using key modifiers](guide/templates/event-listeners#using-key-modifiers) for details.
    *
    * The global target names that can be used to prefix an event name are
    * `document:`, `window:` and `body:`.

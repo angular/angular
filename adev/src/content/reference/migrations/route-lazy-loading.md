@@ -31,8 +31,9 @@ The migration will check all the components in the routes, check if they are sta
 
 #### Before
 
-```typescript
-// app.module.ts
+```typescript {header: "app.module.ts"}
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 import {Home} from './home';
 
 @NgModule({
@@ -51,8 +52,7 @@ export class AppModule {}
 
 #### After
 
-```typescript
-// app.module.ts
+```typescript {header: "app.module.ts"}
 @NgModule({
   imports: [
     RouterModule.forRoot([

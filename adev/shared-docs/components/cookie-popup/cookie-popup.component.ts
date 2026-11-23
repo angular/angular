@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {LOCAL_STORAGE} from '../../providers/index';
 import {setCookieConsent} from '../../utils';
 
@@ -21,7 +21,6 @@ export const STORAGE_KEY = 'docs-accepts-cookies';
   selector: 'docs-cookie-popup',
   templateUrl: './cookie-popup.component.html',
   styleUrls: ['./cookie-popup.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CookiePopup {
   private readonly localStorage = inject(LOCAL_STORAGE);

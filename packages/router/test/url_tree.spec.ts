@@ -39,6 +39,11 @@ describe('UrlTree', () => {
       expect(tree.queryParams).toEqual({'first': 'http://foo/bar?baz=true', 'second': '123'});
     });
 
+    it('should parse a query param named like an Object.prototype member', () => {
+      const tree = serializer.parse('/path/to?hasOwnProperty=foo&bar=baz');
+      expect(tree.queryParams).toEqual({'hasOwnProperty': 'foo', 'bar': 'baz'});
+    });
+
     it('create, serialize, parse, serialize results in same serialized tree with outlet and no primary children', () => {
       const router = TestBed.inject(Router);
       const th = router.createUrlTree(['/', {outlets: {a: ['a'], b: [{outlets: {a: ['b1']}}]}}]);
@@ -365,6 +370,61 @@ describe('UrlTree', () => {
             expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
           },
         );
+      });
+
+      describe('options', () => {
+        it('should default to subset matching when options are omitted', () => {
+          const t1 = serializer.parse('/one/two/three');
+          const t2 = serializer.parse('/one/two');
+          expect(containsTree(t1, t2)).toBe(true);
+        });
+
+        it('should perform exact matching when passing exactMatchOptions', () => {
+          const t1 = serializer.parse('/one/two/three');
+          const t2 = serializer.parse('/one/two');
+          expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+
+          const t3 = serializer.parse('/one/two');
+          expect(containsTree(t3, t2, exactMatchOptions)).toBe(true);
+        });
+
+        it('should require exact query parameter matches when passing exactMatchOptions', () => {
+          const t1 = serializer.parse('/one/two?a=1&b=2');
+          const t2 = serializer.parse('/one/two?a=1');
+          expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+        });
+
+        it('should default to subset matching when passed an empty options object', () => {
+          const t1 = serializer.parse('/one/two/three');
+          const t2 = serializer.parse('/one/two');
+          expect(containsTree(t1, t2, {})).toBe(true);
+        });
+
+        it('should handle undefined options without throwing', () => {
+          const t1 = serializer.parse('/one/two/three');
+          const t2 = serializer.parse('/one/two');
+          expect(containsTree(t1, t2, undefined)).toBe(true);
+        });
+
+        it('should handle null options gracefully', () => {
+          const t1 = serializer.parse('/one/two/three');
+          const t2 = serializer.parse('/one/two');
+          expect(containsTree(t1, t2, null as any)).toBe(true);
+        });
+      });
+
+      describe('partial options', () => {
+        it('should allow overriding specific options while applying subset defaults for the rest', () => {
+          const t1 = serializer.parse('/one/two/three?test=1&page=5');
+          const t2 = serializer.parse('/one/two?test=1');
+          expect(containsTree(t1, t2, {paths: 'subset'})).toBe(true);
+        });
+
+        it('should enforce exact paths when explicitly set while keeping subset queryParams default', () => {
+          const t1 = serializer.parse('/one/two/three?test=1&page=5');
+          const t2 = serializer.parse('/one/two?test=1');
+          expect(containsTree(t1, t2, {paths: 'exact'})).toBe(false);
+        });
       });
     });
   });

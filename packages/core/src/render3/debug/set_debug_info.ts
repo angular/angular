@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {getComponentDef} from '../def_getters';
 import {ClassDebugInfo} from '../interfaces/definition';
 
@@ -15,7 +15,10 @@ import {ClassDebugInfo} from '../interfaces/definition';
  *
  * This runtime is guarded by ngDevMode flag.
  */
-export function ɵsetClassDebugInfo(type: Type<any>, debugInfo: ClassDebugInfo): void {
+export function ɵsetClassDebugInfo(
+  type: Type<any> | AbstractType<any>,
+  debugInfo: ClassDebugInfo,
+): void {
   const def = getComponentDef(type);
   if (def !== null) {
     def.debugInfo = debugInfo;

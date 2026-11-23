@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BabelFile, NodePath, PluginObj, types as t} from '@babel/core';
+import {File, NodePath, PluginObject, types as t} from '@babel/core';
 
 import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
@@ -25,7 +25,7 @@ export function createEs2015LinkerPlugin({
   fileSystem,
   logger,
   ...options
-}: LinkerPluginOptions): PluginObj {
+}: LinkerPluginOptions): PluginObject {
   let fileLinker: FileLinker<
     ConstantScopePath,
     t.Statement,
@@ -187,8 +187,8 @@ function assertNotNull<T>(obj: T | null): asserts obj is T {
 /**
  * Create a string representation of an error that includes the code frame of the `node`.
  */
-function buildCodeFrameError(file: BabelFile, message: string, node: t.Node): string {
+function buildCodeFrameError(file: File, message: string, node: t.Node): string {
   const filename = file.opts.filename || '(unknown file)';
-  const error = file.hub.buildError(node, message);
+  const error = file.hub.buildError(node, message, Error);
   return `${filename}: ${error.message}`;
 }

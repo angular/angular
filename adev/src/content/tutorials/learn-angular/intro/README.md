@@ -1,5 +1,10 @@
 # Welcome to the Angular tutorial
 
+<div class="docs-tutorial-mascot">
+  <img class="docs-tutorial-mascot__angie" src="assets/images/angie/greeting.svg" aria-hidden="true">
+  <p class="docs-tutorial-mascot__bubble">Welcome! Let's learn the building blocks of Angular.</p>
+</div>
+
 This interactive tutorial will teach you the basic building blocks to start building great apps with Angular.
 
 ## How to use this tutorial

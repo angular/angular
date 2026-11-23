@@ -48,10 +48,10 @@ By default, all redirects use the `prefix` strategy.
 ```ts
 export const routes: Routes = [
   // This redirect route is equivalent to…
-  { path: 'news', redirectTo: 'blog },
+  {path: 'news', redirectTo: 'blog'},
 
   // This explicitly defined route redirect pathMatch
-  { path: 'news', redirectTo: 'blog', pathMatch: 'prefix' },
+  {path: 'news', redirectTo: 'blog', pathMatch: 'prefix'},
 ];
 ```
 
@@ -103,13 +103,14 @@ import {Menu} from './menu';
 export const routes: Routes = [
   {
     path: 'restaurant/:location/menu',
+    pathMatch: 'full',
     redirectTo: (activatedRouteSnapshot) => {
       const location = activatedRouteSnapshot.params['location'];
       const currentHour = new Date().getHours();
 
       // Check if user requested a specific meal via query parameter
       if (activatedRouteSnapshot.queryParams['meal']) {
-        return `/restaurant/${location}/menu/${queryParams['meal']}`;
+        return `/restaurant/${location}/menu/${activatedRouteSnapshot.queryParams['meal']}`;
       }
 
       // Auto-redirect based on time of day
@@ -135,6 +136,37 @@ export const routes: Routes = [
 
 To learn more, check out [the API docs for the RedirectFunction](api/router/RedirectFunction).
 
+## Redirecting from components and resources with `RedirectCommand`
+
+In addition to static and function-based route redirects, components and route resources can imperatively trigger a redirect by throwing a `RedirectCommand`. This is especially useful for redirecting unauthenticated users or handling dynamic authorization checks during data fetching:
+
+```angular-ts
+import {Component, inject, resource} from '@angular/core';
+import {Router, RedirectCommand} from '@angular/router';
+
+@Component({
+  selector: 'app-account',
+  template: `<p>Account Details</p>`,
+})
+export class AccountPage {
+  private router = inject(Router);
+
+  accountData = resource({
+    loader: async () => {
+      const response = await fetch('/api/account');
+      if (response.status === 401) {
+        // Automatically redirects to /login when unauthorized
+        throw new RedirectCommand(this.router.parseUrl('/login'));
+      }
+      return response.json();
+    },
+  });
+}
+```
+
+When a `RedirectCommand` is thrown inside a routed component constructor, lifecycle hook, or route resource loader, the Angular Router intercepts the command and dispatches navigation to the target URL automatically.
+
 ## Next steps
 
 For more information about the `redirectTo` property, check out the [API docs](api/router/Route#redirectTo).
+To learn more about error boundaries and catching component failures, see the [Error boundaries guide](/guide/routing/error-boundaries).

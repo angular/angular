@@ -7,7 +7,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 interface Person {
   name: string;
@@ -22,12 +22,15 @@ interface Person {
     </ul>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class JsonpCmp {
   people: Person[] = [];
 
   constructor(http: HttpClient) {
-    http.jsonp('./people.json', 'callback').subscribe((res: unknown) => {
+    const peopleUrl = new URL('./people.json', window.location.href).toString();
+
+    http.jsonp(peopleUrl, 'callback').subscribe((res: unknown) => {
       this.people = res as Person[];
     });
   }

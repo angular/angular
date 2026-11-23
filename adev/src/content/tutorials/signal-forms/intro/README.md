@@ -1,8 +1,11 @@
 # Learn Angular Signal Forms
 
-This interactive tutorial will teach you how to build reactive forms using Angular's experimental Signal Forms API.
+<div class="docs-tutorial-mascot">
+  <img class="docs-tutorial-mascot__angie" src="assets/images/angie/greeting.svg" aria-hidden="true">
+  <p class="docs-tutorial-mascot__bubble">Welcome! Let's build forms with signals.</p>
+</div>
 
-IMPORTANT: Signal Forms is currently [experimental](reference/releases#experimental). The API may change before stabilizing. Check the [official documentation](guide/forms/signals/overview) for the latest updates.
+This interactive tutorial will teach you how to build reactive forms using Angular's Signal Forms API.
 
 ## How to use this tutorial
 

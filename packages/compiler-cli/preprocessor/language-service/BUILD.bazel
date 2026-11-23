@@ -1,0 +1,23 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(name = "node_modules")
+
+ts_project(
+    name = "language-service",
+    srcs = glob(["src/**/*.ts"]),
+    tsconfig = "//packages/compiler-cli/preprocessor:tsconfig",
+    deps = [
+        ":node_modules/vscode-jsonrpc",
+        ":node_modules/vscode-languageserver",
+        ":node_modules/vscode-uri",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/private",
+        "//packages/language-service:private",
+    ],
+)

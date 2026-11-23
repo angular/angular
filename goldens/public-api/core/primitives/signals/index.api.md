@@ -62,6 +62,9 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 export function defaultEquals<T>(a: T, b: T): boolean;
 
 // @public
+export const ERRORED: any;
+
+// @public
 export function finalizeConsumerAfterComputation(node: ReactiveNode): void;
 
 // @public (undocumented)
@@ -159,7 +162,7 @@ export interface ReactiveNode {
 }
 
 // @public (undocumented)
-export type ReactiveNodeKind = 'signal' | 'computed' | 'effect' | 'template' | 'linkedSignal' | 'afterRenderEffectPhase' | 'unknown';
+export type ReactiveNodeKind = 'signal' | 'computed' | 'effect' | 'template' | 'linkedSignal' | 'afterRenderEffectPhase' | 'childSignalProp' | 'unknown';
 
 // @public
 export function resetConsumerBeforeComputation(node: ReactiveNode): void;

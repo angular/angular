@@ -143,8 +143,7 @@ export function ngswCommChannelFactory(): NgswCommChannel {
  * You can use this token to define a provider that generates the registration options at runtime,
  * for example via a function call:
  *
- * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts"}
+ * {@example service-worker/registration-options/module.ts region="registration-options"}
  *
  * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
  *
@@ -199,8 +198,8 @@ export abstract class SwRegistrationOptions {
    *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't
    *     stabilized after `<timeout>` milliseconds (for example, due to a recurrent asynchronous
    *     task), the ServiceWorker will be registered anyway.
-   *     If `<timeout>` is omitted, the ServiceWorker will only be registered once the app
-   *     stabilizes.
+   *     `<timeout>` is required. Without it, the ServiceWorker is registered immediately
+   *     instead of waiting for the application to stabilize.
    * - `registerImmediately`: Register immediately.
    * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
    *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If

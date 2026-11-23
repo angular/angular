@@ -32,7 +32,7 @@ export function compileDeclareInjectableFromMetadata(
   const definitionMap = createInjectableDefinitionMap(meta);
 
   const expression = o.importExpr(R3.declareInjectable).callFn([definitionMap.toLiteralMap()]);
-  const type = createInjectableType(meta);
+  const type = createInjectableType(meta.type.type, meta.typeArgumentCount);
 
   return {expression, type, statements: []};
 }
@@ -40,7 +40,7 @@ export function compileDeclareInjectableFromMetadata(
 /**
  * Gathers the declaration fields for a Injectable into a `DefinitionMap`.
  */
-export function createInjectableDefinitionMap(
+function createInjectableDefinitionMap(
   meta: R3InjectableMetadata,
 ): DefinitionMap<R3DeclareInjectableMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareInjectableMetadata>();

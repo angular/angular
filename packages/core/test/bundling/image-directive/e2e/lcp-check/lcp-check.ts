@@ -7,7 +7,7 @@
  */
 
 import {NgOptimizedImage} from '@angular/common';
-import {Component} from '../../../../../src/core';
+import {ChangeDetectionStrategy, Component} from '../../../../../src/core';
 
 @Component({
   selector: 'lcp-check',
@@ -32,6 +32,7 @@ import {Component} from '../../../../../src/core';
     -->
     <img ngSrc="/e2e/b.png" width="10" height="10" />
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class LcpCheckComponent {
   imageSrc = '/e2e/a.png';

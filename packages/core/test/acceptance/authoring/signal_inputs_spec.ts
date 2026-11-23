@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ViewEncapsulation} from '@angular/compiler';
 import {
   Component,
   ComponentRef,
@@ -26,13 +27,11 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import {SIGNAL} from '../../../primitives/signals';
-import {fakeAsync, TestBed, tick} from '../../../testing';
-import {ViewEncapsulation} from '@angular/compiler';
 import {By} from '@angular/platform-browser';
-import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
-import {isNode} from '@angular/private/testing';
+import {isNode, timeout, useAutoTick} from '@angular/private/testing';
 import {Subscription} from 'rxjs';
+import {SIGNAL} from '../../../primitives/signals';
+import {TestBed} from '../../../testing';
 
 describe('signal inputs', () => {
   beforeEach(() =>
@@ -51,11 +50,11 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -63,8 +62,7 @@ describe('signal inputs', () => {
 
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -81,11 +79,11 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -93,8 +91,7 @@ describe('signal inputs', () => {
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-1');
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
@@ -118,11 +115,11 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -132,8 +129,7 @@ describe('signal inputs', () => {
 
     expect(effectLog).toEqual([1]);
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(effectLog).toEqual([1, 2]);
@@ -204,11 +200,11 @@ describe('signal inputs', () => {
     class InputComp extends BaseDir {}
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -216,8 +212,7 @@ describe('signal inputs', () => {
 
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -236,7 +231,7 @@ describe('signal inputs', () => {
     })
     class App {
       @ViewChild(Dir) dir!: Dir;
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(App);
@@ -244,21 +239,19 @@ describe('signal inputs', () => {
     fixture.detectChanges();
 
     // Initial value.
-    expect(host.value).toBe(1);
+    expect(host.value()).toBe(1);
     expect(host.dir.value()).toBe(1);
 
     // Changing the value from within the directive.
     host.dir.valueChange.emit(2);
-    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
-    expect(host.value).toBe(2);
+    expect(host.value()).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
-    host.value = 3;
-    fixture.changeDetectorRef.markForCheck();
+    host.value.set(3);
     fixture.detectChanges();
-    expect(host.value).toBe(3);
+    expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
 
@@ -305,12 +298,14 @@ describe('signal inputs', () => {
   });
 
   describe('animation API', () => {
+    useAutoTick();
+
     if (isNode) {
       it('should pass', () => expect(true).toBe(true));
       return;
     }
 
-    it('should support signal inputs', fakeAsync(() => {
+    it('should support signal inputs', async () => {
       const styles = `
         .slide-in {
           animation: slide-in 1ms;
@@ -360,7 +355,7 @@ describe('signal inputs', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
       const childCmp = fixture.debugElement.query(By.css('p'));
 
       expect(childCmp.nativeElement.className).toContain('fade-in');
@@ -369,11 +364,11 @@ describe('signal inputs', () => {
         new AnimationEvent('animationend', {animationName: 'fade-in'}),
       );
       fixture.detectChanges();
-      tick();
+      await fixture.whenStable();
       expect(childCmp.nativeElement.className).not.toContain('fade-in');
-    }));
+    });
 
-    it('should support content projection', fakeAsync(() => {
+    it('should support content projection', async () => {
       const animateStyles = `
         .fade-in {
           animation: fade 1ms forwards;
@@ -461,14 +456,14 @@ describe('signal inputs', () => {
 
       // show first time
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
       const enterAppContent = fixture.nativeElement.querySelector('app-content');
 
       expect(enterAppContent).not.toBeNull();
       expect(enterAppContent.className).toEqual('fade-in');
       enterAppContent.dispatchEvent(new AnimationEvent('animationstart'));
       enterAppContent.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
-      tick();
+      await fixture.whenStable();
       expect(enterAppContent.className).not.toEqual('fade-in');
       expect(fixture.debugElement.query(By.css('app-content'))).not.toBeNull();
 
@@ -476,7 +471,7 @@ describe('signal inputs', () => {
 
       // hide first time
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
       const leaveAppContent = fixture.nativeElement.querySelector('app-content');
 
       expect(fixture.nativeElement.outerHTML).toContain('app-content class="fade-out"');
@@ -484,7 +479,7 @@ describe('signal inputs', () => {
       leaveAppContent.dispatchEvent(new AnimationEvent('animationstart'));
       leaveAppContent.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
 
       expect(fixture.debugElement.query(By.css('app-content'))).toBeNull();
 
@@ -493,7 +488,7 @@ describe('signal inputs', () => {
       // show second time
       fixture.detectChanges();
       fixture.changeDetectorRef.markForCheck();
-      tickAnimationFrames(1);
+      await timeout(17);
       const enterAppContent2 = fixture.nativeElement.querySelector('app-content');
 
       expect(enterAppContent2).not.toBeNull();
@@ -502,7 +497,7 @@ describe('signal inputs', () => {
       fadeInEl.dispatchEvent(new AnimationEvent('animationstart'));
       fadeInEl.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
 
       expect(fixture.nativeElement.querySelector('app-content').className).not.toEqual('fade-in');
       expect(fixture.debugElement.query(By.css('app-content'))).not.toBeNull();
@@ -511,7 +506,7 @@ describe('signal inputs', () => {
 
       // hide second time
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
       const leaveAppContent2 = fixture.nativeElement.querySelector('app-content');
 
       expect(fixture.nativeElement.outerHTML).toContain('app-content class="fade-out"');
@@ -519,12 +514,12 @@ describe('signal inputs', () => {
       leaveAppContent2.dispatchEvent(new AnimationEvent('animationstart'));
       leaveAppContent2.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
       fixture.detectChanges();
-      tickAnimationFrames(1);
+      await timeout(17);
 
       expect(fixture.debugElement.query(By.css('app-content'))).toBeNull();
-    }));
+    });
 
-    it('should run animations using the root injector so that the animation queue still runs when the component is destroyed before afterNextRender occurs', fakeAsync(() => {
+    it('should run animations using the root injector so that the animation queue still runs when the component is destroyed before afterNextRender occurs', async () => {
       const animateStyles = `
         .fade-out {
           animation: fade-out 100ms;
@@ -637,7 +632,7 @@ describe('signal inputs', () => {
       // remove the item from the list
       fixture.componentInstance.removeItem(fixture.componentInstance.list()[0].id);
       fixture.detectChanges(); // Detect changes for TestComponent to trigger leave animation
-      tickAnimationFrames(1); // Allow animation to start (will add 'fade-out' class)
+      await timeout(1); // Allow animation to start (will add 'fade-out' class)
 
       const fadingOut = fixture.nativeElement.querySelector('notification');
 
@@ -648,9 +643,9 @@ describe('signal inputs', () => {
       notification.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out', bubbles: true}),
       );
-      tick(300); // Advance timers by animation duration (0.5s)
+      await timeout(300); // Advance timers by animation duration (0.5s)
       fixture.detectChanges(); // Detect changes after animation completes and element is removed
       expect(fixture.nativeElement.querySelector('notification')).toBeNull(); // Verify element is removed
-    }));
+    });
   });
 });

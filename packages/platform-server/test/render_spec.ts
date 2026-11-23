@@ -13,6 +13,7 @@ describe('renderApplication', () => {
   it('should render ARIA attributes from attribute bindings', async () => {
     @Component({
       selector: 'app',
+
       template: '<div [attr.aria-label]="label"></div>',
     })
     class SomeComponent {
@@ -26,6 +27,7 @@ describe('renderApplication', () => {
   it('should render ARIA attributes using property binding syntax', async () => {
     @Component({
       selector: 'app',
+
       template: '<div [aria-label]="label"></div>',
     })
     class SomeComponent {
@@ -34,5 +36,17 @@ describe('renderApplication', () => {
 
     const html = await ssr(SomeComponent);
     expect(html).toContain('aria-label="a third label"');
+  });
+  it('should not serialize MathML script elements', async () => {
+    @Component({
+      selector: 'app',
+
+      template: '<math><mtext><script>bad()</script></mtext></math>',
+    })
+    class SomeComponent {}
+
+    const html = await ssr(SomeComponent, {enableHydration: false});
+
+    expect(html).not.toContain('<script');
   });
 });

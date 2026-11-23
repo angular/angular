@@ -23,7 +23,7 @@ import {
 } from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding} from '../../src/core';
-import {fakeAsync, flushMicrotasks, TestBed, tick} from '../../testing';
+import {TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/router';
 import {isNode} from '@angular/private/testing';
@@ -49,7 +49,7 @@ import {isNode} from '@angular/private/testing';
       });
     });
 
-    it('should query the old and new routes via :leave and :enter', fakeAsync(() => {
+    it('should query the old and new routes via :leave and :enter', async () => {
       @Component({
         animations: [
           trigger('routerAnimations', [
@@ -118,17 +118,15 @@ import {isNode} from '@angular/private/testing';
       const fixture = TestBed.createComponent(ContainerCmp);
       const cmp = fixture.componentInstance;
       cmp.router.initialNavigation();
-      tick();
+      await fixture.whenStable();
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page1');
-      tick();
+      await cmp.router.navigateByUrl('/page1');
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page2');
-      tick();
+      await cmp.router.navigateByUrl('/page2');
       fixture.detectChanges();
       engine.flush();
 
@@ -168,9 +166,9 @@ import {isNode} from '@angular/private/testing';
           ['opacity', '1'],
         ]),
       ]);
-    }));
+    });
 
-    it('should allow inner enter animations to be emulated within a routed item', fakeAsync(() => {
+    it('should allow inner enter animations to be emulated within a routed item', async () => {
       @Component({
         animations: [
           trigger('routerAnimations', [
@@ -242,17 +240,15 @@ import {isNode} from '@angular/private/testing';
       const fixture = TestBed.createComponent(ContainerCmp);
       const cmp = fixture.componentInstance;
       cmp.router.initialNavigation();
-      tick();
+      await fixture.whenStable();
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page1');
-      tick();
+      await cmp.router.navigateByUrl('/page1');
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page2');
-      tick();
+      await cmp.router.navigateByUrl('/page2');
       fixture.detectChanges();
       engine.flush();
 
@@ -290,9 +286,9 @@ import {isNode} from '@angular/private/testing';
           ['opacity', '1'],
         ]),
       ]);
-    }));
+    });
 
-    it('should allow inner leave animations to be emulated within a routed item', fakeAsync(() => {
+    it('should allow inner leave animations to be emulated within a routed item', async () => {
       @Component({
         animations: [
           trigger('routerAnimations', [
@@ -364,17 +360,15 @@ import {isNode} from '@angular/private/testing';
       const fixture = TestBed.createComponent(ContainerCmp);
       const cmp = fixture.componentInstance;
       cmp.router.initialNavigation();
-      tick();
+      await fixture.whenStable();
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page1');
-      tick();
+      await cmp.router.navigateByUrl('/page1');
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page2');
-      tick();
+      await cmp.router.navigateByUrl('/page2');
       fixture.detectChanges();
       engine.flush();
 
@@ -412,9 +406,9 @@ import {isNode} from '@angular/private/testing';
           ['opacity', '0'],
         ]),
       ]);
-    }));
+    });
 
-    it('should properly collect :enter / :leave router nodes even when another non-router *template component is within the trigger boundaries', fakeAsync(() => {
+    it('should properly collect :enter / :leave router nodes even when another non-router *template component is within the trigger boundaries', async () => {
       @Component({
         selector: 'ani-cmp',
         animations: [
@@ -478,18 +472,16 @@ import {isNode} from '@angular/private/testing';
       const fixture = TestBed.createComponent(ContainerCmp);
       const cmp = fixture.componentInstance;
       cmp.router.initialNavigation();
-      tick();
+      await fixture.whenStable();
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page1');
-      tick();
+      await cmp.router.navigateByUrl('/page1');
       cmp.loading = true;
       fixture.detectChanges();
       engine.flush();
 
-      cmp.router.navigateByUrl('/page2');
-      tick();
+      await cmp.router.navigateByUrl('/page2');
       cmp.loading = false;
       fixture.detectChanges();
       engine.flush();
@@ -506,9 +498,9 @@ import {isNode} from '@angular/private/testing';
       const [ip1, ip2] = innerPlayers as any;
       expect(ip1.element.innerText).toEqual('page1');
       expect(ip2.element.innerText).toEqual('page2');
-    }));
+    });
 
-    it('should allow a recursive set of :leave animations to occur for nested routes', fakeAsync(() => {
+    it('should allow a recursive set of :leave animations to occur for nested routes', async () => {
       @Component({
         selector: 'ani-cmp',
         template: '<router-outlet name="recur"></router-outlet>',
@@ -519,11 +511,11 @@ import {isNode} from '@angular/private/testing';
         log: string[] = [];
 
         enter() {
-          this._router.navigateByUrl('/(recur:recur/nested)');
+          return this._router.navigateByUrl('/(recur:recur/nested)');
         }
 
         leave() {
-          this._router.navigateByUrl('/');
+          return this._router.navigateByUrl('/');
         }
       }
 
@@ -575,15 +567,13 @@ import {isNode} from '@angular/private/testing';
 
       const fixture = TestBed.createComponent(ContainerCmp);
       const cmp = fixture.componentInstance;
-      cmp.enter();
-      tick();
+      await cmp.enter();
       fixture.detectChanges();
-      flushMicrotasks();
+      await Promise.resolve();
 
       expect(cmp.log).toEqual(['DEPTH 0', 'DEPTH 1']);
 
-      cmp.leave();
-      tick();
+      await cmp.leave();
       fixture.detectChanges();
 
       const players = getLog();
@@ -592,7 +582,7 @@ import {isNode} from '@angular/private/testing';
       const [p1, p2] = players;
       expect(p1.element.getAttribute('data-depth')).toEqual('0');
       expect(p2.element.getAttribute('data-depth')).toEqual('1');
-    }));
+    });
   });
 });
 

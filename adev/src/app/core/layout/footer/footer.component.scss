@@ -1,11 +1,13 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
+$columns-breakpoint: 600px;
+
 .adev-footer-columns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
 
-  @container footer (max-width: 600px) {
+  @container footer (max-width: #{$columns-breakpoint}) {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
@@ -33,6 +35,10 @@
     font-weight: 600;
     margin-block-end: 1.75rem;
     letter-spacing: -0.00875rem;
+
+    @container footer (min-width: #{$columns-breakpoint + 1px}) {
+      white-space: nowrap;
+    }
   }
 
   ul {

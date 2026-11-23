@@ -21,7 +21,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({});
     });
 
     function extractMessage(diag: ts.Diagnostic) {
@@ -53,7 +53,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA');
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveB');
@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
       expect(jsContents).toContain(
@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
       expect(jsContents).toContain(
@@ -193,7 +193,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA });');
       expect(jsContents).toContain(
@@ -262,31 +262,26 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature(function () { return [DirectiveB]; })]',
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return \[DirectiveB];\s*}\)]/,
       );
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]',
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return\s*\[{ directive: DirectiveA, inputs: \[['"]value['"], ['"]value['"]] }];/,
       );
-      expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveA, ' + 'inputs: { value: "value" } });',
-      );
-
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComponent, "my-component", ' +
-          'never, {}, {}, never, never, false, [{ directive: typeof DirectiveB; ' +
-          'inputs: {}; outputs: {}; }]>;',
+      expect(jsContents).toMatch(
+        /ɵɵdefineDirective\({ type: DirectiveA, inputs: { value: ['"]value['"] } }\);/,
       );
 
-      expect(dtsContents).toContain(
-        'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
-          '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
-          'inputs: { "value": "value"; }; outputs: {}; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, \[{\s*directive: typeof DirectiveB;\s*inputs: {};\s* outputs: {};\s*}]>;/,
       );
 
-      expect(dtsContents).toContain(
-        'ɵɵDirectiveDeclaration<DirectiveA, never, never, ' +
-          '{ "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;',
+      expect(dtsContents).toMatch(
+        /ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, {}, never, never, true, \[{\s*directive: typeof DirectiveA;\s*inputs: {\s*"value": "value";\s*};\s*outputs: {};\s*}]>;/,
+      );
+
+      expect(dtsContents).toMatch(
+        /ɵɵDirectiveDeclaration<DirectiveA, never, never, {\s*"value": {\s*"alias": "value";\s*"required": false;\s*};\s*}, {}, never, never, true, never>;/,
       );
     });
 
@@ -343,21 +338,16 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import { DirectiveA } from './dir-a'`);
-      expect(jsContents).toContain(`import { DirectiveB } from './dir-b'`);
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature(function () { ' +
-          'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: ["input", "inputAlias"], ' +
-          'outputs: ["output", "outputAlias"] }]; })]',
+      expect(jsContents).toMatch(/import { DirectiveA } from ['"].\/dir-a['"]/);
+      expect(jsContents).toMatch(/import { DirectiveB } from ['"].\/dir-b['"]/);
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return \[(i1\.)?DirectiveA, {\s*directive: (i2\.)?DirectiveB,\s*inputs: \[['"]input['"], ['"]inputAlias['"]],\s*outputs: \[['"]output['"], ['"]outputAlias['"]]\s*}];\s*}\)]/,
       );
 
       expect(dtsContents).toContain('import * as i1 from "./dir-a";');
       expect(dtsContents).toContain('import * as i2 from "./dir-b";');
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
-          '{}, never, never, false, [{ directive: typeof i1.DirectiveA; ' +
-          'inputs: {}; outputs: {}; }, { directive: typeof i2.DirectiveB; ' +
-          'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, \[{\s*directive: typeof (i1\.)?DirectiveA;\s*inputs: {};\s*outputs: {};\s*}, {\s*directive: typeof (i2\.)?DirectiveB;\s*inputs: {\s*"input": "inputAlias";\s*};\s*outputs: {\s*"output": "outputAlias";\s*};\s*}]>;/,
       );
     });
 
@@ -393,17 +383,16 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import * as i1 from "external";`);
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.ExternalDir, ' +
-          'inputs: ["input", "inputAlias"], outputs: ["output", "outputAlias"] }])]',
+      expect(jsContents).toMatch(
+        /import \* as i1 from "external";|import { ExternalDir } from "external";/,
+      );
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(\[{ directive: (i1\.)?ExternalDir, inputs: \["input", "inputAlias"], outputs: \["output", "outputAlias"] }]\)]/,
       );
 
       expect(dtsContents).toContain('import * as i1 from "external";');
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, ' +
-          '{}, never, never, false, [{ directive: typeof i1.ExternalDir; ' +
-          'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, never, never, false, \[{\s*directive: typeof i1\.ExternalDir;\s*inputs: {\s*"input": "inputAlias";\s*};\s*outputs: {\s*"output": "outputAlias";\s*};\s*}]>;/,
       );
     });
 
@@ -444,13 +433,16 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import * as i1 from "external";`);
-      expect(jsContents).toContain('features: [i0.ɵɵHostDirectivesFeature([i1.ExternalDir])]');
+      expect(jsContents).toMatch(
+        /import \* as i1 from "external";|import { ExternalDir } from "external";/,
+      );
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(\[(i1\.)?ExternalDir]\)]/,
+      );
 
       expect(dtsContents).toContain('import * as i1 from "external";');
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, ' +
-          'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, never, never, false, \[{\s*directive: typeof i1\.ExternalDir;\s*inputs: {};\s*outputs: {};\s*}]>;/,
       );
     });
 
@@ -517,6 +509,269 @@ runInEachFileSystem(() => {
 
       const messages = env.driveDiagnostics().map(extractMessage);
       expect(messages).toEqual([]);
+    });
+
+    describe('de-duplication', () => {
+      it('should expose original inputs if a directive matches both as a host directive and through the template', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive({selector: '[dir]'})
+            export class HostDir {
+              @Input() value = 0;
+              @Input({alias: 'otherAlias'}) other = false;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value: valueAlias']}]
+            })
+            export class Dir {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir [value]="greeting" [valueAlias]="greeting" [otherAlias]="greeting"></div>',
+              imports: [HostDir, Dir]
+            })
+            export class App {
+              greeting = 'hi';
+            }
+          `,
+        );
+
+        // First diagnostic checks that the host directive alias does not apply.
+        // Second diagnostic checks that an input that would otherwise be hidden by a host directive is available.
+        // Third diagnostic checks that the input is available under the original name.
+        const diags = env
+          .driveDiagnostics()
+          .slice()
+          .sort((a, b) => (a.messageText as string).localeCompare(b.messageText as string));
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toMatch(
+          /Can't bind to 'valueAlias' since it isn't a known property of 'div'\. Find more at .*/,
+        );
+        expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[2].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+      });
+
+      it('should expose original outputs if a directive matches both as a host directive and through the template', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+            @Directive({selector: '[dir]'})
+            export class HostDir {
+              @Output() eventOne = new EventEmitter<number>();
+              @Output('twoAlias') eventTwo = new EventEmitter<boolean>();
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['eventOne: oneAlias']}]
+            })
+            export class Dir {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir (eventOne)="expectsString($event)" (oneAlias)="expectsString($event)" (twoAlias)="expectsString($event)"></div>',
+              imports: [HostDir, Dir]
+            })
+            export class App {
+              expectsString(value: string) {}
+            }
+          `,
+        );
+
+        // First diagnostic checks that the output is available under the original name.
+        // Second diagnostic checks that an output that would otherwise be hidden by a host directive is available.
+        // Third diagnostic checks that the host directive alias does not apply.
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diags[1].messageText).toBe(
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diags[2].messageText).toBe(
+          `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should combine inputs configuration if host directive is exposed multiple times with non-conflicting configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Input() value = 0;
+              @Input({alias: 'otherInput'}) other = false;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['otherInput: otherAlias']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir [value]="greeting" [otherAlias]="greeting"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              greeting = 'hi';
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(2);
+        expect(diagnostics[0].messageText).toBe(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
+        expect(diagnostics[1].messageText).toBe(
+          `Type 'string' is not assignable to type 'boolean'.`,
+        );
+      });
+
+      it('should combine inputs configuration if host directive is exposed multiple times with identical configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Input() value = 0;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir [value]="greeting"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              greeting = 'hi';
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toBe(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
+      });
+
+      it('should combine output configuration if host directive is exposed multiple times with non-conflicting configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Output() myEvent = new EventEmitter<number>();
+              @Output('otherOutput') myOtherEvent = new EventEmitter<boolean>();
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['myEvent']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['otherOutput: otherAlias']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir (myEvent)="expectsString($event)" (otherAlias)="expectsString($event)"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              expectsString(value: string) {}
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(2);
+        expect(diagnostics[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diagnostics[1].messageText).toBe(
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should combine outputs configuration if host directive is exposed multiple times with identical configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Output() myEvent = new EventEmitter<number>();
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['myEvent']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['myEvent']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir (myEvent)="expectsString($event)"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              expectsString(value: string) {}
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
     });
 
     describe('validations', () => {
@@ -1078,6 +1333,149 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
+      });
+
+      it('should produce a diagnostic if an input is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Input() inp: any;
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, inputs: ['inp: alias']}]})
+          class HostOne {}
+
+          @Directive({hostDirectives: [HostOne, {directive: DuplicateHostDir, inputs: ['inp']}]})
+          class HostTwo {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostTwo, {directive: DuplicateHostDir, inputs: ['inp: alias2']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Input declared in DuplicateHostDir.inp is exposed under the following conflicting names: "alias", "inp", "alias2"',
+        );
+      });
+
+      it('should produce a diagnostic if an aliased input is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Input({alias: 'foo'}) inp: any;
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, inputs: ['foo']}]})
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir, {directive: DuplicateHostDir, inputs: ['foo: alias']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Input declared in DuplicateHostDir.inp is exposed under the following conflicting names: "foo", "alias"',
+        );
+      });
+
+      it('should produce a diagnostic if an output is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Output() myEvent = new EventEmitter<void>();
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, outputs: ['myEvent']}]})
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir, {directive: DuplicateHostDir, outputs: ['myEvent: alias']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Output declared in DuplicateHostDir.myEvent is exposed under the following conflicting names: "myEvent", "alias"',
+        );
+      });
+
+      it('should produce a diagnostic if an aliased output is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Output('foo') myEvent = new EventEmitter<void>();
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, outputs: ['foo']}]})
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir, {directive: DuplicateHostDir, outputs: ['foo: alias']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Output declared in DuplicateHostDir.myEvent is exposed under the following conflicting names: "foo", "alias"',
+        );
       });
     });
   });

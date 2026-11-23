@@ -2,9 +2,9 @@
 
 This document explains how the Signal Forms system hooks into the Angular compiler and runtime to provide seamless type-checking and efficient updates.
 
-## 1. Compiler-CLI Integration (Type Checking)
+## 1. Compiler Integration (Type Checking)
 
-The `packages/compiler-cli` package contains specific logic to support `[formField]`. This is primarily handled in `src/ngtsc/typecheck/src/ops/signal_forms.ts`.
+The `packages/compiler` package contains specific logic to support `[formField]`. This is primarily handled in `src/typecheck/ops/signal_forms.ts`.
 
 ### Key Mechanisms:
 
@@ -22,7 +22,7 @@ The `packages/compiler-cli` package contains specific logic to support `[formFie
 
 ### Relevant Files:
 
-- `packages/compiler-cli/src/ngtsc/typecheck/src/ops/signal_forms.ts`: The core logic for `TcbNativeFieldOp` and `SignalFormFieldOp`.
+- `packages/compiler/src/typecheck/ops/signal_forms.ts`: The core Signal Forms type-checking logic, including `TcbNativeFieldOp`.
 
 ## 2. Core Runtime Integration
 
@@ -30,8 +30,8 @@ The `packages/core` package provides the low-level instructions that power the `
 
 ### Key Mechanisms:
 
-- **`ɵngControlCreate` Hook**: The `FormField` directive defines a special method `ɵngControlCreate`.
-- **`ɵɵcontrol` Instructions**: When the compiler sees `ɵngControlCreate`, it emits:
+- **`ɵngControlCreate` Hook**: The `FormField` directive defines a special method `ɵngControlCreate`, which causes the compiler to install `ɵɵControlFeature`.
+- **`ɵɵcontrol` Instructions**: A `formField` binding causes the compiler to emit:
   - `ɵɵcontrolCreate`: Called during the creation phase.
   - `ɵɵcontrol`: Called during the update phase.
 - **`ControlDirectiveHost`**: These instructions provide the directive with a `ControlDirectiveHost`. This is a privileged interface that allows the `FormField` directive to:
@@ -43,4 +43,4 @@ The `packages/core` package provides the low-level instructions that power the `
 ### Relevant Files:
 
 - `packages/core/src/render3/instructions/control.ts`: Implementation of `ɵɵcontrol` instructions.
-- `packages/forms/signals/src/directive/form_field_directive.ts`: The directive that implements the hook.
+- `packages/forms/signals/src/directive/form_field.ts`: The directive that implements the hook.

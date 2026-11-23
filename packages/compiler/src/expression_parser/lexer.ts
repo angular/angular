@@ -329,9 +329,8 @@ class _Scanner {
       case chars.$HASH:
         return this.scanPrivateIdentifier();
       case chars.$PLUS:
-        return this.scanComplexOperator(start, '+', chars.$EQ, '=');
       case chars.$MINUS:
-        return this.scanComplexOperator(start, '-', chars.$EQ, '=');
+        return this.scanPlusOrMinus(start, peek);
       case chars.$SLASH:
         return this.isStartOfRegex()
           ? this.scanRegex(index)
@@ -630,6 +629,22 @@ class _Scanner {
     }
     buffer += String.fromCharCode(unescapedCode);
     return buffer;
+  }
+
+  private scanPlusOrMinus(start: number, code: number): Token {
+    const char = String.fromCharCode(code);
+    this.advance();
+    let operator = char;
+
+    if (this.peek === code) {
+      operator += char;
+      this.advance();
+    } else if (this.peek === chars.$EQ) {
+      operator += '=';
+      this.advance();
+    }
+
+    return newOperatorToken(start, this.index, operator);
   }
 
   private scanStar(start: number): Token {

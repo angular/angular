@@ -1,4 +1,4 @@
-<dialog #searchDialog>
+<dialog #searchDialog id="docsSearchDialog">
   <div class="docs-search-container" (docsClickOutside)="closeSearchDialog()">
     <docs-text-field
       [autofocus]="true"
@@ -11,8 +11,13 @@
 
     @if (searchResults().length) {
       <ul class="docs-search-results docs-mini-scroll-track">
-        @for (result of searchResults(); track result.id) {
-          <li docsSearchItem [item]="result" class="docs-search-result">
+        @for (result of searchResults(); track result.id; let i = $index) {
+          <li
+            docsSearchItem
+            [item]="result"
+            class="docs-search-result"
+            (mousemove)="activateItem(i)"
+          >
             <a
               [routerLink]="'/' + result.url | relativeLink: 'pathname'"
               [fragment]="result.url | relativeLink: 'hash'"
@@ -27,14 +32,16 @@
                     </i>
                   </span>
 
-                  <!-- Page title -->
-                  <span [innerHtml]="result.labelHtml"></span>
-                  @if (result.package) {
-                    <span
-                      [innerHTML]="result.package"
-                      class="docs-search-result__label__package"
-                    ></span>
-                  }
+                  <!-- Page title and package badge -->
+                  <span class="docs-search-result__label__text">
+                    <span [innerHtml]="result.labelHtml"></span>
+                    @if (result.package) {
+                      <span
+                        [innerHTML]="result.package"
+                        class="docs-search-result__label__package"
+                      ></span>
+                    }
+                  </span>
                 </p>
 
                 @if (result.subLabelHtml) {
@@ -63,12 +70,22 @@
       <docs-search-history />
     } @else {
       <div class="docs-search-results docs-mini-scroll-track">
-        @if (!resultsResource.hasValue()) {
+        @if (emptyState() === 'start') {
           <div class="docs-search-results__start-typing">
+            <img
+              src="assets/images/angie/magnifying-glass.svg"
+              class="docs-search-angie"
+              aria-hidden="true"
+            />
             <span>Start typing to see results</span>
           </div>
-        } @else if (searchResults().length === 0) {
+        } @else {
           <div class="docs-search-results__no-results">
+            <img
+              src="assets/images/angie/question.svg"
+              class="docs-search-angie"
+              aria-hidden="true"
+            />
             <span>No results found</span>
           </div>
         }

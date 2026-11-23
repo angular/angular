@@ -6,19 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClient} from '../src/client';
-import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
-import {HttpTestingController, provideHttpClientTesting} from '../testing';
-import {provideHttpClient} from '../src/provider';
+import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 import {toArray} from 'rxjs/operators';
+import {HttpClient} from '../src/client';
+import {provideHttpClient, withNoXsrfProtection} from '../src/provider';
+import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
+import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('HttpClient', () => {
   let client: HttpClient;
   let backend: HttpTestingController;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withNoXsrfProtection()),
+        provideHttpClientTesting(),
+        ɵprovideFakePlatformNavigation(),
+      ],
     });
     client = TestBed.inject(HttpClient);
     backend = TestBed.inject(HttpTestingController);
@@ -130,6 +135,25 @@ describe('HttpClient', () => {
       expect(req.request.reportProgress).toEqual(true);
       req.flush({});
     });
+    it('with split progress events enabled', (done) => {
+      client
+        .get('/test', {reportUploadProgress: true, reportDownloadProgress: true})
+        .subscribe(() => done());
+      const req = backend.expectOne('/test');
+      expect(req.request.reportUploadProgress).toBe(true);
+      expect(req.request.reportDownloadProgress).toBe(true);
+      req.flush({});
+    });
+
+    it('post with a split progress events enabled', (done) => {
+      client
+        .post('/test', {}, {reportUploadProgress: true, reportDownloadProgress: true})
+        .subscribe(() => done());
+      const req = backend.expectOne('/test');
+      expect(req.request.reportUploadProgress).toBe(true);
+      expect(req.request.reportDownloadProgress).toBe(true);
+      req.flush({});
+    });
   });
   describe('makes a POST request', () => {
     it('with text data', (done) => {
@@ -220,6 +244,103 @@ describe('HttpClient', () => {
       const testReq = backend.expectOne('/test');
       expect(testReq.request.body).toBe(body);
       testReq.flush('hello world');
+    });
+    describe('makes a QUERY request', () => {
+      it('with text data', (done) => {
+        client
+          .query('/test', 'text body', {observe: 'response', responseType: 'text'})
+          .subscribe((res) => {
+            expect(res.ok).toBeTruthy();
+            expect(res.status).toBe(HttpStatusCode.Ok);
+            done();
+          });
+        backend.expectOne('/test').flush('hello world');
+      });
+      it('with json data', (done) => {
+        const body = {data: 'json body'};
+        client
+          .query('/test', body, {observe: 'response', responseType: 'text'})
+          .subscribe((res) => {
+            expect(res.ok).toBeTruthy();
+            expect(res.status).toBe(HttpStatusCode.Ok);
+            done();
+          });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
+      it('validates all fetch API options are properly handled', (done) => {
+        client
+          .query(
+            '/test',
+            {},
+            {
+              credentials: 'include',
+              cache: 'force-cache',
+              priority: 'high',
+              mode: 'cors',
+              redirect: 'follow',
+              referrer: 'www.example.com',
+              integrity: 'sha256-abc',
+              timeout: 1000,
+              keepalive: true,
+              withCredentials: true,
+              referrerPolicy: 'no-referrer',
+            },
+          )
+          .subscribe(() => {
+            done();
+          });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.credentials).toBe('include');
+        expect(testReq.request.cache).toBe('force-cache');
+        expect(testReq.request.priority).toBe('high');
+        expect(testReq.request.mode).toBe('cors');
+        expect(testReq.request.redirect).toBe('follow');
+        expect(testReq.request.referrer).toBe('www.example.com');
+        expect(testReq.request.referrerPolicy).toBe('no-referrer');
+        expect(testReq.request.integrity).toBe('sha256-abc');
+        expect(testReq.request.timeout).toBe(1000);
+        expect(testReq.request.keepalive).toBe(true);
+        expect(testReq.request.withCredentials).toBe(true);
+        expect(testReq.request.body).toEqual({});
+        testReq.flush({});
+      });
+      it('with a json body of false', (done) => {
+        client
+          .query('/test', false, {observe: 'response', responseType: 'text'})
+          .subscribe((res) => {
+            expect(res.ok).toBeTruthy();
+            expect(res.status).toBe(HttpStatusCode.Ok);
+            done();
+          });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(false);
+        testReq.flush('hello world');
+      });
+      it('with a json body of 0', (done) => {
+        client.query('/test', 0, {observe: 'response', responseType: 'text'}).subscribe((res) => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(HttpStatusCode.Ok);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(0);
+        testReq.flush('hello world');
+      });
+      it('with an arraybuffer', (done) => {
+        const body = new ArrayBuffer(4);
+        client
+          .query('/test', body, {observe: 'response', responseType: 'text'})
+          .subscribe((res) => {
+            expect(res.ok).toBeTruthy();
+            expect(res.status).toBe(HttpStatusCode.Ok);
+            done();
+          });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
     });
   });
   describe('makes a DELETE request', () => {

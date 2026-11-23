@@ -125,6 +125,7 @@ export class MyComponent {}
 You'd also get this error if you imported `someTemplate` from some other module and neglected to initialize it there.
 
 ```ts
+import {Component} from '@angular/core';
 // ERROR - not initialized there either
 import {someTemplate} from './config';
 
@@ -181,37 +182,6 @@ export abstract class MyStrategy { }
   …
   providers: [
     { provide: MyStrategy, useValue: … }
-  ]
-  …
-```
-
-## Reference to a non-exported function
-
-HELPFUL: _Metadata referenced a function that wasn't exported._
-
-For example, you may have set a providers `useFactory` property to a locally defined function that you neglected to export.
-
-```ts
-// ERROR
-function myStrategy() { … }
-
-  …
-  providers: [
-    { provide: MyStrategy, useFactory: myStrategy }
-  ]
-  …
-```
-
-Angular generates a class factory in a separate module and that factory [can only access exported functions](tools/cli/aot-compiler#public-or-protected-symbols).
-To correct this error, export the function.
-
-```ts
-// CORRECTED
-export function myStrategy() { … }
-
-  …
-  providers: [
-    { provide: MyStrategy, useFactory: myStrategy }
   ]
   …
 ```
@@ -287,7 +257,7 @@ Here's an illustrative example.
 
 ```ts
 // CORRECTED
-import { Inject } from '@angular/core';
+import {Inject, InjectionToken, Component} from '@angular/core';
 
 export const WINDOW = new InjectionToken('Window');
 export function _window() { return window; }
@@ -309,7 +279,7 @@ uses the `@Inject(WINDOW)` to generate the injection code.
 Angular does something similar with the `DOCUMENT` token so you can inject the browser's `document` object \(or an abstraction of it, depending upon the platform in which the application runs\).
 
 ```ts
-import { Inject }   from '@angular/core';
+import {Inject, Component} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Component({ … })

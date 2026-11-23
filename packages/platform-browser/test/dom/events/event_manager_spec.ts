@@ -60,7 +60,7 @@ import type {} from 'zone.js';
       const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
       const manager = new EventManager([plugin], new FakeNgZone());
       expect(() => manager.addEventListener(element, 'click', null!)).toThrowError(
-        'NG05101: No event manager plugin found for event click',
+        'NG05101: No event manager plugin found for event click. Find more at https://next.angular.dev/errors/NG05101',
       );
     });
 

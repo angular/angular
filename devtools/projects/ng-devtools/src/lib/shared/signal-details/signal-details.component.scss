@@ -14,7 +14,7 @@
   scrollbar-color: var(--quaternary-contrast) transparent;
 
   .header {
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.625rem;
     border-bottom: 1px solid var(--quinary-contrast);
     display: flex;
     align-items: flex-start;
@@ -38,6 +38,7 @@
 
         ng-icon {
           --icon-size: 14px;
+          width: 16px;
         }
       }
     }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, Service} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -35,7 +35,7 @@ import {PRIMARY_OUTLET, RouteTitleKey} from './shared';
  * @publicApi
  * @see [Page title guide](guide/routing/define-routes#using-titlestrategy-for-page-titles)
  */
-@Injectable({providedIn: 'root', useFactory: () => inject(DefaultTitleStrategy)})
+@Service({factory: () => inject(DefaultTitleStrategy)})
 export abstract class TitleStrategy {
   /** Performs the application title update. */
   abstract updateTitle(snapshot: RouterStateSnapshot): void;
@@ -57,7 +57,7 @@ export abstract class TitleStrategy {
    * Given an `ActivatedRouteSnapshot`, returns the final value of the
    * `Route.title` property, which can either be a static string or a resolved value.
    */
-  getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot) {
+  getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): string | undefined {
     return snapshot.data[RouteTitleKey];
   }
 }
@@ -72,9 +72,9 @@ export class DefaultTitleStrategy extends TitleStrategy {
   }
 
   /**
-   * Sets the title of the browser to the given value.
+   * Sets the title of the browser to the title built from the given router state.
    *
-   * @param title The `pageTitle` from the deepest primary route.
+   * @param snapshot The current router state. The title is taken from the deepest primary route.
    */
   override updateTitle(snapshot: RouterStateSnapshot): void {
     const title = this.buildTitle(snapshot);

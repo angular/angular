@@ -6,95 +6,103 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '../../../utilities/index.js';
-import {$, browser} from 'protractor';
-import {promise} from 'selenium-webdriver';
+import * as webdriver from 'selenium-webdriver';
+import {
+  createWebDriver,
+  verifyNoBrowserErrors,
+  waitForAngular,
+} from '../../../../packages/examples/test-utils/index.js';
 
 describe('async', () => {
-  const URL = '/';
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  beforeEach(() => browser.get(URL));
-
-  it('should work with synchronous actions', () => {
-    const increment = $('#increment');
-    increment.$('.action').click();
-
-    expect(increment.$('.val').getText()).toEqual('1');
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should wait for asynchronous actions', () => {
-    const timeout = $('#delayedIncrement');
-
-    // At this point, the async action is still pending, so the count should
-    // still be 0.
-    expect(timeout.$('.val').getText()).toEqual('0');
-
-    timeout.$('.action').click();
-
-    // whenStable should only be called when the async action finished,
-    // so the count should be 1 at this point.
-    expect(timeout.$('.val').getText()).toEqual('1');
+  afterAll(async () => {
+    await driver.quit();
   });
 
-  it('should notice when asynchronous actions are cancelled', () => {
-    const timeout = $('#delayedIncrement');
-
-    // At this point, the async action is still pending, so the count should
-    // still be 0.
-    expect(timeout.$('.val').getText()).toEqual('0');
-
-    browser.ignoreSynchronization = true;
-    timeout.$('.action').click();
-
-    timeout.$('.cancel').click();
-    browser.ignoreSynchronization = false;
-
-    // whenStable should be called since the async action is cancelled. The
-    // count should still be 0;
-    expect(timeout.$('.val').getText()).toEqual('0');
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
   });
 
-  it('should wait for a series of asynchronous actions', () => {
-    const timeout = $('#multiDelayedIncrements');
-
-    // At this point, the async action is still pending, so the count should
-    // still be 0.
-    expect(timeout.$('.val').getText()).toEqual('0');
-
-    timeout.$('.action').click();
-
-    // whenStable should only be called when all the async actions
-    // finished, so the count should be 10 at this point.
-    expect(timeout.$('.val').getText()).toEqual('10');
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
   });
 
-  it('should wait via frameworkStabilizer', () => {
-    const whenAllStable = (): promise.Promise<any> => {
-      return browser.executeAsyncScript('window.frameworkStabilizers[0](arguments[0]);');
+  it('should work with synchronous actions', async () => {
+    const increment = await driver.findElement(webdriver.By.css('#increment'));
+    const actionBtn = await increment.findElement(webdriver.By.css('.action'));
+    await actionBtn.click();
+    await waitForAngular(driver);
+
+    const val = await increment.findElement(webdriver.By.css('.val'));
+    expect(await val.getText()).toEqual('1');
+  });
+
+  it('should wait for asynchronous actions', async () => {
+    const timeout = await driver.findElement(webdriver.By.css('#delayedIncrement'));
+    const val = await timeout.findElement(webdriver.By.css('.val'));
+
+    // At this point, the async action is still pending, so the count should still be 0.
+    expect(await val.getText()).toEqual('0');
+
+    const actionBtn = await timeout.findElement(webdriver.By.css('.action'));
+    await actionBtn.click();
+    await waitForAngular(driver);
+
+    expect(await val.getText()).toEqual('1');
+  });
+
+  it('should notice when asynchronous actions are cancelled', async () => {
+    const timeout = await driver.findElement(webdriver.By.css('#delayedIncrement'));
+    const val = await timeout.findElement(webdriver.By.css('.val'));
+
+    expect(await val.getText()).toEqual('0');
+
+    const actionBtn = await timeout.findElement(webdriver.By.css('.action'));
+    await actionBtn.click();
+
+    const cancelBtn = await timeout.findElement(webdriver.By.css('.cancel'));
+    await cancelBtn.click();
+    await waitForAngular(driver);
+
+    expect(await val.getText()).toEqual('0');
+  });
+
+  it('should wait for a series of asynchronous actions', async () => {
+    const timeout = await driver.findElement(webdriver.By.css('#multiDelayedIncrements'));
+    const val = await timeout.findElement(webdriver.By.css('.val'));
+
+    expect(await val.getText()).toEqual('0');
+
+    const actionBtn = await timeout.findElement(webdriver.By.css('.action'));
+    await actionBtn.click();
+    await waitForAngular(driver);
+
+    expect(await val.getText()).toEqual('10');
+  });
+
+  it('should wait via frameworkStabilizer', async () => {
+    const whenAllStable = async (): Promise<any> => {
+      return await driver.executeAsyncScript('window.frameworkStabilizers[0](arguments[0]);');
     };
 
-    // This disables protractor's wait mechanism
-    browser.ignoreSynchronization = true;
+    const timeout = await driver.findElement(webdriver.By.css('#multiDelayedIncrements'));
+    const val = await timeout.findElement(webdriver.By.css('.val'));
 
-    const timeout = $('#multiDelayedIncrements');
+    expect(await val.getText()).toEqual('0');
 
-    // At this point, the async action is still pending, so the count should
-    // still be 0.
-    expect(timeout.$('.val').getText()).toEqual('0');
+    const actionBtn = await timeout.findElement(webdriver.By.css('.action'));
+    await actionBtn.click();
 
-    timeout.$('.action').click();
+    await whenAllStable();
+    expect(await val.getText()).toEqual('10');
 
-    whenAllStable().then(() => {
-      // whenAllStable should only be called when all the async actions
-      // finished, so the count should be 10 at this point.
-      expect(timeout.$('.val').getText()).toEqual('10');
-    });
-
-    whenAllStable().then(() => {
-      // whenAllStable should be called immediately since nothing is pending.
-      browser.ignoreSynchronization = false;
-    });
+    await whenAllStable();
   });
-
-  afterEach(verifyNoBrowserErrors);
 });

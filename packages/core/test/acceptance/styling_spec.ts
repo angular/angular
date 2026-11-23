@@ -5,18 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {CommonModule} from '@angular/common';
+import {NgClass, NgFor, NgIf, NgStyle} from '@angular/common';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {isBrowser} from '@angular/private/testing';
 import {
   Component,
   ComponentRef,
+  computed,
   Directive,
   ElementRef,
+  EventEmitter,
   HostBinding,
   Input,
-  provideZoneChangeDetection,
+  Output,
   Renderer2,
+  signal,
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
@@ -30,20 +33,13 @@ import {
 } from '../../testing/src/styling';
 
 describe('styling', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
   describe('apply in prioritization order', () => {
     it('should perform static bindings', () => {
       @Component({
         template: `<div class="STATIC" style="color: blue"></div>`,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       const staticDiv = fixture.nativeElement.querySelectorAll('div')[0];
 
@@ -58,11 +54,9 @@ describe('styling', () => {
           [style.color]="'blue'"
           [style.width.px]="100"
         ></div>`,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -74,11 +68,9 @@ describe('styling', () => {
     it('should perform map bindings', () => {
       @Component({
         template: `<div [class]="{dynamic: true}" [style]="{color: 'blue', width: '100px'}"></div>`,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -94,11 +86,9 @@ describe('styling', () => {
           style.color="blu{{ 'e' }}"
           style="width: {{ '100' }}px"
         ></div>`,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -108,6 +98,18 @@ describe('styling', () => {
     });
 
     it('should support hostBindings', () => {
+      @Directive({
+        selector: '[my-host-bindings-1]',
+        host: {'class': 'HOST_STATIC_1', 'style': 'font-family: "c1"'},
+      })
+      class Dir1 {}
+
+      @Directive({
+        selector: '[my-host-bindings-2]',
+        host: {'class': 'HOST_STATIC_2', 'style': 'font-family: "c2"'},
+      })
+      class Dir2 {}
+
       @Component({
         template: `<div
           my-host-bindings-2
@@ -115,34 +117,17 @@ describe('styling', () => {
           class="STATIC"
           style="color: blue"
         ></div>`,
-        standalone: false,
-      })
-      class Cmp {}
-      @Directive({
-        selector: '[my-host-bindings-1]',
-        host: {'class': 'HOST_STATIC_1', 'style': 'font-family: "c1"'},
-        standalone: false,
-      })
-      class Dir1 {}
 
-      @Directive({
-        selector: '[my-host-bindings-2]',
-        host: {'class': 'HOST_STATIC_2', 'style': 'font-family: "c2"'},
-        standalone: false,
-      })
-      class Dir2 {}
-
-      TestBed.configureTestingModule({
-        declarations: [
+        imports: [
           // Order of directives in the template does not matter.
           // Order of declarations matters as it determines the relative priority for overrides.
           Dir1,
           Dir2,
           // Even thought component is at the end, it will still have lowest priority because
           // components are special that way.
-          Cmp,
         ],
-      });
+      })
+      class Cmp {}
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -153,24 +138,22 @@ describe('styling', () => {
     });
 
     it('should support hostBindings inheritance', () => {
-      @Component({
-        template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`,
-        standalone: false,
-      })
-      class Cmp {}
       @Directive({
         host: {'class': 'SUPER_STATIC', 'style': 'font-family: "super";'},
-        standalone: false,
       })
       class SuperDir {}
       @Directive({
         selector: '[my-host-bindings]',
         host: {'class': 'HOST_STATIC', 'style': 'font-family: "host font"'},
-        standalone: false,
       })
       class Dir extends SuperDir {}
 
-      TestBed.configureTestingModule({declarations: [Cmp, Dir]});
+      @Component({
+        template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`,
+        imports: [Dir],
+      })
+      class Cmp {}
+
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -185,17 +168,14 @@ describe('styling', () => {
 
     it('should apply style properties that require quote wrapping', () => {
       @Component({
-        selector: 'test-style-quoting',
         template: `
           <div style='content: "foo"'></div>
           <div style='content: "foo"'></div>
           <div style="content: 'foo'"></div>
         `,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -215,11 +195,9 @@ describe('styling', () => {
             [class.DELETE_PROP_B]="false"
           ></div>
         `,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -237,11 +215,9 @@ describe('styling', () => {
             [style.height.px]="undefined"
           ></div>
         `,
-        standalone: false,
       })
       class Cmp {}
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -254,10 +230,9 @@ describe('styling', () => {
     it('should work with ngClass/ngStyle', () => {
       @Component({
         template: `<div [ngClass]="['dynamic']" [ngStyle]="{'font-family': 'dynamic'}"></div>`,
-        standalone: false,
+        imports: [NgClass, NgStyle],
       })
       class Cmp {}
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -286,10 +261,9 @@ describe('styling', () => {
             <span style="width: var(--my-var)">CONTENT</span>
           </div>
         `,
-        standalone: false,
       })
       class Cmp {}
-      TestBed.configureTestingModule({declarations: [Cmp]});
+
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -305,12 +279,10 @@ describe('styling', () => {
 
       @Component({
         template: `<h1 style="width: var(--my-1337-var)">Hello</h1>`,
-        standalone: false,
       })
       class Cmp {
         @HostBinding('style') style = '--my-1337-var: 100px;';
       }
-      TestBed.configureTestingModule({declarations: [Cmp]});
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -330,10 +302,9 @@ describe('styling', () => {
             <span style="width: var(--MyVar)">CONTENT</span>
           </div>
         `,
-        standalone: false,
       })
       class Cmp {}
-      TestBed.configureTestingModule({declarations: [Cmp]});
+
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
 
@@ -456,18 +427,8 @@ describe('styling', () => {
   });
 
   it('should bind [class] as input to directive', () => {
-    @Component({
-      template: `
-        <div class="s1" [class]="'d1'" dir-shadows-class-input></div>
-        <div class="s2 {{ 'd2' }}" dir-shadows-class-input></div>
-      `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[dir-shadows-class-input]',
-      standalone: false,
     })
     class DirectiveShadowsClassInput {
       constructor(private elementRef: ElementRef) {}
@@ -477,7 +438,15 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+    @Component({
+      template: `
+        <div class="s1" [class]="'d1'" dir-shadows-class-input></div>
+        <div class="s2 {{ 'd2' }}" dir-shadows-class-input></div>
+      `,
+      imports: [DirectiveShadowsClassInput],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -496,19 +465,9 @@ describe('styling', () => {
   });
 
   it('should not feed host classes back into shadow input', () => {
-    @Component({
-      template: `
-        <div class="s1" dir-shadows-class-input></div>
-        <div class="s1" [class]="'d1'" dir-shadows-class-input></div>
-      `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[dir-shadows-class-input]',
       host: {'class': 'DIRECTIVE'},
-      standalone: false,
     })
     class DirectiveShadowsClassInput {
       constructor(private elementRef: ElementRef) {}
@@ -518,7 +477,16 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+    @Component({
+      template: `
+        <div class="s1" dir-shadows-class-input></div>
+        <div class="s1" [class]="'d1'" dir-shadows-class-input></div>
+      `,
+
+      imports: [DirectiveShadowsClassInput],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -536,19 +504,9 @@ describe('styling', () => {
   });
 
   it('should not feed host style back into shadow input', () => {
-    @Component({
-      template: `
-        <div style="width: 1px;" dir-shadows-class-input></div>
-        <div style="width: 1px;" [style]="'height:1px;'" dir-shadows-class-input></div>
-      `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[dir-shadows-class-input]',
       host: {'style': 'color: red;'},
-      standalone: false,
     })
     class DirectiveShadowsStyleInput {
       constructor(private elementRef: ElementRef) {}
@@ -558,7 +516,16 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
+    @Component({
+      template: `
+        <div style="width: 1px;" dir-shadows-class-input></div>
+        <div style="width: 1px;" [style]="'height:1px;'" dir-shadows-class-input></div>
+      `,
+
+      imports: [DirectiveShadowsStyleInput],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -575,18 +542,9 @@ describe('styling', () => {
     expect(divBinding.getAttribute('shadow-style')).toEqual('width: 1px; height:1px;');
   });
 
-  it('should bind [class] as input to directive when both static and falsy dynamic values are present', () => {
-    @Component({
-      template: ` <div class="s1" [class]="classBinding" dir-shadows-class-input></div> `,
-      standalone: false,
-    })
-    class Cmp {
-      classBinding: any = undefined;
-    }
-
+  it('should bind [class] as input to directive when both static and falsy dynamic values are present', async () => {
     @Directive({
       selector: '[dir-shadows-class-input]',
-      standalone: false,
     })
     class DirectiveShadowsClassInput {
       constructor(private elementRef: ElementRef) {}
@@ -596,42 +554,40 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+    @Component({
+      template: ` <div class="s1" [class]="classBinding()" dir-shadows-class-input></div> `,
+      imports: [DirectiveShadowsClassInput],
+    })
+    class Cmp {
+      classBinding = signal<any>(undefined);
+    }
+
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
     expect(div.className).toEqual('s1');
     expect(div.getAttribute('shadow-class')).toEqual('s1');
 
-    fixture.componentInstance.classBinding = null;
-    fixture.detectChanges();
+    fixture.componentInstance.classBinding.set(null);
+    await fixture.whenStable();
     expect(div.className).toEqual('s1');
     expect(div.getAttribute('shadow-class')).toEqual('s1');
 
-    fixture.componentInstance.classBinding = false;
-    fixture.detectChanges();
+    fixture.componentInstance.classBinding.set(false);
+    await fixture.whenStable();
     expect(div.className).toEqual('s1');
     expect(div.getAttribute('shadow-class')).toEqual('s1');
 
-    fixture.componentInstance.classBinding = {toString: () => 'd1'};
-    fixture.detectChanges();
+    fixture.componentInstance.classBinding.set({toString: () => 'd1'});
+    await fixture.whenStable();
     expect(div.className).toEqual('s1');
     expect(div.getAttribute('shadow-class')).toEqual('s1 d1');
   });
 
   it('should bind [style] as input to directive', () => {
-    @Component({
-      template: `
-        <div style="color: red;" [style]="'width: 100px;'" dir-shadows-style-input></div>
-      `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[dir-shadows-style-input]',
-      standalone: false,
     })
     class DirectiveShadowsStyleInput {
       constructor(private elementRef: ElementRef) {}
@@ -641,7 +597,15 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
+    @Component({
+      template: `
+        <div style="color: red;" [style]="'width: 100px;'" dir-shadows-style-input></div>
+      `,
+
+      imports: [DirectiveShadowsStyleInput],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -650,16 +614,129 @@ describe('styling', () => {
     expect(div.getAttribute('shadow-style')).toEqual('color: red; width: 100px;');
   });
 
-  it('should prevent circular ExpressionChangedAfterItHasBeenCheckedError on shadow inputs', () => {
-    @Component({
-      template: `<div class="s1" dir-shadows-class-input></div>`,
-      standalone: false,
+  it('should not treat outputs named class or style as shadowing [class] and [style]', async () => {
+    @Directive({
+      selector: '[dir-with-styling-outputs]',
     })
-    class Cmp {}
+    class DirectiveWithStylingOutputs {
+      @Output('class') classOutput = new EventEmitter<string>();
+      @Output('style') styleOutput = new EventEmitter<string>();
+    }
+
+    @Component({
+      template: `
+        <div
+          dir-with-styling-outputs
+          class="s1"
+          style="color: red;"
+          [class]="classBinding()"
+          [style]="styleBinding()"
+        ></div>
+      `,
+      imports: [DirectiveWithStylingOutputs],
+    })
+    class Cmp {
+      classBinding = signal('d1');
+      styleBinding = signal('width: 10px;');
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    const div = fixture.nativeElement.querySelector('div');
+    expectClass(div).toEqual({'s1': true, 'd1': true});
+    expectStyle(div).toEqual({'color': 'red', 'width': '10px'});
+
+    fixture.componentInstance.classBinding.set('d2');
+    fixture.componentInstance.styleBinding.set('width: 20px;');
+    await fixture.whenStable();
+    expectClass(div).toEqual({'s1': true, 'd2': true});
+    expectStyle(div).toEqual({'color': 'red', 'width': '20px'});
+  });
+
+  it('should deliver events from an output named class while [class] is bound', async () => {
+    @Directive({
+      selector: '[dir-with-class-output]',
+    })
+    class DirectiveWithClassOutput {
+      @Output('class') classOutput = new EventEmitter<string>();
+    }
+
+    @Component({
+      template: `
+        <div
+          dir-with-class-output
+          class="s1"
+          [class]="classBinding()"
+          (class)="received.push($event)"
+        ></div>
+      `,
+      imports: [DirectiveWithClassOutput],
+    })
+    class Cmp {
+      @ViewChild(DirectiveWithClassOutput) dir!: DirectiveWithClassOutput;
+      classBinding = signal('d1');
+      received: string[] = [];
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    fixture.componentInstance.dir.classOutput.emit('e1');
+
+    expect(fixture.componentInstance.received).toEqual(['e1']);
+    expectClass(fixture.nativeElement.querySelector('div')).toEqual({'s1': true, 'd1': true});
+  });
+
+  it('should not treat a host directive output exposed as class as shadowing [class]', async () => {
+    @Directive()
+    class HostDir {
+      @Output() changed = new EventEmitter<string>();
+    }
 
     @Directive({
+      selector: '[dir-exposing-class-output]',
+      hostDirectives: [{directive: HostDir, outputs: ['changed: class']}],
+    })
+    class DirectiveExposingClassOutput {}
+
+    @Component({
+      template: `<div dir-exposing-class-output class="s1" [class]="classBinding()"></div>`,
+      imports: [DirectiveExposingClassOutput],
+    })
+    class Cmp {
+      classBinding = signal('d1');
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    expectClass(fixture.nativeElement.querySelector('div')).toEqual({'s1': true, 'd1': true});
+  });
+
+  it('should bind [class] as input to directive that also has an output named class', async () => {
+    @Directive({
       selector: '[dir-shadows-class-input]',
-      standalone: false,
+    })
+    class DirectiveShadowsClassInput {
+      @Input('class') klass = '';
+      @Output('class') classOutput = new EventEmitter<string>();
+    }
+
+    @Component({
+      template: `<div dir-shadows-class-input class="s1" [class]="'d1'"></div>`,
+      imports: [DirectiveShadowsClassInput],
+    })
+    class Cmp {
+      @ViewChild(DirectiveShadowsClassInput) dir!: DirectiveShadowsClassInput;
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('div').className).toEqual('s1');
+    expect(fixture.componentInstance.dir.klass).toEqual('s1 d1');
+  });
+
+  it('should prevent circular ExpressionChangedAfterItHasBeenCheckedError on shadow inputs', () => {
+    @Directive({
+      selector: '[dir-shadows-class-input]',
     })
     class DirectiveShadowsClassInput {
       @Input('class') klass: string | undefined;
@@ -670,7 +747,13 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+    @Component({
+      template: `<div class="s1" dir-shadows-class-input></div>`,
+
+      imports: [DirectiveShadowsClassInput],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     expect(() => fixture.detectChanges()).not.toThrow();
 
@@ -679,18 +762,34 @@ describe('styling', () => {
   });
 
   it('should recover from exceptions', () => {
+    const myDirHostBinding = signal(false);
+    @Directive({
+      selector: '[my-dir]',
+      host: {
+        '[class.myDir]': 'myDir()',
+      },
+    })
+    class MyDirective {
+      myDir(): boolean {
+        if (!myDirHostBinding()) {
+          throw new Error('class.myDir');
+        }
+        return myDirHostBinding();
+      }
+    }
+
     @Component({
       template: `
-        <div [id]="maybeThrow(id)">
-          <span my-dir [class]="maybeThrow(klass)" [class.foo]="maybeThrow(foo)"></span>
+        <div [id]="maybeThrow(id())">
+          <span my-dir [class]="maybeThrow(klass())" [class.foo]="maybeThrow(foo())"></span>
         </div>
       `,
-      standalone: false,
+      imports: [MyDirective],
     })
     class Cmp {
-      id = 'throw_id';
-      klass: string | string[] = 'throw_klass';
-      foo = `throw_foo`;
+      id = signal('throw_id');
+      klass = signal<string | string[]>('throw_klass');
+      foo = signal(`throw_foo`);
 
       maybeThrow(value: any) {
         if (typeof value === 'string' && value.indexOf('throw') === 0) {
@@ -700,22 +799,6 @@ describe('styling', () => {
       }
     }
 
-    let myDirHostBinding = false;
-    @Directive({
-      selector: '[my-dir]',
-      standalone: false,
-    })
-    class MyDirective {
-      @HostBinding('class.myDir')
-      get myDir(): boolean {
-        if (myDirHostBinding === false) {
-          throw new Error('class.myDir');
-        }
-        return myDirHostBinding;
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [Cmp, MyDirective]});
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
     const div = fixture.nativeElement.querySelector('div');
@@ -725,37 +808,30 @@ describe('styling', () => {
     expect(div.id).toBeFalsy();
     expectClass(span).toEqual({});
 
-    cmp.id = 'myId';
+    cmp.id.set('myId');
     expect(() => fixture.detectChanges()).toThrowError(/throw_klass/);
     expect(div.id).toEqual('myId');
     expectClass(span).toEqual({});
 
-    cmp.klass = ['BAR'];
+    cmp.klass.set(['BAR']);
     expect(() => fixture.detectChanges()).toThrowError(/throw_foo/);
     expect(div.id).toEqual('myId');
     expectClass(span).toEqual({BAR: true});
 
-    cmp.foo = 'foo';
+    cmp.foo.set('foo');
     expect(() => fixture.detectChanges()).toThrowError(/class.myDir/);
     expect(div.id).toEqual('myId');
     expectClass(span).toEqual({BAR: true, foo: true});
 
-    myDirHostBinding = true;
+    myDirHostBinding.set(true);
     fixture.detectChanges();
     expect(div.id).toEqual('myId');
     expectClass(span).toEqual({BAR: true, foo: true, myDir: true});
   });
 
   it('should render inline style and class attribute values on the element before a directive is instantiated', () => {
-    @Component({
-      template: ` <div directive-expecting-styling style="width:200px" class="abc xyz"></div> `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[directive-expecting-styling]',
-      standalone: false,
     })
     class DirectiveExpectingStyling {
       constructor(elm: ElementRef) {
@@ -765,7 +841,13 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+    @Component({
+      template: ` <div directive-expecting-styling style="width:200px" class="abc xyz"></div> `,
+
+      imports: [DirectiveExpectingStyling],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -777,15 +859,8 @@ describe('styling', () => {
   });
 
   it('should only render the same initial styling values once before a directive runs', () => {
-    @Component({
-      template: ` <div directive-expecting-styling style="width:200px" class="abc"></div> `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[directive-expecting-styling]',
-      standalone: false,
     })
     class DirectiveExpectingStyling {
       constructor(elm: ElementRef) {
@@ -795,7 +870,13 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+    @Component({
+      template: ` <div directive-expecting-styling style="width:200px" class="abc"></div> `,
+
+      imports: [DirectiveExpectingStyling],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -806,17 +887,6 @@ describe('styling', () => {
 
   it('should ensure that static classes are assigned to ng-container elements and picked up for content projection', () => {
     @Component({
-      template: `
-        <project>
-          outer
-          <ng-container class="inner"> inner </ng-container>
-        </project>
-      `,
-      standalone: false,
-    })
-    class MyApp {}
-
-    @Component({
       selector: 'project',
       template: `
         <div class="outer-area">
@@ -826,11 +896,20 @@ describe('styling', () => {
           <ng-content select=".inner"></ng-content>
         </div>
       `,
-      standalone: false,
     })
     class ProjectCmp {}
 
-    TestBed.configureTestingModule({declarations: [MyApp, ProjectCmp]});
+    @Component({
+      template: `
+        <project>
+          outer
+          <ng-container class="inner"> inner </ng-container>
+        </project>
+      `,
+      imports: [ProjectCmp],
+    })
+    class MyApp {}
+
     const fixture = TestBed.createComponent(MyApp);
     const element = fixture.nativeElement;
     fixture.detectChanges();
@@ -845,7 +924,6 @@ describe('styling', () => {
     @Component({
       selector: '[comp]',
       template: '',
-      standalone: false,
     })
     class Comp {}
 
@@ -855,15 +933,12 @@ describe('styling', () => {
           <p comp class="a">A</p>
         </ng-template>
       `,
-      standalone: false,
+      imports: [NgFor, Comp],
     })
     class App {
       items = [1, 2, 3];
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -873,11 +948,9 @@ describe('styling', () => {
   it('should do nothing for empty style bindings', () => {
     @Component({
       template: '<div [style.color]></div>',
-      standalone: false,
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -887,11 +960,9 @@ describe('styling', () => {
   it('should do nothing for empty class bindings', () => {
     @Component({
       template: '<div [class.is-open]></div>',
-      standalone: false,
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -901,53 +972,46 @@ describe('styling', () => {
   it('should be able to bind zero', () => {
     @Component({
       template: '<div #div [style.opacity]="opacity"></div>',
-      standalone: false,
     })
     class App {
       @ViewChild('div') div!: ElementRef<HTMLElement>;
       opacity = 0;
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.div.nativeElement.style.opacity).toBe('0');
   });
 
-  it('should be able to bind a SafeValue to backgroundImage', () => {
+  it('should be able to bind a SafeValue to backgroundImage', async () => {
     @Component({
       template: '<div [style.backgroundImage]="image"></div>',
-      standalone: false,
     })
     class Cmp {
       image!: SafeStyle;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
 
     fixture.componentInstance.image = sanitizer.bypassSecurityTrustStyle('url("#test")');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
     expect(div.style.backgroundImage).toBe('url("#test")');
   });
 
-  it('should set !important on a single property', () => {
+  it('should set !important on a single property', async () => {
     @Component({
       template: '<div [style.width]="width"></div>',
-      standalone: false,
     })
     class Cmp {
-      width!: string;
+      width = '50px !important';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.componentInstance.width = '50px !important';
-    fixture.detectChanges();
+    await fixture.whenStable();
     const html = fixture.nativeElement.innerHTML;
 
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
@@ -955,19 +1019,16 @@ describe('styling', () => {
     expect(html).toMatch(/style=["|']width:\s*50px\s*!important/);
   });
 
-  it('should set !important that is not preceded by a space', () => {
+  it('should set !important that is not preceded by a space', async () => {
     @Component({
       template: '<div [style.width]="width"></div>',
-      standalone: false,
     })
     class Cmp {
-      width!: string;
+      width = '50px!important';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.componentInstance.width = '50px!important';
-    fixture.detectChanges();
+    await fixture.whenStable();
     const html = fixture.nativeElement.innerHTML;
 
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
@@ -975,19 +1036,16 @@ describe('styling', () => {
     expect(html).toMatch(/style=["|']width:\s*50px\s*!important/);
   });
 
-  it('should set !important on a dash-case property', () => {
+  it('should set !important on a dash-case property', async () => {
     @Component({
       template: '<div [style.margin-right]="marginRight"></div>',
-      standalone: false,
     })
     class Cmp {
-      marginRight!: string;
+      marginRight = '5px !important';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.componentInstance.marginRight = '5px !important';
-    fixture.detectChanges();
+    await fixture.whenStable();
     const html = fixture.nativeElement.innerHTML;
 
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
@@ -995,19 +1053,16 @@ describe('styling', () => {
     expect(html).toMatch(/style=["|']margin-right:\s*5px\s*!important/);
   });
 
-  it('should set !important on multiple properties', () => {
+  it('should set !important on multiple properties', async () => {
     @Component({
       template: '<div [style]="styles"></div>',
-      standalone: false,
     })
     class Cmp {
-      styles!: string;
+      styles = 'height: 25px !important; width: 50px !important;';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.componentInstance.styles = 'height: 25px !important; width: 50px !important;';
-    fixture.detectChanges();
+    await fixture.whenStable();
     const html = fixture.nativeElement.innerHTML;
 
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
@@ -1015,19 +1070,16 @@ describe('styling', () => {
     expect(html).toMatch(/style=["|']height:\s*25px\s*!important;\s*width:\s*50px\s*!important/);
   });
 
-  it('should set !important if some properties are !important and other are not', () => {
+  it('should set !important if some properties are !important and other are not', async () => {
     @Component({
       template: '<div [style]="styles"></div>',
-      standalone: false,
     })
     class Cmp {
-      styles!: string;
+      styles = 'height: 25px; width: 50px !important;';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.componentInstance.styles = 'height: 25px; width: 50px !important;';
-    fixture.detectChanges();
+    await fixture.whenStable();
     const html = fixture.nativeElement.innerHTML;
 
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
@@ -1042,38 +1094,34 @@ describe('styling', () => {
     @Directive({
       selector: 'ng-template[styleDir]',
       host: {'[style.display]': 'display'},
-      standalone: false,
     })
     class StyleDir {
       display = 'block';
     }
 
     @Component({
-      selector: 'app-comp',
       template: `<ng-template styleDir></ng-template>`,
-      standalone: false,
+      imports: [StyleDir],
     })
     class MyApp {}
 
-    TestBed.configureTestingModule({declarations: [MyApp, StyleDir]});
     TestBed.createComponent(MyApp).detectChanges();
   });
 
-  it('should be able to bind a SafeValue to clip-path', () => {
+  it('should be able to bind a SafeValue to clip-path', async () => {
     @Component({
       template: '<div [style.clip-path]="path"></div>',
-      standalone: false,
     })
     class Cmp {
+      constructor(private sanitizer: DomSanitizer) {
+        this.path = this.sanitizer.bypassSecurityTrustStyle('url("#test")');
+      }
+
       path!: SafeStyle;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
-
-    fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const html = fixture.nativeElement.innerHTML;
 
@@ -1082,48 +1130,50 @@ describe('styling', () => {
     expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
   });
 
-  it('should support interpolations inside a class binding', () => {
+  it('should support interpolations inside a class binding', async () => {
     @Component({
       template: `
         <div
-          class="a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{ seven }}h{{
-            eight
-          }}i{{ nine }}j"
+          class="a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{ six() }}g{{
+            seven()
+          }}h{{ eight() }}i{{ nine() }}j"
         ></div>
         <div
-          class="a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{ seven }}h{{
-            eight
-          }}i"
+          class="a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{ six() }}g{{
+            seven()
+          }}h{{ eight() }}i"
         ></div>
         <div
-          class="a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{ seven }}h"
+          class="a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{ six() }}g{{
+            seven()
+          }}h"
         ></div>
-        <div class="a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g"></div>
-        <div class="a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f"></div>
-        <div class="a{{ one }}b{{ two }}c{{ three }}d{{ four }}e"></div>
-        <div class="a{{ one }}b{{ two }}c{{ three }}d"></div>
-        <div class="a{{ one }}b{{ two }}c"></div>
-        <div class="a{{ one }}b"></div>
-        <div class="{{ one }}"></div>
+        <div
+          class="a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{ six() }}g"
+        ></div>
+        <div class="a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f"></div>
+        <div class="a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e"></div>
+        <div class="a{{ one() }}b{{ two() }}c{{ three() }}d"></div>
+        <div class="a{{ one() }}b{{ two() }}c"></div>
+        <div class="a{{ one() }}b"></div>
+        <div class="{{ one() }}"></div>
       `,
-      standalone: false,
     })
     class Cmp {
-      one = '1';
-      two = '2';
-      three = '3';
-      four = '4';
-      five = '5';
-      six = '6';
-      seven = '7';
-      eight = '8';
-      nine = '9';
+      one = signal('1');
+      two = signal('2');
+      three = signal('3');
+      four = signal('4');
+      five = signal('5');
+      six = signal('6');
+      seven = signal('7');
+      eight = signal('8');
+      nine = signal('9');
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const instance = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const divs = fixture.nativeElement.querySelectorAll('div');
 
@@ -1138,17 +1188,16 @@ describe('styling', () => {
     expect(divs[8].getAttribute('class')).toBe('a1b');
     expect(divs[9].getAttribute('class')).toBe('1');
 
-    instance.one =
-      instance.two =
-      instance.three =
-      instance.four =
-      instance.five =
-      instance.six =
-      instance.seven =
-      instance.eight =
-      instance.nine =
-        '';
-    fixture.detectChanges();
+    instance.one.set('');
+    instance.two.set('');
+    instance.three.set('');
+    instance.four.set('');
+    instance.five.set('');
+    instance.six.set('');
+    instance.seven.set('');
+    instance.eight.set('');
+    instance.nine.set('');
+    await fixture.whenStable();
 
     expect(divs[0].getAttribute('class')).toBe('abcdefghij');
     expect(divs[1].getAttribute('class')).toBe('abcdefghi');
@@ -1162,57 +1211,59 @@ describe('styling', () => {
     expect(divs[9].getAttribute('class')).toBeFalsy();
   });
 
-  it('should support interpolations inside a style binding', () => {
+  it('should support interpolations inside a style binding', async () => {
     @Component({
       template: `
         <div
-          style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{
-            seven
-          }}h{{ eight }}i{{ nine }}j&quot;"
+          style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{
+            six()
+          }}g{{ seven() }}h{{ eight() }}i{{ nine() }}j&quot;"
         ></div>
         <div
-          style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{
-            seven
-          }}h{{ eight }}i&quot;"
+          style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{
+            six()
+          }}g{{ seven() }}h{{ eight() }}i&quot;"
         ></div>
         <div
-          style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{
-            seven
-          }}h&quot;"
+          style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{
+            six()
+          }}g{{ seven() }}h&quot;"
         ></div>
         <div
-          style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{
-            six
+          style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{ five() }}f{{
+            six()
           }}g&quot;"
         ></div>
         <div
-          style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f&quot;"
+          style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e{{
+            five()
+          }}f&quot;"
         ></div>
-        <div style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d{{ four }}e&quot;"></div>
-        <div style="content: &quot;a{{ one }}b{{ two }}c{{ three }}d&quot;"></div>
-        <div style="content: &quot;a{{ one }}b{{ two }}c&quot;"></div>
-        <div style="content: &quot;a{{ one }}b&quot;"></div>
-        <div style="{{ self }}"></div>
+        <div
+          style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d{{ four() }}e&quot;"
+        ></div>
+        <div style="content: &quot;a{{ one() }}b{{ two() }}c{{ three() }}d&quot;"></div>
+        <div style="content: &quot;a{{ one() }}b{{ two() }}c&quot;"></div>
+        <div style="content: &quot;a{{ one() }}b&quot;"></div>
+        <div style="{{ self() }}"></div>
       `,
-      standalone: false,
     })
     class Cmp {
-      self = 'content: "self"';
-      one = '1';
-      two = '2';
-      three = '3';
-      four = '4';
-      five = '5';
-      six = '6';
-      seven = '7';
-      eight = '8';
-      nine = '9';
+      self = signal('content: "self"');
+      one = signal('1');
+      two = signal('2');
+      three = signal('3');
+      four = signal('4');
+      five = signal('5');
+      six = signal('6');
+      seven = signal('7');
+      eight = signal('8');
+      nine = signal('9');
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const instance = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const divs = fixture.nativeElement.querySelectorAll('div');
 
@@ -1227,18 +1278,17 @@ describe('styling', () => {
     expect(divs[8].style.getPropertyValue('content')).toBe('"a1b"');
     expect(divs[9].style.getPropertyValue('content')).toBe('"self"');
 
-    instance.one =
-      instance.two =
-      instance.three =
-      instance.four =
-      instance.five =
-      instance.six =
-      instance.seven =
-      instance.eight =
-      instance.nine =
-      instance.self =
-        '';
-    fixture.detectChanges();
+    instance.one.set('');
+    instance.two.set('');
+    instance.three.set('');
+    instance.four.set('');
+    instance.five.set('');
+    instance.six.set('');
+    instance.seven.set('');
+    instance.eight.set('');
+    instance.nine.set('');
+    instance.self.set('');
+    await fixture.whenStable();
 
     expect(divs[0].style.getPropertyValue('content')).toBe('"abcdefghij"');
     expect(divs[1].style.getPropertyValue('content')).toBe('"abcdefghi"');
@@ -1252,19 +1302,17 @@ describe('styling', () => {
     expect(divs[9].style.getPropertyValue('content')).toBeFalsy();
   });
 
-  it('should support interpolations inside a class binding when other classes are present', () => {
+  it('should support interpolations inside a class binding when other classes are present', async () => {
     @Component({
-      template: '<div class="zero i-{{one}} {{two}} three"></div>',
-      standalone: false,
+      template: '<div class="zero i-{{one()}} {{two()}} three"></div>',
     })
     class Cmp {
-      one = 'one';
-      two = 'two';
+      one = signal('one');
+      two = signal('two');
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const classList = fixture.nativeElement.querySelector('div').classList;
 
     expect(classList).toContain('zero');
@@ -1272,8 +1320,9 @@ describe('styling', () => {
     expect(classList).toContain('two');
     expect(classList).toContain('three');
 
-    fixture.componentInstance.one = fixture.componentInstance.two = '';
-    fixture.detectChanges();
+    fixture.componentInstance.one.set('');
+    fixture.componentInstance.two.set('');
+    await fixture.whenStable();
 
     expect(classList).toContain('zero');
     expect(classList).toContain('i-');
@@ -1282,49 +1331,53 @@ describe('styling', () => {
     expect(classList).not.toContain('two');
   });
 
-  it('should support interpolations inside a style property binding', () => {
+  it('should support interpolations inside a style property binding', async () => {
     @Component({
       template: `
         <div
-          style.font-family="f{{ one }}{{ two }}{{ three }}{{ four }}{{ five }}{{ six }}{{
-            seven
-          }}{{ eight }}{{ nine }}"
+          style.font-family="f{{ one() }}{{ two() }}{{ three() }}{{ four() }}{{ five() }}{{
+            six()
+          }}{{ seven() }}{{ eight() }}{{ nine() }}"
         ></div>
         <div
-          style.font-family="f{{ one }}{{ two }}{{ three }}{{ four }}{{ five }}{{ six }}{{
-            seven
-          }}{{ eight }}"
+          style.font-family="f{{ one() }}{{ two() }}{{ three() }}{{ four() }}{{ five() }}{{
+            six()
+          }}{{ seven() }}{{ eight() }}"
         ></div>
         <div
-          style.font-family="f{{ one }}{{ two }}{{ three }}{{ four }}{{ five }}{{ six }}{{ seven }}"
+          style.font-family="f{{ one() }}{{ two() }}{{ three() }}{{ four() }}{{ five() }}{{
+            six()
+          }}{{ seven() }}"
         ></div>
-        <div style.font-family="f{{ one }}{{ two }}{{ three }}{{ four }}{{ five }}{{ six }}"></div>
-        <div style.font-family="f{{ one }}{{ two }}{{ three }}{{ four }}{{ five }}"></div>
-        <div style.font-family="f{{ one }}{{ two }}{{ three }}{{ four }}"></div>
-        <div style.font-family="f{{ one }}{{ two }}{{ three }}"></div>
-        <div style.font-family="f{{ one }}{{ two }}"></div>
-        <div style.font-family="f{{ one }}"></div>
-        <div style.width="{{ singleBinding }}"></div>
+        <div
+          style.font-family="f{{ one() }}{{ two() }}{{ three() }}{{ four() }}{{ five() }}{{
+            six()
+          }}"
+        ></div>
+        <div style.font-family="f{{ one() }}{{ two() }}{{ three() }}{{ four() }}{{ five() }}"></div>
+        <div style.font-family="f{{ one() }}{{ two() }}{{ three() }}{{ four() }}"></div>
+        <div style.font-family="f{{ one() }}{{ two() }}{{ three() }}"></div>
+        <div style.font-family="f{{ one() }}{{ two() }}"></div>
+        <div style.font-family="f{{ one() }}"></div>
+        <div style.width="{{ singleBinding() }}"></div>
       `,
-      standalone: false,
     })
     class Cmp {
-      singleBinding: string | null = '1337px';
-      one = 1;
-      two = 2;
-      three = 3;
-      four = 4;
-      five = 5;
-      six = 6;
-      seven = 7;
-      eight = 8;
-      nine = 9;
+      singleBinding = signal<string | null>('1337px');
+      one = signal(1);
+      two = signal(2);
+      three = signal(3);
+      four = signal(4);
+      five = signal(5);
+      six = signal(6);
+      seven = signal(7);
+      eight = signal(8);
+      nine = signal(9);
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const instance = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const divs: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('div');
 
@@ -1339,18 +1392,17 @@ describe('styling', () => {
     expect(divs[8].style.fontFamily).toBe('f1');
     expect(divs[9].style.width).toBe('1337px');
 
-    instance.singleBinding = null;
-    instance.one =
-      instance.two =
-      instance.three =
-      instance.four =
-      instance.five =
-      instance.six =
-      instance.seven =
-      instance.eight =
-      instance.nine =
-        1;
-    fixture.detectChanges();
+    instance.singleBinding.set(null);
+    instance.one.set(1);
+    instance.two.set(1);
+    instance.three.set(1);
+    instance.four.set(1);
+    instance.five.set(1);
+    instance.six.set(1);
+    instance.seven.set(1);
+    instance.eight.set(1);
+    instance.nine.set(1);
+    await fixture.whenStable();
 
     expect(divs[0].style.fontFamily).toBe('f111111111');
     expect(divs[1].style.fontFamily).toBe('f11111111');
@@ -1364,48 +1416,36 @@ describe('styling', () => {
     expect(divs[9].style.width).toBeFalsy();
   });
 
-  it('should support interpolations when a style property has a unit suffix', () => {
+  it('should support interpolations when a style property has a unit suffix', async () => {
     @Component({
-      template: '<div style.width.px="{{one}}{{three}}{{three}}7"></div>',
-      standalone: false,
+      template: '<div style.width.px="{{one()}}{{three()}}{{three()}}7"></div>',
     })
     class Cmp {
-      one = 1;
-      three = 3;
+      one = signal(1);
+      three = signal(3);
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const div = fixture.nativeElement.querySelector('div');
 
     expect(div.style.width).toBe('1337px');
 
-    fixture.componentInstance.one = 2;
-    fixture.componentInstance.three = 6;
-    fixture.detectChanges();
+    fixture.componentInstance.one.set(2);
+    fixture.componentInstance.three.set(6);
+    await fixture.whenStable();
 
     expect(div.style.width).toBe('2667px');
   });
 
-  it('should not write to a `class` input binding in the event that there is no static class value', () => {
+  it('should not write to a `class` input binding in the event that there is no static class value', async () => {
     let capturedClassBindingCount = 0;
     let capturedClassBindingValue: string | null | undefined = undefined;
     let capturedMyClassBindingCount = 0;
     let capturedMyClassBindingValue: string | null | undefined = undefined;
 
-    @Component({
-      template: '<div [class]="c" [my-class-dir]="x"></div>',
-      standalone: false,
-    })
-    class Cmp {
-      c: any = null;
-      x = 'foo';
-    }
-
     @Directive({
       selector: '[my-class-dir]',
-      standalone: false,
     })
     class MyClassDir {
       @Input('class')
@@ -1421,33 +1461,41 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+    @Component({
+      template: '<div [class]="c()" [my-class-dir]="x"></div>',
+      imports: [MyClassDir],
+    })
+    class Cmp {
+      c = signal<any>(null);
+      x = 'foo';
+    }
+
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(1);
     expect(capturedClassBindingValue as any).toEqual(null);
     expect(capturedMyClassBindingCount).toEqual(1);
     expect(capturedMyClassBindingValue!).toEqual('foo');
 
-    fixture.componentInstance.c = 'dynamic-value';
-    fixture.detectChanges();
+    fixture.componentInstance.c.set('dynamic-value');
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(2);
     expect(capturedClassBindingValue!).toEqual('dynamic-value');
     expect(capturedMyClassBindingCount).toEqual(1);
     expect(capturedMyClassBindingValue!).toEqual('foo');
 
-    fixture.componentInstance.c = null;
-    fixture.detectChanges();
+    fixture.componentInstance.c.set(null);
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(3);
     expect(capturedClassBindingValue as any).toEqual(null);
     expect(capturedMyClassBindingCount).toEqual(1);
     expect(capturedMyClassBindingValue!).toEqual('foo');
 
-    fixture.componentInstance.c = '';
-    fixture.detectChanges();
+    fixture.componentInstance.c.set('');
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(4);
     expect(capturedClassBindingValue as any).toEqual('');
@@ -1455,21 +1503,12 @@ describe('styling', () => {
     expect(capturedMyClassBindingValue!).toEqual('foo');
   });
 
-  it('should write to [class] binding during `update` mode if there is an instantiation-level value', () => {
+  it('should write to [class] binding during `update` mode if there is an instantiation-level value', async () => {
     let capturedClassBindingCount = 0;
     let capturedClassBindingValue: string | null | undefined = undefined;
 
-    @Component({
-      template: '<div [class]="c" my-class-dir></div>',
-      standalone: false,
-    })
-    class Cmp {
-      c: any = 'bar';
-    }
-
     @Directive({
       selector: '[my-class-dir]',
-      standalone: false,
     })
     class MyClassDir {
       @Input('class')
@@ -1479,16 +1518,23 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+    @Component({
+      template: '<div [class]="c()" my-class-dir></div>',
+      imports: [MyClassDir],
+    })
+    class Cmp {
+      c = signal<any>('bar');
+    }
+
     const fixture = TestBed.createComponent(Cmp);
     expect(capturedClassBindingCount).toEqual(0);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(1);
     expect(capturedClassBindingValue as any).toEqual('bar');
 
-    fixture.componentInstance.c = 'dynamic-bar';
-    fixture.detectChanges();
+    fixture.componentInstance.c.set('dynamic-bar');
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(2);
     expect(capturedClassBindingValue!).toEqual('dynamic-bar');
@@ -1500,17 +1546,8 @@ describe('styling', () => {
     let capturedMyClassBindingCount = 0;
     let capturedMyClassBindingValue: string | null = null;
 
-    @Component({
-      template: '<div class="static-val" [my-class-dir]="x"></div>',
-      standalone: false,
-    })
-    class Cmp {
-      x = 'foo';
-    }
-
     @Directive({
       selector: '[my-class-dir]',
-      standalone: false,
     })
     class MyClassDir {
       @Input('class')
@@ -1526,7 +1563,15 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+    @Component({
+      template: '<div class="static-val" [my-class-dir]="x"></div>',
+
+      imports: [MyClassDir],
+    })
+    class Cmp {
+      x = 'foo';
+    }
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -1540,18 +1585,16 @@ describe('styling', () => {
     @Component({
       selector: 'comp',
       template: `{{ className }}`,
-      standalone: false,
     })
     class Comp {
       @Input() className: string = '';
     }
     @Component({
       template: `<comp [className]="'my-className'"></comp>`,
-      standalone: false,
+      imports: [Comp],
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [Comp, App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('my-className');
@@ -1561,7 +1604,6 @@ describe('styling', () => {
     @Component({
       selector: 'comp',
       template: `{{ className }}`,
-      standalone: false,
     })
     class Comp {
       @Input('class') className: string = '';
@@ -1569,34 +1611,23 @@ describe('styling', () => {
 
     @Component({
       template: `<comp class="static" [class]="'my-className'"></comp>`,
-      standalone: false,
+      imports: [Comp],
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [Comp, App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     expect(fixture.debugElement.nativeElement.firstChild.innerHTML).toBe('static my-className');
   });
 
-  it('should write to a `class` input binding if there is a static class value and there is a binding value', () => {
+  it('should write to a `class` input binding if there is a static class value and there is a binding value', async () => {
     let capturedClassBindingCount = 0;
     let capturedClassBindingValue: string | null = null;
     let capturedMyClassBindingCount = 0;
     let capturedMyClassBindingValue: string | null = null;
 
-    @Component({
-      template: '<div class="static-val" [class]="c" [my-class-dir]="x"></div>',
-      standalone: false,
-    })
-    class Cmp {
-      c: any = null;
-      x: any = 'foo';
-    }
-
     @Directive({
       selector: '[my-class-dir]',
-      standalone: false,
     })
     class MyClassDir {
       @Input('class')
@@ -1612,9 +1643,17 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+    @Component({
+      template: '<div class="static-val" [class]="c()" [my-class-dir]="x"></div>',
+      imports: [MyClassDir],
+    })
+    class Cmp {
+      c = signal<any>(null);
+      x: any = 'foo';
+    }
+
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(
       2,
@@ -1633,8 +1672,8 @@ describe('styling', () => {
     expect(capturedMyClassBindingValue!).toEqual('foo');
 
     capturedClassBindingCount = 0;
-    fixture.componentInstance.c = 'dynamic-val';
-    fixture.detectChanges();
+    fixture.componentInstance.c.set('dynamic-val');
+    await fixture.whenStable();
 
     expect(capturedClassBindingCount).toEqual(1);
     expect(capturedClassBindingValue!).toEqual('static-val dynamic-val');
@@ -1643,16 +1682,9 @@ describe('styling', () => {
   });
 
   it('should allow multiple directives to set dynamic and static classes independent of one another', () => {
-    @Component({
-      template: ` <div dir-one dir-two></div> `,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[dir-one]',
       host: {'[class.dir-one]': 'dirOneExp'},
-      standalone: false,
     })
     class DirOne {
       dirOneExp = true;
@@ -1661,17 +1693,49 @@ describe('styling', () => {
     @Directive({
       selector: '[dir-two]',
       host: {'class': 'dir-two'},
-      standalone: false,
     })
     class DirTwo {}
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
+    @Component({
+      template: ` <div dir-one dir-two></div> `,
+
+      imports: [DirOne, DirTwo],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
     const element = fixture.nativeElement.querySelector('div');
     expect(element.classList.contains('dir-one')).toBeTruthy();
     expect(element.classList.contains('dir-two')).toBeTruthy();
+  });
+
+  it('should support class bindings with dots in the class name', () => {
+    @Directive({
+      selector: '[dir]',
+      host: {'[class.py-2.5]': 'exp'},
+    })
+    class Dir {
+      exp = true;
+    }
+
+    @Component({
+      template: `<div dir [class.px-3.5]="exp"></div>`,
+      imports: [Dir],
+    })
+    class Cmp {
+      exp = true;
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement.querySelector('div');
+    expect(element.classList.contains('px-3.5')).toBeTrue();
+    expect(element.classList.contains('py-2.5')).toBeTrue();
+    expect(element.classList.contains('px-3')).toBeFalse();
+    expect(element.classList.contains('py-2')).toBeFalse();
   });
 
   it('should not write empty style values to the DOM', () => {
@@ -1684,11 +1748,9 @@ describe('styling', () => {
           [style.font-size]="'   '"
         ></div>
       `,
-      standalone: false,
     })
     class Cmp {}
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -1700,45 +1762,41 @@ describe('styling', () => {
     // so it would overwrite information about other directives nearby. This test checks
     // that TestDir's injector is not overwritten by NgClass, so TestDir should still
     // be found by DI when ChildDir is instantiated.
-    it('should not overwrite other directive info when using NgClass', () => {
+    it('should not overwrite other directive info when using NgClass', async () => {
       @Directive({
         selector: '[test-dir]',
-        standalone: false,
       })
       class TestDir {}
 
       @Directive({
         selector: '[child-dir]',
-        standalone: false,
       })
       class ChildDir {
         constructor(public parent: TestDir) {}
       }
 
       @Component({
-        selector: 'app',
+        imports: [NgClass, NgIf, ChildDir, TestDir],
         template: `
-          <div class="my-class" [ngClass]="classMap" test-dir>
-            <div *ngIf="showing" child-dir>Hello</div>
+          <div class="my-class" [ngClass]="classMap()" test-dir>
+            <div *ngIf="showing()" child-dir>Hello</div>
           </div>
         `,
-        standalone: false,
       })
       class AppComponent {
-        classMap = {'with-button': true};
-        showing = false;
+        classMap = signal({'with-button': true});
+        showing = signal(false);
       }
 
-      TestBed.configureTestingModule({declarations: [AppComponent, TestDir, ChildDir]});
       const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const testDirDiv = fixture.debugElement.nativeElement.querySelector('div');
       expect(testDirDiv.classList).toContain('with-button');
       expect(fixture.debugElement.nativeElement.textContent).not.toContain('Hello');
 
-      fixture.componentInstance.classMap = {'with-button': false};
-      fixture.componentInstance.showing = true;
-      fixture.detectChanges();
+      fixture.componentInstance.classMap.set({'with-button': false});
+      fixture.componentInstance.showing.set(true);
+      await fixture.whenStable();
 
       const childDir = fixture.debugElement.query(By.directive(ChildDir)).injector.get(ChildDir);
       expect(childDir.parent).toBeInstanceOf(TestDir);
@@ -1750,7 +1808,6 @@ describe('styling', () => {
   it('should be able to name inputs starting with `class` or `style`', () => {
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('classesInSchool') classes = '';
@@ -1759,7 +1816,7 @@ describe('styling', () => {
 
     @Component({
       template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
-      standalone: false,
+      imports: [Dir],
     })
     class App {
       @ViewChild(Dir) dir!: Dir;
@@ -1768,7 +1825,6 @@ describe('styling', () => {
       style = '80s';
     }
 
-    TestBed.configureTestingModule({declarations: [App, Dir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const directive = fixture.componentInstance.dir;
@@ -1780,13 +1836,11 @@ describe('styling', () => {
   it('should be able to bind to `className`', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class App {
       @HostBinding('className') klass = 'one two';
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const classList = fixture.nativeElement.classList;
@@ -1795,31 +1849,29 @@ describe('styling', () => {
     expect(classList.contains('two')).toBe(true);
   });
 
-  it('should apply single property styles/classes to the element and default to any static styling values', () => {
+  it('should apply single property styles/classes to the element and default to any static styling values', async () => {
     @Component({
       template: `
         <div
-          [style.width]="w"
-          [style.height]="h"
-          [style.opacity]="o"
+          [style.width]="w()"
+          [style.height]="h()"
+          [style.opacity]="o()"
           style="width:200px; height:200px;"
-          [class.abc]="abc"
-          [class.xyz]="xyz"
+          [class.abc]="abc()"
+          [class.xyz]="xyz()"
         ></div>
       `,
-      standalone: false,
     })
     class Cmp {
-      w: string | null | undefined = '100px';
-      h: string | null | undefined = '100px';
-      o: string | null | undefined = '0.5';
-      abc = true;
-      xyz = false;
+      w = signal<string | null | undefined>('100px');
+      h = signal<string | null | undefined>('100px');
+      o = signal<string | null | undefined>('0.5');
+      abc = signal(true);
+      xyz = signal(false);
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('div');
     expect(element.style.width).toEqual('100px');
@@ -1828,12 +1880,12 @@ describe('styling', () => {
     expect(element.classList.contains('abc')).toBeTruthy();
     expect(element.classList.contains('xyz')).toBeFalsy();
 
-    fixture.componentInstance.w = undefined;
-    fixture.componentInstance.h = undefined;
-    fixture.componentInstance.o = undefined;
-    fixture.componentInstance.abc = false;
-    fixture.componentInstance.xyz = true;
-    fixture.detectChanges();
+    fixture.componentInstance.w.set(undefined);
+    fixture.componentInstance.h.set(undefined);
+    fixture.componentInstance.o.set(undefined);
+    fixture.componentInstance.abc.set(false);
+    fixture.componentInstance.xyz.set(true);
+    await fixture.whenStable();
 
     expect(element.style.width).toEqual('200px');
     expect(element.style.height).toEqual('200px');
@@ -1841,118 +1893,120 @@ describe('styling', () => {
     expect(element.classList.contains('abc')).toBeFalsy();
     expect(element.classList.contains('xyz')).toBeTruthy();
 
-    fixture.componentInstance.w = null;
-    fixture.componentInstance.h = null;
-    fixture.componentInstance.o = null;
-    fixture.detectChanges();
+    fixture.componentInstance.w.set(null);
+    fixture.componentInstance.h.set(null);
+    fixture.componentInstance.o.set(null);
+    await fixture.whenStable();
     expect(element.style.width).toBeFalsy();
     expect(element.style.height).toBeFalsy();
     expect(element.style.opacity).toBeFalsy();
   });
 
-  it('should apply single style/class across the template and directive host bindings', () => {
+  it('should apply single style/class across the template and directive host bindings', async () => {
     @Directive({
       selector: '[dir-that-sets-width]',
-      standalone: false,
     })
     class DirThatSetsWidthDirective {
-      @Input('dir-that-sets-width') @HostBinding('style.width') public width: string = '';
+      @Input('dir-that-sets-width') @HostBinding('style.width') public width:
+        string | null | undefined = '';
     }
 
     @Directive({
       selector: '[another-dir-that-sets-width]',
       host: {'[style.width]': 'width'},
-      standalone: false,
     })
     class AnotherDirThatSetsWidthDirective {
-      @Input('another-dir-that-sets-width') public width: string = '';
+      @Input('another-dir-that-sets-width') public width: string | null | undefined = '';
     }
 
     @Component({
       template: `
-        <div [style.width]="w0" [dir-that-sets-width]="w1" [another-dir-that-sets-width]="w2"></div>
+        <div
+          [style.width]="w0()"
+          [dir-that-sets-width]="w1()"
+          [another-dir-that-sets-width]="w2()"
+        ></div>
       `,
-      standalone: false,
+      imports: [DirThatSetsWidthDirective, AnotherDirThatSetsWidthDirective],
     })
     class Cmp {
-      w0: string | null | undefined = null;
-      w1: string | null | undefined = null;
-      w2: string | null | undefined = null;
+      w0 = signal<string | null | undefined>(null);
+      w1 = signal<string | null | undefined>(null);
+      w2 = signal<string | null | undefined>(null);
     }
 
-    TestBed.configureTestingModule({
-      declarations: [Cmp, DirThatSetsWidthDirective, AnotherDirThatSetsWidthDirective],
-    });
     const fixture = TestBed.createComponent(Cmp);
-    fixture.componentInstance.w0 = '100px';
-    fixture.componentInstance.w1 = '200px';
-    fixture.componentInstance.w2 = '300px';
-    fixture.detectChanges();
+    fixture.componentInstance.w0.set('100px');
+    fixture.componentInstance.w1.set('200px');
+    fixture.componentInstance.w2.set('300px');
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('div');
     expect(element.style.width).toEqual('100px');
 
-    fixture.componentInstance.w0 = undefined;
-    fixture.detectChanges();
+    fixture.componentInstance.w0.set(undefined);
+    await fixture.whenStable();
 
     expect(element.style.width).toEqual('300px');
 
-    fixture.componentInstance.w2 = undefined;
-    fixture.detectChanges();
+    fixture.componentInstance.w2.set(undefined);
+    await fixture.whenStable();
 
     expect(element.style.width).toEqual('200px');
 
-    fixture.componentInstance.w1 = undefined;
-    fixture.detectChanges();
+    fixture.componentInstance.w1.set(undefined);
+    await fixture.whenStable();
 
     expect(element.style.width).toBeFalsy();
 
-    fixture.componentInstance.w2 = '400px';
-    fixture.detectChanges();
+    fixture.componentInstance.w2.set('400px');
+    await fixture.whenStable();
 
     expect(element.style.width).toEqual('400px');
 
-    fixture.componentInstance.w1 = '500px';
-    fixture.componentInstance.w0 = '600px';
-    fixture.detectChanges();
+    fixture.componentInstance.w1.set('500px');
+    fixture.componentInstance.w0.set('600px');
+    await fixture.whenStable();
 
     expect(element.style.width).toEqual('600px');
   });
 
-  it('should only run stylingFlush once when there are no collisions between styling properties', () => {
+  it('should only run stylingFlush once when there are no collisions between styling properties', async () => {
     @Directive({
       selector: '[dir-with-styling]',
-      standalone: false,
+      host: {'[style.font-size]': 'fontSize()'},
     })
     class DirWithStyling {
-      @HostBinding('style.font-size') public fontSize = '100px';
+      public fontSize = signal('100px');
     }
 
     @Component({
       selector: 'comp-with-styling',
-      standalone: false,
+      template: '',
+      host: {
+        '[style.width]': 'width()',
+        '[style.height]': 'height()',
+      },
     })
     class CompWithStyling {
-      @HostBinding('style.width') public width = '900px';
-
-      @HostBinding('style.height') public height = '900px';
+      public width = signal('900px');
+      public height = signal('900px');
     }
 
     @Component({
       template: `
-        <comp-with-styling [style.opacity]="opacity" dir-with-styling>...</comp-with-styling>
+        <comp-with-styling [style.opacity]="opacity()" dir-with-styling>...</comp-with-styling>
       `,
-      standalone: false,
+      imports: [DirWithStyling, CompWithStyling],
     })
     class Cmp {
-      opacity: string | null = '0.5';
+      opacity = signal<string | null>('0.5');
       @ViewChild(CompWithStyling, {static: true}) compWithStyling: CompWithStyling | null = null;
       @ViewChild(DirWithStyling, {static: true}) dirWithStyling: DirWithStyling | null = null;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirWithStyling, CompWithStyling]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const component = fixture.componentInstance;
     const element = fixture.nativeElement.querySelector('comp-with-styling');
@@ -1962,11 +2016,11 @@ describe('styling', () => {
     expect(element.style.height).toEqual('900px');
     expect(element.style.fontSize).toEqual('100px');
 
-    component.opacity = '0.6';
-    component.compWithStyling!.height = '100px';
-    component.compWithStyling!.width = '100px';
-    component.dirWithStyling!.fontSize = '50px';
-    fixture.detectChanges();
+    component.opacity.set('0.6');
+    component.compWithStyling!.height.set('100px');
+    component.compWithStyling!.width.set('100px');
+    component.dirWithStyling!.fontSize.set('50px');
+    await fixture.whenStable();
 
     expect(element.style.opacity).toEqual('0.6');
     expect(element.style.width).toEqual('100px');
@@ -1974,10 +2028,9 @@ describe('styling', () => {
     expect(element.style.fontSize).toEqual('50px');
   });
 
-  it('should combine all styling across the template, directive and component host bindings', () => {
+  it('should combine all styling across the template, directive and component host bindings', async () => {
     @Directive({
       selector: '[dir-with-styling]',
-      standalone: false,
     })
     class DirWithStyling {
       @HostBinding('style.color') public color = 'red';
@@ -1988,8 +2041,8 @@ describe('styling', () => {
     }
 
     @Component({
+      template: '',
       selector: 'comp-with-styling',
-      standalone: false,
     })
     class CompWithStyling {
       @HostBinding('style.width') public width = '900px';
@@ -2002,24 +2055,23 @@ describe('styling', () => {
     @Component({
       template: `
         <comp-with-styling
-          [style.opacity]="opacity"
-          [style.width]="width"
-          [class.tpl]="tplClass"
+          [style.opacity]="opacity()"
+          [style.width]="width()"
+          [class.tpl]="tplClass()"
           dir-with-styling
           >...</comp-with-styling
         >
       `,
-      standalone: false,
+      imports: [DirWithStyling, CompWithStyling],
     })
     class Cmp {
-      opacity: string | null | undefined = '0.5';
-      width: string | null | undefined = 'auto';
-      tplClass = true;
+      opacity = signal<string | null | undefined>('0.5');
+      width = signal<string | null | undefined>('auto');
+      tplClass = signal(true);
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirWithStyling, CompWithStyling]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('comp-with-styling');
 
@@ -2036,10 +2088,10 @@ describe('styling', () => {
       'tpl': true,
     });
 
-    fixture.componentInstance.width = undefined;
-    fixture.componentInstance.opacity = undefined;
-    fixture.componentInstance.tplClass = false;
-    fixture.detectChanges();
+    fixture.componentInstance.width.set(undefined);
+    fixture.componentInstance.opacity.set(undefined);
+    fixture.componentInstance.tplClass.set(false);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({
       'color': 'red',
@@ -2052,17 +2104,16 @@ describe('styling', () => {
       'comp': true,
     });
 
-    fixture.componentInstance.width = null;
-    fixture.componentInstance.opacity = null;
-    fixture.detectChanges();
+    fixture.componentInstance.width.set(null);
+    fixture.componentInstance.opacity.set(null);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({'color': 'red', 'height': '900px', 'font-size': '100px'});
   });
 
-  it('should properly apply styling across sub and super class directive host bindings', () => {
+  it('should properly apply styling across sub and super class directive host bindings', async () => {
     @Directive({
       selector: '[super-class-dir]',
-      standalone: false,
     })
     class SuperClassDirective {
       @HostBinding('style.width') public w1 = '100px';
@@ -2070,23 +2121,22 @@ describe('styling', () => {
 
     @Component({
       selector: '[sub-class-dir]',
-      standalone: false,
+      template: '',
     })
     class SubClassDirective extends SuperClassDirective {
       @HostBinding('style.width') public w2 = '200px';
     }
 
     @Component({
-      template: ` <div sub-class-dir [style.width]="w3"></div> `,
-      standalone: false,
+      template: ` <div sub-class-dir [style.width]="w3()"></div> `,
+      imports: [SubClassDirective],
     })
     class Cmp {
-      w3: string | null | undefined = '300px';
+      w3 = signal<string | null | undefined>('300px');
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, SuperClassDirective, SubClassDirective]});
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('div');
 
@@ -2094,55 +2144,55 @@ describe('styling', () => {
       'width': '300px',
     });
 
-    fixture.componentInstance.w3 = null;
-    fixture.detectChanges();
+    fixture.componentInstance.w3.set(null);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({});
 
-    fixture.componentInstance.w3 = undefined;
-    fixture.detectChanges();
+    fixture.componentInstance.w3.set(undefined);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({
       'width': '200px',
     });
   });
 
-  it('should apply map-based style and class entries', () => {
+  it('should apply map-based style and class entries', async () => {
     @Component({
-      template: '<div [style]="s" [class]="c"></div>',
-      standalone: false,
+      template: '<div [style]="s()" [class]="c()"></div>',
     })
     class Cmp {
-      public c: {[key: string]: any} | null = null;
+      public c = signal<{[key: string]: any} | null>(null);
       updateClasses(classes: string) {
-        const c = this.c || (this.c = {});
-        Object.keys(this.c).forEach((className) => {
+        const c = {...(this.c() || {})};
+        Object.keys(c).forEach((className) => {
           c[className] = false;
         });
         classes.split(/\s+/).forEach((className) => {
           c[className] = true;
         });
+        this.c.set(c);
       }
 
-      public s: {[key: string]: any} | null = null;
+      public s = signal<{[key: string]: any} | null>(null);
       updateStyles(prop: string, value: string | number | null) {
-        const s = this.s || (this.s = {});
+        const s = {...(this.s() || {})};
         Object.assign(s, {[prop]: value});
+        this.s.set(s);
       }
 
       reset() {
-        this.s = null;
-        this.c = null;
+        this.s.set(null);
+        this.c.set(null);
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
     comp.updateStyles('width', '100px');
     comp.updateStyles('height', '200px');
     comp.updateClasses('abc');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('div');
     expectStyle(element).toEqual({width: '100px', height: '200px'});
@@ -2152,45 +2202,45 @@ describe('styling', () => {
     comp.updateStyles('width', '500px');
     comp.updateStyles('height', null);
     comp.updateClasses('def');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({width: '500px'});
     expectClass(element).toEqual({def: true});
   });
 
-  it('should resolve styling collisions across templates, directives and components for prop and map-based entries', () => {
+  it('should resolve styling collisions across templates, directives and components for prop and map-based entries', async () => {
     @Directive({
       selector: '[dir-that-sets-styling]',
-      standalone: false,
+      host: {'[style]': 'map()'},
     })
     class DirThatSetsStyling {
-      @HostBinding('style') public map: any = {color: 'red', width: '777px'};
+      public map = signal<any>({color: 'red', width: '777px'});
     }
 
     @Component({
       template: `
         <div
-          [style.width]="width"
-          [style]="map"
+          [style.width]="width()"
+          [style]="map()"
           style="width:200px; font-size:99px"
           dir-that-sets-styling
           #dir
           [class.xyz]="xyz"
         ></div>
       `,
-      standalone: false,
+      imports: [DirThatSetsStyling],
     })
     class Cmp {
-      map: any = {width: '111px', opacity: '0.5'};
-      width: string | null | undefined = '555px';
+      map = signal<any>({width: '111px', opacity: '0.5'});
+      width = signal<string | null | undefined>('555px');
+      xyz = false;
 
       @ViewChild('dir', {read: DirThatSetsStyling, static: true}) dir!: DirThatSetsStyling;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirThatSetsStyling]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('div');
     expectStyle(element).toEqual({
@@ -2200,8 +2250,8 @@ describe('styling', () => {
       'opacity': '0.5',
     });
 
-    comp.width = undefined;
-    fixture.detectChanges();
+    comp.width.set(undefined);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({
       'width': '111px',
@@ -2210,8 +2260,8 @@ describe('styling', () => {
       'opacity': '0.5',
     });
 
-    comp.map = null;
-    fixture.detectChanges();
+    comp.map.set(null);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({
       'width': '200px',
@@ -2219,8 +2269,8 @@ describe('styling', () => {
       'font-size': '99px',
     });
 
-    comp.dir.map = null;
-    fixture.detectChanges();
+    comp.dir.map.set(null);
+    await fixture.whenStable();
 
     expectStyle(element).toEqual({
       'width': '200px',
@@ -2228,101 +2278,101 @@ describe('styling', () => {
     });
   });
 
-  it('should only apply each styling property once per CD across templates, components, directives', () => {
+  it('should only apply each styling property once per CD across templates, components, directives', async () => {
     @Directive({
       selector: '[dir-that-sets-styling]',
-      host: {'style': 'width:0px; height:0px'},
-      standalone: false,
+      host: {
+        'style': 'width:0px; height:0px',
+        '[style]': 'map()',
+      },
     })
     class DirThatSetsStyling {
-      @HostBinding('style') public map: any = {width: '999px', height: '999px'};
+      public map = signal<any>({width: '999px', height: '999px'});
     }
 
     @Component({
       template: `
         <div
           #dir
-          [style.width]="width"
-          [style.height]="height"
-          [style]="map"
+          [style.width]="width()"
+          [style.height]="height()"
+          [style]="map()"
           dir-that-sets-styling
         ></div>
       `,
-      standalone: false,
+      imports: [DirThatSetsStyling],
     })
     class Cmp {
-      width: string | null | undefined = '111px';
-      height: string | null | undefined = '111px';
-
-      map: any = {width: '555px', height: '555px'};
+      width = signal<string | null | undefined>('111px');
+      height = signal<string | null | undefined>('111px');
+      map = signal<any>({width: '555px', height: '555px'});
 
       @ViewChild('dir', {read: DirThatSetsStyling, static: true}) dir!: DirThatSetsStyling;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirThatSetsStyling]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
 
-    fixture.detectChanges();
+    await fixture.whenStable();
     const element = fixture.nativeElement.querySelector('div');
 
     assertStyle(element, 'width', '111px');
     assertStyle(element, 'height', '111px');
 
-    comp.width = '222px';
-    fixture.detectChanges();
+    comp.width.set('222px');
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '222px');
     assertStyle(element, 'height', '111px');
 
-    comp.height = '222px';
-    fixture.detectChanges();
+    comp.height.set('222px');
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '222px');
     assertStyle(element, 'height', '222px');
 
-    comp.width = undefined;
-    fixture.detectChanges();
+    comp.width.set(undefined);
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '555px');
     assertStyle(element, 'height', '222px');
 
-    comp.width = '123px';
-    comp.height = '123px';
-    fixture.detectChanges();
+    comp.width.set('123px');
+    comp.height.set('123px');
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '123px');
     assertStyle(element, 'height', '123px');
 
-    comp.map = {};
-    fixture.detectChanges();
+    comp.map.set({});
+    await fixture.whenStable();
 
     // No change, hence no write
     assertStyle(element, 'width', '123px');
     assertStyle(element, 'height', '123px');
 
-    comp.width = undefined;
-    fixture.detectChanges();
+    comp.width.set(undefined);
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '999px');
     assertStyle(element, 'height', '123px');
 
-    comp.dir.map = null;
-    fixture.detectChanges();
+    comp.dir.map.set(null);
+    await fixture.whenStable();
 
     // the width is only applied once
     assertStyle(element, 'width', '0px');
     assertStyle(element, 'height', '123px');
 
-    comp.dir.map = {width: '1000px', height: '1100px', color: 'red'};
-    fixture.detectChanges();
+    comp.dir.map.set({width: '1000px', height: '1100px', color: 'red'});
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '1000px');
     assertStyle(element, 'height', '123px');
     assertStyle(element, 'color', 'red');
 
-    comp.height = undefined;
-    fixture.detectChanges();
+    comp.height.set(undefined);
+    await fixture.whenStable();
 
     // height gets applied twice and all other
     // values get applied
@@ -2330,16 +2380,16 @@ describe('styling', () => {
     assertStyle(element, 'height', '1100px');
     assertStyle(element, 'color', 'red');
 
-    comp.map = {color: 'blue', width: '2000px', opacity: '0.5'};
-    fixture.detectChanges();
+    comp.map.set({color: 'blue', width: '2000px', opacity: '0.5'});
+    await fixture.whenStable();
 
     assertStyle(element, 'width', '2000px');
     assertStyle(element, 'height', '1100px');
     assertStyle(element, 'color', 'blue');
     assertStyle(element, 'opacity', '0.5');
 
-    comp.map = {color: 'blue', width: '2000px'};
-    fixture.detectChanges();
+    comp.map.set({color: 'blue', width: '2000px'});
+    await fixture.whenStable();
 
     // all four are applied because the map was altered
     assertStyle(element, 'width', '2000px');
@@ -2348,99 +2398,93 @@ describe('styling', () => {
     assertStyle(element, 'opacity', '');
   });
 
-  it('should not sanitize style values before writing them', () => {
+  it('should not sanitize style values before writing them', async () => {
     @Component({
-      template: ` <div [style.width]="widthExp" [style.background-image]="bgImageExp"></div> `,
-      standalone: false,
+      template: ` <div [style.width]="widthExp()" [style.background-image]="bgImageExp()"></div> `,
     })
     class Cmp {
-      widthExp = '';
-      bgImageExp = '';
+      widthExp = signal('');
+      bgImageExp = signal('');
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
 
-    comp.bgImageExp = 'url("javascript:img")';
-    fixture.detectChanges();
+    comp.bgImageExp.set('url("javascript:img")');
+    await fixture.whenStable();
     expect(getSortedStyle(div)).toContain('javascript:img');
 
     // Prove that bindings work.
-    comp.widthExp = '789px';
-    comp.bgImageExp = bypassSanitizationTrustStyle(comp.bgImageExp) as string;
-    fixture.detectChanges();
+    comp.widthExp.set('789px');
+    comp.bgImageExp.set(bypassSanitizationTrustStyle(comp.bgImageExp()) as string);
+    await fixture.whenStable();
 
     expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
     expect(div.style.getPropertyValue('width')).toEqual('789px');
   });
 
-  it('should not sanitize style values before writing them with styleMap', () => {
+  it('should not sanitize style values before writing them with styleMap', async () => {
     @Component({
-      template: ` <div [style.width]="widthExp" [style]="styleMapExp"></div> `,
-      standalone: false,
+      template: ` <div [style.width]="widthExp()" [style]="styleMapExp()"></div> `,
     })
     class Cmp {
-      widthExp = '';
-      styleMapExp: {[key: string]: any} = {};
+      widthExp = signal('');
+      styleMapExp = signal<{[key: string]: any}>({});
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
 
-    comp.styleMapExp['background-image'] = 'url("javascript:img")';
-    fixture.detectChanges();
-    expect(getSortedStyle(div)).not.toContain('javascript');
+    comp.styleMapExp.set({'background-image': 'url("javascript:img")'});
+    await fixture.whenStable();
+    expect(getSortedStyle(div)).toContain('javascript:img');
 
     // Prove that bindings work.
-    comp.widthExp = '789px';
-    comp.styleMapExp = {
-      'background-image': bypassSanitizationTrustStyle(comp.styleMapExp['background-image']),
-    };
-    fixture.detectChanges();
+    comp.widthExp.set('789px');
+    comp.styleMapExp.set({
+      'background-image': bypassSanitizationTrustStyle(comp.styleMapExp()['background-image']),
+    });
+    await fixture.whenStable();
 
     expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
     expect(div.style.getPropertyValue('width')).toEqual('789px');
   });
 
-  it('should apply a unit to a style before writing it', () => {
+  it('should apply a unit to a style before writing it', async () => {
     @Component({
-      template: ` <div [style.width.px]="widthExp" [style.height.em]="heightExp"></div> `,
-      standalone: false,
+      template: ` <div [style.width.px]="widthExp()" [style.height.em]="heightExp()"></div> `,
     })
     class Cmp {
-      widthExp: string | number | null = '';
-      heightExp: string | number | null = '';
+      widthExp = signal<string | number | null>('');
+      heightExp = signal<string | number | null>('');
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
 
-    comp.widthExp = '200';
-    comp.heightExp = 10;
-    fixture.detectChanges();
+    comp.widthExp.set('200');
+    comp.heightExp.set(10);
+    await fixture.whenStable();
 
     expect(getSortedStyle(div)).toEqual('height: 10em; width: 200px;');
 
-    comp.widthExp = 0;
-    comp.heightExp = null;
-    fixture.detectChanges();
+    comp.widthExp.set(0);
+    comp.heightExp.set(null);
+    await fixture.whenStable();
 
     expect(getSortedStyle(div)).toEqual('width: 0px;');
   });
 
-  it('should handle values wrapped into SafeValue', () => {
+  it('should handle values wrapped into SafeValue', async () => {
     @Component({
       template: `
         <!-- Verify sanitizable style prop values wrapped in SafeValue -->
@@ -2452,39 +2496,34 @@ describe('styling', () => {
         <!-- Verify regular style prop values not wrapped in SafeValue -->
         <span [style.color]="getColorUnsafe()"></span>
       `,
-      standalone: false,
     })
     class MyComp {
       constructor(private sanitizer: DomSanitizer) {}
-      public width: string = 'calc(20%)';
-      public height: string = '10px';
-      public background: string = '1.png';
-      public color: string = 'red';
+      public width = signal('calc(20%)');
+      public height = signal('10px');
+      public background = signal('1.png');
+      public color = signal('red');
 
       private getSafeStyle(value: string) {
         return this.sanitizer.bypassSecurityTrustStyle(value);
       }
 
       getBackgroundSafe() {
-        return this.getSafeStyle(`url("/${this.background}")`);
+        return this.getSafeStyle(`url("/${this.background()}")`);
       }
       getWidthSafe() {
-        return this.getSafeStyle(this.width);
+        return this.getSafeStyle(this.width());
       }
       getHeightSafe() {
-        return this.getSafeStyle(this.height);
+        return this.getSafeStyle(this.height());
       }
       getColorUnsafe() {
-        return this.color;
+        return this.color();
       }
     }
 
-    TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [MyComp],
-    });
     const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const comp = fixture.componentInstance;
     const div = fixture.nativeElement.querySelector('div');
@@ -2496,12 +2535,12 @@ describe('styling', () => {
     expect(p.style.height).toBe('10px');
     expect(span.style.color).toBe('red');
 
-    comp.background = '2.png';
-    comp.width = '5px';
-    comp.height = '100%';
-    comp.color = 'green';
+    comp.background.set('2.png');
+    comp.width.set('5px');
+    comp.height.set('100%');
+    comp.color.set('green');
 
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(div.style.background).toContain('url("/2.png")');
     expect(p.style.width).toBe('5px');
@@ -2512,7 +2551,6 @@ describe('styling', () => {
   it('should evaluate follow-up [style] maps even if a former map is null', () => {
     @Directive({
       selector: '[dir-with-styling]',
-      standalone: false,
     })
     class DirWithStyleMap {
       @HostBinding('style') public styleMap: any = {color: 'red'};
@@ -2520,7 +2558,6 @@ describe('styling', () => {
 
     @Directive({
       selector: '[dir-with-styling-part2]',
-      standalone: false,
     })
     class DirWithStyleMapPart2 {
       @HostBinding('style') public styleMap: any = {width: '200px'};
@@ -2528,7 +2565,7 @@ describe('styling', () => {
 
     @Component({
       template: ` <div #div [style]="map" dir-with-styling dir-with-styling-part2></div> `,
-      standalone: false,
+      imports: [DirWithStyleMap, DirWithStyleMapPart2],
     })
     class Cmp {
       map: any = null;
@@ -2538,7 +2575,6 @@ describe('styling', () => {
       @ViewChild('div', {read: DirWithStyleMapPart2, static: true}) dir2!: DirWithStyleMapPart2;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirWithStyleMap, DirWithStyleMapPart2]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -2549,23 +2585,22 @@ describe('styling', () => {
     });
   });
 
-  it('should evaluate initial style/class values on a list of elements that changes', () => {
+  it('should evaluate initial style/class values on a list of elements that changes', async () => {
     @Component({
       template: `
-        <div *ngFor="let item of items" class="initial-class item-{{ item }}">
+        <div *ngFor="let item of items()" class="initial-class item-{{ item }}">
           {{ item }}
         </div>
       `,
-      standalone: false,
+      imports: [NgFor],
     })
     class Cmp {
-      items = [1, 2, 3];
+      items = signal([1, 2, 3]);
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     function getItemElements(): HTMLElement[] {
       return [].slice.call(fixture.nativeElement.querySelectorAll('div'));
@@ -2589,8 +2624,8 @@ describe('styling', () => {
       'item-3',
     ]);
 
-    comp.items = [2, 4, 6, 8];
-    fixture.detectChanges();
+    comp.items.set([2, 4, 6, 8]);
+    await fixture.whenStable();
 
     expect(getItemElements().length).toEqual(4);
     expect(getItemClasses()).toEqual([
@@ -2614,13 +2649,12 @@ describe('styling', () => {
         </div>
         <footer class="footer">footer</footer>
       `,
-      standalone: false,
+      imports: [NgFor],
     })
     class Cmp {
       items = [1, 2, 3];
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
     fixture.detectChanges();
@@ -2650,7 +2684,6 @@ describe('styling', () => {
   it('should understand multiple directives which contain initial classes', () => {
     @Directive({
       selector: 'dir-one',
-      standalone: false,
     })
     class DirOne {
       @HostBinding('class') public className = 'dir-one';
@@ -2658,7 +2691,6 @@ describe('styling', () => {
 
     @Directive({
       selector: 'dir-two',
-      standalone: false,
     })
     class DirTwo {
       @HostBinding('class') public className = 'dir-two';
@@ -2670,11 +2702,11 @@ describe('styling', () => {
         <div class="initial"></div>
         <dir-two></dir-two>
       `,
-      standalone: false,
+
+      imports: [DirOne, DirTwo],
     })
     class Cmp {}
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -2690,7 +2722,6 @@ describe('styling', () => {
   it('should evaluate styling across the template directives when there are multiple elements/sources of styling', () => {
     @Directive({
       selector: '[one]',
-      standalone: false,
     })
     class DirOne {
       @HostBinding('class') public className = 'dir-one';
@@ -2698,7 +2729,6 @@ describe('styling', () => {
 
     @Directive({
       selector: '[two]',
-      standalone: false,
     })
     class DirTwo {
       @HostBinding('class') public className = 'dir-two';
@@ -2710,7 +2740,8 @@ describe('styling', () => {
         <div class="b" [style.height.px]="h" one two></div>
         <div class="c" [style.color]="c" two></div>
       `,
-      standalone: false,
+
+      imports: [DirOne, DirTwo],
     })
     class Cmp {
       w = 100;
@@ -2718,7 +2749,6 @@ describe('styling', () => {
       c = 'red';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -2731,10 +2761,9 @@ describe('styling', () => {
     expect(divC.style.color).toEqual('red');
   });
 
-  it('should evaluate styling across the template and directives within embedded views', () => {
+  it('should evaluate styling across the template and directives within embedded views', async () => {
     @Directive({
       selector: '[some-dir-with-styling]',
-      standalone: false,
     })
     class SomeDirWithStyling {
       @HostBinding('style')
@@ -2758,20 +2787,17 @@ describe('styling', () => {
         <section [style.width.px]="w"></section>
         <p [style.height.px]="h"></p>
       `,
-      standalone: false,
+      imports: [NgFor, SomeDirWithStyling],
     })
     class Cmp {
-      items: any[] = [];
+      items = [1, 2, 3, 4];
       c = 'red';
       w = 100;
       h = 100;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, SomeDirWithStyling]});
     const fixture = TestBed.createComponent(Cmp);
-    const comp = fixture.componentInstance;
-    comp.items = [1, 2, 3, 4];
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const items = fixture.nativeElement.querySelectorAll('.item');
     expect(items.length).toEqual(4);
@@ -2787,10 +2813,9 @@ describe('styling', () => {
     expect(p.style['height']).toEqual('100px');
   });
 
-  it("should flush bindings even if any styling hasn't changed in a previous directive", () => {
+  it("should flush bindings even if any styling hasn't changed in a previous directive", async () => {
     @Directive({
       selector: '[one]',
-      standalone: false,
     })
     class DirOne {
       @HostBinding('style.width') w = '100px';
@@ -2799,26 +2824,28 @@ describe('styling', () => {
 
     @Directive({
       selector: '[two]',
-      standalone: false,
+      host: {
+        '[style.height]': 'h()',
+        '[style.color]': 'c()',
+      },
     })
     class DirTwo {
-      @HostBinding('style.height') h = '200px';
-      @HostBinding('style.color') c = 'red';
+      h = signal('200px');
+      c = signal('red');
     }
 
     @Component({
       template: '<div #target one two></div>',
-      standalone: false,
+      imports: [DirOne, DirTwo],
     })
     class Cmp {
       @ViewChild('target', {read: DirOne, static: true}) one!: DirOne;
       @ViewChild('target', {read: DirTwo, static: true}) two!: DirTwo;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
     expect(div.style.opacity).toEqual('0.5');
@@ -2826,42 +2853,40 @@ describe('styling', () => {
     expect(div.style.width).toEqual('100px');
     expect(div.style.height).toEqual('200px');
 
-    comp.two.h = '300px';
-    fixture.detectChanges();
+    comp.two.h.set('300px');
+    await fixture.whenStable();
     expect(div.style.opacity).toEqual('0.5');
     expect(div.style.color).toEqual('red');
     expect(div.style.width).toEqual('100px');
     expect(div.style.height).toEqual('300px');
   });
 
-  it('should work with NO_CHANGE values if they are applied to bindings ', () => {
+  it('should work with NO_CHANGE values if they are applied to bindings ', async () => {
     @Component({
-      template: ` <div [style.width]="w" style.height="{{ h }}" [style.opacity]="o"></div> `,
-      standalone: false,
+      template: ` <div [style.width]="w()" style.height="{{ h() }}" [style.opacity]="o()"></div> `,
     })
     class Cmp {
-      w: any = null;
-      h: any = null;
-      o: any = null;
+      w = signal<any>(null);
+      h = signal<any>(null);
+      o = signal<any>(null);
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
 
-    comp.w = '100px';
-    comp.h = '200px';
-    comp.o = '0.5';
-    fixture.detectChanges();
+    comp.w.set('100px');
+    comp.h.set('200px');
+    comp.o.set('0.5');
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
     expect(div.style.width).toEqual('100px');
     expect(div.style.height).toEqual('200px');
     expect(div.style.opacity).toEqual('0.5');
 
-    comp.w = '500px';
-    comp.o = '1';
-    fixture.detectChanges();
+    comp.w.set('500px');
+    comp.o.set('1');
+    await fixture.whenStable();
 
     expect(div.style.width).toEqual('500px');
     expect(div.style.height).toEqual('200px');
@@ -2871,14 +2896,13 @@ describe('styling', () => {
   it('should allow [ngStyle] and [ngClass] to be used together', () => {
     @Component({
       template: ` <div [ngClass]="c" [ngStyle]="s"></div> `,
-      standalone: false,
+      imports: [NgClass, NgStyle],
     })
     class Cmp {
       c: any = 'foo bar';
       s: any = {width: '200px'};
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -2888,29 +2912,28 @@ describe('styling', () => {
     expect(div.classList.contains('bar')).toBeTruthy();
   });
 
-  it('should allow to reset style property value defined using ngStyle', () => {
+  it('should allow to reset style property value defined using ngStyle', async () => {
     @Component({
-      template: ` <div [ngStyle]="s"></div> `,
-      standalone: false,
+      template: ` <div [ngStyle]="s()"></div> `,
+      imports: [NgStyle],
     })
     class Cmp {
-      s: any = {opacity: '1'};
+      s = signal<any>({opacity: '1'});
 
       clearStyle(): void {
-        this.s = null;
+        this.s.set(null);
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
     expect(div.style.opacity).toEqual('1');
 
     comp.clearStyle();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(div.style.opacity).toEqual('');
   });
@@ -2918,13 +2941,14 @@ describe('styling', () => {
   it('should allow detectChanges to be run in a property change that causes additional styling to be rendered', () => {
     @Component({
       selector: 'child',
-      template: ` <div [class.ready-child]="readyTpl"></div> `,
-      standalone: false,
+      template: ` <div [class.ready-child]="readyTpl()"></div> `,
+      host: {
+        '[class.ready-host]': 'readyHost()',
+      },
     })
     class ChildCmp {
-      readyTpl = false;
-
-      @HostBinding('class.ready-host') readyHost = false;
+      readyTpl = signal(false);
+      readyHost = signal(false);
     }
 
     @Component({
@@ -2935,10 +2959,6 @@ describe('styling', () => {
           <p>{{ prop }}</p>
         </div>
       `,
-      host: {
-        '[style.color]': 'color',
-      },
-      standalone: false,
     })
     class ParentCmp {
       private _prop = '';
@@ -2951,8 +2971,8 @@ describe('styling', () => {
       set prop(value: string) {
         this._prop = value;
         if (this.child && value === 'go') {
-          this.child.instance.readyHost = true;
-          this.child.instance.readyTpl = true;
+          this.child.instance.readyHost.set(true);
+          this.child.instance.readyTpl.set(true);
           this.child.changeDetectorRef.detectChanges();
         }
       }
@@ -2967,14 +2987,13 @@ describe('styling', () => {
     }
 
     @Component({
-      template: `<parent [prop]="prop"></parent>`,
-      standalone: false,
+      template: `<parent [prop]="prop()"></parent>`,
+      imports: [ParentCmp],
     })
     class App {
-      prop = 'a';
+      prop = signal('a');
     }
 
-    TestBed.configureTestingModule({declarations: [App, ParentCmp, ChildCmp]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges(false);
 
@@ -2984,7 +3003,7 @@ describe('styling', () => {
     expect(readyHost).toBeFalsy();
     expect(readyChild).toBeFalsy();
 
-    fixture.componentInstance.prop = 'go';
+    fixture.componentInstance.prop.set('go');
     fixture.detectChanges(false);
 
     readyHost = fixture.nativeElement.querySelector('.ready-host');
@@ -2996,13 +3015,14 @@ describe('styling', () => {
   it('should allow detectChanges to be run in a hook that causes additional styling to be rendered', () => {
     @Component({
       selector: 'child',
-      template: ` <div [class.ready-child]="readyTpl"></div> `,
-      standalone: false,
+      template: ` <div [class.ready-child]="readyTpl()"></div> `,
+      host: {
+        '[class.ready-host]': 'readyHost()',
+      },
     })
     class ChildCmp {
-      readyTpl = false;
-
-      @HostBinding('class.ready-host') readyHost = false;
+      readyTpl = signal(false);
+      readyHost = signal(false);
     }
 
     @Component({
@@ -3010,13 +3030,11 @@ describe('styling', () => {
       template: `
         <div>
           <div #template></div>
-          <p>{{ prop }}</p>
         </div>
       `,
-      standalone: false,
     })
     class ParentCmp {
-      updateChild = false;
+      @Input() updateChild = false;
 
       @ViewChild('template', {read: ViewContainerRef}) vcr: ViewContainerRef = null!;
 
@@ -3024,8 +3042,8 @@ describe('styling', () => {
 
       ngDoCheck() {
         if (this.updateChild) {
-          this.child.instance.readyHost = true;
-          this.child.instance.readyTpl = true;
+          this.child.instance.readyHost.set(true);
+          this.child.instance.readyTpl.set(true);
           this.child.changeDetectorRef.detectChanges();
         }
       }
@@ -3036,14 +3054,13 @@ describe('styling', () => {
     }
 
     @Component({
-      template: `<parent #parent></parent>`,
-      standalone: false,
+      template: `<parent [updateChild]="updateChild()"></parent>`,
+      imports: [ParentCmp],
     })
     class App {
-      @ViewChild('parent', {static: true}) public parent: ParentCmp | null = null;
+      updateChild = signal(false);
     }
 
-    TestBed.configureTestingModule({declarations: [App, ParentCmp, ChildCmp]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges(false);
 
@@ -3052,8 +3069,7 @@ describe('styling', () => {
     expect(readyHost).toBeFalsy();
     expect(readyChild).toBeFalsy();
 
-    const parent = fixture.componentInstance.parent!;
-    parent.updateChild = true;
+    fixture.componentInstance.updateChild.set(true);
     fixture.detectChanges(false);
 
     readyHost = fixture.nativeElement.querySelector('.ready-host');
@@ -3062,39 +3078,37 @@ describe('styling', () => {
     expect(readyChild).toBeTruthy();
   });
 
-  it('should allow various duplicate properties to be defined in various styling maps within the template and directive styling bindings', () => {
-    @Component({
-      template: `
-        <div [style.width]="w" [style.height]="h" [style]="s1" [dir-with-styling]="s2"></div>
-      `,
-      standalone: false,
-    })
-    class Cmp {
-      h = '100px';
-      w = '100px';
-      s1: any = {border: '10px solid black', width: '200px'};
-      s2: any = {border: '10px solid red', width: '300px'};
-    }
-
+  it('should allow various duplicate properties to be defined in various styling maps within the template and directive styling bindings', async () => {
     @Directive({
       selector: '[dir-with-styling]',
-      standalone: false,
     })
     class DirectiveExpectingStyling {
       @Input('dir-with-styling') @HostBinding('style') public styles: any = null;
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+    @Component({
+      template: `
+        <div [style.width]="w" [style.height]="h" [style]="s1()" [dir-with-styling]="s2"></div>
+      `,
+      imports: [DirectiveExpectingStyling],
+    })
+    class Cmp {
+      h = '100px';
+      w = '100px';
+      s1: any = signal({border: '10px solid black', width: '200px'});
+      s2 = {border: '10px solid red', width: '300px'};
+    }
+
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('div');
     expect(element.style.border).toEqual('10px solid black');
     expect(element.style.width).toEqual('100px');
     expect(element.style.height).toEqual('100px');
 
-    fixture.componentInstance.s1 = null;
-    fixture.detectChanges();
+    fixture.componentInstance.s1.set(null);
+    await fixture.whenStable();
 
     expect(element.style.border).toEqual('10px solid red');
     expect(element.style.width).toEqual('100px');
@@ -3102,10 +3116,9 @@ describe('styling', () => {
   });
 
   it('should retrieve styles set via Renderer2', () => {
-    let dirInstance: any;
+    let dirInstance!: Dir;
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       constructor(
@@ -3124,13 +3137,10 @@ describe('styling', () => {
 
     @Component({
       template: `<div dir></div>`,
-      standalone: false,
+      imports: [Dir],
     })
     class App {}
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     dirInstance.setStyles();
@@ -3144,7 +3154,6 @@ describe('styling', () => {
     let dirInstance: any;
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       constructor(
@@ -3157,13 +3166,11 @@ describe('styling', () => {
 
     @Component({
       template: `<div dir></div>`,
-      standalone: false,
+
+      imports: [Dir],
     })
     class App {}
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3190,14 +3197,12 @@ describe('styling', () => {
         <span class="container" [ngClass]="{disabled: isDisabled}"></span>
         <div [style.background]="background"></div>
       `,
-      standalone: false,
     })
     class AppComponent {
       isDisabled = false;
       background = 'orange';
     }
 
-    TestBed.configureTestingModule({declarations: [AppComponent]});
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
@@ -3212,7 +3217,6 @@ describe('styling', () => {
   it('should not set classes when falsy value is passed while a sanitizer from host bindings is present', () => {
     @Directive({
       selector: '[blockStyles]',
-      standalone: false,
     })
     class StylesDirective {
       @HostBinding('style.border') border = '1px solid red';
@@ -3222,82 +3226,29 @@ describe('styling', () => {
 
     @Component({
       template: `<div class="container" [ngClass]="{disabled: isDisabled}" blockStyles></div>`,
-      standalone: false,
+      imports: [StylesDirective],
     })
     class AppComponent {
       isDisabled = false;
     }
 
-    TestBed.configureTestingModule({declarations: [AppComponent, StylesDirective]});
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
     const div = fixture.nativeElement.querySelector('div');
     expect(div.classList.contains('disabled')).toBe(false);
-
-    // The issue we're testing for happens after the second change detection.
-    fixture.detectChanges();
-    expect(div.classList.contains('disabled')).toBe(false);
-  });
-
-  it('should throw an error if a prop-based style/class binding value is changed during checkNoChanges', () => {
-    @Component({
-      template: ` <div [style.color]="color" [class.foo]="fooClass"></div> `,
-      standalone: false,
-    })
-    class Cmp {
-      color = 'red';
-      fooClass = true;
-
-      ngAfterViewInit() {
-        this.color = 'blue';
-        this.fooClass = false;
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [Cmp]});
-    const fixture = TestBed.createComponent(Cmp);
-
-    expect(() => {
-      fixture.detectChanges();
-    }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
-  });
-
-  it('should throw an error if a map-based style/class binding value is changed during checkNoChanges', () => {
-    @Component({
-      template: ` <div [style]="style" [class]="klass"></div> `,
-      standalone: false,
-    })
-    class Cmp {
-      style: any = 'width: 100px';
-      klass: any = 'foo';
-
-      ngAfterViewInit() {
-        this.style = 'height: 200px';
-        this.klass = 'bar';
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [Cmp]});
-    const fixture = TestBed.createComponent(Cmp);
-
-    expect(() => {
-      fixture.detectChanges();
-    }).toThrowError(/ExpressionChangedAfterItHasBeenCheckedError/);
   });
 
   it('should properly merge class interpolation with class-based directives', () => {
     @Component({
       template: `<div class="zero {{ one }}" [class.two]="true" [ngClass]="'three'"></div>`,
-      standalone: false,
+      imports: [NgClass],
     })
     class MyComp {
       one = 'one';
     }
 
-    const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
-      MyComp,
-    );
+    const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
     expect(fixture.debugElement.nativeElement.innerHTML).toContain('zero');
@@ -3312,13 +3263,11 @@ describe('styling', () => {
         <div id="first" class="zero {{ one }}" [class]="'two'"></div>
         <div id="second" [class]="'two'" class="zero {{ one }}"></div>
       `,
-      standalone: false,
     })
     class MyComp {
       one = 'one';
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -3339,13 +3288,10 @@ describe('styling', () => {
         <div id="first" style="margin: {{ margin }}" [style]="'padding: 20px;'"></div>
         <div id="second" [style]="'padding: 20px;'" style="margin: {{ margin }}"></div>
       `,
-      standalone: false,
     })
     class MyComp {
       margin = '10px';
     }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -3358,20 +3304,17 @@ describe('styling', () => {
     expect(second).not.toContain('padding');
   });
 
-  it('should allow to reset style property value defined using [style.prop.px] binding', () => {
+  it('should allow to reset style property value defined using [style.prop.px] binding', async () => {
     @Component({
-      template: '<div [style.left.px]="left"></div>',
-      standalone: false,
+      template: '<div [style.left.px]="left()"></div>',
     })
     class MyComp {
-      left = '';
+      left = signal<string | null | undefined>('');
     }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
-    const checks = [
+    const checks: [string | null | undefined, string][] = [
       ['15', '15px'],
       [undefined, ''],
       [null, ''],
@@ -3379,39 +3322,36 @@ describe('styling', () => {
       ['0', '0px'],
     ];
     const div = fixture.nativeElement.querySelector('div');
-    checks.forEach((check: any[]) => {
+    for (const check of checks) {
       const [fieldValue, expectedValue] = check;
-      fixture.componentInstance.left = fieldValue;
-      fixture.detectChanges();
+      fixture.componentInstance.left.set(fieldValue);
+      await fixture.whenStable();
       expect(div.style.left).toBe(expectedValue);
-    });
+    }
   });
 
-  it('should retain classes added externally', () => {
+  it('should retain classes added externally', async () => {
     @Component({
-      template: `<div [class]="exp"></div>`,
-      standalone: false,
+      template: `<div [class]="exp()"></div>`,
     })
     class MyComp {
-      exp = '';
+      exp = signal('');
     }
 
-    const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
-      MyComp,
-    );
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(MyComp);
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div')!;
     div.className += ' abc';
     expect(splitSortJoin(div.className)).toEqual('abc');
 
-    fixture.componentInstance.exp = '1 2 3';
-    fixture.detectChanges();
+    fixture.componentInstance.exp.set('1 2 3');
+    await fixture.whenStable();
 
     expect(splitSortJoin(div.className)).toEqual('1 2 3 abc');
 
-    fixture.componentInstance.exp = '4 5 6 7';
-    fixture.detectChanges();
+    fixture.componentInstance.exp.set('4 5 6 7');
+    await fixture.whenStable();
 
     expect(splitSortJoin(div.className)).toEqual('4 5 6 7 abc');
 
@@ -3424,7 +3364,6 @@ describe('styling', () => {
     it('should not throw when bound to SafeValue', () => {
       @Component({
         template: `<div [style.background-image]="iconSafe"></div>`,
-        standalone: false,
       })
       class MyComp {
         icon = 'https://i.imgur.com/4AiXzf8.jpg';
@@ -3435,9 +3374,7 @@ describe('styling', () => {
         constructor(private sanitizer: DomSanitizer) {}
       }
 
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
-        MyComp,
-      );
+      const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges(true /* Verify that check no changes does not cause an exception */);
       const div: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(div.style.getPropertyValue('background-image')).toEqual(
@@ -3458,13 +3395,8 @@ describe('styling', () => {
           <div></div>
         `,
         styles: ['div { width: 100px; }'],
-        standalone: false,
       })
       class MyComp {}
-
-      TestBed.configureTestingModule({
-        declarations: [MyComp],
-      });
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -3475,6 +3407,14 @@ describe('styling', () => {
     });
 
   it('should allow multiple styling bindings to work alongside property/attribute bindings', () => {
+    @Directive({
+      selector: '[dir-that-sets-styles]',
+    })
+    class DirThatSetsStyling {
+      @HostBinding('style.width') public w = '100px';
+      @HostBinding('style.height') public h = '200px';
+    }
+
     @Component({
       template: ` <div
         dir-that-sets-styles
@@ -3482,22 +3422,12 @@ describe('styling', () => {
         [attr.title]="'my-title'"
         [attr.data-foo]="'my-foo'"
       ></div>`,
-      standalone: false,
+
+      imports: [DirThatSetsStyling],
     })
     class MyComp {}
 
-    @Directive({
-      selector: '[dir-that-sets-styles]',
-      standalone: false,
-    })
-    class DirThatSetsStyling {
-      @HostBinding('style.width') public w = '100px';
-      @HostBinding('style.height') public h = '200px';
-    }
-
-    const fixture = TestBed.configureTestingModule({
-      declarations: [MyComp, DirThatSetsStyling],
-    }).createComponent(MyComp);
+    const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
     const div = fixture.nativeElement.querySelector('div')!;
     expect(div.style.getPropertyValue('width')).toEqual('100px');
@@ -3507,44 +3437,40 @@ describe('styling', () => {
     expect(div.getAttribute('data-foo')).toEqual('my-foo');
   });
 
-  it('should allow host styling on the root element with external styling', () => {
+  it('should allow host styling on the root element with external styling', async () => {
     @Component({
       template: '...',
-      standalone: false,
+      host: {
+        '[class]': 'classes()',
+      },
     })
     class MyComp {
-      @HostBinding('class') public classes = '';
+      public classes = signal('');
     }
 
-    const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
-      MyComp,
-    );
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(MyComp);
+    await fixture.whenStable();
     const root = fixture.nativeElement as HTMLElement;
     expect(root.className).toEqual('');
 
-    fixture.componentInstance.classes = '1 2 3';
-    fixture.detectChanges();
+    fixture.componentInstance.classes.set('1 2 3');
+    await fixture.whenStable();
     expect(root.className.split(/\s+/).sort().join(' ')).toEqual('1 2 3');
 
     root.classList.add('0');
     expect(root.className.split(/\s+/).sort().join(' ')).toEqual('0 1 2 3');
 
-    fixture.componentInstance.classes = '1 2 3 4';
-    fixture.detectChanges();
+    fixture.componentInstance.classes.set('1 2 3 4');
+    await fixture.whenStable();
     expect(root.className.split(/\s+/).sort().join(' ')).toEqual('0 1 2 3 4');
   });
 
   it('should apply camelCased class names', () => {
     @Component({
       template: `<div [class]="'fooBar'" [class.barFoo]="true"></div>`,
-      standalone: false,
     })
     class MyComp {}
 
-    TestBed.configureTestingModule({
-      declarations: [MyComp],
-    });
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -3553,77 +3479,77 @@ describe('styling', () => {
     expect(classList.contains('barFoo')).toBeTruthy();
   });
 
-  it('should convert camelCased style property names to snake-case', () => {
+  it('should convert camelCased style property names to snake-case', async () => {
     @Component({
-      template: `<div [style]="myStyles"></div>`,
-      standalone: false,
+      template: `<div [style]="myStyles()"></div>`,
     })
     class MyComp {
-      myStyles = {};
+      myStyles = signal<Record<string, string>>({});
     }
 
-    TestBed.configureTestingModule({
-      declarations: [MyComp],
-    });
     const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
-    fixture.componentInstance.myStyles = {fontSize: '200px'};
-    fixture.detectChanges();
+    fixture.componentInstance.myStyles.set({fontSize: '200px'});
+    await fixture.whenStable();
 
     expect(div.style.getPropertyValue('font-size')).toEqual('200px');
   });
 
   it('should recover from an error thrown in styling bindings', () => {
-    let raiseWidthError = false;
+    const raiseWidthError = signal(false);
 
     @Component({
-      template: `<div [style.width]="myWidth" [style.height]="'200px'"></div>`,
-      standalone: false,
+      template: `<div [style.width]="myWidth()" [style.height]="'200px'"></div>`,
     })
     class MyComp {
-      get myWidth() {
-        if (raiseWidthError) {
+      myWidth = computed(() => {
+        if (raiseWidthError()) {
           throw new Error('...');
         }
         return '100px';
-      }
+      });
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
 
-    raiseWidthError = true;
+    raiseWidthError.set(true);
     expect(() => fixture.detectChanges()).toThrow();
 
-    raiseWidthError = false;
+    raiseWidthError.set(false);
     fixture.detectChanges();
     const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
     expect(div.style.getPropertyValue('width')).toEqual('100px');
     expect(div.style.getPropertyValue('height')).toEqual('200px');
   });
 
-  it('should prioritize host bindings for templates first, then directives and finally components', () => {
+  it('should prioritize host bindings for templates first, then directives and finally components', async () => {
     @Component({
       selector: 'my-comp-with-styling',
       template: '',
-      standalone: false,
+      host: {
+        '[style]': 'myStyles()',
+        '[style.height]': 'myHeight()',
+      },
     })
     class MyCompWithStyling {
-      @HostBinding('style') myStyles: any = {width: '300px'};
+      myStyles = signal<any>({width: '300px'});
 
-      @HostBinding('style.height') myHeight: any = '305px';
+      myHeight = signal<any>('305px');
     }
 
     @Directive({
       selector: '[my-dir-with-styling]',
-      standalone: false,
+      host: {
+        '[style]': 'myStyles()',
+        '[style.height]': 'myHeight()',
+      },
     })
     class MyDirWithStyling {
-      @HostBinding('style') myStyles: any = {width: '200px'};
+      myStyles = signal<any>({width: '200px'});
 
-      @HostBinding('style.height') myHeight: any = '205px';
+      myHeight = signal<any>('205px');
     }
 
     @Component({
@@ -3631,45 +3557,44 @@ describe('styling', () => {
         <my-comp-with-styling
           style="height:1px; width:2px"
           my-dir-with-styling
-          [style.height]="myHeight"
-          [style]="myStyles"
+          [style.height]="myHeight()"
+          [style]="myStyles()"
         >
         </my-comp-with-styling>
       `,
-      standalone: false,
+      imports: [MyCompWithStyling, MyDirWithStyling],
     })
     class MyComp {
-      myStyles: {width?: string} = {width: '100px'};
-      myHeight: string | null | undefined = '100px';
+      myStyles = signal<{width?: string}>({width: '100px'});
+      myHeight = signal<string | null | undefined>('100px');
 
       @ViewChild(MyDirWithStyling) dir!: MyDirWithStyling;
       @ViewChild(MyCompWithStyling) comp!: MyCompWithStyling;
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp, MyCompWithStyling, MyDirWithStyling]});
     const fixture = TestBed.createComponent(MyComp);
     const comp = fixture.componentInstance;
     const elm = fixture.nativeElement.querySelector('my-comp-with-styling')!;
 
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(elm.style.width).toEqual('100px');
     expect(elm.style.height).toEqual('100px');
 
-    comp.myStyles = {};
-    comp.myHeight = undefined;
-    fixture.detectChanges();
+    comp.myStyles.set({});
+    comp.myHeight.set(undefined);
+    await fixture.whenStable();
     expect(elm.style.width).toEqual('2px');
     expect(elm.style.height).toEqual('1px');
 
-    comp.comp.myStyles = {};
-    comp.comp.myHeight = undefined;
-    fixture.detectChanges();
+    comp.comp.myStyles.set({});
+    comp.comp.myHeight.set(undefined);
+    await fixture.whenStable();
     expect(elm.style.width).toEqual('2px');
     expect(elm.style.height).toEqual('1px');
 
-    comp.dir.myStyles = {};
-    comp.dir.myHeight = undefined;
-    fixture.detectChanges();
+    comp.dir.myStyles.set({});
+    comp.dir.myHeight.set(undefined);
+    await fixture.whenStable();
     expect(elm.style.width).toEqual('2px');
     expect(elm.style.height).toEqual('1px');
   });
@@ -3679,24 +3604,21 @@ describe('styling', () => {
       selector: 'my-comp-with-styling',
       host: {style: 'color: blue'},
       template: '',
-      standalone: false,
     })
     class MyCompWithStyling {}
 
     @Directive({
       selector: '[my-dir-with-styling]',
       host: {style: 'color: red'},
-      standalone: false,
     })
     class MyDirWithStyling {}
 
     @Component({
       template: `<my-comp-with-styling my-dir-with-styling></my-comp-with-styling>`,
-      standalone: false,
+      imports: [MyCompWithStyling, MyDirWithStyling],
     })
     class MyComp {}
 
-    TestBed.configureTestingModule({declarations: [MyComp, MyCompWithStyling, MyDirWithStyling]});
     const fixture = TestBed.createComponent(MyComp);
     const elm = fixture.nativeElement.querySelector('my-comp-with-styling')!;
 
@@ -3704,33 +3626,39 @@ describe('styling', () => {
     expect(elm.style.color).toEqual('red');
   });
 
-  it('should combine host class.foo bindings from multiple directives', () => {
+  it('should combine host class.foo bindings from multiple directives', async () => {
     @Directive({
       selector: '[dir-that-sets-one-two]',
       exportAs: 'one',
-      standalone: false,
+      host: {
+        '[class.one]': 'one()',
+        '[class.two]': 'two()',
+      },
     })
     class DirThatSetsOneTwo {
-      @HostBinding('class.one') one = false;
-      @HostBinding('class.two') two = false;
+      one = signal(false);
+      two = signal(false);
     }
 
     @Directive({
       selector: '[dir-that-sets-three-four]',
       exportAs: 'two',
-      standalone: false,
+      host: {
+        '[class.three]': 'three()',
+        '[class.four]': 'four()',
+      },
     })
     class DirThatSetsThreeFour {
-      @HostBinding('class.three') three = false;
-      @HostBinding('class.four') four = false;
+      three = signal(false);
+      four = signal(false);
     }
 
     @Component({
       template: `
         <div #div1 dir-that-sets-one-two dir-that-sets-three-four></div>
-        <div #div2 [class.zero]="zero" dir-that-sets-one-two dir-that-sets-three-four></div>
+        <div #div2 [class.zero]="zero()" dir-that-sets-one-two dir-that-sets-three-four></div>
       `,
-      standalone: false,
+      imports: [DirThatSetsThreeFour, DirThatSetsOneTwo],
     })
     class MyComp {
       @ViewChild('div1', {static: true, read: DirThatSetsOneTwo})
@@ -3745,15 +3673,11 @@ describe('styling', () => {
       @ViewChild('div2', {static: true, read: DirThatSetsThreeFour})
       public dirTwoB: DirThatSetsThreeFour | null = null;
 
-      zero = false;
+      zero = signal(false);
     }
 
-    TestBed.configureTestingModule({
-      declarations: [MyComp, DirThatSetsThreeFour, DirThatSetsOneTwo],
-    });
-
     const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const divs = fixture.nativeElement.querySelectorAll('div') as HTMLDivElement[];
 
@@ -3765,9 +3689,11 @@ describe('styling', () => {
     expect(div2.className).toBe('');
 
     const comp = fixture.componentInstance;
-    comp.dirOneA!.one = comp.dirOneB!.one = true;
-    comp.dirOneA!.two = comp.dirOneB!.two = true;
-    fixture.detectChanges();
+    comp.dirOneA!.one.set(true);
+    comp.dirOneB!.one.set(true);
+    comp.dirOneA!.two.set(true);
+    comp.dirOneB!.two.set(true);
+    await fixture.whenStable();
 
     expect(div1.classList.contains('one')).toBeTruthy();
     expect(div1.classList.contains('two')).toBeTruthy();
@@ -3779,9 +3705,11 @@ describe('styling', () => {
     expect(div2.classList.contains('four')).toBeFalsy();
     expect(div2.classList.contains('zero')).toBeFalsy();
 
-    comp.dirTwoA!.three = comp.dirTwoB!.three = true;
-    comp.dirTwoA!.four = comp.dirTwoB!.four = true;
-    fixture.detectChanges();
+    comp.dirTwoA!.three.set(true);
+    comp.dirTwoB!.three.set(true);
+    comp.dirTwoA!.four.set(true);
+    comp.dirTwoB!.four.set(true);
+    await fixture.whenStable();
 
     expect(div1.classList.contains('one')).toBeTruthy();
     expect(div1.classList.contains('two')).toBeTruthy();
@@ -3793,8 +3721,8 @@ describe('styling', () => {
     expect(div2.classList.contains('four')).toBeTruthy();
     expect(div2.classList.contains('zero')).toBeFalsy();
 
-    comp.zero = true;
-    fixture.detectChanges();
+    comp.zero.set(true);
+    await fixture.whenStable();
 
     expect(div1.classList.contains('one')).toBeTruthy();
     expect(div1.classList.contains('two')).toBeTruthy();
@@ -3812,7 +3740,6 @@ describe('styling', () => {
       selector: 'comp-with-classes',
       template: '',
       host: {'class': 'host'},
-      standalone: false,
     })
     class CompWithClasses {
       constructor(ref: ElementRef) {
@@ -3822,15 +3749,13 @@ describe('styling', () => {
 
     @Component({
       template: `<comp-with-classes class="inline" *ngFor="let item of items"></comp-with-classes>`,
-      standalone: false,
+      imports: [CompWithClasses, NgFor],
     })
     class MyComp {
       items = [1, 2, 3];
     }
 
-    const fixture = TestBed.configureTestingModule({
-      declarations: [MyComp, CompWithClasses],
-    }).createComponent(MyComp);
+    const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
     const [one, two, three] = fixture.nativeElement.querySelectorAll(
@@ -3851,21 +3776,19 @@ describe('styling', () => {
   });
 
   it('should allow a single style host binding on an element', () => {
-    @Component({
-      template: `<div single-host-style-dir></div>`,
-      standalone: false,
-    })
-    class Cmp {}
-
     @Directive({
       selector: '[single-host-style-dir]',
-      standalone: false,
     })
     class SingleHostStyleDir {
       @HostBinding('style.width') width = '100px';
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, SingleHostStyleDir]});
+    @Component({
+      template: `<div single-host-style-dir></div>`,
+      imports: [SingleHostStyleDir],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -3875,16 +3798,9 @@ describe('styling', () => {
 
   it('should override class bindings when a directive extends another directive', () => {
     @Component({
-      template: `<child-comp class="template"></child-comp>`,
-      standalone: false,
-    })
-    class Cmp {}
-
-    @Component({
       selector: 'parent-comp',
       host: {'class': 'parent-comp', '[class.parent-comp-active]': 'true'},
       template: '...',
-      standalone: false,
     })
     class ParentComp {}
 
@@ -3897,11 +3813,15 @@ describe('styling', () => {
         '[class.parent-comp-active]': 'false',
       },
       template: '...',
-      standalone: false,
     })
     class ChildComp extends ParentComp {}
 
-    TestBed.configureTestingModule({declarations: [Cmp, ChildComp, ParentComp]});
+    @Component({
+      template: `<child-comp class="template"></child-comp>`,
+      imports: [ChildComp],
+    })
+    class Cmp {}
+
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -3920,7 +3840,6 @@ describe('styling', () => {
 
     @Directive({
       selector: '[test]',
-      standalone: false,
     })
     class MyDir {
       @Input('class')
@@ -3932,11 +3851,9 @@ describe('styling', () => {
     @Component({
       // Note that we shouldn't have a `class` attribute here.
       template: `<div test></div>`,
-      standalone: false,
     })
     class MyComp {}
 
-    TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -3955,10 +3872,8 @@ describe('styling', () => {
           font-size: 10px;
         }
       `,
-      standalone: false,
     })
     class Cmp {}
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -3966,53 +3881,55 @@ describe('styling', () => {
     expect(getComputedStyle(span).getPropertyValue('font-size')).toBe('10px');
   });
 
-  it('should class bindings to classes with special characters in a template', () => {
+  it('should class bindings to classes with special characters in a template', async () => {
     const className = `data-active:text-green-300/80`;
 
-    @Component({template: `<div [class.${className}]="value"></div>`})
+    @Component({
+      template: `<div [class.${className}]="value()"></div>`,
+    })
     class Cmp {
-      value = false;
+      value = signal(false);
     }
 
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const div = fixture.nativeElement.querySelector('div');
     expect(div.classList).not.toContain(className);
 
-    fixture.componentInstance.value = true;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(true);
+    await fixture.whenStable();
     expect(div.classList).toContain(className);
 
-    fixture.componentInstance.value = false;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(false);
+    await fixture.whenStable();
     expect(div.classList).not.toContain(className);
   });
 
-  it('should support class bindings to classes with special characters in a host binding', () => {
+  it('should support class bindings to classes with special characters in a host binding', async () => {
     const className = `data-active:text-green-300/80`;
 
     @Component({
       template: ``,
       host: {
-        [`[class.${className}]`]: 'value',
+        [`[class.${className}]`]: 'value()',
       },
     })
     class Cmp {
-      value = false;
+      value = signal(false);
     }
 
     const fixture = TestBed.createComponent(Cmp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.classList).not.toContain(className);
 
-    fixture.componentInstance.value = true;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(true);
+    await fixture.whenStable();
     expect(fixture.nativeElement.classList).toContain(className);
 
-    fixture.componentInstance.value = false;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(false);
+    await fixture.whenStable();
     expect(fixture.nativeElement.classList).not.toContain(className);
   });
 
@@ -4034,7 +3951,6 @@ describe('styling', () => {
     it('should support sanitizer value in the [style] bindings', () => {
       @Component({
         template: `<div [style]="style"></div>`,
-        standalone: false,
       })
       class HostBindingTestComponent {
         style: SafeStyle;
@@ -4042,7 +3958,6 @@ describe('styling', () => {
           this.style = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
         }
       }
-      TestBed.configureTestingModule({declarations: [HostBindingTestComponent]});
       const fixture = TestBed.createComponent(HostBindingTestComponent);
       fixture.detectChanges();
       const div: HTMLElement = fixture.nativeElement.querySelector('div');
@@ -4056,7 +3971,6 @@ describe('styling', () => {
         host: {
           '[class.foo]': 'hostClass',
         },
-        standalone: false,
       })
       class MyCmp {
         hostClass = true;
@@ -4067,7 +3981,6 @@ describe('styling', () => {
         host: {
           '[class]': 'hostClass',
         },
-        standalone: false,
       })
       class HostStylingsDir {
         hostClass = {'bar': true};
@@ -4075,7 +3988,7 @@ describe('styling', () => {
 
       @Component({
         template: `<my-cmp *ngFor="let i of [1, 2]" host-styling></my-cmp>`,
-        standalone: false,
+        imports: [MyCmp, HostStylingsDir, NgFor],
       })
       class MyApp {
         // When the first view in the list gets CD-ed, everything works.
@@ -4088,7 +4001,6 @@ describe('styling', () => {
         // assertions fails as it expects an `KeyValueArray`.
       }
 
-      TestBed.configureTestingModule({declarations: [MyApp, MyCmp, HostStylingsDir]});
       const fixture = TestBed.createComponent(MyApp);
       expect(() => fixture.detectChanges()).not.toThrow();
       const [cmp1, cmp2] = fixture.nativeElement.querySelectorAll('my-cmp');
@@ -4100,18 +4012,16 @@ describe('styling', () => {
       @Component({
         selector: 'my-cmp',
         template: `className = {{ className }}`,
-        standalone: false,
       })
       class MyCmp {
         @Input() className: string = 'unbound';
       }
+
       @Component({
         template: `<my-cmp [class]="'bound'"></my-cmp>`,
-        standalone: false,
+        imports: [MyCmp],
       })
       class MyApp {}
-
-      TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('className = unbound');
@@ -4121,18 +4031,16 @@ describe('styling', () => {
       @Component({
         selector: 'my-cmp',
         template: `className = {{ className }}`,
-        standalone: false,
       })
       class MyCmp {
         @Input() className: string = 'unbound';
       }
+
       @Component({
         template: `<my-cmp class="bound"></my-cmp>`,
-        standalone: false,
+        imports: [MyCmp],
       })
       class MyApp {}
-
-      TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('className = unbound');

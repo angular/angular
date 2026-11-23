@@ -3,106 +3,85 @@
   "cases": [
     {
       "description": "should properly compile a standalone component",
-      "inputFiles": [
-        "component.ts"
-      ],
+      "inputFiles": ["component.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "component.js"
-          ]
+          "files": ["component.js"]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "local compile", "declaration-only emit"]
     },
     {
       "description": "should properly compile a standalone directive",
-      "inputFiles": [
-        "directive.ts"
-      ],
+      "inputFiles": ["directive.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid directive definition",
-          "files": [
-            "directive.js"
-          ]
+          "files": ["directive.js"]
         }
       ]
     },
     {
       "description": "should properly compile a standalone pipe",
-      "inputFiles": [
-        "pipe.ts"
-      ],
+      "inputFiles": ["pipe.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid pipe definition",
-          "files": [
-            "pipe.js"
-          ]
+          "files": ["pipe.js"]
         }
       ]
     },
     {
       "description": "should generate dependencies array from imports",
-      "inputFiles": [
-        "imports.ts"
-      ],
+      "inputFiles": ["imports.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid standalone component dependencies",
-          "files": [
-            "imports.js"
-          ]
+          "files": ["imports.js"]
         }
       ]
     },
     {
       "description": "should support recursivity in templates",
-      "inputFiles": [
-        "recursive.ts"
-      ],
+      "inputFiles": ["recursive.ts"],
       "expectations": [
         {
           "failureMessage": "Recursive usage not accounted for",
-          "files": [
-            "recursive.js"
-          ]
+          "files": ["recursive.js"]
         }
       ]
     },
     {
       "description": "should optimize injector imports",
-      "inputFiles": [
-        "module_optimization.ts"
-      ],
+      "inputFiles": ["module_optimization.ts"],
       "expectations": [
         {
           "failureMessage": "Injector imports not optimized",
-          "files": [
-            "module_optimization.js"
-          ]
+          "files": ["module_optimization.js"]
         }
       ]
     },
     {
       "description": "should handle a forwardRef in the imports of a standalone component",
-      "inputFiles": [
-        "forward_ref.ts"
-      ],
+      "inputFiles": ["forward_ref.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid component definition",
-          "files": [
-            "forward_ref.js"
-          ]
+          "files": ["forward_ref.js"]
         }
       ]
+    },
+    {
+      "description": "should properly compile foreign component imports in a standalone component",
+      "inputFiles": ["foreign_component.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid foreign component definition",
+          "files": ["foreign_component.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

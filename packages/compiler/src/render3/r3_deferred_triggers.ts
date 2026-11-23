@@ -451,7 +451,10 @@ class OnTriggerParser {
     );
   }
 
-  private trackTrigger(name: keyof t.DeferredBlockTriggers, trigger: t.DeferredTrigger): void {
+  private trackTrigger<Name extends keyof t.DeferredBlockTriggers>(
+    name: Name,
+    trigger: NonNullable<t.DeferredBlockTriggers[Name]>,
+  ): void {
     trackTrigger(name, this.triggers, this.errors, trigger);
   }
 
@@ -467,16 +470,16 @@ class OnTriggerParser {
 }
 
 /** Adds a trigger to a map of triggers. */
-function trackTrigger(
-  name: keyof t.DeferredBlockTriggers,
+function trackTrigger<Name extends keyof t.DeferredBlockTriggers>(
+  name: Name,
   allTriggers: t.DeferredBlockTriggers,
   errors: ParseError[],
-  trigger: t.DeferredTrigger,
+  trigger: NonNullable<t.DeferredBlockTriggers[Name]>,
 ) {
   if (allTriggers[name]) {
     errors.push(new ParseError(trigger.sourceSpan, `Duplicate "${name}" trigger is not allowed`));
   } else {
-    allTriggers[name] = trigger as any;
+    allTriggers[name] = trigger;
   }
 }
 

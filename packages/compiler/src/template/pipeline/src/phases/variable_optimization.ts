@@ -69,7 +69,7 @@ export function optimizeVariables(job: CompilationJob): void {
       }
     }
 
-    // Note that we skip over arrow function operations, because they are considered
+    // Note that we skip over nested scopes, because they are considered
     // separate boundaries that should not influence the surrounding create/update
     // operations. This is a side-effect of not being able to control which nested
     // ops `visitExpressionsInOp` will visit. Without this logic, variable references
@@ -383,7 +383,7 @@ function collectOpInfo(
 
     if (expr.kind === ir.ExpressionKind.ReadVariable) {
       variablesUsed.add(expr.xref);
-    } else {
+    } else if (!(flags & ir.VisitorContextFlag.InChildOperation)) {
       fences |= fencesForIrExpression(expr);
     }
   });

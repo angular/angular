@@ -61,8 +61,18 @@ class Unparser implements AstVisitor {
   }
 
   visitUnary(ast: Unary, context: any) {
-    this._expression += ast.operator;
+    const previous = this._expression;
+    this._expression = '';
     this._visit(ast.expr);
+    const inner = this._expression;
+    this._expression = previous;
+
+    if (ast.isPrefix) {
+      const space = inner.startsWith(ast.operator[0]) ? ' ' : '';
+      this._expression += `${ast.operator}${space}${inner}`;
+    } else {
+      this._expression += `${inner}${ast.operator}`;
+    }
   }
 
   visitBinary(ast: Binary, context: any) {
@@ -292,10 +302,10 @@ export function unparseWithSpan(ast: ASTWithSource): UnparsedWithSpan[] {
 
     override visit(ast: AST, unparsedList: UnparsedWithSpan[]) {
       this.recordUnparsed(ast, 'span', unparsedList);
-      if (ast.hasOwnProperty('nameSpan')) {
+      if (Object.hasOwn(ast, 'nameSpan')) {
         this.recordUnparsed(ast, 'nameSpan', unparsedList);
       }
-      if (ast.hasOwnProperty('argumentSpan')) {
+      if (Object.hasOwn(ast, 'argumentSpan')) {
         this.recordUnparsed(ast, 'argumentSpan', unparsedList);
       }
       ast.visit(this, unparsedList);

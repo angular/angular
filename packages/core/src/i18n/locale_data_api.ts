@@ -11,9 +11,11 @@ import {global} from '../util/global';
 import localeEn from './locale_en';
 
 /**
- * This const is used to store the locale data registered with `registerLocaleData`
+ * This const is used to store the locale data registered with `registerLocaleData`.
+ * Use `Object.create(null)` to prevent prototype pollution.
  */
-let LOCALE_DATA: {[localeId: string]: any} = {};
+// tslint:disable-next-line:no-toplevel-property-access
+let LOCALE_DATA: {[localeId: string]: any} = /* @__PURE__ */ Object.create(null);
 
 /**
  * Register locale data to be used internally by Angular. See the
@@ -102,11 +104,20 @@ export function getLocalePluralCase(locale: string): (value: number) => number {
  */
 export function getLocaleData(normalizedLocale: string): any {
   if (!(normalizedLocale in LOCALE_DATA)) {
-    LOCALE_DATA[normalizedLocale] =
+    const globalLocaleData =
       global.ng &&
       global.ng.common &&
       global.ng.common.locales &&
       global.ng.common.locales[normalizedLocale];
+    // Only cache global locale data when an entry is actually found, to avoid
+    // caching missing lookups. In SSR this cache is process-wide across requests,
+    // so caching `undefined` would retain attacker-controlled locale identifiers
+    // indefinitely. It would also make the `in` check above short-circuit on
+    // subsequent lookups and skip the global fallback.
+    if (globalLocaleData !== undefined) {
+      LOCALE_DATA[normalizedLocale] = globalLocaleData;
+    }
+    return globalLocaleData;
   }
   return LOCALE_DATA[normalizedLocale];
 }
@@ -115,36 +126,38 @@ export function getLocaleData(normalizedLocale: string): any {
  * Helper function to remove all the locale data from `LOCALE_DATA`.
  */
 export function unregisterAllLocaleData() {
-  LOCALE_DATA = {};
+  LOCALE_DATA = Object.create(null);
 }
 
 /**
- * Index of each type of locale data from the locale data array
+ * Index of each type of locale data from the locale data array.
+ * Not an enum: TS enums compile to IIFE side-effects and are not tree-shakable,
+ * even when unused. Using a plain const object with 'as const' instead.
  */
-export enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencyCode,
-  CurrencySymbol,
-  CurrencyName,
-  Currencies,
-  Directionality,
-  PluralCase,
-  ExtraData,
-}
+export const LocaleDataIndex = {
+  LocaleId: 0,
+  DayPeriodsFormat: 1,
+  DayPeriodsStandalone: 2,
+  DaysFormat: 3,
+  DaysStandalone: 4,
+  MonthsFormat: 5,
+  MonthsStandalone: 6,
+  Eras: 7,
+  FirstDayOfWeek: 8,
+  WeekendRange: 9,
+  DateFormat: 10,
+  TimeFormat: 11,
+  DateTimeFormat: 12,
+  NumberSymbols: 13,
+  NumberFormats: 14,
+  CurrencyCode: 15,
+  CurrencySymbol: 16,
+  CurrencyName: 17,
+  Currencies: 18,
+  Directionality: 19,
+  PluralCase: 20,
+  ExtraData: 21,
+} as const;
 
 /**
  * Index of each type of locale data from the extra locale data array

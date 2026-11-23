@@ -8,12 +8,12 @@
 
 import {
   Component,
-  ComponentFactoryResolver,
   destroyPlatform,
   EventEmitter,
   Input,
   NgModule,
   Output,
+  reflectComponentType,
   ViewEncapsulation,
 } from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
@@ -31,11 +31,10 @@ describe('slots', () => {
       .bootstrapModule(TestModule)
       .then((ref) => {
         const injector = ref.injector;
-        const cfr: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
 
         testElements.forEach((comp) => {
-          const compFactory = cfr.resolveComponentFactory(comp);
-          customElements.define(compFactory.selector, createCustomElement(comp, {injector}));
+          const compType = reflectComponentType(comp)!;
+          customElements.define(compType.selector, createCustomElement(comp, {injector}));
         });
       })
       .then(done, done.fail);

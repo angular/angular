@@ -45,7 +45,8 @@ const mergeDirectives = (mergeIn: ElementProfile[], second: ElementProfile[]) =>
       if (mergeInDirective && mergeInDirective.name === d.name) {
         mergeDirective(mergeInDirective, d);
       } else {
-        mergeIn[i].directives.push(d);
+        // Copy, so merging later frames into it doesn't change the recorded frame.
+        mergeIn[i].directives.push(structuredClone(d));
       }
     });
     mergeDirectives(mergeIn[i].children, second[i].children);

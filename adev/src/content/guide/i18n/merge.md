@@ -31,10 +31,12 @@ Use the `i18n` project option in the [`angular.json`][GuideWorkspaceConfig] work
 
 The following sub-options identify the source language and tell the compiler where to find supported translations for the project.
 
-| Suboption      | Details                                                                      |
-| :------------- | :--------------------------------------------------------------------------- |
-| `sourceLocale` | The locale you use within the application source code \(`en-US` by default\) |
-| `locales`      | A map of locale identifiers to translation files                             |
+| Suboption      | Details                                                                                                                                                |
+| :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sourceLocale` | The locale you use within the application source code \(`en-US` by default\). Can also be an object with `code`, `baseHref`, and `subPath` properties. |
+| `locales`      | A map of locale identifiers to translation files. Each entry can also be an object with `translation`, `baseHref`, and `subPath` properties.           |
+
+For the full list of `i18n` properties and their types, see [i18n options][GuideWorkspaceConfigI18n].
 
 ### `angular.json` for `en-US` and `fr` example
 
@@ -55,7 +57,7 @@ HELPFUL: Ahead-of-time (AOT) compilation is required to localize component templ
 If you changed this setting, set `"aot"` to `true` in order to use AOT.
 
 HELPFUL: Due to the deployment complexities of i18n and the need to minimize rebuild time, the development server only supports localizing a single locale at a time.
-If you set the `"localize"` option to `true`, define more than one locale, and use `ng serve`; then an error occurs.
+If you set the `"localize"` option to `true` or to an array of more than one locale, and use `ng serve`, the development server logs a warning and disables localization.
 If you want to develop against a specific locale, set the `"localize"` option to a specific locale.
 For example, for French \(`fr`\), specify `"localize": ["fr"]`.
 
@@ -149,3 +151,4 @@ TLDR: Compile once, then translate for each locale.
 [GuideI18nCommonMergeGenerateApplicationVariantsForEachLocale]: guide/i18n/merge#generate-application-variants-for-each-locale 'Generate application variants for each locale - Merge translations into the application | Angular'
 [GuideI18nCommonTranslationFilesChangeTheSourceLanguageFileFormat]: guide/i18n/translation-files#change-the-source-language-file-format 'Change the source language file format - Work with translation files | Angular'
 [GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'
+[GuideWorkspaceConfigI18n]: reference/configs/workspace-config#i18n-options 'i18n options - Angular workspace configuration | Angular'

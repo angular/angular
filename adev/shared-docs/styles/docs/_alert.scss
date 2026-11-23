@@ -26,7 +26,8 @@
       font-size: 1.3rem;
     }
 
-    p, header {
+    p,
+    header {
       margin-inline-start: 1.65rem;
     }
 
@@ -110,6 +111,32 @@
     --alert-accent: var(--hot-red);
     &::before {
       content: 'priority_high';
+    }
+  }
+
+  .docs-deprecation-warning {
+    // Reserve space for the absolutely-positioned mascot (see width below).
+    padding-inline-end: 120px;
+
+    .docs-deprecation-warning__body p {
+      margin-block: 0;
+    }
+
+    .docs-deprecation-message {
+      border-block-end: none;
+      margin-block: 0.25rem 0;
+    }
+
+    .docs-deprecation-angie {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-end: 1.5rem;
+      transform: translateY(-50%);
+      width: 80px;
+      height: auto;
+      aspect-ratio: 1;
+      // Reset the global content-image margin so it stays centered.
+      margin: 0;
     }
   }
 

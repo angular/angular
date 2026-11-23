@@ -3,16 +3,15 @@
   "private": true,
   "dependencies": {
     "@angular/common": "workspace:*",
-    "@angular/compiler": "workspace:*",
-    "@angular/compiler-cli": "workspace:*",
     "@angular/core": "workspace:*",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "tslib": "2.9.1"
   },
   "devDependencies": {
-    "ng-packagr": "22.0.0-next.1",
-    "typescript": "6.0.1-rc"
-  },
-  "scripts": {
-    "build": "ng-packagr -p libs/post/ng-package.json -c libs/post/tsconfig.json"
+    "@angular/cli": "22.3.0-rc.0",
+    "@angular/build": "22.3.0-rc.0",
+    "@angular/compiler": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "typescript": "6.0.3"
   }
 }

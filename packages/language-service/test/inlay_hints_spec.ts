@@ -3724,4 +3724,63 @@ describe('inlay hints', () => {
       });
     });
   });
+
+  describe('external templates', () => {
+    it('should not provide template inlay hints in the TS file', () => {
+      const files = {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-cmp',
+            templateUrl: './app.html',
+            standalone: false,
+          })
+          export class AppCmp {
+            users = [{id: 1, name: 'Alice'}];
+            onClick(event: any) {}
+          }
+        `,
+        'app.html': `
+          @for (user of users; track user.id) {
+            <div (click)="onClick($event)">{{ user.name }}</div>
+          }
+        `,
+      };
+      project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+
+      const hints = appFile.getInlayHints();
+      expect(hints).toEqual([]);
+    });
+
+    it('should provide template inlay hints in the HTML file', () => {
+      const files = {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-cmp',
+            templateUrl: './app.html',
+            standalone: false,
+          })
+          export class AppCmp {
+            users = [{id: 1, name: 'Alice'}];
+            onClick(e: any) {}
+          }
+        `,
+        'app.html': `
+          @for (user of users; track user.id) {
+            <div (click)="onClick($event)">{{ user.name }}</div>
+          }
+        `,
+      };
+      project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const htmlFile = project.openFile('app.html');
+
+      const hints = htmlFile.getInlayHints();
+      const userHint = hints.find((h) => h.text.includes('id: number'));
+      expect(userHint).toBeDefined();
+    });
+  });
 });

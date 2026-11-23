@@ -42,7 +42,7 @@ export function createOutputListener(
 }
 
 /** Listens to an output on a specific directive. */
-function listenToDirectiveOutput(
+export function listenToDirectiveOutput(
   tNode: TNode,
   lView: LView,
   target: DirectiveDef<unknown>,
@@ -69,7 +69,8 @@ function listenToDirectiveOutput(
   if (
     hostDirectivesStart !== null &&
     hostDirectivesEnd !== null &&
-    tNode.hostDirectiveOutputs?.hasOwnProperty(eventName)
+    tNode.hostDirectiveOutputs &&
+    Object.hasOwn(tNode.hostDirectiveOutputs, eventName)
   ) {
     const hostDirectiveOutputs = tNode.hostDirectiveOutputs[eventName];
 
@@ -93,7 +94,7 @@ function listenToDirectiveOutput(
     }
   }
 
-  if (target.outputs.hasOwnProperty(eventName)) {
+  if (Object.hasOwn(target.outputs, eventName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     hasOutput = true;
     listenToOutput(tNode, lView, hostIndex, eventName, eventName, listenerFn);

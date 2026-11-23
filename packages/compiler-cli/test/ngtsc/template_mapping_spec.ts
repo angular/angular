@@ -8,10 +8,13 @@
 
 /// <reference types="node" />
 import {inspect} from 'node:util';
-import ts from 'typescript';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {
+  isNgpTestMode,
+  loadStandardTestFiles,
+  normalizeNgpSourceMapSegment,
+} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
@@ -24,11 +27,15 @@ runInEachFileSystem((os) => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({
-        sourceMap: true,
-        target: ts.ScriptTarget.ES2015,
-        enableI18nLegacyMessageIdFormat: false,
-      });
+      env.tsconfig(
+        {
+          enableI18nLegacyMessageIdFormat: false,
+        },
+        {
+          sourceMap: true,
+          target: 'es2015',
+        },
+      );
     });
 
     describe('Inline templates', () => {
@@ -682,7 +689,8 @@ runInEachFileSystem((os) => {
         });
 
         const attrsMapping = mappings.find((mapping) =>
-          /consts: \[\[1, "some-class"\]\]/.test(mapping.generated),
+          // NGP's printer emits single-quoted strings.
+          /consts: \[\[1, ["']some-class["']\]\]/.test(mapping.generated),
         );
         expect(attrsMapping).toBeDefined();
       });
@@ -792,13 +800,15 @@ runInEachFileSystem((os) => {
         import {Component, Directive, Input, Output, EventEmitter, Pipe, NgModule} from '@angular/core';
 
         @Directive({
-          selector: '[ngModel],[attr],[ngModelChange]',
+          selector: '[ngModel],[attr],[ngModelChange],[ngIf],[ngForOf]',
           standalone: false,
         })
         export class AllDirective {
           @Input() ngModel!: any;
           @Output() ngModelChange = new EventEmitter<any>();
           @Input() attr!: any;
+          @Input() ngIf!: any;
+          @Input() ngForOf!: any;
         }
 
         @Pipe({
@@ -806,7 +816,7 @@ runInEachFileSystem((os) => {
           standalone: false,
         })
         export class PercentPipe {
-          transform(v: any) {}
+          transform(arg1: unknown, arg2?: unknown) {}
         }
 
         @Component({
@@ -818,6 +828,7 @@ runInEachFileSystem((os) => {
           name = '';
           isInitial = false;
           doSomething() {}
+          showMessage() { return true; }
           items: any[] = [];
           greeting = '';
         }
@@ -858,17 +869,23 @@ runInEachFileSystem((os) => {
     }
 
     function expectMapping(mappings: SegmentMapping[], expected: SegmentMapping): void {
+      // NGP's printer emits code slightly differently from ngtsc's TypeScript emit; only the
+      // generated side is relaxed, the source side must match exactly.
+      const normalize = isNgpTestMode() ? normalizeNgpSourceMapSegment : (code: string) => code;
+      const expectedGenerated = normalize(expected.generated);
       if (
         mappings.some(
           (m) =>
-            m.generated === expected.generated &&
+            normalize(m.generated) === expectedGenerated &&
             m.source === expected.source &&
             m.sourceUrl === expected.sourceUrl,
         )
       ) {
         return;
       }
-      const matchingGenerated = mappings.filter((m) => m.generated === expected.generated);
+      const matchingGenerated = mappings.filter(
+        (m) => normalize(m.generated) === expectedGenerated,
+      );
       const matchingSource = mappings.filter((m) => m.source === expected.source);
 
       const message = [

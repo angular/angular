@@ -213,10 +213,10 @@ export function identifierName(
     return null;
   }
   const ref = compileIdentifier.reference;
-  if (ref['__anonymousType']) {
+  if (Object.hasOwn(ref, '__anonymousType')) {
     return ref['__anonymousType'];
   }
-  if (ref['__forward_ref__']) {
+  if (Object.hasOwn(ref, '__forward_ref__')) {
     // We do not want to try to stringify a `forwardRef()` function because that would cause the
     // inner function to be evaluated too early, defeating the whole point of the `forwardRef`.
     return '__forward_ref__';

@@ -76,4 +76,13 @@ describe('AngularJSUrlCodec', () => {
       }).toThrowError('Invalid URL (http://foo.bar) with base (abc)');
     });
   });
+
+  describe('decodeSearch', () => {
+    it('should decode a search param named like an Object.prototype member', () => {
+      expect(codec.decodeSearch('hasOwnProperty=foo&bar=baz')).toEqual({
+        hasOwnProperty: 'foo',
+        bar: 'baz',
+      });
+    });
+  });
 });

@@ -149,7 +149,7 @@ export class PlaceholderRegistry {
   }
 
   private _generateUniqueName(base: string): string {
-    const seen = this._placeHolderNameCounts.hasOwnProperty(base);
+    const seen = Object.hasOwn(this._placeHolderNameCounts, base);
     if (!seen) {
       this._placeHolderNameCounts[base] = 1;
       return base;

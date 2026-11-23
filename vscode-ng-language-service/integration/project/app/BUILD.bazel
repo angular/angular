@@ -1,0 +1,11 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
+package(default_visibility = ["//vscode-ng-language-service/integration:__subpackages__"])
+
+copy_to_bin(
+    name = "srcs",
+    srcs = glob(
+        ["**"],
+        exclude = ["BUILD.bazel"],
+    ),
+)

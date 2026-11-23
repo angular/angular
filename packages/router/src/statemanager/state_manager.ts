@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {EnvironmentInjector, inject, Injectable} from '@angular/core';
+import {EnvironmentInjector, inject, Service} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {
@@ -15,6 +15,7 @@ import {
   Event,
   isRedirectingEvent,
   NavigationCancel,
+  NavigationCancellationCode,
   NavigationEnd,
   NavigationError,
   NavigationSkipped,
@@ -29,7 +30,7 @@ import {createEmptyState, RouterState} from '../router_state';
 import {UrlHandlingStrategy} from '../url_handling_strategy';
 import {UrlSerializer, UrlTree} from '../url_tree';
 
-@Injectable({providedIn: 'root', useFactory: () => inject(HistoryStateManager)})
+@Service({factory: () => inject(HistoryStateManager)})
 export abstract class StateManager {
   protected readonly urlSerializer = inject(UrlSerializer);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
@@ -91,6 +92,15 @@ export abstract class StateManager {
     return path;
   }
 
+  protected routerUrlState(navigation?: Navigation): {
+    ɵrouterUrl?: string;
+  } {
+    if (navigation?.targetBrowserUrl === undefined || navigation?.finalUrl === undefined) {
+      return {};
+    }
+    return {ɵrouterUrl: this.urlSerializer.serialize(navigation.finalUrl)};
+  }
+
   protected commitTransition({targetRouterState, finalUrl, initialUrl}: Navigation): void {
     // If we are committing the transition after having a final URL and target state, we're updating
     // all pieces of the state. Otherwise, we likely skipped the transition (due to URL handling strategy)
@@ -144,6 +154,7 @@ export abstract class StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike;
 
@@ -154,7 +165,7 @@ export abstract class StateManager {
   abstract handleRouterEvent(e: Event | PrivateRouterEvents, currentTransition: Navigation): void;
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class HistoryStateManager extends StateManager {
   /**
    * The id of the currently active page in the router.
@@ -185,6 +196,7 @@ export class HistoryStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     return this.location.subscribe((event) => {
@@ -192,9 +204,15 @@ export class HistoryStateManager extends StateManager {
         // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
         // hybrid apps.
         setTimeout(() => {
-          listener(event['url']!, event.state as RestoredState | null | undefined, 'popstate', {
-            replaceUrl: true,
-          });
+          listener(
+            event['url']!,
+            event.state as RestoredState | null | undefined,
+            'popstate',
+            {
+              replaceUrl: true,
+            },
+            event.hasUAVisualTransition,
+          );
         });
       }
     });
@@ -216,8 +234,15 @@ export class HistoryStateManager extends StateManager {
       if (this.urlUpdateStrategy === 'deferred' && !currentTransition.extras.skipLocationChange) {
         this.setBrowserUrl(this.createBrowserPath(currentTransition), currentTransition);
       }
-    } else if (e instanceof NavigationCancel && !isRedirectingEvent(e)) {
-      this.restoreHistory(currentTransition);
+    } else if (e instanceof NavigationCancel) {
+      if (!isRedirectingEvent(e)) {
+        this.restoreHistory(currentTransition);
+      } else if (
+        e.code === NavigationCancellationCode.Redirect &&
+        this.routerState === currentTransition.targetRouterState
+      ) {
+        this.resetInternalState(currentTransition);
+      }
     } else if (e instanceof NavigationError) {
       this.restoreHistory(currentTransition, true);
     } else if (e instanceof NavigationEnd) {
@@ -226,20 +251,22 @@ export class HistoryStateManager extends StateManager {
     }
   }
 
-  private setBrowserUrl(path: string, {extras, id}: Navigation) {
+  private setBrowserUrl(path: string, navigation: Navigation) {
+    const {extras, id} = navigation;
     const {replaceUrl, state} = extras;
+
     if (this.location.isCurrentPathEqualTo(path) || !!replaceUrl) {
       // replacements do not update the target page
       const currentBrowserPageId = this.browserPageId;
       const newState = {
         ...state,
-        ...this.generateNgRouterState(id, currentBrowserPageId),
+        ...this.generateNgRouterState(id, currentBrowserPageId, navigation),
       };
       this.location.replaceState(path, '', newState);
     } else {
       const newState = {
         ...state,
-        ...this.generateNgRouterState(id, this.browserPageId + 1),
+        ...this.generateNgRouterState(id, this.browserPageId + 1, navigation),
       };
       this.location.go(path, '', newState);
     }
@@ -253,7 +280,7 @@ export class HistoryStateManager extends StateManager {
     if (this.canceledNavigationResolution === 'computed') {
       const currentBrowserPageId = this.browserPageId;
       const targetPagePosition = this.currentPageId - currentBrowserPageId;
-      if (targetPagePosition !== 0) {
+      if (targetPagePosition !== 0 && this.lastSuccessfulId !== -1) {
         this.location.historyGo(targetPagePosition);
       } else if (this.getCurrentUrlTree() === navigation.finalUrl && targetPagePosition === 0) {
         // We got to the activation stage (where currentUrlTree is set to the navigation's
@@ -299,10 +326,15 @@ export class HistoryStateManager extends StateManager {
     );
   }
 
-  private generateNgRouterState(navigationId: number, routerPageId: number) {
+  private generateNgRouterState(
+    navigationId: number,
+    routerPageId: number,
+    navigation?: Navigation,
+  ) {
     if (this.canceledNavigationResolution === 'computed') {
-      return {navigationId, ɵrouterPageId: routerPageId};
+      return {navigationId, ɵrouterPageId: routerPageId, ...this.routerUrlState(navigation)};
     }
-    return {navigationId};
+
+    return {navigationId, ...this.routerUrlState(navigation)};
   }
 }

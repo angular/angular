@@ -31,9 +31,9 @@
       value="bold"
       type="button"
       aria-label="bold"
-      #bold="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-pressed]="bold.selected()"
+      [attr.aria-pressed]="bold()"
+      (click)="bold.set(!bold())"
       translate="no"
     >
       format_bold
@@ -44,9 +44,9 @@
       value="italic"
       type="button"
       aria-label="italic"
-      #italic="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-pressed]="italic.selected()"
+      [attr.aria-pressed]="italic()"
+      (click)="italic.set(!italic())"
       translate="no"
     >
       format_italic
@@ -57,9 +57,9 @@
       value="underlined"
       type="button"
       aria-label="underlined"
-      #underlined="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-pressed]="underlined.selected()"
+      [attr.aria-pressed]="underlined()"
+      (click)="underlined.set(!underlined())"
       translate="no"
     >
       format_underlined
@@ -75,9 +75,9 @@
       type="button"
       value="align left"
       aria-label="align left"
-      #leftAlign="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-checked]="leftAlign.selected()"
+      [attr.aria-checked]="alignment() === 'left'"
+      (click)="alignment.set('left')"
       translate="no"
     >
       format_align_left
@@ -89,9 +89,9 @@
       type="button"
       value="align center"
       aria-label="align center"
-      #centerAlign="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-checked]="centerAlign.selected()"
+      [attr.aria-checked]="alignment() === 'center'"
+      (click)="alignment.set('center')"
       translate="no"
     >
       format_align_center
@@ -103,9 +103,9 @@
       type="button"
       value="align right"
       aria-label="align right"
-      #rightAlign="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-checked]="rightAlign.selected()"
+      [attr.aria-checked]="alignment() === 'right'"
+      (click)="alignment.set('right')"
       translate="no"
     >
       format_align_right

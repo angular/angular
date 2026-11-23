@@ -7,6 +7,17 @@
  */
 import * as o from '@angular/compiler';
 
+function isSafeAccess(ast: o.Expression): boolean {
+  if (ast instanceof o.ReadPropExpr) {
+    return ast.isOptional || isSafeAccess(ast.receiver);
+  } else if (ast instanceof o.ReadKeyExpr) {
+    return ast.isOptional || isSafeAccess(ast.receiver);
+  } else if (ast instanceof o.InvokeFunctionExpr) {
+    return ast.isOptional || isSafeAccess(ast.fn);
+  }
+  return false;
+}
+
 import {
   AstFactory,
   BinaryOperator,
@@ -26,6 +37,8 @@ import {Context} from './context';
 const UNARY_OPERATORS = /* @__PURE__ */ new Map<o.UnaryOperator, UnaryOperator>([
   [o.UnaryOperator.Minus, '-'],
   [o.UnaryOperator.Plus, '+'],
+  [o.UnaryOperator.Increment, '++'],
+  [o.UnaryOperator.Decrement, '--'],
 ]);
 
 const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperator>([
@@ -112,6 +125,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         stmt.name,
         this.translateParams(stmt.params, context),
         this.factory.createBlock(this.visitStatements(stmt.statements, context.withStatementMode)),
+        stmt.type?.visitType(this, context) ?? null,
       ),
       stmt.leadingComments,
     );
@@ -157,13 +171,13 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
   }
 
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): TExpression {
+    const fn = ast.fn.visitExpression(this, context);
+    const args = ast.args.map((arg) => arg.visitExpression(this, context));
     return this.attachComments(
       this.setSourceMapRange(
-        this.factory.createCallExpression(
-          ast.fn.visitExpression(this, context),
-          ast.args.map((arg) => arg.visitExpression(this, context)),
-          ast.pure,
-        ),
+        isSafeAccess(ast)
+          ? this.factory.createCallChain(fn, args, ast.pure, ast.isOptional)
+          : this.factory.createCallExpression(fn, args, ast.pure),
         ast.sourceSpan,
       ),
       ast.leadingComments,
@@ -428,6 +442,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         ast.name ?? null,
         this.translateParams(ast.params, context),
         this.factory.createBlock(this.visitStatements(ast.statements, context)),
+        ast.type?.visitType(this, context) ?? null,
       ),
       ast.leadingComments,
     );
@@ -440,6 +455,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         Array.isArray(ast.body)
           ? this.factory.createBlock(this.visitStatements(ast.body, context))
           : ast.body.visitExpression(this, context),
+        ast.type?.visitType(this, context) ?? null,
       ),
       ast.leadingComments,
     );
@@ -474,18 +490,22 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, context: Context): TExpression {
+    const receiver = ast.receiver.visitExpression(this, context);
     return this.attachComments(
-      this.factory.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name),
+      isSafeAccess(ast)
+        ? this.factory.createPropertyAccessChain(receiver, ast.name, ast.isOptional)
+        : this.factory.createPropertyAccess(receiver, ast.name),
       ast.leadingComments,
     );
   }
 
   visitReadKeyExpr(ast: o.ReadKeyExpr, context: Context): TExpression {
+    const receiver = ast.receiver.visitExpression(this, context);
+    const index = ast.index.visitExpression(this, context);
     return this.attachComments(
-      this.factory.createElementAccess(
-        ast.receiver.visitExpression(this, context),
-        ast.index.visitExpression(this, context),
-      ),
+      isSafeAccess(ast)
+        ? this.factory.createElementAccessChain(receiver, index, ast.isOptional)
+        : this.factory.createElementAccess(receiver, index),
       ast.leadingComments,
     );
   }
@@ -509,6 +529,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
             propertyName: entry.key,
             quoted: entry.quoted,
             value: entry.value.visitExpression(this, context),
+            leadingComments: entry.leadingComments,
           } satisfies ObjectLiteralAssignment<TExpression>)
         : ({
             kind: 'spread',
@@ -564,6 +585,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
       this.factory.createUnaryExpression(
         UNARY_OPERATORS.get(ast.operator)!,
         ast.expr.visitExpression(this, context),
+        ast.isPrefix,
       ),
       ast.leadingComments,
     );

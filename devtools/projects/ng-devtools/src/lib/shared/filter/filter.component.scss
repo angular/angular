@@ -1,0 +1,91 @@
+@use '../../../styles/typography';
+
+@mixin inner-icon($size) {
+  mat-icon {
+    font-size: $size;
+    width: $size;
+    height: $size;
+  }
+}
+
+:host {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  background: var(--ng-filter-background, var(--color-foreground));
+  border-radius: var(--ng-filter-border-radius, 1rem);
+  height: var(--ng-filter-height, auto);
+
+  &:has(.filter-input:focus) {
+    outline: var(--ng-filter-outline, 2px solid var(--dynamic-blue-02));
+  }
+
+  .search-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    display: var(--ng-filter-icon-display, block);
+    margin-left: 0.5rem;
+  }
+
+  .filter-input {
+    @extend %body-01;
+    border: none;
+    padding: 0;
+    width: var(--ng-filter-width, 100%);
+    height: var(--ng-filter-height, 28px);
+    outline: none;
+    background: transparent;
+    margin-left: 0.5rem;
+    padding-right: 0.5rem;
+    box-sizing: border-box;
+    flex: 1;
+
+    &::placeholder {
+      color: var(--ng-filter-placeholder-color, var(--tertiary-contrast));
+    }
+  }
+
+  button {
+    $size: 18px;
+    width: $size;
+    height: $size;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 1;
+    }
+
+    @include inner-icon($size);
+  }
+
+  .prev-next-buttons {
+    display: flex;
+    gap: 0.25rem;
+    margin-right: 0.75rem;
+  }
+
+  .matches-count {
+    white-space: nowrap;
+    font-size: 11px;
+    color: var(--quaternary-contrast);
+    margin-right: 0.5rem;
+  }
+
+  .clear-btn {
+    margin-right: 0.5rem;
+    $size: 16px;
+    width: $size;
+    height: $size;
+
+    @include inner-icon($size);
+  }
+}

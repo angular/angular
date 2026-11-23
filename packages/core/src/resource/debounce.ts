@@ -10,9 +10,8 @@ import {assertInInjectionContext, inject, Injector} from '../di';
 import {DestroyRef} from '../linker';
 import {effect} from '../render3/reactivity/effect';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
-import {signal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
-import {Resource, ResourceSnapshot, type DebouncedOptions} from './api';
+import {Resource, ResourceSnapshot, type DebounceTimer, type DebouncedOptions} from './api';
 import {resourceFromSnapshots} from './from_snapshots';
 import {
   invalidResourceCreationInParams,
@@ -30,10 +29,12 @@ import {
  * @param options The options to use for the debounced signal.
  * @returns A resource representing the debounced signal.
  * @experimental 22.0
+ *
+ * @see [Debouncing signals with `debounced`](guide/signals/debounced)
  */
 export function debounced<T>(
   source: () => T,
-  wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>,
+  wait: NoInfer<DebounceTimer<T>>,
   options?: NoInfer<DebouncedOptions<T>>,
 ): Resource<T> {
   if (isInParamsFunction()) {
@@ -46,8 +47,17 @@ export function debounced<T>(
 
   let active: Promise<void> | void | undefined;
   let pendingValue: T | undefined;
+  let activeTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const cancelTimer = () => {
+    if (activeTimer !== undefined) {
+      clearTimeout(activeTimer);
+      activeTimer = undefined;
+    }
+  };
 
   injector.get(DestroyRef).onDestroy(() => {
+    cancelTimer();
     active = undefined;
   });
 
@@ -91,6 +101,7 @@ export function debounced<T>(
       } catch (err) {
         rethrowFatalErrors(err);
         state.set({status: 'error', error: err as Error});
+        cancelTimer();
         active = pendingValue = undefined;
         return;
       } finally {
@@ -107,9 +118,18 @@ export function debounced<T>(
         if (equal(value, currentState.value!)) return;
       }
 
+      // The value has changed, so any pending timer from a previous wait is now obsolete.
+      cancelTimer();
+
       const waitFn =
         typeof wait === 'number'
-          ? () => new Promise<void>((resolve) => setTimeout(resolve, wait))
+          ? () =>
+              new Promise<void>((resolve) => {
+                activeTimer = setTimeout(() => {
+                  activeTimer = undefined;
+                  resolve();
+                }, wait);
+              })
           : wait;
 
       const result = waitFn(value, currentState);

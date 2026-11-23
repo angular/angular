@@ -237,6 +237,8 @@ describe('HTML sanitizer', () => {
       sanitizeHtml(defaultDoc, '<input name="nextSibling" form="a">A<form id="a"></form>');
     const firstChild = () =>
       sanitizeHtml(defaultDoc, '<object form="a" id="firstChild"></object>B<form id="a"></form>');
+    const nestedFirstChild = () =>
+      sanitizeHtml(defaultDoc, '<form><b>C</b><input name="firstChild"></form>');
 
     // Note: we have a different behavior here in a real browser and when running in Node,
     // when Domino is used to emulate DOM:
@@ -254,13 +256,15 @@ describe('HTML sanitizer', () => {
     // depending on a platform.
     if (isBrowser) {
       // Running in a real browser
-      const errorMsg = 'Failed to sanitize html because the element is clobbered: ';
+      const errorMsg = 'Action failed because the element is clobbered: ';
       expect(nextSibling).toThrowError(`${errorMsg}<input name="nextSibling" form="a">`);
       expect(firstChild).toThrowError(`${errorMsg}<object form="a" id="firstChild"></object>`);
+      expect(nestedFirstChild).toThrowError(`${errorMsg}<input name="firstChild">`);
     } else {
       // Running in Node, using Domino DOM emulation
       expect(nextSibling()).toBe('A');
       expect(firstChild()).toBe('B');
+      expect(nestedFirstChild()).toBe('<b>C</b>');
     }
   });
 
@@ -294,6 +298,49 @@ describe('HTML sanitizer', () => {
     expect(sanitizeHtml(defaultDoc, '<a href="&#x3000;javascript:alert(1)">CLICKME</a>')).toMatch(
       /<a href="unsafe:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/,
     );
+  });
+
+  it('should clear each inert tree before parsing the next one', () => {
+    // Create the cached inert helper first, so that only the parses below are recorded.
+    sanitizeHtml(defaultDoc, '');
+    const inertRoots: Node[] = [];
+    // For each parse, how many of the earlier inert trees still have content.
+    const populatedAtParse: number[] = [];
+    const countPopulated = () => inertRoots.filter((root) => root.firstChild).length;
+
+    if (isDOMParserAvailable()) {
+      const parseFromString = DOMParser.prototype.parseFromString;
+      spyOn(DOMParser.prototype, 'parseFromString').and.callFake(function (
+        this: DOMParser,
+        html: string,
+        type: DOMParserSupportedType,
+      ) {
+        populatedAtParse.push(countPopulated());
+        const doc = parseFromString.call(this, html, type);
+        inertRoots.push(doc.body);
+        return doc;
+      });
+    } else {
+      // Domino's parser also calls `createElement` for its own root, so only record templates.
+      const createElement = Document.prototype.createElement;
+      spyOn(Document.prototype, 'createElement').and.callFake(function (
+        this: Document,
+        tagName: string,
+        options?: ElementCreationOptions,
+      ): any {
+        const element = createElement.call(this, tagName, options);
+        if (tagName === 'template') {
+          populatedAtParse.push(countPopulated());
+          inertRoots.push((element as HTMLTemplateElement).content);
+        }
+        return element;
+      });
+    }
+
+    // The input is parsed three times, because its serialization differs from it.
+    expect(sanitizeHtml(defaultDoc, '<p>a<p>b')).toBe('<p>a</p><p>b</p>');
+    expect(populatedAtParse).toEqual([0, 0, 0]);
+    expect(countPopulated()).toBe(0);
   });
 
   if (isDOMParserAvailable()) {

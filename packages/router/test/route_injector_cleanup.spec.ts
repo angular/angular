@@ -18,7 +18,7 @@ import {
   Router,
   RouterOutlet,
   provideRouter,
-  withExperimentalAutoCleanupInjectors,
+  withAutoCleanupInjectors,
   RouterModule,
   destroyDetachedRouteHandle,
 } from '@angular/router';
@@ -26,21 +26,20 @@ import {
 describe('Route Injector Destruction', () => {
   @Component({
     template: '<router-outlet></router-outlet>',
-    standalone: true,
     imports: [RouterOutlet],
   })
   class AppComponent {}
 
-  @Component({template: 'home', standalone: true})
+  @Component({template: 'home'})
   class HomeComponent {}
 
-  @Component({template: 'away', standalone: true})
+  @Component({template: 'away'})
   class AwayComponent {}
 
-  @Component({template: 'child', standalone: true})
+  @Component({template: 'child'})
   class ChildComponent {}
 
-  @Component({template: 'lazy', standalone: true})
+  @Component({template: 'lazy'})
   class LazyComponent {}
 
   @NgModule({
@@ -48,7 +47,7 @@ describe('Route Injector Destruction', () => {
   })
   class LazyModule {}
 
-  @Component({template: 'check', standalone: true})
+  @Component({template: 'check'})
   class DestroyCheckComponent {
     destroyRefCalled = false;
     destroyRef = inject(DestroyRef);
@@ -133,7 +132,7 @@ describe('Route Injector Destruction', () => {
               loadChildren: () => Promise.resolve(LazyModule),
             },
           ],
-          withExperimentalAutoCleanupInjectors(),
+          withAutoCleanupInjectors(),
         ),
         {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
       ],
@@ -310,14 +309,14 @@ describe('Route Injector Destruction', () => {
     await router.navigateByUrl('/check');
 
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const component = fixture.debugElement.query(
       By.directive(DestroyCheckComponent),
     ).componentInstance;
 
     // 1. Navigate away to detach 'check' route
     await router.navigateByUrl('/away');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // 2. Verify 'check' route is detached and stored
     expect(strategy.storedHandles.get(checkRoute)).toBeDefined();

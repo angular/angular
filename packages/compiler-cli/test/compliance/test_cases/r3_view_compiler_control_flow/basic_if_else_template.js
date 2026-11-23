@@ -1,26 +1,82 @@
+import { Component } from "@angular/core";
+import * as i0 from "@angular/core";
 function MyApp_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0, " hello ");
+    i0.ɵɵtext(0, " hello ");
   }
 }
-
 function MyApp_Conditional_3_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0, " goodbye ");
+    i0.ɵɵtext(0, " goodbye ");
   }
 }
-…
-function MyApp_Template(rf, ctx) {
-  if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div");
-    $r3$.ɵɵtext(1);
-    $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 0)(3, MyApp_Conditional_3_Template, 1, 0);
-    $r3$.ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵconditional(ctx.value() ? 2 : 3);
-  }
+export class MyApp {
+  message = "hello";
+  value = () => 1;
+  static ɵfac = function MyApp_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyApp)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MyApp,
+    selectors: [["ng-component"]],
+    standalone: false,
+    decls: 4,
+    vars: 2,
+    template: function MyApp_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵelementStart(0, "div");
+        i0.ɵɵtext(1);
+        i0.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 0)(
+          3,
+          MyApp_Conditional_3_Template,
+          1,
+          0
+        );
+        i0.ɵɵelementEnd();
+      }
+      if (rf & 2) {
+        i0.ɵɵadvance();
+        i0.ɵɵtextInterpolate1(" ", ctx.message, " ");
+        i0.ɵɵadvance();
+        i0.ɵɵconditional(ctx.value() ? 2 : 3);
+      }
+    },
+    encapsulation: 2
+  });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyApp,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              template: `
+    <div>
+      {{message}}
+      @if (value()) {
+        hello
+      } @else {
+        goodbye
+      }
+    </div>
+  `,
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyApp, {
+      className: "MyApp",
+      filePath: "basic_if_else.ts",
+      lineNumber: 16
+    });
+})();

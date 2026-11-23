@@ -25,7 +25,7 @@ export class FetchBackend implements HttpBackend {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FetchBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<FetchBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -41,2529 +41,574 @@ export abstract class HttpBackend implements HttpHandler {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
 export class HttpClient {
     constructor(handler: HttpHandler);
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
         body?: any | null;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     delete<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | (string | number | boolean)[]>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     delete(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     delete<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<HttpResponse<T>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
     delete(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<Object>;
+    } & HttpClientCommonOptions): Observable<Object>;
     delete<T>(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
         body?: any | null;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<T>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     get<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     get(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     get<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<T>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
     get(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Object>;
+    } & HttpClientCommonOptions): Observable<Object>;
     get<T>(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<T>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     head<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     head(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     head<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<T>>;
-    head(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Object>;
-    head<T>(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    head(url: string, options?: HttpClientCommonOptions): Observable<Object>;
+    head<T>(url: string, options?: HttpClientCommonOptions): Observable<T>;
+    // @deprecated
     jsonp(url: string, callbackParam: string): Observable<Object>;
+    // @deprecated
     jsonp<T>(url: string, callbackParam: string): Observable<T>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     options<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     options(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     options<T>(url: string, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<T>>;
-    options(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<Object>;
-    options<T>(url: string, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    options(url: string, options?: HttpClientCommonOptions): Observable<Object>;
+    options<T>(url: string, options?: HttpClientCommonOptions): Observable<T>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     patch<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     patch<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<T>>;
-    patch(url: string, body: any | null, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<Object>;
-    patch<T>(url: string, body: any | null, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    patch(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
+    patch<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     post<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     post(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     post<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<T>>;
-    post(url: string, body: any | null, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Object>;
-    post<T>(url: string, body: any | null, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    post(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
+    post<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
     put<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpEvent<T>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     put(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     put<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<HttpResponse<T>>;
-    put(url: string, body: any | null, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    put(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
+    put<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
+    query(url: string, body: any | null, options: {
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
-        responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<Object>;
-    put<T>(url: string, body: any | null, options?: {
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
+        responseType: 'arraybuffer';
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
+    query(url: string, body: any | null, options: {
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
+        responseType: 'blob';
+    } & HttpClientCommonOptions): Observable<Blob>;
+    query(url: string, body: any | null, options: {
+        observe?: 'body';
+        responseType: 'text';
+    } & HttpClientCommonOptions): Observable<string>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType: 'arraybuffer';
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType: 'blob';
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType: 'text';
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        timeout?: number;
-    }): Observable<T>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
+    query<T>(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType: 'arraybuffer';
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType: 'blob';
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType: 'text';
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
+    query<T>(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    query(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
+    query<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
     request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<ArrayBuffer>;
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Blob>;
+    } & HttpClientCommonOptions): Observable<Blob>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<string>;
+    } & HttpClientCommonOptions): Observable<string>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         observe: 'events';
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'events';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<string>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        reportProgress?: boolean;
         observe: 'events';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<any>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<any>>;
     request<R>(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        reportProgress?: boolean;
         observe: 'events';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpEvent<R>>;
+    } & HttpClientCommonOptions): Observable<HttpEvent<R>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'arraybuffer';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'blob';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Blob>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
         observe: 'response';
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
-        reportProgress?: boolean;
         responseType: 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<string>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
     request(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        reportProgress?: boolean;
         observe: 'response';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<HttpResponse<Object>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
     request<R>(method: string, url: string, options: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        reportProgress?: boolean;
         observe: 'response';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         responseType?: 'json';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-    }): Observable<HttpResponse<R>>;
+    } & HttpClientCommonOptions): Observable<HttpResponse<R>>;
     request(method: string, url: string, options?: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         responseType?: 'json';
-        reportProgress?: boolean;
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<Object>;
+    } & HttpClientCommonOptions): Observable<Object>;
     request<R>(method: string, url: string, options?: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
         observe?: 'body';
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         responseType?: 'json';
-        reportProgress?: boolean;
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<R>;
+    } & HttpClientCommonOptions): Observable<R>;
     request(method: string, url: string, options?: {
         body?: any;
-        headers?: HttpHeaders | Record<string, string | string[]>;
-        context?: HttpContext;
-        params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
         observe?: 'body' | 'events' | 'response';
-        reportProgress?: boolean;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    }): Observable<any>;
+    } & HttpClientCommonOptions): Observable<any>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpClient, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpClient>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
+}
+
+// @public
+export interface HttpClientCommonOptions extends Omit<HttpRequestOptions, 'headers' | 'params'> {
+    // (undocumented)
+    headers?: HttpHeaders | {
+        [header: string]: string | string[];
+    };
+    // (undocumented)
+    observe?: 'body' | 'events' | 'response';
+    // (undocumented)
+    params?: HttpParams | {
+        [param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>;
+    };
 }
 
 // @public @deprecated
@@ -2693,7 +738,7 @@ export abstract class HttpHandler {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpHandler, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpHandler>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -2784,131 +829,18 @@ export interface HttpProgressEvent {
 }
 
 // @public
-export class HttpRequest<T> {
-    constructor(method: 'GET' | 'HEAD', url: string, init?: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    });
-    constructor(method: 'DELETE' | 'JSONP' | 'OPTIONS', url: string, init?: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        timeout?: number;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-    });
-    constructor(method: 'POST', url: string, body: T | null, init?: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    });
-    constructor(method: 'PUT' | 'PATCH', url: string, body: T | null, init?: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        timeout?: number;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-    });
-    constructor(method: string, url: string, body: T | null, init?: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
-    });
+export class HttpRequest<T> implements HttpRequestOptions {
+    constructor(method: 'GET' | 'HEAD', url: string, init?: HttpRequestOptions);
+    constructor(method: 'DELETE' | 'JSONP' | 'OPTIONS', url: string, init?: HttpRequestOptions);
+    constructor(method: 'POST' | 'QUERY', url: string, body: T | null, init?: HttpRequestOptions);
+    constructor(method: 'PUT' | 'PATCH', url: string, body: T | null, init?: HttpRequestOptions);
+    constructor(method: string, url: string, body: T | null, init?: HttpRequestOptions);
     readonly body: T | null;
     readonly cache: RequestCache;
     // (undocumented)
     clone(): HttpRequest<T>;
     // (undocumented)
-    clone(update: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
+    clone(update: HttpRequestOptions & {
         body?: T | null;
         method?: string;
         url?: string;
@@ -2920,26 +852,7 @@ export class HttpRequest<T> {
         };
     }): HttpRequest<T>;
     // (undocumented)
-    clone<V>(update: {
-        headers?: HttpHeaders;
-        context?: HttpContext;
-        reportProgress?: boolean;
-        params?: HttpParams;
-        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
-        keepalive?: boolean;
-        priority?: RequestPriority;
-        cache?: RequestCache;
-        mode?: RequestMode;
-        redirect?: RequestRedirect;
-        referrer?: string;
-        integrity?: string;
-        referrerPolicy?: ReferrerPolicy;
-        withCredentials?: boolean;
-        credentials?: RequestCredentials;
-        transferCache?: {
-            includeHeaders?: string[];
-        } | boolean;
-        timeout?: number;
+    clone<V>(update: HttpRequestOptions & {
         body?: V | null;
         method?: string;
         url?: string;
@@ -2963,17 +876,59 @@ export class HttpRequest<T> {
     readonly redirect: RequestRedirect;
     readonly referrer: string;
     readonly referrerPolicy: ReferrerPolicy;
+    // (undocumented)
+    readonly reportDownloadProgress: boolean;
+    // @deprecated
     readonly reportProgress: boolean;
-    readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
+    readonly reportUploadProgress: boolean;
+    readonly responseType: HttpResponseType;
     serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
     readonly timeout?: number;
-    readonly transferCache?: {
-        includeHeaders?: string[];
-    } | boolean;
+    readonly transferCache?: HttpTransferCacheRequestOptions;
     // (undocumented)
     readonly url: string;
     readonly urlWithParams: string;
     readonly withCredentials: boolean;
+}
+
+// @public
+export interface HttpRequestOptions {
+    // (undocumented)
+    cache?: RequestCache;
+    // (undocumented)
+    context?: HttpContext;
+    // (undocumented)
+    credentials?: RequestCredentials;
+    // (undocumented)
+    headers?: HttpHeaders;
+    // (undocumented)
+    integrity?: string;
+    // (undocumented)
+    keepalive?: boolean;
+    // (undocumented)
+    mode?: RequestMode;
+    // (undocumented)
+    params?: HttpParams;
+    // (undocumented)
+    priority?: RequestPriority;
+    // (undocumented)
+    redirect?: RequestRedirect;
+    // (undocumented)
+    referrer?: string;
+    // (undocumented)
+    referrerPolicy?: ReferrerPolicy;
+    // (undocumented)
+    reportDownloadProgress?: boolean;
+    // @deprecated (undocumented)
+    reportProgress?: boolean;
+    reportUploadProgress?: boolean;
+    // (undocumented)
+    responseType?: HttpResponseType;
+    // (undocumented)
+    timeout?: number;
+    transferCache?: HttpTransferCacheRequestOptions;
+    // (undocumented)
+    withCredentials?: boolean;
 }
 
 // @public
@@ -3263,12 +1218,14 @@ export enum HttpStatusCode {
 }
 
 // @public
-export type HttpTransferCacheOptions = {
-    includeHeaders?: string[];
+export interface HttpTransferCacheOptions {
     filter?: (req: HttpRequest<unknown>) => boolean;
+    includeHeaders?: string[];
+    includeNonCacheableRequests?: boolean;
     includePostRequests?: boolean;
     includeRequestsWithAuthHeaders?: boolean;
-};
+    includeRequestsWithCredentials?: boolean;
+}
 
 // @public
 export interface HttpUploadProgressEvent extends HttpProgressEvent {
@@ -3297,7 +1254,7 @@ export class HttpXhrBackend implements HttpBackend {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpXhrBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpXhrBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -3306,27 +1263,27 @@ export abstract class HttpXsrfTokenExtractor {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpXsrfTokenExtractor, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpXsrfTokenExtractor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
-// @public
+// @public @deprecated
 export class JsonpClientBackend implements HttpBackend {
     constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<JsonpClientBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<JsonpClientBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
-// @public
+// @public @deprecated
 export class JsonpInterceptor {
     constructor(injector: EnvironmentInjector);
     intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<JsonpInterceptor, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<JsonpInterceptor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -3341,7 +1298,7 @@ export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeatu
 // @public
 export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
 
-// @public
+// @public @deprecated
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
 
 // @public

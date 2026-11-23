@@ -179,6 +179,191 @@ describe('FileLinker', () => {
     });
   });
 
+  describe('host binding validation', () => {
+    function linkDeclarationWithHost(
+      declarationFn: 'ɵɵngDeclareDirective' | 'ɵɵngDeclareComponent',
+      host: string,
+      version = '0.0.0-PLACEHOLDER',
+    ): void {
+      const componentMetadata =
+        declarationFn === 'ɵɵngDeclareComponent' ? `template: '', isInline: true,` : '';
+      const source = `
+        ${declarationFn}({
+          minVersion: '0.0.0-PLACEHOLDER',
+          version: '${version}',
+          ngImport: core,
+          type: SomeType,
+          ${componentMetadata}
+          host: ${host}
+        });
+      `;
+
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      fileLinker.linkPartialDeclaration(
+        declarationFn,
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+    }
+
+    it('should reject event attribute host bindings in partial directives', () => {
+      expect(() =>
+        linkDeclarationWithHost(
+          'ɵɵngDeclareDirective',
+          `{properties: {'attr.onmouseover': 'this.pay'}}`,
+          '22.0.6',
+        ),
+      ).toThrowError(/Binding to event attribute 'onmouseover' is disallowed for security reasons/);
+
+      expect(() =>
+        linkDeclarationWithHost(
+          'ɵɵngDeclareDirective',
+          `{properties: {'attr.svg:onclick': 'this.pay'}}`,
+          '22.0.6',
+        ),
+      ).toThrowError(/Binding to event attribute 'svg:onclick' is disallowed for security reasons/);
+
+      expect(() =>
+        linkDeclarationWithHost(
+          'ɵɵngDeclareDirective',
+          `{properties: {'attr.:onclick': 'this.pay'}}`,
+          '22.0.6',
+        ),
+      ).toThrowError(
+        /Invalid attribute name ':onclick'\. Attribute names cannot start with a colon\./,
+      );
+    });
+
+    it('should reject case-insensitive and colon-prefixed event property host bindings in partial components', () => {
+      expect(() =>
+        linkDeclarationWithHost('ɵɵngDeclareComponent', `{properties: {OnError: 'this.pay'}}`),
+      ).toThrowError(/Binding to event property 'OnError' is disallowed for security reasons/);
+
+      expect(() =>
+        linkDeclarationWithHost(
+          'ɵɵngDeclareComponent',
+          `{properties: {'svg:onclick': 'this.pay'}}`,
+        ),
+      ).toThrowError(/Binding to event property 'svg:onclick' is disallowed for security reasons/);
+
+      expect(() =>
+        linkDeclarationWithHost('ɵɵngDeclareComponent', `{properties: {':onclick': 'this.pay'}}`),
+      ).toThrowError(
+        /Invalid property name ':onclick'\. Property names cannot start with a colon\./,
+      );
+    });
+  });
+
+  describe('legacyOptionalChaining support', () => {
+    function linkComponentWithTemplate(version: string, template: string): string {
+      // Note that the `minVersion` is set to the placeholder,
+      // because that's what we have in the source code as well.
+      const source = `
+        ɵɵngDeclareComponent({
+          minVersion: "0.0.0-PLACEHOLDER",
+          version: "${version}",
+          ngImport: core,
+          template: \`${template}\`,
+          isInline: true,
+          type: SomeComp
+        });
+      `;
+
+      // We need to create a new source file here, because template parsing requires
+      // the template string to have offsets which synthetic nodes do not.
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareComponent',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should use null for optional chaining if compiled with a version older than 22', () => {
+      for (const version of ['21.0.0', '21.2.0', '16.2.0']) {
+        const result = linkComponentWithTemplate(version, '{{ foo?.bar }}');
+        expect(result).toContain(' == null');
+      }
+    });
+
+    it('should use undefined for optional chaining if compiled with version 22 or above', () => {
+      for (const version of ['22.0.0', '22.0.1', '22.1.0', '22.0.0-next.0', '23.0.0']) {
+        const result = linkComponentWithTemplate(version, '{{ foo?.bar }}');
+        expect(result).not.toContain(' == null');
+      }
+    });
+
+    it('should not use null for optional chaining if compiled with a local version (0.0.0-PLACEHOLDER)', () => {
+      const result = linkComponentWithTemplate('0.0.0-PLACEHOLDER', '{{ foo?.bar }}');
+      expect(result).not.toContain(' == null');
+    });
+
+    it('should use null for optional chaining when the $safeNavigationMigration magic function is used, regardless of the version', () => {
+      for (const version of ['16.2.0', '22.0.0', '0.0.0-PLACEHOLDER']) {
+        const result = linkComponentWithTemplate(
+          version,
+          '{{ $safeNavigationMigration(foo?.bar) }}',
+        );
+        expect(result).toContain(' == null');
+      }
+    });
+
+    function linkDirectiveWithHostBinding(version: string, expression: string): string {
+      const source = `
+        ɵɵngDeclareDirective({
+          minVersion: "0.0.0-PLACEHOLDER",
+          version: "${version}",
+          ngImport: core,
+          host: {
+            properties: {
+              "attr.foo": "${expression}"
+            }
+          },
+          type: SomeDir
+        });
+      `;
+
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareDirective',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should use null for optional chaining in directive host bindings if compiled with a version older than 22', () => {
+      for (const version of ['21.0.0', '21.2.0', '16.2.0']) {
+        const result = linkDirectiveWithHostBinding(version, 'foo?.bar');
+        expect(result).toContain(' == null');
+      }
+    });
+
+    it('should use undefined for optional chaining in directive host bindings if compiled with version 22 or above', () => {
+      for (const version of [
+        '22.0.0',
+        '22.0.1',
+        '22.1.0',
+        '22.0.0-next.0',
+        '23.0.0',
+        '0.0.0-PLACEHOLDER',
+      ]) {
+        const result = linkDirectiveWithHostBinding(version, 'foo?.bar');
+        expect(result).not.toContain(' == null');
+      }
+    });
+  });
+
   describe('getConstantStatements()', () => {
     it('should capture shared constant values', () => {
       const {fileLinker} = createFileLinker();

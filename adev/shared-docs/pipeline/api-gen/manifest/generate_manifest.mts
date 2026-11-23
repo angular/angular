@@ -66,7 +66,7 @@ function getTagSinceVersion(
   }
 
   // In case of deprecated tag we need to separate the version from the deprecation message.
-  const version = tag.comment.match(/\d+(\.\d+)?/)?.[0];
+  const version = tag.comment.match(/^\s*(?:(?:since|from|as of)\s+)?v?(\d+(?:\.\d+)?)/i)?.[1];
 
   return {version};
 }

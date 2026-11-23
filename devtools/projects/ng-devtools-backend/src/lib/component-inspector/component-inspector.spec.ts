@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initializeOrGetDirectiveForestHooks} from '../hooks';
+import {getDirectiveForestManager} from '../directive-forest/manager';
 import {ComponentInspector} from './component-inspector';
 
 describe('ComponentInspector', () => {
@@ -45,6 +45,6 @@ describe('ComponentInspector', () => {
   });
 
   it('should always retrieve the same forest hook', () => {
-    expect(initializeOrGetDirectiveForestHooks()).toBe(initializeOrGetDirectiveForestHooks());
+    expect(getDirectiveForestManager()).toBe(getDirectiveForestManager());
   });
 });

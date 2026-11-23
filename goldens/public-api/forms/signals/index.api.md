@@ -5,8 +5,8 @@
 ```ts
 
 import { AbstractControl } from '@angular/forms';
-import { ControlValueAccessor } from '@angular/forms';
-import { FormControlStatus } from '@angular/forms';
+import { DebounceTimer } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -17,11 +17,9 @@ import { InputSignalWithTransform } from '@angular/core';
 import { ModelSignal } from '@angular/core';
 import { OutputRef } from '@angular/core';
 import { Provider } from '@angular/core';
-import { ResourceRef } from '@angular/core';
+import { Resource } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { ValidationErrors } from '@angular/forms';
-import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 
 // @public
@@ -47,10 +45,12 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
 
 // @public
 export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> {
-    readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
+    readonly debounce?: DebounceTimer<TParams | undefined>;
+    readonly factory: (params: Signal<TParams | undefined>) => Resource<TResult | undefined>;
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
+    readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 // @public
@@ -79,10 +79,13 @@ export type CompatSchemaPath<TControl extends AbstractControl, TPathKind extends
 };
 
 // @public
-export function createManagedMetadataKey<TRead, TWrite>(create: (s: Signal<TWrite | undefined>) => TRead): MetadataKey<TRead, TWrite, TWrite | undefined>;
+export function createLimitSelectionKey(): LimitSelectionKey;
 
 // @public
-export function createManagedMetadataKey<TRead, TWrite, TAcc>(create: (s: Signal<TAcc>) => TRead, reducer: MetadataReducer<TAcc, TWrite>): MetadataKey<TRead, TWrite, TAcc>;
+export function createManagedMetadataKey<TRead, TWrite>(create: (state: FieldState<unknown>, data: Signal<TWrite | undefined>) => TRead): MetadataKey<TRead, TWrite, TWrite | undefined>;
+
+// @public
+export function createManagedMetadataKey<TRead, TWrite, TAcc>(create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead, reducer: MetadataReducer<TAcc, TWrite>): MetadataKey<TRead, TWrite, TAcc>;
 
 // @public
 export function createMetadataKey<TWrite>(): MetadataKey<Signal<TWrite | undefined>, TWrite, TWrite | undefined>;
@@ -97,6 +100,11 @@ export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (context: FieldContext<TValue, TPathKind>, abortSignal: AbortSignal) => Promise<void> | void;
 
 // @public
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
+    when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
+}): void;
+
+// @public @deprecated
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
 
 // @public
@@ -130,6 +138,11 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 export interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {
     readonly controlValue: WritableSignal<TValue>;
     readonly fieldTree: FieldTree<unknown, TKey>;
+    getError<K extends NgValidationError['kind']>(kind: K): (Extract<NgValidationError, {
+        kind: K;
+    }> & ValidationError.WithFieldTree) | undefined;
+    // (undocumented)
+    getError(kind: string): ValidationError.WithFieldTree | undefined;
     markAsDirty(): void;
     markAsTouched(options?: MarkAsTouchedOptions): void;
     reloadValidation(): void;
@@ -159,7 +172,7 @@ export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSche
 export const FORM_FIELD: InjectionToken<FormField<unknown>>;
 
 // @public
-export interface FormCheckboxControl extends FormUiControl {
+export interface FormCheckboxControl extends FormUiControl<boolean> {
     readonly checked: ModelSignal<boolean>;
     readonly value?: undefined;
 }
@@ -172,8 +185,8 @@ export class FormField<T> {
     readonly field: i0.InputSignal<Field<T>>;
     focus(options?: FocusOptions): void;
     readonly injector: Injector;
-    protected get interopNgControl(): InteropNgControl;
     registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
+    reset(): void;
     readonly state: Signal<FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "field": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
@@ -192,10 +205,18 @@ export interface FormFieldBinding {
 // @public (undocumented)
 export interface FormFieldBindingOptions {
     readonly focus?: (focusOptions?: FocusOptions) => void;
+    readonly reset?: () => void;
 }
 
 // @public
 export interface FormOptions<TModel> {
+    experimentalWebMcpTool?: {
+        name: string;
+        description: string;
+        annotations?: {
+            consequentialHint?: boolean;
+        };
+    };
     injector?: Injector;
     name?: string;
     submission?: FormSubmitOptions<TModel, unknown>;
@@ -227,7 +248,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 }
 
 // @public
-export interface FormUiControl {
+export interface FormUiControl<TValue> {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
@@ -235,34 +256,42 @@ export interface FormUiControl {
     focus?(options?: FocusOptions): void;
     readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly max?: InputSignal<NonNullable<TValue> | undefined> | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
     readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly min?: InputSignal<NonNullable<TValue> | undefined> | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
     readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
     readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
     readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
     readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    reset?(): void;
     readonly touch?: OutputRef<void>;
     readonly touched?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
 }
 
 // @public
-export interface FormValueControl<TValue> extends FormUiControl {
+export interface FormValueControl<TValue> extends FormUiControl<TValue> {
     readonly checked?: undefined;
     readonly value: ModelSignal<TValue>;
 }
 
 // @public
-export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+}): void;
+
+// @public @deprecated
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
+    readonly debounce?: DebounceTimer<string | HttpResourceRequest | undefined>;
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly options?: HttpResourceOptions<TResult, unknown>;
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
+    readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 // @public
@@ -274,12 +303,23 @@ export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> 
 export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol;
 
 // @public
+export function isFieldTree(value: unknown): value is FieldTree<unknown>;
+
+// @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
     readonly index: Signal<number>;
 }
 
 // @public
 export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
+
+// @public
+export type LimitKey<TLimit> = MetadataKey<Signal<NonNullable<TLimit> | undefined>, NonNullable<TLimit> | undefined, NonNullable<TLimit> | undefined>;
+
+// @public
+export type LimitSelectionKey = MetadataKey<Signal<LimitKey<unknown> | undefined>, LimitKey<unknown>, LimitKey<unknown> | undefined> & {
+    [LIMIT_SELECTION_KEY]: true;
+};
 
 // @public
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (ctx: FieldContext<TValue, TPathKind>) => TReturn;
@@ -293,13 +333,37 @@ export interface MarkAsTouchedOptions {
 }
 
 // @public
-export const MAX: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MAX: LimitSelectionKey;
 
 // @public
-export function max<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<number | string | null, number | undefined, TPathKind>, config?: BaseValidatorConfig<number | string | null, TPathKind>): void;
+export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
-export const MAX_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MAX_DATE: LimitKey<Date>;
+
+// @public
+export const MAX_LENGTH: LimitKey<number>;
+
+// @public
+export const MAX_NUMBER: LimitKey<number>;
+
+// @public
+export function maxDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxDateValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+
+// @public
+export function maxDateError(maxDate: Date, options: WithFieldTree<ValidationErrorOptions>): MaxDateValidationError;
+
+// @public
+export function maxDateError(maxDate: Date, options?: ValidationErrorOptions): WithoutFieldTree<MaxDateValidationError>;
+
+// @public
+export class MaxDateValidationError extends BaseNgValidationError {
+    constructor(maxDate: Date, options?: ValidationErrorOptions);
+    // (undocumented)
+    readonly kind = "maxDate";
+    // (undocumented)
+    readonly maxDate: Date;
+}
 
 // @public
 export function maxError(max: number, options: WithFieldTree<ValidationErrorOptions>): MaxValidationError;
@@ -341,13 +405,13 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
 export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = (TModel & undefined) | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
 
 // @public
-export function metadata<TValue, TKey extends MetadataKey<any, any, any>, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: TKey, logic: NoInfer<LogicFn<TValue, MetadataSetterType<TKey>, TPathKind>>): TKey;
+export function metadata<TValue, TKey extends MetadataKey<any, any, any>, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: TKey, logic: NoInfer<LogicFn<TValue, TKey extends LimitSelectionKey ? LimitKey<TValue> : MetadataSetterType<TKey>, TPathKind>>): TKey;
 
 // @public
 export class MetadataKey<TRead, TWrite, TAcc> {
-    protected constructor(reducer: MetadataReducer<TAcc, TWrite>, create: ((s: Signal<TAcc>) => TRead) | undefined);
+    protected constructor(reducer: MetadataReducer<TAcc, TWrite>, create: ((state: FieldState<unknown>, data: Signal<TAcc>) => TRead) | undefined);
     // (undocumented)
-    readonly create: ((s: Signal<TAcc>) => TRead) | undefined;
+    readonly create: ((state: FieldState<unknown>, data: Signal<TAcc>) => TRead) | undefined;
     // (undocumented)
     readonly reducer: MetadataReducer<TAcc, TWrite>;
 }
@@ -361,8 +425,8 @@ export interface MetadataReducer<TAcc, TItem> {
 // @public (undocumented)
 export const MetadataReducer: {
     readonly list: <TItem>() => MetadataReducer<TItem[], TItem | undefined>;
-    readonly min: () => MetadataReducer<number | undefined, number | undefined>;
-    readonly max: () => MetadataReducer<number | undefined, number | undefined>;
+    readonly min: <T extends Date | number>() => MetadataReducer<T | undefined, T | undefined>;
+    readonly max: <T extends Date | number>() => MetadataReducer<T | undefined, T | undefined>;
     readonly or: () => MetadataReducer<boolean, boolean>;
     readonly and: () => MetadataReducer<boolean, boolean>;
     readonly override: typeof override;
@@ -372,13 +436,37 @@ export const MetadataReducer: {
 export type MetadataSetterType<TKey> = TKey extends MetadataKey<any, infer TWrite, any> ? TWrite : never;
 
 // @public
-export const MIN: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MIN: LimitSelectionKey;
 
 // @public
-export function min<TValue extends number | string | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
-export const MIN_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MIN_DATE: LimitKey<Date>;
+
+// @public
+export const MIN_LENGTH: LimitKey<number>;
+
+// @public
+export const MIN_NUMBER: LimitKey<number>;
+
+// @public
+export function minDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minDateValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+
+// @public
+export function minDateError(minDate: Date, options: WithFieldTree<ValidationErrorOptions>): MinDateValidationError;
+
+// @public
+export function minDateError(minDate: Date, options?: ValidationErrorOptions): WithoutFieldTree<MinDateValidationError>;
+
+// @public
+export class MinDateValidationError extends BaseNgValidationError {
+    constructor(minDate: Date, options?: ValidationErrorOptions);
+    // (undocumented)
+    readonly kind = "minDate";
+    // (undocumented)
+    readonly minDate: Date;
+}
 
 // @public
 export function minError(min: number, options: WithFieldTree<ValidationErrorOptions>): MinValidationError;
@@ -423,7 +511,7 @@ export class NativeInputParseError extends BaseNgValidationError {
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)
-export type NgValidationError = RequiredValidationError | MinValidationError | MaxValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseError;
+export type NgValidationError = RequiredValidationError | MinValidationError | MinDateValidationError | MaxValidationError | MaxDateValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseError;
 
 // @public
 export type OneOrMany<T> = T | readonly T[];
@@ -474,9 +562,17 @@ export class PatternValidationError extends BaseNgValidationError {
 }
 
 // @public
+export function provideExperimentalWebMcpForms(): EnvironmentProviders;
+
+// @public
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 
 // @public
+export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+}): void;
+
+// @public @deprecated
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
@@ -499,7 +595,6 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly disabled: Signal<boolean>;
     // (undocumented)
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
-    // (undocumented)
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
     readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
     readonly fieldTree: ReadonlyFieldTree<unknown, TKey>;
@@ -509,11 +604,11 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
-    readonly max?: Signal<number | undefined>;
-    readonly maxLength?: Signal<number | undefined>;
+    readonly max: Signal<NonNullable<TValue> | undefined> | undefined;
+    readonly maxLength: Signal<number | undefined> | undefined;
     metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
-    readonly min?: Signal<number | undefined>;
-    readonly minLength?: Signal<number | undefined>;
+    readonly min: Signal<NonNullable<TValue> | undefined> | undefined;
+    readonly minLength: Signal<number | undefined> | undefined;
     readonly name: Signal<string>;
     readonly pattern: Signal<readonly RegExp[]>;
     readonly pending: Signal<boolean>;
@@ -554,14 +649,14 @@ export class RequiredValidationError extends BaseNgValidationError {
 // @public
 export interface RootFieldContext<TValue> {
     readonly fieldTree: ReadonlyFieldTree<TValue>;
-    fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
+    fieldTreeOf<PModel>(this: void, p: SchemaPathTree<PModel>): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
     readonly pathKeys: Signal<readonly string[]>;
     readonly state: ReadonlyFieldState<TValue>;
-    stateOf<PControl extends AbstractControl>(p: CompatSchemaPath<PControl>): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
+    stateOf<PControl extends AbstractControl>(this: void, p: CompatSchemaPath<PControl>): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
     // (undocumented)
-    stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
+    stateOf<PValue>(this: void, p: SchemaPath<PValue, SchemaPathRules>): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
     readonly value: Signal<TValue>;
-    valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
+    valueOf<PValue>(this: void, p: SchemaPath<PValue, SchemaPathRules>): PValue;
 }
 
 // @public

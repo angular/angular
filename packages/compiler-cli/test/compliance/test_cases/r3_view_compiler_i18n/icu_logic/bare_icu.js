@@ -1,64 +1,189 @@
-function $MyComponent_div_2_Template$(rf, ctx) {
+import { Component, NgModule } from "@angular/core";
+import * as i0 from "@angular/core";
+function MyComponent_div_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div", 5);
-    $r3$.ɵɵtext(1, " ");
-    $r3$.ɵɵi18n(2, 1);
-    $r3$.ɵɵtext(3, " ");
-    $r3$.ɵɵelementEnd();
+    i0.ɵɵelementStart(0, "div", 5);
+    i0.ɵɵtext(1, " ");
+    i0.ɵɵi18n(2, 1);
+    i0.ɵɵtext(3, " ");
+    i0.ɵɵelementEnd();
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵi18nExp($ctx_r0$.age);
-    $r3$.ɵɵi18nApply(2);
+    const ctx_r0 = i0.ɵɵnextContext();
+    i0.ɵɵadvance(2);
+    i0.ɵɵi18nExp(ctx_r0.age);
+    i0.ɵɵi18nApply(2);
   }
 }
-…
-function $MyComponent_div_3_Template$(rf, ctx) {
+function MyComponent_div_3_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div", 6);
-    $r3$.ɵɵtext(1, " You have ");
-    $r3$.ɵɵi18n(2, 2);
-    $r3$.ɵɵtext(3, ". ");
-    $r3$.ɵɵelementEnd();
+    i0.ɵɵelementStart(0, "div", 6);
+    i0.ɵɵtext(1, " You have ");
+    i0.ɵɵi18n(2, 2);
+    i0.ɵɵtext(3, ". ");
+    i0.ɵɵelementEnd();
   }
   if (rf & 2) {
-    const $ctx_r1$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵi18nExp($ctx_r1$.count)($ctx_r1$.count);
-    $r3$.ɵɵi18nApply(2);
+    const ctx_r0 = i0.ɵɵnextContext();
+    i0.ɵɵadvance(2);
+    i0.ɵɵi18nExp(ctx_r0.count)(ctx_r0.count);
+    i0.ɵɵi18nApply(2);
   }
 }
-…
-decls: 4,
-vars: 3,
-consts: () => {
-  __i18nIcuMsg__('{VAR_SELECT, select, male {male} female {female} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]], {}) __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]], {})
-  __i18nIcuMsg__('{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}', [['INTERPOLATION', String.raw`\uFFFD1\uFFFD`], ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]], {})
-  return [
-    $i18n_0$,
-    $i18n_1$,
-    $i18n_2$,
-    ["title", "icu only", __AttributeMarker.Template__, "ngIf"],
-    ["title", "icu and text", __AttributeMarker.Template__, "ngIf"],
-    ["title", "icu only"],
-    ["title", "icu and text"]
-  ];
-},
-template: function MyComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div");
-    $r3$.ɵɵi18n(1, 0);
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵtemplate(2, $MyComponent_div_2_Template$, 4, 1, "div", 3)(3, $MyComponent_div_3_Template$, 4, 2, "div", 4);
-  }
-  if (rf & 2) {
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵi18nExp(ctx.gender);
-    $r3$.ɵɵi18nApply(1);
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵproperty("ngIf", ctx.visible);
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵproperty("ngIf", ctx.available);
-  }
+export class MyComponent {
+  gender = "female";
+  static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyComponent)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MyComponent,
+    selectors: [["my-component"]],
+    standalone: false,
+    decls: 4,
+    vars: 3,
+    consts: () => {
+      let i18n_0;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_7842238767399919809$$BARE_ICU_TS_0 =
+          /* @ts-ignore */
+          goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        i18n_0 = MSG_EXTERNAL_7842238767399919809$$BARE_ICU_TS_0;
+      } else {
+        /* @ts-ignore */
+        i18n_0 = $localize`{VAR_SELECT, select, male {male} female {female} other {other}}`;
+      }
+      i18n_0 = i0.ɵɵi18nPostprocess(i18n_0, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+      let i18n_1;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_8806993169187953163$$BARE_ICU_TS_1 =
+          /* @ts-ignore */
+          goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        i18n_1 = MSG_EXTERNAL_8806993169187953163$$BARE_ICU_TS_1;
+      } else {
+        /* @ts-ignore */
+        i18n_1 = $localize`{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}`;
+      }
+      i18n_1 = i0.ɵɵi18nPostprocess(i18n_1, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+      let i18n_2;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_1922743304863699161$$BARE_ICU_TS_2 =
+          /* @ts-ignore */
+          goog.getMsg(
+            "{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}"
+          );
+        i18n_2 = MSG_EXTERNAL_1922743304863699161$$BARE_ICU_TS_2;
+      } else {
+        /* @ts-ignore */
+        i18n_2 = $localize`{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}`;
+      }
+      i18n_2 = i0.ɵɵi18nPostprocess(i18n_2, {
+        "INTERPOLATION": "\uFFFD1\uFFFD",
+        "VAR_SELECT": "\uFFFD0\uFFFD"
+      });
+      return [
+        i18n_0,
+        i18n_1,
+        i18n_2,
+        ["title", "icu only", 4, "ngIf"],
+        ["title", "icu and text", 4, "ngIf"],
+        ["title", "icu only"],
+        ["title", "icu and text"]
+      ];
+    },
+    template: function MyComponent_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵelementStart(0, "div");
+        i0.ɵɵi18n(1, 0);
+        i0.ɵɵelementEnd();
+        i0.ɵɵtemplate(2, MyComponent_div_2_Template, 4, 1, "div", 3)(
+          3,
+          MyComponent_div_3_Template,
+          4,
+          2,
+          "div",
+          4
+        );
+      }
+      if (rf & 2) {
+        i0.ɵɵadvance();
+        i0.ɵɵi18nExp(ctx.gender);
+        i0.ɵɵi18nApply(1);
+        i0.ɵɵadvance();
+        i0.ɵɵproperty("ngIf", ctx.visible);
+        i0.ɵɵadvance();
+        i0.ɵɵproperty("ngIf", ctx.available);
+      }
+    },
+    encapsulation: 2
+  });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: "my-component",
+              template: `
+  <div>{gender, select, male {male} female {female} other {other}}</div>
+  <div *ngIf="visible" title="icu only">
+    {age, select, 10 {ten} 20 {twenty} other {other}}
+  </div>
+  <div *ngIf="available" title="icu and text">
+    You have {count, select, 0 {no emails} 1 {one email} other {{{count}} emails}}.
+  </div>
+`,
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyComponent, {
+      className: "MyComponent",
+      filePath: "bare_icu.ts",
+      lineNumber: 16
+    });
+})();
+export class MyModule {
+  static ɵfac = function MyModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyModule)();
+  };
+  static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+  static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyModule,
+      [
+        {
+          type: NgModule,
+          args: [{ declarations: [MyComponent] }]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(function () {
+  (typeof ngJitMode === "undefined" || ngJitMode) &&
+    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] });
+})();

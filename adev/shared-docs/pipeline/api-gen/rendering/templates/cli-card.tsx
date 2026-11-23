@@ -48,9 +48,11 @@ export function CliCard(props: {card: CliCardRenderable}) {
                 <></>
               )}
               {/* Default Value */}
-              {item.default !== undefined ? <span>Default</span> : <></>}
-              {props.card.type === 'Options' && item.default !== undefined ? (
-                <code>{item.default.toString()}</code>
+              {props.card.type !== 'Arguments' && item.default !== undefined ? (
+                <>
+                  <span>Default</span>
+                  <code>{item.default.toString()}</code>
+                </>
               ) : (
                 <></>
               )}

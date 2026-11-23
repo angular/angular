@@ -6,18 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PluginItem} from '@babel/core';
-
 export interface OptimizationOptions {
-  enableLinker?: {
-    ensureNoPartialDeclaration: boolean;
-    filterPaths?: RegExp;
-    linkerOptions?: object;
-  };
   optimize?: {
     isSideEffectFree?: (absoluteDiskPath: string) => boolean;
   };
-  downlevelAsyncGeneratorsIfPresent?: boolean;
+  enableLinker?: boolean;
 }
 
-export function createEsbuildAngularOptimizePlugin(opts: OptimizationOptions, additionalBabelPlugins?: PluginItem[]): Promise<any>
+export function createEsbuildAngularOptimizePlugin(opts: OptimizationOptions): Promise<any>

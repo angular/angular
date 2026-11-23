@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, Injectable, inject, signal} from '@angular/core';
+import {DestroyRef, inject, signal, Service} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Subject, Subscription, debounceTime, filter, map} from 'rxjs';
 
@@ -19,6 +19,8 @@ import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {TypingsLoader} from '../typings-loader.service';
 
 import {FileAndContentRecord} from '@angular/docs';
+import {DomSanitizer} from '@angular/platform-browser';
+import {NodeRuntimeState} from '../node-runtime-state.service';
 import {CODE_EDITOR_EXTENSIONS} from './constants/code-editor-extensions';
 import {LANGUAGES} from './constants/code-editor-languages';
 import {getAutocompleteExtension} from './extensions/autocomplete';
@@ -26,10 +28,9 @@ import {getDiagnosticsExtension} from './extensions/diagnostics';
 import {getTooltipExtension} from './extensions/tooltip';
 import {DiagnosticsState} from './services/diagnostics-state.service';
 import {TsVfsWorkerActions} from './workers/enums/actions';
+import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
 import {CodeChangeRequest} from './workers/interfaces/code-change-request';
 import {ActionMessage} from './workers/interfaces/message';
-import {NodeRuntimeState} from '../node-runtime-state.service';
-import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
 
 export interface EditorFile {
   filename: string;
@@ -61,9 +62,11 @@ const INITIAL_STATES = {
   contentChangeListenerSubscription$: undefined,
   tutorialChangeListener$: undefined,
   createdFile$: undefined,
+  librariesTypesListener$: undefined,
+  vfsEnvListener$: undefined,
 };
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class CodeMirrorEditor {
   // TODO: handle files created by the user, e.g. after running `ng generate component`
   readonly files = signal<EditorFile[]>(INITIAL_STATES.files);
@@ -81,6 +84,7 @@ export class CodeMirrorEditor {
   private readonly typingsLoader = inject(TypingsLoader);
   private readonly destroyRef = inject(DestroyRef);
   private readonly diagnosticsState = inject(DiagnosticsState);
+  private readonly domSanitizer = inject(DomSanitizer);
   private readonly tsVfsWorkerFactory = inject(TYPESCRIPT_VFS_WORKER_FACTORY);
   private tsVfsWorker: Worker | null = null;
 
@@ -96,6 +100,11 @@ export class CodeMirrorEditor {
     INITIAL_STATES.tutorialChangeListener$;
 
   private createdFileListener$: Subscription | undefined = INITIAL_STATES.createdFile$;
+
+  private librariesTypesListener$: Subscription | undefined =
+    INITIAL_STATES.librariesTypesListener$;
+
+  private vfsEnvListener$: Subscription | undefined = INITIAL_STATES.vfsEnvListener$;
 
   init(parentElement: HTMLElement): void {
     if (this._editorView) return;
@@ -136,7 +145,7 @@ export class CodeMirrorEditor {
 
     // Create TypeScript virtual filesystem when default files map is created
     // and files are set
-    this.eventManager$
+    this.vfsEnvListener$ = this.eventManager$
       .pipe(
         filter(
           (event) =>
@@ -168,6 +177,12 @@ export class CodeMirrorEditor {
 
     this.createdFileListener$?.unsubscribe();
     this.createdFileListener$ = INITIAL_STATES.createdFile$;
+
+    this.librariesTypesListener$?.unsubscribe();
+    this.librariesTypesListener$ = INITIAL_STATES.librariesTypesListener$;
+
+    this.vfsEnvListener$?.unsubscribe();
+    this.vfsEnvListener$ = INITIAL_STATES.vfsEnvListener$;
   }
 
   changeCurrentFile(fileName: string): void {
@@ -217,7 +232,7 @@ export class CodeMirrorEditor {
   }
 
   private saveLibrariesTypes(): void {
-    this.typingsLoader.typings$
+    this.librariesTypesListener$ = this.typingsLoader.typings$
       .pipe(
         filter((typings) => typings.length > 0),
         takeUntilDestroyed(this.destroyRef),
@@ -448,7 +463,12 @@ export class CodeMirrorEditor {
           this.sendRequestToTsVfs,
           this.diagnosticsState,
         ),
-        getTooltipExtension(this.eventManager$, this.currentFile, this.sendRequestToTsVfs),
+        getTooltipExtension(
+          this.eventManager$,
+          this.currentFile,
+          this.sendRequestToTsVfs,
+          this.domSanitizer,
+        ),
       ];
     }
 
@@ -483,6 +503,10 @@ export class CodeMirrorEditor {
         file.filename === this.currentFile().filename ? {...file, content: newContent} : file,
       ),
     );
+    this.embeddedTutorialManager.tutorialFiles.update((files) => ({
+      ...files,
+      [this.currentFile().filename]: newContent,
+    }));
 
     // send current file content to Ts Vfs worker to run diagnostics on current file state
     this.sendRequestToTsVfs<CodeChangeRequest>({

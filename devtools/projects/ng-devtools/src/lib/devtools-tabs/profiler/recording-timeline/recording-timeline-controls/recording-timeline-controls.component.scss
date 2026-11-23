@@ -4,7 +4,42 @@
   padding: 0.5rem;
   border-bottom: 1px solid var(--color-separator);
 
-  input {
-    width: 10rem;
+  .filter-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+
+    .filter-input {
+      position: relative;
+
+      input {
+        width: 10rem;
+        padding-right: 1.625rem;
+      }
+
+      button {
+        position: absolute;
+        right: 0;
+        top: 4px;
+        margin-right: 0.5rem;
+        opacity: 0.5;
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        mat-icon {
+          width: 16px;
+          height: 16px;
+          font-size: 16px;
+        }
+      }
+    }
+
+    .info {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+    }
   }
 }

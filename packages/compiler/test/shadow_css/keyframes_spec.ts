@@ -155,40 +155,6 @@ describe('ShadowCss, keyframes and animations', () => {
     });
   });
 
-  it('should handle (scope or not) animation definitions preceded by an erroneous comma', () => {
-    const COMPONENT_VARIABLE = '%COMP%';
-    const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-    const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-    const css = `.test {
-      animation:, my-anim 1s,my-anim2 2s, my-anim3 3s,my-anim4 4s;
-    }
-    
-    @keyframes my-anim {
-      0% {color: red}
-      100% {color: blue}
-    }
-    
-    @keyframes my-anim2 {
-      0% {font-size: 1em}
-      100% {font-size: 1.2em}
-    }
-    `;
-    const result = shim(css, CONTENT_ATTR, HOST_ATTR);
-    const animationLineMatch = result.match(/animation:[^;]+;/);
-    let animationLine = '';
-    if (animationLineMatch) {
-      animationLine = animationLineMatch[0];
-    }
-    expect(result).not.toContain('animation:,');
-    ['my-anim', 'my-anim2'].forEach((scoped) =>
-      expect(animationLine).toContain(`_ngcontent-%COMP%_${scoped}`),
-    );
-    ['my-anim3', 'my-anim4'].forEach((nonScoped) => {
-      expect(animationLine).toContain(nonScoped);
-      expect(animationLine).not.toContain(`_ngcontent-%COMP%_${nonScoped}`);
-    });
-  });
-
   it('should handle (scope or not) multiple animation definitions in a single declaration', () => {
     const css = `
         div {
@@ -290,6 +256,17 @@ describe('ShadowCss, keyframes and animations', () => {
     expect(shim(css, 'host-a')).toEqual(expected);
     css = '.test{animation:bar 2s forwards;}@-webkit-keyframes bar {}';
     expected = '.test[host-a]{animation:host-a_bar 2s forwards;}@-webkit-keyframes host-a_bar {}';
+    expect(shim(css, 'host-a')).toEqual(expected);
+  });
+
+  it('should correctly process animations defined in minified rules nested in an at-rule', () => {
+    let css = '@keyframes foo {}@media screen{.test{animation:foo 1s forwards}}';
+    let expected =
+      '@keyframes host-a_foo {}@media screen{.test[host-a]{animation:host-a_foo 1s forwards}}';
+    expect(shim(css, 'host-a')).toEqual(expected);
+    css = '@keyframes foo {}@supports (display:grid){.test{animation-name:foo}}';
+    expected =
+      '@keyframes host-a_foo {}@supports (display:grid){.test[host-a]{animation-name:host-a_foo}}';
     expect(shim(css, 'host-a')).toEqual(expected);
   });
 

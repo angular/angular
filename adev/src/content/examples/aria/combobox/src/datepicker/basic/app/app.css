@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font, sans-serif);
+  --border-color: var(--quaternary-contrast, #e0e0e0);
+}
+
+/* Universal/Basic Trigger Layout Styles */
+.example-combobox-container {
+  position: relative;
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--quinary-contrast, #e0e0e0);
+  border-radius: 0.25rem;
+  background-color: var(--page-background, #ffffff);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.example-combobox-input-container {
+  display: flex;
+  position: relative;
+  align-items: center;
+  border-radius: 0.25rem;
+}
+
+.example-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: var(--primary-contrast, #1a1a1a);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.example-search-icon {
+  padding: 0 0.5rem;
+  position: absolute;
+  opacity: 0.8;
+}
+
+.example-combobox-input {
+  border-radius: 0.25rem;
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  background-color: transparent;
+  color: var(--primary-contrast, #1a1a1a);
+}
+
+.example-combobox-container:focus-within {
+  border-color: var(--hot-pink, #ff007f);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--hot-pink, #ff007f) 20%, transparent);
+}
+
+/* Overlay Bounding Popover */
+.example-popover {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: var(--septenary-contrast, #ffffff);
+  overflow: hidden;
+}
+
+.example-datepicker-popup {
+  padding: 16px;
+  width: 320px;
+  max-height: none;
+  overflow: visible;
+  background-color: transparent;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.example-datepicker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
+}
+
+.example-datepicker-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--primary-contrast, #1a1a1a);
+}
+
+.example-datepicker-nav-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--primary-contrast, #1a1a1a);
+  transition: background-color 0.2s ease;
+}
+
+.example-datepicker-nav-button:hover {
+  background-color: var(--senary-contrast, #f0f0f0);
+}
+
+.example-datepicker-nav-button:focus {
+  outline-offset: -1px;
+  outline: 1px solid color-mix(in srgb, var(--hot-pink, #ff007f) 60%, transparent);
+}
+.example-datepicker-grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.example-datepicker-cell {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+}
+
+.example-datepicker-weekday {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--secondary-contrast, #707070);
+  padding-bottom: 8px;
+}
+
+.example-datepicker-empty {
+  color: var(--senary-contrast, #c0c0c0);
+  font-size: 0.8rem;
+}
+
+.example-datepicker-day-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--primary-contrast, #1a1a1a);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.example-datepicker-cell:hover .example-datepicker-day-button {
+  background-color: var(--senary-contrast, #f0f0f0);
+}
+
+.example-datepicker-cell:focus-within {
+  outline: 2px solid var(--hot-pink, #ff007f);
+  outline-offset: -2px;
+}
+
+@media (forced-colors: active) {
+  .example-datepicker-cell:focus-within {
+    outline: 2px solid CanvasText;
+  }
+}
+
+.example-datepicker-day-button:focus {
+  outline: none;
+}
+
+thead {
+  background-image: var(
+    --pink-to-purple-horizontal-gradient,
+    linear-gradient(to right, #ff007f, #6200ee)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.example-datepicker-cell[aria-selected='true'] .example-datepicker-day-button {
+  background-color: var(--electric-violet, #6200ee);
+  color: var(--octonary-contrast, #ffffff);
+}
+
+.example-datepicker-nav-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.example-combobox-hint {
+  font-size: 0.75rem;
+  color: var(--secondary-contrast, #707070);
+  margin-top: 4px;
+}

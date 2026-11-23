@@ -211,9 +211,9 @@ interface BillPayFormModel {
 
 const billPaySchema = schema<BillPayFormModel>((billPay) => {
   // Hide credit card details when user has selected a method other than credit card.
-  hidden(billPay.method.card, ({valueOf}) => valueOf(billPay.method.type) !== 'card');
+  hidden(billPay.method.card, {when: ({valueOf}) => valueOf(billPay.method.type) !== 'card'});
   // Hide bank account details when user has selected a method other than bank account.
-  hidden(billPay.method.bank, ({valueOf}) => valueOf(billPay.method.type) !== 'bank');
+  hidden(billPay.method.bank, {when: ({valueOf}) => valueOf(billPay.method.type) !== 'bank'});
 });
 ```
 
@@ -358,7 +358,7 @@ class MyForm {
 
   protected readonly myForm = form(this.formModel, (root) => {
     // Disable the entire form when the resource is loading.
-    disabled(root, () => this.domainModelResource.isLoading());
+    disabled(root, {when: () => this.domainModelResource.isLoading()});
   });
 }
 ```
@@ -380,7 +380,7 @@ class MyForm {
 
   handleSubmit() {
     submit(this.myForm, async () => {
-      await this.myDataService.update(formModelToDomainModel(this.myForm.value()));
+      await this.myDataService.update(formModelToDomainModel(this.myForm().value()));
     });
   };
 }
@@ -402,7 +402,7 @@ class MyForm {
     effect(() => {
       // When the form model changes to a valid value, update the domain model.
       if (this.myForm().valid()) {
-        this.domainModel.set(formModelToDomainModel(this.myForm.value()));
+        this.domainModel.set(formModelToDomainModel(this.myForm().value()));
       }
     });
   };

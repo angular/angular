@@ -7,8 +7,21 @@
   position: relative;
 
   .not-supported {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 1rem;
     text-align: center;
+
+    ng-angie {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+    }
   }
 
   .wrapper {

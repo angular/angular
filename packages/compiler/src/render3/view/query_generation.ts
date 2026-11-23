@@ -64,10 +64,7 @@ function toQueryFlags(query: R3QueryMetadata): number {
   );
 }
 
-export function getQueryPredicate(
-  query: R3QueryMetadata,
-  constantPool: ConstantPool,
-): o.Expression {
+function getQueryPredicate(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
   if (Array.isArray(query.predicate)) {
     let predicate: o.Expression[] = [];
     query.predicate.forEach((selector: string): void => {
@@ -222,7 +219,7 @@ export function createViewQueriesFunction(
       renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
       renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
     ],
-    o.INFERRED_TYPE,
+    o.DYNAMIC_TYPE,
     null,
     viewQueryFnName,
   );
@@ -289,7 +286,7 @@ export function createContentQueriesFunction(
       renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
       renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
     ],
-    o.INFERRED_TYPE,
+    o.DYNAMIC_TYPE,
     null,
     contentQueriesFnName,
   );

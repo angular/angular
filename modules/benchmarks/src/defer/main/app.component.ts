@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
 import {TableCell} from '../util';
@@ -15,7 +15,6 @@ let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;
 
 @Component({
-  standalone: true,
   selector: 'app',
   template: `
     <table>
@@ -38,6 +37,7 @@ let trustedGreyColor: SafeStyle;
       </tbody>
     </table>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AppComponent {
   @Input() data: TableCell[][] = [];

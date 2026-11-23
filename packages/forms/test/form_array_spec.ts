@@ -1667,7 +1667,7 @@ import {asyncValidator} from './util';
 
       it('should NOT track signals read inside CVA.writeValue when setValue is called inside an effect', async () => {
         const fixture = TestBed.createComponent(HostComponent);
-        fixture.detectChanges(); // wires up FormControlDirective + CVA
+        await fixture.whenStable(); // wires up FormControlDirective + CVA
 
         const driver = signal('A');
         let runs = 0;
@@ -1698,7 +1698,7 @@ import {asyncValidator} from './util';
 
       it('should NOT track signals read inside CVA.writeValue when patchValue is called inside an effect', async () => {
         const fixture = TestBed.createComponent(HostComponent);
-        fixture.detectChanges(); // wires up FormControlDirective + CVA
+        await fixture.whenStable(); // wires up FormControlDirective + CVA
 
         const driver = signal('A');
         let runs = 0;
@@ -1729,7 +1729,7 @@ import {asyncValidator} from './util';
 
       it('should NOT track signals read inside CVA.writeValue when reset is called inside an effect', async () => {
         const fixture = TestBed.createComponent(HostComponent);
-        fixture.detectChanges(); // wires up FormControlDirective + CVA
+        await fixture.whenStable(); // wires up FormControlDirective + CVA
 
         const driver = signal('A');
         let runs = 0;

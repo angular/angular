@@ -304,6 +304,9 @@ export type DirectiveDebugMetadata =
 export function getDirectiveMetadata(
   directiveOrComponentInstance: any,
 ): AngularComponentDebugMetadata | AngularDirectiveDebugMetadata | null {
+  if (!directiveOrComponentInstance) {
+    return null;
+  }
   const {constructor} = directiveOrComponentInstance;
   if (!constructor) {
     throw new Error('Unable to find the instance constructor');
@@ -442,7 +445,7 @@ export function getListeners(element: Element): Listener[] {
   const tCleanup = tView.cleanup;
   const listeners: Listener[] = [];
   if (tCleanup && lCleanup) {
-    for (let i = 0; i < tCleanup.length; ) {
+    for (let i = 0; i < tCleanup.length;) {
       const firstParam = tCleanup[i++];
       const secondParam = tCleanup[i++];
       if (typeof firstParam === 'string') {
@@ -520,7 +523,7 @@ function extractInputDebugMetadata<T>(inputs: DirectiveDef<T>['inputs']) {
   const res: AngularDirectiveDebugMetadata['inputs'] = {};
 
   for (const key in inputs) {
-    if (inputs.hasOwnProperty(key)) {
+    if (Object.hasOwn(inputs, key)) {
       const value = inputs[key];
 
       if (value !== undefined) {

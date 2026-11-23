@@ -1,0 +1,94 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {LifecycleProfile} from '../../../../protocol';
+import {getProfiler, Profiler} from './profiler';
+import {getDirectiveName} from '../directive-forest/utils/directive';
+import type {ComponentInstance, DirectiveInstance} from '../shared/interfaces';
+import {getConfig} from '../config/config';
+
+type Method = keyof LifecycleProfile | 'changeDetection' | string;
+
+export function loadPerformanceTrack(): () => void {
+  let profiler: Profiler | undefined;
+
+  return getConfig().onValue('performanceTrack', (enabled: boolean) => {
+    if (enabled) {
+      // We assign the profiler to a variable to avoid
+      // using `getProfiler` in the `else` case, if it
+      // happens to be executed first. This will prevent
+      // spawning a profiler just for the sake of calling
+      // `unsubscribe` on non-subscribed hooks.
+      profiler = getProfiler();
+      profiler.subscribe(timingHooks);
+    } else {
+      profiler?.unsubscribe(timingHooks);
+    }
+  });
+}
+
+const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
+
+const supportsPerformance =
+  globalThis.performance && typeof globalThis.performance.getEntriesByName === 'function';
+
+const recordMark = (s: string, method: Method) => {
+  if (supportsPerformance) {
+    // tslint:disable-next-line:ban
+    performance.mark(`${markName(s, method)}_start`);
+  }
+};
+
+const endMark = (nodeName: string, method: Method) => {
+  if (supportsPerformance) {
+    const name = markName(nodeName, method);
+    const start = `${name}_start`;
+    const end = `${name}_end`;
+    if (performance.getEntriesByName(start).length > 0) {
+      // tslint:disable-next-line:ban
+      performance.mark(end);
+
+      const measureOptions = {
+        start,
+        end,
+        detail: {
+          devtools: {
+            dataType: 'track-entry',
+            color: 'primary',
+            track: '🅰️ Angular DevTools',
+          },
+        },
+      };
+      performance.measure(name, measureOptions);
+    }
+    performance.clearMarks(start);
+    performance.clearMarks(end);
+    performance.clearMeasures(name);
+  }
+};
+
+const timingHooks = {
+  onChangeDetectionStart(component: ComponentInstance): void {
+    recordMark(getDirectiveName(component), 'changeDetection');
+  },
+  onChangeDetectionEnd(component: ComponentInstance): void {
+    endMark(getDirectiveName(component), 'changeDetection');
+  },
+  onLifecycleHookStart(component: DirectiveInstance, lifecyle: keyof LifecycleProfile): void {
+    recordMark(getDirectiveName(component), lifecyle);
+  },
+  onLifecycleHookEnd(component: DirectiveInstance, lifecyle: keyof LifecycleProfile): void {
+    endMark(getDirectiveName(component), lifecyle);
+  },
+  onOutputStart(component: DirectiveInstance, output: string): void {
+    recordMark(getDirectiveName(component), output);
+  },
+  onOutputEnd(component: DirectiveInstance, output: string): void {
+    endMark(getDirectiveName(component), output);
+  },
+};

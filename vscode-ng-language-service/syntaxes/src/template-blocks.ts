@@ -19,7 +19,8 @@ export const TemplateBlocks: GrammarDefinition = {
     },
 
     block: {
-      begin: /(@)(if|else if|else|defer|placeholder|loading|error|switch|for|empty)(?:\s*)/,
+      begin:
+        /(@)(if|else if|else|defer|placeholder|loading|error|switch|for|empty|boundary)(?:\s*)/,
       beginCaptures: {
         1: {
           patterns: [{include: '#transition'}],

@@ -141,11 +141,6 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
   isStandalone?: boolean;
 
   /**
-   * Whether the directive is a signal-based directive. Defaults to false.
-   */
-  isSignal?: boolean;
-
-  /**
    * Additional directives applied to the directive host.
    */
   hostDirectives?: R3DeclareHostDirectiveMetadata[];
@@ -222,7 +217,7 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
 
   /**
    * Strategy used for detecting changes in the component.
-   * Defaults to `ChangeDetectionStrategy.Default`.
+   * Defaults to `ChangeDetectionStrategy.OnPush`.
    */
   changeDetection?: ChangeDetectionStrategy;
 
@@ -584,4 +579,24 @@ export interface R3DeclareHostDirectiveMetadata {
   directive: o.Expression;
   inputs?: string[];
   outputs?: string[];
+}
+
+/**
+ * Describes the shape of the object that the `ɵɵngDeclareService()` function accepts.
+ *
+ * This interface serves primarily as documentation, as conformance to this interface is not
+ * enforced during linking.
+ */
+export interface R3DeclareServiceMetadata extends R3PartialDeclaration {
+  /**
+   * Determines whether the service should be provided automatically or if the user
+   * is responsible for providing it.
+   */
+  autoProvided?: boolean;
+
+  /**
+   * If provided, an expression that evaluates to a function to use when creating an instance of
+   * this injectable.
+   */
+  factory?: o.Expression;
 }

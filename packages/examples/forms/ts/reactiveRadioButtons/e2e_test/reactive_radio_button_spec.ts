@@ -6,34 +6,50 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element, ElementArrayFinder} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+describe('reactiveRadioButtons example', () => {
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-describe('radioButtons example', () => {
-  afterEach(verifyNoBrowserErrors);
-  let inputs: ElementArrayFinder;
-
-  beforeEach(() => {
-    browser.get('/reactiveRadioButtons');
-    inputs = element.all(by.css('input'));
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should populate the UI with initial values', () => {
-    expect(inputs.get(0).getAttribute('checked')).toEqual(null);
-    expect(inputs.get(1).getAttribute('checked')).toEqual('true');
-    expect(inputs.get(2).getAttribute('checked')).toEqual(null);
-
-    expect(element(by.css('p')).getText()).toEqual('Form value: { "food": "lamb" }');
+  afterAll(async () => {
+    await driver.quit();
   });
 
-  it('update model and other buttons as the UI value changes', () => {
-    inputs.get(0).click();
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
-    expect(inputs.get(0).getAttribute('checked')).toEqual('true');
-    expect(inputs.get(1).getAttribute('checked')).toEqual(null);
-    expect(inputs.get(2).getAttribute('checked')).toEqual(null);
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/reactiveRadioButtons`);
+    await waitForAngular(driver);
+  });
 
-    expect(element(by.css('p')).getText()).toEqual('Form value: { "food": "beef" }');
+  it('should populate the UI with initial values', async () => {
+    const inputs = await driver.findElements(webdriver.By.css('input'));
+    expect(await inputs[0].isSelected()).toBe(false);
+    expect(await inputs[1].isSelected()).toBe(true);
+    expect(await inputs[2].isSelected()).toBe(false);
+
+    const p = await driver.findElement(webdriver.By.css('p'));
+    expect(await p.getText()).toEqual('Form value: { "food": "lamb" }');
+  });
+
+  it('update model and other buttons as the UI value changes', async () => {
+    const inputs = await driver.findElements(webdriver.By.css('input'));
+    await inputs[0].click();
+    await waitForAngular(driver);
+
+    expect(await inputs[0].isSelected()).toBe(true);
+    expect(await inputs[1].isSelected()).toBe(false);
+    expect(await inputs[2].isSelected()).toBe(false);
+
+    const p = await driver.findElement(webdriver.By.css('p'));
+    expect(await p.getText()).toEqual('Form value: { "food": "beef" }');
   });
 });

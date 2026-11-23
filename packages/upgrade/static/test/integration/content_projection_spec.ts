@@ -15,7 +15,6 @@ import {
   Input,
   NgModule,
 } from '@angular/core';
-import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
@@ -34,7 +33,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should instantiate ng2 in ng1 template and project content', waitForAsync(() => {
+    it('should instantiate ng2 in ng1 template and project content', async () => {
       // the ng2 component that will be used in ng1 (downgraded)
       @Component({
         selector: 'ng2',
@@ -67,12 +66,82 @@ withEachNg1Version(() => {
 
       const element = html("<div>{{ 'ng1[' }}<ng2>~{{ ngContent }}~</ng2>{{ ']' }}</div>");
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(document.body.textContent).toEqual('ng1[NG2(~ng1-content~)]');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(document.body.textContent).toEqual('ng1[NG2(~ng1-content~)]');
+    });
 
-    it('should correctly project structural directives', waitForAsync(() => {
+    it('should not compile content that `ng-transclude` added to the host element', async () => {
+      @Component({template: '<ng-content></ng-content>'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .component('ng1', {transclude: true, template: '<ng2 ng-transclude></ng2>'})
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+            $rootScope['user'] = {
+              name: 'Alice',
+              avatarUrl: '/avatars/alice.png?{{ $root.evaluated() }}',
+            };
+          },
+        ]);
+
+      const element = html(
+        '<div><ng1><img ng-src="{{ user.avatarUrl }}">{{ user.name }}</ng1></div>',
+      );
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('Alice');
+    });
+
+    it('should not compile content that a directive on the host element wrote while it was linked', async () => {
+      @Component({template: '<ng-content></ng-content>'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ng1Label', () => ({
+          link: {
+            pre: (
+              scope: angular.IScope,
+              element: angular.IAugmentedJQuery,
+              attrs: angular.IAttributes,
+            ) => (element[0].textContent = attrs['ng1Label']),
+          },
+        }))
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+            $rootScope['value'] = '{{ $root.evaluated() }}';
+          },
+        ]);
+
+      const element = html('<div><ng2 ng1-label="{{ value }}">label</ng2></div>');
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('label');
+    });
+
+    it('should correctly project structural directives', async () => {
       @Component({
         selector: 'ng2',
         template: 'ng2-{{ itemId }}(<ng-content></ng-content>)',
@@ -107,12 +176,32 @@ withEachNg1Version(() => {
            </ng2>
          `);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
+    });
 
-    it('should instantiate ng1 in ng2 template and project content', waitForAsync(() => {
+    it('should project content that uses multi-element directives', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+      const element = html(
+        '<ng2><b ng-repeat-start="i in [1, 2]">{{ i }}</b><i ng-repeat-end>;</i></ng2>',
+      );
+
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(element.textContent)).toBe('[1;2;]');
+    });
+
+    it('should instantiate ng1 in ng2 template and project content', async () => {
       @Component({
         selector: 'ng2',
         template: `{{ 'ng2(' }}<ng1>{{ transclude }}</ng1
@@ -156,12 +245,11 @@ withEachNg1Version(() => {
 
       const element = html("<div>{{ 'ng1(' }}<ng2></ng2>{{ ')' }}</div>");
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(document.body.textContent).toEqual('ng1(ng2(ng1(ng2-transclude)))');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(document.body.textContent).toEqual('ng1(ng2(ng1(ng2-transclude)))');
+    });
 
-    it('should support multi-slot projection', waitForAsync(() => {
+    it('should support multi-slot projection', async () => {
       @Component({
         selector: 'ng2',
         template:
@@ -188,9 +276,8 @@ withEachNg1Version(() => {
         '<ng2><div ng-if="true" class="ng1a">1a</div><div' + ' class="ng1b">1b</div></ng2>',
       );
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
+    });
   });
 });

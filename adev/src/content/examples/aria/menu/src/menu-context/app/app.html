@@ -1,1 +1,59 @@
-<h1>Coming Soon</h1>
+<!-- Target area for right-click -->
+<div (contextmenu)="onContextMenu($event)" class="context-zone">
+  Right-click inside this area to open the context menu.
+</div>
+
+@if (lastAction()) {
+  <p class="last-action">
+    <span class="material-symbols-outlined" translate="no" aria-hidden="true">check_circle</span>
+    Action performed: <strong>{{ lastAction() }}</strong>
+  </p>
+}
+
+<!-- Hidden trigger positioned dynamically at cursor coordinates -->
+<div
+  #triggerEl
+  ngMenuTrigger
+  #trigger="ngMenuTrigger"
+  [menu]="contextMenu()"
+  style="position: fixed; visibility: hidden"
+  [style.left.px]="menuPosition().x"
+  [style.top.px]="menuPosition().y"
+></div>
+
+<!-- Overlay container for the menu -->
+<ng-template
+  [cdkConnectedOverlayOpen]="trigger.expanded()"
+  [cdkConnectedOverlay]="{
+    origin: triggerEl,
+    usePopover: 'inline',
+    hasBackdrop: true,
+    backdropClass: 'cdk-overlay-transparent-backdrop',
+  }"
+  (backdropClick)="closeContextMenu()"
+  (overlayKeydown)="onOverlayKeydown($event)"
+  cdkAttachPopoverAsChild
+>
+  <div ngMenu #contextMenu="ngMenu" (itemSelected)="onItemSelected($event)">
+    <ng-template ngMenuContent>
+      <div ngMenuItem value="Edit">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">edit</span>
+        <span class="label">Edit</span>
+      </div>
+
+      <div ngMenuItem value="Copy">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >content_copy</span
+        >
+        <span class="label">Copy</span>
+      </div>
+
+      <div role="separator" class="separator"></div>
+
+      <div ngMenuItem value="Delete" style="color: var(--vivid-pink)">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">delete</span>
+        <span class="label">Delete</span>
+      </div>
+    </ng-template>
+  </div>
+</ng-template>

@@ -203,6 +203,35 @@ describe('get outlining spans', () => {
     expect(getTrimmedSpanText(result[0].textSpan, files['app.ts'])).toEqual('{{item}}');
     expect(getTrimmedSpanText(result[1].textSpan, files['app.ts'])).toEqual('empty list');
   });
+
+  it('should have outlining spans for boundary and error blocks', () => {
+    const files = {
+      'app.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: \`
+          @boundary {
+            boundary body
+          } @error (let err) {
+            error body
+          }
+          \`,
+          standalone: false,
+        })
+        export class AppCmp {
+        }`,
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    project.expectNoSourceDiagnostics();
+
+    const appFile = project.openFile('app.ts');
+    const result = appFile.getOutliningSpans();
+    expect(result.length).toEqual(2);
+    expect(getTrimmedSpanText(result[0].textSpan, files['app.ts'])).toEqual('boundary body');
+    expect(getTrimmedSpanText(result[1].textSpan, files['app.ts'])).toEqual('error body');
+  });
 });
 
 function getTrimmedSpanText(span: ts.TextSpan, contents: string) {

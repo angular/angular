@@ -1175,6 +1175,24 @@ import {Component, input} from '@angular/core';
 export class WithConcatTemplate {
   readonly bla = input(true);
 }
+@@@@@@ template_icu.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    {foo(), plural,
+      =0 {{bar(), plural, =0 {zero} other {zero, <b>bar is {{ bar() }}</b>}}}
+      other {foo is {{ foo() }}}
+    }
+  `,
+})
+export class MyComp {
+  readonly foo = input(0);
+  readonly bar = input(0);
+}
 @@@@@@ template_ng_if.ts @@@@@@
 
 // tslint:disable
@@ -1211,6 +1229,24 @@ export class MyComp {
   readonly fourth = input(true);
   readonly fifth = input(true);
 }
+@@@@@@ template_ng_let.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    @let sum = one() + two();
+    @let three = this.three();
+    {{ sum }} {{ three }}
+  `,
+})
+export class MyComp {
+  readonly one = input(1);
+  readonly two = input(2);
+  readonly three = input(3);
+}
 @@@@@@ template_object_shorthand.ts @@@@@@
 
 // tslint:disable
@@ -1235,17 +1271,21 @@ import {Component, input} from '@angular/core';
 @Component({
   template: `
     <input [(ngModel)]="inputA()" />
-    <div (click)="inputB = false()"></div>
+    <input [(ngModel)]="inputB().prop.prop" />
+    <input (ngModelChange)="inputC() = $event" />
+    <input (ngModelChange)="inputD().prop = $event + inputF()" />
   `,
   host: {
-    '(click)': 'inputC = true()',
+    '(click)': 'inputE() = true',
   },
 })
 class TwoWayBinding {
   readonly inputA = input('');
-  readonly inputB = input(true);
-  readonly inputC = input(false);
-  readonly inputD = input(false);
+  readonly inputB = input({ prop: { prop: '' } });
+  readonly inputC = input('');
+  readonly inputD = input({ prop: '' });
+  readonly inputE = input(false);
+  readonly inputF = input('');
 }
 @@@@@@ temporary_variables.ts @@@@@@
 

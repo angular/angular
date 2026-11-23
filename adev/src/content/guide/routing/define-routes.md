@@ -28,7 +28,7 @@ A collection of routes looks like this:
 ```ts
 import {Routes} from '@angular/router';
 import {HomePage} from './home-page';
-import {AdminPage} from './about-page';
+import {AdminPage} from './admin-page';
 
 export const routes: Routes = [
   {
@@ -42,7 +42,7 @@ export const routes: Routes = [
 ];
 ```
 
-Tip: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
+TIP: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
 
 ### Adding the router to your application
 
@@ -112,7 +112,7 @@ import {SocialMediaFeed} from './social-media-feed';
 
 const routes: Routes = [
   {path: 'user/:id/:social-media', component: SocialMediaFeed},
-  {path: 'user/:id/', component: UserProfile},
+  {path: 'user/:id', component: UserProfile},
 ];
 ```
 
@@ -127,6 +127,7 @@ When you need to catch all routes for a specific path, the solution is a wildcar
 A common example is defining a Page Not Found component.
 
 ```ts
+import {Routes} from '@angular/router';
 import {Home} from './home/home';
 import {UserProfile} from './user-profile';
 import {NotFound} from './not-found';
@@ -140,7 +141,7 @@ const routes: Routes = [
 
 In this routes array, the app displays the `NotFound` component when the user visits any path outside of `home` and `user/:id`.
 
-Tip: Wildcard routes are typically placed at the end of a routes array.
+TIP: Wildcard routes are typically placed at the end of a routes array.
 
 ## How Angular matches URLs
 
@@ -171,6 +172,7 @@ If a user visits `/users/new`, Angular router would go through the following ste
 You can define a route that redirects to another route instead of rendering a component:
 
 ```ts
+import {Routes} from '@angular/router';
 import {Blog} from './home/blog';
 
 const routes: Routes = [
@@ -216,7 +218,8 @@ The page `title` property can be set dynamically to a resolver function using [`
 ```ts
 const titleResolver: ResolveFn<string> = (route) => route.queryParams['id'];
 const routes: Routes = [
-  ...{
+  // ...
+  {
     path: 'products',
     component: Products,
     title: titleResolver,
@@ -240,11 +243,13 @@ import {TitleStrategy, RouterStateSnapshot} from '@angular/router';
 @Injectable()
 export class AppTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
+  // Read once: getTitle() returns the prefixed title after the first update
+  private readonly defaultTitle = this.title.getTitle();
 
   updateTitle(snapshot: RouterStateSnapshot): void {
     // PageTitle is equal to the "Title" of a route if it's set
-    // If its not set it will use the "title" given in index.html
-    const pageTitle = this.buildTitle(snapshot) || this.title.getTitle();
+    // If it's not set, it uses the "title" given in index.html
+    const pageTitle = this.buildTitle(snapshot) || this.defaultTitle;
     this.title.setTitle(`MyAwesomeApp - ${pageTitle}`);
   }
 }
@@ -320,9 +325,32 @@ In this code sample, the home and about page are configured with specific `analy
 
 You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/routing/read-route-state) for details.
 
-### Dynamic data with data resolvers
+### Dynamic data with resources and resolvers
 
-When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/routing/data-resolvers).
+When you need to fetch data for a route, Angular Router supports reactive route resources as well as data resolvers:
+
+- [Data fetching with resources](/guide/routing/data-fetching-with-resources): Fetch data reactively using Angular Signals `Resource` APIs.
+- [Route data resolvers](/guide/routing/data-resolvers): Fetch data before route activation using resolver functions.
+
+### Error fallback components
+
+You can specify an `errorComponent` on a route to render a dedicated fallback component if the route component throws an error during initialization or rendering:
+
+```ts
+import {Routes} from '@angular/router';
+import {ProductDetails} from './product-details';
+import {ProductErrorFallback} from './product-error-fallback';
+
+export const routes: Routes = [
+  {
+    path: 'product/:id',
+    component: ProductDetails,
+    errorComponent: ProductErrorFallback,
+  },
+];
+```
+
+To learn more about configuring error fallbacks and retrying failed routes, see the [Error boundaries guide](/guide/routing/error-boundaries).
 
 ## Nested Routes
 

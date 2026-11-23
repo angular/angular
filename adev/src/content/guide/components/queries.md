@@ -102,7 +102,7 @@ export class UserProfile {}
 
 If the query does not find a result, its value is `undefined`. This may occur if the target element is absent or hidden by `@if`. Angular keeps the result of `contentChild` up to date as your application state changes.
 
-By default, content queries find only _direct_ children of the component and do not traverse into descendants.
+By default, `contentChild` queries traverse into descendants, while `contentChildren` queries find only _direct_ children. See [Content descendants](#content-descendants).
 
 You can also query for multiple results with the `contentChildren` function.
 
@@ -147,9 +147,7 @@ If a child query (`viewChild` or `contentChild`) does not find a result, its val
 In some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a _required query_.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class CustomCard {
   header = viewChild.required(CustomCardHeader);
   body = contentChild.required(CustomCardBody);
@@ -199,9 +197,7 @@ const SUB_ITEM = new InjectionToken<string>('sub-item');
 })
 export class SpecialItem {}
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class CustomList {
   subItemType = contentChild(SUB_ITEM);
 }
@@ -218,9 +214,7 @@ All query functions accept an options object as a second parameter. These option
 By default, the query locator indicates both the element you're searching for and the value retrieved. You can alternatively specify the `read` option to retrieve a different value from the element matched by the locator.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class CustomExpando {
   toggle = contentChild(ExpandoContent, {read: TemplateRef});
 }
@@ -230,6 +224,30 @@ The above example, locates an element with the directive `ExpandoContent` and re
 the `TemplateRef` associated with that element.
 
 Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
+
+You can also pass `Injector` to `read`.
+
+```angular-ts
+@Component({
+  selector: 'custom-table',
+  template: `
+    <third-party-table #inner>
+      <ng-template>
+        <ng-container [ngTemplateOutlet]="columns()" [ngTemplateOutletInjector]="innerInjector()" />
+      </ng-template>
+    </third-party-table>
+  `,
+})
+export class CustomTable {
+  columns = contentChild(TemplateRef);
+  innerInjector = viewChild('inner', {read: Injector});
+}
+```
+
+The above example retrieves the node injector of the `third-party-table` element, meaning the
+injector as seen from that element's position in the tree. Passing it to `NgTemplateOutlet` through
+`ngTemplateOutletInjector` lets directives in the projected template inject values that the
+third-party component provides.
 
 ### Content descendants
 

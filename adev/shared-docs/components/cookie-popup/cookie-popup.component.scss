@@ -15,15 +15,34 @@
   border-radius: 0.25rem;
   font-size: 0.875rem;
   max-width: 265px;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 
-  > div {
+  .docs-cookies-popup-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .docs-cookies-popup-angie {
+    flex-shrink: 0;
+    width: 52px;
+    height: auto;
+  }
+
+  .docs-cookies-popup-actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;
     width: 100%;
     margin-block-start: 1rem;
+
+    .docs-primary-btn {
+      flex: 1;
+    }
   }
 
   p {

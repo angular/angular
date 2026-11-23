@@ -19,7 +19,7 @@ To make these transitions as straightforward as possible, the Angular team makes
 - We follow the deprecation policy described here, so you have time to update your applications to the latest APIs and best practices
 
 HELPFUL: The practices described in this document apply to Angular 2.0 and later.
-If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade 'Upgrading from Angular JS').
+If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade 'Upgrading from AngularJS').
 _AngularJS_ is the name for all v1.x versions of Angular.
 
 ## Angular versioning
@@ -60,11 +60,13 @@ HELPFUL: Dates are offered as general guidance and are subject to change.
 
 In general, expect the following release cycle:
 
-- A major release every 6 months
-- 1-3 minor releases for each major release
+- A major release every 12 months
+- 4-6 minor releases for each major release
 - A patch release and pre-release \(`next` or `rc`\) build almost every week
 
 This cadence of releases gives eager developers access to new features as soon as they are fully developed and pass through our code review and integration testing processes, while maintaining the stability and reliability of the platform for production users that prefer to receive features after they have been validated by Google and other developers that use the pre-release builds.
+
+HELPFUL: Until Angular v22, Angular had a 6-month major release cycle, with 1-3 minor releases for each major release
 
 ## Support policy and schedule
 
@@ -72,21 +74,22 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 ### Release schedule
 
-<!-- Release schedule for upcoming versions is TBA. -->
-
 | Version | Date               |
 | :------ | :----------------- |
-| v21.1   | Week of 2026-01-12 |
-| v21.2   | Week of 2026-02-23 |
-| v22.0   | Week of 2026-05-18 |
+| v22.1   | Week of 2026-07-27 |
+| v22.2   | Week of 2026-09-21 |
+| v22.3   | ~ November 2026    |
+| v22.4   | ~ January 2027     |
+| v22.5   | ~ March 2027       |
+| v23.0   | ~ June 2027        |
 
 ### Support window
 
-All major releases are typically supported for 18 months.
+All major releases are typically supported for 24 months.
 
 | Support stage     | Support Timing | Details                                                             |
 | :---------------- | :------------- | :------------------------------------------------------------------ |
-| Active            | 6 months       | Regularly-scheduled updates and patches are released                |
+| Active            | 12 months      | Regularly-scheduled updates and patches are released                |
 | Long-term \(LTS\) | 12 months      | Only [critical fixes and security patches](#lts-fixes) are released |
 
 ### Actively supported versions
@@ -95,11 +98,11 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 | :------ | :----- | :--------- | :---------- | :--------- |
-| ^21.0.0 | Active | 2025-11-19 | 2026-05-19  | 2027-05-19 |
+| ^22.0.0 | Active | 2026-06-03 | 2027-06     | 2028-06    |
+| ^21.0.0 | LTS    | 2025-11-19 | 2026-06-03  | 2027-06    |
 | ^20.0.0 | LTS    | 2025-05-28 | 2025-11-19  | 2026-11-28 |
-| ^19.0.0 | LTS    | 2024-11-19 | 2025-05-28  | 2026-05-19 |
 
-Angular versions v2 to v18 are no longer supported.
+IMPORTANT: Angular versions v2 to v19 are no longer supported.
 
 ### LTS fixes
 
@@ -110,14 +113,14 @@ As a general rule, a fix is considered for an LTS version if it resolves one of:
 
 ## Deprecation policy
 
-When the Angular team intends to remove an API or feature, it will be marked as _deprecated_. This occurs when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum two major versions (approximately one year).
+When the Angular team intends to remove an API or feature, it will be marked as _deprecated_. This occurs when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum one major version (approximately one year).
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
 | Deprecation stages | Details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Announcement       | We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/main/CHANGELOG.md 'Angular change log'). Deprecated APIs appear in the [documentation](api?status=8) with ~~strikethrough~~. When we announce a deprecation, we also announce a recommended update path. Additionally, all deprecated APIs are annotated with `@deprecated` in the corresponding documentation, which enables text editors and IDEs to provide hints if your project depends on them. |
-| Deprecation period | When an API or a feature is deprecated, it is still present in at least the next two major releases (period of at least 12 months). After that, deprecated APIs and features are candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature happens only in major release. Until a deprecated API or feature is removed, it is maintained according to the LTS support policy, meaning that only critical and security issues are fixed.        |
+| Deprecation period | When an API or a feature is deprecated, it is still present in at least the next major release (period of at least 12 months). After that, deprecated APIs and features are candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature happens only in major release. Until a deprecated API or feature is removed, it is maintained according to the LTS support policy, meaning that only critical and security issues are fixed.             |
 | npm dependencies   | We only make npm dependency updates that require changes to your applications in a major release. In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version. This means that during minor Angular releases, npm dependency updates within Angular applications and libraries are optional.                                                                                              |
 
 ## Compatibility policy
@@ -133,6 +136,14 @@ To guarantee backward compatibility of Angular we run a series of checks before 
 - Running the tests of all the applications at Google that depend on Angular
 
 Any changes to the public API surface are made in accordance with the versioning, support, and depreciation policies previously described. In exceptional cases, such as critical security patches, fixes may introduce backwards incompatible changes. Such exceptional cases are accompanied by explicit notice on the framework's official communication channels.
+
+### Compiler ABI stability
+
+In addition to public API stability, Angular maintains **Compiler ABI (Application Binary Interface) stability** across patch versions of the same minor version. The ABI refers to the set of internal runtime APIs (such as those prefixed with `ɵɵ`) used by the code generated by the Angular compiler. This stability ensures that code compiled with version `X.Y.A` of the Angular compiler is compatible with the Angular runtime of version `X.Y.B`.
+
+This stability unblocks use cases like microfrontends where multiple applications may share a single Angular runtime while being built independently with different patch versions. Note that ABI stability is not guaranteed across minor versions, as new features may require changes to the internal APIs or the format of the generated code.
+
+HELPFUL: While we strive to maintain ABI compatibility and will treat any breakage as a regression, in practice it is difficult to validate such compatibility across all combinations of versions.
 
 ## Breaking change policy and update paths
 

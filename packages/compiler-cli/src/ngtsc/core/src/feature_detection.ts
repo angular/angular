@@ -8,7 +8,7 @@
 
 // Note: semver isn't available internally so this import will be commented out.
 // When adding more dependencies here, the caretaker may have to update a patch internally.
-import semver from 'semver';
+import semver from 'semver'; // 3p-only
 
 /**
  * Whether a version of `@angular/core` supports a specific feature.
@@ -23,5 +23,6 @@ export function coreVersionSupportsFeature(coreVersion: string, minVersion: stri
     return true;
   }
 
-  return semver.satisfies(coreVersion, minVersion, {includePrerelease: true});
+  // g3-only return true;
+  return semver.satisfies(coreVersion, minVersion, {includePrerelease: true}); // 3p-only
 }

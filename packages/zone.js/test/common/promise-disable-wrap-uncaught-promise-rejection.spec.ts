@@ -110,4 +110,28 @@ describe('disable wrap uncaught promise rejection', () => {
       done();
     });
   });
+
+  it('should handle a custom object rejection with a rejection property without crashing the error logger', async () => {
+    await jasmine.spyOnGlobalErrorsAsync(() => {
+      const originalConsoleError = console.error;
+      console.error = jasmine.createSpy('consoleErr');
+
+      const rejectObj = {
+        rejection: 'custom-inner-rejection',
+        message: 'custom-error-message',
+      };
+
+      Zone.current.fork({name: 'promise-error-zone'}).run(() => {
+        Promise.reject(rejectObj);
+      });
+
+      return new Promise<void>((res) => {
+        setTimeout(() => {
+          expect(console.error).toHaveBeenCalledWith(rejectObj);
+          console.error = originalConsoleError;
+          res();
+        });
+      });
+    });
+  });
 });

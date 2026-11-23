@@ -2,7 +2,7 @@
 
 This schematic migrates usages of `RouterTestingModule` inside tests to `RouterModule`.
 
-When a test imports `SpyLocation` from `@angular/common/testing` and uses `urlChanges` property , the schematic will also add `provideLocationMocks()` to preserve the original behavior.
+When a test imports `SpyLocation` from `@angular/common/testing` and uses the `urlChanges` property, the schematic will also add `provideLocationMocks()` to preserve the original behavior.
 
 Run the schematic with:
 
@@ -24,6 +24,7 @@ Before:
 
 ```ts
 import {RouterTestingModule} from '@angular/router/testing';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation} from '@angular/common/testing';
 
 describe('test', () => {
@@ -39,6 +40,7 @@ After:
 
 ```ts
 import {RouterModule} from '@angular/router';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation} from '@angular/common/testing';
 
 describe('test', () => {
@@ -56,6 +58,7 @@ Before:
 
 ```ts
 import {RouterTestingModule} from '@angular/router/testing';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation} from '@angular/common/testing';
 
 describe('test', () => {
@@ -78,8 +81,8 @@ After:
 
 ```ts
 import {RouterModule} from '@angular/router';
-import {provideLocationMocks} from '@angular/common/testing';
-import {SpyLocation} from '@angular/common/testing';
+import {TestBed} from '@angular/core/testing';
+import {SpyLocation, provideLocationMocks} from '@angular/common/testing';
 
 describe('test', () => {
   let spy: SpyLocation;

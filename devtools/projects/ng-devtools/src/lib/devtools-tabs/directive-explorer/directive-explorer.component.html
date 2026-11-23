@@ -1,7 +1,12 @@
-<as-split unit="percent" [direction]="splitDirection()" [gutterSize]="9">
-  <as-split-area #directiveForestSplitArea size="60">
+<as-split
+  unit="percent"
+  [ngResponsiveSplit]="tabSplitConfig"
+  direction="horizontal"
+  [gutterSize]="9"
+>
+  <as-split-area size="60">
     <as-split
-      [ngResponsiveSplit]="responsiveSplitConfig"
+      [ngResponsiveSplit]="forestSplitConfig"
       (directionChange)="onResponsiveSplitDirChange($event)"
       direction="vertical"
       [gutterSize]="9"
@@ -18,17 +23,8 @@
           [forest]="forest()"
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
+          [cdData]="cdData() ?? undefined"
         />
-        @if (isHydrationEnabled()) {
-          <div class="hydration">
-            <input
-              id="show-hydration-overlays"
-              type="checkbox"
-              (change)="toggleHydrationNodesHighlights($event.target.checked)"
-            />
-            <label for="show-hydration-overlays">Show hydration overlays</label>
-          </div>
-        }
         @if (parents()) {
           <ng-breadcrumbs
             (mouseLeaveNode)="unhighlight()"

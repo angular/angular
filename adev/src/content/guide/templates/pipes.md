@@ -2,7 +2,7 @@
 
 ## Overview
 
-Pipes are a special operator in Angular template expressions that allows you to transform data declaratively in your template. Pipes let you declare a transformation function once and then use that transformation across multiple templates. Angular pipes use the vertical bar character (`|`), inspired by the [Unix pipe](<https://en.wikipedia.org/wiki/Pipeline_(Unix)>).
+Pipes are special operators in Angular template expressions that allow you to transform data declaratively in your template. Pipes let you declare a transformation function once and then use that transformation across multiple templates. Angular pipes use the vertical bar character (`|`), inspired by the [Unix pipe](<https://en.wikipedia.org/wiki/Pipeline_(Unix)>).
 
 NOTE: Angular's pipe syntax deviates from standard JavaScript, which uses the vertical bar character for the [bitwise OR operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_OR). Angular template expressions do not support bitwise operators.
 
@@ -33,7 +33,7 @@ export class ShoppingCart {
 }
 ```
 
-When Angular renders the component, it will ensure that the appropriate date format and currency is based on the locale of the user. If the user is in the United States, it would render:
+When Angular renders the component, it will ensure that the appropriate date format and currency are based on the locale of the user. If the user is in the United States, it would render:
 
 ```angular-html
 <main>
@@ -162,7 +162,7 @@ Always use parentheses in your expressions when operator precedence may be ambig
 
 ### Change detection with pipes
 
-By default, all pipes are considered `pure`, which means that it only executes when a primitive input value (such as a `String`, `Number`, `Boolean`, or `Symbol`) or a object reference (such as `Array`, `Object`, `Function`, or `Date`) is changed. Pure pipes offer a performance advantage because Angular can avoid calling the transformation function if the passed value has not changed.
+By default, all pipes are considered `pure`, which means that they only execute when a primitive input value (such as a `String`, `Number`, `Boolean`, or `Symbol`) or an object reference (such as `Array`, `Object`, `Function`, or `Date`) is changed. Pure pipes offer a performance advantage because Angular can avoid calling the transformation function if the passed value has not changed.
 
 As a result, this means that mutations to object properties or array items are not detected unless the entire object or array reference is replaced with a different instance. If you want this level of change detection, refer to [detecting changes within arrays or objects](#detecting-change-within-arrays-or-objects).
 
@@ -177,8 +177,7 @@ The TypeScript class should additionally implement the `PipeTransform` interface
 
 Here is an example of a custom pipe that transforms strings to kebab case:
 
-```angular-ts
-// kebab-case.pipe.ts
+```angular-ts {header: "kebab-case.pipe.ts"}
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
@@ -289,3 +288,95 @@ export class JoinNamesImpurePipe implements PipeTransform {
 ```
 
 Angular developers often adopt the convention of including `Impure` in the pipe `name` and class name to indicate the potential performance pitfall to other developers.
+
+## Using pipe logic outside templates
+
+Pipes are template operators designed to transform data declaratively in templates. When you need the same transformation logic in a service, a utility class, or any other non-template context, **avoid injecting the pipe class**. Pipes are not designed as injectable services.
+
+### Extract the logic from custom pipes
+
+When you create a custom pipe, extract the transformation into a standalone function. Have the pipe's `transform()` method delegate to that function, and import the function directly wherever else you need it.
+
+```ts {header: "kebab-case.ts"}
+export function toKebabCase(value: string): string {
+  return value.toLowerCase().replace(/ /g, '-');
+}
+```
+
+```ts {header: "kebab-case.pipe.ts" , prefer}
+import {Pipe, PipeTransform} from '@angular/core';
+import {toKebabCase} from './kebab-case';
+
+@Pipe({name: 'kebabCase'})
+export class KebabCasePipe implements PipeTransform {
+  transform(value: string): string {
+    return toKebabCase(value);
+  }
+}
+```
+
+```ts {header: "formatter.service.ts" , prefer}
+import {Service} from '@angular/core';
+import {toKebabCase} from './kebab-case';
+
+@Service()
+export class FormatterService {
+  formatSlug(title: string): string {
+    return toKebabCase(title);
+  }
+}
+```
+
+```ts {header: "formatter.service.ts" , avoid}
+import {inject, Service} from '@angular/core';
+import {KebabCasePipe} from './kebab-case.pipe';
+
+@Service()
+export class FormatterService {
+  // Avoid injecting the pipe class into services or other classes.
+  private kebabCasePipe = inject(KebabCasePipe);
+
+  formatSlug(title: string): string {
+    return this.kebabCasePipe.transform(title);
+  }
+}
+```
+
+### Use formatting functions for built-in pipes
+
+Angular's built-in locale-aware pipes each have a corresponding standalone formatting function exported from `@angular/common`. Use these functions instead of injecting the pipe class.
+
+| Pipe           | Standalone function |
+| -------------- | ------------------- |
+| `DatePipe`     | `formatDate`        |
+| `CurrencyPipe` | `formatCurrency`    |
+| `DecimalPipe`  | `formatNumber`      |
+| `PercentPipe`  | `formatPercent`     |
+
+```ts {prefer}
+import {Service, LOCALE_ID, inject} from '@angular/core';
+import {formatNumber} from '@angular/common';
+
+@Service()
+export class PriceService {
+  private locale = inject(LOCALE_ID);
+
+  format(value: number) {
+    return formatNumber(value, this.locale, '1.2-2');
+  }
+}
+```
+
+```ts {avoid}
+import {inject, Service} from '@angular/core';
+import {DecimalPipe} from '@angular/common';
+
+@Service()
+export class PriceService {
+  private decimalPipe = inject(DecimalPipe);
+
+  format(value: number) {
+    return this.decimalPipe.transform(value, '1.2-2');
+  }
+}
+```

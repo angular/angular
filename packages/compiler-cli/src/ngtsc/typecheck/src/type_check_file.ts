@@ -5,22 +5,27 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {
+  DomSchemaChecker,
+  generateTypeCheckBlock,
+  OutOfBandDiagnosticRecorder,
+  TcbExpr,
+  TcbGenericContextBehavior,
+  TypeCheckingConfig,
+} from '@angular/compiler';
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
+import {AbsoluteFsPath, absoluteFromSourceFile} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
+import {TypeCheckBlockMetadata} from '../api';
 
-import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {OutOfBandDiagnosticRecorder} from './oob';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
-import {generateTypeCheckBlock} from './type_check_block';
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
-import {TcbGenericContextBehavior} from './ops/context';
-import {getStatementsBlock, TcbExpr} from './ops/codegen';
+
+export const TCB_FUNCTION_PREFIX = '_tcb';
 
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
@@ -34,12 +39,33 @@ export class TypeCheckFile extends Environment {
   readonly isTypeCheckFile = true;
   private nextTcbId = 1;
   private tcbStatements: string[] = [];
+  private sourceContent: string = '';
+  get hasCopiedSource() {
+    return this.copiedSourceOriginPath !== undefined;
+  }
+
+  setCopiedSourceOrigin(sourceFile: ts.SourceFile) {
+    const originPath = absoluteFromSourceFile(sourceFile);
+    if (this.copiedSourceOriginPath === originPath) {
+      return;
+    }
+    this.copiedSourceOriginPath = originPath;
+    this.contextFile = ts.createSourceFile(
+      this.contextFile.fileName,
+      sourceFile.text,
+      ts.ScriptTarget.Latest,
+      true,
+    );
+  }
+
+  setSourceContent(text: string) {
+    this.sourceContent = text;
+  }
 
   constructor(
     readonly fileName: AbsoluteFsPath,
     config: TypeCheckingConfig,
     refEmitter: ReferenceEmitter,
-    reflector: ReflectionHost,
     compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   ) {
     super(
@@ -52,7 +78,6 @@ export class TypeCheckFile extends Environment {
         shouldUseSingleQuotes: () => true,
       }),
       refEmitter,
-      reflector,
       ts.createSourceFile(
         compilerHost.getCanonicalFileName(fileName),
         '',
@@ -65,15 +90,17 @@ export class TypeCheckFile extends Environment {
   addTypeCheckBlock(
     ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
     meta: TypeCheckBlockMetadata,
-    domSchemaChecker: DomSchemaChecker,
-    oobRecorder: OutOfBandDiagnosticRecorder,
+    domSchemaChecker: DomSchemaChecker<unknown>,
+    oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     genericContextBehavior: TcbGenericContextBehavior,
+    reflector: ReflectionHost,
   ): void {
-    const fnId = `_tcb${this.nextTcbId++}`;
+    const fnId = `${TCB_FUNCTION_PREFIX}${this.nextTcbId++}`;
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
       ref,
       meta,
       this,
+      reflector,
       genericContextBehavior,
     );
     const fn = generateTypeCheckBlock(
@@ -88,32 +115,41 @@ export class TypeCheckFile extends Environment {
   }
 
   render(): string {
-    // NOTE: We are conditionally adding imports whenever we discover signal inputs. This has a
-    // risk of changing the import graph of the TypeScript program, degrading incremental program
-    // re-use due to program structure changes. For type check block files, we are ensuring an
-    // import to e.g. `@angular/core` always exists to guarantee a stable graph.
-    ensureTypeCheckFilePreparationImports(this);
+    let source = this.sourceContent;
 
-    const importChanges = this.importManager.finalize();
-    if (importChanges.updatedImports.size > 0) {
-      throw new Error(
-        'AssertionError: Expected no imports to be updated for a new type check file.',
-      );
-    }
+    if (!this.hasCopiedSource) {
+      // NOTE: We are conditionally adding imports whenever we discover signal inputs. This has a
+      // risk of changing the import graph of the TypeScript program, degrading incremental program
+      // re-use due to program structure changes. For type check block files, we are ensuring an
+      // import to e.g. `@angular/core` always exists to guarantee a stable graph.
+      ensureTypeCheckFilePreparationImports(this);
 
-    const printer = ts.createPrinter();
-    let source = '';
+      const importChanges = this.importManager.finalize();
+      if (importChanges.updatedImports.size > 0) {
+        throw new Error(
+          'AssertionError: Expected no imports to be updated for a new type check file.',
+        );
+      }
 
-    const newImports = importChanges.newImports.get(this.contextFile.fileName);
-    if (newImports !== undefined) {
-      source += newImports
-        .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
-        .join('\n');
+      const printer = ts.createPrinter();
+      const newImports = importChanges.newImports.get(this.contextFile.fileName);
+      if (newImports !== undefined) {
+        source += newImports
+          .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
+          .join('\n');
+      }
     }
 
     source += '\n';
-    source += getStatementsBlock(this.pipeInstStatements);
-    source += getStatementsBlock(this.typeCtorStatements);
+
+    for (const expr of this.pipeInstStatements) {
+      source += `${expr.print()};\n`;
+    }
+
+    for (const expr of this.typeCtorStatements) {
+      source += `${expr.print()};\n`;
+    }
+
     source += '\n';
 
     for (const stmt of this.tcbStatements) {

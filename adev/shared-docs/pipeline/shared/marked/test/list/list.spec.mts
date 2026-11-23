@@ -32,6 +32,12 @@ describe('markdown to html', () => {
     expect(unorderedList?.textContent).toContain('matter');
   });
 
+  it('should keep the start number of an ordered list', () => {
+    const [firstList, resumedList] = markdownDocument.querySelectorAll('ol');
+    expect(firstList.hasAttribute('start')).toBeFalse();
+    expect(resumedList.getAttribute('start')).toBe('3');
+  });
+
   it('should render list items', () => {
     const unorderedList = markdownDocument.querySelector('ul');
     const linkItem = unorderedList!.children[4];

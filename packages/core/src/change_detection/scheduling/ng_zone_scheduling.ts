@@ -13,9 +13,9 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
   inject,
-  Injectable,
   InjectionToken,
   makeEnvironmentProviders,
+  Service,
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -33,7 +33,7 @@ import {
   ZONELESS_ENABLED,
 } from './zoneless_scheduling';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class NgZoneChangeDetectionScheduler implements OnDestroy {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
@@ -49,10 +49,11 @@ export class NgZoneChangeDetectionScheduler implements OnDestroy {
 
     this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
       next: () => {
-        // `onMicroTaskEmpty` can happen _during_ the zoneless scheduler change detection because
-        // zone.run(() => {}) will result in `checkStable` at the end of the `zone.run` closure
-        // and emit `onMicrotaskEmpty` synchronously if run coalsecing is false.
-        if (this.changeDetectionScheduler.runningTick) {
+        // `onMicroTaskEmpty` can happen _during_ change detection because zone.run(() => {}) will
+        // result in `checkStable` at the end of the `zone.run` closure and emit `onMicrotaskEmpty`
+        // synchronously if run coalsecing is false. Angular itself enters the zone this way while
+        // it flushes effects, so this can happen for any running tick, not just a scheduled one.
+        if (this.changeDetectionScheduler.runningTick || this.applicationRef._runningTick) {
           return;
         }
         this.zone.run(() => {
@@ -228,7 +229,7 @@ export function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions
   };
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ZoneStablePendingTask {
   private readonly subscription = new Subscription();
   private initialized = false;

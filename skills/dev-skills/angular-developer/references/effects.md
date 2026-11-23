@@ -24,7 +24,7 @@ import { Component, signal, effect } from '@angular/core';
 
 @Component({...})
 export class Example {
-  count = signal(0);
+  protected readonly count = signal(0);
 
   constructor() {
     // Effect must be created in an injection context (e.g., a constructor)
@@ -55,7 +55,7 @@ import { Component, afterRenderEffect, viewChild, ElementRef } from '@angular/co
 
 @Component({...})
 export class Chart {
-  canvas = viewChild.required<ElementRef>('canvas');
+  canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
 
   constructor() {
     afterRenderEffect({
@@ -63,10 +63,10 @@ export class Chart {
       earlyRead: () => {
         return this.canvas().nativeElement.getBoundingClientRect().width;
       },
-      // 2. Write to the DOM (receives the result of the previous phase)
+      // 2. Write to the DOM (receives the previous phase result as a Signal)
       write: (width) => {
         // NEVER read from the DOM in the write phase.
-        setupChart(this.canvas().nativeElement, width);
+        setupChart(this.canvas().nativeElement, width());
       }
     });
   }

@@ -81,8 +81,8 @@ describe('NodeRuntimeSandbox', () => {
 
     const fakeSpawnProcess = new FakeWebContainerProcess();
     fakeSpawnProcess.output = {
-      pipeTo: (data: WritableStream) => {
-        data.getWriter().write(OUT_OF_MEMORY_MSG);
+      pipeTo: async (data: WritableStream) => {
+        await data.getWriter().write(OUT_OF_MEMORY_MSG);
       },
       pipeThrough: () => fakeSpawnProcess.output,
     } as any;
@@ -97,9 +97,11 @@ describe('NodeRuntimeSandbox', () => {
   };
   const fakeAlertManager = {
     init: () => {},
+    decreaseInstancesCounter: jasmine.createSpy('decreaseInstancesCounter'),
   };
 
   beforeEach(() => {
+    fakeAlertManager.decreaseInstancesCounter.calls.reset();
     testBed = TestBed.configureTestingModule({
       providers: [
         NodeRuntimeSandbox,
@@ -213,6 +215,7 @@ describe('NodeRuntimeSandbox', () => {
 
     expect(service['nodeRuntimeState'].error()!.message).toBe(OUT_OF_MEMORY_MSG);
     expect(service['nodeRuntimeState'].loadingStep()).toBe(LoadingStep.ERROR);
+    expect(fakeAlertManager.decreaseInstancesCounter).toHaveBeenCalledOnceWith();
   });
 
   it('should run reset only once when called twice', async () => {

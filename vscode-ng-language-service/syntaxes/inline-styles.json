@@ -75,7 +75,7 @@
       ]
     },
     "style": {
-      "begin": "\\s*([`|'|\"])",
+      "begin": "\\s*([`'\"])",
       "beginCaptures": {
         "1": {
           "name": "string"
@@ -89,6 +89,10 @@
       },
       "contentName": "source.css.scss",
       "patterns": [
+        {
+          "match": "\\\\[\\s\\S]",
+          "name": "constant.character.escape.ts"
+        },
         {
           "include": "source.css.scss"
         }

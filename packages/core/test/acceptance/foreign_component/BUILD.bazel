@@ -1,0 +1,30 @@
+load("//tools:defaults.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "foreign_component_test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/core",
+        "//packages/core/src/interface",
+        "//packages/core/testing",
+    ],
+)
+
+angular_jasmine_test(
+    name = "foreign_component",
+    data = [
+        ":foreign_component_test_lib",
+        "//:node_modules/source-map",
+    ],
+)
+
+ng_web_test_suite(
+    name = "foreign_component_web",
+    deps = [
+        ":foreign_component_test_lib",
+    ],
+)

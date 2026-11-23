@@ -66,6 +66,9 @@ Angular DevTools panel and click "Reload frame", and refresh the page you're ins
 
 #### Debugging
 
+For how the panel, background worker, content scripts, and backend connect per tab and pass messages, see
+[docs/connection.md](docs/connection.md).
+
 Depending on which script you want to debug, you can find them in different locations. In debug mode, these should all
 have sourcemaps loaded and be unminified.
 

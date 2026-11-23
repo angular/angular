@@ -23,7 +23,7 @@
   </div>
 
   <div class="tree-view">
-    <ul ngTree #tree="ngTree" class="retro-tree" [(values)]="selected" [multi]="true">
+    <ul ngTree #tree="ngTree" class="retro-tree" [(value)]="selected" [multi]="true">
       <ng-template
         [ngTemplateOutlet]="treeNodes"
         [ngTemplateOutletContext]="{nodes: nodes, parent: tree}"
@@ -56,11 +56,7 @@
         }
       </span>
       {{ node.name }}
-      <span
-        aria-hidden="true"
-        class="material-symbols-outlined selected-icon"
-        translate="no"
-        aria-hidden="true"
+      <span aria-hidden="true" class="material-symbols-outlined selected-icon" translate="no"
         >check</span
       >
     </li>

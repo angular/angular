@@ -61,9 +61,7 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
 }
 
 export type R3FactoryMetadata =
-  | R3ConstructorFactoryMetadata
-  | R3DelegatedFnOrClassMetadata
-  | R3ExpressionFactoryMetadata;
+  R3ConstructorFactoryMetadata | R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
 
 export interface R3DependencyMetadata {
   /**
@@ -193,7 +191,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   let factoryFn: o.Expression = o.fn(
     [new o.FnParam(t.name, o.DYNAMIC_TYPE)],
     body,
-    o.INFERRED_TYPE,
+    o.DYNAMIC_TYPE,
     undefined,
     `${meta.name}_Factory`,
   );
@@ -208,6 +206,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
           new o.DeclareVarStmt(baseFactoryVar.name!, undefined, o.DYNAMIC_TYPE),
           new o.ReturnStatement(factoryFn),
         ],
+        o.DYNAMIC_TYPE,
       )
       .callFn([], /* sourceSpan */ undefined, /* pure */ true);
   }
@@ -321,13 +320,13 @@ function createCtorDepType(dep: R3DependencyMetadata): o.LiteralMapExpr | null {
 export function isDelegatedFactoryMetadata(
   meta: R3FactoryMetadata,
 ): meta is R3DelegatedFnOrClassMetadata {
-  return (meta as any).delegateType !== undefined;
+  return (meta as R3DelegatedFnOrClassMetadata).delegateType !== undefined;
 }
 
 export function isExpressionFactoryMetadata(
   meta: R3FactoryMetadata,
 ): meta is R3ExpressionFactoryMetadata {
-  return (meta as any).expression !== undefined;
+  return (meta as R3ExpressionFactoryMetadata).expression !== undefined;
 }
 
 function getInjectFn(target: FactoryTarget): o.ExternalReference {

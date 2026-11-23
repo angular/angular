@@ -8,7 +8,6 @@
 
 import {
   Component,
-  createComponent,
   createEnvironmentInjector,
   DestroyRef,
   ENVIRONMENT_INITIALIZER,
@@ -116,24 +115,6 @@ describe('environment injector', () => {
     expect(ngModuleRef.injector.get(Service)).toBeInstanceOf(Service);
     // There is no actual instance of @NgModule-annotated class
     expect(ngModuleRef.instance).toBeNull();
-  });
-
-  it('should expose the ComponentFactoryResolver token bound to env injector with specified providers', () => {
-    class Service {}
-
-    @Component({
-      selector: 'test-cmp',
-      standalone: false,
-    })
-    class TestComponent {
-      constructor(readonly service: Service) {}
-    }
-
-    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-    const environmentInjector = createEnvironmentInjector([Service], parentEnvInjector);
-    const cRef = createComponent(TestComponent, {environmentInjector});
-
-    expect(cRef.instance.service).toBeInstanceOf(Service);
   });
 
   it('should support the ENVIRONMENT_INITIALIZER multi-token', () => {

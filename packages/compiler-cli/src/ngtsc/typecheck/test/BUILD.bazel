@@ -25,6 +25,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/scope",
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/diagnostics",
@@ -39,4 +40,16 @@ jasmine_test(
         ":test_lib",
         "//packages/core:npm_package",
     ],
+)
+
+jasmine_test(
+    name = "test_ngp",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/core:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
 )

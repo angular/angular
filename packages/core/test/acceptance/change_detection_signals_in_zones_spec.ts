@@ -7,6 +7,7 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
+import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -23,7 +24,6 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 import {TestBed} from '../../testing';
 
 describe('CheckAlways components', () => {
@@ -93,7 +93,6 @@ describe('CheckAlways components', () => {
     @Component({
       template: `<check-always />`,
       imports: [CheckAlwaysCmp],
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushParent {}
     const fixture = TestBed.createComponent(OnPushParent);
@@ -113,6 +112,7 @@ describe('CheckAlways components', () => {
     @Component({
       template: '{{val()}}',
       selector: 'a-comp',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class A {
       val = aVal;
@@ -120,6 +120,7 @@ describe('CheckAlways components', () => {
     @Component({
       template: '{{val()}}',
       selector: 'b-comp',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class B {
       val = bVal;
@@ -132,7 +133,11 @@ describe('CheckAlways components', () => {
       }
     }
 
-    @Component({template: '<a-comp />-<b-comp />', imports: [A, B]})
+    @Component({
+      template: '<a-comp />-<b-comp />',
+      imports: [A, B],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
     class App {}
 
     const fixture = TestBed.createComponent(App);
@@ -155,6 +160,7 @@ describe('CheckAlways components', () => {
     @Component({
       template: '',
       selector: 'child',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       ngDoCheck() {
@@ -165,7 +171,11 @@ describe('CheckAlways components', () => {
         }
       }
     }
-    @Component({template: '{{val()}}<child />', imports: [Child]})
+    @Component({
+      template: '{{val()}}<child />',
+      imports: [Child],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
     class App {
       val = val;
     }
@@ -209,7 +219,6 @@ describe('OnPush components with signals', () => {
   it('marks view dirty', () => {
     @Component({
       template: `{{ value() }}{{ incrementTemplateExecutions() }}`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushCmp {
       numTemplateExecutions = 0;
@@ -239,7 +248,6 @@ describe('OnPush components with signals', () => {
   it("does not refresh a component when a signal notifies but isn't actually updated", () => {
     @Component({
       template: `{{ memo() }}{{ incrementTemplateExecutions() }}`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushCmp {
       numTemplateExecutions = 0;
@@ -273,7 +281,6 @@ describe('OnPush components with signals', () => {
     @Component({
       selector: 'child',
       template: `child`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class ChildReadingSignalCmp {
       constructor() {
@@ -287,7 +294,6 @@ describe('OnPush components with signals', () => {
         <!-- Template constructed to execute child component constructor in the update pass of a host component -->
         <ng-template [ngIf]="true"><child></child></ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [NgIf, ChildReadingSignalCmp],
     })
     class OnPushCmp {
@@ -334,7 +340,6 @@ describe('OnPush components with signals', () => {
         <!-- Template constructed to execute child component constructor in the update pass of a host component -->
         <ng-template [ngIf]="true"><with-input-setter [testInput]="'input'" /></ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [NgIf, WithInputSetter],
     })
     class OnPushCmp {
@@ -383,7 +388,6 @@ describe('OnPush components with signals', () => {
         <!-- Template constructed to execute child component constructor in the update pass of a host component -->
         <ng-template [ngIf]="true"><with-query-setter /></ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [NgIf, WithQuerySetter],
     })
     class OnPushCmp {
@@ -414,7 +418,6 @@ describe('OnPush components with signals', () => {
       template: `{{ incrementTemplateExecutions() }}`,
       selector: 'child',
       host: {'[class.blue]': 'useBlue()'},
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class MyCmp {
       useBlue = useBlue;
@@ -443,7 +446,6 @@ describe('OnPush components with signals', () => {
       template: `{{ incrementTemplateExecutions() }}`,
       selector: 'child',
       host: {'[class.blue]': 'useBlue()'},
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class ChildCmp {
       useBlue = signal(false);
@@ -457,7 +459,6 @@ describe('OnPush components with signals', () => {
 
     @Component({
       template: `<child />`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [ChildCmp],
     })
     class ParentCmp {}
@@ -481,7 +482,6 @@ describe('OnPush components with signals', () => {
       template: ``,
       selector: 'child',
       host: {'[class.blue]': 'useBlue()'},
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class ChildCmp {
       useBlue = signal(false);
@@ -489,7 +489,6 @@ describe('OnPush components with signals', () => {
 
     @Component({
       template: `<child /> {{ parentSignalValue() }}`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [ChildCmp],
       selector: 'parent',
     })
@@ -500,7 +499,6 @@ describe('OnPush components with signals', () => {
     // Wrapper component so we can effectively test ParentCmp being marked dirty
     @Component({
       template: `<parent />`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [ParentCmp],
     })
     class TestWrapper {}
@@ -543,7 +541,6 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      selector: 'test-component',
       imports: [MisunderstoodDir],
       template: `
         {{ counter() }}
@@ -576,7 +573,6 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      selector: 'test-component',
       imports: [MisunderstoodDir],
       template: `
         {{ counter() }}
@@ -616,7 +612,6 @@ describe('OnPush components with signals', () => {
 
     @Component({
       template: '{{val()}}{{incrementChecks()}}',
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class App {
       val = val;
@@ -645,7 +640,6 @@ describe('OnPush components with signals', () => {
             @if (true) {}
             {{ val() }}
           `,
-          changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class MyComp {
           val = signal('initial');
@@ -665,7 +659,6 @@ describe('OnPush components with signals', () => {
             {{ createEmbeddedView(template) }}
             {{ val() }}
           `,
-          changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class MyComp {
           val = signal('initial');
@@ -685,8 +678,6 @@ describe('OnPush components with signals', () => {
 
     it('refreshes an embedded view in a component', () => {
       @Component({
-        selector: 'signal-component',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         imports: [NgIf],
         template: `<div *ngIf="true">{{ value() }}</div>`,
       })
@@ -703,8 +694,6 @@ describe('OnPush components with signals', () => {
 
     it('refreshes multiple embedded views in a component', () => {
       @Component({
-        selector: 'signal-component',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         imports: [NgFor],
         template: `<div *ngFor="let i of [1, 2, 3]">{{ value() }}</div>`,
       })
@@ -721,8 +710,6 @@ describe('OnPush components with signals', () => {
 
     it('refreshes entire component, including embedded views, when signal updates', () => {
       @Component({
-        selector: 'signal-component',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         imports: [NgIf],
         template: `
           {{ componentSignal() }}
@@ -751,8 +738,6 @@ describe('OnPush components with signals', () => {
 
     it('re-executes deep embedded template if signal updates', () => {
       @Component({
-        selector: 'signal-component',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         imports: [NgIf],
         template: `
           <div *ngIf="true">
@@ -778,7 +763,6 @@ describe('OnPush components with signals', () => {
 
     it('tracks signal updates if embedded view is change detected directly', () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: ` <ng-template #template>{{ value() }}</ng-template> `,
       })
       class Test {
@@ -807,7 +791,6 @@ describe('OnPush components with signals', () => {
 
     it('tracks signal updates if embedded view is change detected directly before attaching', () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: ` <ng-template #template>{{ value() }}</ng-template> `,
       })
       class Test {
@@ -841,7 +824,6 @@ describe('OnPush components with signals', () => {
   describe('shielded by non-dirty OnPush', () => {
     @Component({
       selector: 'signal-component',
-      changeDetection: ChangeDetectionStrategy.OnPush,
       template: `{{ value() }}`,
     })
     class SignalComponent {
@@ -854,10 +836,8 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      selector: 'on-push-parent',
       template: ` <signal-component></signal-component>
         {{ incrementChecks() }}`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       imports: [SignalComponent],
     })
     class OnPushParent {

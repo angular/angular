@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, PLATFORM_ID} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
@@ -19,8 +19,9 @@ const provideServiceWorkerApi = 'provideServiceWorker';
 const serviceWorkerModuleApi = 'ServiceWorkerModule';
 
 async function waitForReadyToRegister() {
-  // `readyToRegister` is a microtask, so we wait for it to execute by
-  // scheduling another microtask before running expectations.
+  // `readyToRegister` is a microtask (often via `Promise.race`), so we wait for it to execute by
+  // scheduling microtasks before running expectations.
+  await Promise.resolve();
   await Promise.resolve();
 }
 
@@ -230,10 +231,17 @@ async function waitForReadyToRegister() {
       });
 
       describe('registrationStrategy', () => {
+        beforeEach(() => jasmine.clock().install());
+        afterEach(() => jasmine.clock().uninstall());
+
         const configTestBedWithMockedStability = (
           strategy?: SwRegistrationOptions['registrationStrategy'],
         ) => {
           const isStableSub = new Subject<boolean>();
+          const whenStable = () =>
+            new Promise<void>((resolve) =>
+              isStableSub.pipe(filter(Boolean), take(1)).subscribe(() => resolve()),
+            );
 
           if (apiFnName === provideServiceWorkerApi) {
             TestBed.configureTestingModule({
@@ -243,7 +251,7 @@ async function waitForReadyToRegister() {
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
-                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
+                    whenStable,
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
@@ -263,7 +271,7 @@ async function waitForReadyToRegister() {
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
-                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
+                    whenStable,
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
@@ -283,117 +291,128 @@ async function waitForReadyToRegister() {
           return isStableSub;
         };
 
-        it('defaults to registering the SW when the app stabilizes (under 30s)', fakeAsync(() => {
+        it('defaults to registering the SW when the app stabilizes (under 30s)', async () => {
           const isStableSub = configTestBedWithMockedStability();
 
           isStableSub.next(false);
+          jasmine.clock().tick(20000);
+          await waitForReadyToRegister();
 
           expect(swRegisterSpy).not.toHaveBeenCalled();
-          // tick(20000);
-          // Calling `tick(20000)` drains the microtask queue,
-          // which leads to `register` being called.
 
           isStableSub.next(true);
+          await waitForReadyToRegister();
 
-          tick();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('defaults to registering the SW after 30s if the app does not stabilize sooner', fakeAsync(() => {
+        it('defaults to registering the SW after 30s if the app does not stabilize sooner', async () => {
           configTestBedWithMockedStability();
+          jasmine.clock().tick(29999);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).not.toHaveBeenCalled();
-          tick(30000);
+
+          jasmine.clock().tick(1);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW when the app stabilizes with `registerWhenStable:<timeout>`', fakeAsync(() => {
+        it('registers the SW when the app stabilizes with `registerWhenStable:<timeout>`', async () => {
           const isStableSub = configTestBedWithMockedStability('registerWhenStable:1000');
 
           isStableSub.next(false);
           isStableSub.next(false);
+          await waitForReadyToRegister();
 
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
+          await waitForReadyToRegister();
 
-          tick();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW after `timeout` if the app does not stabilize with `registerWhenStable:<timeout>`', fakeAsync(() => {
+        it('registers the SW after `timeout` if the app does not stabilize with `registerWhenStable:<timeout>`', async () => {
           configTestBedWithMockedStability('registerWhenStable:1000');
+          jasmine.clock().tick(999);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).not.toHaveBeenCalled();
-          tick(1000);
+
+          jasmine.clock().tick(1);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW asap (asynchronously) before the app stabilizes with `registerWhenStable:0`', fakeAsync(() => {
+        it('registers the SW asap (asynchronously) before the app stabilizes with `registerWhenStable:0`', async () => {
           configTestBedWithMockedStability('registerWhenStable:0');
 
           // Create a microtask.
-          Promise.resolve();
+          await waitForReadyToRegister();
 
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
-          tick(0);
+          jasmine.clock().tick(0);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW only when the app stabilizes with `registerWhenStable:`', fakeAsync(() => {
+        it('registers the SW only when the app stabilizes with `registerWhenStable:`', async () => {
           const isStableSub = configTestBedWithMockedStability('registerWhenStable:');
 
           isStableSub.next(false);
           isStableSub.next(false);
+          await waitForReadyToRegister();
 
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
+          await waitForReadyToRegister();
 
-          tick();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW only when the app stabilizes with `registerWhenStable`', fakeAsync(() => {
+        it('registers the SW only when the app stabilizes with `registerWhenStable`', async () => {
           const isStableSub = configTestBedWithMockedStability('registerWhenStable');
 
           isStableSub.next(false);
           isStableSub.next(false);
+          await waitForReadyToRegister();
 
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
+          await waitForReadyToRegister();
 
-          tick();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
         it('registers the SW immediatelly (synchronously) with `registerImmediately`', async () => {
           configTestBedWithMockedStability('registerImmediately');
@@ -405,72 +424,70 @@ async function waitForReadyToRegister() {
           });
         });
 
-        it('registers the SW after the specified delay with `registerWithDelay:<delay>`', fakeAsync(() => {
+        it('registers the SW after the specified delay with `registerWithDelay:<delay>`', async () => {
           configTestBedWithMockedStability('registerWithDelay:100000');
 
-          // tick(99999);
-          // Calling `tick(99999)` drains the microtask queue,
-          // which leads to `register` being called.
+          jasmine.clock().tick(99999);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
-          tick(100000);
+          jasmine.clock().tick(1);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW asap (asynchronously) with `registerWithDelay:`', fakeAsync(() => {
+        it('registers the SW asap (asynchronously) with `registerWithDelay:`', async () => {
           configTestBedWithMockedStability('registerWithDelay:');
 
-          // Create a microtask.
-          Promise.resolve();
-
-          flushMicrotasks();
+          // Wait for microtasks.
+          await waitForReadyToRegister();
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
-          tick(0);
+          jasmine.clock().tick(0);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW asap (asynchronously) with `registerWithDelay`', fakeAsync(() => {
+        it('registers the SW asap (asynchronously) with `registerWithDelay`', async () => {
           configTestBedWithMockedStability('registerWithDelay');
 
-          // Create a microtask.
-          Promise.resolve();
-
-          flushMicrotasks();
+          // Wait for microtasks.
+          await waitForReadyToRegister();
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
-          tick(0);
+          jasmine.clock().tick(0);
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
-        it('registers the SW on first emitted value with observable factory function', fakeAsync(() => {
+        it('registers the SW on first emitted value with observable factory function', async () => {
           const registerSub = new Subject<void>();
           const isStableSub = configTestBedWithMockedStability(() => registerSub.asObservable());
 
           isStableSub.next(true);
-          tick();
+          await waitForReadyToRegister();
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           registerSub.next();
-          tick();
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
             type: undefined,
           });
-        }));
+        });
 
         it('throws an error with unknown strategy', () => {
           expect(() => configTestBedWithMockedStability('registerYesterday')).toThrowError(

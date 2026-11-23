@@ -138,7 +138,7 @@ export interface ParsedMessage extends MessageMetadata {
   /**
    * A mapping of placeholder names to substitution values.
    */
-  substitutions: Record<string, any>;
+  substitutions: Record<string, unknown>;
   /**
    * An optional mapping of placeholder names to associated MessageIds.
    * This can be used to match ICU placeholders to the message that contains the ICU.
@@ -170,12 +170,12 @@ export interface ParsedMessage extends MessageMetadata {
  */
 export function parseMessage(
   messageParts: TemplateStringsArray,
-  expressions?: readonly any[],
+  expressions?: readonly unknown[],
   location?: SourceLocation,
   messagePartLocations?: (SourceLocation | undefined)[],
   expressionLocations: (SourceLocation | undefined)[] = [],
 ): ParsedMessage {
-  const substitutions: {[placeholderName: string]: any} = {};
+  const substitutions: Record<string, unknown> = {};
   const substitutionLocations: {[placeholderName: string]: SourceLocation | undefined} = {};
   const associatedMessageIds: {[placeholderName: string]: MessageId} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);

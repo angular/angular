@@ -27,21 +27,13 @@ export function isNativeFormElement(element: HTMLElement): element is NativeForm
   );
 }
 
-export function isNumericFormElement(element: HTMLElement): boolean {
+export function elementAcceptsMinMax(element: HTMLElement): boolean {
   if (element.tagName !== 'INPUT') {
     return false;
   }
 
   const type = (element as HTMLInputElement).type;
-  return (
-    type === 'date' ||
-    type === 'datetime-local' ||
-    type === 'month' ||
-    type === 'number' ||
-    type === 'range' ||
-    type === 'time' ||
-    type === 'week'
-  );
+  return type === 'number' || type === 'range' || type === 'date' || type === 'month';
 }
 
 export function isTextualFormElement(element: HTMLElement): boolean {

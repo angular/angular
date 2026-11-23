@@ -1,0 +1,58 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "highlighter",
+    srcs = [
+        "highlight.ts",
+        "index.ts",
+        "templates.ts",
+    ],
+    deps = [
+        ":types",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:directive",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter/rendering",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "types",
+    srcs = ["types.ts"],
+)
+
+ts_test_library(
+    name = "spec-utils",
+    srcs = ["spec-utils.ts"],
+    deps = [
+        ":types",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "highlight.spec.ts",
+        "highlighter.spec.ts",
+    ],
+    deps = [
+        ":highlighter",
+        ":spec-utils",
+        ":types",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter/rendering",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

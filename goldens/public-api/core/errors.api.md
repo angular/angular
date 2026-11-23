@@ -44,6 +44,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_NG_MODULE_ID = 921,
     // (undocumented)
+    EVENT_REPLAY_CONTRACT_ALREADY_CONSUMED = 511,
+    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
@@ -62,7 +64,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_MISSING_NODE = -502,
     // (undocumented)
+    HYDRATION_MISSING_NODE_ON_PATH = -509,
+    // (undocumented)
     HYDRATION_MISSING_SIBLINGS = -501,
+    // (undocumented)
+    HYDRATION_MISSING_TEXT = -512,
     // (undocumented)
     HYDRATION_NODE_MISMATCH = -500,
     // (undocumented)
@@ -99,6 +105,10 @@ export const enum RuntimeErrorCode {
     INVALID_SET_INPUT_CALL = 317,
     // (undocumented)
     INVALID_SKIP_HYDRATION_HOST = -504,
+    // (undocumented)
+    INVALID_STYLE_PROP_VALUE = -318,
+    // (undocumented)
+    LOOP_INVALID_COLLECTION = -957,
     // (undocumented)
     LOOP_TRACK_DUPLICATE_KEYS = -955,
     // (undocumented)
@@ -140,11 +150,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NO_BINDING_TARGET = 315,
     // (undocumented)
-    NO_COMPONENT_FACTORY_FOUND = 917,
-    // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
     OUTPUT_REF_DESTROYED = 953,
+    // (undocumented)
+    PARENT_NODE_NOT_FOUND = 510,
     // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
@@ -170,13 +180,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_QUERY_NO_VALUE = -951,
     // (undocumented)
-    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = 991,
+    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = -991,
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)
     RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
     // (undocumented)
-    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
+    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = -600,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)
@@ -192,11 +202,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNKNOWN_ELEMENT = 304,
     // (undocumented)
-    UNSAFE_ATTRIBUTE_BINDING = -910,
-    // @deprecated (undocumented)
-    UNSAFE_IFRAME_ATTRS = -910,
+    UNPARSABLE_ICU_EXPRESSION = 702,
     // (undocumented)
-    UNSAFE_VALUE_IN_RESOURCE_URL = 904,
+    UNSAFE_ATTRIBUTE_BINDING = -910,
+    // (undocumented)
+    UNSAFE_VALUE_IN_RESOURCE_URL = -904,
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
     // (undocumented)

@@ -6,21 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {readFileSync} from 'fs';
-import {$, browser} from 'protractor';
-import {logging} from 'selenium-webdriver';
-import {RawSourceMap, SourceMapConsumer} from 'source-map';
+import {existsSync, readFileSync} from 'fs';
 import {resolve} from 'path';
+import * as webdriver from 'selenium-webdriver';
+import {RawSourceMap, SourceMapConsumer} from 'source-map';
+import {createWebDriver, waitForAngular} from '../../../../packages/examples/test-utils/index.js';
 
 describe('sourcemaps', function () {
-  const URL = '/';
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
 
   it('should map sources', async function () {
-    await browser.get(URL);
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
 
-    await $('error-app .errorButton').click();
+    const errorBtn = await driver.findElement(webdriver.By.css('error-app .errorButton'));
+    await errorBtn.click();
 
-    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+    const logs = await driver.manage().logs().get(webdriver.logging.Type.BROWSER);
 
     let errorLine: number | null = null;
     let errorColumn: number | null = null;
@@ -35,18 +46,28 @@ describe('sourcemaps', function () {
     expect(errorLine).not.toBeNull();
     expect(errorColumn).not.toBeNull();
 
-    const mapContent = readFileSync(
-      resolve('./modules/playground/src/sourcemap/bundles/main.js.map'),
-      'utf-8',
-    );
+    const mapPath = getFilePath('modules/playground/src/sourcemap/bundles/main.js.map');
+    const mapContent = readFileSync(mapPath, 'utf-8');
     const decoder = await new SourceMapConsumer(JSON.parse(mapContent) as RawSourceMap);
     const originalPosition = decoder.originalPositionFor({line: errorLine!, column: errorColumn!});
-    const sourceCodeLines = readFileSync(
-      resolve('./modules/playground/src/sourcemap/main.ts'),
-      'utf-8',
-    ).split('\n');
+    const sourcePath = getFilePath('modules/playground/src/sourcemap/main.ts');
+    const sourceCodeLines = readFileSync(sourcePath, 'utf-8').split('\n');
     expect(sourceCodeLines[originalPosition.line! - 1]).toMatch(
       /throw new Error\(\'Sourcemap test\'\)/,
     );
   });
 });
+
+function getFilePath(relPath: string): string {
+  const candidates = [
+    resolve(relPath),
+    resolve(process.cwd(), relPath),
+    process.env['TEST_SRCDIR'] ? resolve(process.env['TEST_SRCDIR'], '_main', relPath) : null,
+    process.env['TEST_SRCDIR'] ? resolve(process.env['TEST_SRCDIR'], relPath) : null,
+  ].filter((p): p is string => Boolean(p));
+
+  for (const c of candidates) {
+    if (existsSync(c)) return c;
+  }
+  return resolve(relPath);
+}

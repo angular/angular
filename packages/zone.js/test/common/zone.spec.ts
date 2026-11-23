@@ -5,6 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+
+import {isNode} from '../../lib/common/utils';
+
 describe('Zone Common', function () {
   it('should have a name', function () {
     expect(Zone.current.name).toBeDefined();
@@ -430,6 +433,153 @@ describe('Zone Common', function () {
 
     beforeEach(() => {
       log = [];
+    });
+
+    // https://github.com/angular/angular/issues/44446
+    // https://github.com/angular/angular/issues/55590
+    // https://github.com/angular/angular/issues/51328
+    describe('__zone_symbol__enable_native_microtask_draining', () => {
+      it('should not drain the microtask queue too early without task (if the flag is enabled)', (done) => {
+        // Regression test for https://github.com/angular/angular/issues/44446.
+        // Verifies that a microtask scheduled inside an event task is not drained
+        // synchronously mid-stack when the native draining flag is enabled.
+        const globalAny = global as any;
+        globalAny[Zone.__symbol__('enable_native_microtask_draining')] = true;
+        const zone = Zone.current;
+        const event = zone.scheduleEventTask(
+          'test',
+          () => {
+            log.push('eventTask');
+            zone.scheduleMicroTask('test', () => log.push('microTask'));
+          },
+          undefined,
+          noop,
+          noop,
+        );
+        log.push('after schedule eventTask');
+        expect(log).toEqual(['after schedule eventTask']);
+        event.invoke();
+        // At this point, we should not have invoked the microtask.
+        expect(log).toEqual(['after schedule eventTask', 'eventTask']);
+        globalAny[Zone.__symbol__('setTimeout')](() => {
+          expect(log).toEqual(['after schedule eventTask', 'eventTask', 'microTask']);
+          globalAny[Zone.__symbol__('enable_native_microtask_draining')] = false;
+          done();
+        });
+      });
+
+      it('should not drain the microtask queue too early (if the flag is enabled)', (done) => {
+        // We need `document` in this test.
+        if (isNode) {
+          done();
+          return;
+        }
+
+        // Regression test for https://github.com/angular/angular/issues/44446.
+        // Verifies that a Promise.then() callback scheduled inside a DOM event listener
+        // is not drained synchronously before the main stack unwinds.
+
+        const globalAny = global as any;
+        globalAny[Zone.__symbol__('enable_native_microtask_draining')] = true;
+        const zone = Zone.current;
+
+        zone.run(() => {
+          const listener = () => {
+            Promise.resolve().then(() => log.push('promise.then'));
+          };
+
+          document.body.addEventListener('click', listener);
+          document.body.click();
+          log.push('main stack');
+
+          globalAny[Zone.__symbol__('setTimeout')](() => {
+            document.body.removeEventListener('click', listener);
+            expect(log).toEqual(['main stack', 'promise.then']);
+            globalAny[Zone.__symbol__('enable_native_microtask_draining')] = false;
+            done();
+          });
+        });
+      });
+
+      it('should surface unhandled promise rejections via unhandledrejection event (if the flag is enabled)', async () => {
+        // We need `window` in this test.
+        if (isNode) {
+          return;
+        }
+
+        // Regression test for https://github.com/angular/angular/issues/55590.
+        // Verifies that unhandled promise rejections originating outside zone.js-patched
+        // code (e.g. a plain <script> tag) still surface via the native unhandledrejection
+        // event when the native draining flag is enabled.
+
+        let rejectionEvent: PromiseRejectionEvent | null = null;
+
+        const onError = window.onerror;
+        window.onerror = () => {};
+
+        const globalAny = global as any;
+        globalAny[Zone.__symbol__('enable_native_microtask_draining')] = true;
+
+        await jasmine.spyOnGlobalErrorsAsync(async () => {
+          const handler = (event: PromiseRejectionEvent) => {
+            window.removeEventListener('unhandledrejection', handler);
+            rejectionEvent = event;
+          };
+          window.addEventListener('unhandledrejection', handler);
+
+          const script = document.createElement('script');
+          script.innerHTML = "Promise.reject('Error happened :(')";
+          document.body.append(script);
+
+          // Wait until the event task is dispatched.
+          await new Promise((resolve) => setTimeout(resolve, 10));
+
+          window.onerror = onError;
+          globalAny[Zone.__symbol__('enable_native_microtask_draining')] = false;
+
+          expect(rejectionEvent).not.toBeNull();
+          expect(rejectionEvent!.reason).toBe('Error happened :(');
+        });
+      });
+
+      it('should not surface a rejection as unhandled when catch is attached (if the flag is enabled)', async () => {
+        // We need `window` in this test.
+        if (isNode) {
+          return;
+        }
+
+        // Regression test for https://github.com/angular/angular/issues/51328.
+        // Verifies that an internal `await Promise.reject()` inside an async IIFE does not
+        // fire `unhandledrejection` when a `.catch()` is attached to the outer promise.
+
+        let rejectionEvent: PromiseRejectionEvent | null = null;
+
+        const onError = window.onerror;
+        window.onerror = () => {};
+
+        const globalAny = global as any;
+        globalAny[Zone.__symbol__('enable_native_microtask_draining')] = true;
+
+        await jasmine.spyOnGlobalErrorsAsync(async () => {
+          const handler = (event: PromiseRejectionEvent) => {
+            window.removeEventListener('unhandledrejection', handler);
+            rejectionEvent = event;
+          };
+          window.addEventListener('unhandledrejection', handler);
+
+          (async function () {
+            await Promise.reject(2);
+          })().catch(() => {});
+
+          // Wait until the event task is dispatched.
+          await new Promise((resolve) => setTimeout(resolve, 10));
+
+          window.onerror = onError;
+          globalAny[Zone.__symbol__('enable_native_microtask_draining')] = false;
+
+          expect(rejectionEvent).toBeNull();
+        });
+      });
     });
 
     it('should not drain the microtask queue too early', () => {

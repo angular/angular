@@ -24,12 +24,12 @@ export type BusStatus = 'init' | 'waiting' | 'ready';
  */
 export class SamePageMessageBus extends MessageBus<Events> {
   private status: BusStatus = 'init';
-  private _listeners: ListenerFn[] = [];
+  private listeners: ListenerFn[] = [];
 
   constructor(
     private debugName: string,
-    private _source: string,
-    private _destination: string,
+    private source: string,
+    private destination: string,
   ) {
     super();
   }
@@ -38,15 +38,15 @@ export class SamePageMessageBus extends MessageBus<Events> {
     const listener: ListenerFn = (e) => {
       this.updateStatus(e.data?.topic);
 
-      if (e.source !== window || !e.data || !e.data.topic || e.data.source !== this._destination) {
+      if (e.source !== window || !e.data || !e.data.topic || e.data.source !== this.destination) {
         return;
       }
       cb(e.data.topic, e.data.args);
     };
     window.addEventListener('message', listener);
-    this._listeners.push(listener);
+    this.listeners.push(listener);
     return () => {
-      this._listeners.splice(this._listeners.indexOf(listener), 1);
+      this.listeners.splice(this.listeners.indexOf(listener), 1);
       window.removeEventListener('message', listener);
     };
   }
@@ -55,7 +55,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
     const listener: ListenerFn = (e) => {
       this.updateStatus(e.data?.topic);
 
-      if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
+      if (e.source !== window || !e.data || e.data.source !== this.destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
@@ -63,16 +63,16 @@ export class SamePageMessageBus extends MessageBus<Events> {
       }
     };
     window.addEventListener('message', listener);
-    this._listeners.push(listener);
+    this.listeners.push(listener);
     return () => {
-      this._listeners.splice(this._listeners.indexOf(listener), 1);
+      this.listeners.splice(this.listeners.indexOf(listener), 1);
       window.removeEventListener('message', listener);
     };
   }
 
   override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener: ListenerFn = (e) => {
-      if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
+      if (e.source !== window || !e.data || e.data.source !== this.destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
@@ -90,7 +90,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
 
     window.postMessage(
       {
-        source: this._source,
+        source: this.source,
         topic,
         args,
         __ignore_ng_zone__: true,
@@ -102,8 +102,8 @@ export class SamePageMessageBus extends MessageBus<Events> {
   }
 
   override destroy(): void {
-    this._listeners.forEach((l) => window.removeEventListener('message', l));
-    this._listeners = [];
+    this.listeners.forEach((l) => window.removeEventListener('message', l));
+    this.listeners = [];
   }
 
   private shouldSkipMessage(topic: string): boolean {

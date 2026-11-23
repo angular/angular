@@ -24,7 +24,7 @@ export function writeToDirectiveInput<T>(
   const prevConsumer = setActiveConsumer(null);
   try {
     if (ngDevMode) {
-      if (!def.inputs.hasOwnProperty(publicName)) {
+      if (!Object.hasOwn(def.inputs, publicName)) {
         throw new Error(
           `ASSERTION ERROR: Directive ${def.type.name} does not have an input with a public name of "${publicName}"`,
         );

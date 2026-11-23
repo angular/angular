@@ -34,7 +34,7 @@ import {
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function eagerUrlUpdateStrategyIntegrationSuite() {
+export async function eagerUrlUpdateStrategyIntegrationSuite() {
   describe('"eager" urlUpdateStrategy', () => {
     @Injectable()
     class AuthGuard {
@@ -176,7 +176,7 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
       let navigation: Navigation = null!;
       router.events.subscribe((e) => {
         if (e instanceof NavigationStart) {
-          navigation = router.getCurrentNavigation()!;
+          navigation = router.currentNavigation()!;
         }
       });
 

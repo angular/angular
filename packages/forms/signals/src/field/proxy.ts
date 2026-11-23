@@ -9,16 +9,21 @@
 import {untracked} from '@angular/core';
 import {isArray, isObject} from '../util/type_guards';
 import type {FieldNode} from './node';
+import {FIELD_TREE} from '../api/symbols';
 
 /**
  * Proxy handler which implements `FieldTree<T>` on top of `FieldNode`.
  */
 export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
-  get(getTgt: () => FieldNode, p: string | symbol, receiver: {[key: string]: unknown}) {
+  get(getTgt: () => FieldNode, property: string | symbol, receiver: Record<string, unknown>) {
+    if (property === FIELD_TREE) {
+      return true;
+    }
+
     const tgt = getTgt();
 
     // First, check whether the requested property is a defined child node of this node.
-    const child = tgt.structure.getChild(p);
+    const child = tgt.structure.getChild(property);
     if (child !== undefined) {
       // If so, return the child node's `FieldTree` proxy, allowing the developer to continue
       // navigating the form structure.
@@ -35,12 +40,12 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
 
     if (isArray(value)) {
       // Allow access to the length for field arrays, it should be the same as the length of the data.
-      if (p === 'length') {
+      if (property === 'length') {
         return (tgt.value() as Array<unknown>).length;
       }
       // Allow access to the iterator. This allows the user to spread the field array into a
       // standard array in order to call methods like `filter`, `map`, etc.
-      if (p === Symbol.iterator) {
+      if (property === Symbol.iterator) {
         return () => {
           // When creating an iterator, we need to account for reactivity. The iterator itself will
           // read things each time `.next()` is called, but that may happen outside of the context
@@ -59,7 +64,7 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
 
     if (isObject(value)) {
       // For object fields, allow iteration over their entries for convenience of use with `@for`.
-      if (p === Symbol.iterator) {
+      if (property === Symbol.iterator) {
         return function* () {
           for (const key in receiver) {
             yield [key, receiver[key]];
@@ -72,7 +77,7 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
     return undefined;
   },
 
-  getOwnPropertyDescriptor(getTgt, prop) {
+  getOwnPropertyDescriptor(getTgt: () => FieldNode, prop: string | symbol) {
     const value = untracked(getTgt().value) as Object;
     const desc = Reflect.getOwnPropertyDescriptor(value, prop);
     // In order for `Object.keys` to function properly, keys must be reported as configurable.

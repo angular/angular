@@ -43,12 +43,13 @@
     {
       "name": "i18n-duplicate-translation",
       "type": "string",
+      "default": "warning",
       "enum": [
         "error",
         "ignore",
         "warning"
       ],
-      "description": "How to handle duplicate translations."
+      "description": "How to handle duplicate messages found during extraction."
     },
     {
       "name": "out-file",
@@ -69,7 +70,7 @@
     {
       "name": "project",
       "type": "string",
-      "description": "The name of the project to build. Can be an application or a library.",
+      "description": "The name of the project to run the command for. Can be an application or a library.",
       "positional": 0
     }
   ]

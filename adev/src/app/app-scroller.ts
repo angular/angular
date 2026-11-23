@@ -7,7 +7,6 @@
  */
 import {isPlatformBrowser, ViewportScroller} from '@angular/common';
 import {
-  Injectable,
   inject,
   ApplicationRef,
   afterNextRender,
@@ -15,11 +14,12 @@ import {
   Injector,
   DestroyRef,
   PLATFORM_ID,
+  Service,
 } from '@angular/core';
 import {Scroll, Router} from '@angular/router';
 import {filter, firstValueFrom, map, switchMap, tap} from 'rxjs';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class AppScroller {
   private readonly router = inject(Router);
   private readonly viewportScroller = inject(ViewportScroller);
@@ -65,13 +65,7 @@ export class AppScroller {
           this.canScroll = true;
           this._lastScrollEvent = e;
         }),
-        filter(() => {
-          const info = this.router.lastSuccessfulNavigation()?.extras.info as Record<
-            'disableScrolling',
-            boolean
-          >;
-          return !info?.['disableScrolling'];
-        }),
+        filter((e) => e.scrollBehavior !== 'manual'),
         switchMap((e) => {
           return firstValueFrom(
             this.appRef.isStable.pipe(

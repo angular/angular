@@ -2,7 +2,7 @@
 
 Angular provides two ways to make services available for injection:
 
-1. **Automatic provision** - Using `providedIn` in the `@Injectable` decorator or by providing a factory in the `InjectionToken` configuration
+1. **Automatic provision** - Using `providedIn` in the `@Injectable` decorator, the [`@Service`](guide/di/creating-and-using-services#using-the-service-vs-injectable-decorator) decorator, or by providing a factory in the `InjectionToken` configuration
 2. **Manual provision** - Using the `providers` array in components, directives, routes, or application config
 
 In the [previous guide](/guide/di/creating-and-using-services), you learned how to create services using `providedIn: 'root'`, which handles most common use cases. This guide explores additional patterns for both automatic and manual provider configuration.
@@ -36,11 +36,10 @@ NOTE: The string parameter (e.g., `'api.url'`) is a description purely for debug
 
 ### InjectionToken with `providedIn: 'root'`
 
-An `InjectionToken` that has a `factory` results in `providedIn: 'root'` by default (but can be overidden via the `providedIn` prop).
+An `InjectionToken` that has a `factory` results in `providedIn: 'root'` by default (but can be overridden via the `providedIn` prop).
 
-```ts
-// 📁 /app/config.token.ts
-import {InjectionToken} from '@angular/core';
+```ts {header: "/app/config.token.ts"}
+import {InjectionToken, Component, inject} from '@angular/core';
 
 export interface AppConfig {
   apiUrl: string;
@@ -75,13 +74,12 @@ export class Header {
 
 InjectionToken with factory functions is ideal when you can't use a class but need to provide dependencies globally:
 
-```ts
-// 📁 /app/logger.token.ts
+```ts {header: "/app/logger.token.ts"}
 import {InjectionToken, inject} from '@angular/core';
 import {APP_CONFIG} from './config.token';
 
 // Logger function type
-export type LoggerFn = (level: string, message: string) => void;
+export type LoggerFn = (level: 'log' | 'warn' | 'error', message: string) => void;
 
 // Global logger function with dependencies
 export const LOGGER_FN = new InjectionToken<LoggerFn>('logger.function', {
@@ -89,15 +87,16 @@ export const LOGGER_FN = new InjectionToken<LoggerFn>('logger.function', {
   factory: () => {
     const config = inject(APP_CONFIG);
 
-    return (level: string, message: string) => {
+    return (level: 'log' | 'warn' | 'error', message: string) => {
       if (config.features.logging !== false) {
         console[level](`[${new Date().toISOString()}] ${message}`);
       }
     };
   },
 });
+```
 
-// 📁 /app/storage.token.ts
+```ts {header: "/app/storage.token.ts"}
 // Providing browser APIs as tokens
 export const LOCAL_STORAGE = new InjectionToken<Storage>('localStorage', {
   // providedIn: 'root' is configured as the default
@@ -108,8 +107,9 @@ export const SESSION_STORAGE = new InjectionToken<Storage>('sessionStorage', {
   providedIn: 'root',
   factory: () => window.sessionStorage,
 });
+```
 
-// 📁 /app/feature-flags.token.ts
+```ts {header: "/app/feature-flags.token.ts"}
 // Complex configuration with runtime logic
 export const FEATURE_FLAGS = new InjectionToken<Map<string, boolean>>('feature.flags', {
   providedIn: 'root',
@@ -181,7 +181,7 @@ import {Injectable, Component, inject} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
 export class DataStore {
-  private data: ListItem[] = [];
+  private data: string[] = [];
 }
 
 // This component gets its own instance
@@ -279,7 +279,7 @@ Provider identifiers allow Angular's dependency injection (DI) system to retriev
 
 #### Class names
 
-Class name use the imported class directly as the identifier:
+Class names use the imported class directly as the identifier:
 
 ```angular-ts
 import {Component} from '@angular/core';
@@ -300,8 +300,7 @@ The class serves as both the identifier and the implementation, which is why Ang
 
 Angular provides a built-in [`InjectionToken`](api/core/InjectionToken) class that creates a unique object reference for injectable values or when you want to provide multiple implementations of the same interface.
 
-```ts
-// 📁 /app/tokens.ts
+```ts {header: "/app/tokens.ts"}
 import {InjectionToken} from '@angular/core';
 import {DataService} from './data-service.interface';
 
@@ -549,7 +548,7 @@ class ApiClient {
 }
 
 // Factory function that configures based on user tier
-import {inject} from '@angular/core';
+import {inject, Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 const apiClientFactory = () => {
   const http = inject(HttpClient);
@@ -624,8 +623,7 @@ Use application-level providers in `bootstrapApplication` when:
 - **The service has no component-specific configuration** - General-purpose utilities that work the same everywhere
 - **You're providing global configuration** - API endpoints, feature flags, or environment settings
 
-```ts
-// main.ts
+```ts {header: "main.ts"}
 bootstrapApplication(App, {
   providers: [
     {provide: API_BASE_URL, useValue: 'https://api.example.com'},
@@ -709,8 +707,7 @@ Use route-level providers for:
 - **Lazy-loaded module dependencies** - Services that should only load with specific features
 - **Route-specific configuration** - Settings that vary by application area
 
-```ts
-// routes.ts
+```ts {header: "routes.ts"}
 export const routes: Routes = [
   {
     path: 'admin',
@@ -743,8 +740,7 @@ When creating Angular libraries, you often need to provide flexible configuratio
 
 Instead of requiring users to manually configure complex providers, library authors can export functions that return provider configurations:
 
-```ts
-// 📁 /libs/analytics/src/providers.ts
+```ts {header: "/libs/analytics/src/providers.ts"}
 import {InjectionToken, Provider, inject} from '@angular/core';
 
 // Configuration interface
@@ -770,9 +766,10 @@ export class AnalyticsService {
 export function provideAnalytics(config: AnalyticsConfig): Provider[] {
   return [{provide: ANALYTICS_CONFIG, useValue: config}, AnalyticsService];
 }
+```
 
+```ts {header: "main.ts"}
 // Usage in consumer app
-// main.ts
 bootstrapApplication(App, {
   providers: [
     provideAnalytics({
@@ -787,9 +784,9 @@ bootstrapApplication(App, {
 
 For more complex scenarios, you can combine multiple configuration approaches:
 
-```ts
-// 📁 /libs/http-client/src/provider.ts
+```ts {header: "/libs/http-client/src/provider.ts"}
 import {Provider, InjectionToken, inject} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 // Feature flags for optional functionality
 export enum HttpFeatures {

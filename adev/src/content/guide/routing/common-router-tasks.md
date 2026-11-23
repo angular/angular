@@ -33,7 +33,7 @@ Update the component to have an `input()` property matching the name of the para
 
 ```ts
 id = input.required<string>();
-hero = computed(() => this.service.getHero(id()));
+hero = computed(() => this.service.getHero(this.id()));
 ```
 
 </docs-step>
@@ -56,9 +56,60 @@ internalId = linkedSignal(() => this.id() ?? getDefaultId());
 </docs-step>
 </docs-workflow>
 
-NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
-If you want to use the parent components route info you will need to set the router `paramsInheritanceStrategy` option:
-`withRouterConfig({paramsInheritanceStrategy: 'always'})` . See [router configuration options](guide/routing/customizing-route-behavior#router-configuration-options) for details on other available settings.
+NOTE: You can bind all route data with key-value pairs to component inputs: route resources, static or resolved route data, path parameters, matrix parameters, and query parameters.
+
+### Input binding priority
+
+When multiple route sources define identical keys, the router resolves collisions in the following priority order (from highest to lowest):
+
+1. **Route resources**: Values defined in the route's `resources` map. Blocking resources bind their unwrapped value (`resource.value()`), while non-blocking resources bind the `Resource` instance.
+2. **Route data and resolvers**: Static data defined in `data` or values resolved via `resolve`.
+3. **Path parameters and matrix parameters**: Parameters from the URL path (such as `:id`) and matrix parameters.
+4. **Query parameters**: Parameters from the query string (such as `?id=123`).
+
+For example, if a route has both a path parameter `:id` and a query parameter `?id=...`, the path parameter value is bound to the component's `id` input. If the route also defines a resource named `id`, the resource value takes precedence over both.
+
+### Disable query parameter binding
+
+Use `ComponentInputBindingOptions` to disable query parameter binding if you manage query parameters separately:
+
+```ts
+provideRouter(appRoutes, withComponentInputBinding({queryParams: false}));
+```
+
+### Configure behavior for inputs not available in router data
+
+By default, the router sets an input to `undefined` if it was not available in the router data during a navigation. This ensures that stale data is not retained.
+
+If you want to avoid setting `undefined` for inputs that have _never_ been available in the router data for the active component instance, you can set the `unmatchedInputBehavior` option to `'undefinedIfStale'`:
+
+```ts
+provideRouter(appRoutes, withComponentInputBinding({unmatchedInputBehavior: 'undefinedIfStale'}));
+```
+
+When you combine `unmatchedInputBehavior: 'undefinedIfStale'` with `queryParams: false`, inputs retain their initial values unless they are explicitly provided by the router. The exception is matrix parameters: if a matrix parameter is provided in one navigation and removed in a subsequent one, the router will set the input to `undefined` to avoid retaining stale data.
+
+```ts
+provideRouter(
+  appRoutes,
+  withComponentInputBinding({
+    queryParams: false,
+    unmatchedInputBehavior: 'undefinedIfStale',
+  }),
+);
+```
+
+### Inherit parent route data
+
+By default, child routes inherit parameters and data from parent routes (equivalent to `paramsInheritanceStrategy: 'always'`). This means you can access parent route info directly in child components.
+
+If you need to restore the legacy behavior where parameters were only inherited from empty path routes, you can set `paramsInheritanceStrategy` to `'emptyOnly'`:
+
+```ts
+provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}));
+```
+
+See [router configuration options](guide/routing/customizing-route-behavior#router-configuration-options) for details on other available settings.
 
 ## Displaying a 404 page
 

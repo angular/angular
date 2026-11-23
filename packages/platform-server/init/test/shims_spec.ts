@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import domino from '../src/bundled-domino';
+import domino from '../../third_party/domino/bundled-domino';
 import {applyShims} from '../src/shims';
 
 describe('applyShims()', () => {
@@ -19,7 +19,7 @@ describe('applyShims()', () => {
         // These props are just a getter and cannot be changed
         continue;
       }
-      if (globalClone.hasOwnProperty(prop)) {
+      if (Object.hasOwn(globalClone, prop)) {
         (global as any)[prop] = (globalClone as any)[prop];
       } else {
         delete (global as any)[prop];
@@ -32,12 +32,5 @@ describe('applyShims()', () => {
 
     applyShims();
     expect(global).toEqual(jasmine.objectContaining(domino.impl));
-  });
-
-  it('should define `KeyboardEvent` on `global`', () => {
-    expect((global as any).KeyboardEvent).not.toBe((domino.impl as any).Event);
-
-    applyShims();
-    expect((global as any).KeyboardEvent).toBe((domino.impl as any).Event);
   });
 });

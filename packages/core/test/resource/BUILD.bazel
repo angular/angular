@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_project", "ng_web_test_suite", "zoneless_jasmine_test")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -16,7 +16,7 @@ ng_project(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "resource",
     data = [
         ":resource_lib",

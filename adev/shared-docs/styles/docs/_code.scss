@@ -36,6 +36,15 @@ $code-font-size: 0.875rem;
     }
   }
 
+  .shiki.line.cli {
+    span {
+      color: var(--quaternary-contrast);
+      font-family: var(--inter-font);
+      font-weight: 600;
+      font-size: 13px;
+    }
+  }
+
   .docs-light-mode .shiki {
     color: var(--shiki-light);
     background-color: var(--shiki-light-bg);
@@ -71,28 +80,14 @@ $code-font-size: 0.875rem;
     &:not(pre *) {
       position: relative;
       padding: 0 0.3rem;
-      // Fallback for older browsers
-      background: #e62600;
-      background: var(--red-to-orange-horizontal-gradient);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
+      background: var(--subtle-purple);
+      color: var(--hot-pink);
       max-width: max-content;
+      border-radius: 0.25rem;
       width: 100%;
-      display: inline-block;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        background: var(--subtle-purple);
-        border-radius: 0.25rem;
-        z-index: -1;
-      }
 
       a:not(.docs-anchor) > & {
+        display: inline-block;
         position: relative;
         padding: 0 0.3rem;
         white-space: nowrap;
@@ -205,11 +200,9 @@ $code-font-size: 0.875rem;
 
     &:not([hideDollar]) {
       .shiki {
-        .line {
-          &::before {
-            content: '$';
-            padding-inline-end: 0.5rem;
-          }
+        .line:not(:empty)::before {
+          content: '$';
+          padding-inline-end: 0.5rem;
         }
       }
     }
@@ -234,11 +227,14 @@ $code-font-size: 0.875rem;
     border-radius: 0.25rem;
     cursor: pointer;
     z-index: var(--z-index-icon);
+    opacity: 0;
+    pointer-events: none;
     background-color: var(--octonary-contrast);
     border: 1px solid var(--senary-contrast);
     transition:
       background-color 0.3s ease,
-      border-color 0.3s ease;
+      border-color 0.3s ease,
+      opacity 0.3s ease;
 
     .docs-icon {
       transition: opacity 0.3s ease-out;
@@ -262,6 +258,9 @@ $code-font-size: 0.875rem;
     }
 
     &.docs-copy-source-code-button-success {
+      opacity: 1;
+      pointer-events: auto;
+
       .docs-copy {
         opacity: 0;
       }
@@ -276,6 +275,32 @@ $code-font-size: 0.875rem;
           fill: var(--primary-contrast);
         }
       }
+    }
+  }
+
+  .docs-code:hover,
+  .docs-code:focus-within,
+  .docs-example-viewer-code-wrapper:hover,
+  .docs-example-viewer-code-wrapper:focus-within {
+    > button[docs-copy-source-code] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  button[docs-copy-source-code]:focus-visible,
+  button[docs-copy-source-code].docs-copy-source-code-button-failed {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .docs-code:has(.docs-code-header) {
+    button[docs-copy-source-code] {
+      top: 0.26rem;
+    }
+
+    .docs-code-header {
+      padding-inline-end: 3rem;
     }
   }
 
@@ -299,6 +324,9 @@ $code-font-size: 0.875rem;
 
   .docs-code-header {
     display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 2.9rem;
     padding: 0.75rem;
 
     background: var(--subtle-purple);
@@ -307,25 +335,37 @@ $code-font-size: 0.875rem;
 
     .docs-code-avoid &,
     .docs-code-prefer & {
-      background: color-mix(in srgb, var(--style-color) 17%, var(--page-background));
-      color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+      background: color-mix(in srgb, var(--style-color) 15%, var(--octonary-contrast));
+      box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--style-color) 35%, transparent);
       h3 {
         color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+        font-weight: 700;
       }
     }
 
     .docs-code-header-style {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      font-size: 0.8rem;
+      gap: 0.4rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--style-color) 20%, transparent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: color-mix(in srgb, var(--style-color) 55%, var(--primary-contrast));
+
+      &:not(:last-child) {
+        margin-inline-end: 0.7rem;
+      }
 
       &::before {
+        color: var(--style-color);
         font-family: var(--icons);
-        margin-right: 0.5rem;
-      }
-      &:not(:last-child)::after {
-        content: '-';
-        margin: 0 0.5rem;
+        font-size: 0.9rem;
+        letter-spacing: normal;
+        text-transform: none;
       }
     }
 
@@ -340,7 +380,7 @@ $code-font-size: 0.875rem;
     .docs-code-header-style {
       .docs-code-avoid & {
         &::before {
-          content: 'dangerous';
+          content: 'close';
         }
       }
     }

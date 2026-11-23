@@ -27,6 +27,8 @@ import {
   NG_VALUE_ACCESSOR,
 } from './control_value_accessor';
 
+const NEGATIVE_ZERO = Symbol('negativeZero');
+
 const SELECT_MULTIPLE_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
@@ -126,15 +128,15 @@ export class SelectMultipleControlValueAccessor
    */
   writeValue(value: any): void {
     this.value = value;
-    let optionSelectedStateSetter: (opt: ɵNgSelectMultipleOption, o: any) => void;
+    let optionSelectedStateSetter: (opt: ɵNgSelectMultipleOption, id: string) => void;
     if (Array.isArray(value)) {
       // convert values to ids
-      const ids = value.map((v) => this._getOptionId(v));
-      optionSelectedStateSetter = (opt, o) => {
-        opt._setSelected(ids.indexOf(o.toString()) > -1);
+      const ids = this._getOptionIds(value);
+      optionSelectedStateSetter = (opt, id) => {
+        opt._setSelected(ids.has(id));
       };
     } else {
-      optionSelectedStateSetter = (opt, o) => {
+      optionSelectedStateSetter = (opt) => {
         opt._setSelected(false);
       };
     }
@@ -181,6 +183,30 @@ export class SelectMultipleControlValueAccessor
     const id: string = (this._idCounter++).toString();
     this._optionMap.set(id, value);
     return id;
+  }
+
+  private _getOptionIds(values: any[]): Set<string> {
+    if (this._compareWith !== Object.is || values.length < 2) {
+      return new Set(
+        values.map((value) => this._getOptionId(value)).filter((id): id is string => id !== null),
+      );
+    }
+
+    // Set uses SameValueZero, so keep -0 separate to preserve Object.is comparisons.
+    const remainingValues = new Set<unknown>();
+    values.forEach((value) =>
+      remainingValues.add(value === 0 && Object.is(value, -0) ? NEGATIVE_ZERO : value),
+    );
+
+    const ids = new Set<string>();
+    for (const [id, option] of this._optionMap) {
+      if (remainingValues.size === 0) break;
+      const optionValue = option._value;
+      const value = optionValue === 0 && Object.is(optionValue, -0) ? NEGATIVE_ZERO : optionValue;
+      // Deleting the value preserves the first registered match for duplicate options.
+      if (remainingValues.delete(value)) ids.add(id);
+    }
+    return ids;
   }
 
   /** @internal */

@@ -14,8 +14,8 @@ import {
   I18nOptions,
   LegacyNgcOptions,
   MiscOptions,
-  TypeCheckingOptions,
   TargetOptions,
+  TypeCheckingOptions,
 } from './public_options';
 
 /**
@@ -106,19 +106,6 @@ export interface InternalOptions {
   _enableHmr?: boolean;
 
   /**
-   * Whether selectorless is enabled.
-   *
-   * @internal
-   */
-  _enableSelectorless?: boolean;
-
-  // TODO(crisbeto): this is a temporary flag that will be removed in v20.
-  /**
-   * Whether to check the event side of two-way bindings.
-   */
-  _checkTwoWayBoundEvents?: boolean;
-
-  /**
    * Whether this is a compilation of Angular core itself.
    *
    * By default, we detect this automatically based on the existence of `r3_symbols.ts`
@@ -135,7 +122,8 @@ export interface InternalOptions {
  * Also includes a few miscellaneous options.
  */
 export interface NgCompilerOptions
-  extends ts.CompilerOptions,
+  extends
+    ts.CompilerOptions,
     LegacyNgcOptions,
     BazelAndG3Options,
     DiagnosticOptions,

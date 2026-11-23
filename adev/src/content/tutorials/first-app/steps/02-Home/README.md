@@ -6,7 +6,7 @@ This tutorial lesson demonstrates how to create a new [component](guide/componen
 
 ## What you'll learn
 
-Your app has a new component: `Home`.
+Your app will have a new component: `Home`.
 
 ## Conceptual preview of Angular components
 
@@ -18,10 +18,9 @@ In Angular, components have metadata that define its properties.
 When you create your `Home`, you use these properties:
 
 - `selector`: to describe how Angular refers to the component in templates.
-- `standalone`: to describe whether the component requires a `NgModule`.
 - `imports`: to describe the component's dependencies.
 - `template`: to describe the component's HTML markup and layout.
-- `styleUrls`: to list the URLs of the CSS files that the component uses in an array.
+- `styleUrl`: to specify the URL of the CSS file that the component uses.
 
 <docs-pill-row>
   <docs-pill href="api/core/Component" title="Learn more about Components"/>
@@ -93,17 +92,17 @@ In this step you add features to `Home`.
 In the previous step, you added the default `Home` to your app's template so its default HTML appeared in the app.
 In this step, you add a search filter and button that is used in a later lesson.
 For now, that's all that `Home` has.
-Note that, this step just adds the search elements to the layout without any functionality, yet.
+Note that this step just adds the search elements to the layout without any functionality, yet.
 
 If you started from a fresh Angular project instead of downloading the starter
 (ng new): add these globals to `src/styles.css` so the search button and input border are visible:
 
-```
+```css
 :root {
-  --primary-color: #605DC8;
-  --secondary-color: #8B89E6;
+  --primary-color: #605dc8;
+  --secondary-color: #8b89e6;
   --accent-color: #e8e7fa;
-  --shadow-color: #E8E8E8;
+  --shadow-color: #e8e8e8;
 }
 
 button.primary {

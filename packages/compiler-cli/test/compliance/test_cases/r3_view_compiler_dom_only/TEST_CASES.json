@@ -1,0 +1,16 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should use the DOM-only instruction set in full compilation but the full instruction set in local compilation",
+      "inputFiles": ["dom_only_instruction_set.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect instruction set for a directive-free standalone component",
+          "files": ["dom_only_instruction_set.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    }
+  ]
+}

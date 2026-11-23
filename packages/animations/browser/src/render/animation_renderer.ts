@@ -35,28 +35,11 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   createRenderer(hostElement: any, type: RendererType2): BaseAnimationRenderer {
-    const EMPTY_NAMESPACE_ID = '';
-
     // cache the delegates to find out which cached delegate can
     // be used by which cached renderer
     const delegate = this.delegate.createRenderer(hostElement, type);
     if (!hostElement || !type?.data?.['animation']) {
-      const cache = this._rendererCache;
-      let renderer: BaseAnimationRenderer | undefined = cache.get(delegate);
-      if (!renderer) {
-        // Ensure that the renderer is removed from the cache on destroy
-        // since it may contain references to detached DOM nodes.
-        const onRendererDestroy = () => cache.delete(delegate);
-        renderer = new BaseAnimationRenderer(
-          EMPTY_NAMESPACE_ID,
-          delegate,
-          this.engine,
-          onRendererDestroy,
-        );
-        // only cache this result when the base renderer is used
-        cache.set(delegate, renderer);
-      }
-      return renderer;
+      return getOrCreateBaseRenderer(delegate, this.engine, this._rendererCache);
     }
 
     const componentId = type.id;
@@ -142,4 +125,27 @@ export class AnimationRendererFactory implements RendererFactory2 {
     this.engine.flush();
     (this.delegate as {componentReplaced?: (id: string) => void}).componentReplaced?.(componentId);
   }
+}
+
+/**
+ * Gets a base renderer for a delegate, or creates a new one of it doesn't exist.
+ *
+ * Note that this logic is Kept out of `createRenderer` so the destroy callback, which outlives the
+ * call in the cache, does not share a closure scope with `hostElement`.
+ */
+function getOrCreateBaseRenderer(
+  delegate: Renderer2,
+  engine: AnimationEngine,
+  cache: Map<Renderer2, BaseAnimationRenderer>,
+): BaseAnimationRenderer {
+  let renderer: BaseAnimationRenderer | undefined = cache.get(delegate);
+  if (!renderer) {
+    // Ensure that the renderer is removed from the cache on destroy
+    // since it may contain references to detached DOM nodes.
+    const onRendererDestroy = () => cache.delete(delegate);
+    renderer = new BaseAnimationRenderer('', delegate, engine, onRendererDestroy);
+    // only cache this result when the base renderer is used
+    cache.set(delegate, renderer);
+  }
+  return renderer;
 }

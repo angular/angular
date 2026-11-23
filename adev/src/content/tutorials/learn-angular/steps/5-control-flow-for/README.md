@@ -22,14 +22,14 @@ Here's an example of how to use the `@for` syntax in a component:
   `,
 })
 export class App {
-  operatingSystems = [{id: 'win', name: 'Windows'}, {id: 'osx', name: 'MacOS'}, {id: 'linux', name: 'Linux'}];
+  operatingSystems = [{id: 'win', name: 'Windows'}, {id: 'osx', name: 'macOS'}, {id: 'linux', name: 'Linux'}];
 }
 ```
 
 Two things to take note of:
 
 - There is an `@` prefix for the `for` because it is a special syntax called [Angular template syntax](guide/templates)
-- For applications using v16 and older please refer to the [Angular documentation for NgFor](guide/directives/structural-directives)
+- For applications that still use `*ngFor`, please refer to the [Angular documentation for NgFor](guide/directives/structural-directives)
 
 <docs-workflow>
 

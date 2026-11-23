@@ -18,12 +18,8 @@ You can determine which builder is being used for a particular project by lookin
           "builder": "@angular/build:dev-server"
           // ...
         },
-        "build": {
-          /* ... */
-        },
-        "test": {
-          /* ... */
-        }
+        "build": {/* ... */},
+        "test": {/* ... */}
       }
     }
   }
@@ -70,14 +66,8 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 
 NOTE: To apply changes made to your proxy configuration file, you must restart the `ng serve` process.
 
-### Path matching behavior depends on the builder
+### Path matching behavior
 
-**`@angular/build:dev-server`** (based on [Vite](https://vite.dev/config/server-options#server-proxy))
-
-- `/api` matches only `/api`.
-- `/api/*` matches `/api/users` but not `/api/users/123`.
-- `/api/**` matches `/api/users` and `/api/users/123`.
-
-**`@angular-devkit/build-angular:dev-server`** (based on [Webpack DevServer](https://webpack.js.org/configuration/dev-server/#devserverproxy))
-
-- `/api` matches `/api` and any sub-paths (equivalent to `/api/**`).
+- `/api` matches `/api` and any path that starts with it, such as `/api/users/123` or `/api-docs`.
+- `/api/*` matches `/api/users`, but not `/api` or `/api/users/123`.
+- `/api/**` matches `/api`, `/api/users`, and `/api/users/123`, but not `/api-docs`.

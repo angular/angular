@@ -3,6 +3,13 @@
 An in-memory web api for Angular demos and tests
 that emulates CRUD operations over a RESTy API.
 
+> **WARNING**
+>
+> This package is a development and testing tool only.
+> The in-memory data store applies no authentication or authorization
+> to the requests it answers.
+> Never ship it in a production app.
+
 It intercepts Angular `Http` and `HttpClient` requests that would otherwise go to the remote server and redirects them to an in-memory data store that you control.
 
 See [Austin McDaniel's article](https://medium.com/@amcdnl/mocking-with-angular-more-than-just-unit-testing-cbb7908c9fcc)
@@ -28,7 +35,7 @@ preferably with a small repro.
 - Whip up prototypes and proofs of concept.
 
 - Share examples with the community in a web coding environment such as Plunker or CodePen.
-  Create Angular issues and StackOverflow answers supported by live code.
+  Create Angular issues and Stack Overflow answers supported by live code.
 
 - Simulate operations against data collections that aren't yet implemented on your dev/test server.
   You can pass requests thru to the dev/test server for collections that are supported.

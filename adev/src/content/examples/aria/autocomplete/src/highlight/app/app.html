@@ -1,29 +1,60 @@
-<div ngCombobox filterMode="highlight">
-  <div #origin class="autocomplete">
+<div class="autocomplete-container">
+  <div #origin class="autocomplete-input-container">
     <span class="search-icon material-symbols-outlined" translate="no" aria-hidden="true"
       >search</span
     >
     <input
-      aria-label="Label dropdown"
+      #combobox="ngCombobox"
+      ngCombobox
+      class="autocomplete-input"
       placeholder="Select a country"
-      [(ngModel)]="query"
-      ngComboboxInput
+      [(value)]="query"
+      [(expanded)]="popupExpanded"
+      (click)="popupExpanded.set(true)"
+      (keydown.arrowdown)="navigated.set(true)"
+      (keydown.arrowup)="navigated.set(true)"
+      [inlineSuggestion]="query() || navigated() ? selectedOption()[0] : undefined"
     />
+    <button
+      type="button"
+      class="clear-button"
+      aria-label="Clear"
+      (mousedown)="$event.preventDefault()"
+      (click)="clear()"
+    >
+      <span class="clear-icon material-symbols-outlined" translate="no" aria-hidden="true"
+        >close</span
+      >
+    </button>
   </div>
 
-  <ng-template ngComboboxPopupContainer>
-    <ng-template
-      [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
-      [cdkConnectedOverlayOpen]="true"
-    >
+  <div aria-live="polite" class="cdk-visually-hidden">
+    {{ countries().length === 0 ? 'No results found for ' + query() : '' }}
+  </div>
+
+  <ng-template
+    [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
+    [cdkConnectedOverlayOpen]="popupExpanded()"
+  >
+    <ng-template ngComboboxPopup [combobox]="combobox">
       <div class="popup">
         @if (countries().length === 0) {
           <div class="no-results">No results found</div>
         }
-
-        <div ngListbox>
+        <div
+          #listbox="ngListbox"
+          ngListbox
+          ngComboboxWidget
+          class="listbox"
+          focusMode="activedescendant"
+          [tabindex]="-1"
+          [activeDescendant]="listbox.activeDescendant()"
+          [(value)]="selectedOption"
+          (click)="onCommit()"
+          (keydown.enter)="onCommit()"
+        >
           @for (country of countries(); track country) {
-            <div ngOption [value]="country" [label]="country">
+            <div class="option" ngOption [value]="country" [label]="country">
               <span class="option-label">{{ country }}</span>
               <span class="check-icon material-symbols-outlined" translate="no" aria-hidden="true"
                 >check</span

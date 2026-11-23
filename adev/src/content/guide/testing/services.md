@@ -9,9 +9,9 @@ This guide uses [Vitest](https://vitest.dev/), which Angular CLI projects includ
 Consider a `Calculator` service that performs basic arithmetic:
 
 ```ts { header: 'calculator.ts' }
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class Calculator {
   add(a: number, b: number): number {
     return a + b;
@@ -35,7 +35,7 @@ describe('Calculator', () => {
 
   beforeEach(() => {
     // Injects the Calculator service which is available to Angular
-    // because the service uses `providedIn: 'root'`
+    // because the service uses `@Service`
     service = TestBed.inject(Calculator);
   });
 
@@ -58,9 +58,9 @@ Most services depend on other services to run properly. By default, `TestBed` pr
 Consider an `OrderTotal` service that relies on a `TaxCalculator` to compute the final price of an order:
 
 ```ts { header: 'tax-calculator.ts' }
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class TaxCalculator {
   calculate(subtotal: number): number {
     return subtotal * 0.05;
@@ -69,10 +69,10 @@ export class TaxCalculator {
 ```
 
 ```ts { header: 'order-total.ts' }
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {TaxCalculator} from './tax-calculator';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class OrderTotal {
   private taxCalculator = inject(TaxCalculator);
 
@@ -131,7 +131,7 @@ A stub controls what a dependency returns, but sometimes you also need to verify
 
 ```ts { header: 'order-total.spec.ts' }
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, describe, expect, it, vi, type Mocked} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, vi, type Mocked} from 'vitest';
 import {OrderTotal} from './order-total';
 import {TaxCalculator} from './tax-calculator';
 
@@ -151,6 +151,10 @@ describe('OrderTotal', () => {
     service = TestBed.inject(OrderTotal);
   });
 
+  afterEach(() => {
+    taxCalculatorStub.calculate.mockClear();
+  });
+
   it('adds tax to the subtotal', () => {
     expect(service.total(100)).toBe(105);
   });
@@ -158,7 +162,7 @@ describe('OrderTotal', () => {
   // Verify the interaction with a spy
   it('calls the tax calculator', () => {
     service.total(100);
-    expect(taxCalculatorStub.calculate).toHaveBeenCalledExactlyOnce();
+    expect(taxCalculatorStub.calculate).toHaveBeenCalledExactlyOnceWith(100);
   });
 });
 ```

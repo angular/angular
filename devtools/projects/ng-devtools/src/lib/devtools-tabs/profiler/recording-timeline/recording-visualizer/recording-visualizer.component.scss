@@ -6,28 +6,59 @@
   height: 100%;
 
   .selected-entry {
-    padding: 0.75rem;
+    position: relative;
     box-sizing: border-box;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
 
-    .title {
-      @extend %heading-400;
-      margin: 0 0 0.75rem 0;
-      padding: 0;
-    }
+    .header {
+      padding: 0.75rem;
+      background-color: var(--color-background);
 
-    .subtitle {
-      @extend %body-bold-01;
-      margin: 2rem 0 0.5rem 0;
+      .title {
+        @extend %heading-400;
+        word-wrap: break-word;
+        margin: 0;
+        padding: 0;
+        padding-right: 1rem;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
     }
 
     .entry-statistics {
-      .total-time > span {
-        color: var(--dynamic-purple-01);
+      overflow: auto;
+      flex: 1;
+      padding: 0 0.75rem 0.75rem 0.75rem;
+      display: grid;
+      align-content: start;
+      gap: 0;
+
+      .subtitle {
+        @extend %body-bold-01;
+        margin-top: 2rem;
+      }
+
+      .total-time {
+        margin-top: 0;
+
+        span {
+          color: var(--dynamic-purple-01);
+        }
       }
 
       ng-execution-details {
-        margin-top: 1.5rem;
+        margin-top: 0.25rem;
       }
 
       ul {

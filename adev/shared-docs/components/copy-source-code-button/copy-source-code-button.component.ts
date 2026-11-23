@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Clipboard} from '@angular/cdk/clipboard';
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -15,10 +15,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import {Clipboard} from '@angular/cdk/clipboard';
 import {IconComponent} from '../icon/icon.component';
 
-export const REMOVED_LINE_CLASS_NAME = '.line.remove';
 export const CONFIRMATION_DISPLAY_TIME_MS = 2000;
 
 @Component({
@@ -33,7 +31,6 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 2000;
     '[class.docs-copy-source-code-button-success]': 'showCopySuccess()',
     '[class.docs-copy-source-code-button-failed]': 'showCopyFailure()',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CopySourceCodeButton {
   private readonly changeDetector = inject(ChangeDetectorRef);
@@ -60,19 +57,16 @@ export class CopySourceCodeButton {
     this.showCopySuccess.set(false);
     this.showCopyFailure.set(false);
 
-    const removedLines: NodeList = codeElement.querySelectorAll(REMOVED_LINE_CLASS_NAME);
+    const lines = Array.from(codeElement.querySelectorAll('.line:not(.hidden)'));
 
-    if (removedLines.length) {
-      // Get only those lines which are not marked as removed
-      const formattedText = Array.from(codeElement.querySelectorAll('.line:not(.remove)'))
-        .map((line) => (line as HTMLDivElement).innerText)
-        .join('\n');
-
-      return formattedText.trim();
-    } else {
-      const text: string = codeElement.innerText || '';
-      return text.replace(/\n\n\n/g, ``).trim();
+    if (lines.length) {
+      return lines
+        .map((line) => line.textContent)
+        .join('\n')
+        .trim();
     }
+
+    return (codeElement.innerText || '').trim();
   }
 
   private showResult(messageState: WritableSignal<boolean>) {

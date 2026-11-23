@@ -1,6 +1,7 @@
 name: Google Internal Tests Enforcement
 
 on:
+  # zizmor: ignore[dangerous-triggers] - {Trigger is safe as workflow does not checkout untrusted code}
   pull_request_target:
     types: [opened, reopened, synchronize]
 
@@ -13,8 +14,8 @@ jobs:
       statuses: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: angular/dev-infra/github-actions/google-internal-tests@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: angular/dev-infra/github-actions/google-internal-tests@aba3adc53489fee586e2375ee4367ff30c947390 # main
         with:
           run-tests-guide-url: http://go/angular-g3sync-start
           github-token: ${{ secrets.GITHUB_TOKEN }}

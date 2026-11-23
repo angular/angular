@@ -350,7 +350,7 @@ export class DebugElement extends DebugNode {
    * @param eventName The name of the event to trigger
    * @param eventObj The _event object_ expected by the handler
    *
-   * @see [Testing components scenarios](guide/testing/components-scenarios#trigger-event-handler)
+   * @see [Testing components scenarios](guide/testing/components-scenarios#triggereventhandler)
    */
   triggerEventHandler(eventName: string, eventObj?: any): void {
     const node = this.nativeNode as any;
@@ -713,9 +713,6 @@ function collectPropertyBindings(
   }
 }
 
-// Need to keep the nodes in a global Map so that multiple angular apps are supported.
-const _nativeNodeToDebugNode = new Map<any, DebugNode>();
-
 const NG_DEBUG_PROPERTY = '__ng_debug__';
 
 /**
@@ -723,7 +720,7 @@ const NG_DEBUG_PROPERTY = '__ng_debug__';
  */
 export function getDebugNode(nativeNode: any): DebugNode | null {
   if (nativeNode instanceof Node) {
-    if (!nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY)) {
+    if (!Object.hasOwn(nativeNode, NG_DEBUG_PROPERTY)) {
       (nativeNode as any)[NG_DEBUG_PROPERTY] =
         nativeNode.nodeType == Node.ELEMENT_NODE
           ? new DebugElement(nativeNode as Element)
@@ -732,18 +729,6 @@ export function getDebugNode(nativeNode: any): DebugNode | null {
     return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }
   return null;
-}
-
-export function getAllDebugNodes(): DebugNode[] {
-  return Array.from(_nativeNodeToDebugNode.values());
-}
-
-export function indexDebugNode(node: DebugNode) {
-  _nativeNodeToDebugNode.set(node.nativeNode, node);
-}
-
-export function removeDebugNodeFromIndex(node: DebugNode) {
-  _nativeNodeToDebugNode.delete(node.nativeNode);
 }
 
 /**

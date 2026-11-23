@@ -12,8 +12,8 @@ import {
   SourceFile,
   SourceFileLoader,
 } from '@angular/compiler-cli/private/localize';
-import {ɵParsedMessage, ɵSourceLocation} from '../../../index';
 import {transformSync} from '@babel/core';
+import {ɵParsedMessage, ɵSourceLocation} from '../../../index';
 
 import {makeEs2015ExtractPlugin} from './source_files/es2015_extract_plugin';
 import {makeEs5ExtractPlugin} from './source_files/es5_extract_plugin';
@@ -56,8 +56,8 @@ export class MessageExtractor {
         sourceRoot: this.basePath,
         filename,
         plugins: [
-          makeEs2015ExtractPlugin(this.fs, messages, this.localizeName),
-          makeEs5ExtractPlugin(this.fs, messages, this.localizeName),
+          () => makeEs2015ExtractPlugin(this.fs, messages, this.localizeName),
+          () => makeEs5ExtractPlugin(this.fs, messages, this.localizeName),
         ],
         code: false,
         ast: false,

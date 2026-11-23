@@ -15,16 +15,26 @@ interface SafeTransformContext {
 }
 
 /**
- * Safe read expressions such as `a?.b` have different semantics in Angular templates as
- * compared to JavaScript. In particular, they default to `null` instead of `undefined`. This phase
- * finds all unresolved safe read expressions, and converts them into the appropriate output AST
- * reads, guarded by null checks. We generate temporaries as needed, to avoid re-evaluating the same
- * sub-expression multiple times.
+ * Safe read expressions such as `a?.b` are evaluated in one of three ways:
+ * 1. Native optional chaining (default): The expression is converted into a native JS optional chain `a?.b`
+ *    which defaults to `undefined`.
+ * 2. Global legacy semantics: If the `legacyOptionalChaining` compiler flag is enabled, all safe reads
+ *    will be converted to safe ternaries, defaulting to `null` instead of `undefined`.
+ * 3. Local legacy semantics: If the expression was wrapped in a `$safeNavigationMigration()` expression,
+ *    which acts as a magic marker to hint the compiler to transform that expression to a safe ternary.
+ *
+ * For the legacy semantics, this phase finds all unresolved safe read expressions and converts them into
+ * the appropriate output AST reads guarded by null checks. We generate temporaries as needed, to avoid
+ * re-evaluating the same sub-expression multiple times.
  */
 export function expandSafeReads(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      ir.transformExpressionsInOp(op, (e) => safeTransform(e, {job}), ir.VisitorContextFlag.None);
+      ir.transformExpressionsInOp(
+        op,
+        (e, flags) => safeTransform(e, {job}, flags),
+        ir.VisitorContextFlag.None,
+      );
       ir.transformExpressionsInOp(op, ternaryTransform, ir.VisitorContextFlag.None);
     }
   }
@@ -36,7 +46,6 @@ const requiresTemporary = [
   o.LiteralArrayExpr,
   o.LiteralMapExpr,
   o.ParenthesizedExpr,
-  ir.SafeInvokeFunctionExpr,
   ir.PipeBindingExpr,
 ].map((e) => e.constructor.name);
 
@@ -61,13 +70,14 @@ function needsTemporaryInSafeAccess(e: o.Expression): boolean {
     return needsTemporaryInSafeAccess(e.receiver) || needsTemporaryInSafeAccess(e.index);
   } else if (e instanceof o.ParenthesizedExpr) {
     return needsTemporaryInSafeAccess(e.expr);
+  } else if (e instanceof ir.SafeNavigationMigrationExpr) {
+    return needsTemporaryInSafeAccess(e.expr);
   }
   // TODO: Switch to a method which is exhaustive of newly added expression subtypes.
   return (
     e instanceof o.InvokeFunctionExpr ||
     e instanceof o.LiteralArrayExpr ||
     e instanceof o.LiteralMapExpr ||
-    e instanceof ir.SafeInvokeFunctionExpr ||
     e instanceof ir.PipeBindingExpr
   );
 }
@@ -142,11 +152,11 @@ function safeTernaryWithTemporary(
 
 function isSafeAccessExpression(
   e: o.Expression,
-): e is ir.SafePropertyReadExpr | ir.SafeKeyedReadExpr | ir.SafeInvokeFunctionExpr {
+): e is ir.SafePropertyReadExpr | ir.SafeKeyedReadExpr | o.InvokeFunctionExpr {
   return (
     e instanceof ir.SafePropertyReadExpr ||
     e instanceof ir.SafeKeyedReadExpr ||
-    e instanceof ir.SafeInvokeFunctionExpr
+    (e instanceof o.InvokeFunctionExpr && e.isOptional)
   );
 }
 
@@ -154,7 +164,9 @@ function isUnsafeAccessExpression(
   e: o.Expression,
 ): e is o.ReadPropExpr | o.ReadKeyExpr | o.InvokeFunctionExpr {
   return (
-    e instanceof o.ReadPropExpr || e instanceof o.ReadKeyExpr || e instanceof o.InvokeFunctionExpr
+    e instanceof o.ReadPropExpr ||
+    e instanceof o.ReadKeyExpr ||
+    (e instanceof o.InvokeFunctionExpr && !e.isOptional)
   );
 }
 
@@ -165,8 +177,7 @@ function isAccessExpression(
   | ir.SafePropertyReadExpr
   | o.ReadKeyExpr
   | ir.SafeKeyedReadExpr
-  | o.InvokeFunctionExpr
-  | ir.SafeInvokeFunctionExpr {
+  | o.InvokeFunctionExpr {
   return isSafeAccessExpression(e) || isUnsafeAccessExpression(e);
 }
 
@@ -183,7 +194,31 @@ function deepestSafeTernary(e: o.Expression): ir.SafeTernaryExpr | null {
 
 // TODO: When strict compatibility with TemplateDefinitionBuilder is not required, we can use `&&`
 // instead to save some code size.
-function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression {
+function safeTransform(
+  e: o.Expression,
+  ctx: SafeTransformContext,
+  flags: ir.VisitorContextFlag,
+): o.Expression {
+  if (e instanceof ir.SafeNavigationMigrationExpr) {
+    return e.expr;
+  }
+
+  const useNullSemantics =
+    ctx.job.legacyOptionalChaining ||
+    (flags & ir.VisitorContextFlag.InSafeNavigationMigration) !== 0;
+  if (!useNullSemantics) {
+    // Convert the intermediate IR safe-navigation nodes to output AST nodes with `isOptional=true`.
+    // This is the "native optional chaining" path: the output AST nodes carry the `?.` flag and
+    // are later translated to native JS/TS optional-chain syntax by the code generators.
+    if (e instanceof ir.SafePropertyReadExpr) {
+      return new o.ReadPropExpr(e.receiver, e.name, null, e.sourceSpan, [], true);
+    }
+    if (e instanceof ir.SafeKeyedReadExpr) {
+      return new o.ReadKeyExpr(e.receiver, e.index, null, e.sourceSpan, [], true);
+    }
+    return e;
+  }
+
   if (!isAccessExpression(e)) {
     return e;
   }
@@ -191,7 +226,7 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
   const dst = deepestSafeTernary(e);
 
   if (dst) {
-    if (e instanceof o.InvokeFunctionExpr) {
+    if (e instanceof o.InvokeFunctionExpr && !e.isOptional) {
       dst.expr = dst.expr.callFn(e.args);
       return e.receiver;
     }
@@ -203,7 +238,7 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
       dst.expr = dst.expr.key(e.index);
       return e.receiver;
     }
-    if (e instanceof ir.SafeInvokeFunctionExpr) {
+    if (e instanceof o.InvokeFunctionExpr && e.isOptional) {
       dst.expr = safeTernaryWithTemporary(dst.expr, (r: o.Expression) => r.callFn(e.args), ctx);
       return e.receiver;
     }
@@ -216,7 +251,7 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
       return e.receiver;
     }
   } else {
-    if (e instanceof ir.SafeInvokeFunctionExpr) {
+    if (e instanceof o.InvokeFunctionExpr && e.isOptional) {
       return safeTernaryWithTemporary(e.receiver, (r: o.Expression) => r.callFn(e.args), ctx);
     }
     if (e instanceof ir.SafePropertyReadExpr) {

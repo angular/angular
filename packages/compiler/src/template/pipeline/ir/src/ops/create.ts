@@ -10,6 +10,7 @@ import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
+import * as t from '../../../../../render3/r3_ast';
 import {
   AnimationKind,
   BindingKind,
@@ -44,6 +45,7 @@ export type CreateOp =
   | ElementOp
   | ElementStartOp
   | ElementEndOp
+  | ForeignComponentOp
   | ContainerOp
   | ContainerStartOp
   | ContainerEndOp
@@ -57,7 +59,9 @@ export type CreateOp =
   | VariableOp<CreateOp>
   | NamespaceOp
   | ProjectionDefOp
+  | EnableIncrementalHydrationRuntimeOp
   | ProjectionOp
+  | ContentOp
   | ExtractedAttributeOp
   | DeferOp
   | DeferOnOp
@@ -78,7 +82,9 @@ export type CreateOp =
   | AnimationStringOp
   | AnimationOp
   | SourceLocationOp
-  | ControlCreateOp;
+  | ControlCreateOp
+  | BoundaryCreateOp
+  | BoundaryErrorCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -91,7 +97,8 @@ export type ElementOrContainerOps =
   | TemplateOp
   | RepeaterCreateOp
   | ConditionalCreateOp
-  | ConditionalBranchCreateOp;
+  | ConditionalBranchCreateOp
+  | BoundaryCreateOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
@@ -105,6 +112,7 @@ const elementContainerOpKinds = new Set([
   OpKind.RepeaterCreate,
   OpKind.ConditionalCreate,
   OpKind.ConditionalBranchCreate,
+  OpKind.BoundaryCreate,
 ]);
 
 /**
@@ -183,7 +191,8 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
     | OpKind.Template
     | OpKind.RepeaterCreate
     | OpKind.ConditionalCreate
-    | OpKind.ConditionalBranchCreate;
+    | OpKind.ConditionalBranchCreate
+    | OpKind.BoundaryCreate;
 
   /**
    * The HTML tag name for this element.
@@ -232,6 +241,97 @@ export function createElementStartOp(
     startSourceSpan,
     wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation representing a foreign component in the creation IR.
+ */
+export interface ForeignComponentOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.ForeignComponent;
+
+  /**
+   * The `XrefId` allocated for this foreign component.
+   */
+  xref: XrefId;
+
+  /**
+   * Index of the foreign component class/function in the constant pool.
+   */
+  constIndex: ConstIndex;
+
+  /**
+   * Static attributes and property bindings.
+   */
+  props: Map<string, o.Expression>;
+
+  sourceSpan: ParseSourceSpan | null;
+}
+
+/**
+ * Create a `ForeignComponentOp`.
+ */
+export function createForeignComponentOp(
+  xref: XrefId,
+  constIndex: ConstIndex,
+  props: Map<string, o.Expression>,
+  sourceSpan: ParseSourceSpan | null,
+): ForeignComponentOp {
+  return {
+    kind: OpKind.ForeignComponent,
+    xref,
+    handle: new SlotHandle(),
+    constIndex,
+    props,
+    sourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation representing a project `@content` block for a foreign component.
+ */
+export interface ContentOp extends Op<CreateOp> {
+  kind: OpKind.Content;
+
+  /**
+   * The `XrefId` of the foreign component this content is projected into.
+   */
+  target: XrefId;
+
+  /**
+   * The name of the property on the foreign component to assign this content to.
+   */
+  propertyName: string;
+
+  /**
+   * The `XrefId` of the view containing the content.
+   */
+  view: XrefId;
+
+  startSourceSpan: ParseSourceSpan;
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `ContentOp`.
+ */
+export function createContentOp(
+  target: XrefId,
+  view: XrefId,
+  propertyName: string,
+  startSourceSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+): ContentOp {
+  return {
+    kind: OpKind.Content,
+    target,
+    propertyName,
+    view,
+    startSourceSpan,
+    sourceSpan,
     ...NEW_OP,
   };
 }
@@ -432,6 +532,129 @@ export function createConditionalBranchCreateOp(
     i18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a boundary block.
+ */
+export interface BoundaryCreateOp extends ElementOpBase {
+  kind: OpKind.BoundaryCreate;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+export function createBoundaryCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): BoundaryCreateOp {
+  return {
+    kind: OpKind.BoundaryCreate,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a boundary error block.
+ */
+export interface BoundaryErrorCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.BoundaryErrorCreate;
+
+  templateKind: TemplateKind;
+
+  decls: number | null;
+
+  vars: number | null;
+
+  functionNameSuffix: string;
+
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+
+  /**
+   * The Xref of the BoundaryCreate op that this error branch belongs to.
+   */
+  boundaryXref: XrefId;
+
+  contextVariables: t.Variable[];
+
+  /**
+   * The handle to the slot allocated for this element.
+   */
+  handle: SlotHandle;
+
+  startSourceSpan: ParseSourceSpan;
+
+  wholeSourceSpan: ParseSourceSpan;
+}
+
+export function createBoundaryErrorCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  functionNameSuffix: string,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+  boundaryXref: XrefId,
+  contextVariables: t.Variable[],
+): BoundaryErrorCreateOp {
+  return {
+    kind: OpKind.BoundaryErrorCreate,
+    xref,
+    templateKind,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    boundaryXref,
+    contextVariables,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -1128,6 +1351,27 @@ export function createProjectionDefOp(def: o.Expression | null): ProjectionDefOp
 }
 
 /**
+ * An op that emits a top-level call to the `ɵɵenableIncrementalHydrationRuntime`
+ * instruction. This op is inserted once per view (before the first `Defer` op
+ * with hydrate triggers) to activate the incremental hydration runtime.
+ */
+export interface EnableIncrementalHydrationRuntimeOp extends Op<CreateOp> {
+  kind: OpKind.EnableIncrementalHydrationRuntime;
+
+  sourceSpan: ParseSourceSpan | null;
+}
+
+export function createEnableIncrementalHydrationRuntimeOp(
+  sourceSpan: ParseSourceSpan | null,
+): EnableIncrementalHydrationRuntimeOp {
+  return {
+    kind: OpKind.EnableIncrementalHydrationRuntime,
+    sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+/**
  * An op that creates a content projection slot.
  */
 export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
@@ -1137,7 +1381,7 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   projectionSlotIndex: number;
 
-  attributes: null | o.LiteralArrayExpr;
+  attributes: null | o.Expression;
 
   localRefs: string[];
 
@@ -1565,6 +1809,12 @@ export interface I18nMessageOp extends Op<CreateOp> {
    * A list of sub-messages that are referenced by this message.
    */
   subMessages: XrefId[];
+
+  /**
+   * Whether this message needs to be extracted into a separate function.
+   * Null means that it hasn't been calculated yet.
+   */
+  requiresExtraction: boolean | null;
 }
 
 /**
@@ -1591,6 +1841,7 @@ export function createI18nMessageOp(
     postprocessingParams,
     needsPostprocessing,
     subMessages: [],
+    requiresExtraction: null,
     ...NEW_OP,
   };
 }

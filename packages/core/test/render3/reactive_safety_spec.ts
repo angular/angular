@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {getActiveConsumer} from '../../primitives/signals';
 import {
   Component,
-  ComponentFactoryResolver,
   createComponent,
   createEnvironmentInjector,
   effect,
@@ -24,7 +24,6 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {getActiveConsumer} from '../../primitives/signals';
 import {createInjector} from '../../src/di/create_injector';
 import {TestBed} from '../../testing';
 
@@ -88,10 +87,10 @@ describe('reactive safety', () => {
         }
       }
 
-      const injector = TestBed.inject(EnvironmentInjector);
-      const resolver = TestBed.inject(ComponentFactoryResolver);
-      const factory = resolver.resolveComponentFactory(TestCmp);
-      expectNotToThrowInReactiveContext(() => factory.create(injector));
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expectNotToThrowInReactiveContext(() => {
+        createComponent(TestCmp, {environmentInjector});
+      });
     });
 
     it('should be safe to flip @if to true', () => {

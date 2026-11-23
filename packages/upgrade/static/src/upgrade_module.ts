@@ -42,7 +42,7 @@ import {NgAdapterInjector} from './util';
  *    that it can be used in an AngularJS template. See `downgradeComponent`.
  * 3. Creation of an Angular root injector provider that wraps and exposes an AngularJS
  *    service so that it can be injected into an Angular context. See
- *    {@link UpgradeModule#upgrading-an-angular-1-service Upgrading an AngularJS service} below.
+ *    {@link UpgradeModule#upgrading-an-angularjs-service Upgrading an AngularJS service} below.
  * 4. Creation of an AngularJS service that wraps and exposes an Angular injectable
  *    so that it can be injected into an AngularJS context. See `downgradeInjectable`.
  * 5. Bootstrapping of a hybrid Angular application which contains both of the frameworks
@@ -151,7 +151,7 @@ export class UpgradeModule {
   /**
    * The AngularJS `$injector` for the upgrade application.
    */
-  public $injector: any /*angular.IInjectorService*/;
+  public $injector: any; /*angular.IInjectorService*/
   /** The Angular Injector **/
   public injector: Injector;
   private readonly applicationRef: ApplicationRef;
@@ -266,7 +266,7 @@ export class UpgradeModule {
                 );
 
                 // the `flush` method will be present when ngMocks is used
-                if (intervalDelegate.hasOwnProperty('flush')) {
+                if (Object.hasOwn(intervalDelegate, 'flush')) {
                   (wrappedInterval as any)['flush'] = () => {
                     (intervalDelegate as any)['flush']();
                     return wrappedInterval;

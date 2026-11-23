@@ -4,7 +4,7 @@ filegroup(
     name = "assets",
     srcs = glob(
         include = [
-            "*.svg",
+            "**/*.svg",
         ],
         allow_empty = True,
     ),

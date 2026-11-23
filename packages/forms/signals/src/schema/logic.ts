@@ -112,6 +112,11 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
       : other.fns;
     this.fns.push(...fns);
   }
+
+  /** Checks if any logic rules are registered in this instance. */
+  hasRules(): boolean {
+    return this.fns.length > 0;
+  }
 }
 
 /** Logic that combines its individual logic function results with logical OR. */
@@ -282,9 +287,29 @@ export class LogicContainer {
     );
   }
 
+  /**
+   * Checks whether this container has any logic rules registered in any of its categories.
+   * @returns True if at least one logic rule exists.
+   */
+  hasAnyLogic(): boolean {
+    return (
+      this.hidden.hasRules() ||
+      this.disabledReasons.hasRules() ||
+      this.readonly.hasRules() ||
+      this.syncErrors.hasRules() ||
+      this.syncTreeErrors.hasRules() ||
+      this.asyncErrors.hasRules() ||
+      this.metadata.size > 0
+    );
+  }
+
   /** Checks whether there is logic for the given metadata key. */
   hasMetadata(key: MetadataKey<any, any, any>) {
     return this.metadata.has(key);
+  }
+
+  hasMetadataKeys(): boolean {
+    return this.metadata.size > 0;
   }
 
   /**

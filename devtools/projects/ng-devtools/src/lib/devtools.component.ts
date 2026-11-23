@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import {Component, computed, effect, inject, Injector, OnDestroy, signal} from '@angular/core';
 import {Events, MessageBus} from '../../../protocol';
 import {interval} from 'rxjs';
 
@@ -24,8 +17,11 @@ import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
-import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry} from '@angular/material/icon';
 import {SUPPORTED_APIS} from './application-providers/supported_apis';
+import {APP_DATA} from './application-providers/app_data';
+import {Settings} from './application-services/settings';
+import {AngieComponent} from './shared/angie/angie.component';
 
 const DETECT_ANGULAR_ATTEMPTS = 20;
 
@@ -53,41 +49,39 @@ export const LAST_SUPPORTED_VERSION = 12;
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
-  imports: [DevToolsTabsComponent, MatIcon, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    DevToolsTabsComponent,
+    MatTooltip,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    AngieComponent,
+  ],
 })
 export class DevToolsComponent implements OnDestroy {
   protected readonly supportedApis = inject(SUPPORTED_APIS);
+  protected readonly appData = inject(APP_DATA);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly frameManager = inject(FrameManager);
+  private readonly settings = inject(Settings);
+  private readonly injector = inject(Injector);
+
+  readonly angularStatus = signal(AngularStatus.UNKNOWN);
 
   readonly AngularStatus = AngularStatus;
-  readonly angularStatus = signal(AngularStatus.UNKNOWN);
-  readonly angularVersion = signal<string | undefined>(undefined);
-  readonly angularIsInDevMode = signal(true);
-  readonly hydration = signal(false);
-  readonly ivy = signal<boolean | undefined>(undefined);
-
   readonly LAST_SUPPORTED_VERSION = LAST_SUPPORTED_VERSION;
 
   readonly supportedVersion = computed(() => {
-    const version = this.angularVersion();
-    if (!version) {
-      return false;
-    }
-    const majorVersion = parseInt(version.toString().split('.')[0], 10);
-
+    const {majorVersion, ivy} = this.appData();
     // Check that major version is either greater or equal to the last supported version
     // or that the major version is 0 for the (0.0.0-PLACEHOLDER) dev build case.
-    return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && this.ivy();
+    return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && ivy;
   });
 
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _frameManager = inject(FrameManager);
-
-  private _interval$ = interval(500).subscribe((attempt) => {
+  private interval$ = interval(500).subscribe((attempt) => {
     if (attempt === DETECT_ANGULAR_ATTEMPTS) {
       this.angularStatus.set(AngularStatus.DOES_NOT_EXIST);
     }
-    this._messageBus.emit('queryNgAvailability');
+    this.messageBus.emit('queryNgAvailability');
   });
 
   constructor() {
@@ -95,25 +89,47 @@ export class DevToolsComponent implements OnDestroy {
     inject(BrowserStylesService).initBrowserSpecificStyles();
     inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
 
-    this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
+    this.messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
       this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
-      this.angularVersion.set(version);
-      this.angularIsInDevMode.set(devMode);
-      this.ivy.set(ivy);
-      this._interval$.unsubscribe();
-      this.hydration.set(hydration);
+      this.appData.init({
+        version,
+        devMode,
+        ivy,
+        hydration,
+      });
+      this.interval$.unsubscribe();
 
       if (supportedApis) {
         this.supportedApis.init(supportedApis);
       }
+
+      this.syncBackendWithSettings();
     });
   }
 
   inspectFrame(frame: Frame) {
-    this._frameManager.inspectFrame(frame);
+    this.frameManager.inspectFrame(frame);
   }
 
   ngOnDestroy(): void {
-    this._interval$.unsubscribe();
+    this.interval$.unsubscribe();
+  }
+
+  private syncBackendWithSettings() {
+    effect(
+      () => {
+        this.messageBus.emit('setConfig', [
+          {
+            performanceTrack: this.settings.performanceTrack(),
+            hydrationOverlays: this.settings.showHydrationOverlays(),
+            cdHighlighting: this.settings.highlightChangeDetection(),
+            cdDataStream: this.settings.showCdInExplorer(),
+            deferBlocks: this.settings.showDeferBlocks(),
+            forBlocks: this.settings.showForBlocks(),
+          },
+        ]);
+      },
+      {injector: this.injector},
+    );
   }
 }

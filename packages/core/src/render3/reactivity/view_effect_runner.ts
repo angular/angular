@@ -32,6 +32,11 @@ export function runEffectsInView(view: LView): void {
       } else {
         effect.zone.run(() => effect.run());
       }
+
+      // Stop immediately if the view was destroyed during effect execution.
+      if (view[EFFECTS] === null) {
+        return;
+      }
     }
 
     // Check if we need to continue flushing. If we didn't find any dirty effects, then there's

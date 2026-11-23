@@ -143,7 +143,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
         @Directive({
           selector: 'child-directive',
-          standalone: false,
         })
         class ChildDirective {
           logs: string[] = [];
@@ -160,22 +159,17 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           selector: 'parent-cmp',
           viewProviders: [HostService],
           template: '<child-directive></child-directive>',
-          standalone: false,
+          imports: [ChildDirective],
         })
         class ParentCmp {}
 
         @Component({
-          selector: 'app',
           viewProviders: [OtherService],
           template: '<parent-cmp></parent-cmp>',
-          standalone: false,
+          imports: [ParentCmp],
         })
         class App {}
         // #enddocregion
-
-        TestBed.configureTestingModule({
-          declarations: [App, ParentCmp, ChildDirective],
-        });
 
         let cmp: ComponentFixture<App> = undefined!;
         expect(() => (cmp = TestBed.createComponent(App))).not.toThrow();

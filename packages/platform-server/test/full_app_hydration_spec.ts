@@ -49,6 +49,7 @@ import {
   QueryList,
   signal,
   TemplateRef,
+  Type,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
@@ -92,12 +93,24 @@ import {
 } from './hydration_utils';
 
 describe('platform-server full application hydration integration', () => {
+  const originalWindow = globalThis.window;
+
+  beforeAll(async () => {
+    globalThis.window = globalThis as unknown as Window & typeof globalThis;
+    await import('../../core/primitives/event-dispatch/contract_bundle_min.js' as string);
+  });
+
+  afterAll(() => {
+    globalThis.window = originalWindow;
+  });
+
   beforeEach(() => {
     resetNgDevModeCounters();
   });
 
   afterEach(() => {
     destroyPlatform();
+    window._ejsas = {};
   });
 
   describe('hydration', () => {
@@ -197,6 +210,27 @@ describe('platform-server full application hydration integration', () => {
         // We expect that the existing content of the host node is fully removed.
         expect(ssrContents).not.toContain(extraChildNodes);
         expect(ssrContents).toContain('<app ngh="0"><div>Some content</div></app>');
+      });
+
+      it('should serialize input values correctly for both null and normal non-empty values during SSR', async () => {
+        @Component({
+          selector: 'app',
+
+          template: `
+            <input id="input-null" [value]="nullValue" />
+            <input id="input-normal" [value]="normalValue" />
+          `,
+        })
+        class AppComponent {
+          nullValue: string | null = null;
+          normalValue = 'hello';
+        }
+
+        const html = await ssr(AppComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).not.toContain('value="null"');
+        expect(ssrContents).toContain('id="input-normal" value="hello"');
       });
     });
 
@@ -550,6 +584,7 @@ describe('platform-server full application hydration integration', () => {
         it('should support element containers with *ngIf', async () => {
           @Component({
             selector: 'cmp',
+
             template: 'Hi!',
           })
           class Cmp {}
@@ -923,6 +958,7 @@ describe('platform-server full application hydration integration', () => {
           it('should support hydration on <ng-container> nodes', async () => {
             @Component({
               selector: 'nested-cmp',
+
               imports: [NgIf],
               template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
@@ -958,6 +994,7 @@ describe('platform-server full application hydration integration', () => {
           it('should support hydration on element nodes', async () => {
             @Component({
               selector: 'nested-cmp',
+
               imports: [NgIf],
               template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
@@ -993,6 +1030,7 @@ describe('platform-server full application hydration integration', () => {
           it('should support hydration for nested components', async () => {
             @Component({
               selector: 'nested-cmp',
+
               imports: [NgIf],
               template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
@@ -1000,6 +1038,7 @@ describe('platform-server full application hydration integration', () => {
 
             @Component({
               selector: 'other-nested-cmp',
+
               imports: [NgComponentOutlet],
               template: ` <ng-container *ngComponentOutlet="NestedComponent" />`,
             })
@@ -1258,15 +1297,17 @@ describe('platform-server full application hydration integration', () => {
 
           it('should hydrate dynamically created components using root component as an anchor (with nested components)', async () => {
             @Component({
-              imports: [CommonModule],
               selector: 'nested-dynamic-a',
+
+              imports: [CommonModule],
               template: ` <p>NestedDynamicComponentA</p> `,
             })
             class NestedDynamicComponentA {}
 
             @Component({
-              imports: [CommonModule],
               selector: 'nested-dynamic-b',
+
+              imports: [CommonModule],
               template: ` <p>NestedDynamicComponentB</p> `,
             })
             class NestedDynamicComponentB {}
@@ -1363,6 +1404,7 @@ describe('platform-server full application hydration integration', () => {
             async () => {
               @Component({
                 selector: 'another-dynamic',
+
                 template: `<span>This is a content of another dynamic component.</span>`,
               })
               class AnotherDynamicComponent {
@@ -1662,6 +1704,7 @@ describe('platform-server full application hydration integration', () => {
         it('should append skip hydration flag if component uses i18n blocks and no `withI18nSupport()` call present', async () => {
           @Component({
             selector: 'app',
+
             template: '<div i18n>Hi!</div>',
           })
           class SimpleComponent {
@@ -1945,7 +1988,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>!<!--ICU 28:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>!<!--ICU 29:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
@@ -1997,7 +2040,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 28:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 29:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
@@ -2121,6 +2164,7 @@ describe('platform-server full application hydration integration', () => {
         it('should support using translated views as view container anchors', async () => {
           @Component({
             selector: 'dynamic-cmp',
+
             template: `DynamicComponent content`,
           })
           class DynamicComponent {}
@@ -2234,7 +2278,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 28:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 29:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {
@@ -2397,6 +2441,48 @@ describe('platform-server full application hydration integration', () => {
           expect(clientRootNode.querySelector('#two').textContent).toBe(' one-two ');
           expect(clientRootNode.querySelector('#three').textContent).toBe(' two-one ');
           expect(clientRootNode.querySelector('#four').textContent).toBe(' two-two ');
+        });
+
+        it('should hydrate ICUs in components that share serialized hydration data', async () => {
+          @Component({
+            selector: 'simple-component',
+            template: `<div i18n>
+              {count, plural, =1 {one item} other {{{ count }} items}}
+            </div>`,
+          })
+          class SimpleComponent {
+            @Input() count!: number;
+          }
+
+          @Component({
+            imports: [SimpleComponent],
+            selector: 'app',
+            template: `
+              <simple-component id="one" [count]="21" />
+              <simple-component id="two" [count]="19" />
+            `,
+          })
+          class AppComponent {}
+
+          const hydrationFeatures = () => [withI18nSupport()];
+          const html = await ssr(AppComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(AppComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, AppComponent, {
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<AppComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          expect(clientRootNode.querySelector('#one').textContent).toBe(' 21 items ');
+          expect(clientRootNode.querySelector('#two').textContent).toBe(' 19 items ');
         });
 
         it('should hydrate containers', async () => {
@@ -3482,6 +3568,7 @@ describe('platform-server full application hydration integration', () => {
         async () => {
           @Component({
             selector: 'dynamic-cmp',
+
             template: `DynamicComponent content`,
           })
           class DynamicComponent {}
@@ -5573,6 +5660,7 @@ describe('platform-server full application hydration integration', () => {
       it('should support projecting contents outside of a current host element', async () => {
         @Component({
           selector: 'dynamic-cmp',
+
           template: `<div #target></div>`,
         })
         class DynamicComponent {
@@ -5754,6 +5842,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           imports: [NgIf, NgFor],
           template: `
             <div #target></div>
@@ -5805,6 +5894,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           imports: [NgIf, NgFor],
           template: `
             <div #target></div>
@@ -5846,6 +5936,37 @@ describe('platform-server full application hydration integration', () => {
         }
       });
 
+      it('should not throw when ngSkipHydration is set on a component with projectable nodes created via ViewContainerRef.createComponent', async () => {
+        // Regression test for #67928: NG0503 was thrown during serialization even
+        // when ngSkipHydration was applied to a dynamically created component that
+        // received projectable nodes, because serializeLContainer did not respect
+        // the skip-hydration flag before calling serializeLView.
+        @Component({
+          selector: 'dynamic',
+          template: `<ng-content />`,
+          host: {'ngSkipHydration': 'true'},
+        })
+        class DynamicComponent {}
+
+        @Component({
+          selector: 'app',
+
+          template: `<div #anchor></div>`,
+        })
+        class SimpleComponent {
+          @ViewChild('anchor', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+
+          ngAfterViewInit() {
+            const div = document.createElement('div');
+            this.vcr.createComponent(DynamicComponent, {projectableNodes: [[div]]});
+          }
+        }
+
+        // Before the fix this threw NG0503. After the fix it should succeed.
+        const html = await ssr(SimpleComponent);
+        expect(html).toContain('<dynamic');
+      });
+
       it('should support cases when <ng-content> is used with *ngIf="false"', async () => {
         @Component({
           selector: 'projector-cmp',
@@ -5863,14 +5984,14 @@ describe('platform-server full application hydration integration', () => {
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
-            <projector-cmp [project]="project">
+            <projector-cmp [project]="project()">
               <h1>This node is not projected.</h1>
               <h2>This node is not projected as well.</h2>
             </projector-cmp>
           `,
         })
         class SimpleComponent {
-          project = false;
+          project = signal(false);
         }
 
         const html = await ssr(SimpleComponent);
@@ -5892,12 +6013,12 @@ describe('platform-server full application hydration integration', () => {
         let h2 = clientRootNode.querySelector('h2');
         let span = clientRootNode.querySelector('span');
 
-        expect(h1).not.toBeDefined();
-        expect(h2).not.toBeDefined();
+        expect(h1).toBeNull();
+        expect(h2).toBeNull();
         expect(span.textContent).toBe('no');
 
         // Flip the flag to enable content projection.
-        compRef.instance.project = true;
+        compRef.instance.project.set(true);
         compRef.changeDetectorRef.detectChanges();
 
         h1 = clientRootNode.querySelector('h1');
@@ -5926,14 +6047,14 @@ describe('platform-server full application hydration integration', () => {
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
-            <projector-cmp [project]="project">
+            <projector-cmp [project]="project()">
               <h1>This node is projected.</h1>
               <h2>This node is projected as well.</h2>
             </projector-cmp>
           `,
         })
         class SimpleComponent {
-          project = true;
+          project = signal(true);
         }
 
         const html = await ssr(SimpleComponent);
@@ -5960,15 +6081,15 @@ describe('platform-server full application hydration integration', () => {
         expect(span.textContent).toBe('yes');
 
         // Flip the flag to disable content projection.
-        compRef.instance.project = false;
+        compRef.instance.project.set(false);
         compRef.changeDetectorRef.detectChanges();
 
         h1 = clientRootNode.querySelector('h1');
         h2 = clientRootNode.querySelector('h2');
         span = clientRootNode.querySelector('span');
 
-        expect(h1).not.toBeDefined();
-        expect(h2).not.toBeDefined();
+        expect(h1).toBeNull();
+        expect(h2).toBeNull();
         expect(span.textContent).toBe('no');
       });
 
@@ -6180,7 +6301,371 @@ describe('platform-server full application hydration integration', () => {
           expect(message).toContain('During hydration Angular expected <b> but found <span>');
           expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
           verifyNodeHasMismatchInfo(doc);
+        });
+      });
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
+          'instruction locates a Text node in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. `locateOrCreateElementNodeImpl` always calls
+          // `hasSkipHydrationAttrOnRElement(native)`, which calls
+          // `native.hasAttribute(...)`. The `validateMatchingNode` check that would
+          // normally catch a "found a Text node instead of an <b> element" mismatch
+          // only runs in dev mode, so it's removed from production builds. Without
+          // the extra `nodeType` guard added for this fix, if hydration finds a Text
+          // node here instead of an Element (because the server-rendered DOM didn't
+          // match what the client's compiled template expected), production would
+          // hit `native.hasAttribute`, which doesn't exist on a Text node, and throw
+          // a raw TypeError instead of a coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                <p>This is an original content</p>
+                <b>Bold text</b>
+                <i>Italic text</i>
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized.
+              // The client's compiled template still expects a `<b>` element here,
+              // but the serialized (and later hydrated) DOM will have a plain Text
+              // node instead.
+              if (this.isServer) {
+                const b = this.doc.querySelector('b');
+                const text = this.doc.createTextNode('Not an element anymore!');
+                b?.parentNode?.replaceChild(text, b);
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `locateOrCreateElementNodeImpl` only calls
+          // `validateMatchingNode` when `ngDevMode` is truthy, so turning it off
+          // here means the full mismatch check is skipped, and only the new
+          // `nodeType` guard runs.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0500 RuntimeError, not a raw
+            // TypeError. Production intentionally gets a bare code with no
+            // description — building one (even a cheap one) is debug-only work
+            // that shouldn't ship unconditionally in production bundles.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0500');
+            expect(error.message).not.toContain('hasAttribute is not a function');
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
+          'instruction cannot locate a matching DOM node in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. When the client-rendered DOM has fewer nodes than the
+          // server-rendered HTML (e.g. a node was removed before hydration runs),
+          // `locateNextRNode` returns `null`. The `validateMatchingNode` check that
+          // would normally catch this only runs in dev mode, so it's removed from
+          // production builds. Without a dedicated null guard, production would fall
+          // through to `native.nodeType`, which throws a raw TypeError instead of a
+          // coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                <p>This is an original content</p>
+                <b>Bold text</b>
+                <i>Italic text</i>
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized.
+              // `<i>` is the last child, so removing it means hydration's sibling walk
+              // runs off the end of the DOM (`nextSibling` is `null`) instead of landing
+              // on some other, wrongly-typed node — exercising the missing-node path
+              // rather than the node-mismatch path covered by the test above.
+              if (this.isServer) {
+                this.doc.querySelector('i')?.remove();
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `locateOrCreateElementNodeImpl` only calls
+          // `validateMatchingNode` when `ngDevMode` is truthy, so turning it off
+          // here means the full mismatch check is skipped, and only the new
+          // null guard runs.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0502 RuntimeError, not a raw
+            // TypeError. The descriptive message (naming the enclosing host element) is
+            // dev-mode only, so in production the error carries just the error code.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0502');
+            expect(error.message).not.toContain("reading 'nodeType'");
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when siblingAfter runs out ' +
+          'of DOM siblings to skip in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. `siblingAfter` walks forward a fixed number of DOM siblings
+          // (based on the server-serialized container size) to find a container's anchor
+          // comment node. The dev-mode check that would normally catch a missing sibling
+          // (`validateSiblingNodeExists`) is gated behind `ngDevMode`, so it's removed from
+          // production builds. If the client DOM has fewer real siblings than the server
+          // expected (here, two of the three `@for`-rendered items are removed before
+          // hydration runs), production keeps walking past the end of the DOM and throws a
+          // raw TypeError instead of a coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                @for (item of items; track item) {
+                  <p>{{ item }}</p>
+                }
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            items = [1, 2, 3];
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized. The
+              // serialized container size still says "3 items", but the DOM hydration
+              // actually sees will only have 1.
+              if (this.isServer) {
+                const items = this.doc.querySelectorAll('#abc p');
+                items[1]?.remove();
+                items[2]?.remove();
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `siblingAfter` only calls
+          // `validateSiblingNodeExists` when `ngDevMode` is truthy, so turning it off here
+          // means the walk runs fully unguarded.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0501 RuntimeError, not a raw TypeError.
+            // Production intentionally gets a bare code with no description.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0501');
+            expect(error.message).not.toContain("reading 'nextSibling'");
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      describe('stripped anchor comment in production mode', () => {
+        async function getHydrationError(template: string) {
+          @Component({selector: 'app', template})
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const htmlWithoutAnchor = html.replace(
+            /(<main[^>]*>)(.*?)(<\/main>)/s,
+            (_, start, content, end) => start + content.replace(/<!--.*?-->/gs, '') + end,
+          );
+          expect(htmlWithoutAnchor).not.toBe(html);
+
+          resetTViewsFor(SimpleComponent);
+
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            return await prepareEnvironmentAndHydrate(doc, htmlWithoutAnchor, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            }).then(
+              () => null,
+              (e: Error) => e,
+            );
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        }
+
+        it('should throw NG0502 for an @if with a rendered view', async () => {
+          const error = await getHydrationError('<main>@if (true) {<span>text</span>}</main>');
+          expect(error?.message).toBe('NG0502');
+        });
+
+        it('should throw NG0502 for an @if with no rendered view', async () => {
+          const error = await getHydrationError('<main>@if (false) {<span>text</span>}</main>');
+          expect(error?.message).toBe('NG0502');
+        });
+
+        it('should throw NG0502 for an <ng-container> with a child', async () => {
+          const error = await getHydrationError(
+            '<main><ng-container><span>text</span></ng-container></main>',
+          );
+          expect(error?.message).toBe('NG0502');
+        });
+
+        it('should throw NG0502 for an empty <ng-container>', async () => {
+          const error = await getHydrationError('<main><ng-container></ng-container></main>');
+          expect(error?.message).toBe('NG0502');
+        });
+      });
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an @if branch is ' +
+          're-entered after a hydration mismatch corrupted its template on the first pass',
+        async () => {
+          // Regression test for getParentRElement() (node_manipulation.ts) receiving a null
+          // TNode. Unlike the siblingAfter/navigateToNode bugs above, this one isn't gated
+          // behind ngDevMode at all in the original code — it reproduces every time, with no
+          // need to simulate a production build.
+          //
+          // The mechanism: an @if/@switch branch's content is its own embedded template, with
+          // its own TView, built lazily the first time that branch is actually rendered
+          // (renderView() in render.ts). If an error is thrown partway through that *first*
+          // pass — here, a hydration node-mismatch on the branch's *second* child, so the
+          // first child's TNode is created but the second's never is — TView.firstCreatePass
+          // still gets flipped to false in render.ts's `catch` block before the error
+          // propagates, and the TView is marked `incompleteFirstPass`. Unlike a *component's*
+          // TView (which gets rebuilt from scratch next time via
+          // getOrCreateComponentTView()'s `incompleteFirstPass` check), nothing rebuilds an
+          // *embedded view's* TView. So the next time this exact branch is selected again —
+          // here, by flipping the condition off and back on — its instructions see
+          // `!tView.firstCreatePass` and read straight from `tView.data[slot]` instead of
+          // creating a fresh TNode, and the second child's slot is still null from the
+          // interrupted first pass.
+          let instance!: SimpleComponent;
+
+          @Component({
+            selector: 'app',
+            template: `
+              @if (cond()) {
+                <span>first</span>
+                <span>{{ text() }}</span>
+              } @else {
+                <span>else</span>
+              }
+            `,
+          })
+          class SimpleComponent {
+            cond = signal(true);
+            text = signal('orig');
+            private doc = inject(DOCUMENT);
+            constructor() {
+              instance = this;
+            }
+            ngAfterViewInit() {
+              // Swap the second <span> for a <div>, bypassing Angular's own node tracking
+              // (mimics a third-party script mutating the DOM, like the test above), so
+              // hydration hits a tag mismatch on the branch's SECOND node specifically,
+              // interrupting its first creation pass after the first node already succeeded.
+              const spans = this.doc.querySelectorAll('app span');
+              if (spans.length >= 2) {
+                const bad = this.doc.createElement('div');
+                bad.textContent = spans[1].textContent;
+                spans[1].replaceWith(bad);
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          });
+
+          // Re-enter the same @if branch: leave it, then come back. This is what exposes the
+          // corrupted TView from the interrupted first pass above.
+          instance.cond.set(false);
+          appRef.tick();
+          instance.cond.set(true);
+
+          expect(() => appRef.tick()).toThrowError(/NG0510/);
+        },
+      );
+
+      it('should if there are any third-party scripts that manipulate the DOM', async () => {
+        @Component({
+          selector: 'app',
+
+          template: `<div>Original content</div>`,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const div = this.doc.querySelector('div');
+            const ins = this.doc.createElement('ins');
+            ins.setAttribute('data-ad-client', 'ca-pub-1234');
+            ins.textContent = 'Ad content';
+            div?.parentNode?.insertBefore(ins, div);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+
+        await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain('During hydration Angular expected <div> but found <ins>');
+          expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
         });
       });
 
@@ -6493,6 +6978,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           imports: [CommonModule, ProjectorComponent],
           template: `
             <projector-cmp>
@@ -6681,6 +7167,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           template: `Hi!`,
         })
         class SimpleComponent {
@@ -6724,6 +7211,239 @@ describe('platform-server full application hydration integration', () => {
         // Ensure no error has been logged in the console,
         // such as "injector has already been destroyed."
         expect(errorSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('DOM clobbering', () => {
+      function emulateFormDomClobbering(form: HTMLFormElement): () => void {
+        const clobbered = new Set<string>();
+        for (const control of Array.from(form.querySelectorAll('[name],[id]'))) {
+          for (const key of [control.getAttribute('name'), control.getAttribute('id')]) {
+            if (key && !clobbered.has(key)) {
+              clobbered.add(key);
+              Object.defineProperty(form, key, {value: control, configurable: true});
+            }
+          }
+        }
+        return () => {
+          for (const key of clobbered) {
+            delete (form as unknown as Record<string, unknown>)[key];
+          }
+        };
+      }
+
+      /** Undoes the currently installed DOM clobbering emulation, if any. */
+      let restoreDomClobbering: (() => void) | null = null;
+
+      afterEach(() => {
+        restoreDomClobbering?.();
+        restoreDomClobbering = null;
+      });
+
+      function emulateFormDomClobberingOnClient(): void {
+        if (isPlatformBrowser(inject(PLATFORM_ID))) {
+          restoreDomClobbering = emulateFormDomClobbering(inject(DOCUMENT).querySelector('form')!);
+        }
+      }
+
+      async function hydrateWithFormClobbering(
+        html: string,
+        component: Type<unknown>,
+      ): Promise<ApplicationRef> {
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, component);
+        appRef.tick();
+        restoreDomClobbering?.();
+        restoreDomClobbering = null;
+        return appRef;
+      }
+
+      it('should hydrate correctly when a form control has a non-clobbering name', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <span>{{ label() }}</span>
+              <input [name]="key" />
+              <div>{{ help() }}</div>
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          label = signal('Label');
+          help = signal('Help text');
+          key = 'username';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('<input name="username">');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrateWithFormClobbering(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+        compRef.instance.label.set('Updated label');
+        compRef.instance.help.set('Updated help');
+        appRef.tick();
+
+        expect(clientRootNode.querySelector('span').textContent).toBe('Updated label');
+        expect(clientRootNode.querySelector('div').textContent).toBe('Updated help');
+      });
+
+      async function expectHydrationToFailWithClobbering(
+        component: Type<unknown>,
+        expectedSsrContent: string,
+      ): Promise<Error> {
+        const html = await ssr(component);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain(expectedSsrContent);
+
+        resetTViewsFor(component);
+
+        try {
+          await prepareEnvironmentAndHydrate(doc, html, component, {
+            envProviders: [withNoopErrorHandler()],
+          });
+        } catch (e: unknown) {
+          return e as Error;
+        }
+        fail('Expected the hydration process to throw.');
+        return null!;
+      }
+
+      it('should throw when a form control clobbers `form.firstChild`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <span>{{ label }}</span>
+              <div><input [name]="key" /></div>
+              <div>{{ help }}</div>
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          label = 'Label';
+          help = 'Help text';
+          key = 'firstChild';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const error = await expectHydrationToFailWithClobbering(
+          SimpleComponent,
+          '<input name="firstChild">',
+        );
+        expect(error.message).toBe(
+          'Action failed because the element is clobbered: <input name="firstChild">',
+        );
+      });
+
+      it('should throw when a form control clobbers `form.firstChild` in production mode (ngDevMode off)', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <span>{{ label }}</span>
+              <div><input [name]="key" /></div>
+              <div>{{ help }}</div>
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          label = 'Label';
+          help = 'Help text';
+          key = 'firstChild';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const previousNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = false;
+        try {
+          const error = await expectHydrationToFailWithClobbering(
+            SimpleComponent,
+            '<input name="firstChild">',
+          );
+          expect(error instanceof TypeError).toBe(false);
+          expect(error.message).toBe(
+            'Action failed because the element is clobbered: <input name="firstChild">',
+          );
+        } finally {
+          (globalThis as any).ngDevMode = previousNgDevMode;
+        }
+      });
+
+      it('should throw when a form control clobbers `form.nextSibling`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <input [name]="key" />
+            </form>
+            <div>{{ help }}</div>
+          `,
+        })
+        class SimpleComponent {
+          help = 'Help text';
+          key = 'nextSibling';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const error = await expectHydrationToFailWithClobbering(
+          SimpleComponent,
+          '<input name="nextSibling">',
+        );
+        expect(error.message).toBe(
+          'Action failed because the element is clobbered: <input name="nextSibling">',
+        );
+      });
+
+      it('should throw when a form control clobbers `form.hasAttribute`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <input [name]="key" />
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          key = 'hasAttribute';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const error = await expectHydrationToFailWithClobbering(
+          SimpleComponent,
+          '<input name="hasAttribute">',
+        );
+        expect(error instanceof TypeError).toBe(false);
+        expect(error.message).toBe(
+          'Action failed because the element is clobbered: <input name="hasAttribute">',
+        );
       });
     });
 
@@ -6852,7 +7572,7 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app',
           template: `
-            @if (conditionA) {
+            @if (conditionA()) {
               if block
             } @else {
               else block
@@ -6860,7 +7580,7 @@ describe('platform-server full application hydration integration', () => {
           `,
         })
         class SimpleComponent {
-          conditionA = false;
+          conditionA = signal(false);
         }
 
         const html = await ssr(SimpleComponent);
@@ -6888,7 +7608,7 @@ describe('platform-server full application hydration integration', () => {
 
         // Verify that switching `if` condition results
         // in an update to the DOM which was previously hydrated.
-        compRef.instance.conditionA = true;
+        compRef.instance.conditionA.set(true);
         compRef.changeDetectorRef.detectChanges();
 
         expect(clientRootNode.innerHTML).not.toContain(`else block`);
@@ -7320,12 +8040,12 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app',
           template: `
-            @let greeting = name + '!!!';
+            @let greeting = name() + '!!!';
             Hello, {{ greeting }}
           `,
         })
         class SimpleComponent {
-          name = 'Frodo';
+          name = signal('Frodo');
         }
 
         const html = await ssr(SimpleComponent);
@@ -7345,7 +8065,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Hello, Frodo!!!');
 
-        compRef.instance.name = 'Bilbo';
+        compRef.instance.name.set('Bilbo');
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('Hello, Bilbo!!!');
       });
@@ -7354,14 +8074,14 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app',
           template: `
-            @let plusOne = value + 1;
+            @let plusOne = value() + 1;
             @let plusTwo = plusOne + 1;
             @let result = plusTwo + 1;
             Result: {{ result }}
           `,
         })
         class SimpleComponent {
-          value = 1;
+          value = signal(1);
         }
 
         const html = await ssr(SimpleComponent);
@@ -7381,7 +8101,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Result: 4');
 
-        compRef.instance.value = 2;
+        compRef.instance.value.set(2);
         compRef.changeDetectorRef.detectChanges();
 
         expect(clientRootNode.textContent).toContain('Result: 5');
@@ -7403,12 +8123,12 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           imports: [DoublePipe],
           template: `
-            @let result = value | double;
+            @let result = value() | double;
             Result: {{ result }}
           `,
         })
         class SimpleComponent {
-          value = 1;
+          value = signal(1);
         }
 
         const html = await ssr(SimpleComponent);
@@ -7428,7 +8148,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Result: 2');
 
-        compRef.instance.value = 2;
+        compRef.instance.value.set(2);
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('Result: 4');
       });
@@ -7445,11 +8165,11 @@ describe('platform-server full application hydration integration', () => {
               @let two = one + 1;
             }
 
-            @let one = value + 1;
+            @let one = value() + 1;
           `,
         })
         class SimpleComponent {
-          value = 0;
+          value = signal(0);
         }
 
         const html = await ssr(SimpleComponent);
@@ -7469,7 +8189,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('The result is 3');
 
-        compRef.instance.value = 2;
+        compRef.instance.value.set(2);
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('The result is 5');
       });
@@ -7653,6 +8373,143 @@ describe('platform-server full application hydration integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Main:  Slot: 2');
+      });
+    });
+
+    describe('@boundary', () => {
+      it('should hydrate successfully when no error occurs', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'app',
+          template: `
+            @boundary {
+              Hello, {{ name() }}
+            } @error {
+              Error occurred!
+            }
+          `,
+        })
+        class SimpleComponent {
+          name = signal('Frodo');
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Hello, Frodo');
+        expect(ssrContents).not.toContain('Error occurred!');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Hello, Frodo');
+
+        compRef.instance.name.set('Bilbo');
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.textContent).toContain('Hello, Bilbo');
+      });
+
+      it('should render fallback during SSR and recover to primary during client hydration if error is resolved', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'child',
+          template: 'Child rendering...',
+        })
+        class ChildComponent {
+          @Input() fail = false;
+          ngOnInit() {
+            if (this.fail) {
+              throw new Error('Server error');
+            }
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ChildComponent],
+          template: `
+            @boundary {
+              <child [fail]="fail" />
+            } @error {
+              Error occurred on server!
+            }
+          `,
+        })
+        class SimpleComponent {
+          fail = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        // 1. SSR where an error occurs
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        // Ensure server rendered the fallback
+        expect(ssrContents).toContain('Error occurred on server!');
+        expect(ssrContents).not.toContain('Child rendering...');
+
+        // 2. Hydration where error does NOT occur (fail is false on client)
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // Since the server rendered fallback but client successfully rendered primary,
+        // it shouldn't crash, and the fallback should be replaced with primary.
+        expect(clientRootNode.textContent).toContain('Child rendering...');
+        expect(clientRootNode.textContent).not.toContain('Error occurred on server!');
+      });
+
+      it('should render fallback during SSR and remain in error state during client hydration if error persists', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'child',
+          template: 'Child rendering...',
+        })
+        class ChildComponent {
+          @Input() fail = false;
+          ngOnInit() {
+            if (this.fail) {
+              throw new Error('Persistent error');
+            }
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ChildComponent],
+          template: `
+            @boundary {
+              <child [fail]="true" />
+            } @error {
+              Error occurred on server and client!
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        // 1. SSR where an error occurs
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Error occurred on server and client!');
+
+        // 2. Hydration where error DOES occur again
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // The fallback should still be rendered (either hydrated or re-created)
+        expect(clientRootNode.textContent).toContain('Error occurred on server and client!');
       });
     });
 

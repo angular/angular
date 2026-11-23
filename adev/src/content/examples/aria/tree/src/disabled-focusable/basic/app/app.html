@@ -1,4 +1,4 @@
-<ul ngTree #tree="ngTree" [(values)]="selected" class="basic-tree">
+<ul ngTree #tree="ngTree" [(value)]="selected" class="basic-tree">
   <ng-template
     [ngTemplateOutlet]="treeNodes"
     [ngTemplateOutletContext]="{nodes: nodes, parent: tree}"
@@ -23,11 +23,7 @@
         node.children ? 'folder' : 'docs'
       }}</span>
       {{ node.name }}
-      <span
-        aria-hidden="true"
-        class="material-symbols-outlined selected-icon"
-        translate="no"
-        aria-hidden="true"
+      <span aria-hidden="true" class="material-symbols-outlined selected-icon" translate="no"
         >check</span
       >
     </li>

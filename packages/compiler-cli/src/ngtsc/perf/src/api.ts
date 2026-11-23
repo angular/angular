@@ -190,6 +190,11 @@ export enum PerfPhase {
   LSSemanticClassification,
 
   /**
+   * Time spent by the Angular Language Service calculating smart selection ranges.
+   */
+  LsSmartSelection,
+
+  /**
    * Tracks the number of `PerfPhase`s, and must appear at the end of the list.
    */
   LAST,
@@ -233,6 +238,11 @@ export enum PerfEvent {
    * An `@Pipe` class was analyzed.
    */
   AnalyzePipe,
+
+  /**
+   * An `@Service` class was analyzed.
+   */
+  AnalyzeService,
 
   /**
    * A trait was analyzed.
@@ -298,7 +308,7 @@ export enum PerfEvent {
   EmitSourceFile,
 
   /**
-   * Tracks the number of `PrefEvent`s, and must appear at the end of the list.
+   * Tracks the number of `PerfEvent`s, and must appear at the end of the list.
    */
   LAST,
 }

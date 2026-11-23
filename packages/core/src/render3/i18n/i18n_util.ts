@@ -12,6 +12,7 @@ import {
   assertGreaterThanOrEqual,
   throwError,
 } from '../../util/assert';
+import {getClosureSafeProperty} from '../../util/property';
 import {assertTIcu, assertTNode} from '../assert';
 import {IcuCreateOpCode, TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode, TNode, TNodeType} from '../interfaces/node';
@@ -22,6 +23,13 @@ import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_
 import {createTNodeAtIndex} from '../tnode_manipulation';
 
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
+
+const CURRENT_CASE_LVIEW_INDEX = getClosureSafeProperty({
+  currentCaseLViewIndex: getClosureSafeProperty,
+});
+const TVIEW = getClosureSafeProperty({
+  tView: getClosureSafeProperty,
+});
 
 /**
  * Retrieve `TIcu` at a given `index`.
@@ -41,15 +49,15 @@ export function getTIcu(tView: TView, index: number): TIcu | null {
   if (value === null || typeof value === 'string') return null;
   if (
     ngDevMode &&
-    !(value.hasOwnProperty('tView') || value.hasOwnProperty('currentCaseLViewIndex'))
+    !(Object.hasOwn(value, TVIEW) || Object.hasOwn(value, CURRENT_CASE_LVIEW_INDEX))
   ) {
     throwError("We expect to get 'null'|'TIcu'|'TIcuContainer', but got: " + value);
   }
-  // Here the `value.hasOwnProperty('currentCaseLViewIndex')` is a polymorphic read as it can be
+  // Here the `Object.hasOwn(value, CURRENT_CASE_LVIEW_INDEX)` is a polymorphic read as it can be
   // either TIcu or TIcuContainerNode. This is not ideal, but we still think it is OK because it
   // will be just two cases which fits into the browser inline cache (inline cache can take up to
   // 4)
-  const tIcu = value.hasOwnProperty('currentCaseLViewIndex')
+  const tIcu = Object.hasOwn(value, CURRENT_CASE_LVIEW_INDEX)
     ? (value as TIcu)
     : (value as TIcuContainerNode).value;
   ngDevMode && assertTIcu(tIcu);
@@ -74,7 +82,7 @@ export function setTIcu(tView: TView, index: number, tIcu: TIcu): void {
   const tNode = tView.data[index] as null | TIcuContainerNode;
   ngDevMode &&
     assertEqual(
-      tNode === null || tNode.hasOwnProperty('tView'),
+      tNode === null || Object.hasOwn(tNode, TVIEW),
       true,
       "We expect to get 'null'|'TIcuContainer'",
     );
@@ -101,7 +109,7 @@ export function setTNodeInsertBeforeIndex(tNode: TNode, index: number) {
       index,
     ];
   } else {
-    assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
+    ngDevMode && assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
     (insertBeforeIndex as number[]).push(index);
   }
 }
@@ -149,6 +157,13 @@ export function getInstructionFromIcuCreateOpCode(mergedCode: number): number {
 export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refIdx: number) {
   ngDevMode && assertGreaterThanOrEqual(parentIdx, 0, 'Missing parent index');
   ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
+
+  // Note that we intentionally retain the error here in production,
+  // because the value can change based on the locale.
+  if (parentIdx > IcuCreateOpCode.MAX_PARENT || refIdx > IcuCreateOpCode.MAX_REF) {
+    throw new Error('ICU node index out of range (too many nodes in ICU case)');
+  }
+
   return (
     opCode | (parentIdx << IcuCreateOpCode.SHIFT_PARENT) | (refIdx << IcuCreateOpCode.SHIFT_REF)
   );

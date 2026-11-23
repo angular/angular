@@ -50,108 +50,108 @@ export const constructPathOfKeysToPropertyValue = (
 };
 
 export class DirectivePropertyResolver {
-  private _treeFlattener = getTreeFlattener();
+  private treeFlattener = getTreeFlattener();
 
-  private _treeControl = new FlatTreeControl<FlatNode>(
+  private treeControl = new FlatTreeControl<FlatNode>(
     (node) => node.level,
     (node) => node.expandable,
   );
 
-  private _inputsDataSource: PropertyDataSource;
-  private _propsDataSource: PropertyDataSource;
-  private _outputsDataSource: PropertyDataSource;
-  private _stateDataSource: PropertyDataSource;
+  private inputsDataSource: PropertyDataSource;
+  private propsDataSource: PropertyDataSource;
+  private outputsDataSource: PropertyDataSource;
+  private stateDataSource: PropertyDataSource;
 
   constructor(
-    private _messageBus: MessageBus<Events>,
-    private _props: Properties,
-    private _directivePosition: DirectivePosition,
+    private messageBus: MessageBus<Events>,
+    private props: Properties,
+    private directivePos: DirectivePosition,
   ) {
-    const {inputs, props, outputs, state} = this._classifyProperties();
+    const {inputs, props: properties, outputs, state} = this.classifyProperties();
 
-    this._inputsDataSource = this._createDataSourceFromProps(inputs);
-    this._propsDataSource = this._createDataSourceFromProps(props);
-    this._outputsDataSource = this._createDataSourceFromProps(outputs);
-    this._stateDataSource = this._createDataSourceFromProps(state);
+    this.inputsDataSource = this.createDataSourceFromProps(inputs);
+    this.propsDataSource = this.createDataSourceFromProps(properties);
+    this.outputsDataSource = this.createDataSourceFromProps(outputs);
+    this.stateDataSource = this.createDataSourceFromProps(state);
   }
 
   get directiveInputControls(): DirectiveTreeData {
-    return getDirectiveControls(this._inputsDataSource);
+    return getDirectiveControls(this.inputsDataSource);
   }
 
   get directivePropControls(): DirectiveTreeData {
-    return getDirectiveControls(this._propsDataSource);
+    return getDirectiveControls(this.propsDataSource);
   }
 
   get directiveOutputControls(): DirectiveTreeData {
-    return getDirectiveControls(this._outputsDataSource);
+    return getDirectiveControls(this.outputsDataSource);
   }
 
   get directiveStateControls(): DirectiveTreeData {
-    return getDirectiveControls(this._stateDataSource);
+    return getDirectiveControls(this.stateDataSource);
   }
 
   get directiveMetadata(): DirectiveMetadata | undefined {
-    return this._props.metadata;
+    return this.props.metadata;
   }
 
   get directiveProperties(): {[name: string]: Descriptor} {
-    return this._props.props;
+    return this.props.props;
   }
 
   get directivePosition(): DirectivePosition {
-    return this._directivePosition;
+    return this.directivePos;
   }
 
   getExpandedProperties(): NestedProp[] {
     return [
-      ...getExpandedDirectiveProperties(this._inputsDataSource.data),
-      ...getExpandedDirectiveProperties(this._propsDataSource.data),
-      ...getExpandedDirectiveProperties(this._outputsDataSource.data),
-      ...getExpandedDirectiveProperties(this._stateDataSource.data),
+      ...getExpandedDirectiveProperties(this.inputsDataSource.data),
+      ...getExpandedDirectiveProperties(this.propsDataSource.data),
+      ...getExpandedDirectiveProperties(this.outputsDataSource.data),
+      ...getExpandedDirectiveProperties(this.stateDataSource.data),
     ];
   }
 
   updateProperties(newProps: Properties): void {
-    this._props = newProps;
-    const {inputs, props, outputs, state} = this._classifyProperties();
+    this.props = newProps;
+    const {inputs, props, outputs, state} = this.classifyProperties();
 
-    this._inputsDataSource.update(inputs);
-    this._propsDataSource.update(props);
-    this._outputsDataSource.update(outputs);
-    this._stateDataSource.update(state);
+    this.inputsDataSource.update(inputs);
+    this.propsDataSource.update(props);
+    this.outputsDataSource.update(outputs);
+    this.stateDataSource.update(state);
   }
 
   updateValue(node: FlatNode, newValue: unknown): void {
-    const directiveId = this._directivePosition;
+    const directiveId = this.directivePos;
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
-    this._messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
+    this.messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
     node.prop.descriptor.value = newValue;
   }
 
   logValue(node?: FlatNode): void {
-    const directiveId = this._directivePosition;
+    const directiveId = this.directivePos;
     const keyPath = node ? constructPathOfKeysToPropertyValue(node.prop) : null;
-    this._messageBus.emit('logValue', [{directiveId, keyPath}]);
+    this.messageBus.emit('logValue', [{directiveId, keyPath}]);
   }
 
-  private _createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {
+  private createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {
     return new PropertyDataSource(
       props,
-      this._treeFlattener,
-      this._treeControl,
-      this._directivePosition,
-      this._messageBus,
+      this.treeFlattener,
+      this.treeControl,
+      this.directivePos,
+      this.messageBus,
     );
   }
 
-  private _classifyProperties(): {
+  private classifyProperties(): {
     inputs: {[name: string]: Descriptor};
     props: {[name: string]: Descriptor};
     outputs: {[name: string]: Descriptor};
     state: {[name: string]: Descriptor};
   } {
-    const metadata = this._props.metadata;
+    const metadata = this.props.metadata;
     if (!metadata) {
       return {
         inputs: {},

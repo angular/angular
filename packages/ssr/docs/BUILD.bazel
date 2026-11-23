@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "generate_api_docs", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,30 +11,4 @@ ts_project(
     deps = [
         "//:node_modules/@angular/ssr",
     ],
-)
-
-### @angular/ssr package located in the Angular/CLI repository
-generate_api_docs(
-    name = "ssr_docs",
-    srcs = [
-        ":ssr_docs_lib",
-        ":ssr_docs_lib_types",
-        "//:node_modules/@angular/ssr",
-        "//packages:common_files_and_deps_for_docs",
-    ],
-    entry_point = ":_index.d.ts",
-    module_name = "@angular/ssr",
-)
-
-generate_api_docs(
-    name = "ssr_node_docs",
-    srcs = [
-        ":ssr_docs_lib",
-        ":ssr_docs_lib_types",
-        "//:node_modules/@angular/ssr",
-        "//:node_modules/@types/node",
-        "//packages:common_files_and_deps_for_docs",
-    ],
-    entry_point = ":_node.d.ts",
-    module_name = "@angular/ssr/node",
 )

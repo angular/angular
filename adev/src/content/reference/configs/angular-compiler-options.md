@@ -51,25 +51,18 @@ Default is `false`.
 Specifies the compilation mode to use.
 The following modes are available:
 
-| Modes       | Details                                                                                             |
-| :---------- | :-------------------------------------------------------------------------------------------------- |
-| `'full'`    | Generates fully AOT-compiled code according to the version of Angular that is currently being used. |
-| `'partial'` | Generates code in a stable, but intermediate form suitable for a published library.                 |
+| Modes       | Details                                                                                                                                                      |
+| :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'full'`    | Generates fully AOT-compiled code. The compiler ABI (the internal runtime APIs used by this code) is stable across patch versions of the same minor version. |
+| `'partial'` | Generates code in a stable, but intermediate form suitable for independently published libraries.                                                            |
 
 The default value is `'full'`.
 
 For most applications, `'full'` is the correct compilation mode.
 
 Use `'partial'` for independently published libraries, such as NPM packages.
-`'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different Angular versions from the library.
-Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew.
-
-### `disableExpressionLowering`
-
-When `true`, the default, transforms code that is or could be used in an annotation, to allow it to be imported from template factory modules.
-See [metadata rewriting](tools/cli/aot-compiler#metadata-rewriting) for more information.
-
-When `false`, disables this rewriting, requiring the rewriting to be done manually.
+`'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different major or minor Angular versions from the library.
+Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew across minor versions. Note that the compiler ABI is stable across patch versions of the same minor, allowing for safe sharing of the Angular runtime in microfrontend architectures where different applications might be on different patch levels.
 
 ### `disableTypeScriptVersionCheck`
 
@@ -91,19 +84,14 @@ These message formats have some issues, such as whitespace handling and reliance
 The new message format is more resilient to whitespace changes, is the same across all translation file formats, and can be created directly from calls to `$localize`.
 This allows `$localize` messages in application code to use the same ID as identical `i18n` messages in component templates.
 
+IMPORTANT: This option is only supported by the `@angular-devkit/build-angular:browser` builder.
+When using the `@angular/build:application` builder (esbuild), this option has no effect and the new decimal message ID format is always used regardless of this setting.
+
 ### `enableResourceInlining`
 
 When `true`, replaces the `templateUrl` and `styleUrls` properties in all `@Component` decorators with inline content in the `template` and `styles` properties.
 
 When enabled, the `.js` output of `ngc` does not include any lazy-loaded template or style URLs.
-
-For library projects created with the Angular CLI, the development configuration default is `true`.
-
-### `enableLegacyTemplate`
-
-When `true`, enables the deprecated `<template>` element in place of `<ng-template>`.
-Default is `false`.
-Might be required by some third-party Angular libraries.
 
 ### `flatModuleId`
 
@@ -129,15 +117,6 @@ A flat module index `.d.ts` and `.js` is created with the given `flatModuleOutFi
 For example, if a library uses the `public_api.ts` file as the library index of the module, the `tsconfig.json` `files` field would be `["public_api.ts"]`.
 The `flatModuleOutFile` option could then be set, for example, to `"index.js"`, which produces `index.d.ts` and `index.metadata.json` files.
 The `module` field of the library's `package.json` would be `"index.js"` and the `typings` field would be `"index.d.ts"`.
-
-### `fullTemplateTypeCheck`
-
-When `true`, the recommended value, enables the binding expression validation phase of the template compiler. This phase uses TypeScript to verify binding expressions.
-For more information, see [Template type checking](tools/cli/template-typecheck).
-
-Default is `false`, but when you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
-
-IMPORTANT: The `fullTemplateTypeCheck` option has been deprecated in Angular 13 in favor of the `strictTemplates` family of compiler options.
 
 ### `generateCodeForLibraries`
 
@@ -174,8 +153,6 @@ This turns off most of the template compiler and disables the reporting of templ
 
 Can be used to instruct the template compiler to produce `.metadata.json` files for distribution with an `npm` package. This avoids the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to `npm`.
 
-For library projects created with the Angular CLI, the development configuration default is `true`.
-
 ### `strictMetadataEmit`
 
 When `true`, reports an error to the `.metadata.json` file if `"skipMetadataEmit"` is `false`.
@@ -194,8 +171,6 @@ The template compiler can then use the error nodes to report an error if these s
 If the client of a library intends to use a symbol in an annotation, the template compiler does not normally report this. It gets reported after the client actually uses the symbol.
 This option allows detection of these errors during the build phase of the library and is used, for example, in producing Angular libraries themselves.
 
-For library projects created with the Angular CLI, the development configuration default is `true`.
-
 ### `strictInjectionParameters`
 
 When `true`, reports an error for a supplied parameter whose injection type cannot be determined.
@@ -210,8 +185,7 @@ When `true`, enables [strict template type checking](tools/cli/template-typechec
 
 The strictness flags that this option enables allow you to turn on and off specific types of strict template type checking.
 See [troubleshooting template errors](tools/cli/template-typecheck#troubleshooting-template-errors).
-
-When you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
+Default is `true`.
 
 ### `strictStandalone`
 
@@ -221,6 +195,11 @@ When `true`, reports an error if a component, directive, or pipe is not standalo
 
 When `true`, prints extra information while compiling templates.
 Default is `false`.
+
+### `typeCheckHostBindings`
+
+When `true`, enables type checking of expressions in the `host` object literal and `@HostBinding`/`@HostListener` decorators of components and directives.
+Default is `true`.
 
 ## Command line options
 

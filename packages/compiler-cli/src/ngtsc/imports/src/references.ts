@@ -10,7 +10,7 @@ import {Expression} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AmbientImport} from '../../reflection';
-import {identifierOfNode} from '../../util/src/typescript';
+import {getSourceFile, identifierOfNode} from '../../util/src/typescript';
 
 export interface OwningModule {
   specifier: string;
@@ -57,6 +57,8 @@ export class Reference<T extends ts.Node = ts.Node> {
 
   readonly isAmbient: boolean;
 
+  readonly key: string;
+
   constructor(
     readonly node: T,
     bestGuessOwningModule: OwningModule | AmbientImport | null = null,
@@ -70,8 +72,19 @@ export class Reference<T extends ts.Node = ts.Node> {
     }
 
     const id = identifierOfNode(node);
+    const sourceFile = getSourceFile(node);
+
     if (id !== null) {
       this.identifiers.push(id);
+    }
+
+    // The source file might not be defined for synthetic nodes.
+    if (sourceFile) {
+      this.key = `${sourceFile.fileName}#${node.getStart()}`;
+    } else {
+      // `getStart` will throw if there's no source file.
+      const position = id && id.getSourceFile() ? id.getStart() : null;
+      this.key = `${this.bestGuessOwningModule?.specifier}#${id?.text}#${position}`;
     }
   }
 

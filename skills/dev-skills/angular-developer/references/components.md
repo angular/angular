@@ -48,6 +48,24 @@ To use a component, add it to the `imports` array of the consuming component and
 export class App {}
 ```
 
+### Self-Closing Tags
+
+Angular supports self-closing tags for custom components.
+
+**Rule:** Always use self-closing tags when a component does not contain projected content or child nodes:
+
+```html
+<!-- Preferred: concise and modern -->
+<app-profile />
+<app-user-card [user]="currentUser()" />
+<router-outlet />
+
+<!-- Avoid: redundant closing tags for empty elements -->
+<app-profile></app-profile>
+<app-user-card [user]="currentUser()"></app-user-card>
+<router-outlet></router-outlet>
+```
+
 ## Template Control Flow
 
 Angular uses built-in blocks for conditional rendering and loops.
@@ -90,6 +108,16 @@ The `@for` block iterates over collections. The `track` expression is **required
 
 **Implicit Variables**: `$index`, `$count`, `$first`, `$last`, `$even`, `$odd`.
 
+### Avoiding expensive work in templates
+
+Template expressions are re-evaluated every time the component's template is checked, so avoid doing expensive work in them (e.g. building or filtering arrays, sorting, heavy formatting). Calling a cheap method is fine; the concern is expensive work repeated on every change detection cycle. A method that returns a new array or object also hands `@for` a new collection on every run.
+
+Reading a signal (`count()`, `items()`) is fine, and so is a trivial lookup. For anything expensive, derive the value once:
+
+- **`computed()`** for values derived from signals.
+- **A pure pipe** for formatting a value (see [pipes.md](pipes.md)).
+- **A child component** when each item needs its own derived state.
+
 ### Switching Content (`@switch`)
 
 The `@switch` block renders content based on a value. It uses strict equality (`===`) and has **no fallthrough**.
@@ -101,12 +129,45 @@ The `@switch` block renders content based on a value. It uses strict equality (`
 } }
 ```
 
+**Multiple Cases**: Stack consecutive `@case` statements with no content between them to share one
+block across several matches.
+
+```angular-html
+@switch (status()) {
+  @case ('paused')
+  @case ('cancelled') {
+    <span>Not running</span>
+  }
+  @default {
+    <span>Running</span>
+  }
+}
+```
+
 **Exhaustive Type Checking**: Use `@default never;` to ensure all cases of a union type are handled.
 
 ```html
 @switch (state) { @case ('on') { ... } @case ('off') { ... } @default never; // Errors if a new
 state like 'standby' is added }
 ```
+
+### Arrow Functions in Template Expressions
+
+Template expressions support arrow functions with an expression body, such as inline array
+callbacks:
+
+```html
+<button (click)="count.update((c) => c + 1)">Increment</button>
+```
+
+For derived values such as a filtered list, use a `computed` signal in the component instead.
+
+Arrow functions must have an expression body, such as `(c) => c + 1`. In event bindings, call the
+method directly, `(click)="save()"`, because an arrow function like `(click)="() => save()"` is
+never invoked.
+
+Arrow functions with a block body (`() => { ... }`) are not supported. A pipe cannot be used
+inside an arrow function's body, but an arrow function can be passed as an argument to a pipe.
 
 ## Core Concepts
 

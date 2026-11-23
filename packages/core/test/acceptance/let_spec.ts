@@ -7,62 +7,57 @@
  */
 
 import {
+  ChangeDetectorRef,
   Component,
   Directive,
-  Output,
-  EventEmitter,
   ErrorHandler,
+  EventEmitter,
+  Output,
   Pipe,
   PipeTransform,
-  inject,
-  ChangeDetectorRef,
   ViewChild,
-  provideZoneChangeDetection,
+  inject,
+  signal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('@let declarations', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
-  it('should update the value of a @let declaration over time', () => {
+  it('should update the value of a @let declaration over time', async () => {
     @Component({
       template: `
         @let multiplier = 2;
-        @let result = value * multiplier;
-        {{ value }} times {{ multiplier }} is {{ result }}
+        @let result = value() * multiplier;
+        {{ value() }} times {{ multiplier }} is {{ result }}
       `,
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('0 times 2 is 0');
 
-    fixture.componentInstance.value = 1;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(1);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('1 times 2 is 2');
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(2);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('2 times 2 is 4');
   });
 
-  it('should be able to use @let declarations inside event listeners', () => {
+  it('should be able to use @let declarations inside event listeners', async () => {
     const values: number[] = [];
 
     @Component({
       template: `
-        @let result = value * 2;
+        @let result = value() * 2;
         <button (click)="log(result)"></button>
       `,
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
 
       log(value: number) {
         values.push(value);
@@ -71,19 +66,19 @@ describe('@let declarations', () => {
 
     const fixture = TestBed.createComponent(TestComponent);
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(values).toEqual([]);
 
     button.click();
     expect(values).toEqual([0]);
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(2);
+    await fixture.whenStable();
     button.click();
     expect(values).toEqual([0, 4]);
   });
 
-  it('should be able to access @let declarations through multiple levels of views', () => {
+  it('should be able to access @let declarations through multiple levels of views', async () => {
     @Component({
       template: `
         @if (true) {
@@ -94,52 +89,52 @@ describe('@let declarations', () => {
           @let two = one + 1;
         }
 
-        @let one = value + 1;
+        @let one = value() + 1;
       `,
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('The result is 3');
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(2);
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('The result is 5');
   });
 
-  it('should be able to access @let declarations from parent view before they are declared', () => {
+  it('should be able to access @let declarations from parent view before they are declared', async () => {
     @Component({
       template: `
         @if (true) {
-          {{ value }} times {{ multiplier }} is {{ result }}
+          {{ value() }} times {{ multiplier }} is {{ result }}
         }
 
         @let multiplier = 2;
-        @let result = value * multiplier;
+        @let result = value() * multiplier;
       `,
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('0 times 2 is 0');
 
-    fixture.componentInstance.value = 1;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(1);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('1 times 2 is 2');
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(2);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('2 times 2 is 4');
   });
 
-  it('should throw if a @let declaration is accessed before it is initialized', () => {
+  it('should throw if a @let declaration is accessed before it is initialized', async () => {
     const errors: string[] = [];
 
     @Directive({
@@ -178,14 +173,16 @@ describe('@let declarations', () => {
       ],
     });
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    try {
+      await fixture.whenStable();
+    } catch {}
     expect(errors.length).toBe(1);
     expect(errors[0]).toContain(
       'Attempting to access a @let declaration whose value is not available yet',
     );
   });
 
-  it('should be able to use pipes injecting ChangeDetectorRef in a let declaration', () => {
+  it('should be able to use pipes injecting ChangeDetectorRef in a let declaration', async () => {
     @Pipe({name: 'double'})
     class DoublePipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
@@ -197,25 +194,25 @@ describe('@let declarations', () => {
 
     @Component({
       template: `
-        @let result = value | double;
+        @let result = value() | double;
         Result: {{ result }}
       `,
       imports: [DoublePipe],
     })
     class TestComponent {
-      value = 2;
+      value = signal(2);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Result: 4');
 
-    fixture.componentInstance.value = 5;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(5);
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Result: 10');
   });
 
-  it('should be able to use local references inside @let declarations', () => {
+  it('should be able to use local references inside @let declarations', async () => {
     @Component({
       template: `
         <input #firstName value="Frodo" name="first-name" />
@@ -228,15 +225,18 @@ describe('@let declarations', () => {
 
     const fixture = TestBed.createComponent(TestComponent);
     const firstNameInput = fixture.nativeElement.querySelector('[name="first-name"]');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Hello, Frodo Baggins');
 
     firstNameInput.value = 'Bilbo';
-    fixture.detectChanges();
+    // Directly changing an input value isn't reactive, we mark the component dirty to schedule CD
+    // fixture.componentRef.changeDetectorRef.markForCheck(); doesn't work either see #71293
+    fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Hello, Bilbo Baggins');
   });
 
-  it('should be able to proxy a local reference through @let declarations', () => {
+  it('should be able to proxy a local reference through @let declarations', async () => {
     @Component({
       template: `
         <input #input value="foo" />
@@ -256,11 +256,14 @@ describe('@let declarations', () => {
 
     const fixture = TestBed.createComponent(TestComponent);
     const input = fixture.nativeElement.querySelector('input');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('The value is foo');
 
     input.value = 'bar';
-    fixture.detectChanges();
+    // Directly changing an input value isn't reactive, we mark the component dirty to schedule CD
+    // fixture.componentRef.changeDetectorRef.markForCheck(); doesn't work either see #71293
+    fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('The value is bar');
   });
 
@@ -296,10 +299,10 @@ describe('@let declarations', () => {
     expect(calls).toBeGreaterThan(0);
   });
 
-  it('should resolve a @let declaration correctly within an embedded view that uses a value from parent view and cannot be optimized', () => {
+  it('should resolve a @let declaration correctly within an embedded view that uses a value from parent view and cannot be optimized', async () => {
     @Component({
       template: `
-        @let foo = value + 1;
+        @let foo = value() + 1;
 
         @if (true) {
           <div>
@@ -311,17 +314,17 @@ describe('@let declarations', () => {
       `,
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
       callback(value: number) {}
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('bar is 2');
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(2);
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('bar is 4');
   });

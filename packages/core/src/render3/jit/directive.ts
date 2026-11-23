@@ -28,7 +28,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../def_getters';
+import {getComponentDef, getDirectiveDef, getPipeDef} from '../def_getters';
 import {depsTracker} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
@@ -90,6 +90,13 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           kind: 'component',
           type: type,
         });
+
+        if (metadata.foreignImports !== undefined) {
+          throw new Error(
+            `Foreign components are not supported in JIT mode. ` +
+              `Component '${type.name}' cannot specify 'foreignImports'.`,
+          );
+        }
 
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${type.name}' is not resolved:`];
@@ -237,8 +244,6 @@ function getStandaloneDefFunctions(
   directiveDefs: () => DirectiveDefList;
   pipeDefs: () => PipeDefList;
 } {
-  let cachedDirectiveDefs: DirectiveDefList | null = null;
-  let cachedPipeDefs: PipeDefList | null = null;
   const directiveDefs = () => {
     if (ngDevMode) {
       for (const rawDep of imports) {
@@ -376,6 +381,8 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
 
   return {
     name: type.name,
+    // g3-only legacyOptionalChaining: true,
+    legacyOptionalChaining: false, // 3p-only
     type: type,
     selector: metadata.selector !== undefined ? metadata.selector : null,
     host: metadata.host || EMPTY_OBJ,
@@ -394,7 +401,6 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: metadata.standalone === undefined ? true : !!metadata.standalone,
-    isSignal: !!metadata.signals,
     hostDirectives:
       metadata.hostDirectives?.map((directive) =>
         typeof directive === 'function' ? {directive} : directive,
@@ -414,8 +420,8 @@ function addDirectiveDefToUndecoratedParents(type: Type<any>) {
     // Since inheritance works if the class was annotated already, we only need to add
     // the def if there are no annotations and the def hasn't been created already.
     if (
-      !getDirectiveDef(parent) &&
-      !getComponentDef(parent) &&
+      !Object.hasOwn(parent, NG_DIR_DEF) &&
+      !Object.hasOwn(parent, NG_COMP_DEF) &&
       shouldAddAbstractDirective(parent)
     ) {
       compileDirective(parent, null);
@@ -445,9 +451,10 @@ function extractQueriesMetadata(
   propMetadata: {[key: string]: any[]},
   isQueryAnn: (ann: any) => ann is Query,
 ): R3QueryMetadataFacade[] {
-  const queriesMeta: R3QueryMetadataFacade[] = [];
+  const signalQueriesMeta: R3QueryMetadataFacade[] = [];
+  const decoratorQueriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
-    if (propMetadata.hasOwnProperty(field)) {
+    if (Object.hasOwn(propMetadata, field)) {
       const annotations = propMetadata[field];
       annotations.forEach((ann) => {
         if (isQueryAnn(ann)) {
@@ -460,12 +467,19 @@ function extractQueriesMetadata(
           if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);
           }
-          queriesMeta.push(convertToR3QueryMetadata(field, ann));
+          const queryMeta = convertToR3QueryMetadata(field, ann);
+          if (queryMeta.isSignal) {
+            signalQueriesMeta.push(queryMeta);
+          } else {
+            decoratorQueriesMeta.push(queryMeta);
+          }
         }
       });
     }
   }
-  return queriesMeta;
+
+  // We match the behavior of AOT here by having signal queries first, then the decorator queries.
+  return [...signalQueriesMeta, ...decoratorQueriesMeta];
 }
 
 function extractExportAs(exportAs: string | undefined): string[] | null {

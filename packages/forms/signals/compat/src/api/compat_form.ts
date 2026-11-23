@@ -15,8 +15,10 @@ import {CompatFieldAdapter} from '../compat_field_adapter';
 /**
  * Options that may be specified when creating a compat form.
  *
+ * @see [Top-down migration using compatForm](guide/forms/signals/migration#top-down-migration-using-compatform)
+ *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
 
@@ -46,8 +48,10 @@ export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
  *
+ * @see [Top-down migration using compatForm](guide/forms/signals/migration#top-down-migration-using-compatform)
+ *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
@@ -71,6 +75,7 @@ export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TMo
  * });
  *
  * nameForm.last().value(); // lastName, not FormControl
+ * ```
  *
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
@@ -80,8 +85,10 @@ export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TMo
  *      When passing a schema, the form options can be passed as a third argument if needed.
  *   2. The form options (excluding adapter, since it's provided).
  *
+ * @see [Top-down migration using compatForm](guide/forms/signals/migration#top-down-migration-using-compatform)
+ *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function compatForm<TModel>(
   model: WritableSignal<TModel>,
@@ -108,6 +115,7 @@ export function compatForm<TModel>(
  * });
  *
  * nameForm.last().value(); // lastName, not FormControl
+ * ```
  *
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
@@ -116,8 +124,10 @@ export function compatForm<TModel>(
  *      When passing a schema, the form options can be passed as a third argument if needed.
  * @param options The form options (excluding adapter, since it's provided).
  *
+ * @see [Top-down migration using compatForm](guide/forms/signals/migration#top-down-migration-using-compatform)
+ *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function compatForm<TModel>(
   model: WritableSignal<TModel>,

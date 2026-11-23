@@ -17,8 +17,13 @@ import {getTNode} from '../render3/util/view_utils';
  * Warning! this function will return minified names if the name of the component is minified. The
  * consumer of the function is responsible for resolving the minified name to its original name.
  * @param node Node from which to start the search.
+ * @param predicate Predicate function that can be used to decide which nodes should be skipped over
+ *   during the search. Return true if the search should stop or false to keep going up the tree.
  */
-export function getClosestComponentName(node: Node): string | null {
+export function getClosestComponentName(
+  node: Node,
+  predicate?: (current: HTMLElement, componentName: string) => boolean,
+): string | null {
   let currentNode = node as Node | null;
 
   while (currentNode) {
@@ -40,7 +45,7 @@ export function getClosestComponentName(node: Node): string | null {
 
           // Note: the name may be an empty string if the class name is
           // dropped due to minification. In such cases keep going up the tree.
-          if (name !== null) {
+          if (name !== null && (!predicate || predicate(currentNode as HTMLElement, name))) {
             return name;
           } else {
             break;

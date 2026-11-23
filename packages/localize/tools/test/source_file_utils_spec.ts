@@ -10,13 +10,9 @@ import {
   getFileSystem,
   PathManipulation,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
-import babel, {NodePath, types as t, template, TransformOptions} from '@babel/core';
-import _generate from '@babel/generator';
+import {InputOptions, NodePath, types as t, template, transformSync} from '@babel/core';
+import generate from '@babel/generator';
 import {ɵmakeTemplateObject} from '../../index';
-
-// Babel is a CJS package and misuses the `default` named binding:
-// https://github.com/babel/babel/issues/15269.
-const generate = (_generate as any)['default'] as typeof _generate;
 
 import {
   buildLocalizeReplacement,
@@ -453,7 +449,7 @@ runInNativeFileSystem('utils', () => {
 
 function getTaggedTemplate(
   code: string,
-  options?: TransformOptions,
+  options?: InputOptions,
 ): NodePath<t.TaggedTemplateExpression> {
   return getExpressions<t.TaggedTemplateExpression>(code, options).find((e) =>
     e.isTaggedTemplateExpression(),
@@ -462,28 +458,28 @@ function getTaggedTemplate(
 
 function getFirstExpression<T extends t.Expression>(
   code: string,
-  options?: TransformOptions,
+  options?: InputOptions,
 ): NodePath<T> {
   return getExpressions<T>(code, options)[0];
 }
 
 function getExpressions<T extends t.Expression>(
   code: string,
-  options?: TransformOptions,
+  options?: InputOptions,
 ): NodePath<T>[] {
   const expressions: NodePath<t.Expression>[] = [];
-  babel.transformSync(code, {
+  transformSync(code, {
     code: false,
     filename: 'test/file.js',
     cwd: '/',
     plugins: [
-      {
+      () => ({
         visitor: {
           Expression: (path: NodePath<t.Expression>) => {
             expressions.push(path);
           },
         },
-      },
+      }),
     ],
     ...options,
   });
@@ -492,18 +488,18 @@ function getExpressions<T extends t.Expression>(
 
 function getLocalizeCall(code: string): NodePath<t.CallExpression> {
   let callPaths: NodePath<t.CallExpression>[] = [];
-  babel.transformSync(code, {
+  transformSync(code, {
     code: false,
     filename: 'test/file.js',
     cwd: '/',
     plugins: [
-      {
+      () => ({
         visitor: {
           CallExpression(path) {
             callPaths.push(path);
           },
         },
-      },
+      }),
     ],
   });
   const localizeCall = callPaths.find((p) => {

@@ -18,7 +18,7 @@ import {DI_TOKEN} from './token';
 export class MyComp {
   constructor(
     private service: MyService,
-    @Inject(TOKEN) @Optional() readonly token: string,
+    @Inject(DI_TOKEN) @Optional() readonly token: string,
   ) {}
 }
 ```
@@ -76,7 +76,7 @@ export class MyComp {
 **After:**
 
 ```typescript
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MyService} from './service';
 
 @Component({})

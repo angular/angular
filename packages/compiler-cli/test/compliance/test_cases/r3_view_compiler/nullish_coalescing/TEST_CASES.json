@@ -72,6 +72,28 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should preserve required parentheses for nullish coalescing with legacyOptionalChaining",
+      "inputFiles": ["nullish_coalescing_parens_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_parens_template_use_null.js",
+              "generated": "nullish_coalescing_parens_use_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
     }
   ]
 }

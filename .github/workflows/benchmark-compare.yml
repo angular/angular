@@ -25,20 +25,34 @@ jobs:
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
           reactions: 'rocket'
 
-      - uses: alessbell/pull-request-comment-branch@aad01d65d6982b8eacabed5e9a684cd8ceb98da6 # v1.1
+      - uses: alessbell/pull-request-comment-branch@ef3408c9757d05f89cb525036383033a313758a0 # v2.1.0
         id: comment-branch
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Specify repository as the PR branch might be from a fork.
           repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
           # Checkout the pull request and assume it being trusted given we've checked
           # that the action was triggered by a team member.
-          ref: ${{steps.comment-branch.outputs.head_ref}}
+          ref: ${{steps.comment-branch.outputs.head_sha}}
+
+      # We cannot use `angular/dev-infra/github-actions/npm/checkout-and-setup-node` here
+      # because it does not support checking out from a fork (as it lacks a `repository` input).
+      # Thus, we checkout and setup Node/pnpm manually.
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
 
       - run: pnpm install --frozen-lockfile
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@aba3adc53489fee586e2375ee4367ff30c947390 # main
+
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@aba3adc53489fee586e2375ee4367ff30c947390 # main
         with:
           bazelrc: ./.bazelrc.user
 
@@ -49,7 +63,10 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: pnpm benchmarks prepare-for-github-action "$COMMENT_BODY"
 
-      - run: pnpm benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
+      - env:
+          COMPARE_SHA: ${{steps.info.outputs.compareSha}}
+          BENCHMARK_TARGET: ${{steps.info.outputs.benchmarkTarget}}
+        run: pnpm benchmarks run-compare "$COMPARE_SHA" "$BENCHMARK_TARGET"
         id: benchmark
         name: Running benchmark
 

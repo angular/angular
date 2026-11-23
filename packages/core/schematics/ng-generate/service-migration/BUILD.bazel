@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+copy_to_bin(
+    name = "static_files",
+    srcs = ["schema.json"],
+)
+
+ts_project(
+    name = "service-migration",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+        "//packages/core/schematics/utils",
+    ],
+)

@@ -27,7 +27,7 @@ In the `Home` there is only a single housing location. In this step, you will ad
 
 1. In `src/app/home/home.ts`, remove the `housingLocation` property from the `Home` class.
 1. Update the `Home` class to have a property called `housingLocationList`. Update your code to match the following code:
-   <docs-code language="angular-ts"  header="Add housingLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="26-131"/>
+   <docs-code language="angular-ts"  header="Add housingLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="[26,127]"/>
 
    IMPORTANT: Do not remove the `@Component` decorator, you will update that code in an upcoming step.
 

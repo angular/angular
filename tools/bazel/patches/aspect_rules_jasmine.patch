@@ -1,0 +1,35 @@
+--- a/jasmine/private/runner.cjs	2026-10-21 19:46:04.302749144 +0000
++++ b/jasmine/private/runner.cjs	2026-10-21 19:46:04.302749144 +0000
+@@ -27,6 +27,24 @@
+   const fd = fs.openSync(shardStatusFile, "w");
+   fs.closeSync(fd);
+ 
++  if (major >= 7) {
++    const Jasmine = require("jasmine");
++    const originalLoadSpecs = Jasmine.prototype.loadSpecs;
++    Jasmine.prototype.loadSpecs = async function () {
++      await originalLoadSpecs.apply(this, arguments);
++      const customSpecFilter = this.env.configuration().specFilter;
++      this.env.configure({
++        specFilter: (spec) => {
++          // See: https://github.com/jasmine/jasmine/blob/d0a9931ae6bfa63c73952a07b1cff05b2a8b38e8/src/core/SuiteBuilder.js#L201
++          const index = Number(spec.id.replace("spec", ""));
++          if (index % shardCount !== shardIndex) {
++            return false;
++          }
++          return customSpecFilter ? customSpecFilter(spec) : true;
++        },
++      });
++    };
++  } else {
+   // Safely override boot to intercept addReporter on the environment instance.
+   // This is to exclude the skipped specs due to sharding from the test results.
+   // Maintain the same behaviour between different versions of jasmine-core.
+@@ -105,6 +123,7 @@
+       }
+     };
+   };
++  }
+ }
+ 
+ const jasmine_path = require.resolve("jasmine");

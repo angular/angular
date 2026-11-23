@@ -3,6 +3,15 @@
   height: 100%;
   overflow: auto;
 
+  ng-filter {
+    border-bottom: 1px solid var(--color-separator);
+    --ng-filter-background: transparent;
+    --ng-filter-border-radius: 0;
+    --ng-filter-height: 32px;
+    --ng-filter-placeholder-color: var(--quaternary-contrast);
+    --ng-filter-outline: none;
+  }
+
   .tree-wrapper {
     overflow-y: auto;
     height: calc(100% - 33px);

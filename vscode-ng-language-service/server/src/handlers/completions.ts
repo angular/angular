@@ -13,6 +13,7 @@ import {TextDocument} from 'vscode-languageserver-textdocument';
 import {Session} from '../session';
 import {getSCSSVirtualContent, isInlineStyleNode} from '../embedded_support';
 import {
+  getTokenAtPosition,
   lspPositionToTsPosition,
   tsFileTextChangesToLspWorkspaceEdit,
   tsTextSpanToLspRange,
@@ -20,11 +21,6 @@ import {
 import {documentationToMarkdown} from '../text_render';
 
 const scssLS = getSCSSLanguageService();
-// TODO: Share this or import it if possible, but it's local in session.ts usually.
-// For now, duplicating the simple helper or need to find a way to share `defaultPreferences`.
-
-// We need to access private/internal methods of Session if possible, or move them.
-// getTokenAtPosition was added to session.ts recently. We should move it to utils or export it.
 
 export function onCompletion(
   session: Session,
@@ -69,9 +65,6 @@ export function onCompletion(
     if (!sf) {
       return null;
     }
-    // We need getTokenAtPosition. It is currently in session.ts.
-    // I should move it to utils.ts first or duplicate it (bad).
-    // Let's assume I will move it to utils.ts in the next step.
     const node = getTokenAtPosition(sf, offset);
     if (!isInlineStyleNode(node)) {
       return null;
@@ -148,18 +141,6 @@ export function onCompletionResolve(
   return item;
 }
 
-function getTokenAtPosition(sourceFile: ts.SourceFile, position: number): ts.Node {
-  let current: ts.Node = sourceFile;
-  while (true) {
-    const child = current
-      .getChildren(sourceFile)
-      .find((c) => c.getStart(sourceFile) <= position && c.getEnd() > position);
-    if (!child || child.kind === ts.SyntaxKind.EndOfFileToken) {
-      return current;
-    }
-    current = child;
-  }
-}
 // TODO: Move this to `@angular/language-service`.
 enum CompletionKind {
   attribute = 'attribute',

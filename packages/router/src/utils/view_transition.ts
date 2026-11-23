@@ -21,7 +21,7 @@ export const VIEW_TRANSITION_OPTIONS = new InjectionToken<
 /**
  * Options to configure the View Transitions integration in the Router.
  *
- * @developerPreview 20.0
+ * @publicApi 22.3
  * @see withViewTransitions
  */
 export interface ViewTransitionsFeatureOptions {
@@ -43,7 +43,7 @@ export interface ViewTransitionsFeatureOptions {
  * The information passed to the `onViewTransitionCreated` function provided in the
  * `withViewTransitions` feature options.
  *
- * @developerPreview 20.0
+ * @publicApi 22.3
  */
 export interface ViewTransitionInfo {
   /**
@@ -63,17 +63,27 @@ export interface ViewTransitionInfo {
 
 /**
  * A helper function for using browser view transitions. This function skips the call to
- * `startViewTransition` if the browser does not support it.
+ * `startViewTransition` if the browser does not support it or has already provided a transition.
  *
- * @returns A Promise that resolves when the view transition callback begins.
+ * @returns A Promise that resolves when the view transition callback begins, or `undefined` when
+ * the user agent has already provided a transition and the navigation should continue immediately.
  */
 export function createViewTransition(
   injector: Injector,
   from: ActivatedRouteSnapshot,
   to: ActivatedRouteSnapshot,
-): Promise<void> {
+  hasUAVisualTransition?: boolean,
+): Promise<void> | undefined {
   const transitionOptions = injector.get(VIEW_TRANSITION_OPTIONS);
   const document = injector.get(DOCUMENT);
+
+  if (hasUAVisualTransition) {
+    transitionOptions.skipNextTransition = false;
+    // The browser has already started presenting the navigation. Continuing synchronously gives it
+    // the earliest opportunity to display the post-navigation DOM.
+    return;
+  }
+
   if (!document.startViewTransition || transitionOptions.skipNextTransition) {
     transitionOptions.skipNextTransition = false;
     // The timing of `startViewTransition` is closer to a macrotask. It won't be called

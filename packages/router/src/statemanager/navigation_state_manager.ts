@@ -7,24 +7,20 @@
  */
 import {
   afterNextRender,
-  ɵpromiseWithResolvers as promiseWithResolvers,
   DestroyRef,
   EnvironmentInjector,
   inject,
-  Injectable,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+  Service,
 } from '@angular/core';
 
 import {
+  Location,
   PlatformLocation,
   PlatformNavigation,
   ɵPRECOMMIT_HANDLER_SUPPORTED as PRECOMMIT_HANDLER_SUPPORTED,
 } from '@angular/common';
-import {StateManager} from './state_manager';
-import {
-  NavigationExtras,
-  RestoredState,
-  Navigation as RouterNavigation,
-} from '../navigation_transition';
+import {Subject, SubscriptionLike} from 'rxjs';
 import {
   BeforeActivateRoutes,
   BeforeRoutesRecognized,
@@ -38,13 +34,18 @@ import {
   NavigationTrigger,
   PrivateRouterEvents,
 } from '../events';
-import {Subject, SubscriptionLike} from 'rxjs';
-import {UrlTree} from '../url_tree';
+import {
+  NavigationExtras,
+  RestoredState,
+  Navigation as RouterNavigation,
+} from '../navigation_transition';
 import {ROUTER_SCROLLER} from '../router_scroller';
+import {UrlTree} from '../url_tree';
+import {StateManager} from './state_manager';
 
 type NavigationInfo = {ɵrouterInfo: {intercept: boolean}};
 
-@Injectable({providedIn: 'root'})
+@Service()
 /**
  * A `StateManager` that uses the browser's Navigation API to get the state of a `popstate`
  * event.
@@ -65,8 +66,7 @@ export class NavigationStateManager extends StateManager {
   /** The base origin of the application, extracted from PlatformLocation. */
   private readonly base = new URL(inject(PlatformLocation).href).origin;
   /** The root URL of the Angular application, considering the base href. */
-  private readonly appRootURL = new URL(this.location.prepareExternalUrl?.('/') ?? '/', this.base)
-    .href;
+  private readonly appRootUrl = new URL(this.location.prepareExternalUrl?.('/') ?? '/', this.base);
   private readonly precommitHandlerSupported = inject(PRECOMMIT_HANDLER_SUPPORTED);
   /**
    * The `NavigationHistoryEntry` from the Navigation API that corresponds to the last successfully
@@ -101,6 +101,7 @@ export class NavigationStateManager extends StateManager {
   private nonRouterCurrentEntryChangeSubject = new Subject<{
     path: string;
     state: RestoredState | null | undefined;
+    hasUAVisualTransition?: boolean;
   }>();
 
   nonRouterEntryChangeListener?: SubscriptionLike;
@@ -130,16 +131,18 @@ export class NavigationStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     this.activeHistoryEntry = this.navigation.currentEntry!;
     this.nonRouterEntryChangeListener = this.nonRouterCurrentEntryChangeSubject.subscribe(
-      ({path, state}) => {
+      ({path, state, hasUAVisualTransition}) => {
         listener(
           path,
           state,
           'popstate',
           !this.precommitHandlerSupported ? {replaceUrl: true} : {},
+          hasUAVisualTransition,
         );
       },
     );
@@ -208,6 +211,12 @@ export class NavigationStateManager extends StateManager {
         e.code === NavigationCancellationCode.Redirect &&
         !!this.currentNavigation.commitUrl;
       if (redirectingBeforeUrlCommit) {
+        if (this.currentNavigation.navigationEvent?.navigationType === 'traverse') {
+          // Traversals cannot be redirected via controller.redirect().
+          // Commit the traversal first, then allow the redirect navigation
+          // to perform a new replace navigation to the redirect destination.
+          this.finishNavigation();
+        }
         return;
       }
       void this.cancel(transition, e);
@@ -268,8 +277,7 @@ export class NavigationStateManager extends StateManager {
     // Prepare the state to be stored in the NavigationHistoryEntry.
     const state = {
       ...transition.extras.state,
-      // Include router's navigationId for tracking. Required for in-memory scroll restoration
-      navigationId: transition.id,
+      ...this.generateNgRouterState(transition),
     };
 
     const info: NavigationInfo = {ɵrouterInfo: {intercept: true}};
@@ -305,7 +313,7 @@ export class NavigationStateManager extends StateManager {
    * and resolving the post-commit handler promise. Clears the `currentNavigation` state.
    */
   private finishNavigation() {
-    this.currentNavigation.commitUrl?.();
+    this.currentNavigation.commitUrl?.()?.catch(() => {});
     this.currentNavigation?.resolveHandler?.();
     this.currentNavigation = {};
   }
@@ -318,8 +326,15 @@ export class NavigationStateManager extends StateManager {
     this.currentNavigation.rejectNavigateEvent?.();
     const clearedState = {}; // Marker to detect if a new navigation started during async ops.
     this.currentNavigation = clearedState;
-    // Do not reset state if we're redirecting or navigation is superseded by a new one.
+    // Do not reset browser history if we're redirecting or navigation is superseded by a new one.
     if (isRedirectingEvent(cause)) {
+      if (
+        cause instanceof NavigationCancel &&
+        cause.code === NavigationCancellationCode.Redirect &&
+        this.routerState === transition.targetRouterState
+      ) {
+        this.resetInternalState(transition.finalUrl, false);
+      }
       return;
     }
     // Determine if the rollback should be a traversal to a specific previous entry
@@ -390,16 +405,33 @@ export class NavigationStateManager extends StateManager {
     // We also do not convert reload navigation events to SPA navigations. Intercepting
     // would prevent the generally expected hard refresh. If an application wants special
     // handling for reloads, they can implement it in their own `navigate` event listener.
-    if (!event.canIntercept || event.navigationType === 'reload') {
+    // Downloads are left to the browser as well. Intercepting them would turn them into
+    // same-document navigations and the file would never be downloaded.
+    if (!event.canIntercept || event.navigationType === 'reload' || event.downloadRequest != null) {
       return;
     }
 
     const routerInfo = (event?.info as NavigationInfo | undefined)?.ɵrouterInfo;
     if (routerInfo && !routerInfo.intercept) {
+      // The router is restoring the URL after a cancelled or failed navigation. This must not
+      // start a router navigation, but it still has to be intercepted: otherwise the browser
+      // loads the URL as a new document and the whole app reloads.
+      event.intercept({focusReset: 'manual', scroll: 'manual'});
       return;
     }
     const isTriggeredByRouterTransition = !!routerInfo;
     if (!isTriggeredByRouterTransition) {
+      const {pathname: destPathname, origin: destOrigin} = new URL(event.destination.url);
+      const {pathname: rootPathname, origin: appOrigin} = this.appRootUrl;
+      const rootPath = rootPathname.endsWith('/') ? rootPathname : rootPathname + '/';
+
+      if (
+        destOrigin !== appOrigin ||
+        (destPathname !== rootPathname && !destPathname.startsWith(rootPath))
+      ) {
+        return;
+      }
+
       // If there's an ongoing navigation in the Angular Router, abort it. This new navigation
       // supersedes it. If the navigation was triggered by the Router, it may be the navigation
       // happening from _inside_ the navigation transition, or a separate Router.navigate call
@@ -421,7 +453,7 @@ export class NavigationStateManager extends StateManager {
     const abortHandler = () => {
       this.currentNavigation.routerTransition?.abort();
     };
-    event.signal.addEventListener('abort', abortHandler);
+    event.signal.addEventListener('abort', abortHandler, {once: true});
     this.currentNavigation.removeAbortListener = () =>
       event.signal.removeEventListener('abort', abortHandler);
 
@@ -430,6 +462,7 @@ export class NavigationStateManager extends StateManager {
       : (this.currentNavigation.routerTransition?.extras.scroll ?? 'after-transition');
     const interceptOptions: NavigationInterceptOptions = {
       scroll,
+      focusReset: this.currentNavigation.routerTransition?.extras.focusReset,
     };
 
     const {
@@ -458,15 +491,12 @@ export class NavigationStateManager extends StateManager {
     interceptOptions.handler = () => handlerPromise;
 
     if (this.deferredCommitSupported(event)) {
+      const isTraverse = event.navigationType === 'traverse';
       const redirect = new Promise<
         (url: string, options: {state: unknown; history?: 'push' | 'replace'}) => void
       >((resolve) => {
-        // The `precommitHandler` option is not in the standard DOM types yet
-        (interceptOptions as any).precommitHandler = (controller: any) => {
-          if (this.navigation.transition?.navigationType === 'traverse') {
-            // TODO(atscott): Figure out correct behavior for redirecting traversals
-            resolve(() => {});
-          } else {
+        interceptOptions.precommitHandler = (controller: NavigationPrecommitController) => {
+          if (!isTraverse) {
             resolve(controller.redirect.bind(controller));
           }
           return precommitHandlerPromise;
@@ -479,9 +509,9 @@ export class NavigationStateManager extends StateManager {
         this.currentNavigation.commitUrl = undefined; // Ensure it's only called once.
         const transition = this.currentNavigation.routerTransition;
 
-        // If not skipping location change, use the `redirect` function (from `precommitHandler`'s
-        // controller) to perform the URL update with the correct state and history action.
-        if (transition && !transition.extras.skipLocationChange) {
+        // If not skipping location change and not a traversal, use the `redirect` function
+        // (from `precommitHandler`'s controller) to perform the URL update with the correct state and history action.
+        if (!isTraverse && transition && !transition.extras.skipLocationChange) {
           const internalPath = this.createBrowserPath(transition);
           const history =
             this.location.isCurrentPathEqualTo(internalPath) || !!transition.extras.replaceUrl
@@ -489,7 +519,7 @@ export class NavigationStateManager extends StateManager {
               : 'push';
           const state = {
             ...transition.extras.state,
-            navigationId: transition.id,
+            ...this.generateNgRouterState(transition),
           };
           // this might be a path or an actual URL depending on the baseHref
           const pathOrUrl = this.location.prepareExternalUrl(internalPath);
@@ -498,7 +528,11 @@ export class NavigationStateManager extends StateManager {
         resolvePrecommitHandler();
         // Wait for the Navigation API's own `committed` promise if available (part of transition object)
         // This ensures we respect the browser's timing for when the commit actually happens.
-        return await this.navigation.transition?.committed;
+        try {
+          return await this.navigation.transition?.committed;
+        } catch {
+          return;
+        }
       };
     }
 
@@ -524,13 +558,15 @@ export class NavigationStateManager extends StateManager {
    * @param event The `NavigateEvent` from the Navigation API.
    */
   private handleNavigateEventTriggeredOutsideRouterAPIs(event: NavigateEvent) {
-    // TODO(atscott): Consider if the destination URL doesn't start with `appRootURL`.
-    // Should we ignore it or not intercept in the first place?
-
     // Extract the application-relative path from the full destination URL.
-    const path = event.destination.url.substring(this.appRootURL.length - 1);
+    // The url will always start with the appRootUrl because of the boundary check in handleNavigate.
+    const path = event.destination.url.substring(this.appRootUrl.href.length - 1);
     const state = event.destination.getState() as RestoredState | null | undefined;
-    this.nonRouterCurrentEntryChangeSubject.next({path, state});
+    this.nonRouterCurrentEntryChangeSubject.next({
+      path,
+      state,
+      hasUAVisualTransition: event.hasUAVisualTransition,
+    });
   }
 
   private eventAndRouterDestinationsMatch(
@@ -540,8 +576,34 @@ export class NavigationStateManager extends StateManager {
     const internalPath = this.createBrowserPath(transition);
     const eventDestination = new URL(navigateEvent.destination.url);
     // this might be a path or an actual URL depending on the baseHref
-    const routerDestination = this.location.prepareExternalUrl(internalPath);
-    return new URL(routerDestination, eventDestination.origin).href === eventDestination.href;
+    const routerDestination = new URL(
+      this.location.prepareExternalUrl(internalPath),
+      eventDestination.origin,
+    );
+
+    eventDestination.searchParams.sort();
+    routerDestination.searchParams.sort();
+
+    const {pathname: destPathname, search: destSearch, hash: hashDest} = routerDestination;
+    const {
+      pathname: eventDestPathname,
+      search: eventDestSearch,
+      hash: eventDestHash,
+    } = eventDestination;
+
+    return (
+      destSearch === eventDestSearch &&
+      hashDest === eventDestHash &&
+      Location.stripTrailingSlash(destPathname) === Location.stripTrailingSlash(eventDestPathname)
+    );
+  }
+
+  private generateNgRouterState(transition: RouterNavigation) {
+    return {
+      ...this.routerUrlState(transition),
+      // Include router's navigationId for tracking. Required for in-memory scroll restoration
+      navigationId: transition.id,
+    };
   }
 
   private deferredCommitSupported(event: NavigateEvent): boolean {

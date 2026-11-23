@@ -9,7 +9,12 @@
 import {
   AST,
   BindingPipe,
+  ClassPropertyMapping,
   CssSelector,
+  DomSchemaChecker,
+  ForeignComponentMeta,
+  MatchSource,
+  OutOfBandDiagnosticRecorder,
   ParseSourceFile,
   parseTemplate,
   ParseTemplateOptions,
@@ -17,22 +22,20 @@ import {
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
+  TcbDirectiveMetadata,
+  TcbGenericContextBehavior,
   TmplAstElement,
   TmplAstHoverDeferredTrigger,
   TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
-  TmplAstTextAttribute,
+  TmplAstTemplate,
   TmplAstViewportDeferredTrigger,
+  TypeCheckId,
+  TypeCheckingConfig,
 } from '@angular/compiler';
-import {readFileSync} from 'fs';
-import path from 'path';
 import ts from 'typescript';
-import {globSync} from 'tinyglobby';
 
+import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
 import {
   absoluteFrom,
   AbsoluteFsPath,
@@ -47,31 +50,27 @@ import {
   LocalIdentifierStrategy,
   LogicalProjectStrategy,
   ModuleResolver,
-  OwningModule,
   Reference,
   ReferenceEmitter,
   RelativePathStrategy,
 } from '../../imports';
 import {NOOP_INCREMENTAL_BUILD, NoopIncrementalBuildStrategy} from '../../incremental';
 import {
-  ClassPropertyMapping,
   CompoundMetadataReader,
-  DecoratorInputTransform,
   DirectiveMeta,
   HostDirectivesResolver,
   InputMapping,
-  MatchSource,
   MetadataReaderWithIndex,
   MetaKind,
   NgModuleIndex,
   PipeMeta,
 } from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
-import {TsCreateProgramDriver} from '../../program_driver';
+import {InliningMode, TsCreateProgramDriver} from '../../program_driver';
 import {
-  AmbientImport,
   ClassDeclaration,
   isNamedClassDeclaration,
+  isNamedFunctionDeclaration,
   TypeScriptReflectionHost,
 } from '../../reflection';
 import {
@@ -81,7 +80,8 @@ import {
   ScopeData,
   TypeCheckScopeRegistry,
 } from '../../scope';
-import {makeProgram, resolveFromRunfiles} from '../../testing';
+import {sfExtensionData} from '../../shims';
+import {isNgpTestMode, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
   OptimizeFor,
@@ -91,275 +91,23 @@ import {
   TemplateTypeChecker,
   TypeCheckContext,
 } from '../api';
-import {
-  TypeCheckId,
-  TypeCheckableDirectiveMeta,
-  TypeCheckBlockMetadata,
-  TypeCheckingConfig,
-} from '../api/api';
+import {TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
-import {DomSchemaChecker} from '../src/dom';
-import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
-import {sfExtensionData} from '../../shims';
-import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
-import {TcbGenericContextBehavior} from '../src/ops/context';
+import {compileTargetsWithNgp, registerNgpTypeCheckSetup} from './src/ngp_typecheck_testing';
+import {
+  ALL_ENABLED_CONFIG,
+  angularAnimationsDts,
+  angularCoreDtsFiles,
+  angularFormsDtsFiles,
+  TestDeclaration,
+  TestDirective,
+  TypeCheckingTarget,
+  typescriptLibDts,
+} from './src/test_support';
 
-export function typescriptLibDts(): TestFile {
-  return {
-    name: absoluteFrom('/lib.d.ts'),
-    contents: `
-      type Partial<T> = { [P in keyof T]?: T[P]; };
-      type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
-      type NonNullable<T> = T extends null | undefined ? never : T;
-
-      // The following native type declarations are required for proper type inference
-      declare interface Function {
-        call(...args: any[]): any;
-      }
-      declare interface Array<T> {
-        [index: number]: T;
-        length: number;
-      }
-      declare interface Iterable<T> {}
-      declare interface String {
-        length: number;
-      }
-
-      declare interface Event {
-        preventDefault(): void;
-      }
-      declare interface MouseEvent extends Event {
-        readonly x: number;
-        readonly y: number;
-      }
-
-      declare interface HTMLElementEventMap {
-        "click": MouseEvent;
-      }
-      declare interface HTMLElement {
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void;
-        addEventListener(type: string, listener: (evt: Event) => void): void;
-      }
-      declare interface HTMLDivElement extends HTMLElement {}
-      declare interface HTMLImageElement extends HTMLElement {
-        src: string;
-        alt: string;
-        width: number;
-        height: number;
-      }
-      declare interface HTMLQuoteElement extends HTMLElement {
-        cite: string;
-      }
-      declare interface HTMLElementTagNameMap {
-        "blockquote": HTMLQuoteElement;
-        "div": HTMLDivElement;
-        "img": HTMLImageElement;
-      }
-      declare interface Document {
-        createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
-        createElement(tagName: string): HTMLElement;
-      }
-      declare const document: Document;
-   `,
-  };
-}
-
-let _angularCoreDts: TestFile[] | null = null;
-export function angularCoreDtsFiles(): TestFile[] {
-  if (_angularCoreDts !== null) {
-    return _angularCoreDts;
-  }
-
-  const directory = resolveFromRunfiles('_main/packages/core/npm_package');
-  const dtsFiles = globSync('**/*.d.ts', {cwd: directory});
-
-  return (_angularCoreDts = ['package.json', ...dtsFiles].map((fileName) => ({
-    name: absoluteFrom(`/node_modules/@angular/core/${fileName}`),
-    contents: readFileSync(path.join(directory, fileName), 'utf8'),
-  })));
-}
-
-export function angularAnimationsDts(): TestFile {
-  return {
-    name: absoluteFrom('/node_modules/@angular/animations/index.d.ts'),
-    contents: `
-    export declare class AnimationEvent {
-      element: any;
-    }
-   `,
-  };
-}
-
-export function ngIfDeclaration(): TestDeclaration {
-  return {
-    type: 'directive',
-    file: absoluteFrom('/ngif.d.ts'),
-    selector: '[ngIf]',
-    name: 'NgIf',
-    inputs: {ngIf: 'ngIf'},
-    ngTemplateGuards: [{type: 'binding', inputName: 'ngIf'}],
-    hasNgTemplateContextGuard: true,
-    isGeneric: true,
-  };
-}
-
-export function ngIfDts(): TestFile {
-  return {
-    name: absoluteFrom('/ngif.d.ts'),
-    contents: `
-    export declare class NgIf<T> {
-      ngIf: T;
-      static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>
-    }
-
-    export declare class NgIfContext<T> {
-      $implicit: T;
-      ngIf: T;
-    }`,
-  };
-}
-
-export function ngForDeclaration(): TestDeclaration {
-  return {
-    type: 'directive',
-    file: absoluteFrom('/ngfor.d.ts'),
-    selector: '[ngForOf]',
-    name: 'NgForOf',
-    inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy', ngForTemplate: 'ngForTemplate'},
-    hasNgTemplateContextGuard: true,
-    isGeneric: true,
-  };
-}
-
-export function ngForDts(): TestFile {
-  return {
-    name: absoluteFrom('/ngfor.d.ts'),
-    contents: `
-    export declare class NgForOf<T> {
-      ngForOf: T[];
-      ngForTrackBy: TrackByFunction<T>;
-      static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
-    }
-
-    export interface TrackByFunction<T> {
-      (index: number, item: T): any;
-    }
-
-    export declare class NgForOfContext<T> {
-      $implicit: T;
-      index: number;
-      count: number;
-      readonly odd: boolean;
-      readonly even: boolean;
-      readonly first: boolean;
-      readonly last: boolean;
-    }`,
-  };
-}
-
-export function ngForTypeCheckTarget(): TypeCheckingTarget {
-  const dts = ngForDts();
-  return {...dts, fileName: dts.name, source: dts.contents, templates: {}};
-}
-
-export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
-  applyTemplateContextGuards: true,
-  checkQueries: false,
-  checkTemplateBodies: true,
-  checkControlFlowBodies: true,
-  alwaysCheckSchemaInTemplateBodies: true,
-  checkTypeOfInputBindings: true,
-  honorAccessModifiersForInputBindings: true,
-  strictNullInputBindings: true,
-  checkTypeOfAttributes: true,
-  // Feature is still in development.
-  // TODO(alxhub): enable when DOM checking via lib.dom.d.ts is further along.
-  checkTypeOfDomBindings: false,
-  checkTypeOfOutputEvents: true,
-  checkTypeOfAnimationEvents: true,
-  checkTypeOfDomEvents: true,
-  checkTypeOfDomReferences: true,
-  checkTypeOfNonDomReferences: true,
-  checkTypeOfPipes: true,
-  strictSafeNavigationTypes: true,
-  useContextGenericType: true,
-  strictLiteralTypes: true,
-  enableTemplateTypeChecker: false,
-  useInlineTypeConstructors: true,
-  suggestionsForSuboptimalTypeInference: false,
-  controlFlowPreventingContentProjection: 'warning',
-  unusedStandaloneImports: 'warning',
-  allowSignalsInTwoWayBindings: true,
-  checkTwoWayBoundEvents: true,
-  allowDomEventAssertion: true,
-};
-
-// Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export interface TestDirective extends Partial<
-  Pick<
-    TypeCheckableDirectiveMeta,
-    Exclude<
-      keyof TypeCheckableDirectiveMeta,
-      | 'ref'
-      | 'coercedInputFields'
-      | 'restrictedInputFields'
-      | 'stringLiteralInputFields'
-      | 'undeclaredInputFields'
-      | 'publicMethods'
-      | 'inputs'
-      | 'outputs'
-      | 'hostDirectives'
-    >
-  >
-> {
-  selector: string | null;
-  name: string;
-  file?: AbsoluteFsPath;
-  type: 'directive';
-  inputs?: {
-    [fieldName: string]:
-      | string
-      | {
-          classPropertyName: string;
-          bindingPropertyName: string;
-          required: boolean;
-          isSignal: boolean;
-          transform: DecoratorInputTransform | null;
-        };
-  };
-  outputs?: {[fieldName: string]: string};
-  coercedInputFields?: string[];
-  restrictedInputFields?: string[];
-  stringLiteralInputFields?: string[];
-  undeclaredInputFields?: string[];
-  publicMethods?: string[];
-  isGeneric?: boolean;
-  code?: string;
-  ngContentSelectors?: string[] | null;
-  preserveWhitespaces?: boolean;
-  hostDirectives?: {
-    directive: TestDirective & {isStandalone: true};
-    inputs?: string[];
-    outputs?: string[];
-  }[];
-  bestGuessOwningModule?: OwningModule | AmbientImport;
-  hasNgFieldDirective?: boolean;
-}
-
-export interface TestPipe {
-  name: string;
-  file?: AbsoluteFsPath;
-  isStandalone?: boolean;
-  pipeName: string;
-  type: 'pipe';
-  code?: string;
-  bestGuessOwningModule?: OwningModule | AmbientImport;
-  isGeneric?: boolean;
-}
-
-export type TestDeclaration = TestDirective | TestPipe;
+export * from './src/test_support';
 
 export function tcb(
   template: string,
@@ -367,6 +115,7 @@ export function tcb(
   config?: Partial<TypeCheckingConfig>,
   options?: {emitSpans?: boolean},
   templateParserOptions?: ParseTemplateOptions,
+  foreignComponents: string[] = [],
 ): string {
   const codeLines = [
     'declare const ɵNgFieldDirective: unique symbol;',
@@ -397,19 +146,18 @@ export function tcb(
   const clazz = getClass(sf, 'Test');
   const templateUrl = 'synthetic.html';
   const {nodes, errors} = parseTemplate(template, templateUrl, templateParserOptions);
-  const selectorlessEnabled = templateParserOptions?.enableSelectorless ?? false;
 
   if (errors !== null) {
     throw new Error('Template parse errors: \n' + errors.join('\n'));
   }
 
-  const {matcher, pipes} = prepareDeclarations(
+  const {matcher, pipes, foreignMatcher} = prepareDeclarations(
     declarations,
     (decl) => getClass(sf, decl.name),
     new Map(),
-    selectorlessEnabled,
+    foreignComponents,
   );
-  const binder = new R3TargetBinder<DirectiveMeta>(matcher);
+  const binder = new R3TargetBinder<DirectiveMeta>(matcher, foreignMatcher);
   const boundTarget = binder.bind({template: nodes});
 
   const id = 'tcb' as TypeCheckId;
@@ -424,7 +172,6 @@ export function tcb(
 
   const fullConfig: TypeCheckingConfig = {
     applyTemplateContextGuards: true,
-    checkQueries: false,
     checkTypeOfInputBindings: true,
     honorAccessModifiersForInputBindings: false,
     strictNullInputBindings: true,
@@ -433,6 +180,7 @@ export function tcb(
     checkTypeOfOutputEvents: true,
     checkTypeOfAnimationEvents: true,
     checkTypeOfDomEvents: true,
+    checkUnclaimedEventNames: false,
     checkTypeOfDomReferences: true,
     checkTypeOfNonDomReferences: true,
     checkTypeOfPipes: true,
@@ -446,10 +194,10 @@ export function tcb(
     strictLiteralTypes: true,
     enableTemplateTypeChecker: false,
     useInlineTypeConstructors: true,
-    suggestionsForSuboptimalTypeInference: false,
     allowSignalsInTwoWayBindings: true,
-    checkTwoWayBoundEvents: true,
     allowDomEventAssertion: true,
+    checkUnknownElements: true,
+    checkTypeOfNgTemplateBindings: true,
     ...config,
   };
   options = options || {emitSpans: false};
@@ -463,7 +211,7 @@ export function tcb(
     new RelativePathStrategy(reflectionHost),
   ]);
 
-  const env = new TypeCheckFile(fileName, fullConfig, refEmmiter, reflectionHost, host);
+  const env = new TypeCheckFile(fileName, fullConfig, refEmmiter, host);
 
   env.addTypeCheckBlock(
     new Reference(clazz),
@@ -471,6 +219,7 @@ export function tcb(
     new NoopSchemaChecker(),
     new NoopOobRecorder(),
     TcbGenericContextBehavior.UseEmitter,
+    reflectionHost,
   );
 
   let rendered = env.render();
@@ -480,35 +229,6 @@ export function tcb(
   }
 
   return rendered.replace(/\s+/g, ' ');
-}
-
-/**
- * A file in the test program, along with any template information for components within the file.
- */
-export interface TypeCheckingTarget {
-  /**
-   * Path to the file in the virtual test filesystem.
-   */
-  fileName: AbsoluteFsPath;
-
-  /**
-   * Raw source code for the file.
-   *
-   * If this is omitted, source code for the file will be generated based on any expected component
-   * classes.
-   */
-  source?: string;
-
-  /**
-   * A map of component class names to string templates for that component.
-   */
-  templates?: {[className: string]: string};
-
-  /**
-   * Any declarations (e.g. directives) which should be considered as part of the scope for the
-   * components in this file.
-   */
-  declarations?: TestDeclaration[];
 }
 
 /**
@@ -526,15 +246,24 @@ export function setup(
     config?: Partial<TypeCheckingConfig>;
     options?: ts.CompilerOptions;
     inlining?: boolean;
+    inliningMode?: InliningMode;
     parseOptions?: ParseTemplateOptions;
     referenceEmitter?: ReferenceEmitter;
+  } = {},
+  load: {
+    forms?: boolean;
   } = {},
 ): {
   templateTypeChecker: TemplateTypeChecker;
   program: ts.Program;
   programStrategy: TsCreateProgramDriver;
 } {
-  const files = [typescriptLibDts(), ...angularCoreDtsFiles(), angularAnimationsDts()];
+  const files = [
+    typescriptLibDts(),
+    ...angularCoreDtsFiles(),
+    angularAnimationsDts(),
+    ...(load.forms ? angularFormsDtsFiles() : []),
+  ];
   const fakeMetadataRegistry = new Map();
   const shims = new Map<AbsoluteFsPath, AbsoluteFsPath>();
 
@@ -627,6 +356,7 @@ export function setup(
       }
 
       const declarations = target.declarations ?? [];
+      const foreignComponents = target.foreignComponents ?? [];
 
       for (const className of Object.keys(target.templates)) {
         const classDecl = getClass(sf, className);
@@ -638,7 +368,7 @@ export function setup(
           throw new Error('Template parse errors: \n' + errors.join('\n'));
         }
 
-        const {matcher, pipes} = prepareDeclarations(
+        const {matcher, pipes, foreignMatcher} = prepareDeclarations(
           declarations,
           (decl) => {
             let declFile = sf;
@@ -651,9 +381,9 @@ export function setup(
             return getClass(declFile, decl.name);
           },
           fakeMetadataRegistry,
-          overrides.parseOptions?.enableSelectorless ?? false,
+          foreignComponents,
         );
-        const binder = new R3TargetBinder<DirectiveMeta>(matcher);
+        const binder = new R3TargetBinder<DirectiveMeta>(matcher, foreignMatcher);
         const classRef = new Reference(classDecl);
         const templateContext: TemplateContext = {
           nodes,
@@ -676,8 +406,12 @@ export function setup(
   });
 
   const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
-  if (overrides.inlining !== undefined) {
-    (programStrategy as any).supportsInlineOperations = overrides.inlining;
+  if (overrides.inliningMode !== undefined) {
+    (programStrategy as any).inliningMode = overrides.inliningMode;
+  } else if (overrides.inlining !== undefined) {
+    (programStrategy as any).inliningMode = overrides.inlining
+      ? InliningMode.InlineOps
+      : InliningMode.Error;
   }
 
   const fakeScopeReader: ComponentScopeReader = {
@@ -744,6 +478,9 @@ export function setup(
     typeCheckScopeRegistry,
     NOOP_PERF_RECORDER,
   );
+  if (isNgpTestMode()) {
+    registerNgpTypeCheckSetup(templateTypeChecker, {targets, overrides, load});
+  }
   return {templateTypeChecker, program, programStrategy};
 }
 
@@ -761,17 +498,27 @@ export function diagnose(
   options?: ts.CompilerOptions,
 ): string[] {
   const sfPath = absoluteFrom('/main.ts');
-  const {program, templateTypeChecker} = setup(
-    [
-      {fileName: sfPath, templates: {'TestComponent': template}, source, declarations},
-      ...additionalSources.map((testFile) => ({
-        fileName: testFile.name,
-        source: testFile.contents,
-        templates: {},
-      })),
-    ],
-    {config, options},
-  );
+  const targets: TypeCheckingTarget[] = [
+    {fileName: sfPath, templates: {'TestComponent': template}, source, declarations},
+    ...additionalSources.map((testFile) => ({
+      fileName: testFile.name,
+      source: testFile.contents,
+      templates: {},
+    })),
+  ];
+  if (isNgpTestMode()) {
+    const diagnostics = compileTargetsWithNgp(targets, {config, options});
+    return diagnostics.map((diag) => {
+      const text = ts.flattenDiagnosticMessageText(diag.messageText, '\n');
+      let fileName = diag.file!.fileName;
+      if (fileName.endsWith('/TestComponent.html') || fileName.endsWith('\\TestComponent.html')) {
+        fileName = 'TestComponent.html';
+      }
+      const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
+      return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
+    });
+  }
+  const {program, templateTypeChecker} = setup(targets, {config, options});
   const sf = getSourceFileOrError(program, sfPath);
   const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
 
@@ -820,7 +567,7 @@ function prepareDeclarations(
   declarations: TestDeclaration[],
   resolveDeclaration: DeclarationResolver,
   metadataRegistry: Map<string, TypeCheckableDirectiveMeta>,
-  selectorlessEnabled: boolean,
+  foreignComponentNames: string[] = [],
 ) {
   const pipes = new Map<string, PipeMeta>();
   const hostDirectiveResolder = new HostDirectivesResolver(
@@ -846,30 +593,29 @@ function prepareDeclarations(
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        deferredBlocks: null,
         isPure: true,
       });
     }
   }
 
+  const foreignRegistry = new Map<string, ForeignComponentMeta[]>();
+  for (const name of foreignComponentNames) {
+    foreignRegistry.set(name, [{name}]);
+  }
+  const foreignMatcher = new SelectorlessMatcher<ForeignComponentMeta>(foreignRegistry);
+
   // We need to make two passes over the directives so that all declarations
   // have been registered by the time we resolve the host directives.
 
-  if (selectorlessEnabled) {
-    const registry = new Map<string, DirectiveMeta[]>();
-    for (const meta of directives) {
-      registry.set(meta.name, [meta, ...hostDirectiveResolder.resolve(meta)]);
-    }
-    return {matcher: new SelectorlessMatcher<DirectiveMeta>(registry), pipes};
-  } else {
-    const matcher = new SelectorMatcher<DirectiveMeta[]>();
-    for (const meta of directives) {
-      const selector = CssSelector.parse(meta.selector || '');
-      const matches = [...hostDirectiveResolder.resolve(meta), meta] as DirectiveMeta[];
-      matcher.addSelectables(selector, matches);
-    }
-
-    return {matcher, pipes};
+  const matcher = new SelectorMatcher<DirectiveMeta[]>();
+  for (const meta of directives) {
+    const selector = CssSelector.parse(meta.selector || '');
+    const matches = [...hostDirectiveResolder.resolve(meta), meta] as DirectiveMeta[];
+    matcher.addSelectables(selector, matches);
   }
+
+  return {matcher, pipes, foreignMatcher};
 }
 
 export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {
@@ -879,6 +625,18 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
     }
   }
   throw new Error(`Class ${name} not found in file: ${sf.fileName}: ${sf.text}`);
+}
+
+export function getFunction(
+  sf: ts.SourceFile,
+  name: string,
+): ClassDeclaration<ts.FunctionDeclaration> {
+  for (const stmt of sf.statements) {
+    if (isNamedFunctionDeclaration(stmt) && stmt.name.text === name) {
+      return stmt;
+    }
+  }
+  throw new Error(`Function ${name} not found in file: ${sf.fileName}`);
 }
 
 function getDirectiveMetaFromDeclaration(
@@ -904,15 +662,16 @@ function getDirectiveMetaFromDeclaration(
     queries: decl.queries || [],
     isStructural: false,
     isStandalone: !!decl.isStandalone,
-    isSignal: !!decl.isSignal,
     baseClass: null,
     animationTriggerNames: null,
     decorator: null,
     ngContentSelectors: decl.ngContentSelectors || null,
     preserveWhitespaces: decl.preserveWhitespaces ?? false,
     isExplicitlyDeferred: false,
+    deferredBlocks: null,
     imports: decl.imports,
     rawImports: null,
+    matchSource: MatchSource.Selector,
     hostDirectives:
       decl.hostDirectives === undefined
         ? null
@@ -964,19 +723,19 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStructural: false,
         animationTriggerNames: null,
         isStandalone: false,
-        isSignal: false,
         imports: null,
+        foreignImports: null,
         rawImports: null,
         deferredImports: null,
+        deferredImportsByBlock: null,
         schemas: null,
         decorator: null,
         assumedToExportProviders: false,
         ngContentSelectors: decl.ngContentSelectors || null,
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
         isExplicitlyDeferred: false,
+        deferredBlocks: null,
         inputFieldNamesFromMetadataArray: null,
-        selectorlessEnabled: false,
-        localReferencedSymbols: null,
         hostDirectives:
           decl.hostDirectives === undefined
             ? null
@@ -1006,6 +765,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        deferredBlocks: null,
         isPure: true,
       });
     }
@@ -1027,27 +787,37 @@ function parseInputOutputMappingArray(values: string[]) {
   );
 }
 
-export class NoopSchemaChecker implements DomSchemaChecker {
+export class NoopSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
 
   checkElement(): void {}
   checkTemplateElementProperty(): void {}
+  checkTemplateElementEvent(): void {}
   checkHostElementProperty(): void {}
 }
 
-export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
+export class NoopOobRecorder implements OutOfBandDiagnosticRecorder<TemplateDiagnostic> {
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
-  deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void {}
-  deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {}
+  deferredPipeUsedEagerly(
+    id: TypeCheckId,
+    ast: BindingPipe,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void {}
+  deferredComponentUsedEagerly(
+    id: TypeCheckId,
+    element: TmplAstElement | TmplAstTemplate,
+    dirMeta: TcbDirectiveMetadata,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void {}
   duplicateTemplateVar(): void {}
-  requiresInlineTcb(): void {}
-  requiresInlineTypeConstructors(): void {}
   suboptimalTypeInference(): void {}
   splitTwoWayBinding(): void {}
   missingRequiredInputs(): void {}
@@ -1067,19 +837,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
     element: TmplAstElement,
     componentNames: string[],
   ): void {}
-  missingNamedTemplateDependency(
-    id: TypeCheckId,
-    node: TmplAstComponent | TmplAstDirective,
-  ): void {}
-  unclaimedDirectiveBinding(
-    id: TypeCheckId,
-    directive: TmplAstDirective,
-    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
-  ): void {}
-  incorrectTemplateDependencyType(
-    id: TypeCheckId,
-    node: TmplAstComponent | TmplAstDirective,
-  ): void {}
   deferImplicitTriggerMissingPlaceholder(
     id: TypeCheckId,
     trigger:
@@ -1094,6 +851,7 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
       | TmplAstInteractionDeferredTrigger
       | TmplAstViewportDeferredTrigger,
   ): void {}
+  conflictingHostDirectiveBinding(): void {}
 }
 
 export function createNgCompilerForFile(fileContent: string) {

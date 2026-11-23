@@ -75,7 +75,12 @@ export class PendingTasks {
    */
   run(fn: () => Promise<unknown>): void {
     const removeTask = this.add();
-    fn().catch(this.errorHandler).finally(removeTask);
+    try {
+      fn().catch(this.errorHandler).finally(removeTask);
+    } catch (err) {
+      this.errorHandler(err);
+      removeTask();
+    }
   }
 
   /** @nocollapse */

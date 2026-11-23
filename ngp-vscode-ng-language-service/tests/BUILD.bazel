@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    tsconfig = "//ngp-vscode-ng-language-service:tsconfig_test",
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//ngp-vscode-ng-language-service:node_modules/vscode-jsonrpc",
+        "//ngp-vscode-ng-language-service:node_modules/vscode-languageserver",
+        "//ngp-vscode-ng-language-service:node_modules/vscode-languageserver-textdocument",
+        "//ngp-vscode-ng-language-service:node_modules/vscode-uri",
+        "//packages/compiler-cli/preprocessor/language-service",
+        "//packages/compiler-cli/preprocessor/language-service/tests:test_lib",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    timeout = "long",
+    data = [
+        ":test_lib",
+        # The server bundle and what it resolves at runtime: `typescript` and `tsgo`.
+        "//:node_modules/typescript",
+        "//ngp-vscode-ng-language-service/server:node_modules/@typescript/native-preview",
+        "//ngp-vscode-ng-language-service/server:server_bundle",
+        # `tsgo` as spawned directly by the shared test helpers.
+        "//packages/compiler-cli/preprocessor/language-service:node_modules/@typescript/native-preview",
+        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
+        "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
+    ] + glob(["test-workspace/**"]),
+    # The specs follow `workspace/didChangeWatchedFiles` (a one-way notification the
+    # server processes asynchronously) with an immediate request, so under load the
+    # request can occasionally be served before the invalidation is applied.
+    flaky = True,
+    shard_count = 3,
+)

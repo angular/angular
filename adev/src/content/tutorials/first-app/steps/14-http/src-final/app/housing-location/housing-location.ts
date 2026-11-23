@@ -9,7 +9,7 @@ import {RouterLink} from '@angular/router';
     <section class="listing">
       <img
         class="listing-photo"
-        [src]="housingLocation.photo"
+        [src]="housingLocation().photo"
         alt="Exterior photo of {{ housingLocation().name }}"
         crossorigin
       />
@@ -18,7 +18,7 @@ import {RouterLink} from '@angular/router';
       <a [routerLink]="['/details', housingLocation().id]">Learn More</a>
     </section>
   `,
-  styleUrls: ['./housing-location.css'],
+  styleUrl: './housing-location.css',
 })
 export class HousingLocation {
   housingLocation = input.required<HousingLocationInfo>();

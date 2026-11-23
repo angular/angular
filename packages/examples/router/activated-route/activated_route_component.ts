@@ -10,8 +10,7 @@ import {Component} from '@angular/core';
 // #enddocregion activated-route
 // #docregion activated-route
 import {ActivatedRoute} from '@angular/router';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, Observable} from 'rxjs';
 // #enddocregion activated-route
 
 // #docregion activated-route

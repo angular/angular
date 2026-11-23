@@ -7,7 +7,7 @@
  */
 
 import {ALL_ITEMS} from '../../src/app/routing/navigation-entries/index.js';
-import {getIdFromHeading} from '../../shared-docs/pipeline/shared/heading.mjs';
+import {extractHeadingIds, findDuplicateIds} from '../../shared-docs/pipeline/shared/heading.mjs';
 import {NavigationItem} from '@angular/docs';
 import {writeFileSync, readFileSync} from 'fs';
 import {join, resolve} from 'path';
@@ -20,7 +20,7 @@ const contentRoot = resolve(process.cwd(), '../../src/content');
  * in a JSON file. This file then used by other bazel targets to know which routes are valid.
  */
 
-function extractRoutes(items: NavigationItem[]): string[] {
+function extractRoutes(items: NavigationItem[], duplicatesByPage: Map<string, string[]>): string[] {
   const routes: string[] = [];
   for (const item of items) {
     if (item.path && !item.path.startsWith('http')) {
@@ -29,7 +29,11 @@ function extractRoutes(items: NavigationItem[]): string[] {
         const content = readFileSync(join(contentRoot, `${item.contentPath}.md`), {
           encoding: 'utf-8',
         });
-        const headings = extractHeadings(content);
+        const headings = extractHeadingIds(content);
+        const duplicates = findDuplicateIds(headings);
+        if (duplicates.length > 0) {
+          duplicatesByPage.set(`${item.contentPath}.md`, duplicates);
+        }
         routes.push(
           ...headings.map(
             (heading) => `${item.path}#${heading.toLowerCase().replace(/\s+/g, '-')}`,
@@ -38,33 +42,28 @@ function extractRoutes(items: NavigationItem[]): string[] {
       }
     }
     if (item.children) {
-      routes.push(...extractRoutes(item.children));
+      routes.push(...extractRoutes(item.children, duplicatesByPage));
     }
   }
   return routes;
 }
 
-function extractHeadings(content: string): string[] {
-  const headings = content
-    .split('\n')
-    // Top level heading (H1) are used for the page title only
-    // and yes, headings can have leading spaces
-    .filter((line) => line.trim().startsWith('##'))
-    .map((line) => line.replace(/^#+\s*/, '').trim());
-
-  const stepRegex = /<docs-step[^>]*title="([^"]*)"/g;
-  let match;
-  while ((match = stepRegex.exec(content)) !== null) {
-    headings.push(match[1]);
-  }
-
-  return headings.map((heading: string) => getIdFromHeading(heading));
-}
-
 function main() {
   const allRoutes: string[] = [];
+  const duplicatesByPage = new Map<string, string[]>();
 
-  allRoutes.push(...extractRoutes(ALL_ITEMS));
+  allRoutes.push(...extractRoutes(ALL_ITEMS, duplicatesByPage));
+
+  if (duplicatesByPage.size > 0) {
+    const details = Array.from(duplicatesByPage)
+      .map(([page, ids]) => `  ${page}: ${ids.map((id) => `#${id}`).join(', ')}`)
+      .join('\n');
+    throw new Error(
+      `Headings must produce a unique anchor id within a page, otherwise every link to the ` +
+        `anchor resolves to the first heading that claims it. Give the later heading its own ` +
+        `id with the \`{#custom-id}\` syntax.\n${details}`,
+    );
+  }
 
   const uniqueRoutes = Array.from(new Set(allRoutes.filter((r) => !!r)));
 

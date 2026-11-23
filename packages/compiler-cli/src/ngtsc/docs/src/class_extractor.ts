@@ -6,17 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {InputOrOutput} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {
-  DirectiveMeta,
-  InputMapping,
-  InputOrOutput,
-  MetadataReader,
-  NgModuleMeta,
-  PipeMeta,
-} from '../../metadata';
+import {DirectiveMeta, InputMapping, MetadataReader, PipeMeta} from '../../metadata';
 
 import {
   ClassEntry,

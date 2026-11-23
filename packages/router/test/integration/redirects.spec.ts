@@ -18,7 +18,7 @@ import {
 } from './integration_helpers';
 import {childNodesAsList} from '@angular/private/testing';
 
-export function redirectsIntegrationSuite(browserAPI: 'history' | 'navigation') {
+export async function redirectsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('redirects', () => {
     it('should work', async () => {
       const router = TestBed.inject(Router);

@@ -1,15 +1,43 @@
+import { Directive, model } from "@angular/core";
+import * as i0 from "@angular/core";
 export class TestDir {
-  …
-  static ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
-    …
-    inputs: {
-      counter: [1, "counter"],
-      name: [1, "name"]
-    },
-    outputs: {
-      counter: "counterChange",
-      name: "nameChange"
-    }
-    …
+  counter = model(
+    0 /* @ts-ignore */,
+    ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ [])
+  );
+  name = model.required(
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ [])
+  );
+  static ɵfac = function TestDir_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || TestDir)();
+  };
+  static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({
+    type: TestDir,
+    inputs: { counter: [1, "counter"], name: [1, "name"] },
+    outputs: { counter: "counterChange", name: "nameChange" }
   });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      TestDir,
+      [
+        {
+          type: Directive,
+          args: [{}]
+        }
+      ],
+      null,
+      {
+        counter: [
+          { type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] },
+          { type: i0.Output, args: ["counterChange"] }
+        ],
+        name: [
+          { type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] },
+          { type: i0.Output, args: ["nameChange"] }
+        ]
+      }
+    );
+})();

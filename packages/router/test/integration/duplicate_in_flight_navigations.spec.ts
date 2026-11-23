@@ -26,7 +26,9 @@ import {
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'history' | 'navigation') {
+export async function duplicateInFlightNavigationsIntegrationSuite(
+  browserAPI: 'history' | 'navigation',
+) {
   describe('duplicate in-flight navigations', () => {
     @Injectable()
     class RedirectingGuard {
@@ -187,8 +189,8 @@ export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'histor
           }
           router.events.subscribe((e) => {
             if (e instanceof GuardsCheckEnd) {
-              expect(router.getCurrentNavigation()?.extractedUrl.toString()).toEqual('/two');
-              expect(router.getCurrentNavigation()?.extras).toBeDefined();
+              expect(router.currentNavigation()?.extractedUrl.toString()).toEqual('/two');
+              expect(router.currentNavigation()?.extras).toBeDefined();
             }
           });
         }

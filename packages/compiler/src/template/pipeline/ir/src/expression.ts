@@ -9,12 +9,12 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
-import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as t from '../../../../render3/r3_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import {OpList, type XrefId} from './operations';
-import type {CreateOp} from './ops/create';
+import type {ConstIndex, CreateOp} from './ops/create';
 import {createStatementOp} from './ops/shared';
 import {Interpolation, type UpdateOp} from './ops/update';
 import {
@@ -31,6 +31,8 @@ import {
 export type Expression =
   | LexicalReadExpr
   | ReferenceExpr
+  | ForeignContentExpr
+  | BoundaryStateExpr
   | ContextExpr
   | NextContextExpr
   | GetCurrentViewExpr
@@ -43,7 +45,7 @@ export type Expression =
   | PipeBindingVariadicExpr
   | SafePropertyReadExpr
   | SafeKeyedReadExpr
-  | SafeInvokeFunctionExpr
+  | SafeNavigationMigrationExpr
   | EmptyExpr
   | AssignTemporaryExpr
   | ReadTemporaryExpr
@@ -54,7 +56,8 @@ export type Expression =
   | ContextLetReferenceExpr
   | StoreLetExpr
   | TrackContextExpr
-  | ArrowFunctionExpr;
+  | ArrowFunctionExpr
+  | InvalidExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -72,7 +75,7 @@ export function isIrExpression(expr: o.Expression): expr is Expression {
 /**
  * Base type used for all logical IR expressions.
  */
-export abstract class ExpressionBase extends o.Expression {
+abstract class ExpressionBase extends o.Expression {
   abstract readonly kind: ExpressionKind;
 
   constructor(sourceSpan: ParseSourceSpan | null = null) {
@@ -147,6 +150,76 @@ export class ReferenceExpr extends ExpressionBase {
 
   override clone(): ReferenceExpr {
     return new ReferenceExpr(this.target, this.targetSlot, this.offset);
+  }
+}
+
+/**
+ * Runtime operation to render foreign content (children of a foreign component)
+ * and extract its root DOM nodes.
+ */
+export class ForeignContentExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ForeignContent;
+
+  constructor(
+    readonly childrenViewXref: XrefId,
+    readonly childrenViewHandle: SlotHandle,
+    readonly foreignComponentConstIndex: ConstIndex,
+  ) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return (
+      e instanceof ForeignContentExpr &&
+      e.childrenViewXref === this.childrenViewXref &&
+      e.foreignComponentConstIndex === this.foreignComponentConstIndex
+    );
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): ForeignContentExpr {
+    return new ForeignContentExpr(
+      this.childrenViewXref,
+      this.childrenViewHandle,
+      this.foreignComponentConstIndex,
+    );
+  }
+}
+
+/**
+ * Read of a boundary state.
+ */
+export class BoundaryStateExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.BoundaryState;
+  name: string | null = null;
+
+  constructor(readonly xref: XrefId) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(other: o.Expression): boolean {
+    return other instanceof BoundaryStateExpr && other.xref === this.xref;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): BoundaryStateExpr {
+    const b = new BoundaryStateExpr(this.xref);
+    b.name = this.name;
+    return b;
   }
 }
 
@@ -767,46 +840,42 @@ export class SafeKeyedReadExpr extends ExpressionBase {
   }
 }
 
-export class SafeInvokeFunctionExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.SafeInvokeFunction;
+/**
+ * Wraps an expression to indicate that it should be evaluated with legacy null-safe navigation semantics.
+ * This is used to implement the `$safeNavigationMigration` builtin function.
+ */
+export class SafeNavigationMigrationExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeNavigationMigration;
 
-  constructor(
-    public receiver: o.Expression,
-    public args: o.Expression[],
-  ) {
+  constructor(public expr: o.Expression) {
     super();
   }
 
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
-    this.receiver.visitExpression(visitor, context);
-    for (const a of this.args) {
-      a.visitExpression(visitor, context);
-    }
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    this.expr.visitExpression(visitor, context);
   }
 
-  override isEquivalent(): boolean {
-    return false;
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof SafeNavigationMigrationExpr && this.expr.isEquivalent(e.expr);
   }
 
   override isConstant(): boolean {
-    return false;
+    return this.expr.isConstant();
   }
 
   override transformInternalExpressions(
     transform: ExpressionTransform,
     flags: VisitorContextFlag,
   ): void {
-    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
-    for (let i = 0; i < this.args.length; i++) {
-      this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
-    }
+    this.expr = transformExpressionsInExpression(
+      this.expr,
+      transform,
+      flags | VisitorContextFlag.InSafeNavigationMigration,
+    );
   }
 
-  override clone(): SafeInvokeFunctionExpr {
-    return new SafeInvokeFunctionExpr(
-      this.receiver.clone(),
-      this.args.map((a) => a.clone()),
-    );
+  override clone(): SafeNavigationMigrationExpr {
+    return new SafeNavigationMigrationExpr(this.expr.clone());
   }
 }
 
@@ -915,8 +984,8 @@ export class ReadTemporaryExpr extends ExpressionBase {
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
-  override isEquivalent(): boolean {
-    return this.xref === this.xref;
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof ReadTemporaryExpr && e.xref === this.xref;
   }
 
   override isConstant(): boolean {
@@ -1103,6 +1172,26 @@ export class ArrowFunctionExpr
   }
 }
 
+export class InvalidExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.InvalidExpr;
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof InvalidExpr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): InvalidExpr {
+    return new InvalidExpr();
+  }
+
+  override transformInternalExpressions(): void {}
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -1124,6 +1213,7 @@ export enum VisitorContextFlag {
   None = 0b0000,
   InChildOperation = 0b0001,
   InArrowFunctionOperation = 0b0010,
+  InSafeNavigationMigration = 0b0100,
 }
 
 function transformExpressionsInInterpolation(
@@ -1208,6 +1298,18 @@ export function transformExpressionsInOp(
         op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
+    case OpKind.Boundary:
+      for (const condition of op.conditions) {
+        if (condition.expr === null) {
+          continue;
+        }
+        condition.expr = transformExpressionsInExpression(condition.expr, transform, flags);
+      }
+      if (op.processed !== null) {
+        op.processed = transformExpressionsInExpression(op.processed, transform, flags);
+      }
+
+      break;
     case OpKind.Animation:
     case OpKind.AnimationListener:
     case OpKind.Listener:
@@ -1269,6 +1371,11 @@ export function transformExpressionsInOp(
     case OpKind.StoreLet:
       op.value = transformExpressionsInExpression(op.value, transform, flags);
       break;
+    case OpKind.ForeignComponent:
+      for (const [key, expr] of op.props) {
+        op.props.set(key, transformExpressionsInExpression(expr, transform, flags));
+      }
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:
@@ -1290,7 +1397,9 @@ export function transformExpressionsInOp(
     case OpKind.Pipe:
     case OpKind.Projection:
     case OpKind.ProjectionDef:
+    case OpKind.EnableIncrementalHydrationRuntime:
     case OpKind.Template:
+    case OpKind.Content:
     case OpKind.Text:
     case OpKind.I18nAttributes:
     case OpKind.IcuPlaceholder:
@@ -1300,6 +1409,8 @@ export function transformExpressionsInOp(
     case OpKind.ConditionalBranchCreate:
     case OpKind.Control:
     case OpKind.ControlCreate:
+    case OpKind.BoundaryCreate:
+    case OpKind.BoundaryErrorCreate:
       // These operations contain no expressions.
       break;
     default:
@@ -1394,6 +1505,10 @@ export function transformExpressionsInExpression(
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.SpreadElementExpr) {
     expr.expression = transformExpressionsInExpression(expr.expression, transform, flags);
+  } else if (expr instanceof o.FunctionExpr) {
+    for (let i = 0; i < expr.statements.length; i++) {
+      transformExpressionsInStatement(expr.statements[i], transform, flags);
+    }
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||

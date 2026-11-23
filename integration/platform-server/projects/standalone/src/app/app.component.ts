@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 
 @Component({
@@ -7,5 +7,6 @@ import {RouterOutlet} from '@angular/router';
 
   imports: [CommonModule, RouterOutlet],
   template: '<router-outlet></router-outlet>',
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AppComponent {}

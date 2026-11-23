@@ -42,9 +42,6 @@ const packageJsonPath = 'vscode-ng-language-service/package.json';
 /** The path to the `CHANGELOG.md` file for the extension. */
 const changelogPath = 'vscode-ng-language-service/CHANGELOG.md';
 
-/** The remote URL for the angular/angular repository. */
-const angularRepoRemote = 'https://github.com/angular/angular.git';
-
 /**
  * The prefix for all release commits created by this script. This is used to filter commits when
  * determining the last release.
@@ -81,8 +78,14 @@ async function main(): Promise<void> {
     throw new Error(`Cannot release from non releasable branch ${branchToReleaseFrom}.`);
   }
 
+  const upstreamRemote = await getUpstreamRemoteName();
+  const forkRemote = await getForkRemoteName();
+
+  console.log(chalk.blue(`Using upstream remote: ${upstreamRemote}`));
+  console.log(chalk.blue(`Using fork remote: ${forkRemote}`));
+
   console.log(chalk.blue(`Releasing from ${branchToReleaseFrom}.`));
-  await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom} --tags`);
+  await exec(`git fetch ${upstreamRemote} ${branchToReleaseFrom} --tags`);
 
   const currentVersion = await getCurrentVersion();
   const newVersion = await getNewVersion(currentVersion);
@@ -93,21 +96,20 @@ async function main(): Promise<void> {
   await installDependencies();
   await buildExtension();
 
-  const forkRemote = await getForkRemoteName();
   await prepareReleasePullRequest(
     releaseBranch,
     `${releaseCommitPrefix}${newVersion}`,
     [packageJsonPath, changelogPath],
     forkRemote,
   );
-  await waitForPRToBeMergedAndTag(newVersion, branchToReleaseFrom);
+  await waitForPRToBeMergedAndTag(newVersion, branchToReleaseFrom, upstreamRemote);
 
   await publishExtension();
 
   await createGithubRelease(newVersion, changelog);
 
   if (branchToReleaseFrom !== 'main') {
-    await cherryPickChangelog(changelog, newVersion, forkRemote);
+    await cherryPickChangelog(changelog, newVersion, forkRemote, upstreamRemote);
   }
 
   console.log(chalk.green('VSCode extension release process complete!'));
@@ -321,14 +323,16 @@ async function updatingPackageJsonVersion(newVersion: string): Promise<void> {
  * This function prompts the user to confirm that the release PR has been merged. Once confirmed,
  * it fetches the latest changes from the upstream repository, finds the SHA of the merged release
  * commit, and then creates a Git tag with the format `vsix-<newVersion>` on that commit. Finally,
- * it pushes the new tag to the origin.
+ * it pushes the new tag to the upstream repository.
  *
  * @param newVersion The new version number used to create the Git tag.
  * @param branchToReleaseFrom The branch that the release PR was merged into.
+ * @param upstreamRemote The remote name or URL used for the upstream repository.
  */
 async function waitForPRToBeMergedAndTag(
   newVersion: string,
   branchToReleaseFrom: string,
+  upstreamRemote: string,
 ): Promise<void> {
   console.log(
     chalk.yellow(`
@@ -346,13 +350,14 @@ Once you press Enter, the process will tag and publish automatically.
     message: 'Press Enter once the release PR has been merged.',
   });
 
-  await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom}`);
+  await exec(`git fetch ${upstreamRemote} ${branchToReleaseFrom}`);
   const mergedCommitSha = await getLastReleaseSha(newVersion);
 
   console.log(chalk.green(`Tagging the commit: ${mergedCommitSha}`));
   const tagName = getTagName(newVersion);
   await exec(`git tag ${tagName} ${mergedCommitSha}`);
-  await exec(`git push ${angularRepoRemote} tag ${tagName}`);
+  const pushTarget = await getPushTarget(upstreamRemote);
+  await exec(`git push ${pushTarget} tag ${tagName}`);
   console.log(chalk.green('Release tag pushed to origin.'));
 }
 
@@ -381,7 +386,9 @@ async function buildExtension(): Promise<void> {
   console.log(chalk.blue('Building VSCode extension...'));
   await execAndStream('pnpm', ['bazel', 'clean']);
   await execAndStream('pnpm', [
-    'pnpm --filter=ng-template run package',
+    '--filter=ng-template',
+    'run',
+    'package',
     ...additionBazelReleaseArgs,
   ]);
 
@@ -414,8 +421,9 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     'Authorization': `Bearer ${token}`,
     'X-GitHub-Api-Version': '2022-11-28',
   };
-  const {owner, repo} = getRepoDetails(angularRepoRemote);
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+  const githubReleasesApiUrl = 'https://api.github.com/repos/angular/angular/releases';
+
+  const response = await fetch(githubReleasesApiUrl, {
     method: 'POST',
     headers: {
       ...commonHeaders,
@@ -430,6 +438,7 @@ async function createGithubRelease(version: string, changelog: string): Promise<
         .trim(),
       make_latest: 'false',
       prerelease: false,
+      draft: true,
     }),
   });
 
@@ -437,7 +446,7 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     throw new Error(`Failed to create release: ${response.statusText} ${await response.text()}`);
   }
 
-  const release = (await response.json()) as {upload_url: string};
+  const release = (await response.json()) as {id: number; upload_url: string};
   const uploadUrl = release.upload_url.replace(
     '{?name,label}',
     `?name=ng-template-${version}.vsix`,
@@ -459,7 +468,25 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     );
   }
 
-  console.log(chalk.green('GitHub release created and asset uploaded.'));
+  const publishResponse = await fetch(`${githubReleasesApiUrl}/${release.id}`, {
+    method: 'PATCH',
+    headers: {
+      ...commonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      draft: false,
+      make_latest: 'false',
+    }),
+  });
+
+  if (!publishResponse.ok) {
+    throw new Error(
+      `Failed to publish release: ${publishResponse.statusText} ${await publishResponse.text()}`,
+    );
+  }
+
+  console.log(chalk.green('GitHub release created, asset uploaded, and release published.'));
 }
 
 /**
@@ -491,16 +518,19 @@ async function publishExtension(): Promise<void> {
  *
  * @param changelog The changelog content to add.
  * @param newVersion The new version number.
+ * @param forkRemote The remote name for the fork repository.
+ * @param upstreamRemote The remote name or URL for the upstream repository.
  */
 async function cherryPickChangelog(
   changelog: string,
   newVersion: string,
   forkRemote: string,
+  upstreamRemote: string,
 ): Promise<void> {
   console.log(chalk.blue('Cherry-picking changelog to main...'));
 
   await exec(`git stash`);
-  await exec(`git fetch ${angularRepoRemote} main`);
+  await exec(`git fetch ${upstreamRemote} main`);
   const cherryPickBranch = `vscode-changelog-cherry-pick${newVersion}`;
   await exec(`git branch -D ${cherryPickBranch}`).catch(() => {});
   await exec(`git checkout -b ${cherryPickBranch} FETCH_HEAD`);
@@ -552,6 +582,24 @@ function execAndStream(command: string, args: string[], options: SpawnOptions = 
 }
 
 /**
+ * Gets all configured Git remotes as a map from remote name to remote URL.
+ *
+ * @returns A promise that resolves to a map of remote names to their URLs.
+ */
+async function getRemotes(): Promise<Map<string, string>> {
+  const {stdout} = await exec('git remote -v');
+  const remotes = new Map<string, string>();
+  for (const line of stdout.split('\n')) {
+    const parts = line.split(/\s+/);
+    if (parts.length >= 2) {
+      const [name, url] = parts;
+      remotes.set(name, url);
+    }
+  }
+  return remotes;
+}
+
+/**
  * Gets the owner and repo name from a remote URL.
  *
  * @param remoteUrl The remote URL to parse.
@@ -561,8 +609,8 @@ function getRepoDetails(remoteUrl: string): {owner: string; repo: string} {
   const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
 
   return {
-    owner: match ? match[1] : 'angular',
-    repo: match ? match[2] : 'angular',
+    owner: match ? match[1].toLowerCase() : 'angular',
+    repo: match ? match[2].toLowerCase() : 'angular',
   };
 }
 
@@ -611,6 +659,44 @@ function getTagName(version: string): string {
 }
 
 /**
+ * Gets the remote name or authenticated URL for the upstream angular repository (angular/angular).
+ *
+ * It checks existing configured remotes:
+ * - If any remote points to angular/angular, uses that remote.
+ * - If no remote points to angular/angular, falls back to an authenticated HTTPS URL using GITHUB_TOKEN.
+ *
+ * @returns The remote name or URL to use for upstream.
+ */
+async function getUpstreamRemoteName(): Promise<string> {
+  const remotes = await getRemotes();
+  for (const [name, url] of remotes) {
+    const details = getRepoDetails(url);
+    if (details.owner === 'angular' && details.repo === 'angular') {
+      return name;
+    }
+  }
+
+  const token = ensureGithubToken();
+  return `https://${token}@github.com/angular/angular.git`;
+}
+
+/**
+ * Determines the target to push to for the upstream repository.
+ * If the remote URL is HTTPS without embedded credentials, it injects GITHUB_TOKEN to avoid interactive login prompts.
+ */
+async function getPushTarget(upstreamRemote: string): Promise<string> {
+  const remotes = await getRemotes();
+  const remoteUrl = remotes.get(upstreamRemote) ?? upstreamRemote;
+
+  if (remoteUrl.startsWith('git@') || remoteUrl.startsWith('ssh://')) {
+    return upstreamRemote;
+  }
+
+  const token = ensureGithubToken();
+  return `https://${token}@github.com/angular/angular.git`;
+}
+
+/**
  * Gets the name of the remote to use as the user's fork.
  *
  * This function lists all configured remotes and attempts to identify the user's fork.
@@ -621,15 +707,7 @@ function getTagName(version: string): string {
  * @returns The name of the remote to use.
  */
 async function getForkRemoteName(): Promise<string> {
-  const {stdout} = await exec('git remote -v');
-  const remotes = new Map<string, string>();
-  for (const line of stdout.split('\n')) {
-    const parts = line.split(/\s+/);
-    if (parts.length >= 2) {
-      const [name, url] = parts;
-      remotes.set(name, url);
-    }
-  }
+  const remotes = await getRemotes();
 
   const candidates: string[] = [];
   for (const [name, url] of remotes) {
@@ -640,8 +718,6 @@ async function getForkRemoteName(): Promise<string> {
 
   // If origin is a candidate, we prefer it appropriately IF it's likely the user's fork.
   // The check `getRepoDetails(url).owner !== 'angular'` already filters out upstream.
-  // So if `origin` is in candidates, it's safe to use?
-  // User wanted: "If origin exists and is a candidate ... return 'origin'".
   if (candidates.includes('origin')) {
     return 'origin';
   }

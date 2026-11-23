@@ -35,5 +35,12 @@ export function linkRender(this: AdevDocsRenderer, {href, title, tokens}: Tokens
   }
 
   const titleAttribute = title ? ` title="${title}"` : '';
-  return `<a href="${href}"${titleAttribute}${anchorTarget(href)}>${this.parser.parseInline(tokens)}</a>`;
+  // Disable auto-linking while rendering the link's content so that a code symbol used as the
+  // link text (e.g. [`httpResource`](/guide/http/http-resource)) isn't turned into a nested
+  // anchor pointing at the API reference, which would override the explicit link.
+  const previousDisableAutoLinking = this.context.disableAutoLinking;
+  this.context.disableAutoLinking = true;
+  const content = this.parser.parseInline(tokens);
+  this.context.disableAutoLinking = previousDisableAutoLinking;
+  return `<a href="${href}"${titleAttribute}${anchorTarget(href)}>${content}</a>`;
 }

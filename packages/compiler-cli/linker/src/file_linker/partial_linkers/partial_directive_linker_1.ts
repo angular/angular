@@ -11,7 +11,6 @@ import {
   ForwardRefHandling,
   LegacyInputPartialMapping,
   makeBindingParser,
-  outputAst as o,
   ParseLocation,
   ParseSourceFile,
   ParseSourceSpan,
@@ -24,15 +23,22 @@ import {
   R3InputMetadata,
   R3PartialDeclaration,
   R3QueryMetadata,
+  verifyHostBindings,
 } from '@angular/compiler';
 
+import semver from 'semver';
 import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, getDefaultStandaloneValue, wrapReference} from './util';
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/src/types';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
+import {
+  extractForwardRef,
+  getDefaultStandaloneValue,
+  PLACEHOLDER_VERSION,
+  wrapReference,
+} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -62,6 +68,7 @@ export function toR3DirectiveMeta<TExpression>(
   sourceUrl: AbsoluteFsPath,
   version: string,
 ): R3DirectiveMetadata {
+  const {major} = new semver.SemVer(version);
   const typeExpr = metaObj.getValue('type');
   const typeName = typeExpr.getSymbolName();
   if (typeName === null) {
@@ -71,12 +78,22 @@ export function toR3DirectiveMeta<TExpression>(
     );
   }
 
+  const host = toHostMetadata(metaObj);
+  // Partial declarations are external linker inputs, so validate them before emitting host code.
+  if (metaObj.has('host')) {
+    const hostMeta = metaObj.getValue('host');
+    const errors = verifyHostBindings(host, createSourceSpan(hostMeta.getRange(), code, sourceUrl));
+    if (errors.length > 0) {
+      throw new FatalLinkerError(hostMeta.expression, errors.map((error) => error.msg).join('\n'));
+    }
+  }
+
   return {
     typeSourceSpan: createSourceSpan(typeExpr.getRange(), code, sourceUrl),
     type: wrapReference(typeExpr.getOpaque()),
     typeArgumentCount: 0,
     deps: null,
-    host: toHostMetadata(metaObj),
+    host,
     inputs: metaObj.has('inputs') ? metaObj.getObject('inputs').toLiteral(toInputMapping) : {},
     outputs: metaObj.has('outputs')
       ? metaObj.getObject('outputs').toLiteral((value) => value.getString())
@@ -103,10 +120,10 @@ export function toR3DirectiveMeta<TExpression>(
     isStandalone: metaObj.has('isStandalone')
       ? metaObj.getBoolean('isStandalone')
       : getDefaultStandaloneValue(version),
-    isSignal: metaObj.has('isSignal') ? metaObj.getBoolean('isSignal') : false,
     hostDirectives: metaObj.has('hostDirectives')
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))
       : null,
+    legacyOptionalChaining: major < 22 && version !== PLACEHOLDER_VERSION,
   };
 }
 

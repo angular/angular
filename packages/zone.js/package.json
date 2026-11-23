@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.16.1",
+  "version": "0.16.3",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
@@ -8,34 +8,35 @@
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
   "devDependencies": {
-    "@csstools/css-calc": "3.1.1",
-    "@csstools/css-color-parser": "4.0.2",
+    "@csstools/css-calc": "3.4.4",
+    "@csstools/css-color-parser": "4.2.8",
     "@externs/nodejs": "1.5.0",
     "@types/jasmine": "6.0.0",
     "@types/node": "^24.3.0",
     "@types/systemjs": "6.15.4",
     "bluebird": "3.7.2",
-    "domino": "https://github.com/angular/domino.git#24d1e0d46df98a07576fa7aaceeae3f7b47fe530",
+    "domino": "https://github.com/angular/domino.git#51fa184b59769e2d150c92ce09c46e3dbeb401c1",
     "esbuild-plugin-umd-wrapper": "3.0.0",
-    "jest-environment-jsdom": "30.3.0",
-    "jest-environment-node": "30.3.0",
-    "jest": "30.3.0",
-    "mocha": "11.7.5",
+    "jest-environment-jsdom": "30.5.2",
+    "jest-environment-node": "30.5.2",
+    "jest": "30.5.2",
+    "mocha": "12.0.3",
     "mock-require": "3.0.3",
-    "jasmine": "6.1.0",
+    "jasmine": "6.3.0",
     "source-map-support": "0.5.21",
-    "jasmine-core": "6.1.0",
+    "jasmine-core": "6.3.0",
     "jasmine-reporters": "2.5.2",
     "rxjs": "7.8.2",
     "systemjs": "6.15.1",
     "tslib": "^2.3.0",
-    "vitest": "^4.0.0"
+    "vitest": "^5.0.0"
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
-    "vitest:test": "vitest ./test/vitest/vitest.spec.js",
+    "vitest:test": "vitest ./test/vitest/*.spec.js --exclude ./test/vitest/*-globals.spec.js",
+    "vitest-globals:test": "vitest ./test/vitest/*-globals.spec.js --globals",
     "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs",
     "release": "node tools/release.mts"
   },
@@ -62,22 +63,27 @@
       "default": "./fesm2015/zone.js"
     },
     "./testing": {
+      "types": "./fesm2015/zone-testing.d.ts",
       "require": "./bundles/zone-testing.umd.js",
       "default": "./fesm2015/zone-testing.js"
     },
     "./node": {
+      "types": "./fesm2015/zone-node.d.ts",
       "require": "./bundles/zone-node.umd.js",
       "default": "./fesm2015/zone-node.js"
     },
     "./mix": {
+      "types": "./fesm2015/zone-mix.d.ts",
       "require": "./bundles/zone-mix.umd.js",
       "default": "./fesm2015/zone-mix.js"
     },
     "./plugins/*.min": {
+      "types": "./fesm2015/*.d.ts",
       "require": "./bundles/*.umd.min.js",
       "default": "./fesm2015/*.min.js"
     },
     "./plugins/*": {
+      "types": "./fesm2015/*.d.ts",
       "require": "./bundles/*.umd.js",
       "default": "./fesm2015/*.js"
     }

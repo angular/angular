@@ -2,6 +2,8 @@
 
 Angular has two types of variable declarations in templates: local template variables and template reference variables.
 
+HELPFUL: In this guide, “template” does not mean the entire HTML template file. It refers only to a specific template construct or expression within the file.
+
 ## Local template variables with `@let`
 
 Angular's `@let` syntax allows you to define a local variable and re-use it across a template, similar to the [JavaScript `let` syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
@@ -194,3 +196,39 @@ export class AppComponent {
 ```
 
 See [Referencing children with queries](/guide/components/queries) for more information on queries.
+
+### Template variable scope
+
+Just like variables in JavaScript or TypeScript code, template variables are scoped to the template that declares them.
+
+Similarly, [control flow blocks](guide/templates/control-flow) like `@if` and `@for`, [structural directives](guide/directives/structural-directives), and `<ng-template>` declarations create a new nested template scope, much like JavaScript's control flow statements like `if` and `for` create new lexical scopes. You cannot access template variables within one of these nested templates from outside of its boundaries.
+
+HELPFUL: Define a variable only once in the template so the runtime value remains predictable.
+
+#### Accessing in a nested template
+
+An inner template can access template variables that the outer template defines.
+
+In the following example, changing the text in the `<input>` changes the value in the `<span>` because Angular immediately updates changes through the template variable, `ref1`.
+
+```angular-html
+<input #ref1 type="text" [(ngModel)]="firstExample" />
+
+@if (true) {
+  <span>Value: {{ ref1.value }}</span>
+}
+```
+
+In this case, the `@if` block creates a new template scope, which includes the `ref1` variable from its parent scope.
+
+However, accessing a template variable from a child scope in the parent template doesn't work:
+
+```angular-html {avoid}
+@if (true) {
+  <input #ref2 type="text" [(ngModel)]="secondExample" />
+}
+
+<span>Value: {{ ref2?.value }}</span>
+```
+
+Here, `ref2` is declared in the child scope created by `@if`, and is not accessible from the parent template.

@@ -46,6 +46,18 @@ import {
 const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
 
+/**
+ * Options passed to `afterRenderEffect`.
+ *
+ * @publicApi
+ */
+export interface AfterRenderEffectOptions extends AfterRenderOptions {
+  /**
+   * A debug name for the effect. Used in Angular DevTools to identify the effect.
+   */
+  debugName?: string;
+}
+
 /** Callback type for an `afterRenderEffect` phase effect */
 type AfterRenderPhaseEffectHook = (
   // Either a cleanup function or a pipelined value and a cleanup function
@@ -190,6 +202,7 @@ export class AfterRenderEffectSequence extends AfterRenderSequence {
     readonly scheduler: ChangeDetectionScheduler,
     injector: Injector,
     snapshot: TracingSnapshot | null = null,
+    debugName?: string,
   ) {
     // Note that we also initialize the underlying `AfterRenderSequence` hooks to `undefined` and
     // populate them as we create reactive nodes below.
@@ -228,7 +241,7 @@ export class AfterRenderEffectSequence extends AfterRenderSequence {
       this.hooks[phase] = (value) => node.phaseFn(value);
 
       if (ngDevMode) {
-        setupDebugInfo(node, injector);
+        setupDebugInfo(node, injector, debugName);
       }
     }
   }
@@ -304,7 +317,7 @@ export type ɵFirstAvailableSignal<T extends unknown[]> = T extends [infer H, ..
  */
 export function afterRenderEffect(
   callback: (onCleanup: EffectCleanupRegisterFn) => void,
-  options?: AfterRenderOptions,
+  options?: AfterRenderEffectOptions,
 ): AfterRenderRef;
 /**
  * Register effects that, when triggered, are invoked when the application finishes rendering,
@@ -373,7 +386,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]) => M;
     read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
   },
-  options?: AfterRenderOptions,
+  options?: AfterRenderEffectOptions,
 ): AfterRenderRef;
 
 /**
@@ -390,7 +403,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(
         ) => M;
         read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
       },
-  options?: AfterRenderOptions,
+  options?: AfterRenderEffectOptions,
 ): AfterRenderRef {
   ngDevMode &&
     assertNotInReactiveContext(
@@ -427,13 +440,18 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     scheduler,
     injector,
     tracing?.snapshot(null),
+    ngDevMode ? options?.debugName : undefined,
   );
   manager.impl.register(sequence);
   return sequence;
 }
 
-function setupDebugInfo(node: AfterRenderPhaseEffectNode, injector: Injector): void {
-  node.debugName = `afterRenderEffect - ${phaseDebugName(node.phase)} phase`;
+function setupDebugInfo(
+  node: AfterRenderPhaseEffectNode,
+  injector: Injector,
+  debugName: string | undefined,
+): void {
+  node.debugName = `${debugName || 'afterRenderEffect'} - ${phaseDebugName(node.phase)} phase`;
   const prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
   try {
     emitAfterRenderEffectPhaseCreatedEvent(node);

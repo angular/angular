@@ -53,6 +53,14 @@ describe('utils', () => {
         'a{$ph1}b{$ph2}c',
       );
     });
+
+    it('should strip replacement characters from message parts', () => {
+      const translation = makeParsedTranslation(['a\uFFFD#1', 'b\uFFFD*1:1'], ['ph1']);
+      expect(translation.messageParts).toEqual(
+        makeTemplateObject(['a#1', 'b*1:1'], ['a#1', 'b*1:1']),
+      );
+      expect(translation.text).toEqual('a#1{$ph1}b*1:1');
+    });
   });
 
   describe('parseTranslation', () => {
@@ -108,6 +116,13 @@ describe('utils', () => {
       expect(translation.messageParts.raw).toEqual(['', '', '']);
       expect(translation.placeholderNames).toEqual(['one', 'two']);
     });
+
+    it('should strip replacement characters from message parts', () => {
+      const translation = parseTranslation('a\uFFFD#1{$one}\uFFFD:marker:b\uFFFD');
+      expect(translation.messageParts).toEqual(['a#1', ':marker:b']);
+      expect(translation.messageParts.raw).toEqual(['a#1', '\\:marker:b']);
+      expect(translation.text).toEqual('a#1{$one}:marker:b');
+    });
   });
 
   describe('translate', () => {
@@ -135,6 +150,17 @@ describe('utils', () => {
         `There is a placeholder name mismatch with the translation provided for the message "8986527425650846693" ("abc{$INTERPOLATION}def").\n` +
           `The translation contains a placeholder with name PH, which does not exist in the message.`,
       );
+    });
+
+    it('should substitute a placeholder whose name shadows an Object.prototype member', () => {
+      // A placeholder legitimately named `hasOwnProperty` puts that key on the
+      // substitutions object, so calling it as a method would throw a TypeError.
+      expect(
+        doTranslate(
+          {'abc{$hasOwnProperty}def': 'abc{$hasOwnProperty}def'},
+          parts`abc${1 + 2}:hasOwnProperty:def`,
+        ),
+      ).toEqual(parts`abc${3}def`);
     });
 
     it('(with identity translations) should render template literals as-is', () => {

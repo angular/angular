@@ -18,6 +18,7 @@ import {wrapIntoObservable} from './utils/collection';
 import {firstValueFrom} from './utils/first_value_from';
 
 export class NoMatch extends Error {
+  override readonly name: string = 'NoMatch';
   public segmentGroup: UrlSegmentGroup | null;
 
   constructor(segmentGroup?: UrlSegmentGroup) {
@@ -32,6 +33,8 @@ export class NoMatch extends Error {
 }
 
 export class AbsoluteRedirect extends Error {
+  override readonly name: string = 'AbsoluteRedirect';
+
   constructor(public urlTree: UrlTree) {
     super();
 
@@ -142,7 +145,8 @@ export class ApplyRedirects {
   ): UrlSegmentGroup {
     const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
 
-    let children: {[n: string]: UrlSegmentGroup} = {};
+    // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
+    let children: {[n: string]: UrlSegmentGroup} = Object.create(null);
     Object.entries(group.children).forEach(([name, child]) => {
       children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams);
     });

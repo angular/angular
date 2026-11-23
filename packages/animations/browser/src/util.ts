@@ -60,7 +60,7 @@ export function resolveTiming(
   errors: Error[],
   allowNegativeValues?: boolean,
 ) {
-  return timings.hasOwnProperty('duration')
+  return typeof timings === 'object' && timings !== null && Object.hasOwn(timings, 'duration')
     ? <AnimateTimings>timings
     : parseTimeExpression(<string | number>timings, errors, allowNegativeValues);
 }
@@ -168,7 +168,7 @@ export function validateStyleParams(
   const matches = extractStyleParams(value);
   if (matches.length) {
     matches.forEach((varName) => {
-      if (!params.hasOwnProperty(varName)) {
+      if (!Object.hasOwn(params, varName)) {
         errors.push(invalidStyleParams(varName));
       }
     });

@@ -7,6 +7,12 @@
   --primary: var(--hot-pink);
 }
 
+.autocomplete-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .material-autocomplete {
   display: flex;
   position: relative;
@@ -24,28 +30,24 @@
   color: var(--quaternary-contrast);
 }
 
-[ngComboboxInput] {
+.autocomplete-input {
   width: 13rem;
   font-size: 1rem;
   border-radius: 3rem;
-  padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
   color: var(--primary-contrast);
-  outline-color: var(--primary);
+  outline: none;
   border: 1px solid var(--quinary-contrast);
   background-color: var(--page-background);
 }
 
-[ngComboboxInput]::placeholder {
+.autocomplete-input:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.autocomplete-input::placeholder {
   color: var(--quaternary-contrast);
-}
-
-[ngCombobox]:focus-within [ngComboboxInput] {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-[ngCombobox]:has([aria-expanded='false']) .popup {
-  display: none;
 }
 
 .popup {
@@ -56,21 +58,25 @@
   border-radius: 2rem;
   background-color: var(--septenary-contrast);
   font-size: 0.9rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .no-results {
   padding: 1rem;
 }
 
-[ngListbox] {
+.listbox {
   gap: 2px;
   height: 100%;
   display: flex;
   overflow: auto;
   flex-direction: column;
+  outline: none;
 }
 
-[ngOption] {
+.option {
   display: flex;
   cursor: pointer;
   align-items: center;
@@ -78,24 +84,24 @@
   padding: 0 1rem;
   min-height: 3rem;
   border-radius: 3rem;
+  outline: none;
 }
 
-[ngOption]:hover,
-[ngOption][data-active='true'] {
+.option:hover {
   background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
 }
 
-[ngOption][data-active='true'] {
+.option[data-active='true'] {
   outline-offset: -2px;
   outline: 2px solid var(--primary);
 }
 
-[ngOption][aria-selected='true'] {
+.option[aria-selected='true'] {
   color: var(--primary);
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-[ngOption]:not([aria-selected='true']) .check-icon {
+.option:not([aria-selected='true']) .check-icon {
   display: none;
 }
 
@@ -105,4 +111,41 @@
 
 .check-icon {
   font-size: 0.9rem;
+}
+
+.clear-button {
+  position: absolute;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--quaternary-contrast);
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.clear-button:hover {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.clear-button:focus-visible {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.clear-icon {
+  font-size: 1.25rem;
 }

@@ -28,7 +28,6 @@ import {
   FieldIncompatibilityReason,
 } from './passes/problematic_patterns/incompatibility';
 import {MigrationConfig} from './migration_config';
-import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -258,12 +257,9 @@ function filterInputsViaConfig(
     return;
   }
 
-  const skippedInputs = new Set<ClassFieldUniqueKey>();
-
   // Mark all skipped inputs as incompatible for migration.
   for (const input of knownInputs.knownInputIds.values()) {
     if (!config.shouldMigrateInput(input)) {
-      skippedInputs.add(input.descriptor.key);
       knownInputs.markFieldIncompatible(input.descriptor, {
         context: null,
         reason: FieldIncompatibilityReason.SkippedViaConfigFilter,

@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
+import {RelativeLink, Search, SearchItem, SearchResultItem} from '@angular/docs';
 import {ActivatedRoute, RouterLink, UrlSegment} from '@angular/router';
-import {Search, SearchItem, RelativeLink, SearchResultItem} from '@angular/docs';
 
 @Component({
   imports: [SearchItem, RouterLink, RelativeLink],
   templateUrl: './not-found.html',
   styleUrl: './not-found.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotFound {
   private readonly search = inject(Search);

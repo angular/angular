@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {DevToolsComponent} from '../../../ng-devtools';
+import {DEEP_LINK_INSTANCE_ID} from '../../../ng-devtools/src/lib/application-providers/deep_link';
 import {Events, MessageBus} from '../../../protocol';
 
 @Component({
@@ -16,15 +17,27 @@ import {Events, MessageBus} from '../../../protocol';
   styleUrls: ['./app.component.scss'],
   imports: [DevToolsComponent],
 })
-export class AppComponent implements OnInit {
-  private _cd = inject(ChangeDetectorRef);
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
+export class AppComponent implements OnInit, OnDestroy {
+  private cd = inject(ChangeDetectorRef);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly deepLinkInstanceId = inject(DEEP_LINK_INSTANCE_ID);
   private onProfilingStartedListener = () => {
-    this._messageBus.emit('enableTimingAPI');
+    this.messageBus.emit('setConfig', [{performanceTrack: true}]);
   };
   private onProfilingStoppedListener = () => {
-    this._messageBus.emit('disableTimingAPI');
+    this.messageBus.emit('setConfig', [{performanceTrack: false}]);
   };
+
+  private readonly deepLinkListener = (event: MessageEvent) => {
+    if (event.origin !== window.location.origin) return;
+    if (
+      event.data?.type === 'angular-devtools-deep-link' &&
+      typeof event.data.instanceId === 'number'
+    ) {
+      this.deepLinkInstanceId.set(event.data.instanceId);
+    }
+  };
+
   ngOnInit(): void {
     chrome.devtools.network.onNavigated.addListener(() => {
       window.location.reload();
@@ -33,7 +46,10 @@ export class AppComponent implements OnInit {
     chromeDevToolsPerformance?.onProfilingStarted?.addListener?.(this.onProfilingStartedListener);
     chromeDevToolsPerformance?.onProfilingStopped?.addListener?.(this.onProfilingStoppedListener);
 
-    this._cd.detectChanges();
+    // Listen for deep link messages from the devtools page (devtools.ts)
+    window.addEventListener('message', this.deepLinkListener);
+
+    this.cd.detectChanges();
   }
   ngOnDestroy(): void {
     const chromeDevToolsPerformance = chrome.devtools.performance;
@@ -43,5 +59,6 @@ export class AppComponent implements OnInit {
     chromeDevToolsPerformance?.onProfilingStopped?.removeListener?.(
       this.onProfilingStoppedListener,
     );
+    window.removeEventListener('message', this.deepLinkListener);
   }
 }

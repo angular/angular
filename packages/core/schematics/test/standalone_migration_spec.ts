@@ -9,7 +9,7 @@
 import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
-import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {rmSync} from 'node:fs';
 import {resolve} from 'node:path';
 
@@ -127,6 +127,8 @@ describe('standalone migration', () => {
         static ɵmod: ɵɵNgModuleDeclaration<CommonModule, never,
           [typeof NgIf, typeof NgForOf], [typeof NgIf, typeof NgForOf]>;
       }
+
+      export declare function registerLocaleData(data: any, localeId?: any, extraData?: any): void;
 
       export {NgForOf as NgFor};
     `,
@@ -3753,6 +3755,113 @@ describe('standalone migration', () => {
     );
   });
 
+  it('should not remove a module that is exported by a retained module (transitive dependency)', async () => {
+    writeFile(
+      'icon.component.ts',
+      `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'app-icon',
+        template: '<p>icon</p>'
+      })
+      export class IconComponent {}
+    `,
+    );
+
+    writeFile(
+      'icons.module.ts',
+      `
+      import {NgModule} from '@angular/core';
+      import {IconComponent} from './icon.component';
+
+      @NgModule({
+        imports: [IconComponent],
+        exports: [IconComponent],
+      })
+      export class IconsModule {}
+    `,
+    );
+
+    writeFile(
+      'forms.module.ts',
+      `
+      import {NgModule, ModuleWithProviders} from '@angular/core';
+
+      export interface FormsConfig {
+        callSetDisabledState: string;
+      }
+
+      @NgModule()
+      export class FormsModule {
+        static withConfig(config: FormsConfig): ModuleWithProviders<FormsModule> {
+          return {
+            ngModule: FormsModule,
+            providers: [{provide: 'FORMS_CONFIG', useValue: config}]
+          };
+        }
+      }
+    `,
+    );
+    const sharedModule = `
+      import {NgModule} from '@angular/core';
+      import {IconsModule} from './icons.module';
+      import {FormsModule} from './forms.module';
+
+      @NgModule({
+        imports: [
+          // This import with config prevents SharedModule from being removed
+          FormsModule.withConfig({ callSetDisabledState: 'whenDisabledForLegacyCode' }),
+          IconsModule,
+        ],
+        exports: [IconsModule],
+      })
+      export class SharedModule {}
+    `;
+
+    writeFile('shared.module.ts', sharedModule);
+
+    writeFile(
+      'some.component.ts',
+      `
+      import {Component} from '@angular/core';
+      import {SharedModule} from './shared.module';
+
+      @Component({
+        selector: 'app-some',
+        template: 'inside some component: <app-icon />',
+        imports: [SharedModule]
+      })
+      export class SomeComponent {}
+    `,
+    );
+
+    await runMigration('prune-ng-modules');
+
+    // IconsModule should NOT be removed because it's exported by SharedModule
+    // which is retained due to the FormsModule.withConfig
+    expect(tree.exists('icons.module.ts')).toBe(true);
+
+    const someContent = tree.readContent('some.component.ts');
+    const sharedModuleContent = tree.readContent('shared.module.ts');
+
+    expect(sharedModuleContent).toBe(sharedModule);
+
+    expect(stripWhitespace(someContent)).toBe(
+      stripWhitespace(`
+      import {Component} from '@angular/core';
+      import {SharedModule} from './shared.module';
+
+      @Component({
+        selector: 'app-some',
+        template: 'inside some component: <app-icon />',
+        imports: [SharedModule]
+      })
+      export class SomeComponent {}
+    `),
+    );
+  });
+
   it('should switch a platformBrowser().bootstrapModule call to bootstrapApplication', async () => {
     writeFile(
       'main.ts',
@@ -4174,6 +4283,66 @@ describe('standalone migration', () => {
 
       @Component({template: 'hello'})
       export class AppComponent {}
+    `),
+    );
+  });
+
+  it('should copy top-level registerLocaleData calls to the main file', async () => {
+    writeFile(
+      '/node_modules/@angular/common/locales/fr.d.ts',
+      `
+      declare const localeFr: unknown[];
+      export default localeFr;
+    `,
+    );
+
+    writeFile(
+      'main.ts',
+      `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `,
+    );
+
+    writeFile(
+      './app/app.module.ts',
+      `
+      import {NgModule, Component, LOCALE_ID} from '@angular/core';
+      import {registerLocaleData} from '@angular/common';
+      import localeFr from '@angular/common/locales/fr';
+
+      registerLocaleData(localeFr);
+
+      @Component({template: 'hello', standalone: false})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        providers: [{provide: LOCALE_ID, useValue: 'fr'}]
+      })
+      export class AppModule {}
+    `,
+    );
+
+    await runMigration('standalone-bootstrap');
+
+    const content = stripWhitespace(tree.readContent('main.ts'));
+
+    expect(content).toContain(
+      stripWhitespace(`import localeFr from '@angular/common/locales/fr';`),
+    );
+    expect(content).toContain(
+      stripWhitespace(`import {registerLocaleData} from '@angular/common';`),
+    );
+    expect(content).toContain(stripWhitespace(`registerLocaleData(localeFr);`));
+    expect(content).toContain(
+      stripWhitespace(`
+      bootstrapApplication(AppComponent, {
+        providers: [{provide: LOCALE_ID, useValue: 'fr'}]
+      }).catch(e => console.error(e));
     `),
     );
   });

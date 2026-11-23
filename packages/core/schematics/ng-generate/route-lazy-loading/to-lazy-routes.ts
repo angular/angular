@@ -73,6 +73,17 @@ export function migrateFileToLazyRoutes(
 /** Finds route object that can be migrated */
 function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
   const routesArrays: RouteData[] = [];
+  const routeFileImports = sourceFile.statements.filter(ts.isImportDeclaration);
+
+  const addRouteArray = (array: ts.ArrayLiteralExpression) => {
+    if (!routesArrays.some((x) => x.array === array)) {
+      routesArrays.push({
+        routeFilePath: sourceFile.fileName,
+        array,
+        routeFileImports,
+      });
+    }
+  };
 
   sourceFile.forEachChild(function walk(node) {
     if (ts.isCallExpression(node)) {
@@ -82,15 +93,10 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
         isProvideRouterCallExpression(node, typeChecker)
       ) {
         const arg = node.arguments[0]; // ex: RouterModule.forRoot(routes) or provideRouter(routes)
-        const routeFileImports = sourceFile.statements.filter(ts.isImportDeclaration);
 
         if (ts.isArrayLiteralExpression(arg) && arg.elements.length > 0) {
           // ex: inline routes array: RouterModule.forRoot([{ path: 'test', component: TestComponent }])
-          routesArrays.push({
-            routeFilePath: sourceFile.fileName,
-            array: arg as ts.ArrayLiteralExpression,
-            routeFileImports,
-          });
+          addRouteArray(arg);
         } else if (ts.isIdentifier(arg)) {
           // ex: reference to routes array: RouterModule.forRoot(routes)
           // RouterModule.forRoot(routes), provideRouter(routes)
@@ -102,11 +108,7 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
               const initializer = declaration.initializer;
               if (initializer && ts.isArrayLiteralExpression(initializer)) {
                 // ex: const routes = [{ path: 'test', component: TestComponent }];
-                routesArrays.push({
-                  routeFilePath: sourceFile.fileName,
-                  array: initializer,
-                  routeFileImports,
-                });
+                addRouteArray(initializer);
               }
             }
           }
@@ -121,16 +123,7 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
           initializer.elements.length > 0
         ) {
           // ex: const routes: Routes = [{ path: 'test', component: TestComponent }];
-          if (routesArrays.find((x) => x.array === initializer)) {
-            // already exists
-            return;
-          }
-
-          routesArrays.push({
-            routeFilePath: sourceFile.fileName,
-            array: initializer,
-            routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
-          });
+          addRouteArray(initializer);
         }
       }
     } else if (ts.isExportAssignment(node)) {
@@ -142,11 +135,7 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
       }
 
       if (ts.isArrayLiteralExpression(expression)) {
-        routesArrays.push({
-          routeFilePath: sourceFile.fileName,
-          array: expression,
-          routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
-        });
+        addRouteArray(expression);
       } else if (ts.isIdentifier(expression)) {
         manageRoutesExportedByDefault(routesArrays, typeChecker, expression, sourceFile);
       }
@@ -181,7 +170,7 @@ function migrateRoutesArray(
 ): {migratedRoutes: RouteMigrationData[]; skippedRoutes: RouteMigrationData[]} {
   const migratedRoutes: RouteMigrationData[] = [];
   const skippedRoutes: RouteMigrationData[] = [];
-  const importsToRemove: ts.ImportDeclaration[] = [];
+  const importsToRemove = new Set<ts.ImportDeclaration>();
 
   for (const route of routesArray) {
     route.array.elements.forEach((element) => {
@@ -193,7 +182,9 @@ function migrateRoutesArray(
         } = migrateRoute(element, route, typeChecker, reflector, tracker);
         migratedRoutes.push(...migrated);
         skippedRoutes.push(...toBeSkipped);
-        importsToRemove.push(...toBeRemoved);
+        for (const importDecl of toBeRemoved) {
+          importsToRemove.add(importDecl);
+        }
       }
     });
   }
@@ -278,9 +269,26 @@ function migrateRoute(
     return routeMigrationResults;
   }
 
-  const componentImport = route.routeFileImports.find((importDecl) =>
-    importDecl.importClause?.getText().includes(componentClassName),
-  )!;
+  // Resolve the import that provides this component by exact specifier match
+  // Handles default imports, named imports, and aliases (e.g., `import { Foo as Bar }`).
+  const componentImport = route.routeFileImports.find((importDecl) => {
+    const clause = importDecl.importClause;
+    if (!clause) return false;
+    // Default import: import FooComponent from '...'
+    if (clause.name && ts.isIdentifier(clause.name) && clause.name.text === componentClassName) {
+      return true;
+    }
+    // Named imports: import { FooComponent } from '...'
+    const named = clause.namedBindings;
+    if (named && ts.isNamedImports(named)) {
+      return named.elements.some((el: ts.ImportSpecifier) => {
+        // Support alias: import { Foo as Bar }
+        const importedName = el.propertyName ? el.propertyName.text : el.name.text;
+        return importedName === componentClassName;
+      });
+    }
+    return false;
+  })!;
 
   // remove single and double quotes from the import path
   let componentImportPath = ts.isStringLiteral(componentImport?.moduleSpecifier)
@@ -365,11 +373,13 @@ const manageRoutesExportedByDefault = (
       declaration.initializer &&
       ts.isArrayLiteralExpression(declaration.initializer)
     ) {
-      routesArrays.push({
-        routeFilePath: sourceFile.fileName,
-        array: declaration.initializer,
-        routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
-      });
+      if (!routesArrays.some((x) => x.array === declaration.initializer)) {
+        routesArrays.push({
+          routeFilePath: sourceFile.fileName,
+          array: declaration.initializer,
+          routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
+        });
+      }
     }
   }
 };

@@ -5,15 +5,17 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^22.22.0 || >=24.13.1"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
   "dependencies": {
+    "@standard-schema/spec": "^1.0.0",
     "tslib": "^2.3.0",
-    "@standard-schema/spec": "^1.0.0"
+    "zod": "^4.0.10"
   },
+  "sideEffects": false,
   "peerDependencies": {
-    "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
@@ -30,6 +32,5 @@
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  },
-  "sideEffects": false
+  }
 }

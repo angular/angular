@@ -10,7 +10,7 @@
           "files": ["basic_linked.js"]
         }
       ],
-      "compilationModeFilter": ["linked compile", "declaration-only emit"]
+      "compilationModeFilter": ["linked compile", "declaration-only emit", "instruction compile"]
     },
     {
       "description": "should define a basic NgModule (full/local)",
@@ -129,7 +129,7 @@
           "files": ["forward_refs.js"]
         }
       ],
-      "compilationModeFilter": ["linked compile", "declaration-only emit"],
+      "compilationModeFilter": ["linked compile"],
       "angularCompilerOptions": {
         "linkerJitMode": true
       }
@@ -165,6 +165,17 @@
         "local compile",
         "declaration-only emit"
       ]
+    },
+    {
+      "description": "should exercise all NgModule options in local and optimized mode",
+      "inputFiles": ["all_options.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid NgModule definition",
+          "files": ["all_options.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

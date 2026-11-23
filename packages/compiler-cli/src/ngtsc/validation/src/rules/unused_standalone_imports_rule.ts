@@ -6,16 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TypeCheckingConfig} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic} from '../../../diagnostics';
 import type {ImportedSymbolsTracker, Reference} from '../../../imports';
 import type {ClassDeclaration} from '../../../reflection';
-import type {
-  TemplateTypeChecker,
-  TypeCheckableDirectiveMeta,
-  TypeCheckingConfig,
-} from '../../../typecheck/api';
+import type {TemplateTypeChecker, TypeCheckableDirectiveMeta} from '../../../typecheck/api';
 
 import type {SourceFileValidatorRule} from './api';
 

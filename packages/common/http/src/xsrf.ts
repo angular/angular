@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵparseCookieValue as parseCookieValue, PlatformLocation} from '../../index';
 import {
   EnvironmentInjector,
   inject,
   Injectable,
   InjectionToken,
   runInInjectionContext,
+  Service,
 } from '@angular/core';
 import {Observable} from 'rxjs';
+import {DOCUMENT, ɵparseCookieValue as parseCookieValue, PlatformLocation} from '../../index';
 
-import {HttpHandler} from './backend';
-import {HttpHandlerFn, HttpInterceptor} from './interceptor';
+import type {HttpHandler} from './backend';
+import type {HttpHandlerFn, HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
@@ -48,7 +49,7 @@ export const XSRF_HEADER_NAME = new InjectionToken<string>(
 /**
  * `HttpXsrfTokenExtractor` which retrieves the token from a cookie.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
   private readonly cookieName = inject(XSRF_COOKIE_NAME);
   private readonly doc = inject(DOCUMENT);
@@ -96,7 +97,12 @@ export function xsrfInterceptorFn(
 ): Observable<HttpEvent<unknown>> {
   // Skip both non-mutating requests
   // Non-mutating requests generally don't require a token.
-  if (!inject(XSRF_ENABLED) || req.method === 'GET' || req.method === 'HEAD') {
+  if (
+    !inject(XSRF_ENABLED) ||
+    req.method === 'GET' ||
+    req.method === 'HEAD' ||
+    req.method === 'QUERY'
+  ) {
     return next(req);
   }
 

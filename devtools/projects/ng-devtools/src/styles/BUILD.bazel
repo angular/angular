@@ -15,6 +15,7 @@ sass_library(
     srcs = ["_global.scss"],
     deps = [
         ":colors",
+        ":dl",
         ":inputs",
         ":material_sass_deps",
         ":overrides",
@@ -57,6 +58,14 @@ sass_library(
     srcs = ["_tables.scss"],
     deps = [
         ":material_sass_deps",
+        ":typography",
+    ],
+)
+
+sass_library(
+    name = "dl",
+    srcs = ["_dl.scss"],
+    deps = [
         ":typography",
     ],
 )

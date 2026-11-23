@@ -8,7 +8,7 @@
 
 //tslint:disable:no-console
 import assert from 'node:assert';
-import {execSync} from 'node:child_process';
+import {execFileSync} from 'node:child_process';
 import {existsSync, constants as fsConstants} from 'node:fs';
 import {
   copyFile,
@@ -41,6 +41,16 @@ export async function updateAssets({repo, assetsPath, destPath}) {
     await readFile(buildInfoPath, 'utf-8'),
   );
 
+  const shaRegex = /^[0-9a-f]{40}$/i;
+  const branchRegex = /^(?!.*\.\.)[a-zA-Z0-9/_.-]+$/;
+
+  if (!shaRegex.test(storedSha)) {
+    throw new Error(`Invalid SHA in build info: ${storedSha}`);
+  }
+  if (!branchRegex.test(storedBranch)) {
+    throw new Error(`Invalid branch name in build info: ${storedBranch}`);
+  }
+
   assert(process.env.ANGULAR_READONLY_GITHUB_TOKEN);
   const githubApi = new GithubClient(
     repo,
@@ -63,6 +73,10 @@ export async function updateAssets({repo, assetsPath, destPath}) {
     downstreamBranch = storedBranch;
   }
 
+  if (!shaRegex.test(latestSha)) {
+    throw new Error(`Invalid SHA resolved: ${latestSha}`);
+  }
+
   console.log(`Comparing ${storedSha}...${latestSha}.`);
   const affectedFiles = await githubApi.getAffectedFiles(storedSha, latestSha);
   const changedFiles = affectedFiles.filter((file) => file.startsWith(`${assetsPath}/`));
@@ -78,14 +92,18 @@ export async function updateAssets({repo, assetsPath, destPath}) {
 
     try {
       const execOptions = {cwd: temporaryDir, stdio: 'inherit'};
-      execSync('git init', execOptions);
-      execSync(`git remote add origin https://github.com/${repo}.git`, execOptions);
+      execFileSync('git', ['init'], execOptions);
+      execFileSync(
+        'git',
+        ['remote', 'add', 'origin', `https://github.com/${repo}.git`],
+        execOptions,
+      );
       // fetch a commit
-      execSync(`git fetch origin ${latestSha}`, execOptions);
+      execFileSync('git', ['fetch', 'origin', latestSha], execOptions);
       // reset this repository's main branch to the commit of interest
-      execSync('git reset --hard FETCH_HEAD', execOptions);
+      execFileSync('git', ['reset', '--hard', 'FETCH_HEAD'], execOptions);
       // get sha when files where changed
-      shaWhenFilesChanged = execSync(`git rev-list -1 ${latestSha} "${assetsPath}/"`, {
+      shaWhenFilesChanged = execFileSync('git', ['rev-list', '-1', latestSha, `${assetsPath}/`], {
         encoding: 'utf8',
         cwd: temporaryDir,
         stdio: ['ignore', 'pipe', 'ignore'],

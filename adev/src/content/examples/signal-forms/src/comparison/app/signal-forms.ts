@@ -1,11 +1,19 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {email, form, FormField, minLength, required} from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
+import {
+  email,
+  form,
+  FormField,
+  FormRoot,
+  minLength,
+  required,
+  submit,
+} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-login',
-  imports: [FormField],
+  imports: [FormField, FormRoot],
   template: `
-    <form (submit)="onSubmit()">
+    <form [formRoot]="loginForm" (submit)="onSubmit()">
       <div>
         <label>
           Email
@@ -33,7 +41,6 @@ import {email, form, FormField, minLength, required} from '@angular/forms/signal
       <button type="submit" [disabled]="loginForm().invalid()">Sign In</button>
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   loginModel = signal({
@@ -50,9 +57,9 @@ export class LoginComponent {
   });
 
   onSubmit() {
-    if (this.loginForm().valid()) {
-      const credentials = this.loginModel();
-      console.log('Submitting:', credentials);
-    }
+    // Only runs the action when the form is valid.
+    submit(this.loginForm, async (field) => {
+      console.log('Submitting:', field().value());
+    });
   }
 }

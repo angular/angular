@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-/// <reference path="../../../goog.d.ts" />
+/// <reference path="../../../goog.d.ts" /> // 3p-only
 
 import {ɵglobal as global} from '@angular/core';
 

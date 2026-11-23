@@ -13,13 +13,17 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_CONFLICTING_FEATURES = 5001,
     // (undocumented)
-    NO_PLUGIN_FOR_EVENT = 5101,
+    INSERT_BEFORE_NODE_NOT_FOUND = -5106,
+    // (undocumented)
+    INVALID_EVENT_ATTRIBUTE = 5203,
+    // (undocumented)
+    NO_PLUGIN_FOR_EVENT = -5101,
     // (undocumented)
     ROOT_NODE_NOT_FOUND = -5104,
     // (undocumented)
     SANITIZATION_UNEXPECTED_CTX = 5202,
     // (undocumented)
-    SANITIZATION_UNSAFE_RESOURCE_URL = 5201,
+    SANITIZATION_UNSAFE_RESOURCE_URL = -5201,
     // (undocumented)
     SANITIZATION_UNSAFE_SCRIPT = 5200,
     // (undocumented)
@@ -27,7 +31,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_SYNTHETIC_PROPERTY = 5105,
     // (undocumented)
-    UNSUPPORTED_EVENT_TARGET = 5102,
+    UNSUPPORTED_EVENT_TARGET = -5102,
     // (undocumented)
     UNSUPPORTED_ZONEJS_INSTANCE = -5000
 }

@@ -3,61 +3,25 @@
   "cases": [
     {
       "description": "should not match directives on i18n attribute",
-      "inputFiles": [
-        "i18n_attribute_directive.ts"
-      ],
+      "inputFiles": ["i18n_attribute_directive.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect definition",
-          "files": [
-            {
-              "expected": "i18n_attribute_directive_definition.js",
-              "generated": "i18n_attribute_directive.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect factory",
-          "files": [
-            {
-              "expected": "i18n_attribute_directive_factory.js",
-              "generated": "i18n_attribute_directive.js"
-            }
-          ]
+          "files": ["i18n_attribute_directive.js"]
         }
       ]
     },
     {
       "description": "should not match directives on i18n-prefixed attributes",
-      "inputFiles": [
-        "i18n_prefix_attribute_directive.ts"
-      ],
+      "inputFiles": ["i18n_prefix_attribute_directive.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect definition",
-          "files": [
-            {
-              "expected": "i18n_prefix_attribute_directive_definition.js",
-              "generated": "i18n_prefix_attribute_directive.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect factory",
-          "files": [
-            {
-              "expected": "i18n_prefix_attribute_directive_factory.js",
-              "generated": "i18n_prefix_attribute_directive.js"
-            }
-          ]
+          "files": ["i18n_prefix_attribute_directive.js"]
         }
       ]
     },
     {
       "description": "should match directives on property bindings",
-      "inputFiles": [
-        "property_binding_directive.ts"
-      ],
+      "inputFiles": ["property_binding_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -72,9 +36,7 @@
     },
     {
       "description": "should match directives on ng-templates",
-      "inputFiles": [
-        "ng_template_directive.ts"
-      ],
+      "inputFiles": ["ng_template_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -89,9 +51,7 @@
     },
     {
       "description": "should match directives on ng-container",
-      "inputFiles": [
-        "ng_container_directive.ts"
-      ],
+      "inputFiles": ["ng_container_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -106,9 +66,7 @@
     },
     {
       "description": "should match directives on ng-template bindings",
-      "inputFiles": [
-        "ng_template_binding_directive.ts"
-      ],
+      "inputFiles": ["ng_template_binding_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -123,9 +81,7 @@
     },
     {
       "description": "should match structural directives",
-      "inputFiles": [
-        "structural_directive.ts"
-      ],
+      "inputFiles": ["structural_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -140,9 +96,7 @@
     },
     {
       "description": "should match directives on element outputs",
-      "inputFiles": [
-        "output_directive.ts"
-      ],
+      "inputFiles": ["output_directive.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",

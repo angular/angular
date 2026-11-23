@@ -7,11 +7,16 @@
  */
 
 /**
- * Disallowed strings in the comment.
+ * Matches the `<` or `>` of a disallowed string in the comment.
+ *
+ * The delimiter is matched together with the surrounding context rather than the disallowed string
+ * as a whole, so that disallowed strings sharing characters (such as the `--` of `<!--` and `--!>`
+ * in `<!--!>`) are all escaped. A pattern matching the whole string would consume the shared
+ * characters with the first match and never see the second one.
  *
  * see: https://html.spec.whatwg.org/multipage/syntax.html#comments
  */
-const COMMENT_DISALLOWED = /^>|^->|<!--|-->|--!>|<!-$/g;
+const COMMENT_DISALLOWED = /(^-?|--!?)>|<(?=!--|!-$)/g;
 /**
  * Delimiter in the disallowed strings which needs to be wrapped with zero with character.
  */
@@ -48,5 +53,51 @@ const COMMENT_DELIMITER_ESCAPED = '\u200B$1\u200B';
 export function escapeCommentText(value: string): string {
   return value.replace(COMMENT_DISALLOWED, (text) =>
     text.replace(COMMENT_DELIMITER, COMMENT_DELIMITER_ESCAPED),
+  );
+}
+
+/**
+ * Retrieves next sibling node and makes sure that there is no
+ * clobbering of the `nextSibling` property happening.
+ */
+export function getNextSibling(node: Node): Node | null {
+  const nextSibling = node.nextSibling;
+  // Make sure there is no `nextSibling` clobbering: navigating to
+  // the next sibling and going back to the previous one should result
+  // in the original node.
+  if (nextSibling && node !== nextSibling.previousSibling) {
+    throw clobberedElementError(nextSibling);
+  }
+  return nextSibling;
+}
+
+/**
+ * Retrieves first child node and makes sure that there is no
+ * clobbering of the `firstChild` property happening.
+ *
+ * See `getNextSibling` for more information on clobbering.
+ */
+export function getFirstChild(node: Node): Node | null {
+  const firstChild = node.firstChild;
+  // Make sure there is no `firstChild` clobbering: the real first child has
+  // `node` as its parent and no previous sibling. Note that checking whether
+  // the node is a descendant isn't enough, since a clobbering form control is
+  // typically located inside the form itself.
+  if (firstChild && (firstChild.parentNode !== node || firstChild.previousSibling !== null)) {
+    throw clobberedElementError(firstChild);
+  }
+  return firstChild;
+}
+
+/** Gets a reasonable nodeName, even for clobbered nodes. */
+export function getNodeName(node: Node): string {
+  const nodeName = node.nodeName;
+  // If the property is clobbered, assume it is an `HTMLFormElement`.
+  return typeof nodeName === 'string' ? nodeName : 'FORM';
+}
+
+export function clobberedElementError(node: Node) {
+  return new Error(
+    `Action failed because the element is clobbered: ${(node as Element).outerHTML}`,
   );
 }

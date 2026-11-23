@@ -6,22 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementPosition, HydrationStatus} from '../../../../protocol';
+import {ElementPosition} from '../../../../protocol';
 
-import {findNodeInForest} from '../component-tree/component-tree';
-import {
-  findComponentAndHost,
-  highlightHydrationElement,
-  highlightSelectedElement,
-  removeHydrationHighlights,
-  unHighlight,
-} from '../highlighter';
-import {initializeOrGetDirectiveForestHooks} from '../hooks';
-import {ComponentTreeNode} from '../interfaces';
+import {findNodeInForest} from '../directive-forest';
+import {getDirectiveForestManager} from '../directive-forest/manager';
+import {findDirectiveAndHost, getDirectiveName} from '../directive-forest/utils/directive';
+import {inspectElementHighlightTemplate} from '../shared/highlighter/templates';
+import {highlightElement} from '../shared/highlighter';
+import {ComponentTreeNode} from '../shared/interfaces';
+import {Highlight} from '../shared/highlighter/types';
 
-interface Type<T> extends Function {
-  new (...args: any[]): T;
-}
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
   onComponentSelect: (id: number) => void;
@@ -29,10 +23,11 @@ export interface ComponentInspectorOptions {
 }
 
 export class ComponentInspector {
-  private _selectedComponent!: {component: Type<unknown>; host: HTMLElement | null};
-  private readonly _onComponentEnter;
-  private readonly _onComponentSelect;
-  private readonly _onComponentLeave;
+  private selectedDirective!: {directive: unknown; host: Element | null};
+  private readonly onComponentEnter;
+  private readonly onComponentSelect;
+  private readonly onComponentLeave;
+  private currentHighlight: Highlight | null = null;
 
   constructor(
     componentOptions: ComponentInspectorOptions = {
@@ -42,9 +37,9 @@ export class ComponentInspector {
     },
   ) {
     this.bindMethods();
-    this._onComponentEnter = componentOptions.onComponentEnter;
-    this._onComponentSelect = componentOptions.onComponentSelect;
-    this._onComponentLeave = componentOptions.onComponentLeave;
+    this.onComponentEnter = componentOptions.onComponentEnter;
+    this.onComponentSelect = componentOptions.onComponentSelect;
+    this.onComponentLeave = componentOptions.onComponentLeave;
   }
 
   startInspecting(): void {
@@ -57,15 +52,16 @@ export class ComponentInspector {
     window.removeEventListener('mouseover', this.elementMouseOver, true);
     window.removeEventListener('click', this.elementClick, true);
     window.removeEventListener('mouseout', this.cancelEvent, true);
+    this.unhighlight();
   }
 
   elementClick(e: MouseEvent): void {
     e.stopImmediatePropagation();
     e.preventDefault();
 
-    if (this._selectedComponent.component && this._selectedComponent.host) {
-      this._onComponentSelect(
-        initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
+    if (this.selectedDirective.directive && this.selectedDirective.host) {
+      this.onComponentSelect(
+        getDirectiveForestManager().getDirectiveId(this.selectedDirective.directive)!,
       );
     }
   }
@@ -73,16 +69,16 @@ export class ComponentInspector {
   elementMouseOver(e: MouseEvent): void {
     this.cancelEvent(e);
 
-    const el = e.target as HTMLElement;
-    if (el) {
-      this._selectedComponent = findComponentAndHost(el);
+    const el = e.target;
+    if (el instanceof Node) {
+      this.selectedDirective = findDirectiveAndHost(el);
     }
 
-    unHighlight();
-    if (this._selectedComponent.component && this._selectedComponent.host) {
-      highlightSelectedElement(this._selectedComponent.host);
-      this._onComponentEnter(
-        initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
+    this.unhighlight();
+    if (this.selectedDirective.directive && this.selectedDirective.host) {
+      this.highlightElement(this.selectedDirective.host);
+      this.onComponentEnter(
+        getDirectiveForestManager().getDirectiveId(this.selectedDirective.directive)!,
       );
     }
   }
@@ -90,7 +86,7 @@ export class ComponentInspector {
   cancelEvent(e: MouseEvent): void {
     e.stopImmediatePropagation();
     e.preventDefault();
-    this._onComponentLeave();
+    this.onComponentLeave();
   }
 
   bindMethods(): void {
@@ -102,68 +98,23 @@ export class ComponentInspector {
   }
 
   highlightByPosition(position: ElementPosition): void {
-    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
-    const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
+    const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
+    const elementToHighlight = findNodeInForest(position, forest);
     if (elementToHighlight) {
-      highlightSelectedElement(elementToHighlight);
+      this.highlightElement(elementToHighlight);
     }
   }
 
-  highlightHydrationNodes(): void {
-    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
-
-    // drop the root nodes, we don't want to highlight it
-    const forestWithoutRoots = forest.flatMap((rootNode) => rootNode.children);
-
-    const errorNodes = findErrorNodesForHydrationOverlay(forestWithoutRoots);
-
-    // We get the first level of hydrated nodes
-    // nested mismatched nodes nested in hydrated nodes aren't includes
-    const nodes = findNodesForHydrationOverlay(forestWithoutRoots);
-
-    // This ensures top level mismatched nodes are removed as we have a dedicated array
-    const otherNodes = nodes.filter(({status}) => status?.status !== 'mismatched');
-
-    for (const {node, status} of [...otherNodes, ...errorNodes]) {
-      highlightHydrationElement(node, status);
-    }
+  unhighlight() {
+    this.currentHighlight?.destroy();
+    this.currentHighlight = null;
   }
 
-  removeHydrationHighlights() {
-    removeHydrationHighlights();
+  private highlightElement(element: Element) {
+    this.unhighlight();
+    const cmp = findDirectiveAndHost(element).directive;
+    this.currentHighlight = highlightElement(element, inspectElementHighlightTemplate, {
+      'component-name': [getDirectiveName(cmp)],
+    });
   }
-}
-
-/**
- * Returns the first level of hydrated nodes
- * Note: Mismatched nodes nested in hydrated nodes aren't included
- */
-function findNodesForHydrationOverlay(
-  forest: ComponentTreeNode[],
-): {node: Node; status: HydrationStatus}[] {
-  return forest.flatMap((node) => {
-    if (node?.hydration?.status) {
-      // We highlight first level
-      return {node: node.nativeElement!, status: node.hydration};
-    }
-    if (node.children.length) {
-      return findNodesForHydrationOverlay(node.children);
-    }
-    return [];
-  });
-}
-
-function findErrorNodesForHydrationOverlay(
-  forest: ComponentTreeNode[],
-): {node: Node; status: HydrationStatus}[] {
-  return forest.flatMap((node) => {
-    if (node?.hydration?.status === 'mismatched') {
-      // We highlight first level
-      return {node: node.nativeElement!, status: node.hydration};
-    }
-    if (node.children.length) {
-      return findNodesForHydrationOverlay(node.children);
-    }
-    return [];
-  });
 }

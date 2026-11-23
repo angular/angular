@@ -21,6 +21,7 @@ export const enum TokenType {
   ENCODED_ENTITY,
   COMMENT_START,
   COMMENT_END,
+  IN_ELEMENT_COMMENT,
   CDATA_START,
   CDATA_END,
   ATTR_NAME,
@@ -42,14 +43,7 @@ export const enum TokenType {
   LET_VALUE,
   LET_END,
   INCOMPLETE_LET,
-  COMPONENT_OPEN_START,
-  COMPONENT_OPEN_END,
-  COMPONENT_OPEN_END_VOID,
-  COMPONENT_CLOSE,
-  INCOMPLETE_COMPONENT_OPEN,
-  DIRECTIVE_NAME,
-  DIRECTIVE_OPEN,
-  DIRECTIVE_CLOSE,
+  PROCESSING_INSTRUCTION,
   EOF,
 }
 
@@ -64,6 +58,7 @@ export type Token =
   | EncodedEntityToken
   | CommentStartToken
   | CommentEndToken
+  | InElementCommentToken
   | CdataStartToken
   | CdataEndToken
   | AttributeNameToken
@@ -86,21 +81,12 @@ export type Token =
   | LetValueToken
   | LetEndToken
   | IncompleteLetToken
-  | ComponentOpenStartToken
-  | ComponentOpenEndToken
-  | ComponentOpenEndVoidToken
-  | ComponentCloseToken
-  | IncompleteComponentOpenToken
-  | DirectiveNameToken
-  | DirectiveOpenToken
-  | DirectiveCloseToken;
+  | ProcessingInstructionToken;
 
 export type InterpolatedTextToken = TextToken | InterpolationToken | EncodedEntityToken;
 
 export type InterpolatedAttributeToken =
-  | AttributeValueTextToken
-  | AttributeValueInterpolationToken
-  | EncodedEntityToken;
+  AttributeValueTextToken | AttributeValueInterpolationToken | EncodedEntityToken;
 
 export interface TokenBase {
   type: TokenType;
@@ -158,6 +144,11 @@ export interface CommentStartToken extends TokenBase {
 export interface CommentEndToken extends TokenBase {
   type: TokenType.COMMENT_END;
   parts: [];
+}
+
+export interface InElementCommentToken extends TokenBase {
+  type: TokenType.IN_ELEMENT_COMMENT;
+  parts: [content: string, type: 'single' | 'multi'];
 }
 
 export interface CdataStartToken extends TokenBase {
@@ -272,42 +263,7 @@ export interface IncompleteLetToken extends TokenBase {
   parts: [name: string];
 }
 
-export interface ComponentOpenStartToken extends TokenBase {
-  type: TokenType.COMPONENT_OPEN_START;
-  parts: [componentName: string, prefix: string, tagName: string];
-}
-
-export interface ComponentOpenEndToken extends TokenBase {
-  type: TokenType.COMPONENT_OPEN_END;
-  parts: [];
-}
-
-export interface ComponentOpenEndVoidToken extends TokenBase {
-  type: TokenType.COMPONENT_OPEN_END_VOID;
-  parts: [];
-}
-
-export interface ComponentCloseToken extends TokenBase {
-  type: TokenType.COMPONENT_CLOSE;
-  parts: [componentName: string, prefix: string, tagName: string];
-}
-
-export interface IncompleteComponentOpenToken extends TokenBase {
-  type: TokenType.INCOMPLETE_COMPONENT_OPEN;
-  parts: [componentName: string, prefix: string, tagName: string];
-}
-
-export interface DirectiveNameToken extends TokenBase {
-  type: TokenType.DIRECTIVE_NAME;
-  parts: [name: string];
-}
-
-export interface DirectiveOpenToken extends TokenBase {
-  type: TokenType.DIRECTIVE_OPEN;
-  parts: [];
-}
-
-export interface DirectiveCloseToken extends TokenBase {
-  type: TokenType.DIRECTIVE_CLOSE;
-  parts: [];
+export interface ProcessingInstructionToken extends TokenBase {
+  type: TokenType.PROCESSING_INSTRUCTION;
+  parts: [content: string];
 }

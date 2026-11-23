@@ -5,6 +5,7 @@
     "packages/*",
     "packages/bazel/**",
     "packages/compiler-cli/linker/**",
+    "packages/compiler-cli/preprocessor/**",
     "packages/compiler-cli/src/ngtsc/sourcemaps/**",
     "packages/compiler-cli/src/ngtsc/testing/**",
     "packages/compiler-cli/private/bazel.ts",

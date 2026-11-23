@@ -32,8 +32,6 @@ export function generateTrackVariables(job: CompilationJob): void {
             } else if (expr.name === op.varNames.$implicit) {
               return o.variable('$item');
             }
-
-            // TODO: handle prohibited context variables (emit as globals?)
           }
           return expr;
         },

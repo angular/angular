@@ -14,6 +14,10 @@ The logo graphics available for download on this page are provided under [CC BY 
     Our brand guidelines folders contain the design files, guidance and community examples for how the brand can be adapted.
     Read more about adapting the logo in the section below.
   </docs-card>
+  <docs-card title="Angular mascot" href="https://drive.google.com/drive/folders/1uX4H3exWWpwPqh52Bxig3GLS736gBEAf?usp=drive_link" link="Download from Google Drive">
+    ![Angular mascot cheerful](assets/images/press-kit/angular_mascot_cheerful.png "Angular mascot cheerful")
+    Angie is the official mascot of the Angular framework. The mascot folders contain different file formats and poses of our friendly companion for use in your community assets and presentations.
+  </docs-card>
 </docs-card-container>
 
 ## Press and Media
@@ -48,9 +52,9 @@ In this example, we’ve adapted the shield to create an Angular Signals logo va
 
 <docs-step title="Do’s and don’ts of using Angular's brand">
 If you are creating your own logo, we encourage differentiating your logo from ours to not cause confusion. When adapting the logo, you are free to change and adapt the colors and shape to make it your own.
-  
+
 When representing Angular with the original logo, please follow these guidelines:
-![Rhubarb the small cat](assets/images/press-kit/do_and_dont.png "Rhubarb the small cat")
+![Rhubarb the small cat](assets/images/press-kit/do_and_dont.png 'Rhubarb the small cat')
 </docs-step>
 
 </docs-workflow>
@@ -59,7 +63,7 @@ When representing Angular with the original logo, please follow these guidelines
 
 ### 2016 Angular (v3-v16)
 
-In 2023 , we announced a modernized logo with v17. We advise against using the former Angular logo to prevent confusion. You can view the old press kit on our [old docs site](https://angular.io/presskit).
+In 2023, we announced a modernized logo with v17. We advise against using the former Angular logo to prevent confusion. You can view the old press kit on our [old docs site](https://angular.io/presskit).
 
 ### AngularJS
 

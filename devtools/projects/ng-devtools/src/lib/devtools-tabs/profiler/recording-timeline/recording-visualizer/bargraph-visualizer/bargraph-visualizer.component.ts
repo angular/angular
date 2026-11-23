@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
-import {ProfilerFrame} from '../../../../../../../../protocol';
+import {Component, computed, input, output} from '@angular/core';
+import {ElementProfile, ProfilerFrame} from '../../../../../../../../protocol';
 
 import {BarGraphFormatter, BargraphNode} from '../../record-formatter/bargraph-formatter/index';
 
@@ -20,15 +20,17 @@ import {SelectedDirective, SelectedEntry} from '../recording-visualizer-types';
   templateUrl: './bargraph-visualizer.component.html',
   styleUrls: ['./bargraph-visualizer.component.scss'],
   imports: [BarChartComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BargraphVisualizerComponent {
   readonly nodeSelect = output<SelectedEntry>();
 
-  private readonly _formatter = new BarGraphFormatter();
+  private readonly formatter = new BarGraphFormatter();
   frame = input.required<ProfilerFrame>();
 
-  profileRecords = computed(() => this._formatter.formatFrame(this.frame()));
+  /** The `ElementProfile` that corresponds to a bar graph node to highlight. */
+  highlighted = input<ElementProfile | null>(null);
+
+  profileRecords = computed(() => this.formatter.formatFrame(this.frame()));
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
     return formatDirectiveProfile(bargraphNode.directives ?? []);

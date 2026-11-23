@@ -17,6 +17,7 @@ import {
   ResolveFn,
   Router,
   RouterModule,
+  RouterOutlet,
   RouterStateSnapshot,
   TitleStrategy,
   withRouterConfig,
@@ -186,7 +187,6 @@ describe('title strategy', () => {
 
 @Component({
   template: '',
-  standalone: false,
 })
 export class BlankCmp {}
 
@@ -195,12 +195,11 @@ export class BlankCmp {}
     <router-outlet></router-outlet>
     <router-outlet name="aux"></router-outlet>
   `,
-  standalone: false,
+  imports: [RouterOutlet],
 })
 export class RootCmp {}
 
 @NgModule({
-  declarations: [BlankCmp],
   imports: [RouterModule.forRoot([])],
 })
 export class TestModule {}

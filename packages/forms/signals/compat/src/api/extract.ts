@@ -29,7 +29,7 @@ export type RawValue<T> =
 /**
  * A type that recursively makes all properties of T optional.
  * Used for the result of `extractValue` when filtering is applied.
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export type DeepPartial<T> =
   | (T extends (infer U)[]
@@ -45,7 +45,7 @@ export type DeepPartial<T> =
  * Each property is optional; when provided, the field must match the specified state.
  *
  * @category interop
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export interface ExtractFilter {
   readonly dirty?: boolean;
@@ -54,7 +54,7 @@ export interface ExtractFilter {
 }
 
 /**
- * Utility to unwrap a {@link FieldTree} into its underlying raw value.
+ * Utility to unwrap a {@link /api/forms/signals/FieldTree FieldTree} into its underlying raw value.
  *
  * This function is recursive, so if the field tree represents an object or an array,
  * the result will be an object or an array of the raw values of its children.
@@ -63,11 +63,11 @@ export interface ExtractFilter {
  * @returns The raw value of the field tree.
  *
  * @category interop
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
 /**
- * Utility to unwrap a {@link FieldTree} into its underlying raw value.
+ * Utility to unwrap a {@link /api/forms/signals/FieldTree FieldTree} into its underlying raw value.
  *
  * This function is recursive, so if the field tree represents an object or an array,
  * the result will be an object or an array of the raw values of its children.
@@ -77,7 +77,7 @@ export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
  * @returns A partial value containing only the fields matching the filter, or `undefined` if none match.
  *
  * @category interop
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export function extractValue<T>(
   field: FieldTree<T>,
@@ -87,7 +87,7 @@ export function extractValue<T>(
   field: FieldTree<T>,
   filter?: ExtractFilter,
 ): RawValue<T> | DeepPartial<RawValue<T>> {
-  return untracked(() => visitFieldTree(field, filter)) as RawValue<T> | DeepPartial<RawValue<T>>;
+  return visitFieldTree(field, filter) as RawValue<T> | DeepPartial<RawValue<T>>;
 }
 
 function visitFieldTree(

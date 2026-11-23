@@ -7,9 +7,7 @@ directly interact with a component's DOM. Components can inject ElementRef to ge
 component's host element:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class ProfilePhoto {
   constructor() {
     const elementRef = inject(ElementRef);
@@ -25,9 +23,7 @@ You can use Angular's `afterEveryRender` and `afterNextRender` functions to regi
 callback** that runs when Angular has finished rendering the page.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class ProfilePhoto {
   constructor() {
     const elementRef = inject(ElementRef);
@@ -66,8 +62,8 @@ method to update synthetic animation properties and the `listen` method to add e
 synthetic animation events. See the [Animations](guide/animations) guide for details.
 
 Aside from these two narrow use-cases, there is no difference between using `Renderer2` and native
-DOM APIs. `Renderer2` APIs do not support DOM manipulation in server-side rendering or build-time
-pre-rendering contexts.
+DOM APIs. Both work in server-side rendering and build-time pre-rendering, but the server's DOM lacks
+browser-only APIs such as layout measurement and observers.
 
 ## When to use DOM APIs
 

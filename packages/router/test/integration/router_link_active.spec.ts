@@ -5,24 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {Location, NgIf} from '@angular/common';
 import {Component, NgZone} from '@angular/core';
-import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
-import {Router, provideRouter} from '../../src';
 import {By} from '@angular/platform-browser';
+import {Router, RouterLink, RouterLinkActive, RouterOutlet, provideRouter} from '../../src';
 import {
-  RootCmp,
   BlankCmp,
-  TeamCmp,
   DummyLinkCmp,
-  SimpleCmp,
   DummyLinkWithParentCmp,
   ROUTER_DIRECTIVES,
-  createRoot,
+  RootCmp,
+  SimpleCmp,
+  TeamCmp,
   advance,
+  createRoot,
 } from './integration_helpers';
 
-export function routerLinkActiveIntegrationSuite() {
+export async function routerLinkActiveIntegrationSuite() {
   describe('routerLinkActive', () => {
     it('should set the class when the link is active (a tag)', async () => {
       const router: Router = TestBed.inject(Router);
@@ -67,11 +67,10 @@ export function routerLinkActiveIntegrationSuite() {
       @Component({
         template:
           '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ></a>',
-        standalone: false,
+        imports: [RouterOutlet, RouterLink, RouterLinkActive],
       })
       class RootCmpWithLink {}
 
-      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
       const router: Router = TestBed.inject(Router);
 
       const f = TestBed.createComponent(RootCmpWithLink);
@@ -165,11 +164,10 @@ export function routerLinkActiveIntegrationSuite() {
           <span *ngIf="rla.isActive"></span>
           <span [ngClass]="{'highlight': rla.isActive}"></span>
           <router-outlet></router-outlet>`,
-        standalone: false,
+        imports: [...ROUTER_DIRECTIVES, NgIf],
       })
       class ComponentWithRouterLink {}
 
-      TestBed.configureTestingModule({declarations: [ComponentWithRouterLink]});
       const router: Router = TestBed.inject(Router);
 
       router.resetConfig([
@@ -198,8 +196,8 @@ export function routerLinkActiveIntegrationSuite() {
 
     it('should not trigger change detection when active state has not changed', async () => {
       @Component({
+        imports: [...ROUTER_DIRECTIVES],
         template: `<div id="link" routerLinkActive="active" [routerLink]="link"></div>`,
-        standalone: false,
       })
       class LinkComponent {
         link = 'notactive';
@@ -207,14 +205,11 @@ export function routerLinkActiveIntegrationSuite() {
 
       @Component({
         template: '',
-        standalone: false,
       })
       class SimpleComponent {}
 
       TestBed.configureTestingModule({
-        imports: [...ROUTER_DIRECTIVES],
         providers: [provideRouter([{path: '', component: SimpleComponent}])],
-        declarations: [LinkComponent, SimpleComponent],
       });
 
       const fixture = await createRoot(TestBed.inject(Router), LinkComponent);

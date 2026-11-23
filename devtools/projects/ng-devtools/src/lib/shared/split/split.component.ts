@@ -9,7 +9,6 @@
 import {
   afterNextRender,
   booleanAttribute,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   effect,
@@ -24,8 +23,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
-import {Observable, Subject, Subscriber} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
+import {Observable, Subject, Subscriber, debounceTime} from 'rxjs';
 
 import {
   Direction,
@@ -86,7 +84,6 @@ import {
 @Component({
   selector: 'as-split',
   exportAs: 'asSplit',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [`./split.component.scss`],
   template: `<ng-content></ng-content>
     @for (_ of displayedAreas; track $index) {

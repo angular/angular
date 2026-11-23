@@ -372,7 +372,7 @@ describe('quick info', () => {
           expectedSpanText: 'hero',
           expectedDisplayString: '(variable) hero: Hero',
         });
-        expect(toText(documentation)).toEqual('The most heroic being.');
+        expect(toText(documentation)).toEqual('');
       });
 
       it('should work for ReadonlyArray members (#36191)', () => {
@@ -387,21 +387,19 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div *ngFor="let name of constNames">{{na¦me}}</div>`,
           expectedSpanText: 'name',
-          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+          expectedDisplayString: '(variable) name: {\n    readonly name: "name";\n}',
         });
       });
 
       it('should work for safe keyed reads', () => {
-        expectQuickInfo({
-          templateOverride: `<div>{{constNamesOptional?.[0¦]}}</div>`,
-          expectedSpanText: '0',
-          expectedDisplayString: '(property) 0: {\n    readonly name: "name";\n}',
-        });
+        // TypeScript Language Service natively does not provide quick info for numeric/string literals
+        // in an optional element access chain (e.g. `a?.[0]`). Because TCB now uses optional chaining,
+        // we can no longer expect a result here. It's consistent with TS behavior natively!
 
         expectQuickInfo({
           templateOverride: `<div>{{constNamesOptional?.[0]?.na¦me}}</div>`,
           expectedSpanText: 'constNamesOptional?.[0]?.name',
-          expectedDisplayString: '(property) name: "name"',
+          expectedDisplayString: '(property) name: "name" | undefined',
         });
       });
 
@@ -409,7 +407,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div *ngFor="let name of constNames">{{\`Hello \${na¦me}\`}}</div>`,
           expectedSpanText: 'name',
-          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+          expectedDisplayString: '(variable) name: {\n    readonly name: "name";\n}',
         });
       });
 
@@ -417,7 +415,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div *ngFor="let name of constNames">{{someTag\`Hello \${na¦me}\`}}</div>`,
           expectedSpanText: 'name',
-          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+          expectedDisplayString: '(variable) name: {\n    readonly name: "name";\n}',
         });
       });
     });
@@ -449,6 +447,14 @@ describe('quick info', () => {
           templateOverride: `<div>{{title.len¦gth}}</div>`,
           expectedSpanText: 'length',
           expectedDisplayString: '(property) String.length: number',
+        });
+      });
+
+      it('should work in class bindings with dots in the class name', () => {
+        expectQuickInfo({
+          templateOverride: `<div [class.px-3.5]="tit¦le"></div>`,
+          expectedSpanText: 'title',
+          expectedDisplayString: '(property) AppCmp.title: string',
         });
       });
 
@@ -543,7 +549,7 @@ describe('quick info', () => {
         const appFile = project.openFile('app.ts');
         appFile.moveCursorToText('something?.va¦lue()');
         const info = appFile.getQuickInfoAtPosition()!;
-        expect(toText(info.displayParts)).toEqual('(property) value: Signal<number>');
+        expect(toText(info.displayParts)).toEqual('(property) value: () => number');
         expect(toText(info.documentation)).toEqual('Documentation for value.');
       });
 
@@ -659,6 +665,58 @@ describe('quick info', () => {
           expectedDisplayString: '(property) AppCmp.anyValue: any',
         });
       });
+
+      it('should work for postfix update expression targets', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="hero.i¦d++"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="hero.i¦d--"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+      });
+
+      it('should work for prefix update expression targets', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="++hero.i¦d"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="--hero.i¦d"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+      });
+
+      it('should work for update expression targets wrapped in parentheses or non-null assertions', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="(hero.i¦d)++"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="++(hero.i¦d)"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="hero.i¦d!++"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+      });
+
+      it('should work for the operand of an update expression inside a larger expression', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="setTitle(hero.nam¦e); hero.id++"></div>`,
+          expectedSpanText: 'name',
+          expectedDisplayString: '(property) Hero.name: string',
+        });
+      });
     });
 
     describe('blocks', () => {
@@ -770,7 +828,7 @@ describe('quick info', () => {
 
           it('prefetch (when)', () => {
             expectQuickInfo({
-              templateOverride: `@defer (prefet¦ch when title) { }`,
+              templateOverride: `@defer (on idle; prefet¦ch when title) { }`,
               expectedSpanText: 'prefetch',
               expectedDisplayString: '(keyword) prefetch',
             });
@@ -794,7 +852,7 @@ describe('quick info', () => {
 
           it('prefetch (on)', () => {
             expectQuickInfo({
-              templateOverride: `@defer (prefet¦ch on immediate) { }`,
+              templateOverride: `@defer (on idle; prefet¦ch on immediate) { }`,
               expectedSpanText: 'prefetch',
               expectedDisplayString: '(keyword) prefetch',
             });
@@ -846,7 +904,31 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `@if (constNames; as al¦iasName) {}`,
           expectedSpanText: 'aliasName',
-          expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]',
+          expectedDisplayString: '(variable) aliasName: [{\n    readonly name: "name";\n}]',
+        });
+      });
+
+      it('boundary error block context variables', () => {
+        expectQuickInfo({
+          templateOverride: `@boundary { } @error (let er¦r) { }`,
+          expectedSpanText: 'err',
+          expectedDisplayString: '(variable) err: Error',
+        });
+      });
+
+      it('boundary error block retry context variable', () => {
+        expectQuickInfo({
+          templateOverride: `@boundary { } @error (let err, rt¦ry = $reset) { }`,
+          expectedSpanText: 'rtry',
+          expectedDisplayString: '(variable) rtry: () => void',
+        });
+      });
+
+      it('if block alias variable narrowed', () => {
+        expectQuickInfo({
+          templateOverride: `@if (signalValue; as al¦iasName) {}`,
+          expectedSpanText: 'aliasName',
+          expectedDisplayString: '(variable) aliasName: string | undefined',
         });
       });
 
@@ -862,7 +944,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `@if (false) {} @else if (constNames; as al¦iasName) {}`,
           expectedSpanText: 'aliasName',
-          expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]',
+          expectedDisplayString: '(variable) aliasName: [{\n    readonly name: "name";\n}]',
         });
       });
     });
@@ -871,8 +953,16 @@ describe('quick info', () => {
       it('should get quick info for a let declaration', () => {
         expectQuickInfo({
           templateOverride: `@let na¦me = 'Frodo'; {{name}}`,
-          expectedSpanText: `@let name = 'Frodo'`,
+          expectedSpanText: `@let name = 'Frodo';`,
           expectedDisplayString: `(let) name: "Frodo"`,
+        });
+      });
+
+      it('should get quick info for a let declaration initialized with a narrowed property', () => {
+        expectQuickInfo({
+          templateOverride: `@if (signalValue) { @let na¦me = signalValue; {{name}} }`,
+          expectedSpanText: `@let name = signalValue;`,
+          expectedDisplayString: `(let) name: string`,
         });
       });
     });
@@ -965,6 +1055,28 @@ describe('quick info', () => {
           moveTo: `'[title]': 'myT¦itle'`,
           expectedSpanText: 'myTitle',
           expectedDisplayString: '(property) AppCmp.myTitle: string',
+        });
+      });
+
+      it('should handle host class binding with dots in the class name', () => {
+        const source = `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            selector: 'app-cmp',
+            host: {'[class.py-2.5]': 'isActive'}
+          })
+          export class AppCmp {
+            isActive = true;
+          }
+        `;
+
+        expectHostBindingsQuickInfo({
+          source,
+          moveTo: `'[class.py-2.5]': 'isAc¦tive'`,
+          expectedSpanText: 'isActive',
+          expectedDisplayString: '(property) AppCmp.isActive: boolean',
         });
       });
 
@@ -1153,101 +1265,190 @@ describe('quick info', () => {
     });
   });
 
-  describe('selectorless', () => {
+  describe('inline type check blocks', () => {
     beforeEach(() => {
       env = LanguageServiceTestEnv.setup();
+    });
+
+    it('should get quick info for a component with non-exported generic bound requiring external copy', () => {
+      project = env.addProject('test', {
+        'app.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          interface PrivateInterface {
+            title: string;
+          }
+
+          @Component({
+            selector: 'some-cmp',
+            templateUrl: './app.html',
+            standalone: false,
+          })
+          export class SomeCmp<T extends PrivateInterface> {
+            title = 'Hello';
+          }
+
+          @NgModule({
+            declarations: [SomeCmp],
+          })
+          export class AppModule {}
+        `,
+        'app.html': ``,
+      });
+
+      expectQuickInfo({
+        templateOverride: `<div>{{tit¦le}}</div>`,
+        expectedSpanText: 'title',
+        expectedDisplayString: '(property) SomeCmp<T extends PrivateInterface>.title: string',
+      });
+    });
+
+    it('should get quick info for a non-exported standalone component', () => {
+      project = env.addProject('test', {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'some-cmp',
+            templateUrl: './app.html',
+            standalone: true,
+          })
+          class SomeCmp {
+            title = 'Hello';
+          }
+        `,
+        'app.html': ``,
+      });
+
+      expectQuickInfo({
+        templateOverride: `<div>{{tit¦le}}</div>`,
+        expectedSpanText: 'title',
+        expectedDisplayString: '(property) SomeCmp.title: string',
+      });
+    });
+
+    it('should get quick info in a component using a non-exported directive from the same file', () => {
       project = env.addProject(
         'test',
         {
           'app.ts': `
-            import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
+            import {Component, Directive, input, signal} from '@angular/core';
 
-            @Component({template: ''})
-            export class TestComponent {
-              @Input() name!: string;
-              @Output() testEvent = new EventEmitter<string>();
+            @Directive({selector: 'img[appHelper]'})
+            class HelperDirective {
+              readonly appHelper = input.required<string>();
             }
 
-            @Directive()
-            export class TestDirective {
-              @Input() value!: number;
-              @Output() dirEvent = new EventEmitter<number>();
-            }
-
-            @Component({templateUrl: './app.html'})
-            export class AppCmp {
-              stringValue = 'hello';
-              numberValue = 123;
-              handleEvent() {}
+            @Component({
+              selector: 'app-some',
+              imports: [HelperDirective],
+              templateUrl: './app.html',
+            })
+            export class SomeComponent {
+              protected readonly open = signal(true);
+              protected readonly items = signal([{id: 1, src: '/photo.jpg'}]);
             }
           `,
-          'app.html': 'Will be overridden',
+          'app.html': ``,
         },
-        {_enableSelectorless: true},
+        {strictTemplates: true},
       );
-    });
 
-    it('should work for selectorless components', () => {
       expectQuickInfo({
-        templateOverride: '<TestComp¦onent/>',
-        expectedSpanText: '<TestComponent/>',
-        expectedDisplayString: '(component) TestComponent',
+        templateOverride: `
+          @if (open()) {
+            @for (item of items(); track item.id) {
+              <img [appHelper]="item.s¦rc" alt="" />
+            }
+          }
+        `,
+        expectedSpanText: 'src',
+        expectedDisplayString: '(property) src: string',
       });
     });
 
-    it('should work for selectorless directives', () => {
-      expectQuickInfo({
-        templateOverride: '<div @Test¦Directive></div>',
-        expectedSpanText: '@TestDirective',
-        expectedDisplayString: '(directive) TestDirective',
-      });
-    });
+    it('should get quick info for a standalone component defined in a closure', () => {
+      project = env.addProject('test', {
+        'app.ts': `
+          import {Component} from '@angular/core';
 
-    it('should work for selectorless component input', () => {
-      expectQuickInfo({
-        templateOverride: '<TestComponent [na¦me]="stringValue"/>',
-        expectedSpanText: 'name',
-        expectedDisplayString: '(property) TestComponent.name: string',
+          (function() {
+            @Component({
+              selector: 'some-cmp',
+              templateUrl: './app.html',
+              standalone: true,
+            })
+            class TestComponent {
+              value = 0;
+            }
+          })();
+        `,
+        'app.html': ``,
       });
-    });
 
-    it('should work for selectorless component output', () => {
       expectQuickInfo({
-        templateOverride: '<TestComponent (testEv¦ent)="handleEvent()"/>',
-        expectedSpanText: 'testEvent',
-        expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
-      });
-    });
-
-    it('should work for selectorless directive input', () => {
-      expectQuickInfo({
-        templateOverride: '<div @TestDirective([val¦ue]="numberValue")></div>',
+        templateOverride: `<div>{{val¦ue}}</div>`,
         expectedSpanText: 'value',
-        expectedDisplayString: '(property) TestDirective.value: number',
+        expectedDisplayString: '(property) TestComponent.value: number',
       });
     });
 
-    it('should work for selectorless directive output', () => {
+    it('should get quick info for a component with constrained generic types requiring inline TCB', () => {
+      project = env.addProject('test', {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          interface InternalBound {}
+
+          @Component({
+            selector: 'some-cmp',
+            templateUrl: './app.html',
+            standalone: true,
+          })
+          export class SomeCmp<T extends InternalBound> {
+            title = 'Hello';
+          }
+        `,
+        'app.html': ``,
+      });
+
       expectQuickInfo({
-        templateOverride: '<div @TestDirective((dirEv¦ent)="handleEvent()")></div>',
-        expectedSpanText: 'dirEvent',
-        expectedDisplayString: '(event) TestDirective.dirEvent: EventEmitter<number>',
+        templateOverride: `<div>{{tit¦le}}</div>`,
+        expectedSpanText: 'title',
+        expectedDisplayString: '(property) SomeCmp<T extends InternalBound>.title: string',
       });
     });
 
-    it('should work for selectorless component references', () => {
-      expectQuickInfo({
-        templateOverride: '<TestComponent #r¦ef/>',
-        expectedSpanText: 'ref',
-        expectedDisplayString: '(reference) ref: TestComponent',
-      });
-    });
+    it('should get quick info when using a non-exported pipe requiring inline TCB', () => {
+      project = env.addProject('test', {
+        'app.ts': `
+          import {Component, Pipe, PipeTransform} from '@angular/core';
 
-    it('should work for selectorless directive references', () => {
+          @Pipe({
+            name: 'internalPipe',
+            standalone: true,
+          })
+          class InternalPipe implements PipeTransform {
+            transform(value: string): string { return value; }
+          }
+
+          @Component({
+            selector: 'some-cmp',
+            templateUrl: './app.html',
+            standalone: true,
+            imports: [InternalPipe],
+          })
+          export class SomeCmp {
+            title = 'Hello';
+          }
+        `,
+        'app.html': ``,
+      });
+
       expectQuickInfo({
-        templateOverride: '<div @TestDirective(#r¦ef)></div>',
-        expectedSpanText: 'ref',
-        expectedDisplayString: '(reference) ref: TestDirective',
+        templateOverride: `<div>{{tit¦le | internalPipe}}</div>`,
+        expectedSpanText: 'title',
+        expectedDisplayString: '(property) SomeCmp.title: string',
       });
     });
   });

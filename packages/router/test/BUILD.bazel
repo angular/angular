@@ -14,7 +14,6 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     tsconfig = ":tsconfig_test",
-    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",

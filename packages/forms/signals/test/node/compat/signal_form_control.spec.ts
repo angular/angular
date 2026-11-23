@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
-import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
+import {disabled, required, schema, validateAsync, ValidationError} from '@angular/forms/signals';
 import {SchemaFn} from '../../../src/api/types';
 import {SignalFormControl} from '../../../compat';
 
@@ -24,20 +24,6 @@ function createSignalFormControl<T>(initialValue: T, schema?: SchemaFn<T>) {
   const injector = TestBed.inject(Injector);
 
   return new SignalFormControl(initialValue, schema, {injector});
-}
-
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return {promise, resolve, reject};
 }
 
 describe('SignalFormControl', () => {
@@ -93,11 +79,11 @@ describe('SignalFormControl', () => {
     });
 
     it('should expose pending status for async validators', async () => {
-      let deferred = promiseWithResolvers<ValidationError[]>();
+      let deferred = Promise.withResolvers<ValidationError[]>();
       const resolveNext = (errors: ValidationError[]) => {
         TestBed.tick();
         deferred.resolve(errors);
-        deferred = promiseWithResolvers<ValidationError[]>();
+        deferred = Promise.withResolvers<ValidationError[]>();
       };
 
       const form = createSignalFormControl('initial', (p) => {
@@ -140,7 +126,7 @@ describe('SignalFormControl', () => {
 
     it('should support disabled via rules', () => {
       const form = createSignalFormControl(10, (p) => {
-        disabled(p, ({value}) => value() > 15);
+        disabled(p, {when: ({value}) => value() > 15});
       });
 
       expect(form.disabled).toBe(false);
@@ -651,12 +637,23 @@ describe('SignalFormControl', () => {
         /Setting untouched directly is not supported. Instead use reset\(\)/,
       );
     });
+
+    it('should throw error when updateOn option is passed directly to constructor', () => {
+      expect(() => createSignalFormControl(10, {updateOn: 'blur'} as any)).toThrowError(
+        /SignalFormControl does not support the "updateOn: 'blur'" option/,
+      );
+    });
+
+    it('should return "change" for updateOn', () => {
+      const form = createSignalFormControl(10);
+      expect(form.updateOn).toBe('change');
+    });
   });
 
   describe('callback registration', () => {
     it('should call registered onDisabledChange callback when disabled state changes', () => {
       const form = createSignalFormControl(10, (p) => {
-        disabled(p, ({value}) => value() > 15);
+        disabled(p, {when: ({value}) => value() > 15});
       });
       const callback = jasmine.createSpy('onDisabledChange');
 
@@ -674,7 +671,7 @@ describe('SignalFormControl', () => {
 
     it('should NOT track signals read inside onDisabledChange callback', () => {
       const form = createSignalFormControl(10, (p) => {
-        disabled(p, ({value}) => value() > 15);
+        disabled(p, {when: ({value}) => value() > 15});
       });
       const otherSignal = signal(0);
       const callback = jasmine.createSpy('onDisabledChange').and.callFake(() => {
@@ -750,6 +747,74 @@ describe('SignalFormControl', () => {
       const form = runInInjectionContext(injector, () => new SignalFormControl(10));
 
       expect(form.value).toBe(10);
+    });
+  });
+
+  describe('options handling', () => {
+    it('should accept options as the second argument', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(10, {name: 'customControl', injector});
+
+      expect(control.value).toBe(10);
+      expect(control.fieldTree().name()).toBe('customControl');
+    });
+
+    it('should accept options as the second argument outside injection context', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(10, {injector});
+
+      expect(control.value).toBe(10);
+    });
+
+    it('should accept options as the third argument with schema function', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(
+        '',
+        (p) => {
+          required(p);
+        },
+        {name: 'requiredControl', injector},
+      );
+
+      expect(control.fieldTree().name()).toBe('requiredControl');
+      expect(control.valid).toBe(false);
+      control.setValue('hello');
+      expect(control.valid).toBe(true);
+    });
+
+    it('should accept options as the third argument with undefined schema', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(10, undefined, {name: 'customControl', injector});
+
+      expect(control.value).toBe(10);
+      expect(control.fieldTree().name()).toBe('customControl');
+    });
+
+    it('should accept Schema instance created with schema()', () => {
+      const injector = TestBed.inject(Injector);
+      const customSchema = schema<string>((p) => {
+        required(p);
+      });
+      const control = new SignalFormControl('', customSchema, {name: 'schemaControl', injector});
+
+      expect(control.fieldTree().name()).toBe('schemaControl');
+      expect(control.valid).toBe(false);
+      control.setValue('hello');
+      expect(control.valid).toBe(true);
+    });
+
+    it('should throw when unsupported updateOn option is passed as second argument', () => {
+      const injector = TestBed.inject(Injector);
+      expect(() => new SignalFormControl(10, {updateOn: 'blur', injector} as any)).toThrowError(
+        /SignalFormControl does not support the "updateOn: 'blur'" option/,
+      );
+    });
+
+    it('should throw when unsupported updateOn option is passed as third argument', () => {
+      const injector = TestBed.inject(Injector);
+      expect(
+        () => new SignalFormControl(10, (p) => {}, {updateOn: 'submit', injector} as any),
+      ).toThrowError(/SignalFormControl does not support the "updateOn: 'submit'" option/);
     });
   });
 });

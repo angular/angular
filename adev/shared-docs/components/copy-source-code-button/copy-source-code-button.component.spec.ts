@@ -8,13 +8,13 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
+import {Clipboard} from '@angular/cdk/clipboard';
+import {Component, signal} from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {
   CONFIRMATION_DISPLAY_TIME_MS,
   CopySourceCodeButton,
 } from './copy-source-code-button.component';
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {By} from '@angular/platform-browser';
-import {Clipboard} from '@angular/cdk/clipboard';
 
 const SUCCESSFULLY_COPY_CLASS_NAME = 'docs-copy-source-code-button-success';
 const FAILED_COPY_CLASS_NAME = 'docs-copy-source-code-button-failed';
@@ -48,6 +48,36 @@ describe('CopySourceCodeButton', () => {
     button.click();
 
     expect(copySpy.calls.argsFor(0)[0].trim()).toBe(expectedCodeToBeCopied);
+  });
+
+  it('should keep blank lines and skip line numbers', async () => {
+    component.code.set(
+      '<span class="shiki-ln-number">1</span><span class="line">const a = 1;</span>\n' +
+        '<span class="shiki-ln-number">2</span><span class="line"></span>\n' +
+        '<span class="shiki-ln-number">3</span><span class="line">const b = 2;</span>',
+    );
+
+    await fixture.whenStable();
+
+    const button = fixture.debugElement.query(By.directive(CopySourceCodeButton)).nativeElement;
+    button.click();
+
+    expect(copySpy.calls.argsFor(0)[0]).toBe('const a = 1;\n\nconst b = 2;');
+  });
+
+  it('should skip hidden lines', async () => {
+    component.code.set(
+      '<span class="line">const a = 1;</span>\n' +
+        '<span class="line hidden">const b = 2;</span>\n' +
+        '<span class="line">const c = 3;</span>',
+    );
+
+    await fixture.whenStable();
+
+    const button = fixture.debugElement.query(By.directive(CopySourceCodeButton)).nativeElement;
+    button.click();
+
+    expect(copySpy.calls.argsFor(0)[0]).toBe('const a = 1;\nconst c = 3;');
   });
 
   it(`should set ${SUCCESSFULLY_COPY_CLASS_NAME} for ${CONFIRMATION_DISPLAY_TIME_MS} ms when copy was executed properly`, async () => {
@@ -99,7 +129,6 @@ describe('CopySourceCodeButton', () => {
     <button docs-copy-source-code></button>
   `,
   imports: [CopySourceCodeButton],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class CodeSnippetWrapper {
   code = signal('');

@@ -50,7 +50,7 @@
       ]
     },
     "ngTemplate": {
-      "begin": "\\G\\s*([`|'|\"])",
+      "begin": "\\G\\s*([`'\"])",
       "beginCaptures": {
         "1": {
           "name": "string"
@@ -64,6 +64,10 @@
       },
       "contentName": "text.html.derivative",
       "patterns": [
+        {
+          "match": "\\\\[\\s\\S]",
+          "name": "constant.character.escape.ts"
+        },
         {
           "include": "text.html.derivative"
         },

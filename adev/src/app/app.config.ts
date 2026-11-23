@@ -7,14 +7,13 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {provideHttpClient, withFetch} from '@angular/common/http';
 import {
   ApplicationConfig,
   ErrorHandler,
   inject,
-  provideZonelessChangeDetection,
   provideEnvironmentInitializer,
 } from '@angular/core';
+import {UrlSerializer} from '@angular/router';
 import {
   DOCS_CONTENT_LOADER,
   ENVIRONMENT,
@@ -33,13 +32,12 @@ import {CustomErrorHandler} from './core/services/errors-handling/error-handler'
 import {ExampleContentLoader} from './core/services/example-content-loader.service';
 import {routerProviders} from './routing/router_providers';
 import {TYPESCRIPT_VFS_WORKER_PROVIDER} from './editor/code-editor/workers/factory-provider';
+import {AdevUrlSerializer} from './core/services/routing/adev-url-serializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     routerProviders,
-    provideZonelessChangeDetection(),
     provideClientHydration(),
-    provideHttpClient(withFetch()),
     provideEnvironmentInitializer(() => inject(AnalyticsService)),
     provideAlgoliaSearchClient(environment),
     {provide: ENVIRONMENT, useValue: environment},
@@ -53,5 +51,9 @@ export const appConfig: ApplicationConfig = {
       deps: [DOCUMENT],
     },
     TYPESCRIPT_VFS_WORKER_PROVIDER,
+    {
+      provide: UrlSerializer,
+      useClass: AdevUrlSerializer,
+    },
   ],
 };

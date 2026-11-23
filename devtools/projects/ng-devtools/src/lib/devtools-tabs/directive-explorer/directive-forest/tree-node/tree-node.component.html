@@ -4,13 +4,12 @@
   @if (node().expandable) {
     <!-- We stop propagration on dblClick to prevent to show the element panel -->
     <button
-      [style.left]="PADDING_LEFT_STEP * node().level + 'px'"
-      (click)="treeControl().toggle(node())"
+      (click)="expansionModel().toggle(node())"
       (dblclick)="$event.stopPropagation()"
       [attr.aria-label]="'Toggle ' + node().name"
     >
       <mat-icon class="mat-icon-rtl-mirror">
-        {{ treeControl().isExpanded(node()) ? 'expand_more' : 'chevron_right' }}
+        {{ expansionModel().isExpanded(node()) ? 'expand_more' : 'chevron_right' }}
       </mat-icon>
     </button>
   }
@@ -19,7 +18,7 @@
   <div class="node-name" #nodeName>
     <span
       class="element-name"
-      [class.non-element]="!node().original.hasNativeElement"
+      [class.non-element]="!node().original.hasNativeElement && !node().static"
       [class.angular-element]="isElement()"
       >{{ node().name }}</span
     >
@@ -28,8 +27,8 @@
     }
   </div>
 
-  @if (node().onPush) {
-    <span class="trait">OnPush</span>
+  @if (changeDetection()) {
+    <span class="trait change-detection">{{ changeDetection() }}</span>
   }
 
   @let block = node().controlFlowBlock;
@@ -57,6 +56,21 @@
     <span class="console-reference trait"> == $ng0 </span>
   }
 
+  @if (nodeCdData(); as cd) {
+    @let below60fps = cd.lastCdPassDuration > FPS_60;
+
+    <span class="pill cycle-count">x{{ cd.cdCount }}</span>
+    <span
+      class="pill cycle-duration"
+      [class.frame-dropped]="below60fps"
+      [matTooltip]="
+        'The component update time during the last CD cycle' +
+        (below60fps ? '. Exceeded 16.6 ms (60 fps)' : '')
+      "
+      >{{ cd.lastCdPassDuration | number: '1.0-1' }} ms</span
+    >
+  }
+
   @switch (hydration?.status) {
     @case ('hydrated') {
       <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
@@ -79,7 +93,7 @@
 </div>
 
 @if (
-  treeControl().isExpanded(node()) &&
+  expansionModel().isExpanded(node()) &&
   hydration &&
   hydration.status === 'mismatched' &&
   (hydration.expectedNodeDetails || hydration.actualNodeDetails)

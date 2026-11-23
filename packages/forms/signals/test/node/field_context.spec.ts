@@ -176,4 +176,19 @@ describe('Field Context', () => {
       expect(ctx.fieldTreeOf(p.age)().value()).toEqual(5);
     });
   });
+
+  it('supports destructuring valueOf, stateOf and fieldTreeOf with void this typing', () => {
+    const cat = signal({name: 'pirojok-the-cat', age: 5});
+    testContext(cat, ({valueOf, stateOf, fieldTreeOf}, p) => {
+      expect(valueOf(p.name)).toEqual('pirojok-the-cat');
+      expect(stateOf(p.name).value()).toEqual('pirojok-the-cat');
+      expect(fieldTreeOf(p.name)().value()).toEqual('pirojok-the-cat');
+
+      // Fails to compile unless the helpers declare `this: void`, which is what
+      // `@typescript-eslint/unbound-method` relies on to allow destructuring.
+      const _v: void = null as unknown as ThisParameterType<typeof valueOf>;
+      const _s: void = null as unknown as ThisParameterType<typeof stateOf>;
+      const _f: void = null as unknown as ThisParameterType<typeof fieldTreeOf>;
+    });
+  });
 });

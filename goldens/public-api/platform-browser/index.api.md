@@ -19,7 +19,7 @@ import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Predicate } from '@angular/core';
 import { Provider } from '@angular/core';
-import { Sanitizer } from '@angular/core';
+import { Sanitizer as Sanitizer_2 } from '@angular/core';
 import { SecurityContext } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Type } from '@angular/core';
@@ -55,10 +55,19 @@ export class By {
 export function createApplication(options?: ApplicationConfig, context?: BootstrapContext): Promise<ApplicationRef>;
 
 // @public
+export class CssVarNamespacer {
+    namespace(name: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<CssVarNamespacer, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
+}
+
+// @public
 export function disableDebugTools(): void;
 
 // @public
-export abstract class DomSanitizer implements Sanitizer {
+export abstract class DomSanitizer implements Sanitizer_2 {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
     abstract bypassSecurityTrustScript(value: string): SafeScript;
@@ -68,7 +77,7 @@ export abstract class DomSanitizer implements Sanitizer {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DomSanitizer, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<DomSanitizer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -85,7 +94,7 @@ export class EventManager {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EventManager, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<EventManager>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -116,12 +125,13 @@ export enum HydrationFeatureKind {
     // (undocumented)
     IncrementalHydration = 4,
     // (undocumented)
-    NoHttpTransferCache = 0
+    NoHttpTransferCache = 0,
+    // (undocumented)
+    NoIncrementalHydration = 5
 }
 
 // @public
 export class Meta {
-    constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;
     addTags(tags: MetaDefinition[], forceCreation?: boolean): HTMLMetaElement[];
     getTag(attrSelector: string): HTMLMetaElement | null;
@@ -132,7 +142,7 @@ export class Meta {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Meta, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Meta>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -157,7 +167,12 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
 export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]): EnvironmentProviders;
 
 // @public
-export function provideProtractorTestingSupport(): Provider[];
+export function provideCssVarNamespacing(namespace?: string): EnvironmentProviders;
+
+// @public
+export function provideProtractorTestingSupport(options?: {
+    usePendingTasksForStability?: boolean;
+}): Provider[];
 
 // @public
 export const REMOVE_STYLES_ON_COMPONENT_DESTROY: InjectionToken<boolean>;
@@ -194,7 +209,7 @@ export class Title {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Title, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Title>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public (undocumented)
@@ -209,11 +224,14 @@ export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions):
 // @public
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport>;
 
-// @public
+// @public @deprecated
 export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration>;
 
 // @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;
+
+// @public
+export function withNoIncrementalHydration(): HydrationFeature<HydrationFeatureKind.NoIncrementalHydration>;
 
 // (No @packageDocumentation comment for this package)
 

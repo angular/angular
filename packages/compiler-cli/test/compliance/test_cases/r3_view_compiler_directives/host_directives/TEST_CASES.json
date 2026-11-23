@@ -3,9 +3,7 @@
   "cases": [
     {
       "description": "should create a basic hostDirectives definition",
-      "inputFiles": [
-        "basic_host_directives.ts"
-      ],
+      "inputFiles": ["basic_host_directives.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -16,13 +14,12 @@
             }
           ]
         }
-      ]
+      ],
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should create hostDirective definitions for a chain of host directives",
-      "inputFiles": [
-        "chained_host_directives.ts"
-      ],
+      "inputFiles": ["chained_host_directives.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -33,13 +30,12 @@
             }
           ]
         }
-      ]
+      ],
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should handle a forwardRef used in hostDirectives",
-      "inputFiles": [
-        "forward_ref_host_directives.ts"
-      ],
+      "inputFiles": ["forward_ref_host_directives.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -50,13 +46,12 @@
             }
           ]
         }
-      ]
+      ],
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should handle the `inputs` and `outputs` options in host directives",
-      "inputFiles": [
-        "host_directives_with_inputs_outputs.ts"
-      ],
+      "inputFiles": ["host_directives_with_inputs_outputs.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -67,13 +62,12 @@
             }
           ]
         }
-      ]
+      ],
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should handle aliases to aliased `inputs` and `outputs` of a host directive",
-      "inputFiles": [
-        "host_directives_with_host_aliases.ts"
-      ],
+      "inputFiles": ["host_directives_with_host_aliases.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect definition",
@@ -84,7 +78,8 @@
             }
           ]
         }
-      ]
+      ],
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     }
   ]
 }

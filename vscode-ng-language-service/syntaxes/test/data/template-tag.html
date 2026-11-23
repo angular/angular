@@ -14,6 +14,13 @@
 <div [%invalidProperty]="val"></div>
 <div [invalidProperty)="val"></div>
 <div [class.min-h-[calc(100vh-var(--header-height))]]="val"></div>
+<div [class.hover:flex]="val"></div>
+<div [class.!p-4]="val"></div>
+<div [class.bg-primary/30]="val"></div>
+<div [class.@md:flex]="val"></div>
+<div [class.px-3.5]="val"></div>
+<div [class.sm:hover:!bg-red-500/75]="val"></div>
+<img [attr.xlink:href]="val" />
 
 <!-- Event binding test -->
 <button (click)="onClick($event)"></button>
@@ -89,3 +96,6 @@
   */
   attr2="value2"
 ></div>
+
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Click me</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Click me too</a><a href="https://example.com" //inline-comment>

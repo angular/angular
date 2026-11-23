@@ -20,11 +20,13 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)               |
 | `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109)         |
 | `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111)      |
+| `NG8112` | [`unusedLetDeclaration`](extended-diagnostics/NG8112)                 |
 | `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113)              |
 | `NG8114` | [`unparenthesizedNullishCoalescing`](extended-diagnostics/NG8114)     |
 | `NG8115` | [`uninvokedTrackFunction`](extended-diagnostics/NG8115)               |
 | `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)           |
 | `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8117) |
+| `NG8119` | [`numericCssPropertyRequiresUnit`](extended-diagnostics/NG8119)       |
 | `NG8021` | [`deferTriggerMisconfiguration`](extended-diagnostics/NG8021)         |
 
 ## Configuration

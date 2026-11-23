@@ -49,6 +49,7 @@ export class CustomErrorHandler implements ErrorHandler {
         data: {
           message: `Our docs have been updated, reload the page to see the latest.`,
           actionText: `Reload`,
+          pose: 'greeting',
         } satisfies ErrorSnackBarData,
       })
       .onAction()

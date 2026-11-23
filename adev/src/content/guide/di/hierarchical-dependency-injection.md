@@ -10,7 +10,7 @@ Angular has two injector hierarchies:
 
 | Injector hierarchies            | Details                                                                                                                                                                   |
 | :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `EnvironmentInjector` hierarchy | Configure an `EnvironmentInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`.                                                   |
+| `EnvironmentInjector` hierarchy | Configure an `EnvironmentInjector` in this hierarchy using `@Service()` or `providers` array in `ApplicationConfig`.                                                      |
 | `ElementInjector` hierarchy     | Created implicitly at each DOM element. An `ElementInjector` is empty by default unless you configure it in the `providers` property on `@Directive()` or `@Component()`. |
 
 <docs-callout title="NgModule Based Applications">
@@ -21,12 +21,12 @@ For `NgModule` based applications, you can provide dependencies with the `Module
 
 The `EnvironmentInjector` can be configured in one of two ways by using:
 
-- The `@Injectable()` `providedIn` property to refer to `root` or `platform`
+- The `@Service()`
 - The `ApplicationConfig` `providers` array
 
-<docs-callout title="Tree-shaking and @Injectable()">
+<docs-callout title="Tree-shaking and @Service()">
 
-Using the `@Injectable()` `providedIn` property is preferable to using the `ApplicationConfig` `providers` array. With `@Injectable()` `providedIn`, optimization tools can perform tree-shaking, which removes services that your application isn't using. This results in smaller bundle sizes.
+Using the `@Service()` decorator is preferable to using the `ApplicationConfig` `providers` array. With `@Service`, optimization tools can perform tree-shaking, which removes services that your application isn't using. This results in smaller bundle sizes.
 
 Tree-shaking is especially useful for a library because the application which uses the library may not have a need to inject it.
 
@@ -34,26 +34,24 @@ Tree-shaking is especially useful for a library because the application which us
 
 `EnvironmentInjector` is configured by the `ApplicationConfig.providers`.
 
-Provide services using `providedIn` of `@Injectable()` as follows:
+Provide services using `@Service()` as follows:
 
 ```ts {highlight:[4]}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root', // <--provides this service in the root EnvironmentInjector
-})
+@Service() // <--provides this service in the root EnvironmentInjector
 export class ItemService {
   name = 'telephone';
 }
 ```
 
-The `@Injectable()` decorator identifies a service class.
-The `providedIn` property configures a specific `EnvironmentInjector`, here `root`, which makes the service available in the `root` `EnvironmentInjector`.
+The `@Service()` or `@Injectable()` decorators identify a service class.
 
 ### ModuleInjector
 
 In the case of `NgModule` based applications, the ModuleInjector can be configured in one of two ways by using:
 
+- The `@Service()` decorator,
 - The `@Injectable()` `providedIn` property to refer to `root` or `platform`
 - The `@NgModule()` `providers` array
 
@@ -74,7 +72,7 @@ bootstrapApplication(App, appConfig);
 The `bootstrapApplication()` method creates a child injector of the platform injector which is configured by the `ApplicationConfig` instance.
 This is the `root` `EnvironmentInjector`.
 
-The `platformBrowserDynamic()` method creates an injector configured by a `PlatformModule`, which contains platform-specific dependencies.
+The `bootstrapApplication()` method also creates (or reuses) the platform injector, which contains platform-specific dependencies.
 This allows multiple applications to share a platform configuration.
 For example, a browser has only one URL bar, no matter how many applications you have running.
 You can configure additional platform-specific providers at the platform level by supplying `extraProviders` using the `platformBrowser()` function.
@@ -87,7 +85,7 @@ The following diagram represents the relationship between the `root` `ModuleInje
 
 ```mermaid
 stateDiagram-v2
-    elementInjector: EnvironmentInjector<br>(configured by Angular)<br>has special things like DomSanitizer => providedIn 'platform'
+    elementInjector: EnvironmentInjector<br>(configured by Angular)<br>has special things like PlatformLocation => providedIn 'platform'
     rootInjector: root EnvironmentInjector<br>(configured by AppConfig)<br>has things for your app => bootstrapApplication(..., AppConfig)
     nullInjector: NullInjector<br>always throws an error unless<br>you use @Optional()
 
@@ -232,7 +230,7 @@ In this case, the injector looks no further than the current `ElementInjector` b
   providers: [{provide: FlowerService, useValue: {emoji: '🌷'}}],
 })
 export class Self {
-  constructor(@Self() public flower: FlowerService) {}
+  public flower = inject(FlowerService, {self: true});
 }
 ```
 
@@ -305,7 +303,7 @@ export class Host {
 }
 ```
 
-Since `Host` has the `host` option , no matter what the parent of `Host` might have as a `flower.emoji` value, the `Host` will use tulip <code>🌷</code>.
+Since `Host` has the `host` option, no matter what the parent of `Host` might have as a `flower.emoji` value, the `Host` will use tulip <code>🌷</code>.
 
 ### Modifiers with constructor injection
 
@@ -366,7 +364,7 @@ A component class can provide services in two ways:
 
 In the examples below, you will see the logical tree of an Angular application.
 To illustrate how the injector works in the context of templates, the logical tree will represent the HTML structure of the application.
-For example, the logical tree will show that `<child-component>` is a direct children of `<parent-component>`.
+For example, the logical tree will show that `<child-component>` is a direct child of `<parent-component>`.
 
 In the logical tree, you will see special attributes: `@Provide`, `@Inject`, and `@ApplicationConfig`.
 These aren't real attributes but are here to demonstrate what is going on under the hood.
@@ -381,10 +379,8 @@ These aren't real attributes but are here to demonstrate what is going on under 
 
 The example application has a `FlowerService` provided in `root` with an `emoji` value of red hibiscus <code>🌺</code>.
 
-```ts {header:"lower.service.ts"}
-@Injectable({
-  providedIn: 'root',
-})
+```ts {header:"flower.service.ts"}
+@Service()
 export class FlowerService {
   emoji = '🌺';
 }
@@ -545,11 +541,9 @@ For demonstration, we are building an `AnimalService` to demonstrate `viewProvid
 First, create an `AnimalService` with an `emoji` property of whale <code>🐳</code>:
 
 ```typescript
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AnimalService {
   emoji = '🐳';
 }
@@ -634,7 +628,7 @@ It doesn't need to continue searching the `ElementInjector` tree, nor does it ne
 ### `providers` vs. `viewProviders`
 
 The `viewProviders` field is conceptually similar to `providers`, but there is one notable difference.
-Configured providers in `viewProviders` are not visible to projected content that ends up as a logical children of the component.
+Providers in `viewProviders` are only visible inside the component's own view — content projected into the component via `<ng-content>` cannot see them.
 
 To see the difference between using `providers` and `viewProviders`, add another component to the example and call it `Inspector`.
 `Inspector` will be a child of the `Child`.
@@ -705,6 +699,11 @@ These four bindings demonstrate the difference between `providers` and `viewProv
 Remember that the dog emoji <code>🐶</code> is declared inside the `<#VIEW>` of `Child` and isn't visible to the projected content.
 Instead, the projected content sees the whale <code>🐳</code>.
 
+You might wonder why the projected `<app-inspector>` can still see <code>🐳</code>, which is the root-provided `AnimalService`.
+The reason is that Angular DI tracks **where a component was declared**, not where it ends up being rendered.
+`<app-inspector>` lives in `App`'s template, inside `App`'s `<#VIEW>`, so its lookup never goes through `Child`'s `<#VIEW>`.
+Projecting it into `Child` cuts off access to `Child`'s `viewProviders` (<code>🐶</code>), but the root `AnimalService` (<code>🐳</code>) is still reachable up the tree.
+
 However, in the next output section though, the `Inspector` is an actual child component of `Child`, `Inspector` is inside the `<#VIEW>`, so when it asks for the `AnimalService`, it sees the dog <code>🐶</code>.
 
 The `AnimalService` in the logical tree would look like this:
@@ -741,8 +740,45 @@ The `AnimalService` in the logical tree would look like this:
 </app-root>
 ```
 
-The projected content of `<app-inspector>` sees the whale <code>🐳</code>, not the dog <code>🐶</code>, because the dog <code>🐶</code> is inside the `<app-child>` `<#VIEW>`.
-The `<app-inspector>` can only see the dog <code>🐶</code> if it is also within the `<#VIEW>`.
+The projected `<app-inspector>` gets <code>🐳</code> because <code>🐶</code> belongs to `Child`'s view and projected content can't reach it.
+<code>🐳</code> is accessible because `<app-inspector>` was declared in `App`'s template, so it can still walk up to the root `AnimalService`.
+
+The `<app-inspector>` that lives directly inside `Child`'s template (not projected) gets <code>🐶</code> — it's inside the `<#VIEW>`, so no boundary to cross.
+
+### Giving projected content access to a view injector
+
+Content projected with `<ng-content>` can't see a component's `viewProviders`, because Angular resolves injection against the injector where the content is declared, not where it renders.
+
+When you specifically want projected content to reach a view-level service — or the projecting component instance itself — accept the content as a template instead of `<ng-content>` and render it with an explicit injector.
+
+Update `Child` to provide `AnimalService` in `viewProviders`, query the projected template, and render it through [`NgTemplateOutlet`](/api/common/NgTemplateOutlet) with `ngTemplateOutletInjector` set to an injector that can see that service:
+
+```ts
+@Component({
+  selector: 'app-child',
+  viewProviders: [AnimalService],
+  imports: [NgTemplateOutlet],
+  template: `
+    <ng-container [ngTemplateOutlet]="content()" [ngTemplateOutletInjector]="injector" />
+  `,
+})
+export class Child {
+  readonly content = contentChild.required(TemplateRef);
+  readonly injector = inject(Injector);
+}
+```
+
+The consumer wraps the projected markup in an `<ng-template>`:
+
+```html
+<app-child>
+  <ng-template>
+    <app-inspector />
+  </ng-template>
+</app-child>
+```
+
+`Child` now creates `<app-inspector>` at the outlet using its own injector, so `AnimalService` resolves to the dog <code>🐶</code> even though the markup is written in `App`'s template. The cost is a little extra markup on both sides compared with `<ng-content>`.
 
 ### Visibility of provided tokens
 
@@ -750,7 +786,7 @@ Visibility decorators influence where the search for the injection token begins 
 To do this, place visibility configuration at the point of injection, that is, when invoking `inject()`, rather than at a point of declaration.
 
 To alter where the injector starts looking for `FlowerService`, add `skipSelf` to the `<app-child>` `inject()` invocation where `FlowerService` is injected.
-This invocation is a property initializer the `<app-child>` as shown in `child.ts`:
+This invocation is a property initializer in `<app-child>` as shown in `child.ts`:
 
 ```typescript
 flower = inject(FlowerService, {skipSelf: true});
@@ -943,7 +979,7 @@ For example, consider we build a `VillainsList` that displays a list of villains
 It gets those villains from a `VillainsService`.
 
 If you provide `VillainsService` in the root `AppModule`, it will make `VillainsService` visible everywhere in the application.
-If you later modify the `VillainsService`, you could break something in other components that started depending this service by accident.
+If you later modify the `VillainsService`, you could break something in other components that started depending on this service by accident.
 
 Instead, you should provide the `VillainsService` in the `providers` metadata of the `VillainsList` like this:
 
@@ -977,7 +1013,7 @@ Each tax return component has the following characteristics:
 - Can change a tax return without affecting a return in another component
 - Has the ability to save the changes to its tax return or cancel them
 
-Suppose that the `HeroTaxReturn` had logic to manage and restore changes.
+Suppose that the `HeroTaxReturnEditor` had logic to manage and restore changes.
 That would be a straightforward task for a hero tax return.
 In the real world, with a rich tax return data model, the change management would be tricky.
 You could delegate that management to a helper service, as this example does.
@@ -986,11 +1022,11 @@ The `HeroTaxReturnService` caches a single `HeroTaxReturn`, tracks changes to th
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 
 ```typescript
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {HeroTaxReturn} from './hero';
 import {HeroesService} from './heroes.service';
 
-@Injectable()
+@Service({autoProvided: false})
 export class HeroTaxReturnService {
   private currentTaxReturn!: HeroTaxReturn;
   private originalTaxReturn!: HeroTaxReturn;
@@ -1017,10 +1053,10 @@ export class HeroTaxReturnService {
 }
 ```
 
-Here is the `HeroTaxReturn` that makes use of `HeroTaxReturnService`.
+Here is the `HeroTaxReturnEditor` that makes use of `HeroTaxReturnService`.
 
 ```typescript
-import {Component, input, output} from '@angular/core';
+import {Component, effect, inject, input, output} from '@angular/core';
 import {HeroTaxReturn} from './hero';
 import {HeroTaxReturnService} from './hero-tax-return.service';
 
@@ -1030,24 +1066,20 @@ import {HeroTaxReturnService} from './hero-tax-return.service';
   styleUrls: ['./hero-tax-return.css'],
   providers: [HeroTaxReturnService],
 })
-export class HeroTaxReturn {
+export class HeroTaxReturnEditor {
   message = '';
 
   close = output<void>();
 
-  get taxReturn(): HeroTaxReturn {
-    return this.heroTaxReturnService.taxReturn;
-  }
-
   taxReturn = input.required<HeroTaxReturn>();
+
+  private heroTaxReturnService = inject(HeroTaxReturnService);
 
   constructor() {
     effect(() => {
       this.heroTaxReturnService.taxReturn = this.taxReturn();
     });
   }
-
-  private heroTaxReturnService = inject(HeroTaxReturnService);
 
   onCanceled() {
     this.flashMessage('Canceled');
@@ -1070,21 +1102,21 @@ export class HeroTaxReturn {
 }
 ```
 
-The _tax-return-to-edit_ arrives by way of the `input` property, which is implemented with getters and setters.
-The setter initializes the component's own instance of the `HeroTaxReturnService` with the incoming return.
-The getter always returns what that service says is the current state of the hero.
+The _tax-return-to-edit_ arrives by way of the `taxReturn` signal input.
+An `effect` initializes the component's own instance of the `HeroTaxReturnService` with the incoming return whenever the input changes.
+The service's getter always returns what the service says is the current state of the hero.
 The component also asks the service to save and restore this tax return.
 
 This won't work if the service is an application-wide singleton.
 Every component would share the same service instance, and each component would overwrite the tax return that belonged to another hero.
 
-To prevent this, configure the component-level injector of `HeroTaxReturn` to provide the service, using the `providers` property in the component metadata.
+To prevent this, configure the component-level injector of `HeroTaxReturnEditor` to provide the service, using the `providers` property in the component metadata.
 
 ```typescript
 providers: [HeroTaxReturnService];
 ```
 
-The `HeroTaxReturn` has its own provider of the `HeroTaxReturnService`.
+The `HeroTaxReturnEditor` has its own provider of the `HeroTaxReturnService`.
 Recall that every component _instance_ has its own injector.
 Providing the service at the component level ensures that _every_ instance of the component gets a private instance of the service. This makes sure that no tax return gets overwritten.
 

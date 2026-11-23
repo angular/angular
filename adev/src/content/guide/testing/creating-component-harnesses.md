@@ -30,7 +30,7 @@ The `hostSelector` property identifies elements in the DOM that match this harne
   template: `
     <button (click)="toggle()">{{ triggerText() }}</button>
     @if (isOpen()) {
-      <div class="my-popup-content"><ng-content></ng-content></div>
+      <div class="my-popup-content"><ng-content /></div>
     }
   `,
 })
@@ -133,7 +133,7 @@ class MyMenuItem {}
 class MyMenu {
   triggerText = input('');
 
-  @ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
+  items = contentChildren(MyMenuItem);
 }
 ```
 

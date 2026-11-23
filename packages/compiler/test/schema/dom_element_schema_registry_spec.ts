@@ -6,18 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '../../src/core';
 import {
   _ATTR_TO_PROP,
   DomElementSchemaRegistry,
   SCHEMA,
 } from '../../src/schema/dom_element_schema_registry';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
-import {isNode} from '@angular/private/testing';
 
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-
-import {extractSchema} from './schema_extractor';
 
 describe('DOMElementSchema', () => {
   let registry: DomElementSchemaRegistry;
@@ -30,6 +27,7 @@ describe('DOMElementSchema', () => {
     expect(registry.hasElement('b', [])).toBeTruthy();
     expect(registry.hasElement('ng-container', [])).toBeTruthy();
     expect(registry.hasElement('ng-content', [])).toBeTruthy();
+    expect(registry.hasElement('ng-template', [])).toBeTruthy();
 
     expect(registry.hasElement('my-cmp', [])).toBeFalsy();
     expect(registry.hasElement('abc', [])).toBeFalsy();
@@ -47,6 +45,11 @@ describe('DOMElementSchema', () => {
     expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'inert', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'popover', [])).toBeTruthy();
+    expect(registry.hasProperty('button', 'popoverTargetAction', [])).toBeTruthy();
+    expect(registry.hasProperty('button', 'popoverTargetElement', [])).toBeTruthy();
+    expect(registry.hasProperty('input', 'popoverTargetAction', [])).toBeTruthy();
+    expect(registry.hasProperty('input', 'popoverTargetElement', [])).toBeTruthy();
     expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h2', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h3', 'align', [])).toBeTruthy();
@@ -125,6 +128,19 @@ If 'onClick' is a directive input, make sure the directive is imported by the cu
       `Binding to event property 'onAnything' is disallowed for security reasons, please use (Anything)=...
 If 'onAnything' is a directive input, make sure the directive is imported by the current module.`,
     );
+
+    report = registry.validateProperty(':onClick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid property name ':onClick'. Property names cannot start with a colon.`,
+    );
+
+    report = registry.validateProperty('svg:onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Binding to event property 'svg:onclick' is disallowed for security reasons, please use (click)=...
+If 'svg:onclick' is a directive input, make sure the directive is imported by the current module.`,
+    );
   });
 
   it('should return an error message when asserting event attributes', () => {
@@ -138,6 +154,44 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(report.error).toBeTruthy();
     expect(report.msg).toEqual(
       `Binding to event attribute 'onAnything' is disallowed for security reasons, please use (Anything)=...`,
+    );
+
+    report = registry.validateAttribute(':onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':onclick'. Attribute names cannot start with a colon.`,
+    );
+
+    report = registry.validateAttribute(':onClick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':onClick'. Attribute names cannot start with a colon.`,
+    );
+
+    report = registry.validateAttribute('svg:onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use (click)=...`,
+    );
+
+    report = registry.validateAttribute(':svg:onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':svg:onclick'. Attribute names cannot start with a colon.`,
+    );
+  });
+
+  it('should return an error message when property or attribute names start with a colon', () => {
+    let report = registry.validateProperty(':title');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid property name ':title'. Property names cannot start with a colon.`,
+    );
+
+    report = registry.validateAttribute(':title');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':title'. Attribute names cannot start with a colon.`,
     );
   });
 
@@ -157,6 +211,72 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
     expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
+    expect(registry.securityContext('iframe', 'credentialless', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+
+    // SVG animate and set attributes
+    expect(registry.securityContext(':svg:animate', 'to', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext(':svg:animate', 'from', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext(':svg:animate', 'values', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext(':svg:set', 'to', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+
+    // SVG animation elements are sensitive when their namespace is omitted at compile time.
+    expect(registry.securityContext('set', 'to', true)).toBe(SecurityContext.ATTRIBUTE_NO_BINDING);
+    expect(registry.securityContext('set', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'to', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'from', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'values', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animateMotion', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animateTransform', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+
+    // The defensive SVG lookup must not apply to elements in an explicit foreign namespace.
+    expect(registry.securityContext(':math:set', 'to', true)).toBe(SecurityContext.NONE);
+
+    // SVG link attributes
+    expect(registry.securityContext(':svg:a', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'xlink:href', true)).toBe(SecurityContext.URL);
+
+    // MathML link attributes
+    expect(registry.securityContext(':math:math', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:math', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:math', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:math', 'xlink:href', true)).toBe(SecurityContext.URL);
+    // Making sure we're have a wild card match for MathML elements with the correct security context
+    expect(registry.securityContext(':math:foobar', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:foobar', 'xlink:href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:foobar', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:foobar', 'xlink:href', false)).toBe(SecurityContext.URL);
+    // Ensure MathML wildcard does not apply outside of the MathML namespace.
+    expect(registry.securityContext(':svg:foobar', 'href', false)).toBe(SecurityContext.NONE);
+    expect(registry.securityContext(':svg:foobar', 'xlink:href', false)).toBe(SecurityContext.NONE);
+
+    expect(registry.securityContext('p', 'href', false)).toBe(SecurityContext.NONE);
   });
 
   it('should detect properties on namespaced elements', () => {
@@ -174,6 +294,10 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
   it('should check security contexts for attributes', () => {
     expect(registry.securityContext('p', 'innerHtml', true)).toBe(SecurityContext.HTML);
     expect(registry.securityContext('p', 'formaction', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('a', ':href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('a', '::href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('iframe', '::srcdoc', true)).toBe(SecurityContext.HTML);
+    expect(registry.securityContext(':svg:a', ':xlink:href', true)).toBe(SecurityContext.URL);
   });
 
   describe('Angular custom elements', () => {
@@ -184,6 +308,30 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     it('should support <ng-content>', () => {
       expect(registry.hasProperty('ng-content', 'id', [])).toBeFalsy();
       expect(registry.hasProperty('ng-content', 'select', [])).toBeFalsy();
+    });
+
+    it('should support <ng-template>', () => {
+      expect(registry.hasProperty('ng-template', 'id', [])).toBeFalsy();
+      expect(registry.hasProperty('ng-template', 'id', [CUSTOM_ELEMENTS_SCHEMA])).toBeFalsy();
+      expect(registry.hasProperty(':svg:ng-template', 'id', [])).toBeFalsy();
+      expect(registry.hasProperty(':svg:ng-template', 'id', [CUSTOM_ELEMENTS_SCHEMA])).toBeFalsy();
+    });
+  });
+
+  describe('Custom XML / XHTML namespaces', () => {
+    it('should support elements with custom namespaces', () => {
+      expect(registry.hasElement(':xhtml:a', [])).toBeTruthy();
+      expect(registry.hasElement(':foo:div', [])).toBeTruthy();
+    });
+
+    it('should support properties on custom namespaced elements', () => {
+      expect(registry.hasProperty(':xhtml:a', 'href', [])).toBeTruthy();
+      expect(registry.hasProperty(':foo:div', 'id', [])).toBeTruthy();
+    });
+
+    it('should return correct security contexts for custom namespaced elements', () => {
+      expect(registry.securityContext(':xhtml:a', 'href', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext(':foo:div', 'innerHTML', false)).toBe(SecurityContext.HTML);
     });
   });
 

@@ -8,6 +8,7 @@
 
 import {TNode, TNodeFlags} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
+import {clobberedElementError} from '../util/dom';
 
 /**
  * The name of an attribute that can be added to the hydration boundary node
@@ -41,6 +42,9 @@ export function hasSkipHydrationAttrOnTNode(tNode: TNode): boolean {
  * Helper function to check if a given RElement has the 'ngSkipHydration' attribute.
  */
 export function hasSkipHydrationAttrOnRElement(rNode: RElement): boolean {
+  if (typeof rNode.hasAttribute !== 'function') {
+    throw clobberedElementError(rNode.hasAttribute as unknown as Node);
+  }
   return rNode.hasAttribute(SKIP_HYDRATION_ATTR_NAME);
 }
 

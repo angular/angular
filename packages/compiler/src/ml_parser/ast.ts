@@ -25,8 +25,7 @@ export type Node =
   | Text
   | Block
   | BlockParameter
-  | Component
-  | Directive;
+  | StartTagComment;
 
 export abstract class NodeWithI18n implements BaseNode {
   constructor(
@@ -97,11 +96,21 @@ export class Attribute extends NodeWithI18n {
   }
 }
 
+export class StartTagComment implements BaseNode {
+  constructor(
+    public value: string,
+    public type: 'single' | 'multi',
+    public sourceSpan: ParseSourceSpan,
+  ) {}
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitStartTagComment ? visitor.visitStartTagComment(this, context) : undefined;
+  }
+}
+
 export class Element extends NodeWithI18n {
   constructor(
     public name: string,
     public attrs: Attribute[],
-    readonly directives: Directive[],
     public children: Node[],
     readonly isSelfClosing: boolean,
     sourceSpan: ParseSourceSpan,
@@ -109,6 +118,7 @@ export class Element extends NodeWithI18n {
     public endSourceSpan: ParseSourceSpan | null = null,
     readonly isVoid: boolean,
     i18n?: I18nMeta,
+    public comments: StartTagComment[] = [],
   ) {
     super(sourceSpan, i18n);
   }
@@ -143,42 +153,6 @@ export class Block extends NodeWithI18n {
 
   override visit(visitor: Visitor, context: any) {
     return visitor.visitBlock(this, context);
-  }
-}
-
-export class Component extends NodeWithI18n {
-  constructor(
-    readonly componentName: string,
-    readonly tagName: string | null,
-    readonly fullName: string,
-    public attrs: Attribute[],
-    readonly directives: Directive[],
-    readonly children: Node[],
-    readonly isSelfClosing: boolean,
-    sourceSpan: ParseSourceSpan,
-    readonly startSourceSpan: ParseSourceSpan,
-    public endSourceSpan: ParseSourceSpan | null = null,
-    i18n?: I18nMeta,
-  ) {
-    super(sourceSpan, i18n);
-  }
-
-  override visit(visitor: Visitor, context: any): any {
-    return visitor.visitComponent(this, context);
-  }
-}
-
-export class Directive implements BaseNode {
-  constructor(
-    readonly name: string,
-    readonly attrs: Attribute[],
-    readonly sourceSpan: ParseSourceSpan,
-    readonly startSourceSpan: ParseSourceSpan,
-    readonly endSourceSpan: ParseSourceSpan | null = null,
-  ) {}
-
-  visit(visitor: Visitor, context: any): any {
-    return visitor.visitDirective(this, context);
   }
 }
 
@@ -221,8 +195,7 @@ export interface Visitor {
   visitBlock(block: Block, context: any): any;
   visitBlockParameter(parameter: BlockParameter, context: any): any;
   visitLetDeclaration(decl: LetDeclaration, context: any): any;
-  visitComponent(component: Component, context: any): any;
-  visitDirective(directive: Directive, context: any): any;
+  visitStartTagComment?(comment: StartTagComment, context: any): any;
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {
@@ -246,12 +219,13 @@ export class RecursiveVisitor implements Visitor {
   visitElement(ast: Element, context: any): any {
     this.visitChildren(context, (visit) => {
       visit(ast.attrs);
-      visit(ast.directives);
+      visit(ast.comments);
       visit(ast.children);
     });
   }
 
   visitAttribute(ast: Attribute, context: any): any {}
+  visitStartTagComment(ast: StartTagComment, context: any): any {}
   visitText(ast: Text, context: any): any {}
   visitComment(ast: Comment, context: any): any {}
 
@@ -273,19 +247,6 @@ export class RecursiveVisitor implements Visitor {
   visitBlockParameter(ast: BlockParameter, context: any): any {}
 
   visitLetDeclaration(decl: LetDeclaration, context: any) {}
-
-  visitComponent(component: Component, context: any) {
-    this.visitChildren(context, (visit) => {
-      visit(component.attrs);
-      visit(component.children);
-    });
-  }
-
-  visitDirective(directive: Directive, context: any) {
-    this.visitChildren(context, (visit) => {
-      visit(directive.attrs);
-    });
-  }
 
   private visitChildren(
     context: any,

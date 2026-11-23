@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
+import {Platform} from '@angular/cdk/platform';
 import {MatIcon} from '@angular/material/icon';
 
-import {DebugSignalGraphNode, ElementPosition} from '../../../../../protocol';
+import {DebugSignalGraphNode, ElementPosition, Events, MessageBus} from '../../../../../protocol';
+import {SUPPORTED_APIS} from '../../application-providers/supported_apis';
 import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
 import {ButtonComponent} from '../button/button.component';
 import {
@@ -49,15 +51,20 @@ interface ResourceCluster {
   selector: 'ng-signal-details',
   templateUrl: './signal-details.component.html',
   styleUrl: './signal-details.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip, IconComponent],
 })
 export class SignalDetailsComponent {
+  private readonly platform = inject(Platform);
+  protected readonly supportsBreakpoints = !this.platform.FIREFOX;
+
   protected readonly node = input.required<DevtoolsSignalGraphNode>();
   protected readonly graph = input.required<DevtoolsSignalGraph>();
   protected readonly element = input.required<ElementPosition>();
+  protected readonly hasBreakpoint = input<boolean>(false);
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
+  protected readonly setBreakpoint = output<DevtoolsSignalGraphNode>();
+  protected readonly removeBreakpoint = output<DevtoolsSignalGraphNode>();
   protected readonly expandCluster = output<string>();
   protected readonly highlightDeps = output<{
     node: DevtoolsSignalGraphNode;
@@ -65,11 +72,22 @@ export class SignalDetailsComponent {
   }>();
   protected readonly close = output<void>();
 
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly supportedApis = inject(SUPPORTED_APIS);
+
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;
   protected readonly CLUSTER_TYPE_CLASS_MAP = CLUSTER_TYPE_CLASS_MAP;
 
   protected readonly isSignalNode = isSignalNode;
   protected readonly isClusterNode = isClusterNode;
+
+  protected isWatchable(node: DevtoolsSignalGraphNode): node is DevtoolsSignalNode {
+    return (
+      this.supportedApis().signalWatch &&
+      isSignalNode(node) &&
+      (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal')
+    );
+  }
 
   protected readonly cluster = computed(() => {
     const node = this.node();
@@ -113,6 +131,12 @@ export class SignalDetailsComponent {
 
     return previewableNode;
   });
+
+  protected toggleIsBeingWatched() {
+    const selectedNode = this.node();
+    if (!this.isWatchable(selectedNode)) return;
+    this.messageBus.emit('toggleWatchSignal', [selectedNode.id]);
+  }
 
   private getCompoundNodeValueHof(node: DevtoolsClusterNode) {
     const compoundNodes = (this.graph().nodes.filter(

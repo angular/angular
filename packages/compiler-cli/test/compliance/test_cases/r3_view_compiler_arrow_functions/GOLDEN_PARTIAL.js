@@ -507,6 +507,47 @@ export declare class TestComp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: arrow_function_safe_access_use_null.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComp {
+    componentProp = {};
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    {{(value => value?.a?.b?.c?.()?.()?.()?.())(componentProp)}}
+    <hr>
+    {{() => componentProp?.a?.b?.c?.()?.()?.()?.()}}
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{(value => value?.a?.b?.c?.()?.()?.()?.())(componentProp)}}
+    <hr>
+    {{() => componentProp?.a?.b?.c?.()?.()?.()?.()}}
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_safe_access_use_null.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComp {
+    componentProp: {
+        a?: {
+            b?: {
+                c?: () => () => () => () => string;
+            };
+        };
+    };
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: arrow_function_safe_access_nested_views.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
@@ -541,6 +582,55 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
 /****************************************************************************************************
  * PARTIAL FILE: arrow_function_safe_access_nested_views.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComp {
+    componentProp: {
+        a?: {
+            b?: {
+                c?: () => () => () => () => string;
+            };
+        };
+    };
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_safe_access_nested_views_use_null.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComp {
+    componentProp = {};
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @if (true) {
+      @if (true) {
+        @if (true) {
+          {{() => componentProp?.a?.b?.c?.()?.()?.()?.()}}
+        }
+      }
+    }
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @if (true) {
+      @if (true) {
+        @if (true) {
+          {{() => componentProp?.a?.b?.c?.()?.()?.()?.()}}
+        }
+      }
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_safe_access_nested_views_use_null.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestComp {

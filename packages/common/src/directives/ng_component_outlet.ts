@@ -94,6 +94,8 @@ import {RuntimeErrorCode} from '../errors';
  *
  * @publicApi
  * @ngModule CommonModule
+ *
+ * @see [Using NgComponentOutlet](guide/components/programmatic-rendering#using-ngcomponentoutlet)
  */
 @Directive({
   selector: '[ngComponentOutlet]',

@@ -21,8 +21,8 @@ The schema function receives a `SchemaPathTree` object that lets you define your
 <docs-code
   header="app.ts"
   path="adev/src/content/examples/signal-forms/src/login-validation-complete/app/app.ts"
-  visibleLines="[21,22,23,24,25,26,27]"
-  highlight="[23,24,26]"
+  visibleLines="[29,30,31,32,33,34]"
+  highlight="[30,31,33]"
 />
 
 The schema function runs once during form initialization. Validation rules bind to fields using the schema path parameter (such as `schemaPath.email`, `schemaPath.password`), and validation runs automatically whenever field values change.
@@ -38,7 +38,7 @@ Validation in Signal Forms follows this pattern:
 3. **Error propagation** - Validation errors are exposed through field state signals
 4. **Reactive updates** - UI automatically updates when validation state changes
 
-Validation runs on every value change for interactive fields. Hidden and disabled fields don't run validation - their validation rules are skipped until the field becomes interactive again.
+Validation runs on every value change for interactive fields. Hidden, disabled, and readonly fields don't run validation - their validation rules are skipped until the field becomes interactive again.
 
 ### Validation timing
 
@@ -51,6 +51,20 @@ Validation rules execute in this order:
 Synchronous validation rules (like `required()`, `email()`) complete immediately. Asynchronous validation rules (like `validateHttp()`) may take time and set the `pending()` signal to `true` while executing.
 
 All validation rules run on every change - validation doesn't short-circuit after the first error. If a field has both `required()` and `email()` validation rules, both run, and both can produce errors simultaneously.
+
+### Native HTML validation
+
+Signal Forms **does not** use the browser's built-in [constraint validation](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Constraint_validation) to run validation rules. This is by design: Signal Forms allows any component to act as a form control, not just native form elements.
+
+Instead, your validation rules run entirely in Angular, and validation state is exposed through field state signals such as `valid()`, `invalid()`, and `errors()` rather than through the element's native validity state. The [`FormRoot` directive](guide/forms/signals/form-submission) also sets the `novalidate` attribute on the form element so the browser does not block submission.
+
+When a field is bound to a native form element, some built-in validation rules mirror their constraint to the corresponding native attribute: `required()`, `min()`, `max()`, `minLength()`, and `maxLength()` set the `required`, `min`, `max`, `minlength`, and `maxlength` attributes when the element supports them. An exception is `pattern()`, which does not set the native `pattern` attribute. Signal Forms sets these attributes to control input behavior and to improve accessibility, **not to trigger native validation**.
+
+NOTE: There is one case where Signal Forms reads native validity state: when the browser cannot parse a native input's value (for example, a partially typed date), Signal Forms reports it as a parse error. Even then, the error surfaces through the field's `errors()` signal like any other validation error. See [Value transformation](guide/forms/signals/custom-controls#value-transformation) for details.
+
+IMPORTANT: Do not rely on native validity features such as the `:valid` and `:invalid` CSS pseudo-classes, the element's `validity` property, or `validationMessage`. The browser may report some inputs as invalid as a side effect of the mirrored attributes (for example, a number input whose value is below its `min`), but this behavior varies by validation rule and input type and is not a supported way to observe validation state.
+
+To style controls based on validation state, bind classes to field state signals (see [Field state management](guide/forms/signals/field-state-management#conditional-error-display)) or configure automatic status classes (see [Automatic status classes](guide/forms/signals/migration#automatic-status-classes)).
 
 ## Built-in validation rules
 
@@ -96,12 +110,22 @@ export class RegistrationComponent {
 }
 ```
 
-A field is considered "empty" when:
+A field is considered "empty" when its value is one of the following, and non-empty for every other
+value — including `0` and the empty array `[]`:
 
-| Condition                | Example |
-| ------------------------ | ------- |
-| Value is `null`          | `null`, |
-| Value is an empty string | `''`    |
+| Condition                | Example     |
+| ------------------------ | ----------- |
+| Value is `null`          | `null`      |
+| Value is `undefined`     | `undefined` |
+| Value is an empty string | `''`        |
+| Value is `false`         | `false`     |
+| Value is `NaN`           | `NaN`       |
+
+The last two are worth calling out:
+
+- `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
+  an unchecked box fails validation.
+- `NaN` is empty because it is usually the result of a parsing error, and is not a valid number.
 
 For conditional requirements, use the `when` option:
 
@@ -116,7 +140,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 
 The validation rule only runs when the `when` function returns `true`.
 
-NOTE: `required` will return `true` for empty array. Use [`minLength()`](#minlength-and-maxlength) to validate arrays.
+NOTE: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items.
 
 ### email()
 
@@ -199,6 +223,49 @@ ageForm = form(this.ageModel, (schemaPath) => {
   });
 });
 ```
+
+### minDate() and maxDate()
+
+The `minDate()` and `maxDate()` validation rules work with `Date` values, such as a field bound to `<input type="date">`. They also set the `min` and `max` attributes of that input.
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, minDate, maxDate} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-booking-form',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Check-in
+        <input type="date" [formField]="bookingForm.checkIn" />
+      </label>
+    </form>
+  `,
+})
+export class BookingFormComponent {
+  bookingModel = signal<{checkIn: Date | null}>({checkIn: null});
+
+  bookingForm = form(this.bookingModel, (schemaPath) => {
+    minDate(schemaPath.checkIn, new Date('2026-06-01'), {message: 'Bookings open on June 1'});
+    maxDate(schemaPath.checkIn, new Date('2026-08-31'), {message: 'Bookings close on August 31'});
+  });
+}
+```
+
+IMPORTANT: An `<input type="date">` reads and writes `Date` values at midnight UTC, whatever the user's time zone, because that is how the browser's `valueAsDate` works. Build the limits the same way, for example with `new Date('2026-06-01')` or `new Date(Date.UTC(2026, 5, 1))`. A `Date` created from local time, such as `new Date(2026, 5, 1)` or `new Date()`, is shifted by the user's UTC offset. Depending on the time zone, the `min` or `max` attribute can then be off by a day, and the limit date itself can be rejected.
+
+To require a date that is not before today, use today's calendar date in the user's time zone, expressed at midnight UTC:
+
+```ts
+const now = new Date();
+const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+
+minDate(schemaPath.checkIn, today, {message: 'Check-in cannot be in the past'});
+```
+
+Passing `new Date()` directly can reject today's date, because the value picked in the input is midnight UTC, which is earlier than the current time. This happens in UTC and in the time zones behind it.
 
 ### minLength() and maxLength()
 
@@ -336,9 +403,7 @@ export class OrderComponent {
 
 When validation rules fail, they produce error objects that describe what went wrong. Understanding error structure helps you provide clear feedback to users.
 
-<!-- TODO: Uncomment when field state management guide is published
-
-NOTE: This section covers the errors that validation rules produce. For displaying and using validation errors in your UI, see the [Field State Management guide](guide/forms/signals/field-state-management). -->
+NOTE: This section covers the errors that validation rules produce. For displaying and using validation errors in your UI, see the [Field State Management guide](guide/forms/signals/field-state-management).
 
 ### Error structure
 
@@ -411,7 +476,7 @@ signupForm = form(this.signupModel, (schemaPath) => {
 });
 ```
 
-If the email field is empty, only the `required()` error appears. If the user types "a@b", both `email()` and `minLength()` errors appear. All validation rules run - validation doesn't stop after the first failure.
+If the email field is empty, only the `required()` error appears. If the user types "a@", both `email()` and `minLength()` errors appear. All validation rules run - validation doesn't stop after the first failure.
 
 TIP: Use the `touched() && invalid()` pattern in your templates to prevent errors from appearing before users have interacted with a field. For comprehensive guidance on displaying validation errors, see the [Field State Management guide](guide/forms/signals/field-state-management#conditional-error-display).
 
@@ -468,7 +533,7 @@ The validator function receives a `FieldContext` object with:
 | --------------- | ---------- | ------------------------------------------- |
 | `value`         | Signal     | Signal containing the current field value   |
 | `state`         | FieldState | The field state reference                   |
-| `field`         | FieldTree  | The field tree reference                    |
+| `fieldTree`     | FieldTree  | The field tree reference                    |
 | `valueOf()`     | Method     | Get the value of another field by path      |
 | `stateOf()`     | Method     | Get the state of another field by path      |
 | `fieldTreeOf()` | Method     | Get the field tree of another field by path |
@@ -491,11 +556,9 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
-  readonly userModel = model<DTO>({
+  readonly userModel = model<User>({
     firstName: '',
     lastName: '',
   });
@@ -622,6 +685,17 @@ export class PasswordChangeComponent {
 
 The confirmation validation rule accesses the password field value using `valueOf(schemaPath.password)` and compares it to the confirmation value. This validation rule runs reactively - if either password changes, validation reruns automatically.
 
+## Conditional validation
+
+Sometimes a validation rule should apply only under certain conditions, such as validating a shipping address only when an order ships internationally, or applying a different set of rules to each variant of a union-typed field.
+
+Because validation rules live in the schema function, you apply them conditionally with the same structural functions that compose schemas:
+
+- Use [`applyWhen()`](guide/forms/signals/form-logic#conditional-logic-with-applywhen) to activate a group of rules based on reactive form state, including the values of other fields.
+- Use [`applyWhenValue()`](guide/forms/signals/schemas#type-narrowing-with-applywhenvalue) to apply rules based on a field's own value. When the predicate is a type guard, the rules are typed to the narrowed value, which makes it the recommended way to validate discriminated unions and other variant types.
+
+For complete examples, including reusable schemas and discriminated unions, see the [Schemas and schema composability guide](guide/forms/signals/schemas).
+
 ## Async validation
 
 Async validation handles validation that requires external data sources, like checking username availability on a server or validating against an API.
@@ -635,7 +709,7 @@ import {Component, signal} from '@angular/core';
 import {form, FormField, required, validateHttp} from '@angular/forms/signals';
 
 @Component({
-  selector: 'app-username-form',|
+  selector: 'app-username-form',
   imports: [FormField],
   template: `
     <form novalidate>
@@ -702,6 +776,7 @@ Signal Forms have built-in support for libraries that conform to [Standard Schem
 
 ```ts
 import {form, validateStandardSchema} from '@angular/forms/signals';
+import {signal} from '@angular/core';
 import * as z from 'zod';
 
 // Define your schema
@@ -718,16 +793,14 @@ const userForm = form(signal({email: '', password: ''}), (schemaPath) => {
 
 ### Dynamic schemas
 
-You can pass a signal instead of a static schema so the validation schema updates automatically when its dependencies change.
+Instead of a static schema, you can pass a function that returns the schema. The validation then updates automatically when the signals read by the function change.
 
 ```angular-ts
 import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
-import z from 'zod';
+import * as z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 
@@ -749,10 +822,9 @@ export class DynamicSchema {
 
 This guide covered creating and applying validation rules. Related guides explore other aspects of Signal Forms:
 
-<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/models" title="Form models" />
-  <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
-  <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
+  <docs-pill href="guide/forms/signals/form-logic" title="Adding form logic" />
+  <docs-pill href="guide/forms/signals/schemas" title="Schemas and schema composability" />
 </docs-pill-row>

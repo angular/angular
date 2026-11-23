@@ -7,8 +7,10 @@
  */
 
 import {readFile} from 'fs/promises';
+import {JSDOM} from 'jsdom';
 import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {getRenderable} from '../processing.mjs';
+import {renderEntry} from '../rendering.mjs';
 import {setSymbols} from '../symbol-context.mjs';
 import {resolve} from 'path';
 import {initHighlighter} from '../../../shared/shiki.mjs';
@@ -31,6 +33,7 @@ describe('renderable', () => {
     const symbols = Object.fromEntries([
       ['AfterRenderPhase', 'core'],
       ['afterRender', 'core'],
+      ['Component', 'core'],
       ['EmbeddedViewRef', 'core'],
       ['ChangeDetectionStrategy', 'core'],
       ['ChangeDetectorRef', 'core'],
@@ -59,5 +62,69 @@ describe('renderable', () => {
     expect(linkedSignal!.developerPreview).toEqual({version: undefined});
     expect(linkedSignal!.experimental).toBe(undefined);
     expect(linkedSignal!.stable).toBe(undefined);
+  });
+
+  it('should render docs-anchor links in class member card headers', () => {
+    const viewRef = entries.get('ViewRef')!;
+    expect(viewRef).toBeDefined();
+
+    const html = renderEntry(viewRef);
+    const fragment = JSDOM.fragment(html);
+
+    const memberCards = fragment.querySelectorAll('.docs-reference-member-card');
+    expect(memberCards.length).toBeGreaterThan(0);
+
+    for (const card of Array.from(memberCards)) {
+      const id = card.getAttribute('id')!;
+      const anchor = card.querySelector('h3 a.docs-anchor') as HTMLAnchorElement;
+      expect(anchor.getAttribute('href')).toBe(`#${id}`);
+    }
+  });
+
+  it('should render decorators without whitespace after the @ symbol', () => {
+    const component = entries.get('Component')!;
+    const html = renderEntry(component);
+    const fragment = JSDOM.fragment(html);
+    const api = fragment.querySelector('.docs-reference-api-section code')!;
+
+    expect(api.textContent).toContain('@Component({');
+  });
+
+  it('should use the member name as the id of decorator member cards', () => {
+    const component = entries.get('Component')!;
+    const html = renderEntry(component);
+    const fragment = JSDOM.fragment(html);
+    const card = fragment.querySelector('.docs-reference-member-card')!;
+
+    expect(card.getAttribute('id')).toBe('selector');
+  });
+
+  it('should render the signature of a decorator that has no members', () => {
+    const decorator = entries.get('FakeHostListener')!;
+    expect(decorator).toBeDefined();
+
+    const code = JSDOM.fragment(renderEntry(decorator)).querySelector('pre')!.textContent!;
+
+    expect(code).toContain('eventName: string');
+    expect(code).toContain('args?: string[]');
+    expect(code).not.toContain('{}');
+  });
+
+  it('should not render a return type on constructor signatures', () => {
+    const httpRequest = entries.get('HttpRequest')!;
+    expect(httpRequest).toBeDefined();
+
+    const html = renderEntry(httpRequest);
+    const fragment = JSDOM.fragment(html);
+
+    const constructorLines = Array.from(fragment.querySelectorAll('.docs-code .line'))
+      .map((line) => line.textContent!.trim())
+      .filter((line) => line.startsWith('constructor('));
+
+    expect(constructorLines.length).toBeGreaterThan(0);
+    for (const line of constructorLines) {
+      // Constructors have no return type, the signature ends with the parameter list.
+      expect(line).toMatch(/\);$/);
+    }
   });
 });

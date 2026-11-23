@@ -7,13 +7,9 @@
  */
 import {leadingComment} from '@angular/compiler';
 import {types as t, template} from '@babel/core';
-import _generate from '@babel/generator';
+import generate from '@babel/generator';
 
 import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
-
-// Babel is a CJS package and misuses the `default` named binding:
-// https://github.com/babel/babel/issues/15269.
-const generate = (_generate as any)['default'] as typeof _generate;
 
 // Exposes shorthands for the `expression` and `statement`
 // methods exposed by `@babel/template`.
@@ -156,9 +152,26 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(generate(fn).code).toEqual(
         ['function foo(arg1, arg2: number) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
+    });
+
+    it('should create a function declaration with a return type', () => {
+      const stmts = statement.ast`{x = 10; y = 20;}`;
+      const fn = factory.createFunctionDeclaration(
+        'foo',
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        stmts,
+        factory.createBuiltInType('boolean'),
+      );
+      expect(generate(fn).code).toEqual(
+        ['function foo(arg1, arg2: number): boolean {', '  x = 10;', '  y = 20;', '}'].join('\n'),
       );
     });
   });
@@ -173,10 +186,27 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(t.isStatement(fn)).toBe(false);
       expect(generate(fn).code).toEqual(
         ['function foo(arg1, arg2: number) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
+    });
+
+    it('should create a function expression with a return type', () => {
+      const stmts = statement.ast`{x = 10; y = 20;}`;
+      const fn = factory.createFunctionExpression(
+        'foo',
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        stmts,
+        factory.createBuiltInType('boolean'),
+      );
+      expect(generate(fn).code).toEqual(
+        ['function foo(arg1, arg2: number): boolean {', '  x = 10;', '  y = 20;', '}'].join('\n'),
       );
     });
 
@@ -189,6 +219,7 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(generate(fn).code).toEqual(
         ['function (arg1, arg2: number) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
@@ -205,13 +236,27 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         expr,
+        null,
       );
       expect(generate(fn).code).toEqual('(arg1, arg2: number) => arg2 + arg1');
     });
 
+    it('should create an arrow function with a return type', () => {
+      const expr = expression.ast`arg2 + arg1`;
+      const fn = factory.createArrowFunctionExpression(
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        expr,
+        factory.createBuiltInType('number'),
+      );
+      expect(generate(fn).code).toEqual('(arg1, arg2: number): number => arg2 + arg1');
+    });
+
     it('should create an arrow function with an implicit return object literal', () => {
       const expr = expression.ast`{a: 1, b: 2}`;
-      const fn = factory.createArrowFunctionExpression([], expr);
+      const fn = factory.createArrowFunctionExpression([], expr, null);
       expect(generate(fn).code).toEqual(['() => ({', '  a: 1,', '  b: 2', '})'].join('\n'));
     });
 
@@ -223,6 +268,7 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(generate(fn).code).toEqual(
         ['(arg1, arg2: number) => {', '  x = 10;', '  y = 20;', '  return x + y;', '}'].join('\n'),
@@ -282,9 +328,9 @@ describe('BabelAstFactory', () => {
       expect(generate(literal).code).toEqual('42');
     });
 
-    it('should create a number literal for `NaN`', () => {
+    it('should create an identifier for `NaN`', () => {
       const literal = factory.createLiteral(NaN);
-      expect(t.isNumericLiteral(literal)).toBe(true);
+      expect(t.isIdentifier(literal)).toBe(true);
       expect(generate(literal).code).toEqual('NaN');
     });
 
@@ -330,6 +376,20 @@ describe('BabelAstFactory', () => {
       expect(generate(obj).code).toEqual(
         ['{', '  prop1: 42,', '  "prop2": "moo",', '  ...foo', '}'].join('\n'),
       );
+    });
+
+    it('should attach leading comments to object literal properties', () => {
+      const prop1 = expression.ast`42`;
+      const obj = factory.createObjectLiteral([
+        {
+          propertyName: 'prop1',
+          value: prop1,
+          kind: 'property',
+          quoted: false,
+          leadingComments: [leadingComment('@ts-ignore', true, true)],
+        },
+      ]);
+      expect(generate(obj).code).toEqual(['{', '  /* @ts-ignore */prop1: 42', '}'].join('\n'));
     });
   });
 
@@ -405,6 +465,25 @@ describe('BabelAstFactory', () => {
       const expr = expression.ast`value`;
       const unaryExpr = factory.createUnaryExpression('!', expr);
       expect(generate(unaryExpr).code).toEqual('!value');
+    });
+
+    it('should create prefix and postfix increment/decrement expressions', () => {
+      expect(generate(factory.createUnaryExpression('++', expression.ast`a`, true)).code).toEqual(
+        '++a',
+      );
+      expect(generate(factory.createUnaryExpression('++', expression.ast`b`, false)).code).toEqual(
+        'b++',
+      );
+      expect(generate(factory.createUnaryExpression('--', expression.ast`c`, true)).code).toEqual(
+        '--c',
+      );
+      expect(generate(factory.createUnaryExpression('--', expression.ast`d`, false)).code).toEqual(
+        'd--',
+      );
+    });
+
+    it('should default to a prefix expression', () => {
+      expect(generate(factory.createUnaryExpression('++', expression.ast`a`)).code).toEqual('++a');
     });
   });
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵFramework as Framework} from '@angular/core';
+import {ChangeDetectionStrategy, ɵFramework as Framework} from '@angular/core';
 import {Properties, PropType} from '../../../../../../protocol';
 
 import {DirectivePropertyResolver} from './directive-property-resolver';
@@ -109,7 +109,7 @@ const properties: Properties = {
       o1: 'o_1',
     },
     encapsulation: 0,
-    onPush: false,
+    changeDetection: ChangeDetectionStrategy.OnPush,
   },
 };
 

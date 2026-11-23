@@ -10,15 +10,16 @@ import {Tab, TabContent, TabList, TabPanel, Tabs} from '@angular/aria/tabs';
 import {A11yModule} from '@angular/cdk/a11y';
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
+  booleanAttribute,
   Component,
   ElementRef,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
-import {IS_SEARCH_DIALOG_OPEN, IconComponent, TextField} from '@angular/docs';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {IconComponent, IS_SEARCH_DIALOG_OPEN, TextField} from '@angular/docs';
+import {RouterLink} from '@angular/router';
 import {ControlFlowExample} from './components/control-flow/control-flow-example';
 import {DeferrableViewsExample} from './components/deferrable-views-example/deferrable-views-example';
 import {HydrationExample} from './components/hydration-example/hydration-example';
@@ -50,11 +51,10 @@ const FEATURE_TAB = {
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home {
-  private readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly isUwu = 'uwu' in this.activatedRoute.snapshot.queryParams;
+  /** Bound from the `?uwu` query param, which has an empty string value when present. */
+  readonly uwu = input(false, {transform: booleanAttribute});
 
   protected readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 

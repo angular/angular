@@ -198,6 +198,35 @@ describe('outputs', () => {
         });
       });
 
+      it('should not insert a TODO comment for emit function with void type', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter<void>();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                readonly someChange = output<void>();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+        });
+      });
+
       it('should insert a TODO comment for emit function with type', async () => {
         await verify({
           before: `

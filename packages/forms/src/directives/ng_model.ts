@@ -35,9 +35,10 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NG_CONTROL_PARSE_ERRORS_PROVIDER, NgControl} from './ng_control';
+import {NG_CONTROL_INTEGRATION_PROVIDER, NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
+import {FormGroupDirective} from './reactive_directives/form_group_directive';
 import {
   CALL_SET_DISABLED_STATE,
   controlPath,
@@ -49,6 +50,7 @@ import {
   formGroupNameException,
   missingNameException,
   modelParentException,
+  ngModelInChildComponentWarning,
 } from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
@@ -74,7 +76,7 @@ const formControlBinding: Provider = {
  * - this is just one extra run no matter how many `ngModel`s have been changed.
  * - this is a general problem when using `exportAs` for directives!
  */
-const resolvedPromise = (() => Promise.resolve())();
+const resolvedPromise = /* @__PURE__ */ (() => Promise.resolve())();
 
 /**
  * @description
@@ -163,7 +165,7 @@ const resolvedPromise = (() => Promise.resolve())();
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
-  providers: [formControlBinding, NG_CONTROL_PARSE_ERRORS_PROVIDER],
+  providers: [formControlBinding, NG_CONTROL_INTEGRATION_PROVIDER],
   exportAs: 'ngModel',
   standalone: false,
 })
@@ -181,6 +183,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   /** @internal */
   _registered = false;
+
+  private _ngModelInjector?: Injector;
 
   /**
    * Internal reference to the view model value.
@@ -212,7 +216,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Tracks the configuration options for this `ngModel` instance.
    *
    * **name**: An alternative to setting the name attribute on the form control element. See
-   * the [example](api/forms/NgModel#using-ngmodel-on-a-standalone-control) for using `NgModel`
+   * the [example](api/forms/NgModel) for using `NgModel`
    * as a standalone control.
    *
    * **standalone**: When set to true, the `ngModel` will not register itself with its parent form,
@@ -249,12 +253,35 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   ) {
     super(injector, renderer, valueAccessors);
     this._parent = parent;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      this._ngModelInjector = injector;
+    }
+
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
   }
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
+    if (
+      !this._registered &&
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      this._parent === null &&
+      !this.options?.standalone
+    ) {
+      const parentContainer = this._ngModelInjector?.get(ControlContainer, null);
+      if (parentContainer != null) {
+        const typeName =
+          parentContainer instanceof NgForm
+            ? 'NgForm'
+            : parentContainer instanceof FormGroupDirective
+              ? 'FormGroupDirective'
+              : parentContainer instanceof NgModelGroup
+                ? 'NgModelGroup'
+                : parentContainer.constructor.name || 'ControlContainer';
+        console.warn(ngModelInChildComponentWarning(typeName));
+      }
+    }
     this._checkForErrors();
     if (!this._registered || 'name' in changes) {
       if (this._registered) {
@@ -298,17 +325,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * @internal
    */
   ɵngControlUpdate(host: ControlDirectiveHost): void {
-    super.ngControlUpdate(host, false);
-  }
-
-  /**
-   * Template-driven forms handle `required` via the `RequiredValidator` directive.
-   *
-   * This directive has a `required` input and a host binding to `[attr.required]`. It defines the
-   * source of truth for required-ness, so disable the normal control binding for it.
-   */
-  protected override get shouldBindRequired() {
-    return false;
+    super.ngControlUpdate(host);
   }
 
   /**

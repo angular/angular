@@ -18,28 +18,6 @@ import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics';
  */
 export interface LegacyNgcOptions {
   /**
-   * generate all possible generated files
-   *  @deprecated This option is not used anymore.
-   */
-  allowEmptyCodegenFiles?: boolean;
-
-  /**
-   * Whether to type check the entire template.
-   *
-   * This flag currently controls a couple aspects of template type-checking, including
-   * whether embedded views are checked.
-   *
-   * For maximum type-checking, set this to `true`, and set `strictTemplates` to `true`.
-   *
-   * It is an error for this flag to be `false`, while `strictTemplates` is set to `true`.
-   *
-   * @deprecated The `fullTemplateTypeCheck` option has been superseded by the more granular
-   * `strictTemplates` family of compiler options. Usage of `fullTemplateTypeCheck` is therefore
-   * deprecated, `strictTemplates` and its related options should be used instead.
-   */
-  fullTemplateTypeCheck?: boolean;
-
-  /**
    * Whether to generate a flat module index of the given name and the corresponding
    * flat module metadata. This option is intended to be used when creating flat
    * modules similar to how `@angular/core` and `@angular/common` are packaged.
@@ -100,9 +78,7 @@ export interface TypeCheckingOptions {
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *
-   * This flag is a superset of the deprecated `fullTemplateTypeCheck` option.
-   *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is `true`.
+   * Defaults to `true`
    */
   strictTemplates?: boolean;
 
@@ -115,7 +91,7 @@ export interface TypeCheckingOptions {
    * directive or component is receiving the binding. If set to `true`, both sides of the assignment
    * are checked.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictInputTypes?: boolean;
 
@@ -123,7 +99,7 @@ export interface TypeCheckingOptions {
    * Whether to check if the input binding attempts to assign to a restricted field (readonly,
    * private, or protected) on the directive/component.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck", "strictTemplates" and/or
+   * Defaults to `false`, even if "strictTemplates" and/or
    * "strictInputTypes" is set. Note that if `strictInputTypes` is not set, or set to `false`, this
    * flag has no effect.
    *
@@ -140,7 +116,7 @@ export interface TypeCheckingOptions {
    * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
    * null checks.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set. Note that if `strictInputTypes` is
+   * Defaults to `false`. Note that if `strictInputTypes` is
    * not set, or set to `false`, this flag has no effect.
    */
   strictNullInputTypes?: boolean;
@@ -154,7 +130,7 @@ export interface TypeCheckingOptions {
    * without a value, so with this flag set to `true`, an error would be reported. If set to
    * `false`, text attributes will never report an error.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set. Note that if `strictInputTypes` is
+   * Defaults to `false`. Note that if `strictInputTypes` is
    * not set, or set to `false`, this flag has no effect.
    */
   strictAttributeTypes?: boolean;
@@ -166,7 +142,7 @@ export interface TypeCheckingOptions {
    * then the return type of `a?.b` for example will be the same as the type of the ternary
    * expression `a != null ? a.b : a`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictSafeNavigationTypes?: boolean;
 
@@ -177,7 +153,7 @@ export interface TypeCheckingOptions {
    * determined by the type of `document.createElement` for the given DOM node. If set to `false`,
    * the type of `ref` for DOM nodes will be `any`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictDomLocalRefTypes?: boolean;
 
@@ -189,7 +165,7 @@ export interface TypeCheckingOptions {
    * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
    * type `any`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictOutputEventTypes?: boolean;
 
@@ -200,9 +176,31 @@ export interface TypeCheckingOptions {
    * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
    * `$event` variable will be of type `any`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictDomEventTypes?: boolean;
+
+  /**
+   * Whether to report event bindings whose name matches neither an output of a directive applied
+   * to the element nor a known native DOM event.
+   *
+   * If this is `true`, an event binding such as `(outputTypo)="handle()"` on an element with
+   * matched directives will produce an error when no directive emits an `outputTypo` output and
+   * `outputTypo` isn't a native DOM event. To avoid false positives, only single-identifier
+   * camelCase names are checked: dash-separated names (e.g. `my-event`), which custom events
+   * dispatched by descendant elements conventionally use, are exempt, and so are known native
+   * DOM events — the ones described by TypeScript's `GlobalEventHandlersEventMap` — compared
+   * ignoring case to cover vendor-prefixed names like `webkitAnimationEnd`. When
+   * `CUSTOM_ELEMENTS_SCHEMA` is in use, elements without a matched Angular component are exempt
+   * as well.
+   *
+   * Note that this check is a heuristic: the compiler cannot know the set of custom events that
+   * may bubble up from descendant elements. Projects listening to camelCase custom events on
+   * elements with matched directives should not enable this option.
+   *
+   * Defaults to `false`.
+   */
+  strictUnclaimedEventNames?: boolean;
 
   /**
    * Whether to include the generic type of components when type-checking the template.
@@ -213,7 +211,7 @@ export interface TypeCheckingOptions {
    * will be included in the context type for the template. If `false`, any generic parameters will
    * be set to `any` in the template context type.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictContextGenerics?: boolean;
 
@@ -221,9 +219,25 @@ export interface TypeCheckingOptions {
    * Whether object or array literals defined in templates use their inferred type, or are
    * interpreted as `any`.
    *
-   * Defaults to `false` unless `fullTemplateTypeCheck` or `strictTemplates` are set.
+   * Defaults to `false` unless `strictTemplates` is set.
    */
   strictLiteralTypes?: boolean;
+
+  /**
+   * Whether to validate unknown element tags even when matched by attribute directives.
+   *
+   * Defaults to `false`.
+   */
+  strictUnknownElements?: boolean;
+
+  /**
+   * Whether to check if unknown properties are bound to `<ng-template>`.
+   *
+   * If this is `true`, an error will be reported for unknown properties bound to an `<ng-template>`.
+   *
+   * Defaults to `false`.
+   */
+  strictNgTemplateTypes?: boolean;
 }
 
 /**
@@ -356,6 +370,20 @@ export interface BazelAndG3Options {
    * for the Gemini app in g3 for the initial phase of the experiment.
    */
   _experimentalAllowEmitDeclarationOnly?: boolean;
+
+  /**
+   * Whether to follow the Javascript optional chaining specs: returning `undefined` instead of
+   * `null` for null-safe navigation operations.
+   *
+   * Defaults to `false`.
+   */
+  legacyOptionalChaining?: boolean;
+
+  /**
+   * Whether to generate additional code that adds the source location
+   * of elements to the DOM as an attribute.
+   */
+  enableTemplateSourceLocations?: boolean;
 }
 
 /**

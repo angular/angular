@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
+import {debounceTime} from 'rxjs';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
   DebugSignalGraphNode,
+  DevtoolsConfig,
   DevToolsNode,
   DirectivePosition,
   DirectiveType,
@@ -23,7 +26,6 @@ import {
   SignalNodePosition,
   TransferStateValue,
 } from '../../../protocol';
-import {debounceTime} from 'rxjs/operators';
 import {
   appIsAngularInDevMode,
   appIsAngularIvy,
@@ -33,47 +35,73 @@ import {
 } from '../../../shared-utils';
 
 import {ComponentInspector} from './component-inspector/component-inspector';
+import {setConsoleReference} from './console/set-console-reference';
+import {queryDirectiveForest} from './directive-forest';
+import {
+  getLatestDirectiveState,
+  logDirectiveValue,
+  updateDirectiveState,
+} from './directive-forest/directive-state/directive-state';
+import {getDirectiveForestManager} from './directive-forest/manager';
+import {getDirectiveCdStrategy} from './directive-forest/utils/directive';
+import {loadHydrationOverlays} from './hydration/hydration-overlays';
 import {
   getElementInjectorElement,
   getInjectorFromElementNode,
   getInjectorProviders,
   getInjectorResolutionPath,
-  getLatestComponentState,
   idToInjector,
-  injectorsSeen,
   isElementInjector,
-  isOnPushDirective,
-  logValue,
   nodeInjectorToResolutionPath,
-  queryDirectiveForest,
   serializeProviderRecord,
   serializeResolutionPath,
-  updateState,
-} from './component-tree/component-tree';
-import {unHighlight} from './highlighter';
-import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
-import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
-import {ComponentTreeNode} from './interfaces';
-import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
-import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
-import {setConsoleReference} from './set-console-reference';
-import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
-import {runOutsideAngular, unwrapSignal} from './utils';
-import {DirectiveForestHooks} from './hooks/hooks';
-import {getSupportedApis} from './ng-debug-api/supported-apis';
-import {sanitizeObject} from './serialization-utils';
+} from './injector-tree/injector-tree';
+import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
+import {loadCdDataStream, loadCdHighlighting} from './profiling/cd-analyzer';
+import {loadPerformanceTrack} from './profiling/performance-track';
+import {getProfiler, Profiler} from './profiling/profiler';
+import {
+  getRouterCallableConstructRef,
+  parseRoutes,
+  RoutePropertyType,
+} from './router-tree/router-tree';
+import {removeAllHighlights} from './shared/highlighter';
+import {ComponentTreeNode, DevtoolsBackendConfig} from './shared/interfaces';
+import {
+  ngDebugClient,
+  ngDebugDependencyInjectionApiIsSupported,
+} from './shared/ng-debug-api/ng-debug-api';
+import {getSupportedApis} from './shared/ng-debug-api/supported-apis';
+import {serializeDirectiveState, serializeValue} from './shared/state-serializer/state-serializer';
+import {runOutsideAngular, unwrapSignal} from './shared/utils/general';
+import {debugLog, log, setupLogging} from './shared/utils/log';
+import {sanitizeObject} from './shared/utils/serialization';
+import {SignalGraphRef} from './shared/utils/signal-graph-ref';
+import {getConfig} from './config/config';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
-  depsForTestOnly?: {
-    directiveForestHooks?: typeof DirectiveForestHooks;
+  config?: DevtoolsBackendConfig & {
+    depsForTestOnly?: {
+      profiler?: new (...args: any[]) => Profiler;
+    };
   },
 ): void => {
   const inspector: InspectorRef = {ref: null};
+  setupLogging(config?.devtoolsDevMode ?? false);
 
-  messageBus.on('shutdown', shutdownCallback(messageBus));
+  const cleanUpFns: (() => void)[] = [
+    loadCdDataStream(messageBus),
+    loadCdHighlighting(),
+    loadHydrationOverlays(),
+    loadPerformanceTrack(),
+  ];
+
+  messageBus.on('shutdown', shutdownCallback(messageBus, cleanUpFns));
+
+  messageBus.on('devtoolsShutdown', devtoolsShutdownCallback(inspector));
 
   messageBus.on(
     'getLatestComponentExplorerView',
@@ -85,7 +113,7 @@ export const subscribeToClientEvents = (
   messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
+  messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -93,11 +121,8 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus));
 
-  messageBus.on('updateState', updateState);
-  messageBus.on('logValue', logValue);
-
-  messageBus.on('enableTimingAPI', enableTimingAPI);
-  messageBus.on('disableTimingAPI', disableTimingAPI);
+  messageBus.on('updateState', updateDirectiveState);
+  messageBus.on('logValue', logDirectiveValue);
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
@@ -105,11 +130,20 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getTransferState', getTransferStateCallback(messageBus));
 
+  messageBus.on('setConfig', setConfigCallback);
+
+  const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
-    console[level](`[Angular DevTools]: ${message}`);
+    if (SAFE_LOG_LEVELS.has(level)) {
+      log[level](message);
+    } else {
+      debugLog.warn(`Invalid log level attempted: ${level}`);
+    }
   });
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
+
+  messageBus.on('toggleWatchSignal', toggleWatchSignal(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -119,10 +153,13 @@ export const subscribeToClientEvents = (
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      initializeOrGetDirectiveForestHooks(depsForTestOnly)
-        .profiler.changeDetection$.pipe(debounceTime(250))
+      getProfiler(config?.depsForTestOnly)
+        .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
+
+    getConfig().onChange('deferBlocks', () => messageBus.emit('componentTreeDirty'));
+    getConfig().onChange('forBlocks', () => messageBus.emit('componentTreeDirty'));
   }
 };
 
@@ -130,8 +167,16 @@ export const subscribeToClientEvents = (
 // Callback Definitions
 //
 
-const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
+const shutdownCallback = (messageBus: MessageBus<Events>, cleanUpFns: (() => void)[]) => () => {
+  for (const fn of cleanUpFns) {
+    fn();
+  }
   messageBus.destroy();
+};
+
+const devtoolsShutdownCallback = (inspector: InspectorRef) => () => {
+  inspector.ref?.stopInspecting();
+  removeAllHighlights();
 };
 
 const getLatestComponentExplorerViewCallback =
@@ -139,38 +184,19 @@ const getLatestComponentExplorerViewCallback =
     // We want to force re-indexing of the component tree.
     // Pressing the refresh button means the user saw stuck UI.
 
-    initializeOrGetDirectiveForestHooks().indexForest();
+    getDirectiveForestManager().indexForest();
 
     const forest = prepareForestForSerialization(
-      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      getDirectiveForestManager().getIndexedDirectiveForest(),
       ngDebugDependencyInjectionApiIsSupported(),
     );
-
-    // cleanup injector id mappings
-    for (const injectorId of idToInjector.keys()) {
-      if (!injectorsSeen.has(injectorId)) {
-        const injector = idToInjector.get(injectorId)!;
-        if (isElementInjector(injector)) {
-          const element = getElementInjectorElement(injector);
-          if (element) {
-            nodeInjectorToResolutionPath.delete(element);
-          }
-        }
-
-        idToInjector.delete(injectorId);
-      }
-    }
-    injectorsSeen.clear();
 
     if (!query) {
       messageBus.emit('latestComponentExplorerView', [{forest}]);
       return;
     }
 
-    const state = getLatestComponentState(
-      query,
-      initializeOrGetDirectiveForestHooks().getDirectiveForest(),
-    );
+    const state = getLatestDirectiveState(query, getDirectiveForestManager().getDirectiveForest());
 
     if (state) {
       const {directiveProperties} = state;
@@ -192,7 +218,7 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
   if (router) {
     ngDebugClient().ɵnavigateByUrl?.(router, path);
   } else {
-    console.warn('Router not found or navigateByUrl method not available');
+    log.warn('Router not found or navigateByUrl method not available');
   }
 };
 
@@ -221,13 +247,12 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
+const selectedComponentCallback = (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
-  inspector.ref?.highlightByPosition(position);
 };
 
 const getNestedPropertiesCallback =
@@ -235,13 +260,13 @@ const getNestedPropertiesCallback =
     const emitEmpty = () => messageBus.emit('nestedProperties', [position, {props: {}}, propPath]);
     const node = queryDirectiveForest(
       position.element,
-      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      getDirectiveForestManager().getIndexedDirectiveForest(),
     );
     if (!node) {
       return emitEmpty();
     }
     const current =
-      position.directive === undefined ? node.component : node.directives[position.directive];
+      position.directive === undefined ? node.component : node.directives?.[position.directive];
     if (!current) {
       return emitEmpty();
     }
@@ -249,7 +274,7 @@ const getNestedPropertiesCallback =
     for (const prop of propPath) {
       data = unwrapSignal(data[prop]);
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('nestedProperties', [
@@ -266,25 +291,39 @@ const getSignalNestedPropertiesCallback =
       messageBus.emit('signalNestedProperties', [position, {props: {}}, propPath]);
     const node = queryDirectiveForest(
       position.element,
-      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      getDirectiveForestManager().getIndexedDirectiveForest(),
     );
-    if (!node) {
+    if (!node || !node.nativeElement) {
       return emitEmpty();
     }
 
-    const injector = getInjectorFromElementNode(node.nativeElement!);
+    const injector = getInjectorFromElementNode(node.nativeElement);
     if (!injector) {
       return emitEmpty();
     }
 
     const ng = ngDebugClient();
 
-    const signalGraph = ng.ɵgetSignalGraph?.(injector);
+    let signalGraph: InternalDebugSignalGraph | undefined;
+
+    // Considering that the inspection of signal value nested properties
+    // usually involves multiple requests, we store the signal graph
+    // during the first call. We keep only the last requested signal graph
+    // to avoid filling the heap with graphs that may not be needed.
+    if (componentSignalGraphRef.exists(node.nativeElement)) {
+      signalGraph = componentSignalGraphRef.deref(node.nativeElement);
+    } else {
+      signalGraph = ng.ɵgetSignalGraph?.(injector);
+      if (signalGraph) {
+        componentSignalGraphRef.set(node.nativeElement, signalGraph);
+      }
+    }
+
     if (!signalGraph) {
       return emitEmpty();
     }
 
-    const current = signalGraph.nodes.find((node) => node.id === position.signalId);
+    const current = signalGraph.nodes.find((n) => n.id === position.signalId);
     if (!current) {
       return emitEmpty();
     }
@@ -293,7 +332,7 @@ const getSignalNestedPropertiesCallback =
     for (const prop of propPath) {
       data = (data as Record<string, object>)[prop];
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('signalNestedProperties', [
@@ -336,7 +375,7 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
   }
 
   if (appIsIvy && appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
-    initializeOrGetDirectiveForestHooks();
+    getDirectiveForestManager();
   }
 
   const devMode = appIsAngularInDevMode();
@@ -371,10 +410,7 @@ const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   messageBus.on('createHighlightOverlay', (position: ElementPosition) => {
     inspector.highlightByPosition(position);
   });
-  messageBus.on('removeHighlightOverlay', unHighlight);
-
-  messageBus.on('createHydrationOverlay', inspector.highlightHydrationNodes);
-  messageBus.on('removeHydrationOverlay', inspector.removeHydrationHighlights);
+  messageBus.on('removeHighlightOverlay', () => inspector.unhighlight());
 
   return inspector;
 };
@@ -398,7 +434,7 @@ export interface SerializableComponentTreeNode extends DevToolsNode<
 }
 
 function getRouterInstance() {
-  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  const forest = getDirectiveForestManager().getIndexedDirectiveForest();
   const rootNode = forest[0];
 
   if (!rootNode || !rootNode.nativeElement) {
@@ -424,22 +460,24 @@ const prepareForestForSerialization = (
   const serializedNodes: SerializableComponentTreeNode[] = [];
   for (const node of roots) {
     const serializedNode: SerializableComponentTreeNode = {
-      element: node.element,
+      tagName: node.tagName,
       component: node.component
         ? {
             name: node.component.name,
             isElement: node.component.isElement,
-            id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance)!,
+            id: getDirectiveForestManager().getDirectiveId(node.component.instance)!,
+            instanceId: ngDebugClient()?.ɵgetComponentInstanceDeepLinkId?.(node.component.instance),
           }
         : null,
-      directives: node.directives.map((d) => ({
+      directives: node.directives?.map((d) => ({
         name: d.name,
-        id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance)!,
+        id: getDirectiveForestManager().getDirectiveId(d.instance)!,
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
       controlFlowBlock: node.controlFlowBlock,
-      onPush: node.component ? isOnPushDirective(node.component) : false,
+      static: node.static,
+      changeDetection: node.component ? getDirectiveCdStrategy(node.component) : undefined,
 
       // native elements are not serializable
       hasNativeElement: !!node.nativeElement,
@@ -479,21 +517,17 @@ function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] 
     nodeInjectorToResolutionPath.set(element, serializeResolutionPath(resolutionPaths));
   }
 
-  const serializedPath = nodeInjectorToResolutionPath.get(element)!;
-  for (const injector of serializedPath) {
-    injectorsSeen.add(injector.id);
-  }
-
-  return serializedPath;
+  return nodeInjectorToResolutionPath.get(element)!;
 }
 
 const getInjectorProvidersCallback =
   (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
-    if (!idToInjector.has(injector.id)) {
+    const resolvedInjector = idToInjector.get(injector.id)?.deref();
+    if (!resolvedInjector) {
       return;
     }
 
-    const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
+    const providerRecords = getInjectorProviders(resolvedInjector);
     const allProviderRecords: SerializedProviderRecord[] = [];
 
     const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
@@ -514,7 +548,7 @@ const getInjectorProvidersCallback =
 
     const serializedProviderRecords: SerializedProviderRecord[] = [];
 
-    for (const [token, records] of tokenToRecords.entries()) {
+    for (const records of tokenToRecords.values()) {
       const multiRecords = records.filter((record) => record.multi);
       const nonMultiRecords = records.filter((record) => !record.multi);
 
@@ -544,11 +578,10 @@ const logProvider = (
   serializedInjector: SerializedInjector,
   serializedProvider: SerializedProviderRecord,
 ): void => {
-  if (!idToInjector.has(serializedInjector.id)) {
+  const injector = idToInjector.get(serializedInjector.id)?.deref();
+  if (!injector) {
     return;
   }
-
-  const injector = idToInjector.get(serializedInjector.id)!;
 
   const providerRecords = getInjectorProviders(injector);
 
@@ -583,75 +616,54 @@ const logProvider = (
 const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
   const ng = ngDebugClient();
 
-  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  const forest = getDirectiveForestManager().getIndexedDirectiveForest();
   if (forest.length === 0) {
     messageBus.emit('transferStateData', [null]);
     return;
   }
 
-  const rootNode = forest[0];
-  if (!rootNode || !rootNode.nativeElement) {
-    messageBus.emit('transferStateData', [null]);
-    return;
+  // Keys can name `Object.prototype` properties like `__proto__`, so use a null-prototype map.
+  const merged: Record<string, TransferStateValue> = Object.create(null);
+  let collected = false;
+
+  for (const rootNode of forest) {
+    if (!rootNode?.nativeElement) continue;
+
+    const injector = getInjectorFromElementNode(rootNode.nativeElement);
+    if (!injector) continue;
+
+    const rootData = ng.ɵgetTransferState?.(injector) as
+      Record<string, TransferStateValue> | null | undefined;
+    if (rootData && typeof rootData === 'object') {
+      Object.assign(merged, rootData);
+      collected = true;
+    }
   }
 
-  const injector = getInjectorFromElementNode(rootNode.nativeElement);
-  if (!injector) {
-    messageBus.emit('transferStateData', [null]);
-    return;
-  }
-
-  const transferStateData = (ng.ɵgetTransferState?.(injector) ?? null) as Record<
-    string,
-    TransferStateValue
-  > | null;
-
-  if (
-    transferStateData &&
-    typeof transferStateData === 'object' &&
-    Object.keys(transferStateData).length > 0
-  ) {
-    messageBus.emit('transferStateData', [transferStateData]);
-  } else {
-    messageBus.emit('transferStateData', [null]);
-  }
+  messageBus.emit('transferStateData', [collected ? merged : null]);
 };
 
-const getInjectorInstance = (
-  serializedInjector: SerializedInjector,
-  serializedProvider: SerializedProviderRecord,
-) => {
-  if (!idToInjector.has(serializedInjector.id)) {
-    return;
-  }
-
-  const injector = idToInjector.get(serializedInjector.id)!;
-  const providerRecords = getInjectorProviders(injector);
-
-  if (typeof serializedProvider.index === 'number') {
-    const provider = providerRecords[serializedProvider.index];
-    return injector.get(provider.token, null, {optional: true});
-  } else if (Array.isArray(serializedProvider.index)) {
-    const providers = serializedProvider.index.map((index) => providerRecords[index]);
-    return injector.get(providers[0].token, null, {optional: true});
-  }
-  return null;
-};
+let lastSignalGraphElement: ElementPosition | null = null;
 
 const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  lastSignalGraphElement = element;
+  // We assume that a new request for a signal graph
+  // should invalidate the current ref cache.
+  componentSignalGraphRef.clear();
+
   const ng = ngDebugClient();
 
   // get injector from position
   const node = queryDirectiveForest(
     element,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   if (!node) {
     messageBus.emit('latestSignalGraph', [null]);
     return;
   }
 
-  const injector = getInjectorFromElementNode(node.nativeElement!);
+  const injector = node.injector ?? getInjectorFromElementNode(node.nativeElement!);
 
   if (!injector) {
     messageBus.emit('latestSignalGraph', [null]);
@@ -668,10 +680,23 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
         epoch: node.epoch,
         preview: serializeValue(node.value),
         debuggable: !!node.debuggableFn,
+        watched: node.watched ?? false,
       };
     });
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
+};
+
+const toggleWatchSignal = (messageBus: MessageBus<Events>) => (id: string) => {
+  const ng = ngDebugClient();
+  ng.toggleWatchSignal?.(id);
+  if (lastSignalGraphElement) {
+    getSignalGraphCallback(messageBus)(lastSignalGraphElement);
+  }
+};
+
+const setConfigCallback = (config: Partial<DevtoolsConfig>) => {
+  getConfig().set(config);
 };
 
 // Route data needs to be serializable to be sent over the message bus.
@@ -686,3 +711,13 @@ export function sanitizeRouteData(route: Route): Route {
 
   return route;
 }
+
+/**
+ * Keeps a reference to the last requested signal graph.
+ * This should save us from needlessly calling `ng.ɵgetSignalGraph`
+ * when we are still managing the same/last graph (e.g. inspecting
+ * signal value nested properties). The ref is tied to the host element.
+ *
+ * Note: If the element is destroyed, the graph is garbage collected.
+ */
+const componentSignalGraphRef = new SignalGraphRef<Node>();

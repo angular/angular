@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {email, form, FormField, required, submit} from '@angular/forms/signals';
 
 interface LoginData {
@@ -19,7 +19,6 @@ interface LoginData {
   templateUrl: 'app.html',
   styleUrl: 'app.css',
   imports: [FormField],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   loginModel = signal<LoginData>({

@@ -4,3 +4,4 @@
 ![Async Decoded Image](https://angular.dev/assets/logo.svg {decoding: 'async'} 'Async Image')
 ![High Priority Image](https://angular.dev/assets/logo.svg {fetchpriority: 'high'})
 ![Combined Attributes](https://angular.dev/assets/logo.svg {loading: 'eager', decoding: 'sync', fetchpriority: 'high'} 'Hero Image')
+![Say "hello" to the logo](https://angular.dev/assets/logo.svg 'The "new" icon')

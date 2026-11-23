@@ -12,7 +12,7 @@ import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
 import {InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
 import type {SingleProvider} from '../../di/provider_collection';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
 import type {TNode} from '../interfaces/node';
 import type {LView} from '../interfaces/view';
@@ -70,7 +70,7 @@ export interface InjectorProfilerContext {
    *      - Example: if ModuleA --provides--> ServiceA --injects--> ServiceB
    *                 then inject(ServiceB) in ServiceA has ServiceA as a construction context
    */
-  token: Type<unknown> | null;
+  token: Type<unknown> | AbstractType<unknown> | null;
 }
 
 export interface InjectedServiceEvent {
@@ -145,7 +145,7 @@ export interface ProviderRecord {
   /**
    * The path of DI containers that were followed to import this provider
    */
-  importPath?: Type<unknown>[];
+  importPath?: (Type<unknown> | AbstractType<unknown>)[];
 }
 
 /**
