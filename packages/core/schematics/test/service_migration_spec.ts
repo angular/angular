@@ -289,4 +289,90 @@ describe('service migration schematic', () => {
     expect(contents).toContain(`import { Service } from '@angular/core';`);
     expect(contents).not.toContain('Injectable');
   });
+
+  it('should not alias the import if `Service` is only used as a property name', async () => {
+    writeFile(
+      'service.ts',
+      `
+        import {Injectable} from '@angular/core';
+
+        const LABELS = {Service: 'service time'};
+
+        @Injectable({providedIn: 'root'})
+        export class MyService {}
+      `,
+    );
+
+    await runMigration();
+    const contents = tree.readContent('service.ts');
+
+    expect(contents).toContain(`import { Service } from '@angular/core';`);
+    expect(contents).toContain('@Service()');
+    expect(contents).not.toContain('Service_1');
+  });
+
+  it('should use the import alias if `Service` is already declared in the file', async () => {
+    writeFile(
+      'service.ts',
+      `
+        import {Injectable} from '@angular/core';
+
+        const Service = 'service time';
+
+        @Injectable({providedIn: 'root'})
+        export class MyService {}
+      `,
+    );
+
+    await runMigration();
+    const contents = tree.readContent('service.ts');
+
+    expect(contents).toContain(`import { Service as Service_1 } from '@angular/core';`);
+    expect(contents).toContain('@Service_1()');
+    expect(contents).not.toContain('Injectable');
+  });
+
+  it('should reference `Service` through an existing namespace import', async () => {
+    writeFile(
+      'service.ts',
+      `
+        import * as core from '@angular/core';
+        import {Injectable} from '@angular/core';
+
+        @Injectable({providedIn: 'root'})
+        export class MyService {
+          ref = core.inject(core.Injector);
+        }
+      `,
+    );
+
+    await runMigration();
+    const contents = tree.readContent('service.ts');
+
+    expect(contents).toContain('@core.Service()');
+    expect(contents).not.toContain('Injectable(');
+  });
+
+  it('should reuse an existing aliased `Service` import', async () => {
+    writeFile(
+      'service.ts',
+      `
+        import {Injectable, Service as S} from '@angular/core';
+
+        @Injectable({providedIn: 'root'})
+        export class MyService {}
+
+        @S()
+        export class OtherService {}
+      `,
+    );
+
+    await runMigration();
+    const contents = tree.readContent('service.ts');
+
+    expect(contents).toContain(`import { Service as S } from '@angular/core';`);
+    expect(contents).toContain(`@S()
+        export class MyService {}`);
+    expect(contents).not.toContain('Injectable');
+  });
 });
