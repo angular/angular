@@ -743,7 +743,7 @@ export class HybridCompiler {
   }
 
   async init() {
-    const iterator = this.optimize ? this.analyzer.analyzeOptimized() : this.analyzer.analyze();
+    const iterator = this.optimize ? this.analyzeOptimized() : this.analyze();
     for await (const _ of iterator) {
     }
   }
@@ -904,6 +904,39 @@ export class HybridCompiler {
     return update;
   }
 
+  /**
+   * Hydrates `unchanged: true` delta stubs emitted by `ng-analyze` from cached `metadataByFile`.
+   *
+   * TODO(ngp): remove once template compilation moves into Rust and unchanged peer metadata no
+   * longer crosses the Rust-JS IPC boundary.
+   */
+  private async resolveDeltaChunk(chunk: nga.CompilationChunk): Promise<nga.CompilationChunk> {
+    if (!chunk.files.some((f) => f.unchanged)) {
+      return chunk;
+    }
+    const files = await Promise.all(
+      chunk.files.map(async (f) => {
+        if (!f.unchanged) {
+          return f;
+        }
+        const hydrated =
+          this.metadataByFile.get(f.filePath) ??
+          (await this.analyzer.getMetadataForFile(
+            f.idKind === 'virtual' ? {id: f.filePath, idKind: 'virtual'} : f.filePath,
+          ));
+        if (!hydrated) {
+          throw new Error(`Failed to hydrate unchanged delta stub for ${f.filePath}`);
+        }
+        return hydrated;
+      }),
+    );
+    return {
+      files,
+      staticEdges: chunk.staticEdges,
+      removedFiles: chunk.removedFiles,
+    };
+  }
+
   private async runUpdate(applyUpdate: () => Promise<string[]>): Promise<void> {
     try {
       const invalidatedTsFiles = await applyUpdate();
@@ -913,10 +946,18 @@ export class HybridCompiler {
       const iterator = this.optimize
         ? this.analyzer.analyzeOptimizedDelta()
         : this.analyzer.analyzeDelta();
-      for await (const chunk of iterator) {
-        if (chunk.files.length > 0 || (chunk.removedFiles && chunk.removedFiles.length > 0)) {
-          for (const file of chunk.files) {
-            this.invalidateCachedFile(file.filePath);
+      for await (const rawChunk of iterator) {
+        if (
+          rawChunk.files.length > 0 ||
+          (rawChunk.removedFiles && rawChunk.removedFiles.length > 0)
+        ) {
+          const chunk = await this.resolveDeltaChunk(rawChunk);
+          for (const file of rawChunk.files) {
+            if (!file.unchanged) {
+              this.invalidateCachedFile(file.filePath);
+            } else if (!this.incrementalEnabled) {
+              this.fileCache.delete(file.filePath);
+            }
           }
           for (const removed of chunk.removedFiles ?? []) {
             this.invalidateCachedFile(removed);
@@ -1018,7 +1059,8 @@ export class HybridCompiler {
         yield chunk;
       }
     }
-    for await (const chunk of chunks) {
+    for await (const rawChunk of chunks) {
+      const chunk = await this.resolveDeltaChunk(rawChunk);
       if (this.recordDeltaChunk(chunk, yieldedFiles)) {
         yield chunk;
       }
@@ -1188,7 +1230,12 @@ export class HybridCompiler {
    */
   async ensureBound(filePath: string): Promise<FileAnalysis> {
     const cached = this.fileCache.get(filePath);
-    if (cached && cached.preparedTcbData !== undefined && this.metadataByFile.has(filePath)) {
+    if (
+      cached &&
+      cached.preparedTcbData !== undefined &&
+      this.metadataByFile.has(filePath) &&
+      this.pendingDeltaChunks.length === 0
+    ) {
       return cached;
     }
     const result = await this.getCachedMetadata(filePath);

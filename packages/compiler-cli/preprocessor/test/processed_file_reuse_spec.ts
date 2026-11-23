@@ -115,6 +115,43 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
+  it('hydrates unchanged peer stubs and reuses peer outputs in multi-file NgModule chunks', async () => {
+    const {analyzer, build, edit} = await createSession('ngmodule_peer_stubs', false, true, {
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {},
+        files: ['cmp_a.ts', 'cmp_b.ts', 'app.module.ts'],
+      }),
+      'cmp_a.html': '<p>a v1</p>',
+      'cmp_a.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'cmp-a', templateUrl: './cmp_a.html', standalone: false})
+        export class CmpA {}
+      `,
+      'cmp_b.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'cmp-b', template: '<cmp-a></cmp-a>', standalone: false})
+        export class CmpB {}
+      `,
+      'app.module.ts': `
+        import {NgModule} from '@angular/core';
+        import {CmpA} from './cmp_a';
+        import {CmpB} from './cmp_b';
+        @NgModule({declarations: [CmpA, CmpB], exports: [CmpA, CmpB]})
+        export class AppModule {}
+      `,
+    });
+    const first = await build();
+
+    await edit('cmp_a.html', '<p>a v2</p>');
+    const second = await build();
+
+    expect(second.get('cmp_a.ts')).not.toBe(first.get('cmp_a.ts'));
+    expect(second.get('cmp_a.ts')!.magicString.toString()).toContain('a v2');
+    expect(second.get('cmp_b.ts')).toBe(first.get('cmp_b.ts'));
+    expect(second.get('app.module.ts')).toBe(first.get('app.module.ts'));
+    analyzer.close();
+  });
+
   it("reprocesses a component when a dependency's public API changes", async () => {
     const {analyzer, build, edit} = await createSession('dependency_edit');
     const first = await build();

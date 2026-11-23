@@ -11182,3 +11182,73 @@ fn test_batching_host_cancelled_delta_preserves_direct_dirty_and_wire_baseline()
         ]
     );
 }
+
+#[test]
+fn test_analyze_delta_emits_unchanged_stub_for_ngmodule_peer() {
+    let mut files = HashMap::new();
+    files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{
+            "compilerOptions": {"rootDirs": ["/project"]},
+            "files": ["cmp_a.ts", "cmp_b.ts", "app.module.ts"]
+        }"#
+        .to_string(),
+    );
+    files.insert("/project/cmp_a.html".to_string(), "<p>a v1</p>".to_string());
+    files.insert(
+        "/project/cmp_a.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         @Component({selector: 'cmp-a', templateUrl: './cmp_a.html', standalone: false})\n\
+         export class CmpA {}\n"
+            .to_string(),
+    );
+    files.insert(
+        "/project/cmp_b.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         @Component({selector: 'cmp-b', template: '<p>b</p>', standalone: false})\n\
+         export class CmpB {}\n"
+            .to_string(),
+    );
+    files.insert(
+        "/project/app.module.ts".to_string(),
+        "import { NgModule } from '@angular/core';\n\
+         import { CmpA } from './cmp_a';\n\
+         import { CmpB } from './cmp_b';\n\
+         @NgModule({declarations: [CmpA, CmpB], exports: [CmpA, CmpB]})\n\
+         export class AppModule {}\n"
+            .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(files),
+        ..Default::default()
+    })
+    .expect("create analyzer");
+
+    let initial = analyzer.analyze_optimized().expect("initial stream");
+    while futures::executor::block_on(initial.next())
+        .expect("initial chunk")
+        .is_some()
+    {}
+
+    analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/cmp_a.html".to_string(),
+            content: "<p>a v2</p>".to_string(),
+            id_kind: None,
+        }])
+        .expect("update cmp_a.html");
+
+    let delta = analyzer.analyze_optimized_delta().expect("delta stream");
+    let mut results = HashMap::new();
+    while let Some(chunk) = futures::executor::block_on(delta.next()).expect("delta chunk") {
+        for file in chunk.files {
+            results.insert(file.file_path, (file.unchanged, file.classes.len()));
+        }
+    }
+    assert_eq!(results.get("/project/cmp_a.ts"), Some(&(false, 1)));
+    assert_eq!(results.get("/project/cmp_b.ts"), Some(&(true, 0)));
+    assert_eq!(results.get("/project/app.module.ts"), Some(&(true, 0)));
+}

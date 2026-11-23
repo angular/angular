@@ -141,6 +141,13 @@ pub struct AnalysisResult {
     /// re-emit decisions) without resolving module specifiers themselves.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub static_dependencies: Vec<String>,
+    /// True on a delta stream when this file's `AnalysisResult` is unchanged since the previous
+    /// completed pass (an unchanged peer emitted alongside a dirty file in a multi-file
+    /// `@NgModule` chunk).
+    // TODO(ngp): remove once template compilation moves into Rust and unchanged peer metadata no
+    // longer crosses the Rust-JS IPC boundary.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub unchanged: bool,
 }
 
 /// Options for constructing an [`crate::Analyzer`].
