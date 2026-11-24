@@ -13,23 +13,16 @@ import {
   Chain,
   Conditional,
   ParsedEventType,
-  PropertyRead,
   ArrowFunction,
   SafeCall,
-  SafePropertyRead,
   TmplAstBoundEvent,
   TmplAstNode,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
-import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {
-  TemplateCheckFactory,
-  TemplateCheckWithVisitor,
-  TemplateContext,
-  formatExtendedError,
-} from '../../api';
+import {NgTemplateDiagnostic} from '../../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures that function in event bindings are called. For example, `<button (click)="myFunc"></button>`
@@ -41,37 +34,31 @@ class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<Error
 
   override visitNode(
     ctx: TemplateContext<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>,
-    component: ts.ClassDeclaration,
+    _component: ts.ClassDeclaration,
     node: TmplAstNode | AST,
   ): NgTemplateDiagnostic<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>[] {
-    // If the node is not a bound event, skip it.
     if (!(node instanceof TmplAstBoundEvent)) return [];
 
-    // If the node is not a regular or animation event, skip it.
-    if (node.type !== ParsedEventType.Regular && node.type !== ParsedEventType.LegacyAnimation)
+    if (node.type !== ParsedEventType.Regular && node.type !== ParsedEventType.LegacyAnimation) {
       return [];
+    }
 
     if (!(node.handler instanceof ASTWithSource)) return [];
 
-    const sourceExpressionText = node.handler.source || '';
-
     if (node.handler.ast instanceof Chain) {
-      // (click)="increment; decrement"
       return node.handler.ast.expressions.flatMap((expression) =>
-        assertExpressionInvoked(expression, component, node, sourceExpressionText, ctx),
+        assertExpressionInvoked(expression, node, ctx),
       );
     }
 
     if (node.handler.ast instanceof Conditional) {
-      // (click)="true ? increment : decrement"
       const {trueExp, falseExp} = node.handler.ast;
       return [trueExp, falseExp].flatMap((expression) =>
-        assertExpressionInvoked(expression, component, node, sourceExpressionText, ctx),
+        assertExpressionInvoked(expression, node, ctx),
       );
     }
 
-    // (click)="increment"
-    return assertExpressionInvoked(node.handler.ast, component, node, sourceExpressionText, ctx);
+    return assertExpressionInvoked(node.handler.ast, node, ctx);
   }
 }
 
@@ -81,13 +68,11 @@ class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<Error
  */
 function assertExpressionInvoked(
   expression: AST,
-  component: ts.ClassDeclaration,
   node: TmplAstBoundEvent,
-  expressionText: string,
   ctx: TemplateContext<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>,
 ): NgTemplateDiagnostic<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>[] {
   if (expression instanceof Call || expression instanceof SafeCall) {
-    return []; // If the method is called, skip it.
+    return [];
   }
 
   if (expression instanceof ArrowFunction) {
@@ -96,30 +81,7 @@ function assertExpressionInvoked(
     return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
   }
 
-  if (!(expression instanceof PropertyRead) && !(expression instanceof SafePropertyRead)) {
-    return []; // If the expression is not a property read, skip it.
-  }
-
-  const symbol = ctx.templateTypeChecker.getSymbolOfNode(expression, component);
-
-  if (symbol !== null && symbol.kind === SymbolKind.Expression) {
-    const type = ctx.templateTypeChecker.getTypeOfSymbol(symbol);
-    if (type && type.getCallSignatures()?.length > 0) {
-      const fullExpressionText = generateStringFromExpression(expression, expressionText);
-      const errorString = formatExtendedError(
-        ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING,
-        `Function in event binding should be invoked: ${fullExpressionText}()`,
-      );
-
-      return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
-    }
-  }
-
   return [];
-}
-
-function generateStringFromExpression(expression: AST, source: string): string {
-  return source.substring(expression.span.start, expression.span.end);
 }
 
 export const factory: TemplateCheckFactory<

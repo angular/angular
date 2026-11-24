@@ -109,17 +109,6 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
 
   // Tests TypeScript `structureIsReused` across in-memory ngtsc incremental compilations.
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
-
-  // Extended diagnostics that won't be ported to the new compilation model
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function is not',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function that returns a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
 ]);
 
 /**
