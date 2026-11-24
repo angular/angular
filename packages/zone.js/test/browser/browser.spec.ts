@@ -1707,6 +1707,163 @@ describe('Zone Browser', function () {
         }),
       );
 
+      describe(
+        'mixing passive and non-passive listeners on the same target',
+        ifEnvSupports(supportEventListenerOptions, function () {
+          it('should allow preventDefault when a non-passive listener is added after a passive listener', () => {
+            const logs: string[] = [];
+            const passiveListener = () => {
+              logs.push('passive');
+            };
+            const activeListener = (e: Event) => {
+              logs.push('active:' + e.defaultPrevented);
+              e.preventDefault();
+              logs.push('active:' + e.defaultPrevented);
+            };
+
+            button.addEventListener('click', passiveListener, {passive: true});
+            button.addEventListener('click', activeListener, {passive: false});
+
+            const evt = new Event('click', {cancelable: true});
+            button.dispatchEvent(evt);
+
+            expect(logs).toEqual(['passive', 'active:false', 'active:true']);
+            expect(evt.defaultPrevented).toBe(true);
+
+            button.removeEventListener('click', passiveListener);
+            button.removeEventListener('click', activeListener);
+          });
+
+          it('should allow preventDefault when a default (unspecified passive) listener is added after a passive listener', () => {
+            const logs: string[] = [];
+            const passiveListener = () => {
+              logs.push('passive');
+            };
+            const defaultListener = (e: Event) => {
+              e.preventDefault();
+              logs.push('default:' + e.defaultPrevented);
+            };
+
+            button.addEventListener('click', passiveListener, {passive: true});
+            button.addEventListener('click', defaultListener);
+
+            const evt = new Event('click', {cancelable: true});
+            button.dispatchEvent(evt);
+
+            expect(logs).toEqual(['passive', 'default:true']);
+            expect(evt.defaultPrevented).toBe(true);
+
+            button.removeEventListener('click', passiveListener);
+            button.removeEventListener('click', defaultListener);
+          });
+
+          it('should allow preventDefault when an explicit passive:false listener is added after a browser-default passive listener on window', () => {
+            const logs: string[] = [];
+            const defaultListener = () => {
+              logs.push('default');
+            };
+            const activeListener = (e: Event) => {
+              e.preventDefault();
+              logs.push('active:' + e.defaultPrevented);
+            };
+
+            window.addEventListener('touchmove', defaultListener);
+            window.addEventListener('touchmove', activeListener, {passive: false});
+
+            const evt = new Event('touchmove', {cancelable: true});
+            window.dispatchEvent(evt);
+
+            expect(logs).toEqual(['default', 'active:true']);
+            expect(evt.defaultPrevented).toBe(true);
+
+            window.removeEventListener('touchmove', defaultListener);
+            window.removeEventListener('touchmove', activeListener);
+          });
+
+          it('should downgrade back to passive after removing the non-passive listener', () => {
+            const logs: boolean[] = [];
+            const passiveListener = (e: Event) => {
+              e.preventDefault();
+              logs.push(e.defaultPrevented);
+            };
+            const activeListener = (e: Event) => {
+              e.preventDefault();
+            };
+
+            button.addEventListener('click', passiveListener, {passive: true});
+            button.addEventListener('click', activeListener, {passive: false});
+            button.removeEventListener('click', activeListener);
+
+            const evt = new Event('click', {cancelable: true});
+            button.dispatchEvent(evt);
+
+            expect(logs).toEqual([false]);
+            expect(evt.defaultPrevented).toBe(false);
+
+            button.removeEventListener('click', passiveListener);
+          });
+
+          it('should downgrade back to passive after a non-passive listener is removed via AbortSignal', () => {
+            if (typeof AbortController === 'undefined') {
+              return;
+            }
+            const logs: boolean[] = [];
+            const controller = new AbortController();
+            const passiveListener = (e: Event) => {
+              e.preventDefault();
+              logs.push(e.defaultPrevented);
+            };
+            const activeListener = (e: Event) => {
+              e.preventDefault();
+            };
+
+            button.addEventListener('click', passiveListener, {passive: true});
+            button.addEventListener('click', activeListener, {
+              passive: false,
+              signal: controller.signal,
+            });
+            controller.abort();
+
+            const evt = new Event('click', {cancelable: true});
+            button.dispatchEvent(evt);
+
+            expect(logs).toEqual([false]);
+            expect(evt.defaultPrevented).toBe(false);
+
+            button.removeEventListener('click', passiveListener);
+          });
+
+          it('should preserve listener order and stopImmediatePropagation across interleaved passive and non-passive listeners', () => {
+            const logs: string[] = [];
+            const passive1 = () => {
+              logs.push('passive1');
+            };
+            const active = (e: Event) => {
+              logs.push('active');
+              e.preventDefault();
+              e.stopImmediatePropagation();
+            };
+            const passive2 = () => {
+              logs.push('passive2');
+            };
+
+            button.addEventListener('click', passive1, {passive: true});
+            button.addEventListener('click', active, {passive: false});
+            button.addEventListener('click', passive2, {passive: true});
+
+            const evt = new Event('click', {cancelable: true});
+            button.dispatchEvent(evt);
+
+            expect(logs).toEqual(['passive1', 'active']);
+            expect(evt.defaultPrevented).toBe(true);
+
+            button.removeEventListener('click', passive1);
+            button.removeEventListener('click', active);
+            button.removeEventListener('click', passive2);
+          });
+        }),
+      );
+
       describe('passiveEvents by global settings', () => {
         let logs: string[] = [];
         const listener = (e: Event) => {

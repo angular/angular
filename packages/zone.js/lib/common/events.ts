@@ -97,6 +97,39 @@ const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
 // properties that a caller-supplied options object may expose.
 const KNOWN_EVENT_LISTENER_OPTIONS = ['capture', 'once', 'passive', 'signal'];
 
+// Precedence order for the `passive` option when multiple listeners share a
+// single native `globalZoneAwareCallback`:
+//   0 = explicitly non-passive (`{passive: false}`)
+//   1 = browser default (`passive` unspecified)
+//   2 = explicitly passive (`{passive: true}`)
+// The native listener uses the minimum rank among all active tasks so that
+// any non-passive listener can still call `preventDefault()`.
+const PASSIVE_RANK_FALSE = 0;
+const PASSIVE_RANK_DEFAULT = 1;
+const PASSIVE_RANK_TRUE = 2;
+
+const PASSIVE_RANK_SYMBOL = zoneSymbol('passiveRank');
+
+function getPassiveRank(options: any): number {
+  if (typeof options === 'object' && options !== null && options.passive !== undefined) {
+    return options.passive ? PASSIVE_RANK_TRUE : PASSIVE_RANK_FALSE;
+  }
+  return PASSIVE_RANK_DEFAULT;
+}
+
+function buildNativeOptionsForPassiveRank(
+  capture: boolean,
+  passiveRank: number,
+): boolean | AddEventListenerOptions {
+  if (passiveRank === PASSIVE_RANK_FALSE) {
+    return {capture, passive: false};
+  }
+  if (passiveRank === PASSIVE_RANK_TRUE) {
+    return {capture, passive: true};
+  }
+  return capture;
+}
+
 function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
   const falseEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
   const trueEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
@@ -393,15 +426,37 @@ export function patchEventTarget(
     }
 
     const customScheduleGlobal = function (task: Task) {
+      const symbolEventNames = zoneSymbolEventNames[taskData.eventName!];
+      const symbolEventName =
+        symbolEventNames && symbolEventNames[taskData.capture ? TRUE_STR : FALSE_STR];
+      const existingTasks = symbolEventName && taskData.target[symbolEventName];
+      const newRank = getPassiveRank(taskData.options);
+      const globalCb = taskData.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback;
+
       // if there is already a task for the eventName + capture,
-      // just return, because we use the shared globalZoneAwareCallback here.
+      // reuse the shared globalZoneAwareCallback unless the new listener
+      // requires a stricter (less passive) native registration.
       if (taskData.isExisting) {
+        if (existingTasks && newRank < existingTasks[PASSIVE_RANK_SYMBOL]) {
+          const capture = Boolean(taskData.capture);
+          nativeRemoveEventListener.call(taskData.target, taskData.eventName, globalCb, capture);
+          existingTasks[PASSIVE_RANK_SYMBOL] = newRank;
+          return nativeAddEventListener.call(
+            taskData.target,
+            taskData.eventName,
+            globalCb,
+            buildNativeOptionsForPassiveRank(capture, newRank),
+          );
+        }
         return;
+      }
+      if (existingTasks) {
+        existingTasks[PASSIVE_RANK_SYMBOL] = newRank;
       }
       return nativeAddEventListener.call(
         taskData.target,
         taskData.eventName,
-        taskData.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback,
+        globalCb,
         taskData.options,
       );
     };
@@ -413,50 +468,72 @@ export function patchEventTarget(
      * the task target.
      */
     const customCancelGlobal = function (task: InternalEventTask) {
+      const symbolEventNames = zoneSymbolEventNames[task.eventName!];
+      const symbolEventName =
+        symbolEventNames && symbolEventNames[task.capture ? TRUE_STR : FALSE_STR];
+      const existingTasks = symbolEventName && task.target && task.target[symbolEventName];
+
       // if task is not marked as isRemoved, this call is directly
       // from Zone.prototype.cancelTask, we should remove the task
       // from tasksList of target first
-      if (!task.isRemoved) {
-        const symbolEventNames = zoneSymbolEventNames[task.eventName!];
-        let symbolEventName;
-        if (symbolEventNames) {
-          symbolEventName = symbolEventNames[task.capture ? TRUE_STR : FALSE_STR];
-        }
-        const existingTasks = symbolEventName && task.target[symbolEventName];
-        if (existingTasks) {
-          for (let i = 0; i < existingTasks.length; i++) {
-            const existingTask = existingTasks[i];
-            if (existingTask === task) {
-              existingTasks.splice(i, 1);
-              // set isRemoved to data for faster invokeTask check
-              task.isRemoved = true;
-              if (task.removeAbortListener) {
-                task.removeAbortListener();
-                task.removeAbortListener = null;
-              }
-              if (existingTasks.length === 0) {
-                // all tasks for the eventName + capture have gone,
-                // remove globalZoneAwareCallback and remove the task cache from target
-                task.allRemoved = true;
-                task.target[symbolEventName] = null;
-              }
-              break;
+      if (!task.isRemoved && existingTasks) {
+        for (let i = 0; i < existingTasks.length; i++) {
+          const existingTask = existingTasks[i];
+          if (existingTask === task) {
+            existingTasks.splice(i, 1);
+            // set isRemoved to data for faster invokeTask check
+            task.isRemoved = true;
+            if (task.removeAbortListener) {
+              task.removeAbortListener();
+              task.removeAbortListener = null;
             }
+            if (existingTasks.length === 0) {
+              // all tasks for the eventName + capture have gone,
+              // remove globalZoneAwareCallback and remove the task cache from target
+              task.allRemoved = true;
+              task.target[symbolEventName] = null;
+            }
+            break;
           }
         }
       }
+      const globalCb = task.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback;
       // if all tasks for the eventName + capture have gone,
-      // we will really remove the global event callback,
-      // if not, return
+      // we will really remove the global event callback;
+      // otherwise check whether the remaining tasks allow downgrading
+      // the native listener back to a more passive state.
       if (!task.allRemoved) {
+        if (
+          existingTasks &&
+          existingTasks.length > 0 &&
+          getPassiveRank(task.options) === existingTasks[PASSIVE_RANK_SYMBOL] &&
+          existingTasks[PASSIVE_RANK_SYMBOL] < PASSIVE_RANK_TRUE
+        ) {
+          let nextRank = PASSIVE_RANK_TRUE;
+          for (let i = 0; i < existingTasks.length; i++) {
+            const rank = getPassiveRank(existingTasks[i].options);
+            if (rank < nextRank) {
+              nextRank = rank;
+              if (nextRank === existingTasks[PASSIVE_RANK_SYMBOL]) {
+                break;
+              }
+            }
+          }
+          if (nextRank > existingTasks[PASSIVE_RANK_SYMBOL]) {
+            const capture = Boolean(task.capture);
+            nativeRemoveEventListener.call(task.target, task.eventName, globalCb, capture);
+            existingTasks[PASSIVE_RANK_SYMBOL] = nextRank;
+            return nativeAddEventListener.call(
+              task.target,
+              task.eventName,
+              globalCb,
+              buildNativeOptionsForPassiveRank(capture, nextRank),
+            );
+          }
+        }
         return;
       }
-      return nativeRemoveEventListener.call(
-        task.target,
-        task.eventName,
-        task.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback,
-        task.options,
-      );
+      return nativeRemoveEventListener.call(task.target, task.eventName, globalCb, task.options);
     };
 
     const customScheduleNonGlobal = function (task: Task) {
