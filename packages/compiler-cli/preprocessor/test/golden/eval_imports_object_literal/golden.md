@@ -31,7 +31,7 @@ export class AppComponent {
       decls: 1,
       vars: 1,
       consts: [[3, 'label']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'lib-shared', 0);
         }
@@ -161,7 +161,7 @@ export class SharedComponent {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function SharedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SharedComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Shared');

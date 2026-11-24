@@ -80,7 +80,7 @@ export class MyComp {
       },
       decls: 0,
       vars: 0,
-      template: function MyComp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MyComp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

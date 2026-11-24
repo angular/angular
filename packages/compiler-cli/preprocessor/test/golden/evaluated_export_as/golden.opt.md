@@ -71,7 +71,7 @@ export class App {
         ['tooltip', '', 3, 'click'],
         ['multi', '', 3, 'click'],
       ],
-      template: function App_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function App_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           const _r1: any = i0.ɵɵgetCurrentView();
           i0.ɵɵelementStart(0, 'button', 2, 0);

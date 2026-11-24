@@ -11,7 +11,7 @@ const AppComponent_Defer_1_DepsFn = (): any => [
   /* @ts-ignore */
   import('./deferred-b').then((m: any): any => m.default),
 ];
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'deferred-a')(1, 'deferred-b');
   }
@@ -42,7 +42,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 3,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 2, 0);
           i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
@@ -132,7 +132,7 @@ export default class DefCompA {
       selectors: [['deferred-a']],
       decls: 1,
       vars: 0,
-      template: function DefCompA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DefCompA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'A');
         }
@@ -201,7 +201,7 @@ export default class DefCompB {
       selectors: [['deferred-b']],
       decls: 1,
       vars: 0,
-      template: function DefCompB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DefCompB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'B');
         }

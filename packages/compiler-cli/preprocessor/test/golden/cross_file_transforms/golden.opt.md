@@ -106,7 +106,10 @@ export class TestTransformsComponent {
       },
       decls: 1,
       vars: 0,
-      template: function TestTransformsComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestTransformsComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'div');
         }
@@ -201,7 +204,7 @@ export class AppComponent {
           'externalTypeInput',
         ],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'test-transforms', 0);
         }

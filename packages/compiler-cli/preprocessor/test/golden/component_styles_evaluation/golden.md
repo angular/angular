@@ -35,7 +35,7 @@ export class TestComponent {
       decls: 1,
       vars: 0,
       consts: [[1, 'box']],
-      template: function TestComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }

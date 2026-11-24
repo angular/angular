@@ -52,7 +52,7 @@ export class Cmp {
       decls: 1,
       vars: 0,
       consts: [['dir', '']],
-      template: function Cmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Cmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0_1.ɵɵelement(0, 'div', 0);
         }
@@ -203,7 +203,7 @@ export class Existing {
       decls: 1,
       vars: 0,
       consts: [['dir', '']],
-      template: function Existing_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Existing_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0_1.ɵɵelement(0, 'div', 0);
         }
@@ -351,7 +351,7 @@ class InlineCmp {
       decls: 1,
       vars: 1,
       consts: [[3, 'sdir']],
-      template: function InlineCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function InlineCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0_1.ɵɵelement(0, 'div', 0);
         }

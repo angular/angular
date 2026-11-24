@@ -90,7 +90,7 @@ export class App {
       decls: 3,
       vars: 1,
       consts: [['badge', '', 3, 'highlight']],
-      template: function App_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function App_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'app-card')(1, 'p', 0);
           i0.ɵɵtext(2, 'hi');
@@ -185,7 +185,7 @@ export class Card {
       ngContentSelectors: _c0,
       decls: 1,
       vars: 0,
-      template: function Card_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Card_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef();
           i0.ɵɵprojection(0);
@@ -314,7 +314,7 @@ export class LegacyItem {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function LegacyItem_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LegacyItem_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'item');
         }
@@ -371,7 +371,7 @@ export class LegacyList {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function LegacyList_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LegacyList_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'legacy-item');
         }

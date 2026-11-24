@@ -64,7 +64,7 @@ export class LifecycleComp {
       features: [i0.ɵɵNgOnChangesFeature],
       decls: 0,
       vars: 0,
-      template: function LifecycleComp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function LifecycleComp_Template(rf: number, ctx: any): any {},
       dependencies: i0.ɵɵgetComponentDepsFactory(LifecycleComp),
       encapsulation: 2,
     });
@@ -127,7 +127,7 @@ export class SimpleLayout {
       decls: 2,
       vars: 2,
       consts: [[3, 'name']],
-      template: function SimpleLayout_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SimpleLayout_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'lifecycle-comp', 0)(1, 'lifecycle-comp', 0);
         }

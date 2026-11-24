@@ -126,7 +126,7 @@ export class AppComponent {
           'selectedId',
         ],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'app-greeting', 0);
           i0.ɵɵlistener(
@@ -379,7 +379,7 @@ export class GreetingComponent {
       },
       decls: 2,
       vars: 2,
-      template: function GreetingComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function GreetingComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1);

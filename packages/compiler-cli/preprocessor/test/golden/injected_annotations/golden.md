@@ -102,7 +102,7 @@ export class TestComponent {
       selectors: [['app-test']],
       decls: 0,
       vars: 0,
-      template: function TestComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function TestComponent_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

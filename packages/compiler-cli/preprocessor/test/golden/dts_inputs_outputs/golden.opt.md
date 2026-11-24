@@ -81,7 +81,7 @@ export class AppComponent {
         ],
         ['test-dir', '', 3, 'dirInput', 'signal'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'test-cmp', 0);
           i0.ɵɵlistener(

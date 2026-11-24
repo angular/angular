@@ -40,7 +40,7 @@ export class AppComponent {
         [3, 'valueChange', 'selected', 'value'],
         [3, 'itemsSubmit', 'items'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'child-comp', 0);
           i0.ɵɵlistener(
@@ -200,7 +200,7 @@ export class ChildComponent extends AliasedBase {
       features: [i0.ɵɵInheritDefinitionFeature],
       decls: 0,
       vars: 0,
-      template: function ChildComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function ChildComponent_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -272,7 +272,7 @@ export class Widget extends BaseWidget {
       features: [i0.ɵɵInheritDefinitionFeature],
       decls: 0,
       vars: 0,
-      template: function Widget_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function Widget_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

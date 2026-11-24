@@ -32,7 +32,7 @@ export class AppComponent {
       decls: 2,
       vars: 0,
       consts: [['routerLink', '/']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'a', 0);
           i0.ɵɵtext(1, 'Home');

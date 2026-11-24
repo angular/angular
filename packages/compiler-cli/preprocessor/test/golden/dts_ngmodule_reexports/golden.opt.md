@@ -54,7 +54,7 @@ export class AppComponent {
       decls: 1,
       vars: 1,
       consts: [[3, 'myProp']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'feature-cmp', 0);
         }

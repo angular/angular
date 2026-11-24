@@ -38,7 +38,7 @@ export class AppComponent {
       decls: 1,
       vars: 0,
       consts: [frameworkImport(FancyButton)],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵforeignComponent(0, 0, (): any => ({ label: ctx.title }));
         }

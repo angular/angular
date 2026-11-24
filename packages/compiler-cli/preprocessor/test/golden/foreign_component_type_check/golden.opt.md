@@ -59,7 +59,10 @@ export class ForeignHostComponent {
       decls: 1,
       vars: 0,
       consts: [frameworkImport(Widget)],
-      template: function ForeignHostComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ForeignHostComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵforeignComponent(0, 0, (): any => ({ size: ctx.size, label: ctx.label }));
         }
@@ -195,7 +198,10 @@ export class MissingForeignImportsComponent {
       decls: 1,
       vars: 1,
       consts: [[3, 'size']],
-      template: function MissingForeignImportsComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MissingForeignImportsComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'Widget', 0);
         }

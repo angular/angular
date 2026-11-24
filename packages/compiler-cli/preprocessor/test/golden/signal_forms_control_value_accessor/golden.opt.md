@@ -279,7 +279,7 @@ export class MyComp {
         ['partialCva', '', 3, 'formField'],
         ['privateCva', '', 3, 'formField'],
       ],
-      template: function MyComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'input', 0);
           i0.ɵɵcontrolCreate();

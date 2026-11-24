@@ -65,7 +65,7 @@ export class OnPushCmp {
       selectors: [['on-push-cmp']],
       decls: 2,
       vars: 0,
-      template: function OnPushCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function OnPushCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1, 'On Push Component');
@@ -129,7 +129,7 @@ export class DefaultCmp {
       selectors: [['default-cmp']],
       decls: 2,
       vars: 0,
-      template: function DefaultCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DefaultCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1, 'Default Component');
@@ -194,7 +194,7 @@ export class EagerCmp {
       selectors: [['eager-cmp']],
       decls: 2,
       vars: 0,
-      template: function EagerCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function EagerCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1, 'Eager Component');
@@ -261,7 +261,7 @@ export class OmittedCmp {
       selectors: [['omitted-cmp']],
       decls: 2,
       vars: 0,
-      template: function OmittedCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function OmittedCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1, 'Omitted Component');

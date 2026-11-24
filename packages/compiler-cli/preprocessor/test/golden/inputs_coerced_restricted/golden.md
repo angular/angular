@@ -83,7 +83,10 @@ export class TestCoercedComponent {
       },
       decls: 1,
       vars: 0,
-      template: function TestCoercedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestCoercedComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div');
         }
@@ -175,7 +178,7 @@ export class AppComponent {
           'normalInput',
         ],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'test-coerced', 0);
         }

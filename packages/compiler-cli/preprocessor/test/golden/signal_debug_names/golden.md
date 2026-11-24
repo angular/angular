@@ -293,7 +293,10 @@ export class SignalDebugNamesComponent {
       decls: 3,
       vars: 1,
       consts: [['el', '']],
-      template: function SignalDebugNamesComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SignalDebugNamesComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', null, 0);
           i0.ɵɵtext(2);

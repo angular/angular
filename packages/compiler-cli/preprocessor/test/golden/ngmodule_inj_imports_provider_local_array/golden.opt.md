@@ -111,7 +111,7 @@ export class CmpLocalArray {
       selectors: [['c1']],
       decls: 0,
       vars: 0,
-      template: function CmpLocalArray_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpLocalArray_Template(rf: number, ctx: any): any {},
       dependencies: [NoProvModule, ProvModule],
       encapsulation: 2,
     });
@@ -164,7 +164,7 @@ export class CmpSpread {
       selectors: [['c2']],
       decls: 0,
       vars: 0,
-      template: function CmpSpread_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpSpread_Template(rf: number, ctx: any): any {},
       dependencies: [NoProvModule, ProvModule],
       encapsulation: 2,
     });
@@ -217,7 +217,7 @@ export class CmpNested {
       selectors: [['c3']],
       decls: 0,
       vars: 0,
-      template: function CmpNested_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpNested_Template(rf: number, ctx: any): any {},
       dependencies: [NoProvModule, ProvModule],
       encapsulation: 2,
     });
@@ -265,7 +265,7 @@ export class CmpNoProv {
       selectors: [['c4']],
       decls: 0,
       vars: 0,
-      template: function CmpNoProv_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpNoProv_Template(rf: number, ctx: any): any {},
       dependencies: [NoProvModule],
       encapsulation: 2,
     });
@@ -317,7 +317,10 @@ export class CmpLocalTransitive {
       selectors: [['c5']],
       decls: 0,
       vars: 0,
-      template: function CmpLocalTransitive_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpLocalTransitive_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       dependencies: [LocalTransitiveModule],
       encapsulation: 2,
     });

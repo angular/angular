@@ -38,7 +38,7 @@ export class DashboardComponent {
         [3, 'filterDir'],
         [3, 'viewData'],
       ],
-      template: function DashboardComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DashboardComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'filter-bar', 0)(1, 'div', 1)(2, 'local-config-comp', 0)(
             3,
@@ -139,7 +139,10 @@ export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> 
       inputs: { config: 'config' },
       decls: 0,
       vars: 0,
-      template: function FilterBarComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function FilterBarComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -263,7 +266,10 @@ export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
       inputs: { config: 'config' },
       decls: 0,
       vars: 0,
-      template: function LocalConfigComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function LocalConfigComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -330,7 +336,10 @@ export class NestedViewComponent<T extends NestedData<string> = NestedData<strin
       inputs: { viewData: 'viewData' },
       decls: 0,
       vars: 0,
-      template: function NestedViewComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function NestedViewComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {

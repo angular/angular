@@ -4,7 +4,7 @@ import { Component, Pipe, PipeTransform } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtext(0);
     i0.ɵɵpipe(1, 'myPipe');
@@ -13,7 +13,7 @@ function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
     i0.ɵɵtextInterpolate1(' ', i0.ɵɵpipeBind1(1, 1, 'hello'), ' ');
   }
 }
-function AppComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtext(0, ' Placeholder ');
   }
@@ -88,7 +88,7 @@ class AppComponent {
       selectors: [['app-root']],
       decls: 5,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 2, 3)(

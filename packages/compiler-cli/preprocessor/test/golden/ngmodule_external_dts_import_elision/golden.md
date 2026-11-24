@@ -30,7 +30,7 @@ export class DummyComponent {
       selectors: [['dummy-cmp']],
       decls: 2,
       vars: 0,
-      template: function DummyComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DummyComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Dummy');
@@ -96,7 +96,7 @@ export class AppComponent {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Hello');

@@ -58,7 +58,7 @@ export class AppCmp {
       decls: 1,
       vars: 1,
       consts: [['myDir', '', 3, 'myDirAliasedOut', 'myDirAliasedInp']],
-      template: function AppCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵlistener(

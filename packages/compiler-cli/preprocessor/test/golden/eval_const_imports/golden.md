@@ -31,7 +31,7 @@ export class AppComponent {
       decls: 1,
       vars: 0,
       consts: [['libBar', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'lib-foo', 0);
         }
@@ -151,7 +151,7 @@ export class FooComponent {
       selectors: [['lib-foo']],
       decls: 2,
       vars: 0,
-      template: function FooComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function FooComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Foo');

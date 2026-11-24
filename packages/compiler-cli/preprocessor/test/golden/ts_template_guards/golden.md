@@ -5,7 +5,7 @@ import { MyIf, MyDirWithInvalidGuards } from './my-dir';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_div_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_div_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'div');
     i0.ɵɵtext(1);
@@ -17,7 +17,7 @@ function AppComponent_div_0_Template(rf: number, ctx: any): any {
     i0.ɵɵtextInterpolate1(' ', user_r1.name, ' ');
   }
 }
-function AppComponent_div_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_div_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'div');
     i0.ɵɵtext(1);
@@ -62,7 +62,7 @@ export class AppComponent {
         [4, 'myIf', 'myIfInvocation'],
         [4, 'invalidGuards'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtemplate(0, AppComponent_div_0_Template, 2, 1, 'div', 0)(
             1,

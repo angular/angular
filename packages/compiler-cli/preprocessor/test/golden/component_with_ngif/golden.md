@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function HelloComponent_div_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function HelloComponent_div_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'div');
     i0.ɵɵtext(1);
@@ -45,7 +45,7 @@ export class HelloComponent {
       decls: 1,
       vars: 1,
       consts: [[4, 'ngIf']],
-      template: function HelloComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function HelloComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtemplate(0, HelloComponent_div_0_Template, 2, 1, 'div', 0);
         }

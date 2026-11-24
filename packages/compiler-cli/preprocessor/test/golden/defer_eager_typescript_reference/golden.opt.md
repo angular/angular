@@ -34,12 +34,12 @@ const AppComponent_Defer_3_DepsFn = (): any => [
   QueriedComponent,
   DeferredTwin,
 ];
-function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'app-deferred')(1, 'app-queried')(2, 'app-deferred-twin');
   }
 }
-function AppComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtext(0, ' Placeholder ');
   }
@@ -83,7 +83,7 @@ export class AppComponent {
       },
       decls: 5,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'app-eager-twin');
           i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 3, 0)(
@@ -197,7 +197,7 @@ export class DeferredComponent {
       selectors: [['app-deferred']],
       decls: 1,
       vars: 0,
-      template: function DeferredComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DeferredComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Deferred content');
         }
@@ -284,7 +284,7 @@ export class QueriedComponent {
       selectors: [['app-queried']],
       decls: 1,
       vars: 0,
-      template: function QueriedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function QueriedComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Queried content');
         }
@@ -377,7 +377,7 @@ export class DeferredTwin {
       selectors: [['app-deferred-twin']],
       decls: 1,
       vars: 0,
-      template: function DeferredTwin_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DeferredTwin_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Deferred twin');
         }
@@ -438,7 +438,7 @@ export class EagerTwin {
       selectors: [['app-eager-twin']],
       decls: 1,
       vars: 0,
-      template: function EagerTwin_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function EagerTwin_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Eager twin');
         }

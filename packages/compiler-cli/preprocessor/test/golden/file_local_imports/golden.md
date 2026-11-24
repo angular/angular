@@ -116,7 +116,7 @@ export class LocalComp {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function LocalComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'local');
@@ -183,7 +183,7 @@ export class AppComponent {
       decls: 3,
       vars: 3,
       consts: [['localDir', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'local-comp', 0);
           i0.ɵɵtext(1);

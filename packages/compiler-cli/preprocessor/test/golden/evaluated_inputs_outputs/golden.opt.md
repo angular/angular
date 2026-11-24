@@ -84,7 +84,7 @@ export class App {
           'hintAlias',
         ],
       ],
-      template: function App_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function App_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵlistener(

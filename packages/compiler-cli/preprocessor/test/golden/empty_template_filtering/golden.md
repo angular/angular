@@ -71,7 +71,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 0,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {},
       dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [UnusedDir]),
       encapsulation: 2,
     });

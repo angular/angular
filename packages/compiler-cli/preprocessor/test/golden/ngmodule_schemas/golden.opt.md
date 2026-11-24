@@ -82,7 +82,10 @@ export class MyCompCustomElements {
       decls: 2,
       vars: 1,
       consts: [[3, 'unknown-property']],
-      template: function MyCompCustomElements_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyCompCustomElements_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
         }
@@ -197,7 +200,7 @@ export class MyCompNoErrors {
       decls: 2,
       vars: 1,
       consts: [[3, 'unknown-property']],
-      template: function MyCompNoErrors_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyCompNoErrors_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
         }
@@ -306,7 +309,10 @@ export class MyCompStandaloneImportingModule {
       decls: 2,
       vars: 1,
       consts: [[3, 'unknown-property']],
-      template: function MyCompStandaloneImportingModule_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyCompStandaloneImportingModule_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'unknown-element')(1, 'div', 0);
         }
@@ -378,7 +384,7 @@ export class MyCompNoSchemas {
       decls: 2,
       vars: 1,
       consts: [[3, 'unknown-property']],
-      template: function MyCompNoSchemas_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyCompNoSchemas_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
         }

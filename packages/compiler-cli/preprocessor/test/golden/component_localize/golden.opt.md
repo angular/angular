@@ -97,7 +97,7 @@ export class LocalizeSimpleCmp {
         }
         return [i18n_0, i18n_1];
       },
-      template: function LocalizeSimpleCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalizeSimpleCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵi18n(1, 0);
@@ -205,7 +205,10 @@ export class LocalizeInterpolationCmp {
         }
         return [i18n_2, i18n_3];
       },
-      template: function LocalizeInterpolationCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalizeInterpolationCmp_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵi18n(1, 0);
@@ -298,7 +301,10 @@ export class LocalizeAttributesCmp {
         }
         return [['title', i18n_4]];
       },
-      template: function LocalizeAttributesCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalizeAttributesCmp_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'input', 0);
         }
@@ -387,7 +393,10 @@ export class LocalizeNamedPlaceholderCmp {
         }
         return [i18n_5];
       },
-      template: function LocalizeNamedPlaceholderCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalizeNamedPlaceholderCmp_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵi18n(1, 0);

@@ -36,7 +36,7 @@ export class AppComponent {
         [3, 'value'],
         [3, 'fireTeleportalOutlet'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'proto-box', 0)(1, 'div', 1);
         }
@@ -125,7 +125,7 @@ export class ProtoBox<
       inputs: { format: 'format', value: 'value' },
       decls: 0,
       vars: 0,
-      template: function ProtoBox_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function ProtoBox_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

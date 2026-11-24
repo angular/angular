@@ -6,7 +6,7 @@ import { TrimPipeModule } from './pipe_module';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'button', 0);
     i0.ɵɵtext(1);
@@ -45,7 +45,7 @@ export class AppComponent {
       decls: 3,
       vars: 0,
       consts: [['matButton', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 3, 3);
           i0.ɵɵdefer(1, 0);

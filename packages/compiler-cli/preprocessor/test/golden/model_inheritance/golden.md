@@ -36,7 +36,7 @@ export class AppComponent {
         [3, 'counterChange', 'counter'],
         [3, 'valueChange', 'value'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'child-cmp', 0);
           i0.ɵɵtwoWayListener(
@@ -204,7 +204,7 @@ export class ChildComponent extends BaseDir {
       features: [i0.ɵɵInheritDefinitionFeature],
       decls: 2,
       vars: 0,
-      template: function ChildComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ChildComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Child');
@@ -274,7 +274,7 @@ export class SettingComponent extends BaseSetting<string> {
       features: [i0.ɵɵInheritDefinitionFeature],
       decls: 2,
       vars: 0,
-      template: function SettingComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SettingComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Setting');

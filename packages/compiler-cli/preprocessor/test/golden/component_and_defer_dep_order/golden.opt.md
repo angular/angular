@@ -35,7 +35,7 @@ const AppComp_Defer_1_DepsFn = (): any => [
   /* @ts-ignore */
   import('./lazy').then((m: any): any => m.MyPipe),
 ];
-function AppComp_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComp_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'div', 0);
     i0.ɵɵtext(1);
@@ -74,7 +74,7 @@ export class AppComp {
       decls: 3,
       vars: 0,
       consts: [['dirB', '', 'dirA', '']],
-      template: function AppComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComp_Defer_0_Template, 3, 3);
           i0.ɵɵdefer(1, 0, AppComp_Defer_1_DepsFn);

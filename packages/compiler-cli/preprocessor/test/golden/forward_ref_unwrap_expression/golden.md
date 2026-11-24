@@ -92,7 +92,7 @@ export class HostComponent {
       ],
       decls: 0,
       vars: 0,
-      template: function HostComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function HostComponent_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -178,7 +178,7 @@ export class ImportsComponent {
       decls: 1,
       vars: 0,
       consts: [['dep', '']],
-      template: function ImportsComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImportsComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }

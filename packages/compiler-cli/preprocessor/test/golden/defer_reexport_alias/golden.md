@@ -5,7 +5,10 @@ import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function NetworkActivityComponent_Defer_0_div_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function NetworkActivityComponent_Defer_0_div_0_Template(
+  rf: number,
+  ctx: any,
+): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'div');
     i0.ɵɵtext(1);
@@ -17,7 +20,7 @@ function NetworkActivityComponent_Defer_0_div_0_Template(rf: number, ctx: any): 
     i0.ɵɵtextInterpolate(item_r1);
   }
 }
-function NetworkActivityComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function NetworkActivityComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtemplate(0, NetworkActivityComponent_Defer_0_div_0_Template, 2, 1, 'div', 0);
   }
@@ -26,7 +29,10 @@ function NetworkActivityComponent_Defer_0_Template(rf: number, ctx: any): any {
     i0.ɵɵproperty('ngForOf', ctx_r1.items);
   }
 }
-function NetworkActivityComponent_DeferPlaceholder_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function NetworkActivityComponent_DeferPlaceholder_1_Template(
+  rf: number,
+  ctx: any,
+): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'span');
     i0.ɵɵtext(1, 'Placeholder');
@@ -60,7 +66,10 @@ export class NetworkActivityComponent {
       decls: 4,
       vars: 0,
       consts: [[4, 'ngFor', 'ngForOf']],
-      template: function NetworkActivityComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function NetworkActivityComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, NetworkActivityComponent_Defer_0_Template, 1, 1)(
             1,

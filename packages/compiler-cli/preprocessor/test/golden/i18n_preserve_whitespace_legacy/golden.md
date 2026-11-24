@@ -49,7 +49,7 @@ export class AppComp {
         }
         return [i18n_0];
       },
-      template: function AppComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵi18nStart(1, 0);

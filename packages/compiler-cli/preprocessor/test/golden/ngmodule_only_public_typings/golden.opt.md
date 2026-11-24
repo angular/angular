@@ -223,7 +223,7 @@ export class PrivateCmp {
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function PrivateCmp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function PrivateCmp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -271,7 +271,7 @@ export class InternalCmp {
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function InternalCmp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function InternalCmp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

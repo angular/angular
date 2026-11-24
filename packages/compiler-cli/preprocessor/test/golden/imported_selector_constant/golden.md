@@ -32,7 +32,7 @@ export class AppComponent {
       decls: 1,
       vars: 0,
       consts: [['appTooltip', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'app-dialog', 0);
         }
@@ -104,7 +104,7 @@ export class DialogComponent {
       selectors: [['app-dialog']],
       decls: 2,
       vars: 0,
-      template: function DialogComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DialogComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'p');
           i0.ɵɵtext(1, 'Dialog');
@@ -177,7 +177,7 @@ export class LegacyWidget {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function LegacyWidget_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LegacyWidget_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Legacy');
@@ -243,7 +243,7 @@ export class LegacyHost {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function LegacyHost_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LegacyHost_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'legacy-widget');
         }

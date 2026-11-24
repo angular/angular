@@ -106,7 +106,7 @@ export class AppComponent {
       decls: 7,
       vars: 0,
       consts: [['appLocalDir', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'app-button', 0);
           i0.ɵɵtext(1, 'Click');
@@ -221,7 +221,10 @@ export class BarrelItemComponent {
       selectors: [['app-barrel-item']],
       decls: 2,
       vars: 0,
-      template: function BarrelItemComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function BarrelItemComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'span');
           i0.ɵɵtext(1, 'Barrel');
@@ -313,7 +316,7 @@ export class ButtonComponent {
       ngContentSelectors: _c0,
       decls: 2,
       vars: 0,
-      template: function ButtonComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ButtonComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef();
           i0.ɵɵdomElementStart(0, 'button');
@@ -406,7 +409,7 @@ export class CardComponent {
       ngContentSelectors: _c0,
       decls: 2,
       vars: 0,
-      template: function CardComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CardComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef();
           i0.ɵɵdomElementStart(0, 'div');
@@ -496,7 +499,10 @@ export class FeatureInnerComponent {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function FeatureInnerComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function FeatureInnerComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'p');
           i0.ɵɵtext(1, 'Feature Inner');
@@ -634,7 +640,7 @@ export class IconComponent {
       selectors: [['app-icon']],
       decls: 2,
       vars: 0,
-      template: function IconComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function IconComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'i');
           i0.ɵɵtext(1, 'icon');
@@ -722,7 +728,10 @@ export class OtherUnusedComponent {
       selectors: [['other-unused']],
       decls: 0,
       vars: 0,
-      template: function OtherUnusedComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function OtherUnusedComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {

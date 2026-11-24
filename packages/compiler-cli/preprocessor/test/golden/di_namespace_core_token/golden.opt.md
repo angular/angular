@@ -58,7 +58,7 @@ export class MyComponent {
       selectors: [['my-component']],
       decls: 1,
       vars: 0,
-      template: function MyComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'div');
         }

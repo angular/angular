@@ -29,7 +29,7 @@ export class ChildComponent<T> {
       selectors: [['child-comp']],
       decls: 2,
       vars: 0,
-      template: function ChildComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ChildComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Child');
@@ -101,7 +101,7 @@ export class ParentComponent<T> {
       },
       decls: 2,
       vars: 0,
-      template: function ParentComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ParentComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Parent');

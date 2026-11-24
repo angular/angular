@@ -30,7 +30,7 @@ export class ModuleChild {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function ModuleChild_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ModuleChild_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'i');
           i0.ɵɵtext(1, 'module child');
@@ -95,7 +95,7 @@ export class ModuleParent {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function ModuleParent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ModuleParent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'ng-component');
         }
@@ -206,7 +206,7 @@ export class Child {
       selectors: [['ng-component']],
       decls: 2,
       vars: 0,
-      template: function Child_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Child_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'child');
@@ -265,7 +265,7 @@ export class EmptySelector {
       selectors: [['ng-component']],
       decls: 2,
       vars: 0,
-      template: function EmptySelector_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function EmptySelector_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'b');
           i0.ɵɵtext(1, 'empty');
@@ -328,7 +328,7 @@ export class App {
       selectors: [['app-root']],
       decls: 1,
       vars: 0,
-      template: function App_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function App_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'ng-component');
         }
@@ -387,7 +387,7 @@ export class AppEmpty {
       selectors: [['app-empty']],
       decls: 1,
       vars: 0,
-      template: function AppEmpty_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppEmpty_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'ng-component');
         }
@@ -451,7 +451,7 @@ export class AppByName {
       selectors: [['app-by-name']],
       decls: 1,
       vars: 0,
-      template: function AppByName_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppByName_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'Child');
         }

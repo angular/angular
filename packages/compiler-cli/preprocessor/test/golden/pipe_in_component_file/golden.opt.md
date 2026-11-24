@@ -84,7 +84,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 2,
       vars: 3,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0);
           i0.ɵɵpipe(1, 'myPipe');

@@ -36,7 +36,7 @@ export class AppComponent {
       decls: 4,
       vars: 0,
       consts: [[3, 'click']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'button', 0);
           i0.ɵɵlistener('click', function AppComponent_Template_button_click_0_listener(): any {

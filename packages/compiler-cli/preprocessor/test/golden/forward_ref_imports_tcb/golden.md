@@ -30,7 +30,7 @@ export class HostComponent {
       decls: 1,
       vars: 1,
       consts: [[3, 'value']],
-      template: function HostComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function HostComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'app-target', 0);
         }
@@ -100,7 +100,7 @@ export class TargetComponent {
       inputs: { value: 'value' },
       decls: 2,
       vars: 0,
-      template: function TargetComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TargetComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Target');

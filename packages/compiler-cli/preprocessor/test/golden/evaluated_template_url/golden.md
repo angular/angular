@@ -30,7 +30,7 @@ export class FooterComponent {
       selectors: [['app-footer']],
       decls: 2,
       vars: 0,
-      template: function FooterComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function FooterComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'footer');
           i0.ɵɵtext(1, 'footer');
@@ -92,7 +92,10 @@ export class BadFooterComponent {
       selectors: [['app-bad-footer']],
       decls: 0,
       vars: 0,
-      template: function BadFooterComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function BadFooterComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -158,7 +161,7 @@ export class HeaderComponent {
       selectors: [['app-header']],
       decls: 2,
       vars: 0,
-      template: function HeaderComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function HeaderComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'header');
           i0.ɵɵtext(1, 'default header');

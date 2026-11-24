@@ -9,12 +9,12 @@ import * as i0 from '@angular/core';
 
 const AppComponent_Defer_1_DepsFn = (): any => [CompA];
 const AppComponent_Defer_4_DepsFn = (): any => [CompB, PipeA];
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'comp-a');
   }
 }
-function AppComponent_Defer_3_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_3_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'comp-b');
     i0.ɵɵtext(1);
@@ -51,7 +51,7 @@ export class AppComponent {
       selectors: [['app-comp']],
       decls: 6,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
@@ -139,7 +139,7 @@ export class CompA {
       selectors: [['comp-a']],
       decls: 1,
       vars: 0,
-      template: function CompA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component A');
         }
@@ -205,7 +205,7 @@ export class CompB {
       selectors: [['comp-b']],
       decls: 1,
       vars: 0,
-      template: function CompB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component B');
         }

@@ -41,7 +41,7 @@ export class C1 {
       decls: 1,
       vars: 0,
       consts: [['d', '']],
-      template: function C1_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function C1_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }
@@ -114,7 +114,7 @@ export class C2 {
       decls: 1,
       vars: 0,
       consts: [['d', '']],
-      template: function C2_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function C2_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'span', 0);
         }

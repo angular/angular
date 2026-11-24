@@ -31,7 +31,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 2,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'local-comp')(1, 'external-comp');
         }
@@ -122,7 +122,7 @@ export class LocalComp {
       selectors: [['local-comp']],
       decls: 1,
       vars: 0,
-      template: function LocalComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Local');
         }

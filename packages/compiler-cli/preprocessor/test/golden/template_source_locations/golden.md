@@ -29,7 +29,7 @@ export class ExternalCmp {
       selectors: [['external-cmp']],
       decls: 3,
       vars: 0,
-      template: function ExternalCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ExternalCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div')(1, 'span');
           i0.ɵɵtext(2, 'external');
@@ -79,7 +79,7 @@ import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function InlineCmp_Conditional_7_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function InlineCmp_Conditional_7_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'button');
     i0.ɵɵtext(1, 'Go');
@@ -114,7 +114,7 @@ export class InlineCmp {
       selectors: [['inline-cmp']],
       decls: 8,
       vars: 1,
-      template: function InlineCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function InlineCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'section')(1, 'h1');
           i0.ɵɵtext(2, 'Title');

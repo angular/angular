@@ -67,7 +67,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 1,
       vars: 3,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'div');
         }
@@ -144,7 +144,7 @@ export class VarComponent {
       selectors: [['app-var']],
       decls: 1,
       vars: 1,
-      template: function VarComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function VarComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'div');
         }
@@ -210,7 +210,10 @@ export class BoundAndInvalidComponent {
       selectors: [['app-bound-invalid']],
       decls: 1,
       vars: 2,
-      template: function BoundAndInvalidComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function BoundAndInvalidComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'div');
         }

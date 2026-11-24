@@ -46,7 +46,10 @@ export class DynamicTemplateUrlComponent {
       selectors: [['app-dynamic-template-url']],
       decls: 0,
       vars: 0,
-      template: function DynamicTemplateUrlComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function DynamicTemplateUrlComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -130,7 +133,10 @@ export class DynamicTemplateComponent {
       selectors: [['app-dynamic-template']],
       decls: 0,
       vars: 0,
-      template: function DynamicTemplateComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function DynamicTemplateComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -216,7 +222,7 @@ export class MissingLinkStylesheetTemplateLiteralComponent {
       selectors: [['app-missing-link-stylesheet-template-literal']],
       decls: 2,
       vars: 0,
-      template: function MissingLinkStylesheetTemplateLiteralComponent_Template(
+      template: /* @ɵɵgenerated */ function MissingLinkStylesheetTemplateLiteralComponent_Template(
         rf: number,
         ctx: any,
       ): any {
@@ -307,7 +313,10 @@ export class MissingLinkStylesheetComponent {
       selectors: [['app-missing-link-stylesheet']],
       decls: 2,
       vars: 0,
-      template: function MissingLinkStylesheetComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MissingLinkStylesheetComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1, 'Hello');
@@ -395,7 +404,10 @@ export class MissingTemplateComponent {
       selectors: [['app-missing-template']],
       decls: 0,
       vars: 0,
-      template: function MissingTemplateComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MissingTemplateComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {

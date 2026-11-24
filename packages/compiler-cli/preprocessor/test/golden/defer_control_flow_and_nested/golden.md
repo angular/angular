@@ -10,17 +10,17 @@ import { PipeNested } from './pipe-nested';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_Defer_0_Conditional_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Conditional_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'cmp-a');
   }
 }
-function AppComponent_Defer_0_For_3_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_For_3_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'cmp-b');
   }
 }
-function AppComponent_Defer_0_Defer_5_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Defer_5_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'cmp-nested');
     i0.ɵɵelementStart(1, 'span');
@@ -33,7 +33,7 @@ function AppComponent_Defer_0_Defer_5_Template(rf: number, ctx: any): any {
     i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(3, 1, 'inner'));
   }
 }
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵconditionalCreate(0, AppComponent_Defer_0_Conditional_0_Template, 1, 0, 'cmp-a');
     i0.ɵɵpipe(1, 'pipeA');
@@ -86,7 +86,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 3,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 8, 5);
           i0.ɵɵdefer(1, 0);
@@ -169,7 +169,7 @@ export class CmpA {
       selectors: [['cmp-a']],
       decls: 1,
       vars: 0,
-      template: function CmpA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CmpA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'A');
         }
@@ -225,7 +225,7 @@ export class CmpB {
       selectors: [['cmp-b']],
       decls: 1,
       vars: 0,
-      template: function CmpB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CmpB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'B');
         }
@@ -291,7 +291,7 @@ export class CmpNested {
       selectors: [['cmp-nested']],
       decls: 1,
       vars: 0,
-      template: function CmpNested_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CmpNested_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Nested');
         }

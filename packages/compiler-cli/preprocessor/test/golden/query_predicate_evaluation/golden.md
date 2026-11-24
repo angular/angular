@@ -162,7 +162,7 @@ export class TestComp {
       decls: 5,
       vars: 0,
       consts: [['myRef', '', 'x', '', 'y', '', 'z', '']],
-      template: function TestComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', null, 0);
         }

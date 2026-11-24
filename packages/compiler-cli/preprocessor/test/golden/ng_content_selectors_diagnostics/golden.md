@@ -5,7 +5,7 @@ import { HasContent } from 'test-lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function MyApp_Conditional_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function MyApp_Conditional_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'div')(1, 'div');
   }
@@ -37,7 +37,7 @@ export class MyApp {
       selectors: [['my-app']],
       decls: 2,
       vars: 1,
-      template: function MyApp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyApp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'has-content');
           i0.ɵɵconditionalCreate(1, MyApp_Conditional_1_Template, 2, 0);

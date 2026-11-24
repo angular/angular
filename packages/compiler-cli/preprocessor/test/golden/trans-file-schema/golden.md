@@ -80,7 +80,7 @@ export class MyComp {
       decls: 2,
       vars: 1,
       consts: [[3, 'unknown-property']],
-      template: function MyComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
         }

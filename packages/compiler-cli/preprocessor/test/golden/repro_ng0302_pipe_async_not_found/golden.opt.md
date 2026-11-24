@@ -62,7 +62,7 @@ export class LabelsPanel {
       standalone: false,
       decls: 3,
       vars: 3,
-      template: function LabelsPanel_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LabelsPanel_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);

@@ -212,7 +212,7 @@ export class C1 {
       features: [i0.ɵɵHostDirectivesFeature([DepA])],
       decls: 0,
       vars: 0,
-      template: function C1_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C1_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -260,7 +260,7 @@ export class C2 {
       features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
       decls: 0,
       vars: 0,
-      template: function C2_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C2_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -312,7 +312,7 @@ export class C3 {
       features: [i0.ɵɵHostDirectivesFeature([i1.DepA, { directive: i1.DepB, inputs: ['x', 'y'] }])],
       decls: 0,
       vars: 0,
-      template: function C3_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C3_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -366,7 +366,7 @@ export class C4 {
       ],
       decls: 0,
       vars: 0,
-      template: function C4_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C4_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -419,7 +419,7 @@ export class C6 {
       ],
       decls: 0,
       vars: 0,
-      template: function C6_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C6_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -478,7 +478,7 @@ export class C7 {
       features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
       decls: 0,
       vars: 0,
-      template: function C7_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C7_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -528,7 +528,7 @@ export class C8 {
       features: [i0.ɵɵHostDirectivesFeature([DepA])],
       decls: 0,
       vars: 0,
-      template: function C8_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C8_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -577,7 +577,7 @@ export class C10 {
       features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
       decls: 0,
       vars: 0,
-      template: function C10_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C10_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -621,7 +621,7 @@ export class C11 {
       features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepB, inputs: ['x', 'q'] }])],
       decls: 0,
       vars: 0,
-      template: function C11_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C11_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -682,7 +682,7 @@ export class C12 {
       ],
       decls: 0,
       vars: 0,
-      template: function C12_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C12_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -735,7 +735,7 @@ export class C13 {
       ],
       decls: 0,
       vars: 0,
-      template: function C13_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C13_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -791,7 +791,7 @@ export class C14 {
       features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA }])],
       decls: 0,
       vars: 0,
-      template: function C14_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C14_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -843,7 +843,7 @@ export class C15 {
       features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'] }])],
       decls: 0,
       vars: 0,
-      template: function C15_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function C15_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

@@ -102,7 +102,7 @@ export class SharedWidget {
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function SharedWidget_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function SharedWidget_Template(rf: number, ctx: any): any {},
       dependencies: i0.ɵɵgetComponentDepsFactory(SharedWidget),
       encapsulation: 2,
     });
