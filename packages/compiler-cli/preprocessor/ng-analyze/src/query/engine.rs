@@ -2089,21 +2089,30 @@ impl QueryEngine {
                         )
                         .await;
                     if let Some(references) = completed.get_optional() {
-                        let mut resolve_futures = Vec::new();
+                        // Registration only needs to verify that the declared class exists in
+                        // `r.file`. Checking `analyze_file_syntax` avoids triggering
+                        // `AnalyzeFileEvaluated` on every declared class in the program (which
+                        // would evaluate external `@Input(...)` / `hostDirectives` references from
+                        // `.d.ts` files during local mode).
+                        let mut check_futures = Vec::new();
                         for r in &references {
-                            resolve_futures.push((
-                                r,
-                                crate::query::scope::resolve_reference_async(r, &mod_ctx),
-                            ));
+                            let file_id = r.file;
+                            let mod_ctx = &mod_ctx;
+                            check_futures.push((r, async move {
+                                mod_ctx
+                                    .analyze_file_syntax(file_id)
+                                    .await
+                                    .class_index
+                                    .contains_key(&r.name)
+                            }));
                         }
-                        let (items, futures): (Vec<_>, Vec<_>) =
-                            resolve_futures.into_iter().unzip();
+                        let (items, futures): (Vec<_>, Vec<_>) = check_futures.into_iter().unzip();
                         let results = futures::future::join_all(futures).await;
                         let mod_deps = mod_ctx.dependencies();
                         ctx.extend_dependencies(mod_deps.iter().copied());
 
-                        for (r, resolved_info) in items.into_iter().zip(results) {
-                            if resolved_info.is_none() {
+                        for (r, exists) in items.into_iter().zip(results) {
+                            if !exists {
                                 continue;
                             }
                             mapping.register_declaration(r.file, r.name(), class.reference_id);
@@ -7911,6 +7920,162 @@ mod tests {
             .map(|d| d.name.as_str())
             .collect();
         assert_eq!(decl_names, vec!["SubComp", "SiblingComp"]);
+    }
+
+    #[test]
+    fn local_extra_imports_skips_external_superclass_host_directives_and_evaluated_metadata() {
+        let app_mod = "/local_skip/app_module.ts";
+        let main_comp = "/local_skip/main_comp.ts";
+        let extends_ext = "/local_skip/extends_ext.ts";
+        let hosted_dir = "/local_skip/hosted_dir.ts";
+        let eval_meta = "/local_skip/eval_meta.ts";
+        let ext_base = "/local_skip/ext/base.d.ts";
+        let ext_host_base = "/local_skip/ext/host_base.d.ts";
+        let ext_tokens = "/local_skip/ext/tokens.d.ts";
+
+        let host = LoadTrackingHost::new(
+            &[
+                (app_mod, "./main_comp", main_comp),
+                (app_mod, "./extends_ext", extends_ext),
+                (app_mod, "./hosted_dir", hosted_dir),
+                (app_mod, "./eval_meta", eval_meta),
+                (extends_ext, "@ext/base", ext_base),
+                (hosted_dir, "@ext/host_base", ext_host_base),
+                (eval_meta, "@ext/tokens", ext_tokens),
+            ],
+            &[
+                (
+                    app_mod,
+                    "import {NgModule} from '@angular/core';\n\
+                     import {MainComp} from './main_comp';\n\
+                     import {ExtendsExternalComp} from './extends_ext';\n\
+                     import {HostedDir} from './hosted_dir';\n\
+                     import {EvaluatedMetaComp} from './eval_meta';\n\
+                     @NgModule({declarations: [MainComp, ExtendsExternalComp, HostedDir, EvaluatedMetaComp]})\n\
+                     export class AppModule {}\n",
+                ),
+                (
+                    main_comp,
+                    "import {Component} from '@angular/core';\n\
+                     @Component({selector: 'main-comp', template: '<extends-ext></extends-ext><div hosted></div><eval-meta></eval-meta>', standalone: false})\n\
+                     export class MainComp {}\n",
+                ),
+                (
+                    extends_ext,
+                    "import {Component} from '@angular/core';\n\
+                     import {ExtBase} from '@ext/base';\n\
+                     @Component({selector: 'extends-ext', template: '', standalone: false})\n\
+                     export class ExtendsExternalComp extends ExtBase {}\n",
+                ),
+                // Keep `LocalHostDir` in the same file as `HostedDir` so its `hostDirectives`
+                // entry is already resolved in Stage 1 (independently testing
+                // `HostDirectiveResolution::Skip` without relying on `AnalyzeFileEvaluated`).
+                (
+                    hosted_dir,
+                    "import {Directive} from '@angular/core';\n\
+                     import {ExtHostBase} from '@ext/host_base';\n\
+                     @Directive({selector: '[localHost]', standalone: true})\n\
+                     export class LocalHostDir extends ExtHostBase {}\n\
+                     @Directive({selector: '[hosted]', standalone: false, hostDirectives: [LocalHostDir]})\n\
+                     export class HostedDir {}\n",
+                ),
+                (
+                    eval_meta,
+                    "import {Component, Input} from '@angular/core';\n\
+                     import {EXT_ALIAS} from '@ext/tokens';\n\
+                     @Component({selector: 'eval-meta', template: '', standalone: false})\n\
+                     export class EvaluatedMetaComp { @Input(EXT_ALIAS) label = ''; }\n",
+                ),
+                (ext_base, "export declare class ExtBase {}\n"),
+                (ext_host_base, "export declare class ExtHostBase {}\n"),
+                (ext_tokens, "export declare const EXT_ALIAS = 'extLabel';\n"),
+            ],
+        );
+        let engine = local_engine(
+            host.clone(),
+            &[app_mod, main_comp, extends_ext, hosted_dir, eval_meta],
+            true,
+        );
+
+        let main_wire = futures::executor::block_on(
+            QueryContext::new(engine.clone())
+                .analyze_file_wire(engine.intern_path(main_comp), false),
+        );
+        let decl_names: Vec<&str> = main_wire.0.as_ref().expect("local wire analysis").classes[0]
+            .component
+            .as_ref()
+            .expect("MainComp metadata")
+            .resolved_declarations
+            .as_ref()
+            .expect("local resolved declarations")
+            .iter()
+            .map(|d| d.name.as_str())
+            .collect();
+        assert_eq!(
+            decl_names,
+            vec!["ExtendsExternalComp", "HostedDir", "EvaluatedMetaComp"]
+        );
+
+        let loaded = host.loaded();
+        for ext in [ext_base, ext_host_base, ext_tokens] {
+            assert!(
+                !loaded.iter().any(|id| id == ext),
+                "local extra-imports must not load external .d.ts {ext}: {loaded:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn component_mapping_skips_evaluated_queries_on_declared_classes() {
+        let app_mod = "/comp_map_syntax/app_module.ts";
+        let decl_comp = "/comp_map_syntax/decl_comp.ts";
+        let ext_tokens = "/comp_map_syntax/ext/tokens.d.ts";
+
+        let host = LoadTrackingHost::new(
+            &[
+                (app_mod, "./decl_comp", decl_comp),
+                (decl_comp, "@ext/tokens", ext_tokens),
+            ],
+            &[
+                (
+                    app_mod,
+                    "import {NgModule} from '@angular/core';\n\
+                     import {DeclComp} from './decl_comp';\n\
+                     @NgModule({declarations: [DeclComp]})\n\
+                     export class AppModule {}\n",
+                ),
+                (
+                    decl_comp,
+                    "import {Component, Input} from '@angular/core';\n\
+                     import {EXT_ALIAS} from '@ext/tokens';\n\
+                     @Component({selector: 'decl-comp', template: '', standalone: false})\n\
+                     export class DeclComp { @Input(EXT_ALIAS) label = ''; }\n",
+                ),
+                (ext_tokens, "export declare const EXT_ALIAS = 'extLabel';\n"),
+            ],
+        );
+        let engine = QueryEngine::new_default_with_host(
+            host.clone(),
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(RwLock::new(vec![
+                PathBuf::from(app_mod),
+                PathBuf::from(decl_comp),
+            ])),
+        );
+
+        let mapping =
+            futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping());
+        let owner = mapping
+            .get(engine.intern_path(decl_comp), "DeclComp")
+            .expect("DeclComp should be mapped to AppModule");
+        assert_eq!(owner.file, engine.intern_path(app_mod));
+
+        let loaded = host.loaded();
+        assert!(
+            !loaded.iter().any(|id| id == ext_tokens),
+            "component_mapping must check declared classes syntactically without loading external \
+             .d.ts files: {loaded:?}"
+        );
     }
 }
 
