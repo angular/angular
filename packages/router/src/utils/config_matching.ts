@@ -61,14 +61,15 @@ export function matchWithChecks(
   abortSignal: AbortSignal,
 ): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
-  if (!result.matched) {
+  if (!result.matched || !route.canMatch || route.canMatch.length === 0) {
     return of(result);
   }
 
   const currentSnapshot = createPreMatchRouteSnapshot(createSnapshot(result));
   // Only create the Route's `EnvironmentInjector` if it matches the attempted
   // navigation
-  // TODO(v23): Run canMatch guards in root environment injector in 3p as well.
+  // TODO(v23): Run canMatch guards in root environment injector in 3p as well (also required before
+  // exposing loadConfig publicly in 3p so child route injectors aren't created before loadConfig).
   injector = getOrCreateRouteInjectorIfNeeded(route, injector); // 3p-only
   return runCanMatchGuards(
     injector,

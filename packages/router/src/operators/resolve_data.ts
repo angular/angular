@@ -82,10 +82,10 @@ function runResolve(
   paramsInheritanceStrategy: 'emptyOnly' | 'always',
 ) {
   const config = futureARS.routeConfig;
-  const resolve = futureARS._resolve;
-  if (config?.title !== undefined && !hasStaticTitle(config)) {
-    resolve[RouteTitleKey] = config.title;
-  }
+  const resolve =
+    config?.title !== undefined && !hasStaticTitle(config)
+      ? {...futureARS._resolve, [RouteTitleKey]: config.title}
+      : futureARS._resolve;
   return defer(() => {
     futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
     return resolveNode(resolve, futureARS, futureRSS).pipe(

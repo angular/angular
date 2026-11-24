@@ -768,6 +768,8 @@
       "hasStaticTitle",
       "hasStyleInput",
       "hasTagAndTypeMatch",
+      "hasUnloadedConfig",
+      "hydrateRouteInjectors",
       "icuContainerIterate",
       "identity",
       "identityFn",
