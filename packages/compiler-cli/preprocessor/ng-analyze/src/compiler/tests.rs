@@ -1073,7 +1073,12 @@ fn test_isolated_type_tuple_resolves_local_const_of_imported_classes() {
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
         "/project/tsconfig.json".to_string(),
-        r#"{"files": ["index.ts", "greet.pipe.ts", "widget.ts", "hidden.ts"]}"#.to_string(),
+        r#"{
+            "compilerOptions": {"emitDeclarationOnly": true},
+            "angularCompilerOptions": {"_experimentalAllowEmitDeclarationOnly": true},
+            "files": ["index.ts", "greet.pipe.ts", "widget.ts", "hidden.ts"]
+        }"#
+        .to_string(),
     );
     virtual_files.insert(
         "/project/greet.pipe.ts".to_string(),

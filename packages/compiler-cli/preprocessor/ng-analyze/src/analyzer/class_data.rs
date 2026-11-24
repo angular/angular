@@ -4282,6 +4282,12 @@ impl ClassData {
                     slot.as_ref()
                         .is_some_and(|s| s.raw().any_reference(&mut |r| r.synthetic))
                 };
+                // `analyze_file_wire_body` hardcodes `emit_declaration_only: false` for semantic
+                // mode while `resolve_semantic` still completes isolated tuples; omit them in
+                // regular syntax mode where `complete_isolated_type_tuples` is skipped and the TS
+                // emitter ignores them.
+                let emit_isolated_tuples =
+                    cx.emit_declaration_only || cx.mode == WireMode::Semantic;
                 ng_module = Some(NgModuleMetadata {
                     decorator_name: m.decorator_name.clone(),
                     remote_scopes_may_require_cycle_protection: any_synthetic(&m.declarations)
@@ -4351,10 +4357,12 @@ impl ClassData {
                     isolated_imports: m
                         .isolated_imports
                         .as_ref()
+                        .filter(|_| emit_isolated_tuples)
                         .map(|t| self.to_wire_isolated_tuple(t, cx)),
                     isolated_exports: m
                         .isolated_exports
                         .as_ref()
+                        .filter(|_| emit_isolated_tuples)
                         .map(|t| self.to_wire_isolated_tuple(t, cx)),
                     is_jit: m.is_jit,
                 });
