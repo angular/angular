@@ -247,4 +247,68 @@ describe('resolveData operator', () => {
     const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
     expect(rootSnapshot.firstChild!.firstChild!.data).toEqual({bResolve: 'b', aResolve: 'a'});
   });
+
+  it('should not mutate a shared resolve object when resolving a dynamic title', async () => {
+    @Component({
+      template: '',
+    })
+    class Empty {}
+
+    const sharedResolve = {item: () => 'resolved-item'};
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            component: Empty,
+            resolve: sharedResolve,
+            title: () => 'Dynamic A',
+          },
+          {
+            path: 'b',
+            component: Empty,
+            resolve: sharedResolve,
+            title: 'Static B',
+          },
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const harness = await RouterTestingHarness.create('/a');
+    expect(router.routerState.root.firstChild!.snapshot.title).toBe('Dynamic A');
+    expect(router.routerState.root.firstChild!.snapshot.data['item']).toBe('resolved-item');
+
+    await harness.navigateByUrl('/b');
+    expect(router.routerState.root.firstChild!.snapshot.title).toBe('Static B');
+    expect(router.routerState.root.firstChild!.snapshot.data['item']).toBe('resolved-item');
+  });
+
+  it('should support a frozen resolve object when resolving a dynamic title', async () => {
+    @Component({
+      template: '',
+    })
+    class Empty {}
+
+    const frozenResolve = Object.freeze({item: () => 'resolved-item'});
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            component: Empty,
+            resolve: frozenResolve,
+            title: () => 'Dynamic A',
+          },
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    await RouterTestingHarness.create('/a');
+    expect(router.routerState.root.firstChild!.snapshot.title).toBe('Dynamic A');
+    expect(router.routerState.root.firstChild!.snapshot.data['item']).toBe('resolved-item');
+  });
 });
