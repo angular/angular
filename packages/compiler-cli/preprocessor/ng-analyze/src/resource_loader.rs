@@ -11,6 +11,12 @@ pub trait ResourceResolverFs: FileSystem {
     fn resolve_root_dirs_backing_path(&self, _path: &Path) -> Option<PathBuf> {
         None
     }
+
+    /// Monotonic counter incremented when filesystem overlay configuration or virtual entries
+    /// change in a way that can alter module resolution.
+    fn config_epoch(&self) -> u64 {
+        0
+    }
 }
 
 /// A resource located by [`ResourceResolver::load_resource`].

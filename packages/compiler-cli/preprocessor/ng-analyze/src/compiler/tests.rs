@@ -10453,3 +10453,77 @@ fn test_dts_component_ng_content_selectors_projected_to_wire() {
     );
     assert_eq!(selectors_of("LegacyComponent"), None);
 }
+
+#[cfg(unix)]
+#[test]
+fn test_invalidate_files_changed_virtual_overlay_re_canonicalizes_disk_target() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path().canonicalize().unwrap();
+    let pkg_dir = ws.join("pkg");
+    let real_dir = ws.join("real");
+    std::fs::create_dir_all(&pkg_dir).unwrap();
+    std::fs::create_dir_all(&real_dir).unwrap();
+
+    let real_lib = real_dir.join("lib.ts");
+    std::fs::write(&real_lib, lib_source("[libOld]")).unwrap();
+    let symlink_lib = pkg_dir.join("lib.ts");
+    std::os::unix::fs::symlink(&real_lib, &symlink_lib).unwrap();
+
+    let unrelated = pkg_dir.join("unrelated.ts");
+    std::fs::write(&unrelated, "export const x = 1;\n").unwrap();
+
+    let pkg_str = pkg_dir.to_string_lossy().into_owned();
+    let app_path = format!("{pkg_str}/app.ts");
+    let mut virtual_files = angular_core_stub(&pkg_str);
+    virtual_files.insert(
+        symlink_lib.to_string_lossy().into_owned(),
+        lib_source("[libOld]"),
+    );
+    virtual_files.insert(
+        unrelated.to_string_lossy().into_owned(),
+        "export const x = 2;\n".to_string(),
+    );
+
+    let analyzer = consumer_analyzer(&pkg_str, "./lib", virtual_files);
+    // Warm the query cache for both the virtual overlay (`pkg/lib.ts`) and the underlying disk
+    // target (`real/lib.ts`) before editing `real/lib.ts` on disk.
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libOld]")
+    );
+    assert!(app_statically_imports(&analyzer, &app_path, "pkg/lib.ts"));
+    assert!(analyzer
+        .get_metadata_for_file(real_lib.to_string_lossy().into_owned())
+        .is_some());
+
+    // Dropping an overlay on an ordinary non-shadowed file keeps `app.ts` cached.
+    let unrelated_invalidated = analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: unrelated.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Changed,
+            id_kind: None,
+        }])
+        .unwrap();
+    assert!(
+        !unrelated_invalidated.contains(&app_path),
+        "{unrelated_invalidated:?}"
+    );
+
+    // Edit `real/lib.ts` on disk and drop the shadowing overlay at `pkg/lib.ts`: `./lib` must
+    // re-canonicalize to `real/lib.ts` and read its updated disk content rather than the stale
+    // pre-cached parse.
+    std::fs::write(&real_lib, lib_source("[libNew]")).unwrap();
+    analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: symlink_lib.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Changed,
+            id_kind: None,
+        }])
+        .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libNew]")
+    );
+    assert!(app_statically_imports(&analyzer, &app_path, "real/lib.ts"));
+}

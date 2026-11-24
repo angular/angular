@@ -8,7 +8,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::{Error, Result};
 use std::path::{Path, PathBuf};
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicU64, Ordering},
     Arc, RwLock,
 };
 
@@ -34,6 +34,8 @@ pub struct OverlayFileSystem {
     /// Cached current working directory to avoid repeated OS syscalls during hot lookups
     cwd: Arc<PathBuf>,
     pub preserve_symlinks: Arc<AtomicBool>,
+    /// Monotonic generation bumped on overlay structural or configuration changes.
+    config_epoch: Arc<AtomicU64>,
     /// Optional set of allowed source files for build-system boundaries
     pub allowed_sources: Arc<Option<HashSet<PathBuf>>>,
     /// Cache for is_allowed results to avoid repeated canonicalization and normalization.
@@ -52,6 +54,7 @@ impl Clone for OverlayFileSystem {
             root_dirs: Arc::clone(&self.root_dirs),
             cwd: Arc::clone(&self.cwd),
             preserve_symlinks: Arc::clone(&self.preserve_symlinks),
+            config_epoch: Arc::clone(&self.config_epoch),
             allowed_sources: Arc::clone(&self.allowed_sources),
             is_allowed_cache: Arc::clone(&self.is_allowed_cache),
             physical: Arc::clone(&self.physical),
@@ -183,6 +186,7 @@ impl OverlayFileSystem {
             root_dirs: Arc::new(RwLock::new(Vec::new())),
             cwd: Arc::new(std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))),
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
+            config_epoch: Arc::new(AtomicU64::new(0)),
             allowed_sources: Arc::new(allowed),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
             #[cfg(test)]
@@ -204,12 +208,17 @@ impl OverlayFileSystem {
         // Sort by path length in descending order (longest first) for robust prefix matching.
         // https://github.com/angular/angular/blob/b53fa3c/packages/compiler-cli/src/ngtsc/file_system/src/logical.ts#L70
         normalized.sort_by_key(|p| std::cmp::Reverse(p.as_os_str().len()));
-        *dirs = normalized;
-        self.is_allowed_cache.write().unwrap().clear();
+        if *dirs != normalized {
+            *dirs = normalized;
+            self.is_allowed_cache.write().unwrap().clear();
+            self.config_epoch.fetch_add(1, Ordering::Release);
+        }
     }
 
     pub fn set_preserve_symlinks(&self, value: bool) {
-        self.preserve_symlinks.store(value, Ordering::Relaxed);
+        if self.preserve_symlinks.swap(value, Ordering::AcqRel) != value {
+            self.config_epoch.fetch_add(1, Ordering::Release);
+        }
     }
 
     /// The physical filesystem underneath this overlay.
@@ -273,12 +282,23 @@ impl OverlayFileSystem {
         None
     }
 
-    /// Remove a virtual file from the overlay
-    pub fn remove_virtual_file(&self, path: &std::path::Path) {
-        let normalized = normalize_path(path).into_owned();
-        let mut files = self.virtual_files.write().unwrap();
-        files.remove(&normalized);
-        self.is_allowed_cache.write().unwrap().clear();
+    /// Remove a virtual file from the overlay, returning whether an entry was removed.
+    pub fn remove_virtual_file(&self, path: &std::path::Path) -> bool {
+        if !self.has_virtual_files.load(Ordering::Relaxed) {
+            return false;
+        }
+        let normalized = normalize_path(path);
+        let removed = self
+            .virtual_files
+            .write()
+            .unwrap()
+            .remove(normalized.as_ref())
+            .is_some();
+        if removed {
+            self.is_allowed_cache.write().unwrap().clear();
+            self.config_epoch.fetch_add(1, Ordering::Release);
+        }
+        removed
     }
 
     /// Check if a physical path is allowed by the allowed_sources filter
@@ -390,10 +410,11 @@ impl OverlayFileSystem {
             },
         );
 
-        // Only invalidate the cache if a new file was actually added.
-        // Modifying an existing file does not change its allowed status.
-        if old_file.is_none() {
+        // Only invalidate caches if a new file was actually added.
+        // Modifying an existing file does not change its allowed status or module resolution.
+        if old_file.as_ref().is_none_or(|f| f.is_dir) {
             self.is_allowed_cache.write().unwrap().clear();
+            self.config_epoch.fetch_add(1, Ordering::Release);
         }
     }
 
@@ -475,6 +496,10 @@ impl crate::resource_loader::ResourceResolverFs for OverlayFileSystem {
             None => resolved,
         })
     }
+
+    fn config_epoch(&self) -> u64 {
+        self.config_epoch.load(Ordering::Acquire)
+    }
 }
 
 impl FileSystem for OverlayFileSystem {
@@ -487,6 +512,7 @@ impl FileSystem for OverlayFileSystem {
             root_dirs: Arc::new(RwLock::new(Vec::new())),
             cwd: Arc::new(std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))),
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
+            config_epoch: Arc::new(AtomicU64::new(0)),
             allowed_sources: Arc::new(None),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
             #[cfg(test)]

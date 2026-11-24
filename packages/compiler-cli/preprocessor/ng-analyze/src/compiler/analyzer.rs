@@ -1153,7 +1153,7 @@ impl Analyzer {
             self.invalidate_changed_path(&path, &mut paths_to_invalidate);
         }
 
-        self.finalize_file_updates(paths_to_invalidate, files_created, config_changed)
+        self.finalize_file_updates(paths_to_invalidate, files_created, config_changed, false)
     }
 
     /// Drop the virtual overlay of each changed or deleted file and return every stale TS path or
@@ -1167,6 +1167,7 @@ impl Analyzer {
         let mut ts_paths_to_invalidate = Vec::new();
         let mut files_created_or_deleted = false;
         let mut config_changed = false;
+        let mut overlay_target_changed = false;
 
         for update in updates {
             files_created_or_deleted |= matches!(
@@ -1181,7 +1182,7 @@ impl Analyzer {
                         update.file_path.as_str(),
                     ));
                 } else {
-                    self.fs.remove_virtual_file(&path);
+                    let _ = self.fs.remove_virtual_file(&path);
                 }
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(update.file_path.clone());
@@ -1222,8 +1223,49 @@ impl Analyzer {
                 }
                 norm_path
             } else {
-                let canonical = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
-                self.fs.remove_virtual_file(&canonical);
+                let norm_raw = crate::fs::normalize_path_structural(&raw_path).into_owned();
+                let mut prev_overlay = self
+                    .fs
+                    .remove_virtual_file(&norm_raw)
+                    .then(|| norm_raw.clone());
+                let mut disk_exists = self.fs.metadata(&raw_path).is_ok();
+                let mut canonical = if disk_exists {
+                    self.fs
+                        .canonicalize(&raw_path)
+                        .unwrap_or_else(|_| norm_raw.clone())
+                } else {
+                    norm_raw.clone()
+                };
+                if prev_overlay.is_none()
+                    && canonical != norm_raw
+                    && self.fs.remove_virtual_file(&canonical)
+                {
+                    prev_overlay = Some(canonical);
+                    disk_exists = self.fs.metadata(&raw_path).is_ok();
+                    canonical = if disk_exists {
+                        self.fs.canonicalize(&raw_path).unwrap_or_else(|_| norm_raw)
+                    } else {
+                        norm_raw
+                    };
+                }
+                if let Some(overlay_path) = prev_overlay {
+                    if !disk_exists || overlay_path != canonical {
+                        overlay_target_changed = true;
+                        if overlay_path != canonical {
+                            if is_ts_file(&overlay_path) {
+                                self.resource_registry.unregister_ts_file(&overlay_path);
+                                ts_paths_to_invalidate
+                                    .push(overlay_path.to_string_lossy().into_owned());
+                            }
+                            self.invalidate_changed_path(
+                                &overlay_path,
+                                &mut ts_paths_to_invalidate,
+                            );
+                        }
+                        let evicted = self.engine.invalidate_deleted_file(&overlay_path);
+                        self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
+                    }
+                }
                 config_changed |= canonical
                     .extension()
                     .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
@@ -1245,6 +1287,7 @@ impl Analyzer {
             ts_paths_to_invalidate,
             files_created_or_deleted,
             config_changed,
+            overlay_target_changed,
         )
     }
 
@@ -1253,10 +1296,16 @@ impl Analyzer {
         mut invalidated_paths: Vec<String>,
         structure_changed: bool,
         config_changed: bool,
+        overlay_target_changed: bool,
     ) -> Result<Vec<String>, String> {
         if structure_changed {
             let evicted = self.engine.invalidate_module_resolution();
             self.push_evicted_paths(evicted, &mut invalidated_paths);
+        } else if overlay_target_changed {
+            // Dropping a virtual overlay on `Changed` exposed a different underlying symlink,
+            // `rootDirs` target, or missing/disallowed path; clear the host's resolution cache
+            // without evicting unrelated files' unresolved-import queries.
+            self.engine.host.clear_cache();
         }
         if structure_changed || config_changed {
             self.re_resolve_entrypoints(&mut invalidated_paths);

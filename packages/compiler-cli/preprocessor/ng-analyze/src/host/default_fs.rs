@@ -6,9 +6,25 @@ use crate::fs::OverlayFileSystem;
 use crate::{ResourceResolver, ResourceResolverFs};
 use futures::future::FutureExt;
 use oxc_resolver::ResolverGeneric;
+use std::collections::HashMap;
 use std::fmt;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
+
+/// Cached positive resolution state for [`DefaultFsHost`], cleared on [`AnalysisHost::clear_cache`]
+/// or when [`ResourceResolverFs::config_epoch`] advances.
+///
+/// `by_dir` keys on `(importer_dir, specifier)` because [`DefaultFsHost::resolve`] passes only
+/// those two arguments to [`ResolverGeneric::resolve`]. Failed resolutions are not cached here so
+/// transient config/IO errors or newly created files never stick. `resolved_by_path` caches
+/// post-resolution `rootDirs` backing-path lookup and canonicalization across directories that
+/// resolve to the same raw path.
+#[derive(Default)]
+struct HostResolveCache {
+    config_epoch: u64,
+    by_dir: HashMap<PathBuf, HashMap<String, ResolvedModule>>,
+    resolved_by_path: HashMap<PathBuf, ResolvedModule>,
+}
 
 /// Synchronous [`AnalysisHost`] backed by [`oxc_resolver::ResolverGeneric`] and a
 /// [`ResourceResolverFs`] (typically [`crate::fs::OverlayFileSystem`]).
@@ -18,6 +34,7 @@ use std::sync::Arc;
 pub struct DefaultFsHost<Fs: ResourceResolverFs> {
     fs: Fs,
     resolver: Arc<ResolverGeneric<Fs>>,
+    resolve_cache: Arc<RwLock<HostResolveCache>>,
 }
 
 impl<Fs: ResourceResolverFs + Clone> Clone for DefaultFsHost<Fs> {
@@ -25,6 +42,7 @@ impl<Fs: ResourceResolverFs + Clone> Clone for DefaultFsHost<Fs> {
         Self {
             fs: self.fs.clone(),
             resolver: Arc::clone(&self.resolver),
+            resolve_cache: Arc::clone(&self.resolve_cache),
         }
     }
 }
@@ -37,23 +55,50 @@ impl<Fs: ResourceResolverFs> fmt::Debug for DefaultFsHost<Fs> {
 
 impl<Fs: ResourceResolverFs> DefaultFsHost<Fs> {
     pub fn new(fs: Fs, resolver: Arc<ResolverGeneric<Fs>>) -> Self {
-        Self { fs, resolver }
+        let config_epoch = fs.config_epoch();
+        Self {
+            fs,
+            resolver,
+            resolve_cache: Arc::new(RwLock::new(HostResolveCache {
+                config_epoch,
+                ..HostResolveCache::default()
+            })),
+        }
     }
 
     pub fn fs(&self) -> &Fs {
         &self.fs
     }
 
-    pub fn resolver(&self) -> &Arc<ResolverGeneric<Fs>> {
-        &self.resolver
+    fn ensure_cache_epoch(&self) -> u64 {
+        let current_epoch = self.fs.config_epoch();
+        if self.resolve_cache.read().unwrap().config_epoch == current_epoch {
+            return current_epoch;
+        }
+        let mut cache = self.resolve_cache.write().unwrap();
+        let current_epoch = self.fs.config_epoch();
+        if cache.config_epoch != current_epoch {
+            self.resolver.clear_cache();
+            cache.by_dir.clear();
+            cache.resolved_by_path.clear();
+            cache.config_epoch = current_epoch;
+        }
+        current_epoch
     }
 
-    fn canonicalize_resolved_path(&self, resolved: PathBuf) -> PathBuf {
-        let resolved = self
+    fn resolve_canonical_module(&self, raw_path: &Path) -> ResolvedModule {
+        let backing = self
             .fs
-            .resolve_root_dirs_backing_path(&resolved)
-            .unwrap_or(resolved);
-        self.fs.canonicalize(&resolved).unwrap_or(resolved)
+            .resolve_root_dirs_backing_path(raw_path)
+            .unwrap_or_else(|| raw_path.to_path_buf());
+        let canonical = self.fs.canonicalize(&backing).unwrap_or(backing);
+        ResolvedModule {
+            id: ModuleId::from_path(&canonical),
+            id_kind: IdKind::Path,
+            format: ModuleFormat::from_path(&canonical),
+            external: false,
+            code: None,
+        }
     }
 }
 
@@ -82,24 +127,74 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
         &self,
         req: ResolveRequest,
     ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
-        let importer_path = Path::new(req.importer.as_str());
+        // Destructure exhaustively so adding a field to `ResolveRequest` forces updating the cache key.
+        let ResolveRequest {
+            importer,
+            specifier,
+            kind: _,
+            type_only: _,
+            attributes: _,
+        } = req;
+        let epoch_at_start = self.ensure_cache_epoch();
+        let importer_path = Path::new(importer.as_str());
         let file_dir = importer_path.parent().unwrap_or_else(|| Path::new("."));
-        let resolved = self
-            .resolver
-            .resolve(file_dir, &req.specifier)
-            .ok()
-            .map(|resolution| {
-                let canonical = self.canonicalize_resolved_path(resolution.into_path_buf());
-                let format = ModuleFormat::from_path(&canonical);
-                ResolvedModule {
-                    id: ModuleId::from_path(&canonical),
-                    id_kind: IdKind::Path,
-                    format,
-                    external: false,
-                    code: None,
-                }
-            });
-        futures::future::ready(Ok(resolved)).boxed()
+        if let Some(cached) = self
+            .resolve_cache
+            .read()
+            .unwrap()
+            .by_dir
+            .get(file_dir)
+            .and_then(|specs| specs.get(specifier.as_str()))
+        {
+            return futures::future::ready(Ok(Some(cached.clone()))).boxed();
+        }
+
+        let Ok(resolution) = self.resolver.resolve(file_dir, &specifier) else {
+            return futures::future::ready(Ok(None)).boxed();
+        };
+        let raw_path = resolution.into_path_buf();
+        let cached_module = {
+            let cache = self.resolve_cache.read().unwrap();
+            (cache.config_epoch == epoch_at_start)
+                .then(|| cache.resolved_by_path.get(&raw_path).cloned())
+                .flatten()
+        };
+        let (resolved, new_resolved_path) = match cached_module {
+            Some(module) => (module, None),
+            None => {
+                let module = self.resolve_canonical_module(&raw_path);
+                (module.clone(), Some((raw_path, module)))
+            }
+        };
+
+        let mut cache = self.resolve_cache.write().unwrap();
+        let current_epoch = self.fs.config_epoch();
+        if cache.config_epoch != current_epoch {
+            self.resolver.clear_cache();
+            cache.by_dir.clear();
+            cache.resolved_by_path.clear();
+            cache.config_epoch = current_epoch;
+        }
+        if current_epoch == epoch_at_start {
+            let resolved = match new_resolved_path {
+                Some((raw_path, module)) => cache
+                    .resolved_by_path
+                    .entry(raw_path)
+                    .or_insert(module)
+                    .clone(),
+                None => resolved,
+            };
+            if let Some(specs) = cache.by_dir.get_mut(file_dir) {
+                specs.insert(specifier, resolved.clone());
+            } else {
+                cache.by_dir.insert(
+                    file_dir.to_path_buf(),
+                    HashMap::from([(specifier, resolved.clone())]),
+                );
+            }
+            return futures::future::ready(Ok(Some(resolved))).boxed();
+        }
+        futures::future::ready(Ok(Some(resolved))).boxed()
     }
 
     fn load(
@@ -149,7 +244,11 @@ impl<Fs: ResourceResolverFs + Send + Sync + 'static> AnalysisHost for DefaultFsH
     }
 
     fn clear_cache(&self) {
+        let mut cache = self.resolve_cache.write().unwrap();
         self.resolver.clear_cache();
+        cache.by_dir.clear();
+        cache.resolved_by_path.clear();
+        cache.config_epoch = self.fs.config_epoch();
     }
 
     fn resolve_backing_path(&self, path: &Path) -> Option<PathBuf> {
@@ -482,5 +581,184 @@ mod tests {
                 .expect("expected resource to load");
             assert_eq!(&*loaded.code, expected, "{url}");
         }
+    }
+
+    #[test]
+    fn test_default_fs_host_memoizes_resolutions_and_canonical_paths_until_clear_cache() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let ws = dir.path();
+        let src_dir = ws.join("src");
+        let gen_dir = ws.join("gen");
+        let src_a = src_dir.join("a");
+        let src_b = src_dir.join("b");
+        std::fs::create_dir_all(&src_a).unwrap();
+        std::fs::create_dir_all(&src_b).unwrap();
+        std::fs::create_dir_all(&gen_dir).unwrap();
+
+        let gen_target = gen_dir.join("target.ts");
+        std::fs::write(&gen_target, "export const V = 'gen';").unwrap();
+
+        let fs = OverlayFileSystem::new_with_overlay();
+        fs.set_root_dirs(vec![src_dir.clone(), gen_dir.clone()]);
+        // With `preserve_symlinks = true`, `oxc_resolver` returns the logical `src/target.ts` path
+        // for both `src/a` and `src/b`, while `DefaultFsHost` maps it to the backing `rootDirs`
+        // target in `resolved_by_path`.
+        let host = DefaultFsHost::from_fs_and_options(fs, None, true, None);
+        let resolve_from = |importer: PathBuf, spec: &str| {
+            host.resolve(ResolveRequest::new(
+                ModuleId::from_path(&importer),
+                spec,
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .map(|m| m.id)
+        };
+
+        let expected_gen = ModuleId::from_path(&gen_target);
+        assert_eq!(
+            resolve_from(src_a.join("one.ts"), "../target"),
+            Some(expected_gen.clone())
+        );
+
+        // Shadow `gen/target.ts` on disk without clearing the cache: both a sibling importer in
+        // `src/a` (`by_dir`) and an importer in `src/b` (`resolved_by_path`) keep the memoized
+        // backing target until `clear_cache()` runs.
+        let src_target = src_dir.join("target.ts");
+        std::fs::write(&src_target, "export const V = 'src';").unwrap();
+        assert_eq!(
+            resolve_from(src_a.join("two.ts"), "../target"),
+            Some(expected_gen.clone())
+        );
+        assert_eq!(
+            resolve_from(src_b.join("three.ts"), "../target"),
+            Some(expected_gen)
+        );
+
+        // Clearing the cache (including via a cloned host) evicts both `by_dir` and
+        // `resolved_by_path` so subsequent lookups pick up `src/target.ts`.
+        host.clone().clear_cache();
+        let expected_src = ModuleId::from_path(&src_target);
+        assert_eq!(
+            resolve_from(src_a.join("two.ts"), "../target"),
+            Some(expected_src.clone())
+        );
+        assert_eq!(
+            resolve_from(src_b.join("three.ts"), "../target"),
+            Some(expected_src)
+        );
+    }
+
+    #[test]
+    fn test_default_fs_host_does_not_negative_cache_transient_config_errors() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let ws = dir.path().canonicalize().unwrap();
+        let src_dir = ws.join("src");
+        let pkg_dir = ws.join("node_modules/my-pkg");
+        std::fs::create_dir_all(&src_dir).unwrap();
+        std::fs::create_dir_all(&pkg_dir).unwrap();
+
+        let dep_ts = src_dir.join("dep.ts");
+        std::fs::write(&dep_ts, "export const DEP = 1;").unwrap();
+        let pkg_dts = pkg_dir.join("index.d.ts");
+        std::fs::write(&pkg_dts, "export declare const PKG: number;").unwrap();
+
+        let tsconfig_path = ws.join("tsconfig.json");
+        let pkg_json_path = pkg_dir.join("package.json");
+        std::fs::write(&tsconfig_path, "{ malformed json").unwrap();
+        std::fs::write(&pkg_json_path, "{ malformed json").unwrap();
+
+        let fs = OverlayFileSystem::new_with_overlay();
+        let host = DefaultFsHost::from_fs_and_options(fs, Some(&tsconfig_path), false, None);
+        let resolve_from = |importer: PathBuf, spec: &str| {
+            host.resolve(ResolveRequest::new(
+                ModuleId::from_path(&importer),
+                spec,
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .map(|m| m.id)
+        };
+
+        // Transient parse failures in `tsconfig.json` and `package.json` must not poison `by_dir`.
+        assert_eq!(resolve_from(src_dir.join("a.ts"), "@aliased/dep"), None);
+
+        std::fs::write(
+            &tsconfig_path,
+            r#"{"compilerOptions": {"paths": {"@aliased/dep": ["./src/dep.ts"]}}}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            resolve_from(src_dir.join("b.ts"), "@aliased/dep"),
+            Some(ModuleId::from_path(&dep_ts))
+        );
+
+        assert_eq!(resolve_from(src_dir.join("a.ts"), "my-pkg"), None);
+        std::fs::write(
+            &pkg_json_path,
+            r#"{"name": "my-pkg", "types": "./index.d.ts"}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            resolve_from(src_dir.join("b.ts"), "my-pkg"),
+            Some(ModuleId::from_path(&pkg_dts))
+        );
+    }
+
+    #[test]
+    fn test_default_fs_host_invalidates_cache_on_overlay_fs_mutations_without_clear_cache() {
+        let host = make_overlay_host(
+            &[
+                ("/app/src/main.ts", "import './dep'; import './virtual_only';"),
+                ("/app/gen1/dep.ts", "export const V = 1;"),
+                ("/app/gen2/dep.ts", "export const V = 2;"),
+            ],
+            &["/app/src", "/app/gen1"],
+        );
+        let resolve_spec = |spec: &str| {
+            host.resolve(ResolveRequest::new(
+                "/app/src/main.ts",
+                spec,
+                ImportKind::Static,
+            ))
+            .now_or_never()
+            .unwrap()
+            .unwrap()
+            .map(|m| m.id)
+        };
+
+        assert_eq!(
+            resolve_spec("./dep"),
+            Some(ModuleId::from("/app/gen1/dep.ts"))
+        );
+        assert_eq!(resolve_spec("./virtual_only"), None);
+
+        // Reconfiguring `rootDirs` on `OverlayFileSystem` without calling `host.clear_cache()`
+        // must still evict stale `HostResolveCache` and `oxc_resolver` entries.
+        host.fs()
+            .set_root_dirs(vec![PathBuf::from("/app/src"), PathBuf::from("/app/gen2")]);
+        assert_eq!(
+            resolve_spec("./dep"),
+            Some(ModuleId::from("/app/gen2/dep.ts"))
+        );
+
+        // Creating and later removing a virtual file on `OverlayFileSystem` without calling
+        // `host.clear_cache()` must also be reflected immediately.
+        host.fs().upsert_file(
+            PathBuf::from("/app/src/virtual_only.ts"),
+            "export const X = 1;".to_string(),
+        );
+        assert_eq!(
+            resolve_spec("./virtual_only"),
+            Some(ModuleId::from("/app/src/virtual_only.ts"))
+        );
+
+        assert!(host
+            .fs()
+            .remove_virtual_file(Path::new("/app/src/virtual_only.ts")));
+        assert_eq!(resolve_spec("./virtual_only"), None);
     }
 }
