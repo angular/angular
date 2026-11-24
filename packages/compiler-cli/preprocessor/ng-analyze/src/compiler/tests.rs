@@ -10528,3 +10528,292 @@ fn test_clear_resolution_cache_flushes_allowed_sources_cache() {
         Some("[libNew]")
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn test_lazy_tsconfig_dts_symlink_and_root_dirs_invalidation() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path();
+    let ws_str = ws.to_string_lossy().into_owned();
+    let real_dir = ws.join("real");
+    let gen_dir = ws.join("gen");
+    std::fs::create_dir_all(&real_dir).unwrap();
+    std::fs::create_dir_all(&gen_dir).unwrap();
+
+    let real_global_v1 = real_dir.join("global_v1.d.ts");
+    let real_global_v2 = real_dir.join("global_v2.d.ts");
+    std::fs::write(&real_global_v1, "declare const AMBIENT_SEL: 'from-v1';\n").unwrap();
+    std::fs::write(&real_global_v2, "declare const AMBIENT_SEL: 'from-v2';\n").unwrap();
+
+    let app_ts = ws.join("app.ts");
+    let app_path = app_ts.to_string_lossy().into_owned();
+    std::fs::write(
+        &app_ts,
+        r#"
+            import {Component} from '@angular/core';
+            import {AmbientClient} from 'virtual-ambient-mod';
+
+            @Component({selector: AMBIENT_SEL, template: ''})
+            export class AppCmp {
+                constructor(private readonly client: AmbientClient) {}
+            }
+        "#,
+    )
+    .unwrap();
+
+    let tsconfig_path = ws.join("tsconfig.json");
+    std::fs::write(
+        &tsconfig_path,
+        r#"{
+            "compilerOptions": {"rootDirs": [".", "gen"]},
+            "files": ["app.ts", "ambient_global.d.ts", "ambient_mod.d.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig_path.to_string_lossy().into_owned()),
+        virtual_files: Some(angular_core_stub(&ws_str)),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let inspect_app = || -> (Option<String>, bool) {
+        let meta = analyzer.get_metadata_for_file(app_path.clone()).unwrap();
+        let app = meta
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+            .unwrap();
+        (
+            app.component.as_ref().unwrap().selector.clone(),
+            app.constructor_params.as_ref().unwrap()[0].is_value_verified,
+        )
+    };
+
+    assert_eq!(inspect_app(), (None, false));
+
+    let link_global_dts = ws.join("ambient_global.d.ts");
+    std::os::unix::fs::symlink(&real_global_v1, &link_global_dts).unwrap();
+    let gen_mod_dts = gen_dir.join("ambient_mod.d.ts");
+    std::fs::write(
+        &gen_mod_dts,
+        "declare module 'virtual-ambient-mod' { export class AmbientClient {} }\n",
+    )
+    .unwrap();
+    analyzer
+        .invalidate_files_core(vec![
+            FileInvalidation {
+                file_path: link_global_dts.to_string_lossy().into_owned(),
+                update_type: FileUpdateType::Created,
+                id_kind: None,
+            },
+            FileInvalidation {
+                file_path: gen_mod_dts.to_string_lossy().into_owned(),
+                update_type: FileUpdateType::Created,
+                id_kind: None,
+            },
+        ])
+        .unwrap();
+    assert_eq!(inspect_app(), (Some("from-v1".to_string()), true));
+
+    std::fs::remove_file(&link_global_dts).unwrap();
+    std::os::unix::fs::symlink(&real_global_v2, &link_global_dts).unwrap();
+    analyzer.clear_resolution_cache_core().unwrap();
+    assert_eq!(inspect_app(), (Some("from-v2".to_string()), true));
+
+    std::fs::remove_file(&link_global_dts).unwrap();
+    std::fs::remove_file(&gen_mod_dts).unwrap();
+    analyzer
+        .invalidate_files_core(vec![
+            FileInvalidation {
+                file_path: link_global_dts.to_string_lossy().into_owned(),
+                update_type: FileUpdateType::Deleted,
+                id_kind: None,
+            },
+            FileInvalidation {
+                file_path: gen_mod_dts.to_string_lossy().into_owned(),
+                update_type: FileUpdateType::Deleted,
+                id_kind: None,
+            },
+        ])
+        .unwrap();
+    assert_eq!(inspect_app(), (None, false));
+}
+
+#[test]
+fn test_lazy_tsconfig_dts_directory_create_delete_invalidation() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path().canonicalize().unwrap();
+    let ws_str = ws.to_string_lossy().into_owned();
+    let types_dir = ws.join("types.v1");
+
+    let app_ts = ws.join("app.ts");
+    let app_path = app_ts.to_string_lossy().into_owned();
+    std::fs::write(
+        &app_ts,
+        r#"
+            import {Component} from '@angular/core';
+            import {AmbientClient} from 'dir-ambient-mod';
+
+            @Component({selector: DIR_AMBIENT_SEL, template: ''})
+            export class AppCmp {
+                constructor(private readonly client: AmbientClient) {}
+            }
+        "#,
+    )
+    .unwrap();
+
+    let tsconfig_path = ws.join("tsconfig.json");
+    std::fs::write(
+        &tsconfig_path,
+        r#"{
+            "files": ["app.ts", "types.v1/ambient_global.d.ts", "types.v1/ambient_mod.d.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig_path.to_string_lossy().into_owned()),
+        virtual_files: Some(angular_core_stub(&ws_str)),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let inspect_app = || -> (Option<String>, bool) {
+        let meta = analyzer.get_metadata_for_file(app_path.clone()).unwrap();
+        let app = meta
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+            .unwrap();
+        (
+            app.component.as_ref().unwrap().selector.clone(),
+            app.constructor_params.as_ref().unwrap()[0].is_value_verified,
+        )
+    };
+
+    assert_eq!(inspect_app(), (None, false));
+
+    std::fs::create_dir_all(&types_dir).unwrap();
+    std::fs::write(
+        types_dir.join("ambient_global.d.ts"),
+        "declare const DIR_AMBIENT_SEL: 'from-dir';\n",
+    )
+    .unwrap();
+    std::fs::write(
+        types_dir.join("ambient_mod.d.ts"),
+        "declare module 'dir-ambient-mod' { export class AmbientClient {} }\n",
+    )
+    .unwrap();
+    analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: types_dir.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Created,
+            id_kind: None,
+        }])
+        .unwrap();
+    assert_eq!(inspect_app(), (Some("from-dir".to_string()), true));
+
+    std::fs::remove_dir_all(&types_dir).unwrap();
+    std::fs::create_dir_all(&types_dir).unwrap();
+    std::fs::write(
+        types_dir.join("ambient_global.d.ts"),
+        "declare const DIR_AMBIENT_SEL: 'from-dir-v2';\n",
+    )
+    .unwrap();
+    analyzer
+        .invalidate_files_core(vec![
+            FileInvalidation {
+                file_path: types_dir.to_string_lossy().into_owned(),
+                update_type: FileUpdateType::Deleted,
+                id_kind: None,
+            },
+            FileInvalidation {
+                file_path: types_dir.to_string_lossy().into_owned(),
+                update_type: FileUpdateType::Created,
+                id_kind: None,
+            },
+        ])
+        .unwrap();
+    assert_eq!(inspect_app(), (Some("from-dir-v2".to_string()), false));
+
+    std::fs::remove_dir_all(&types_dir).unwrap();
+    analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: types_dir.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Deleted,
+            id_kind: None,
+        }])
+        .unwrap();
+    assert_eq!(inspect_app(), (None, false));
+}
+
+#[cfg(unix)]
+#[test]
+fn test_lazy_tsconfig_dts_preserve_symlinks_repoint_on_clear_resolution_cache() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let ws = dir.path();
+    let ws_str = ws.to_string_lossy().into_owned();
+    let real_dir = ws.join("real");
+    std::fs::create_dir_all(&real_dir).unwrap();
+
+    let real_global_v1 = real_dir.join("global_v1.d.ts");
+    let real_global_v2 = real_dir.join("global_v2.d.ts");
+    std::fs::write(&real_global_v1, "declare const PRESERVED_SEL: 'v1';\n").unwrap();
+    std::fs::write(&real_global_v2, "declare const PRESERVED_SEL: 'v2';\n").unwrap();
+
+    let link_global_dts = ws.join("ambient_global.d.ts");
+    std::os::unix::fs::symlink(&real_global_v1, &link_global_dts).unwrap();
+
+    let app_ts = ws.join("app.ts");
+    let app_path = app_ts.to_string_lossy().into_owned();
+    std::fs::write(
+        &app_ts,
+        r#"
+            import {Component} from '@angular/core';
+
+            @Component({selector: PRESERVED_SEL, template: ''})
+            export class AppCmp {}
+        "#,
+    )
+    .unwrap();
+
+    let tsconfig_path = ws.join("tsconfig.json");
+    std::fs::write(
+        &tsconfig_path,
+        r#"{
+            "compilerOptions": {"preserveSymlinks": true},
+            "files": ["app.ts", "ambient_global.d.ts"]
+        }"#,
+    )
+    .unwrap();
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some(tsconfig_path.to_string_lossy().into_owned()),
+        virtual_files: Some(angular_core_stub(&ws_str)),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let inspect_selector = || -> Option<String> {
+        let meta = analyzer.get_metadata_for_file(app_path.clone()).unwrap();
+        let app = meta
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+            .unwrap();
+        app.component.as_ref().unwrap().selector.clone()
+    };
+
+    assert_eq!(inspect_selector().as_deref(), Some("v1"));
+
+    std::fs::remove_file(&link_global_dts).unwrap();
+    std::os::unix::fs::symlink(&real_global_v2, &link_global_dts).unwrap();
+    analyzer.clear_resolution_cache_core().unwrap();
+
+    assert_eq!(inspect_selector().as_deref(), Some("v2"));
+}

@@ -6,6 +6,9 @@ use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
 pub struct ResolvedTsConfig {
+    /// Resolved program file paths (`files` in order, then sorted `include` expansion).
+    /// Declaration files (`.d.ts`/`.d.mts`/`.d.cts`) listed in `files` are retained without eager
+    /// existence checks and resolved lazily by the query engine, so they may be absent on disk.
     pub files: Vec<PathBuf>,
     pub compiler_options: CompilerOptions,
     pub preserve_symlinks: bool,
@@ -101,9 +104,9 @@ pub fn load_and_resolve_tsconfig(
     let mut files = Vec::new();
     let mut seen_files = HashSet::new();
 
-    // 1. files
+    // 1. files: `.d.ts` files are loaded lazily by the query engine, so skip stating them eagerly.
     for f in resolved_files {
-        if fs.metadata(&f).is_ok() && seen_files.insert(f.clone()) {
+        if (crate::utils::is_dts(&f) || fs.metadata(&f).is_ok()) && seen_files.insert(f.clone()) {
             files.push(f);
         }
     }
@@ -2278,5 +2281,42 @@ mod tests {
         let fs = crate::fs::OverlayFileSystem::new_with_overlay();
         let config = load_and_resolve_tsconfig(&link_dir.join("tsconfig.json"), &fs).unwrap();
         assert_eq!(config.files, vec![link_dir.join("src/app.ts")]);
+    }
+
+    #[test]
+    fn test_lazy_dts_files_retained_without_metadata_stats() {
+        let fs = crate::fs::OverlayFileSystem::new_with_allowed_sources_and_fs(
+            None,
+            std::sync::Arc::new(crate::physical_fs::NoopFs),
+        );
+        fs.upsert_file(
+            PathBuf::from("/ws/pkg/app.ts"),
+            "export const a = 1;".to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/ws/out/pkg/tsconfig.json"),
+            r#"{
+                "files": [
+                    "../../pkg/app.ts",
+                    "../../pkg/missing.ts",
+                    "../dep/unmaterialized.d.ts",
+                    "../dep/esm.d.mts",
+                    "../dep/cjs.d.cts"
+                ]
+            }"#
+            .to_string(),
+        );
+
+        let config =
+            load_and_resolve_tsconfig(Path::new("/ws/out/pkg/tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            config.files,
+            vec![
+                PathBuf::from("/ws/pkg/app.ts"),
+                PathBuf::from("/ws/out/dep/unmaterialized.d.ts"),
+                PathBuf::from("/ws/out/dep/esm.d.mts"),
+                PathBuf::from("/ws/out/dep/cjs.d.cts"),
+            ]
+        );
     }
 }

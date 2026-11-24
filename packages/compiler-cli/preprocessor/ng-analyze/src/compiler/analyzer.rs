@@ -1086,6 +1086,7 @@ impl Analyzer {
         let _mutation = self.pause_metadata_requests();
         self.cancel_current_analysis();
         let mut paths_to_invalidate = Vec::new();
+        let mut structural_paths = Vec::new();
         let mut files_created = false;
         let mut config_changed = false;
 
@@ -1131,7 +1132,10 @@ impl Analyzer {
                 let existed = batch_host.has_overlay(&module_id)
                     || interned_fid
                         .is_some_and(|fid| self.engine.cached_parsed_source(fid).is_some());
-                files_created |= !existed;
+                if !existed {
+                    files_created = true;
+                    structural_paths.push(crate::fs::normalize_path(&norm_path).into_owned());
+                }
                 batch_host.upsert_overlay(
                     module_id.clone(),
                     Arc::from(update.content.as_str()),
@@ -1143,7 +1147,10 @@ impl Analyzer {
             }
 
             let path = self.fs.canonicalize(&raw_path).unwrap_or(raw_path);
-            files_created |= self.fs.metadata(&path).is_err();
+            if self.fs.metadata(&path).is_err() {
+                files_created = true;
+                structural_paths.push(crate::fs::normalize_path(&path).into_owned());
+            }
             config_changed |= path
                 .extension()
                 .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
@@ -1153,7 +1160,12 @@ impl Analyzer {
             self.invalidate_changed_path(&path, &mut paths_to_invalidate);
         }
 
-        self.finalize_file_updates(paths_to_invalidate, files_created, config_changed)
+        self.finalize_file_updates(
+            paths_to_invalidate,
+            files_created,
+            config_changed,
+            &structural_paths,
+        )
     }
 
     /// Drop the virtual overlay of each changed or deleted file and return every stale TS path or
@@ -1165,14 +1177,16 @@ impl Analyzer {
         let _mutation = self.pause_metadata_requests();
         self.cancel_current_analysis();
         let mut ts_paths_to_invalidate = Vec::new();
+        let mut structural_paths = Vec::new();
         let mut files_created_or_deleted = false;
         let mut config_changed = false;
 
         for update in updates {
-            files_created_or_deleted |= matches!(
+            let is_structural = matches!(
                 update.update_type,
                 crate::FileUpdateType::Created | crate::FileUpdateType::Deleted
             );
+            files_created_or_deleted |= is_structural;
             let kind = self.resolve_update_kind(&update.file_path, update.id_kind);
             if kind == crate::host::IdKind::Virtual {
                 let path = PathBuf::from(&update.file_path);
@@ -1209,6 +1223,9 @@ impl Analyzer {
             }
 
             let raw_path = PathBuf::from(&update.file_path);
+            if is_structural {
+                structural_paths.push(crate::fs::normalize_path(&raw_path).into_owned());
+            }
             let path = if let Some(batch_host) = &self.batching_host {
                 let norm_path = crate::fs::normalize_path_structural(&raw_path).into_owned();
                 let norm_str = crate::fs::path_to_string(norm_path.clone());
@@ -1229,6 +1246,12 @@ impl Analyzer {
                     .is_some_and(|ext| ext.eq_ignore_ascii_case("json"));
                 canonical
             };
+            if is_structural {
+                let norm_canonical = crate::fs::normalize_path(&path).into_owned();
+                if structural_paths.last() != Some(&norm_canonical) {
+                    structural_paths.push(norm_canonical);
+                }
+            }
 
             if is_ts_file(&path) {
                 self.resource_registry.unregister_ts_file(&path);
@@ -1245,6 +1268,7 @@ impl Analyzer {
             ts_paths_to_invalidate,
             files_created_or_deleted,
             config_changed,
+            &structural_paths,
         )
     }
 
@@ -1253,14 +1277,19 @@ impl Analyzer {
         mut invalidated_paths: Vec<String>,
         structure_changed: bool,
         config_changed: bool,
+        structural_paths: &[PathBuf],
     ) -> Result<Vec<String>, String> {
         if structure_changed {
             self.fs.clear_allowed_cache();
-            let evicted = self.engine.invalidate_module_resolution();
-            self.push_evicted_paths(evicted, &mut invalidated_paths);
         }
         if structure_changed || config_changed {
             self.re_resolve_entrypoints(&mut invalidated_paths);
+        }
+        if structure_changed {
+            let evicted = self.engine.refresh_tsconfig_dts_file_ids(structural_paths);
+            self.push_evicted_paths(evicted, &mut invalidated_paths);
+            let evicted = self.engine.invalidate_module_resolution();
+            self.push_evicted_paths(evicted, &mut invalidated_paths);
         }
         Ok(dedup_preserving_order(invalidated_paths))
     }
@@ -1353,6 +1382,8 @@ impl Analyzer {
         let mut invalidated_paths = Vec::new();
         let evicted = self.engine.clear_resolution_cache();
         self.push_evicted_paths(evicted, &mut invalidated_paths);
+        let dts_evicted = self.engine.invalidate_materialized_tsconfig_dts_files();
+        self.push_evicted_paths(dts_evicted, &mut invalidated_paths);
         Ok(dedup_preserving_order(invalidated_paths))
     }
 
