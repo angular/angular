@@ -17,21 +17,6 @@ import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {wrapIntoObservable} from './utils/collection';
 import {firstValueFrom} from './utils/first_value_from';
 
-export class NoMatch extends Error {
-  override readonly name: string = 'NoMatch';
-  public segmentGroup: UrlSegmentGroup | null;
-
-  constructor(segmentGroup?: UrlSegmentGroup) {
-    super();
-    this.segmentGroup = segmentGroup || null;
-
-    // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
-    // when extending errors in TS and the workaround is to explicitly set the prototype.
-    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
-    Object.setPrototypeOf(this, NoMatch.prototype);
-  }
-}
-
 export class AbsoluteRedirect extends Error {
   override readonly name: string = 'AbsoluteRedirect';
 

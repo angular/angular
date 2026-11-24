@@ -8,7 +8,7 @@
 
 import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {AbsoluteRedirect, ApplyRedirects, canLoadFails, NoMatch} from './apply_redirects';
+import {AbsoluteRedirect, ApplyRedirects, canLoadFails} from './apply_redirects';
 import {createUrlTreeFromSnapshot} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Data, LoadedRouterConfig, ResolveData, Route, Routes} from './models';
@@ -42,6 +42,10 @@ import {isEmptyError} from './utils/type_guards';
  * try to match child configs in case there are empty path children.
  */
 class NoLeftoversInUrl {}
+
+class NoMatch {
+  constructor(public segmentGroup: UrlSegmentGroup | null = null) {}
+}
 
 export async function recognize(
   injector: EnvironmentInjector,
@@ -144,6 +148,9 @@ export class Recognizer {
         PRIMARY_OUTLET,
         rootSnapshot,
       );
+      if (children instanceof NoMatch) {
+        throw this.noMatchError(children);
+      }
       return {children, rootSnapshot};
     } catch (e: any) {
       if (e instanceof AbsoluteRedirect) {
@@ -163,9 +170,6 @@ export class Recognizer {
         this.queryParams = Object.freeze({...this.urlTree.queryParams});
         return this.match(e.urlTree.root);
       }
-      if (e instanceof NoMatch) {
-        throw this.noMatchError(e);
-      }
 
       throw e;
     }
@@ -177,7 +181,7 @@ export class Recognizer {
     segmentGroup: UrlSegmentGroup,
     outlet: string,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot>[]> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot>[] | NoMatch> {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(injector, config, segmentGroup, parentRoute);
     }
@@ -191,12 +195,15 @@ export class Recognizer {
       true,
       parentRoute,
     );
+    if (child instanceof NoMatch) {
+      return child;
+    }
     return child instanceof TreeNode ? [child] : [];
   }
 
   /**
-   * Matches every child outlet in the `segmentGroup` to a `Route` in the config. Returns `null` if
-   * we cannot find a match for _any_ of the children.
+   * Matches every child outlet in the `segmentGroup` to a `Route` in the config. Returns `NoMatch`
+   * if we cannot find a match for _any_ of the children.
    *
    * @param config - The `Routes` to match against
    * @param segmentGroup - The `UrlSegmentGroup` whose children need to be matched against the
@@ -207,7 +214,7 @@ export class Recognizer {
     config: Route[],
     segmentGroup: UrlSegmentGroup,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot>[]> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot>[] | NoMatch> {
     // Expand outlets one at a time, starting with the primary outlet. We need to do it this way
     // because an absolute redirect from the primary outlet takes precedence.
     const childOutlets: string[] = [];
@@ -235,6 +242,9 @@ export class Recognizer {
         true,
         parentRoute,
       );
+      if (outletChild instanceof NoMatch) {
+        return outletChild;
+      }
       if (outletChild instanceof TreeNode) {
         children.push(outletChild);
       }
@@ -256,10 +266,10 @@ export class Recognizer {
     outlet: string,
     allowRedirects: boolean,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch> {
     for (const r of routes) {
       try {
-        return await this.processSegmentAgainstRoute(
+        const result = await this.processSegmentAgainstRoute(
           r._injector ?? injector,
           routes,
           r,
@@ -269,8 +279,12 @@ export class Recognizer {
           allowRedirects,
           parentRoute,
         );
+        if (result instanceof NoMatch) {
+          continue;
+        }
+        return result;
       } catch (e: any) {
-        if (e instanceof NoMatch || isEmptyError(e)) {
+        if (isEmptyError(e)) {
           continue;
         }
         throw e;
@@ -280,7 +294,7 @@ export class Recognizer {
     if (noLeftoversInUrl(segmentGroup, segments, outlet)) {
       return new NoLeftoversInUrl();
     }
-    throw new NoMatch(segmentGroup);
+    return new NoMatch(segmentGroup);
   }
 
   async processSegmentAgainstRoute(
@@ -292,7 +306,7 @@ export class Recognizer {
     outlet: string,
     allowRedirects: boolean,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch> {
     // We allow matches to empty paths when the outlets differ so we can match a url like `/(b:b)` to
     // a config like
     // * `{path: '', children: [{path: 'b', outlet: 'b'}]}`
@@ -313,7 +327,7 @@ export class Recognizer {
         // the URL segment group has no segments or children to pierce with.
         (segments.length === 0 && !rawSegment.hasChildren()))
     ) {
-      throw new NoMatch(rawSegment);
+      return new NoMatch(rawSegment);
     }
 
     if (route.redirectTo === undefined) {
@@ -339,7 +353,7 @@ export class Recognizer {
       );
     }
 
-    throw new NoMatch(rawSegment);
+    return new NoMatch(rawSegment);
   }
 
   private async expandSegmentAgainstRouteUsingRedirect(
@@ -350,10 +364,10 @@ export class Recognizer {
     segments: UrlSegment[],
     outlet: string,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch> {
     const {matched, parameters, consumedSegments, positionalParamSegments, remainingSegments} =
       match(segmentGroup, route, segments);
-    if (!matched) throw new NoMatch(segmentGroup);
+    if (!matched) return new NoMatch(segmentGroup);
 
     const currentSnapshot = this.createSnapshot(injector, route, segments, parameters, parentRoute);
     if (this.abortSignal.aborted) {
@@ -413,7 +427,7 @@ export class Recognizer {
     segments: UrlSegment[],
     outlet: string,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot>> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoMatch> {
     if (this.abortSignal.aborted) {
       throw new Error(this.abortSignal.reason);
     }
@@ -442,7 +456,7 @@ export class Recognizer {
     }
 
     if (!result?.matched) {
-      throw new NoMatch(rawSegment);
+      return new NoMatch(rawSegment);
     }
     // If the route has an injector created from providers, we should start using that.
     injector = getOrCreateRouteInjectorIfNeeded(route, injector);
@@ -470,6 +484,9 @@ export class Recognizer {
         segmentGroup,
         snapshot,
       );
+      if (children instanceof NoMatch) {
+        return children;
+      }
       return new TreeNode(snapshot, children);
     }
 
@@ -494,8 +511,11 @@ export class Recognizer {
       true,
       snapshot,
     );
+    if (child instanceof NoMatch) {
+      return child;
+    }
     if (!matchedOnOutlet && !(child instanceof TreeNode)) {
-      throw new NoMatch(rawSegment);
+      return new NoMatch(rawSegment);
     }
     return new TreeNode(snapshot, child instanceof TreeNode ? [child] : []);
   }
