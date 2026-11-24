@@ -1,7 +1,8 @@
-//! NgModule scope queries: the bodies behind [`QueryKey::NgModuleExportsScope`] and
-//! [`QueryKey::NgModuleImportsScope`], plus the recursive expansion helpers they use. Relocated
-//! from `compiler/decorators/ng_module.rs` onto the [`QueryEngine`]; sub-queries are requested
-//! through the engine's cached accessors so the transitive module graph is resolved once and shared.
+//! NgModule scope queries: the bodies behind [`QueryKey::NgModuleExportsScope`],
+//! [`QueryKey::NgModuleImportsScope`], and [`QueryKey::LocalNgModuleImportsScope`], plus the
+//! recursive expansion helpers they use. Relocated from `compiler/decorators/ng_module.rs` onto
+//! the [`QueryEngine`]; sub-queries are requested through the engine's cached accessors so the
+//! transitive module graph is resolved once and shared.
 
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
@@ -10,10 +11,29 @@ use futures::future::{BoxFuture, FutureExt};
 
 use crate::analyzer::flatten_class_info;
 use crate::evaluator::{FromResolved, ScopeReferences};
-use crate::query::keys::ModuleExportMap;
+use crate::query::keys::{ModuleExportMap, NgModuleImportsScopeData};
 use crate::query::{FileId, QueryContext, QueryEngine, ReferenceId};
 use crate::types::analysis::{DeclarationData, OwningReference};
 use crate::ClassType;
+
+#[derive(Clone, Copy)]
+enum ScopeFileFilter<'a> {
+    All,
+    Only(&'a HashSet<FileId>),
+}
+
+impl<'a> ScopeFileFilter<'a> {
+    fn allows(self, file_id: FileId) -> bool {
+        match self {
+            Self::All => true,
+            Self::Only(allowed) => allowed.contains(&file_id),
+        }
+    }
+
+    fn is_bounded(self) -> bool {
+        matches!(self, Self::Only(_))
+    }
+}
 
 pub(crate) async fn resolve_reference_async(
     reference: &crate::types::analysis::Reference,
@@ -26,12 +46,26 @@ pub(crate) async fn resolve_reference_async(
 async fn scope_references(
     slot: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
     ctx: &QueryContext,
+    filter: ScopeFileFilter<'_>,
 ) -> Option<Vec<crate::types::analysis::Reference>> {
     let mut completed = slot.clone();
-    completed
-        .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
-        .await;
+    let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
+    match filter {
+        ScopeFileFilter::Only(allowed) => {
+            completed.complete_within_files(ctx, foreign, allowed).await
+        }
+        ScopeFileFilter::All => completed.complete_with(ctx, foreign).await,
+    }
     ScopeReferences::from_value(completed.raw(), completed.origin).map(|refs| refs.0)
+}
+
+async fn build_scope_declaration(
+    decl_ref: crate::types::analysis::Reference,
+    info: &crate::ClassInfo,
+    ctx: &QueryContext,
+) -> Option<DeclarationData> {
+    let flattened = flatten_class_info(info.clone(), ctx).await;
+    DeclarationData::from_class_info(decl_ref, info, &flattened, false)
 }
 
 impl QueryEngine {
@@ -44,7 +78,7 @@ impl QueryEngine {
         let mut visited = HashSet::new();
         visited.insert(reference_id);
         Arc::new(
-            self.exports_scope_internal(reference_id, ctx, &mut visited)
+            self.exports_scope_internal(reference_id, ctx, &mut visited, ScopeFileFilter::All)
                 .await,
         )
     }
@@ -54,8 +88,13 @@ impl QueryEngine {
         reference_id: ReferenceId,
         ctx: &'a QueryContext,
         visited: &'a mut HashSet<ReferenceId>,
+        filter: ScopeFileFilter<'a>,
     ) -> BoxFuture<'a, Vec<DeclarationData>> {
         async move {
+            if !filter.allows(reference_id.file) {
+                return Vec::new();
+            }
+
             let local_result = ctx.analyze_file_syntax(reference_id.file).await;
 
             let Some(ng_module) = find_ng_module(reference_id, &local_result) else {
@@ -65,9 +104,12 @@ impl QueryEngine {
             let mut resolved_declarations = Vec::new();
 
             if let Some(ref exports_resolved) = ng_module.exports {
-                if let Some(references) = scope_references(exports_resolved, ctx).await {
+                if let Some(references) = scope_references(exports_resolved, ctx, filter).await {
                     let mut resolve_futures = Vec::new();
                     for r in &references {
+                        if !filter.allows(r.file) {
+                            continue;
+                        }
                         resolve_futures.push((r, resolve_reference_async(r, ctx)));
                     }
 
@@ -78,6 +120,9 @@ impl QueryEngine {
                         let Some(info) = resolved_info else {
                             continue;
                         };
+                        if !filter.allows(info.reference_id.file) {
+                            continue;
+                        }
 
                         if info.class_type == ClassType::NgModule {
                             if !visited.insert(info.reference_id) {
@@ -85,28 +130,34 @@ impl QueryEngine {
                             }
 
                             let sub_scope = self
-                                .exports_scope_internal(info.reference_id, ctx, visited)
+                                .exports_scope_internal(info.reference_id, ctx, visited, filter)
                                 .await;
-                            let mapped = propagate_owning_reference_validated(
-                                ctx,
-                                &sub_scope,
-                                &r.owning_reference,
-                                info.reference_id.file,
-                            )
-                            .await;
-                            resolved_declarations.extend(mapped);
+                            if filter.is_bounded() {
+                                // In-unit source NgModules never propagate package owning
+                                // references; skipping `propagate_owning_reference_validated`
+                                // avoids cloning `sub_scope` and any `module_export_map` walk.
+                                resolved_declarations.extend(sub_scope);
+                            } else {
+                                let mapped = propagate_owning_reference_validated(
+                                    ctx,
+                                    &sub_scope,
+                                    &r.owning_reference,
+                                    info.reference_id.file,
+                                )
+                                .await;
+                                resolved_declarations.extend(mapped);
+                            }
                         } else if info.class_type == ClassType::Component
                             || info.class_type == ClassType::Directive
                             || info.class_type == ClassType::Pipe
                         {
-                            let flattened = flatten_class_info(info.clone(), ctx).await;
                             let decl_ref = if info.is_standalone.unwrap_or(true) {
                                 self.ngmodule_imported_declaration_ref(r, &info)
                             } else {
                                 r.clone()
                             };
                             if let Some(resolved) =
-                                DeclarationData::from_class_info(decl_ref, &info, &flattened, false)
+                                build_scope_declaration(decl_ref, &info, ctx).await
                             {
                                 resolved_declarations.push(resolved);
                             }
@@ -125,26 +176,61 @@ impl QueryEngine {
         self: &Arc<Self>,
         reference_id: ReferenceId,
         ctx: &QueryContext,
-    ) -> Arc<crate::query::keys::NgModuleImportsScopeData> {
+    ) -> Arc<NgModuleImportsScopeData> {
         let fp = self.lookup_path(reference_id.file);
 
         let is_dts = crate::utils::is_dts(&fp);
         if is_dts {
             // A `.d.ts` NgModule has no separate imports scope; its exports scope is the whole scope.
             let exports = ctx.ngmodule_exports_scope(reference_id).await;
-            return Arc::new(crate::query::keys::NgModuleImportsScopeData {
+            return Arc::new(NgModuleImportsScopeData {
                 declarations: (*exports).clone(),
                 is_complete: true,
             });
         }
 
+        Arc::new(
+            self.imports_scope_internal(reference_id, ctx, ScopeFileFilter::All)
+                .await,
+        )
+    }
+
+    /// Compilation scope (imports + declarations) restricted to the current compilation unit's
+    /// entrypoints, used by local-mode extra-imports tracking so external `.d.ts` dependencies
+    /// are neither parsed nor traversed only to be discarded.
+    pub(crate) async fn local_imports_scope_body(
+        self: &Arc<Self>,
+        reference_id: ReferenceId,
+        ctx: &QueryContext,
+    ) -> Arc<Vec<DeclarationData>> {
+        let extra = ctx.local_extra_imports().await;
+        let allowed = &extra.entrypoints_ids;
+        if !allowed.contains(&reference_id.file)
+            || self.lookup_external(reference_id.file)
+            || crate::utils::is_dts(&self.lookup_path(reference_id.file))
+        {
+            return Arc::new(Vec::new());
+        }
+
+        let scope = self
+            .imports_scope_internal(reference_id, ctx, ScopeFileFilter::Only(allowed))
+            .await;
+        Arc::new(scope.declarations)
+    }
+
+    async fn imports_scope_internal(
+        self: &Arc<Self>,
+        reference_id: ReferenceId,
+        ctx: &QueryContext,
+        filter: ScopeFileFilter<'_>,
+    ) -> NgModuleImportsScopeData {
         let local_result = ctx.analyze_file_syntax(reference_id.file).await;
 
         let Some(ng_module) = find_ng_module(reference_id, &local_result) else {
-            return Arc::new(crate::query::keys::NgModuleImportsScopeData {
+            return NgModuleImportsScopeData {
                 declarations: Vec::new(),
                 is_complete: true,
-            });
+            };
         };
 
         let mut resolved_declarations = Vec::new();
@@ -152,7 +238,7 @@ impl QueryEngine {
 
         // Imported NgModules' exports are expanded before local declarations (matching ngtsc).
         if let Some(ref imports_resolved) = ng_module.imports {
-            if let Some(references) = scope_references(imports_resolved, ctx).await {
+            if let Some(references) = scope_references(imports_resolved, ctx, filter).await {
                 let mut visited_modules = HashSet::new();
                 let all_resolved = self
                     .expand_ngmodule_scope_async(
@@ -160,6 +246,7 @@ impl QueryEngine {
                         &mut visited_modules,
                         &mut resolved_declarations,
                         ctx,
+                        filter,
                     )
                     .await;
                 if !all_resolved {
@@ -171,9 +258,12 @@ impl QueryEngine {
         }
 
         if let Some(ref decls_resolved) = ng_module.declarations {
-            if let Some(references) = scope_references(decls_resolved, ctx).await {
+            if let Some(references) = scope_references(decls_resolved, ctx, filter).await {
                 let mut resolve_futures = Vec::new();
                 for r in &references {
+                    if !filter.allows(r.file) {
+                        continue;
+                    }
                     resolve_futures.push((r, resolve_reference_async(r, ctx)));
                 }
 
@@ -185,11 +275,11 @@ impl QueryEngine {
                         is_complete = false;
                         continue;
                     };
+                    if !filter.allows(info.reference_id.file) {
+                        continue;
+                    }
 
-                    let flattened = flatten_class_info(info.clone(), ctx).await;
-                    if let Some(resolved) =
-                        DeclarationData::from_class_info(r.clone(), &info, &flattened, false)
-                    {
+                    if let Some(resolved) = build_scope_declaration(r.clone(), &info, ctx).await {
                         resolved_declarations.push(resolved);
                     }
                 }
@@ -198,10 +288,10 @@ impl QueryEngine {
             }
         }
 
-        Arc::new(crate::query::keys::NgModuleImportsScopeData {
+        NgModuleImportsScopeData {
             declarations: deduplicate_ngmodule_scope(resolved_declarations),
             is_complete,
-        })
+        }
     }
 
     /// Which name the entry point rooted at `file_id` publishes each declaration under
@@ -217,17 +307,21 @@ impl QueryEngine {
     }
 
     /// Recursively and concurrently expands the imports graph of an NgModule.
-    pub(crate) fn expand_ngmodule_scope_async<'a>(
+    fn expand_ngmodule_scope_async<'a>(
         self: &'a Arc<Self>,
         references: &'a [crate::types::analysis::Reference],
         visited_modules: &'a mut HashSet<ReferenceId>,
         out_declarations: &'a mut Vec<DeclarationData>,
         ctx: &'a QueryContext,
+        filter: ScopeFileFilter<'a>,
     ) -> BoxFuture<'a, bool> {
         async move {
             let mut all_resolved = true;
             let mut resolve_futures = Vec::new();
             for r in references {
+                if !filter.allows(r.file) {
+                    continue;
+                }
                 resolve_futures.push((r, resolve_reference_async(r, ctx)));
             }
 
@@ -239,30 +333,48 @@ impl QueryEngine {
                     all_resolved = false;
                     continue;
                 };
+                if !filter.allows(info.reference_id.file) {
+                    continue;
+                }
 
                 if info.class_type == ClassType::NgModule {
                     if !visited_modules.insert(info.reference_id) {
                         continue;
                     }
 
-                    let sub_scope = ctx.ngmodule_exports_scope(info.reference_id).await;
-                    let mapped = propagate_owning_reference_validated(
-                        ctx,
-                        &sub_scope,
-                        &r.owning_reference,
-                        info.reference_id.file,
-                    )
-                    .await;
-                    out_declarations.extend(mapped);
+                    if filter.is_bounded() {
+                        // Cannot call `ctx.ngmodule_exports_scope`, which is unbounded and would
+                        // parse external `.d.ts` exports. In-unit NgModule graphs are small and
+                        // cached at the declaring module via `LocalNgModuleImportsScope`, and
+                        // in-unit source modules never propagate owning references.
+                        let mut visited_exports = HashSet::new();
+                        visited_exports.insert(info.reference_id);
+                        let sub_scope = self
+                            .exports_scope_internal(
+                                info.reference_id,
+                                ctx,
+                                &mut visited_exports,
+                                filter,
+                            )
+                            .await;
+                        out_declarations.extend(sub_scope);
+                    } else {
+                        let sub_scope = ctx.ngmodule_exports_scope(info.reference_id).await;
+                        let mapped = propagate_owning_reference_validated(
+                            ctx,
+                            &sub_scope,
+                            &r.owning_reference,
+                            info.reference_id.file,
+                        )
+                        .await;
+                        out_declarations.extend(mapped);
+                    }
                 } else if info.class_type == ClassType::Component
                     || info.class_type == ClassType::Directive
                     || info.class_type == ClassType::Pipe
                 {
-                    let flattened = flatten_class_info(info.clone(), ctx).await;
                     let decl_ref = self.ngmodule_imported_declaration_ref(r, &info);
-                    if let Some(resolved) =
-                        DeclarationData::from_class_info(decl_ref, &info, &flattened, false)
-                    {
+                    if let Some(resolved) = build_scope_declaration(decl_ref, &info, ctx).await {
                         out_declarations.push(resolved);
                     }
                 }

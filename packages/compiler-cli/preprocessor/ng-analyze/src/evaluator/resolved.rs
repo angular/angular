@@ -846,6 +846,22 @@ impl<T> Resolved<T> {
         self.value = crate::evaluator::evaluate_value_completely(ctx, &self.value, foreign).await;
     }
 
+    /// Resolve this value in-place while refusing to read, parse, or evaluate any file outside
+    /// `allowed_files` (holes outside `allowed_files` become `Dynamic(Unknown)`).
+    pub async fn complete_within_files(
+        &mut self,
+        ctx: &crate::query::QueryContext,
+        foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+        allowed_files: &std::collections::HashSet<crate::query::FileId>,
+    ) {
+        if !self.value.contains_incomplete() {
+            return;
+        }
+        self.value =
+            crate::evaluator::evaluate_value_within_files(ctx, &self.value, foreign, allowed_files)
+                .await;
+    }
+
     /// Resolve only [`crate::evaluator::IncompleteDep::AmbientGlobal`] holes in-place via `ctx`,
     /// leaving cross-file import/member/call holes untouched.
     pub async fn complete_ambient_globals_with(

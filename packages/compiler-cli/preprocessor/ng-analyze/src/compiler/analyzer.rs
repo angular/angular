@@ -3891,6 +3891,143 @@ mod entry_point_tests {
         );
     }
 
+    #[test]
+    fn local_extra_imports_delta_tracks_in_unit_submodule_exports() {
+        let ext_kit = "import * as i0 from '@angular/core';\n\
+            export declare class ExtKitModule {\n\
+              static ɵmod: i0.ɵɵNgModuleDeclaration<ExtKitModule, never, never, never>;\n\
+            }\n";
+        let sub_module = |exports: &str| {
+            format!(
+                "import {{NgModule}} from '@angular/core';\n\
+                 import {{ExtKitModule}} from './ext/kit';\n\
+                 import {{SubA, SubB}} from './sub_comps';\n\
+                 @NgModule({{imports: [ExtKitModule], declarations: [SubA, SubB], exports: [{exports}]}})\n\
+                 export class SubModule {{}}\n"
+            )
+        };
+
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(false),
+            virtual_files: Some(
+                [
+                    (
+                        "/project/tsconfig.json",
+                        r#"{
+                            "angularCompilerOptions": {"generateExtraImportsInLocalMode": true},
+                            "files": ["app_module.ts", "main_comp.ts", "sub_comps.ts", "sub_module.ts"]
+                        }"#
+                        .to_string(),
+                    ),
+                    ("/project/ext/kit.d.ts", ext_kit.to_string()),
+                    (
+                        "/project/app_module.ts",
+                        "import {NgModule} from '@angular/core';\n\
+                         import {ExtKitModule} from './ext/kit';\n\
+                         import {MainComp} from './main_comp';\n\
+                         import {SubModule} from './sub_module';\n\
+                         @NgModule({imports: [ExtKitModule, SubModule], declarations: [MainComp]})\n\
+                         export class AppModule {}\n"
+                            .to_string(),
+                    ),
+                    (
+                        "/project/main_comp.ts",
+                        "import {Component} from '@angular/core';\n\
+                         @Component({selector: 'main-comp', template: '<sub-a></sub-a><sub-b></sub-b>', standalone: false})\n\
+                         export class MainComp {}\n"
+                            .to_string(),
+                    ),
+                    (
+                        "/project/sub_comps.ts",
+                        "import {Component} from '@angular/core';\n\
+                         @Component({selector: 'sub-a', template: '', standalone: false})\n\
+                         export class SubA {}\n\
+                         @Component({selector: 'sub-b', template: '', standalone: false})\n\
+                         export class SubB {}\n"
+                            .to_string(),
+                    ),
+                    ("/project/sub_module.ts", sub_module("SubA, ExtKitModule")),
+                ]
+                .into_iter()
+                .map(|(path, content)| (path.to_string(), content))
+                .collect(),
+            ),
+            ..Default::default()
+        })
+        .unwrap();
+
+        let collect =
+            |rx: futures::channel::mpsc::UnboundedReceiver<Result<CompilationChunk, String>>| {
+                futures::executor::block_on(rx.collect::<Vec<_>>())
+                    .into_iter()
+                    .map(|chunk| chunk.expect("chunk"))
+                    .collect::<Vec<_>>()
+            };
+        let decl_names_of_main = |chunks: &[CompilationChunk]| -> Option<Vec<String>> {
+            chunks
+                .iter()
+                .flat_map(|chunk| chunk.files.iter())
+                .find(|file| file.file_path == "/project/main_comp.ts")
+                .map(|file| {
+                    file.classes[0]
+                        .component
+                        .as_ref()
+                        .expect("MainComp is a component")
+                        .resolved_declarations
+                        .as_deref()
+                        .unwrap_or(&[])
+                        .iter()
+                        .map(|decl| decl.name.clone())
+                        .collect()
+                })
+        };
+
+        let initial = collect(analyzer.analyze_core(get_global_pool().clone()).unwrap());
+        assert_eq!(decl_names_of_main(&initial), Some(vec!["SubA".to_string()]));
+
+        // Editing an unread external `.d.ts` must not re-stream any file in local mode.
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/ext/kit.d.ts".to_string(),
+                content: format!("{ext_kit}export declare const UNUSED: number;\n"),
+                id_kind: None,
+            }])
+            .unwrap();
+        let after_dts_edit = collect(
+            analyzer
+                .analyze_delta_core(get_global_pool().clone())
+                .unwrap(),
+        );
+        let re_streamed: Vec<&str> = after_dts_edit
+            .iter()
+            .flat_map(|chunk| chunk.files.iter())
+            .map(|file| file.file_path.as_str())
+            .collect();
+        assert!(
+            re_streamed.is_empty(),
+            "editing an unread external .d.ts must not re-stream any file: {re_streamed:?}"
+        );
+
+        // Editing in-unit `SubModule` exports must re-stream `MainComp` with `SubB` included.
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/sub_module.ts".to_string(),
+                content: sub_module("SubA, SubB, ExtKitModule"),
+                id_kind: None,
+            }])
+            .unwrap();
+        let after_sub_edit = collect(
+            analyzer
+                .analyze_delta_core(get_global_pool().clone())
+                .unwrap(),
+        );
+        assert_eq!(
+            decl_names_of_main(&after_sub_edit),
+            Some(vec!["SubA".to_string(), "SubB".to_string()])
+        );
+    }
+
     const C3_IN_M2: [(&str, &str); 2] = [
         (
             "/project/c3.component.ts",

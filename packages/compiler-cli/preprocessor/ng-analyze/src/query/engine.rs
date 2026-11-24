@@ -809,7 +809,8 @@ impl QueryEngine {
                             }
                             QueryKey::AnalyzeFileWire { .. }
                             | QueryKey::NgModuleExportsScope(_)
-                            | QueryKey::NgModuleImportsScope(_) => {
+                            | QueryKey::NgModuleImportsScope(_)
+                            | QueryKey::LocalNgModuleImportsScope(_) => {
                                 keys_to_evict.insert(key);
                             }
                             _ => {}
@@ -957,6 +958,7 @@ impl QueryEngine {
                             QueryKey::AnalyzeFileWire { .. }
                             | QueryKey::NgModuleExportsScope(_)
                             | QueryKey::NgModuleImportsScope(_)
+                            | QueryKey::LocalNgModuleImportsScope(_)
                             | QueryKey::ComponentMapping
                             | QueryKey::NgModuleScopeRegistry
                             | QueryKey::LocalExtraImports => {
@@ -1320,6 +1322,10 @@ impl QueryEngine {
                 )),
                 QueryKey::NgModuleImportsScope(reference_id) => Arc::new(QueryValue::ImportsScope(
                     self.imports_scope_body(reference_id, &child_ctx).await,
+                )),
+                QueryKey::LocalNgModuleImportsScope(reference_id) => Arc::new(QueryValue::Scope(
+                    self.local_imports_scope_body(reference_id, &child_ctx)
+                        .await,
                 )),
                 QueryKey::ModuleExportMap(file_id) => Arc::new(QueryValue::ExportMap(
                     self.module_export_map_body(file_id, &child_ctx).await,
@@ -2119,7 +2125,7 @@ impl QueryEngine {
     ) -> Arc<crate::query::keys::LocalExtraImportsData> {
         ctx.record_file(ROOTS_FILE_ID);
         let entrypoints: Vec<PathBuf> = self.entrypoints.read().unwrap().clone();
-        let entrypoints_ids: HashSet<FileId> = entrypoints
+        let mut entrypoints_ids: HashSet<FileId> = entrypoints
             .iter()
             .map(|path| self.intern_entry_or_dep(path))
             .collect();
@@ -2134,6 +2140,10 @@ impl QueryEngine {
             }
             entrypoints_set.insert(crate::fs::normalize_path(path).into_owned());
             if let Some(canon) = self.host.canonicalize_path(path) {
+                // Keep `entrypoints_ids` aligned with `entrypoints_set` when entrypoints are
+                // symlinked so `LocalNgModuleImportsScope` does not drop canonicalized targets
+                // that `local_extra_imports_body` classified as local.
+                entrypoints_ids.insert(self.intern_entry_or_dep(&canon));
                 entrypoints_set.insert(crate::fs::normalize_path(&canon).into_owned());
             }
         }
@@ -2189,10 +2199,17 @@ impl QueryEngine {
                     return false;
                 }
                 let path = Path::new(module.id.as_str());
-                entrypoints_set.contains(crate::fs::normalize_path(path).as_ref())
+                let matches_entrypoint = entrypoints_set
+                    .contains(crate::fs::normalize_path(path).as_ref())
                     || self.host.canonicalize_path(path).is_some_and(|canon| {
                         entrypoints_set.contains(crate::fs::normalize_path(&canon).as_ref())
-                    })
+                    });
+                if matches_entrypoint {
+                    // Record `target_id` as in-unit so `LocalNgModuleImportsScope` traverses the
+                    // same target that was excluded from `global_extra_imports`.
+                    entrypoints_ids.insert(target_id);
+                }
+                matches_entrypoint
             });
             if is_local_entrypoint {
                 continue;
@@ -7457,11 +7474,20 @@ mod tests {
     struct LoadTrackingHost {
         resolutions: HashMap<(String, String), crate::host::ResolvedModule>,
         modules: HashMap<String, crate::host::LoadedModule>,
+        canonical_paths: HashMap<PathBuf, PathBuf>,
         load_calls: Mutex<Vec<String>>,
     }
 
     impl LoadTrackingHost {
         fn new(resolutions: &[(&str, &str, &str)], modules: &[(&str, &str)]) -> Arc<Self> {
+            Self::with_canonical_paths(resolutions, modules, &[])
+        }
+
+        fn with_canonical_paths(
+            resolutions: &[(&str, &str, &str)],
+            modules: &[(&str, &str)],
+            canonical_paths: &[(&str, &str)],
+        ) -> Arc<Self> {
             use crate::host::{IdKind, LoadedModule, ModuleFormat, ModuleId, ResolvedModule};
 
             let resolutions = resolutions
@@ -7491,9 +7517,14 @@ mod tests {
                     )
                 })
                 .collect();
+            let canonical_paths = canonical_paths
+                .iter()
+                .map(|&(from, to)| (PathBuf::from(from), PathBuf::from(to)))
+                .collect();
             Arc::new(Self {
                 resolutions,
                 modules,
+                canonical_paths,
                 load_calls: Mutex::new(Vec::new()),
             })
         }
@@ -7539,6 +7570,10 @@ mod tests {
             Result<Option<crate::host::ResolvedResourceId>, crate::host::HostError>,
         > {
             Box::pin(async { Ok(None) })
+        }
+
+        fn canonicalize_path(&self, path: &Path) -> Option<PathBuf> {
+            self.canonical_paths.get(path).cloned()
         }
     }
 
@@ -7610,6 +7645,272 @@ mod tests {
             "host.load must not be called for external .d.ts when emit_declaration_only is false: \
              {loaded:?}"
         );
+    }
+
+    #[test]
+    fn local_extra_imports_bounds_scope_to_unit_without_loading_external_dts() {
+        let app_mod = "/local_scope/app_module.ts";
+        let main_comp = "/local_scope/main_comp.ts";
+        let sub_comp = "/local_scope/sub_comp.ts";
+        let sub_mod = "/local_scope/sub_module.ts";
+        let local_barrel = "/local_scope/local_barrel.ts";
+        let local_standalone = "/local_scope/local_standalone.ts";
+        let shared_imports = "/local_scope/shared_imports.ts";
+        let ext_kit = "/local_scope/ext/kit.d.ts";
+        let ext_comp = "/local_scope/ext/ext_comp.d.ts";
+        let ext_router = "/local_scope/ext/router.d.ts";
+        let ext_ambient = "/local_scope/ext/ambient.d.ts";
+
+        let host = LoadTrackingHost::new(
+            &[
+                (app_mod, "@ext/kit", ext_kit),
+                (app_mod, "@ext/router", ext_router),
+                (app_mod, "./local_barrel", local_barrel),
+                (app_mod, "./main_comp", main_comp),
+                (app_mod, "./shared_imports", shared_imports),
+                (local_barrel, "@ext/kit", ext_kit),
+                (local_barrel, "./sub_module", sub_mod),
+                (shared_imports, "@ext/kit", ext_kit),
+                (shared_imports, "./local_standalone", local_standalone),
+                (sub_comp, "./shared_imports", shared_imports),
+                (sub_mod, "@ext/kit", ext_kit),
+                (sub_mod, "./sub_comp", sub_comp),
+                (ext_kit, "./ext_comp", ext_comp),
+            ],
+            &[
+                (
+                    ext_comp,
+                    "import * as i0 from '@angular/core';\n\
+                     export declare class ExtComp {\n\
+                       static ɵcmp: i0.ɵɵComponentDeclaration<ExtComp, 'ext-comp', never, {}, {}, never, never, false, never>;\n\
+                     }\n",
+                ),
+                (
+                    ext_kit,
+                    "import * as i0 from '@angular/core';\n\
+                     import * as i1 from './ext_comp';\n\
+                     export declare class ExtService {}\n\
+                     export declare class ExtKitModule {\n\
+                       static ɵmod: i0.ɵɵNgModuleDeclaration<ExtKitModule, [typeof i1.ExtComp], never, [typeof i1.ExtComp]>;\n\
+                     }\n",
+                ),
+                (
+                    ext_router,
+                    "import * as i0 from '@angular/core';\n\
+                     export declare class ExtRouterModule {\n\
+                       static forRoot(): i0.ModuleWithProviders<ExtRouterModule>;\n\
+                       static ɵmod: i0.ɵɵNgModuleDeclaration<ExtRouterModule, never, never, never>;\n\
+                     }\n",
+                ),
+                (ext_ambient, "declare const AMBIENT_IMPORTS: readonly [];\n"),
+                (
+                    local_standalone,
+                    "import {Directive} from '@angular/core';\n\
+                     @Directive({selector: '[localStandalone]', standalone: true})\n\
+                     export class LocalStandaloneDir {}\n",
+                ),
+                (
+                    shared_imports,
+                    "import {ExtKitModule} from '@ext/kit';\n\
+                     import {LocalStandaloneDir} from './local_standalone';\n\
+                     export const SUB_COMP_SELECTOR = 'sub-comp';\n\
+                     export const SHARED_IMPORTS = [ExtKitModule, LocalStandaloneDir];\n",
+                ),
+                (
+                    sub_comp,
+                    "import {Component} from '@angular/core';\n\
+                     import {SUB_COMP_SELECTOR} from './shared_imports';\n\
+                     @Component({selector: SUB_COMP_SELECTOR, template: '', standalone: false})\n\
+                     export class SubComp {}\n",
+                ),
+                (
+                    sub_mod,
+                    "import {ModuleWithProviders, NgModule} from '@angular/core';\n\
+                     import {ExtKitModule, ExtService} from '@ext/kit';\n\
+                     import {SubComp} from './sub_comp';\n\
+                     @NgModule({imports: [ExtKitModule], declarations: [SubComp], exports: [SubComp, ExtKitModule]})\n\
+                     export class SubModule {\n\
+                       static forRoot(): ModuleWithProviders<SubModule> {\n\
+                         return {ngModule: SubModule, providers: [ExtService]};\n\
+                       }\n\
+                     }\n",
+                ),
+                (
+                    local_barrel,
+                    "export * from '@ext/kit';\nexport * from './sub_module';\n",
+                ),
+                (
+                    main_comp,
+                    "import {Component} from '@angular/core';\n\
+                     @Component({selector: 'main-comp', template: '<sub-comp></sub-comp><div localStandalone></div>', standalone: false})\n\
+                     export class MainComp {}\n",
+                ),
+                (
+                    app_mod,
+                    "import {NgModule} from '@angular/core';\n\
+                     import {ExtKitModule} from '@ext/kit';\n\
+                     import {ExtRouterModule} from '@ext/router';\n\
+                     import {SubModule} from './local_barrel';\n\
+                     import {MainComp} from './main_comp';\n\
+                     import {SHARED_IMPORTS} from './shared_imports';\n\
+                     @NgModule({\n\
+                       imports: [ExtKitModule, ExtRouterModule.forRoot(), SubModule.forRoot(), ...SHARED_IMPORTS, AMBIENT_IMPORTS],\n\
+                       declarations: [MainComp],\n\
+                     })\n\
+                     export class AppModule {}\n",
+                ),
+            ],
+        );
+        let engine = local_engine(
+            host.clone(),
+            &[
+                app_mod,
+                main_comp,
+                sub_comp,
+                sub_mod,
+                local_barrel,
+                local_standalone,
+                shared_imports,
+            ],
+            true,
+        );
+        *engine.tsconfig_dts_files.write().unwrap() = vec![PathBuf::from(ext_ambient)];
+
+        let main_wire = futures::executor::block_on(
+            QueryContext::new(engine.clone())
+                .analyze_file_wire(engine.intern_path(main_comp), false),
+        );
+        let comp = main_wire.0.as_ref().expect("local wire analysis").classes[0]
+            .component
+            .as_ref()
+            .expect("MainComp metadata");
+        assert_eq!(
+            comp.local_compilation_extra_imports.as_deref(),
+            Some(["@ext/kit".to_string(), "@ext/router".to_string()].as_slice())
+        );
+        let decls = comp
+            .resolved_declarations
+            .as_ref()
+            .expect("local resolved declarations");
+        let decl_names: Vec<&str> = decls.iter().map(|d| d.name.as_str()).collect();
+        assert_eq!(decl_names, vec!["SubComp", "LocalStandaloneDir"]);
+        assert_eq!(decls[0].selector.as_deref(), Some("sub-comp"));
+
+        let loaded = host.loaded();
+        for ext in [ext_kit, ext_comp, ext_router, ext_ambient] {
+            assert!(
+                !loaded.iter().any(|id| id == ext),
+                "local mode must not load external .d.ts {ext}: {loaded:?}"
+            );
+        }
+
+        // Optimized analysis on the same engine must still resolve the full scope including `.d.ts`.
+        let opt_wire = futures::executor::block_on(
+            QueryContext::new(engine.clone())
+                .analyze_file_wire(engine.intern_path(main_comp), true),
+        );
+        let opt_names: Vec<&str> = opt_wire
+            .0
+            .as_ref()
+            .expect("optimized wire analysis")
+            .classes[0]
+            .component
+            .as_ref()
+            .expect("optimized MainComp")
+            .resolved_declarations
+            .as_ref()
+            .expect("optimized resolved declarations")
+            .iter()
+            .map(|d| d.name.as_str())
+            .collect();
+        assert!(
+            opt_names.contains(&"ExtComp"),
+            "optimized scope on the same engine must still include external .d.ts declarations: \
+             {opt_names:?}"
+        );
+    }
+
+    #[test]
+    fn local_extra_imports_preserves_symlinked_entrypoint_declarations() {
+        let app_mod = "/sym/app_module.ts";
+        let main_comp = "/sym/main_comp.ts";
+        let sym_sibling = "/sym/link/sibling.ts";
+        let real_sibling = "/sym/real/sibling.ts";
+        let sym_sub_mod = "/sym/link/sub_mod.ts";
+        let real_sub_mod = "/sym/real/sub_mod.ts";
+        let sub_comp = "/sym/sub_comp.ts";
+
+        let sibling_src = "import {Component} from '@angular/core';\n\
+            @Component({selector: 'sibling', template: '', standalone: false})\n\
+            export class SiblingComp {}\n";
+        let sub_mod_src = "import {NgModule} from '@angular/core';\n\
+            import {SubComp} from '../sub_comp';\n\
+            @NgModule({declarations: [SubComp], exports: [SubComp]})\n\
+            export class SubModule {}\n";
+
+        let host = LoadTrackingHost::with_canonical_paths(
+            &[
+                (app_mod, "./main_comp", main_comp),
+                (app_mod, "./sibling", real_sibling),
+                (app_mod, "./sub_mod", sym_sub_mod),
+                (sym_sub_mod, "../sub_comp", sub_comp),
+                (real_sub_mod, "../sub_comp", sub_comp),
+            ],
+            &[
+                (
+                    app_mod,
+                    "import {NgModule} from '@angular/core';\n\
+                     import {MainComp} from './main_comp';\n\
+                     import {SiblingComp} from './sibling';\n\
+                     import {SubModule} from './sub_mod';\n\
+                     @NgModule({imports: [SubModule], declarations: [MainComp, SiblingComp]})\n\
+                     export class AppModule {}\n",
+                ),
+                (
+                    main_comp,
+                    "import {Component} from '@angular/core';\n\
+                     @Component({selector: 'main-comp', template: '<sibling></sibling><sub-comp></sub-comp>', standalone: false})\n\
+                     export class MainComp {}\n",
+                ),
+                (sym_sibling, sibling_src),
+                (real_sibling, sibling_src),
+                (sym_sub_mod, sub_mod_src),
+                (real_sub_mod, sub_mod_src),
+                (
+                    sub_comp,
+                    "import {Component} from '@angular/core';\n\
+                     @Component({selector: 'sub-comp', template: '', standalone: false})\n\
+                     export class SubComp {}\n",
+                ),
+            ],
+            &[(sym_sibling, real_sibling), (sym_sub_mod, real_sub_mod)],
+        );
+        let engine = local_engine(
+            host,
+            &[app_mod, main_comp, sym_sibling, real_sub_mod, sub_comp],
+            true,
+        );
+
+        let main_wire = futures::executor::block_on(
+            QueryContext::new(engine.clone())
+                .analyze_file_wire(engine.intern_path(main_comp), false),
+        );
+        let comp = main_wire.0.as_ref().expect("local wire analysis").classes[0]
+            .component
+            .as_ref()
+            .expect("MainComp metadata");
+        assert_eq!(
+            comp.local_compilation_extra_imports.as_deref(),
+            Some([].as_slice())
+        );
+        let decl_names: Vec<&str> = comp
+            .resolved_declarations
+            .as_ref()
+            .expect("local resolved declarations")
+            .iter()
+            .map(|d| d.name.as_str())
+            .collect();
+        assert_eq!(decl_names, vec!["SubComp", "SiblingComp"]);
     }
 }
 

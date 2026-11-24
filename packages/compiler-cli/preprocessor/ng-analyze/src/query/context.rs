@@ -242,6 +242,21 @@ impl QueryContext {
         }
     }
 
+    /// In-unit compilation scope (declarations from the compilation unit's entrypoints only) for
+    /// `generateExtraImportsInLocalMode` ([`QueryKey::LocalNgModuleImportsScope`]).
+    pub async fn local_ngmodule_imports_scope(
+        &self,
+        reference_id: ReferenceId,
+    ) -> Arc<Vec<DeclarationData>> {
+        match &*self
+            .query_with_deps(QueryKey::LocalNgModuleImportsScope(reference_id))
+            .await
+        {
+            QueryValue::Scope(r) => r.clone(),
+            _ => unreachable!("LocalNgModuleImportsScope must yield Scope"),
+        }
+    }
+
     pub fn record_component_mapping_deps(&self, mapping: &NgModuleComponentMap, file_id: FileId) {
         self.record_file(file_id);
         if let Some(deps) = mapping.file_dependencies.get(&file_id) {

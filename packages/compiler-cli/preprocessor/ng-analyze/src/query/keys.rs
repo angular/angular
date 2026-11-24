@@ -35,6 +35,9 @@ pub enum QueryKey {
     NgModuleExportsScope(ReferenceId),
     /// Full compilation scope (imports + declarations) visible to templates inside an NgModule.
     NgModuleImportsScope(ReferenceId),
+    /// In-unit compilation scope (imports + declarations restricted to the compilation unit's
+    /// entrypoints) used by `generateExtraImportsInLocalMode`.
+    LocalNgModuleImportsScope(ReferenceId),
     /// Export map of a package entry point (upstream's `moduleExportsCache`).
     ModuleExportMap(FileId),
     /// Singleton: component → owning-NgModule mapping across [`QueryKey::ProgramFiles`].
@@ -67,6 +70,7 @@ impl QueryKey {
             | Self::ModuleExportMap(file_id) => Some(file_id),
             Self::NgModuleExportsScope(_)
             | Self::NgModuleImportsScope(_)
+            | Self::LocalNgModuleImportsScope(_)
             | Self::ComponentMapping
             | Self::NgModuleScopeRegistry
             | Self::ProgramFiles
@@ -77,21 +81,21 @@ impl QueryKey {
 
     /// The file to attribute this query to in perf summaries (`slowest` entries).
     ///
-    /// Includes [`Self::NgModuleExportsScope`] and [`Self::NgModuleImportsScope`] via the
-    /// NgModule's declaring file without widening [`Self::file_id`], which cache invalidation
-    /// uses to mark per-file results dirty.
+    /// Includes [`Self::NgModuleExportsScope`], [`Self::NgModuleImportsScope`], and
+    /// [`Self::LocalNgModuleImportsScope`] via the NgModule's declaring file without widening
+    /// [`Self::file_id`], which cache invalidation uses to mark per-file results dirty.
     pub fn perf_file_id(&self) -> Option<FileId> {
         match *self {
-            Self::NgModuleExportsScope(ref_id) | Self::NgModuleImportsScope(ref_id) => {
-                Some(ref_id.file)
-            }
+            Self::NgModuleExportsScope(ref_id)
+            | Self::NgModuleImportsScope(ref_id)
+            | Self::LocalNgModuleImportsScope(ref_id) => Some(ref_id.file),
             _ => self.file_id(),
         }
     }
 
     /// Variant names, indexed by [`Self::kind_index`]. The perf layer maps a query span's
     /// `kind` field back to its name here.
-    pub const KIND_NAMES: [&'static str; 13] = [
+    pub const KIND_NAMES: [&'static str; 14] = [
         "AnalyzeFileSemantic",
         "AnalyzeFileSyntax",
         "AnalyzeFileEvaluated",
@@ -105,6 +109,7 @@ impl QueryKey {
         "ProgramFiles",
         "AmbientModuleFiles",
         "LocalExtraImports",
+        "LocalNgModuleImportsScope",
     ];
 
     /// Position of this key's variant in [`Self::KIND_NAMES`].
@@ -123,6 +128,7 @@ impl QueryKey {
             Self::ProgramFiles => 10,
             Self::AmbientModuleFiles => 11,
             Self::LocalExtraImports => 12,
+            Self::LocalNgModuleImportsScope(_) => 13,
         }
     }
 
@@ -168,7 +174,7 @@ pub enum QueryValue {
     Wire(Arc<WireFileResult>),
     /// Parsed source file ([`QueryKey::ParseFile`]).
     ParsedFile(Arc<Mutex<ParsedFile>>),
-    /// An NgModule exports scope.
+    /// An NgModule exports scope or local-only imports scope.
     Scope(Arc<Vec<DeclarationData>>),
     /// An NgModule imports compilation scope.
     ImportsScope(Arc<NgModuleImportsScopeData>),
