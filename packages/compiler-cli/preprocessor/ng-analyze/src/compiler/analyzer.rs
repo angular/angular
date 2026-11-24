@@ -1288,6 +1288,11 @@ impl Analyzer {
         if structure_changed {
             let evicted = self.engine.refresh_tsconfig_dts_file_ids(structural_paths);
             self.push_evicted_paths(evicted, &mut invalidated_paths);
+        }
+        if config_changed {
+            let evicted = self.engine.clear_resolution_cache();
+            self.push_evicted_paths(evicted, &mut invalidated_paths);
+        } else if structure_changed {
             let evicted = self.engine.invalidate_module_resolution();
             self.push_evicted_paths(evicted, &mut invalidated_paths);
         }

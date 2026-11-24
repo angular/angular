@@ -10817,3 +10817,69 @@ fn test_lazy_tsconfig_dts_preserve_symlinks_repoint_on_clear_resolution_cache() 
 
     assert_eq!(inspect_selector().as_deref(), Some("v2"));
 }
+
+#[test]
+fn test_updating_tsconfig_paths_flushes_resolver_cache() {
+    let mut virtual_files = angular_core_stub("/pkg");
+    virtual_files.insert(
+        "/pkg/app.ts".to_string(),
+        LIB_CONSUMER_APP.replace("LIB_SPECIFIER", "@aliased/lib"),
+    );
+    virtual_files.insert(
+        "/pkg/tsconfig.json".to_string(),
+        r#"{
+            "compilerOptions": {"paths": {"@aliased/lib": ["./lib_v1.ts"]}},
+            "files": ["app.ts", "lib_v1.ts", "lib_v2.ts"]
+        }"#
+        .to_string(),
+    );
+    virtual_files.insert("/pkg/lib_v1.ts".to_string(), lib_source("[v1]"));
+    virtual_files.insert("/pkg/lib_v2.ts".to_string(), lib_source("[v2]"));
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/pkg/tsconfig.json".to_string()),
+        optimize: Some(false),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/pkg/app.ts").as_deref(),
+        Some("[v1]")
+    );
+
+    analyzer
+        .update_file_content_core(vec![FileUpdate {
+            file_path: "/pkg/tsconfig.json".to_string(),
+            content: r#"{
+                "compilerOptions": {"paths": {"@aliased/lib": ["./lib_v2.ts"]}},
+                "files": ["app.ts", "lib_v1.ts", "lib_v2.ts"]
+            }"#
+            .to_string(),
+            id_kind: None,
+        }])
+        .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/pkg/app.ts").as_deref(),
+        Some("[v2]")
+    );
+
+    analyzer
+        .update_file_content_core(vec![FileUpdate {
+            file_path: "/pkg/tsconfig.json".to_string(),
+            content: r#"{
+                "compilerOptions": {"paths": {"@aliased/lib": ["./lib_v1.ts"]}},
+                "files": ["app.ts", "lib_v1.ts", "lib_v2.ts"]
+            }"#
+            .to_string(),
+            id_kind: None,
+        }])
+        .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/pkg/app.ts").as_deref(),
+        Some("[v1]")
+    );
+}
