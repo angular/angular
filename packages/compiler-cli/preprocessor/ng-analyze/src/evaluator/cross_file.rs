@@ -102,7 +102,26 @@ pub fn cross_file_resolve_export<'a>(
     export_name: String,
     visited: &'a mut HashSet<(PathBuf, String)>,
 ) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
+    cross_file_resolve_export_within(ctx, file_path, specifier, export_name, visited, None)
+}
+
+/// Like [`cross_file_resolve_export`], but when `allowed_files` is `Some`, refuses to open or
+/// traverse any resolved target file outside `allowed_files`: out-of-set direct targets return
+/// `Ok(None)`, and out-of-set `export *` wildcard branches are skipped while continuing to
+/// remaining in-set branches.
+pub(crate) fn cross_file_resolve_export_within<'a>(
+    ctx: &'a crate::QueryCtx,
+    file_path: &'a Path,
+    specifier: Option<&'a str>,
+    export_name: String,
+    visited: &'a mut HashSet<(PathBuf, String)>,
+    allowed_files: Option<&'a HashSet<FileId>>,
+) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
     async move {
+        let mut state = ChaseState {
+            visited,
+            allowed_files,
+        };
         let (target_id, target_file, initial_owning) = match specifier {
             Some(spec) if !spec.is_empty() => {
                 let Some((resolved_id, resolved)) = ctx
@@ -111,6 +130,9 @@ pub fn cross_file_resolve_export<'a>(
                 else {
                     return Ok(None);
                 };
+                if !state.allows_file(resolved_id) {
+                    return Ok(None);
+                }
                 let importer_id = ctx.engine.intern_path(file_path);
                 let owning = if OwningReference::is_absolute_specifier(spec) {
                     let bare = OwningReference::from_source_specifier(spec, export_name.clone());
@@ -132,11 +154,13 @@ pub fn cross_file_resolve_export<'a>(
                 };
                 (resolved_id, resolved, owning)
             }
-            _ => (
-                ctx.engine.intern_path(file_path),
-                file_path.to_path_buf(),
-                None,
-            ),
+            _ => {
+                let id = ctx.engine.intern_path(file_path);
+                if !state.allows_file(id) {
+                    return Ok(None);
+                }
+                (id, file_path.to_path_buf(), None)
+            }
         };
 
         let entered_from_specifier = specifier.is_some_and(|spec| !spec.is_empty());
@@ -145,7 +169,7 @@ pub fn cross_file_resolve_export<'a>(
             target_file,
             export_name.clone(),
             initial_owning,
-            visited,
+            &mut state,
             0,
             entered_from_specifier,
         )
@@ -406,12 +430,24 @@ async fn chase_symbol_in_file(
     ChaseTarget::NotFound
 }
 
-fn chase_symbol_declaration<'a>(
+struct ChaseState<'a> {
+    visited: &'a mut HashSet<(PathBuf, String)>,
+    allowed_files: Option<&'a HashSet<FileId>>,
+}
+
+impl ChaseState<'_> {
+    fn allows_file(&self, file_id: FileId) -> bool {
+        self.allowed_files
+            .is_none_or(|allowed| allowed.contains(&file_id))
+    }
+}
+
+fn chase_symbol_declaration<'a, 's>(
     ctx: &'a crate::QueryCtx,
     file_path: PathBuf,
     name: String,
     owning_reference: Option<OwningReference>,
-    visited: &'a mut HashSet<(PathBuf, String)>,
+    state: &'a mut ChaseState<'s>,
     depth: usize,
     require_exported: bool,
 ) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
@@ -428,7 +464,7 @@ fn chase_symbol_declaration<'a>(
                 format!("#local:{name}")
             },
         );
-        if !visited.insert(key.clone()) {
+        if !state.visited.insert(key.clone()) {
             return Err(ChaseSymbolError::CycleDetected);
         }
 
@@ -452,6 +488,9 @@ fn chase_symbol_declaration<'a>(
                     if let Some((resolved_id, resolved_path)) =
                         ctx.resolve_from_path(&file_path, &source, kind).await
                     {
+                        if !state.allows_file(resolved_id) {
+                            return Ok(None);
+                        }
                         let importer_is_external = ctx.engine.lookup_external(file_id);
                         let importer_path = (!importer_is_external
                             && ctx.engine.lookup_kind(file_id) == crate::host::IdKind::Path)
@@ -469,7 +508,7 @@ fn chase_symbol_declaration<'a>(
                             resolved_path,
                             original_name.clone(),
                             next_owning,
-                            visited,
+                            state,
                             depth + 1,
                             true,
                         )
@@ -492,7 +531,7 @@ fn chase_symbol_declaration<'a>(
                         file_path.clone(),
                         alias_target,
                         owning_reference.clone(),
-                        visited,
+                        state,
                         depth + 1,
                         false,
                     )
@@ -533,6 +572,9 @@ fn chase_symbol_declaration<'a>(
                         else {
                             continue;
                         };
+                        if !state.allows_file(resolved_id) {
+                            continue;
+                        }
 
                         let next_owning = update_owning_reference(
                             owning_reference.as_ref(),
@@ -548,7 +590,7 @@ fn chase_symbol_declaration<'a>(
                             resolved_path,
                             name.clone(),
                             next_owning,
-                            visited,
+                            state,
                             depth + 1,
                             true,
                         )
@@ -615,7 +657,7 @@ fn chase_symbol_declaration<'a>(
         }
         .await;
 
-        visited.remove(&key);
+        state.visited.remove(&key);
         res
     }
     .boxed()

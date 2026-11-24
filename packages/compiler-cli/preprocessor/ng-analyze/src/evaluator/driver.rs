@@ -72,10 +72,32 @@ pub async fn evaluate_value_completely(
     value: &ResolvedValue,
     foreign: &[&dyn ForeignFunctionResolver],
 ) -> ResolvedValue {
+    evaluate_value_inner(ctx, value, foreign, None).await
+}
+
+/// Like [`evaluate_value_completely`], but refuses to read, parse, or evaluate any file outside
+/// `allowed_files` (including ambient global `.d.ts` lookups). Holes that resolve outside
+/// `allowed_files` become `Dynamic(Unknown)` so callers such as `ScopeReferences` skip them
+/// without triggering file I/O.
+pub async fn evaluate_value_within_files(
+    ctx: &QueryContext,
+    value: &ResolvedValue,
+    foreign: &[&dyn ForeignFunctionResolver],
+    allowed_files: &HashSet<FileId>,
+) -> ResolvedValue {
+    evaluate_value_inner(ctx, value, foreign, Some(allowed_files)).await
+}
+
+async fn evaluate_value_inner(
+    ctx: &QueryContext,
+    value: &ResolvedValue,
+    foreign: &[&dyn ForeignFunctionResolver],
+    allowed_files: Option<&HashSet<FileId>>,
+) -> ResolvedValue {
     if !value.contains_incomplete() {
         return value.clone();
     }
-    let mut state = ResolutionState::default();
+    let mut state = ResolutionState::with_allowed_files(allowed_files);
     let mut env = ResolvedEnv::new();
     let mut ast_results = std::collections::HashMap::new();
     let mut current = value.clone();
@@ -121,6 +143,9 @@ pub async fn evaluate_value_completely(
         if current.contains_incomplete() {
             // Re-evaluate every non-transparent hole node (even if keys repeat across call sites).
             for hole in collect_reevaluation_holes(&current) {
+                if !state.allows_file(hole.file) {
+                    continue;
+                }
                 let Some(reevaluated) =
                     reevaluate_ast_expression(ctx, hole.file, hole.node_id, &env, foreign).await
                 else {
@@ -229,16 +254,20 @@ enum EvalTask {
 
 /// Runs `task` to a hole-free value in `file_id`, iteratively resolving cross-file holes and
 /// re-evaluating with the populated `env` until complete (or demoting remaining holes to `Dynamic`).
-fn complete_value<'a>(
+fn complete_value<'a, 's>(
     ctx: &'a QueryContext,
     file_id: FileId,
     task: EvalTask,
     initial: Option<ResolvedValue>,
-    state: &'a mut ResolutionState,
+    state: &'a mut ResolutionState<'s>,
     depth: usize,
     foreign: &'a [&'a dyn ForeignFunctionResolver],
 ) -> BoxFuture<'a, ResolvedValue> {
     async move {
+        debug_assert!(
+            state.allows_file(file_id),
+            "complete_value entered disallowed file {file_id:?}"
+        );
         let parsed = ctx.parse_file(file_id).await;
         let mut env = ResolvedEnv::new();
         let mut value =
@@ -350,16 +379,34 @@ enum ResolutionKey {
 
 /// Per-evaluation Member/Call cycle stack and memo table across frames.
 #[derive(Default)]
-struct ResolutionState {
+struct ResolutionState<'a> {
     /// Keys currently being resolved on the active path, outermost first.
     in_progress: Vec<ResolutionKey>,
     /// Path-independent completed values (stored before stamping the caller's owning reference).
     completed: HashMap<ResolutionKey, ResolvedValue>,
     /// Shallowest `in_progress` depth a cycle or depth-limit cut depended on (0 = whole path).
     shallowest_cut: Option<usize>,
+    /// When `Some`, evaluation refuses to read, parse, or evaluate any file outside this set.
+    allowed_files: Option<&'a HashSet<FileId>>,
 }
 
-impl ResolutionState {
+impl<'a> ResolutionState<'a> {
+    fn with_allowed_files(allowed_files: Option<&'a HashSet<FileId>>) -> Self {
+        Self {
+            allowed_files,
+            ..Self::default()
+        }
+    }
+
+    fn allows_file(&self, file: FileId) -> bool {
+        self.allowed_files
+            .is_none_or(|allowed| allowed.contains(&file))
+    }
+
+    fn is_file_bounded(&self) -> bool {
+        self.allowed_files.is_some()
+    }
+
     fn cut_cycle(&mut self, key: &ResolutionKey) -> bool {
         let Some(index) = self.in_progress.iter().position(|k| k == key) else {
             return false;
@@ -378,10 +425,10 @@ impl ResolutionState {
 }
 
 /// Resolves one hole to a hole-free value, converting failures to `Dynamic`.
-fn resolve_hole<'a>(
+fn resolve_hole<'a, 's>(
     ctx: &'a QueryContext,
     hole: IncompleteValue,
-    state: &'a mut ResolutionState,
+    state: &'a mut ResolutionState<'s>,
     depth: usize,
     foreign: &'a [&'a dyn ForeignFunctionResolver],
 ) -> BoxFuture<'a, ResolvedValue> {
@@ -395,6 +442,11 @@ fn resolve_hole<'a>(
                 return resolve_import(ctx, unresolved, hole.span, state, depth + 1, foreign).await;
             }
             IncompleteDep::AmbientGlobal { file, name } => {
+                if state.is_file_bounded() {
+                    // Skip ambient `.d.ts` global scanning under file-bounded evaluation; return
+                    // `Unknown` so `ScopeReferences` skips this entry cleanly.
+                    return ResolvedValue::dynamic(hole.file, hole.span, DynamicReason::Unknown);
+                }
                 let ident_span = hole.identifiers.first().map_or(hole.span, |&(_, s)| s);
                 return resolve_ambient_global(
                     ctx,
@@ -435,6 +487,9 @@ fn resolve_hole<'a>(
             ),
         };
 
+        if !state.allows_file(file) {
+            return ResolvedValue::dynamic(hole.file, hole.span, DynamicReason::Unknown);
+        }
         if let Some(done) = state.completed.get(&key) {
             return apply_owning_reference(done.clone(), file, owning);
         }
@@ -481,7 +536,7 @@ async fn resolve_ambient_global(
     consumer_file: FileId,
     name: String,
     ident_span: Span,
-    state: &mut ResolutionState,
+    state: &mut ResolutionState<'_>,
     depth: usize,
     foreign: &[&dyn ForeignFunctionResolver],
 ) -> ResolvedValue {
@@ -596,7 +651,7 @@ async fn resolve_import(
     ctx: &QueryContext,
     unresolved: UnresolvedReference,
     usage_span: Span,
-    state: &mut ResolutionState,
+    state: &mut ResolutionState<'_>,
     depth: usize,
     foreign: &[&dyn ForeignFunctionResolver],
 ) -> ResolvedValue {
@@ -604,6 +659,15 @@ async fn resolve_import(
         ImportKind::Named(name) => name.clone(),
         ImportKind::Default => "default".to_string(),
         ImportKind::Namespace => {
+            if state.is_file_bounded() {
+                // Return `Unknown` rather than `UnresolvedImport` so `ScopeReferences::from_value`
+                // skips the entry instead of synthesizing a `Reference` on `unresolved.importer`.
+                return ResolvedValue::dynamic(
+                    unresolved.importer,
+                    usage_span,
+                    DynamicReason::Unknown,
+                );
+            }
             // TODO(parity): Materialize unrefined namespace imports as a `Map` of exports
             // (upstream `ResolvedModule`).
             return ResolvedValue::dynamic(
@@ -648,14 +712,14 @@ async fn resolve_import(
 }
 
 #[allow(clippy::too_many_arguments)]
-fn resolve_named_export<'a>(
+fn resolve_named_export<'a, 's>(
     ctx: &'a QueryContext,
     file_path: &'a Path,
     specifier: String,
     export_name: String,
     unresolved: UnresolvedReference,
     usage_span: Span,
-    state: &'a mut ResolutionState,
+    state: &'a mut ResolutionState<'s>,
     depth: usize,
     foreign: &'a [&'a dyn ForeignFunctionResolver],
 ) -> BoxFuture<'a, ResolvedValue> {
@@ -670,12 +734,13 @@ fn resolve_named_export<'a>(
         }
 
         let mut chase_visited = HashSet::new();
-        let chased_decl = crate::evaluator::cross_file::cross_file_resolve_export(
+        let chased_decl = crate::evaluator::cross_file::cross_file_resolve_export_within(
             ctx,
             file_path,
             Some(&specifier),
             export_name.clone(),
             &mut chase_visited,
+            state.allowed_files,
         )
         .await;
 
@@ -786,6 +851,15 @@ fn resolve_named_export<'a>(
                 ResolvedValue::dynamic(file_id, usage_span, DynamicReason::ImportCycle)
             }
             Ok(None) => {
+                if state.is_file_bounded() {
+                    // Return `Unknown` rather than `UnresolvedImport` so `ScopeReferences::from_value`
+                    // skips out-of-unit imports cleanly instead of synthesizing a `Reference`.
+                    return ResolvedValue::dynamic(
+                        unresolved.importer,
+                        usage_span,
+                        DynamicReason::Unknown,
+                    );
+                }
                 let file_id = ctx
                     .resolve_from_id(
                         unresolved.importer,

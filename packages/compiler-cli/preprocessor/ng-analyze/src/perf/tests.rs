@@ -362,8 +362,11 @@ fn slowest_executions_serialize_into_the_summary() {
 fn ngmodule_scope_queries_attribute_declaring_file_without_changing_file_id() {
     let exports_key = QueryKey::NgModuleExportsScope(ReferenceId::new(4, SymbolId::from(1)));
     let imports_key = QueryKey::NgModuleImportsScope(ReferenceId::new(7, SymbolId::from(2)));
+    let local_imports_key =
+        QueryKey::LocalNgModuleImportsScope(ReferenceId::new(9, SymbolId::from(3)));
     assert_eq!(exports_key.file_id(), None);
     assert_eq!(imports_key.file_id(), None);
+    assert_eq!(local_imports_key.file_id(), None);
 
     let h = Harness::new();
     h.on_thread("a", || {
@@ -376,6 +379,11 @@ fn ngmodule_scope_queries_attribute_declaring_file_without_changing_file_id() {
         h.at(20);
         imports_span.in_scope(|| h.at(28));
         imports_span.record("done", true);
+
+        let local_imports_span = query(&local_imports_key);
+        h.at(30);
+        local_imports_span.in_scope(|| h.at(35));
+        local_imports_span.record("done", true);
     });
     let take = h.layer.take(&|id| Some(format!("/src/f{id}.ts")));
     assert_eq!(
@@ -389,5 +397,11 @@ fn ngmodule_scope_queries_attribute_declaring_file_without_changing_file_id() {
             .file
             .as_deref(),
         Some("/src/f7.ts")
+    );
+    assert_eq!(
+        take.summary.queries["LocalNgModuleImportsScope"].slowest[0]
+            .file
+            .as_deref(),
+        Some("/src/f9.ts")
     );
 }
