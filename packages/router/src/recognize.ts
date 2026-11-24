@@ -140,39 +140,34 @@ export class Recognizer {
       {},
       this.injector,
     );
-    try {
-      const children = await this.processSegmentGroup(
-        this.injector,
-        this.config,
-        rootSegmentGroup,
-        PRIMARY_OUTLET,
-        rootSnapshot,
-      );
-      if (children instanceof NoMatch) {
-        throw this.noMatchError(children);
-      }
-      return {children, rootSnapshot};
-    } catch (e: any) {
-      if (e instanceof AbsoluteRedirect) {
-        // Count at the actual root-restart boundary so redirects returned from functions are
-        // subject to the same limit as static redirects.
-        this.absoluteRedirectCount++;
-        if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
-          if (ngDevMode) {
-            throw new RuntimeError(
-              RuntimeErrorCode.INFINITE_REDIRECT,
-              `Detected possible infinite redirect when redirecting from '${this.urlTree}' to '${e.urlTree}'.`,
-            );
-          }
-          this.allowRedirects = false;
+    const children = await this.processSegmentGroup(
+      this.injector,
+      this.config,
+      rootSegmentGroup,
+      PRIMARY_OUTLET,
+      rootSnapshot,
+    );
+    if (children instanceof AbsoluteRedirect) {
+      // Count at the actual root-restart boundary so redirects returned from functions are
+      // subject to the same limit as static redirects.
+      this.absoluteRedirectCount++;
+      if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
+        if (ngDevMode) {
+          throw new RuntimeError(
+            RuntimeErrorCode.INFINITE_REDIRECT,
+            `Detected possible infinite redirect when redirecting from '${this.urlTree}' to '${children.urlTree}'.`,
+          );
         }
-        this.urlTree = e.urlTree;
-        this.queryParams = Object.freeze({...this.urlTree.queryParams});
-        return this.match(e.urlTree.root);
+        this.allowRedirects = false;
       }
-
-      throw e;
+      this.urlTree = children.urlTree;
+      this.queryParams = Object.freeze({...this.urlTree.queryParams});
+      return this.match(children.urlTree.root);
     }
+    if (children instanceof NoMatch) {
+      throw this.noMatchError(children);
+    }
+    return {children, rootSnapshot};
   }
 
   async processSegmentGroup(
@@ -181,7 +176,7 @@ export class Recognizer {
     segmentGroup: UrlSegmentGroup,
     outlet: string,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot>[] | NoMatch> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot>[] | NoMatch | AbsoluteRedirect> {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(injector, config, segmentGroup, parentRoute);
     }
@@ -195,7 +190,7 @@ export class Recognizer {
       true,
       parentRoute,
     );
-    if (child instanceof NoMatch) {
+    if (child instanceof NoMatch || child instanceof AbsoluteRedirect) {
       return child;
     }
     return child instanceof TreeNode ? [child] : [];
@@ -214,7 +209,7 @@ export class Recognizer {
     config: Route[],
     segmentGroup: UrlSegmentGroup,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot>[] | NoMatch> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot>[] | NoMatch | AbsoluteRedirect> {
     // Expand outlets one at a time, starting with the primary outlet. We need to do it this way
     // because an absolute redirect from the primary outlet takes precedence.
     const childOutlets: string[] = [];
@@ -242,7 +237,7 @@ export class Recognizer {
         true,
         parentRoute,
       );
-      if (outletChild instanceof NoMatch) {
+      if (outletChild instanceof NoMatch || outletChild instanceof AbsoluteRedirect) {
         return outletChild;
       }
       if (outletChild instanceof TreeNode) {
@@ -266,7 +261,7 @@ export class Recognizer {
     outlet: string,
     allowRedirects: boolean,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch | AbsoluteRedirect> {
     for (const r of routes) {
       try {
         const result = await this.processSegmentAgainstRoute(
@@ -306,7 +301,7 @@ export class Recognizer {
     outlet: string,
     allowRedirects: boolean,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch | AbsoluteRedirect> {
     // We allow matches to empty paths when the outlets differ so we can match a url like `/(b:b)` to
     // a config like
     // * `{path: '', children: [{path: 'b', outlet: 'b'}]}`
@@ -327,7 +322,7 @@ export class Recognizer {
         // the URL segment group has no segments or children to pierce with.
         (segments.length === 0 && !rawSegment.hasChildren()))
     ) {
-      return new NoMatch(rawSegment);
+      return new NoMatch();
     }
 
     if (route.redirectTo === undefined) {
@@ -353,7 +348,7 @@ export class Recognizer {
       );
     }
 
-    return new NoMatch(rawSegment);
+    return new NoMatch();
   }
 
   private async expandSegmentAgainstRouteUsingRedirect(
@@ -364,10 +359,10 @@ export class Recognizer {
     segments: UrlSegment[],
     outlet: string,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl | NoMatch | AbsoluteRedirect> {
     const {matched, parameters, consumedSegments, positionalParamSegments, remainingSegments} =
       match(segmentGroup, route, segments);
-    if (!matched) return new NoMatch(segmentGroup);
+    if (!matched) return new NoMatch();
 
     const currentSnapshot = this.createSnapshot(injector, route, segments, parameters, parentRoute);
     if (this.abortSignal.aborted) {
@@ -382,6 +377,9 @@ export class Recognizer {
       // g3-only this.injector,
       injector, // 3p-only
     );
+    if (newTree instanceof AbsoluteRedirect) {
+      return newTree;
+    }
 
     const newSegments = await this.applyRedirects.lineralizeSegments(route, newTree);
     return this.processSegment(
@@ -427,7 +425,7 @@ export class Recognizer {
     segments: UrlSegment[],
     outlet: string,
     parentRoute: ActivatedRouteSnapshot,
-  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoMatch> {
+  ): Promise<TreeNode<ActivatedRouteSnapshot> | NoMatch | AbsoluteRedirect> {
     if (this.abortSignal.aborted) {
       throw new Error(this.abortSignal.reason);
     }
@@ -456,7 +454,7 @@ export class Recognizer {
     }
 
     if (!result?.matched) {
-      return new NoMatch(rawSegment);
+      return new NoMatch();
     }
     // If the route has an injector created from providers, we should start using that.
     injector = getOrCreateRouteInjectorIfNeeded(route, injector);
@@ -484,7 +482,7 @@ export class Recognizer {
         segmentGroup,
         snapshot,
       );
-      if (children instanceof NoMatch) {
+      if (children instanceof NoMatch || children instanceof AbsoluteRedirect) {
         return children;
       }
       return new TreeNode(snapshot, children);
@@ -511,11 +509,11 @@ export class Recognizer {
       true,
       snapshot,
     );
-    if (child instanceof NoMatch) {
+    if (child instanceof NoMatch || child instanceof AbsoluteRedirect) {
       return child;
     }
     if (!matchedOnOutlet && !(child instanceof TreeNode)) {
-      return new NoMatch(rawSegment);
+      return new NoMatch();
     }
     return new TreeNode(snapshot, child instanceof TreeNode ? [child] : []);
   }
