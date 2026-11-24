@@ -47,7 +47,7 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  *
  * @publicApi
  *
- * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in a future version
  */
 export function provideAnimationsAsync(
   type: 'animations' | 'noop' = 'animations',

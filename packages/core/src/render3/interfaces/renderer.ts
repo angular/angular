@@ -44,7 +44,7 @@ export interface Renderer {
   destroyNode?: ((node: RNode) => void) | null;
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null, isMove?: boolean): void;
-  // TODO(thePunderWoman): remove the requireSynchronousElementRemoval flag once the animations package has been deleted after v23.
+  // TODO(thePunderWoman): remove the requireSynchronousElementRemoval flag once the animations package has been deleted.
   removeChild(
     parent: RElement | null,
     oldChild: RNode,
