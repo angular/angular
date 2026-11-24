@@ -1918,7 +1918,13 @@ impl QueryEngine {
                 class.complete_styles(ctx).await;
                 class.complete_local_compilation_constants(ctx).await;
                 class.complete_resource_urls(ctx).await;
-                class.complete_isolated_type_tuples(ctx).await;
+                // `isolated_imports`/`isolated_exports` are only consumed under
+                // `emitDeclarationOnly` (`R3NgModuleMetadataKind.Isolated`); completing them in
+                // regular local mode would parse external `.d.ts` files referenced from
+                // `@NgModule.imports`/`exports`.
+                if self.emit_declaration_only {
+                    class.complete_isolated_type_tuples(ctx).await;
+                }
             }
             if self.generate_extra_imports_in_local_mode {
                 self.populate_local_compilation_extra_imports(&mut syntax_res, ctx)
@@ -7446,6 +7452,164 @@ mod tests {
         );
         let file_id = engine.intern_path("/async_only/app.ts");
         let _ = engine.get_metadata_for_file_id_blocking(file_id);
+    }
+
+    struct LoadTrackingHost {
+        resolutions: HashMap<(String, String), crate::host::ResolvedModule>,
+        modules: HashMap<String, crate::host::LoadedModule>,
+        load_calls: Mutex<Vec<String>>,
+    }
+
+    impl LoadTrackingHost {
+        fn new(resolutions: &[(&str, &str, &str)], modules: &[(&str, &str)]) -> Arc<Self> {
+            use crate::host::{IdKind, LoadedModule, ModuleFormat, ModuleId, ResolvedModule};
+
+            let resolutions = resolutions
+                .iter()
+                .map(|&(importer, spec, target)| {
+                    (
+                        (importer.to_owned(), spec.to_owned()),
+                        ResolvedModule {
+                            id: ModuleId::new(target),
+                            id_kind: IdKind::Path,
+                            format: ModuleFormat::from_path(Path::new(target)),
+                            external: false,
+                            code: None,
+                        },
+                    )
+                })
+                .collect();
+            let modules = modules
+                .iter()
+                .map(|&(path, code)| {
+                    (
+                        path.to_owned(),
+                        LoadedModule {
+                            code: Arc::from(code),
+                            format: ModuleFormat::from_path(Path::new(path)),
+                        },
+                    )
+                })
+                .collect();
+            Arc::new(Self {
+                resolutions,
+                modules,
+                load_calls: Mutex::new(Vec::new()),
+            })
+        }
+
+        fn loaded(&self) -> Vec<String> {
+            self.load_calls.lock().unwrap().clone()
+        }
+    }
+
+    impl crate::host::AnalysisHost for LoadTrackingHost {
+        fn resolve(
+            &self,
+            req: crate::host::ResolveRequest,
+        ) -> crate::host::HostFuture<
+            Result<Option<crate::host::ResolvedModule>, crate::host::HostError>,
+        > {
+            let hit = self
+                .resolutions
+                .get(&(req.importer.as_str().to_owned(), req.specifier))
+                .cloned();
+            Box::pin(async move { Ok(hit) })
+        }
+
+        fn load(
+            &self,
+            id: &crate::host::ModuleId,
+            _kind: crate::host::LoadKind,
+            _external: bool,
+        ) -> crate::host::HostFuture<
+            Result<Option<crate::host::LoadedModule>, crate::host::HostError>,
+        > {
+            self.load_calls.lock().unwrap().push(id.as_str().to_owned());
+            let hit = self.modules.get(id.as_str()).cloned();
+            Box::pin(async move { Ok(hit) })
+        }
+
+        fn resolve_resource(
+            &self,
+            _containing: &crate::host::ModuleId,
+            _url: &str,
+            _kind: crate::host::ResourceKind,
+        ) -> crate::host::HostFuture<
+            Result<Option<crate::host::ResolvedResourceId>, crate::host::HostError>,
+        > {
+            Box::pin(async { Ok(None) })
+        }
+    }
+
+    fn local_engine(
+        host: Arc<LoadTrackingHost>,
+        entrypoints: &[&str],
+        generate_extra_imports: bool,
+    ) -> Arc<QueryEngine> {
+        QueryEngine::new_with_host(
+            host,
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(RwLock::new(entrypoints.iter().map(PathBuf::from).collect())),
+            Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new()),
+            None,
+            None,
+            generate_extra_imports,
+            /* compile_non_exported_classes= */ true,
+            /* enable_hmr= */ false,
+            /* strict_standalone= */ false,
+            /* use_poisoned_data= */ false,
+            /* strict_injection_parameters= */ false,
+            /* implicit_standalone= */ true,
+            /* emit_declaration_only= */ false,
+            /* experimental_local_compilation= */ true,
+        )
+    }
+
+    #[test]
+    fn local_mode_skips_isolated_type_tuples_when_not_emit_declaration_only() {
+        let app_mod = "/isolated_gate/app_module.ts";
+        let ext_dts = "/isolated_gate/ext/mat.d.ts";
+        let host = LoadTrackingHost::new(
+            &[(app_mod, "@ext/mat", ext_dts)],
+            &[
+                (
+                    app_mod,
+                    "import {NgModule} from '@angular/core';\n\
+                     import {MatModule} from '@ext/mat';\n\
+                     @NgModule({imports: [MatModule], exports: [MatModule]})\n\
+                     export class AppModule {}\n",
+                ),
+                (
+                    ext_dts,
+                    "import * as i0 from '@angular/core';\n\
+                     export declare class MatModule {\n\
+                       static ɵmod: i0.ɵɵNgModuleDeclaration<MatModule, never, never, never>;\n\
+                     }\n",
+                ),
+            ],
+        );
+        let engine = local_engine(host.clone(), &[app_mod], false);
+
+        let mod_wire = futures::executor::block_on(
+            QueryContext::new(engine.clone()).analyze_file_wire(engine.intern_path(app_mod), false),
+        );
+        let ng_module = mod_wire
+            .0
+            .as_ref()
+            .expect("local AppModule wire analysis")
+            .classes[0]
+            .ng_module
+            .as_ref()
+            .expect("AppModule metadata");
+        assert!(ng_module.isolated_imports.is_none());
+        assert!(ng_module.isolated_exports.is_none());
+        let loaded = host.loaded();
+        assert!(
+            !loaded.iter().any(|id| id == ext_dts),
+            "host.load must not be called for external .d.ts when emit_declaration_only is false: \
+             {loaded:?}"
+        );
     }
 }
 
