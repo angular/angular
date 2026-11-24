@@ -7,6 +7,8 @@
 use futures::StreamExt;
 use ng_analyze::{Analyzer, AnalyzerOptions, CompilationChunk, FileInvalidation, FileUpdate};
 use serde::{Deserialize, Serialize};
+#[cfg(not(target_arch = "wasm32"))]
+use std::io::BufWriter;
 use std::io::{self, BufRead, Write};
 
 #[derive(Deserialize)]
@@ -23,6 +25,13 @@ struct RpcResponse {
     result: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     error: Option<String>,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[derive(Serialize)]
+struct RpcNotification<'a, T> {
+    method: &'a str,
+    params: T,
 }
 
 #[derive(Deserialize)]
@@ -394,17 +403,22 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
     }
 }
 
+/// Buffer size for streaming JSON-RPC notifications to stdout, batching multi-megabyte
+/// `analysisResult` payloads into larger writes that bypass `StdoutLock`'s 1 KiB `LineWriter`
+/// buffer while allowing the host process to drain the pipe concurrently.
+#[cfg(not(target_arch = "wasm32"))]
+const NOTIFICATION_BUFFER_CAPACITY: usize = 64 * 1024;
+
 #[cfg(not(target_arch = "wasm32"))]
 fn send_notification<T: Serialize>(method: &str, params: T) {
-    let msg = serde_json::json!({
-        "method": method,
-        "params": params
-    });
-    let stdout = std::io::stdout();
-    let mut handle = stdout.lock();
-    serde_json::to_writer(&mut handle, &msg).unwrap();
-    handle.write_all(b"\n").unwrap();
-    handle.flush().unwrap();
+    let stdout = io::stdout();
+    let mut writer = BufWriter::with_capacity(NOTIFICATION_BUFFER_CAPACITY, stdout.lock());
+    serde_json::to_writer(&mut writer, &RpcNotification { method, params })
+        .expect("failed to serialize RPC notification to stdout");
+    writer
+        .write_all(b"\n")
+        .and_then(|()| writer.flush())
+        .expect("failed to flush RPC notification to stdout");
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
