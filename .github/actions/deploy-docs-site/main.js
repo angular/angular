@@ -23034,7 +23034,7 @@ var require_lockfile = __commonJS({
       /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = glob;
-        var fs2 = __webpack_require__(3);
+        var fs3 = __webpack_require__(3);
         var rp = __webpack_require__(114);
         var minimatch = __webpack_require__(60);
         var Minimatch = minimatch.Minimatch;
@@ -23379,7 +23379,7 @@ var require_lockfile = __commonJS({
           var self2 = this;
           var lstatcb = inflight(lstatkey, lstatcb_);
           if (lstatcb)
-            fs2.lstat(abs, lstatcb);
+            fs3.lstat(abs, lstatcb);
           function lstatcb_(er, lstat2) {
             if (er && er.code === "ENOENT")
               return cb();
@@ -23408,7 +23408,7 @@ var require_lockfile = __commonJS({
               return cb(null, c);
           }
           var self2 = this;
-          fs2.readdir(abs, readdirCb(this, abs, cb));
+          fs3.readdir(abs, readdirCb(this, abs, cb));
         };
         function readdirCb(self2, abs, cb) {
           return function(er, entries) {
@@ -23552,10 +23552,10 @@ var require_lockfile = __commonJS({
           var self2 = this;
           var statcb = inflight("stat\0" + abs, lstatcb_);
           if (statcb)
-            fs2.lstat(abs, statcb);
+            fs3.lstat(abs, statcb);
           function lstatcb_(er, lstat2) {
             if (lstat2 && lstat2.isSymbolicLink()) {
-              return fs2.stat(abs, function(er2, stat3) {
+              return fs3.stat(abs, function(er2, stat3) {
                 if (er2)
                   self2._stat2(f, abs, null, lstat2, cb);
                 else
@@ -24523,9 +24523,9 @@ var require_lockfile = __commonJS({
         realpath.realpathSync = realpathSync;
         realpath.monkeypatch = monkeypatch;
         realpath.unmonkeypatch = unmonkeypatch;
-        var fs2 = __webpack_require__(3);
-        var origRealpath = fs2.realpath;
-        var origRealpathSync = fs2.realpathSync;
+        var fs3 = __webpack_require__(3);
+        var origRealpath = fs3.realpath;
+        var origRealpathSync = fs3.realpathSync;
         var version = process.version;
         var ok = /^v[0-5]\./.test(version);
         var old = __webpack_require__(217);
@@ -24563,12 +24563,12 @@ var require_lockfile = __commonJS({
           }
         }
         function monkeypatch() {
-          fs2.realpath = realpath;
-          fs2.realpathSync = realpathSync;
+          fs3.realpath = realpath;
+          fs3.realpathSync = realpathSync;
         }
         function unmonkeypatch() {
-          fs2.realpath = origRealpath;
-          fs2.realpathSync = origRealpathSync;
+          fs3.realpath = origRealpath;
+          fs3.realpathSync = origRealpathSync;
         }
       },
       /* 115 */
@@ -24769,7 +24769,7 @@ var require_lockfile = __commonJS({
       /***/
       function(module2, exports2, __webpack_require__) {
         var path3 = __webpack_require__(0);
-        var fs2 = __webpack_require__(3);
+        var fs3 = __webpack_require__(3);
         var _0777 = parseInt("0777", 8);
         module2.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
         function mkdirP(p, opts, f, made) {
@@ -24780,7 +24780,7 @@ var require_lockfile = __commonJS({
             opts = { mode: opts };
           }
           var mode = opts.mode;
-          var xfs = opts.fs || fs2;
+          var xfs = opts.fs || fs3;
           if (mode === void 0) {
             mode = _0777 & ~process.umask();
           }
@@ -24819,7 +24819,7 @@ var require_lockfile = __commonJS({
             opts = { mode: opts };
           }
           var mode = opts.mode;
-          var xfs = opts.fs || fs2;
+          var xfs = opts.fs || fs3;
           if (mode === void 0) {
             mode = _0777 & ~process.umask();
           }
@@ -26764,7 +26764,7 @@ ${indent}`);
       function(module2, exports2, __webpack_require__) {
         var pathModule = __webpack_require__(0);
         var isWindows = process.platform === "win32";
-        var fs2 = __webpack_require__(3);
+        var fs3 = __webpack_require__(3);
         var DEBUG = process.env.NODE_DEBUG && /fs/.test(process.env.NODE_DEBUG);
         function rethrow() {
           var callback;
@@ -26827,7 +26827,7 @@ ${indent}`);
             base = m[0];
             previous = "";
             if (isWindows && !knownHard[base]) {
-              fs2.lstatSync(base);
+              fs3.lstatSync(base);
               knownHard[base] = true;
             }
           }
@@ -26845,7 +26845,7 @@ ${indent}`);
             if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
               resolvedLink = cache[base];
             } else {
-              var stat2 = fs2.lstatSync(base);
+              var stat2 = fs3.lstatSync(base);
               if (!stat2.isSymbolicLink()) {
                 knownHard[base] = true;
                 if (cache)
@@ -26860,8 +26860,8 @@ ${indent}`);
                 }
               }
               if (linkTarget === null) {
-                fs2.statSync(base);
-                linkTarget = fs2.readlinkSync(base);
+                fs3.statSync(base);
+                linkTarget = fs3.readlinkSync(base);
               }
               resolvedLink = pathModule.resolve(previous, linkTarget);
               if (cache)
@@ -26898,7 +26898,7 @@ ${indent}`);
             base = m[0];
             previous = "";
             if (isWindows && !knownHard[base]) {
-              fs2.lstat(base, function(err) {
+              fs3.lstat(base, function(err) {
                 if (err)
                   return cb(err);
                 knownHard[base] = true;
@@ -26926,7 +26926,7 @@ ${indent}`);
             if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
               return gotResolvedLink(cache[base]);
             }
-            return fs2.lstat(base, gotStat);
+            return fs3.lstat(base, gotStat);
           }
           function gotStat(err, stat2) {
             if (err)
@@ -26943,10 +26943,10 @@ ${indent}`);
                 return gotTarget(null, seenLinks[id], base);
               }
             }
-            fs2.stat(base, function(err2) {
+            fs3.stat(base, function(err2) {
               if (err2)
                 return cb(err2);
-              fs2.readlink(base, function(err3, target) {
+              fs3.readlink(base, function(err3, target) {
                 if (!isWindows)
                   seenLinks[id] = target;
                 gotTarget(err3, target);
@@ -26972,7 +26972,7 @@ ${indent}`);
       function(module2, exports2, __webpack_require__) {
         module2.exports = globSync;
         globSync.GlobSync = GlobSync;
-        var fs2 = __webpack_require__(3);
+        var fs3 = __webpack_require__(3);
         var rp = __webpack_require__(114);
         var minimatch = __webpack_require__(60);
         var Minimatch = minimatch.Minimatch;
@@ -27150,7 +27150,7 @@ ${indent}`);
           var lstat2;
           var stat2;
           try {
-            lstat2 = fs2.lstatSync(abs);
+            lstat2 = fs3.lstatSync(abs);
           } catch (er) {
             if (er.code === "ENOENT") {
               return null;
@@ -27176,7 +27176,7 @@ ${indent}`);
               return c;
           }
           try {
-            return this._readdirEntries(abs, fs2.readdirSync(abs));
+            return this._readdirEntries(abs, fs3.readdirSync(abs));
           } catch (er) {
             this._readdirError(abs, er);
             return null;
@@ -27285,7 +27285,7 @@ ${indent}`);
           if (!stat2) {
             var lstat2;
             try {
-              lstat2 = fs2.lstatSync(abs);
+              lstat2 = fs3.lstatSync(abs);
             } catch (er) {
               if (er && (er.code === "ENOENT" || er.code === "ENOTDIR")) {
                 this.statCache[abs] = false;
@@ -27294,7 +27294,7 @@ ${indent}`);
             }
             if (lstat2 && lstat2.isSymbolicLink()) {
               try {
-                stat2 = fs2.statSync(abs);
+                stat2 = fs3.statSync(abs);
               } catch (er) {
                 stat2 = lstat2;
               }
@@ -27522,7 +27522,7 @@ ${indent}`);
         rimraf.sync = rimrafSync;
         var assert2 = __webpack_require__(22);
         var path3 = __webpack_require__(0);
-        var fs2 = __webpack_require__(3);
+        var fs3 = __webpack_require__(3);
         var glob = __webpack_require__(75);
         var _0666 = parseInt("666", 8);
         var defaultGlobOpts = {
@@ -27541,9 +27541,9 @@ ${indent}`);
             "readdir"
           ];
           methods.forEach(function(m) {
-            options[m] = options[m] || fs2[m];
+            options[m] = options[m] || fs3[m];
             m = m + "Sync";
-            options[m] = options[m] || fs2[m];
+            options[m] = options[m] || fs3[m];
           });
           options.maxBusyTries = options.maxBusyTries || 3;
           options.emfileWait = options.emfileWait || 1e3;
@@ -32653,6 +32653,9 @@ import { format as format2 } from "util";
 import { resolve as resolve3 } from "path";
 import { createRequire as createRequire2 } from "node:module";
 import { readFileSync as readFileSync3, readdirSync as readdirSync2 } from "node:fs";
+import fs2 from "fs";
+import path from "path";
+import { fileURLToPath as fileURLToPath2 } from "url";
 import { styleText } from "util";
 import { spawn as _spawn, spawnSync as _spawnSync, exec as _exec } from "child_process";
 import assert from "assert";
@@ -32680,6 +32683,226 @@ var require_get_caller_file = __commonJS2({
         return stack[position] ? stack[position].getFileName() : void 0;
       }
     };
+  }
+});
+var require_index_min = __commonJS2({
+  ""(exports) {
+    "use strict";
+    var a = (t, e) => () => (e || t((e = { exports: {} }).exports, e), e.exports);
+    var _ = a((i) => {
+      "use strict";
+      Object.defineProperty(i, "__esModule", { value: true });
+      i.sync = i.isexe = void 0;
+      var M = __require2("node:fs"), x = __require2("node:fs/promises"), q = async (t, e = {}) => {
+        let { ignoreErrors: r = false } = e;
+        try {
+          return d(await (0, x.stat)(t), e);
+        } catch (s) {
+          let n = s;
+          if (r || n.code === "EACCES")
+            return false;
+          throw n;
+        }
+      };
+      i.isexe = q;
+      var m = (t, e = {}) => {
+        let { ignoreErrors: r = false } = e;
+        try {
+          return d((0, M.statSync)(t), e);
+        } catch (s) {
+          let n = s;
+          if (r || n.code === "EACCES")
+            return false;
+          throw n;
+        }
+      };
+      i.sync = m;
+      var d = (t, e) => t.isFile() && A(t, e), A = (t, e) => {
+        let r = e.uid ?? process.getuid?.(), s = e.groups ?? process.getgroups?.() ?? [], n = e.gid ?? process.getgid?.() ?? s[0];
+        if (r === void 0 || n === void 0)
+          throw new Error("cannot get uid or gid");
+        let u = /* @__PURE__ */ new Set([n, ...s]), c = t.mode, S = t.uid, P = t.gid, f = parseInt("100", 8), l = parseInt("010", 8), j = parseInt("001", 8), C = f | l;
+        return !!(c & j || c & l && u.has(P) || c & f && S === r || c & C && r === 0);
+      };
+    });
+    var g = a((o) => {
+      "use strict";
+      Object.defineProperty(o, "__esModule", { value: true });
+      o.sync = o.isexe = void 0;
+      var T = __require2("node:fs"), I = __require2("node:fs/promises"), D = __require2("node:path"), F = async (t, e = {}) => {
+        let { ignoreErrors: r = false } = e;
+        try {
+          return y(await (0, I.stat)(t), t, e);
+        } catch (s) {
+          let n = s;
+          if (r || n.code === "EACCES")
+            return false;
+          throw n;
+        }
+      };
+      o.isexe = F;
+      var L = (t, e = {}) => {
+        let { ignoreErrors: r = false } = e;
+        try {
+          return y((0, T.statSync)(t), t, e);
+        } catch (s) {
+          let n = s;
+          if (r || n.code === "EACCES")
+            return false;
+          throw n;
+        }
+      };
+      o.sync = L;
+      var B = (t, e) => {
+        let { pathExt: r = process.env.PATHEXT || "" } = e, s = r.split(D.delimiter);
+        if (s.indexOf("") !== -1)
+          return true;
+        for (let n of s) {
+          let u = n.toLowerCase(), c = t.substring(t.length - u.length).toLowerCase();
+          if (u && c === u)
+            return true;
+        }
+        return false;
+      }, y = (t, e, r) => t.isFile() && B(e, r);
+    });
+    var p = a((h) => {
+      "use strict";
+      Object.defineProperty(h, "__esModule", { value: true });
+    });
+    var v = exports && exports.__createBinding || (Object.create ? function(t, e, r, s) {
+      s === void 0 && (s = r);
+      var n = Object.getOwnPropertyDescriptor(e, r);
+      (!n || ("get" in n ? !e.__esModule : n.writable || n.configurable)) && (n = { enumerable: true, get: function() {
+        return e[r];
+      } }), Object.defineProperty(t, s, n);
+    } : function(t, e, r, s) {
+      s === void 0 && (s = r), t[s] = e[r];
+    });
+    var G = exports && exports.__setModuleDefault || (Object.create ? function(t, e) {
+      Object.defineProperty(t, "default", { enumerable: true, value: e });
+    } : function(t, e) {
+      t.default = e;
+    });
+    var w = exports && exports.__importStar || /* @__PURE__ */ function() {
+      var t = function(e) {
+        return t = Object.getOwnPropertyNames || function(r) {
+          var s = [];
+          for (var n in r)
+            Object.prototype.hasOwnProperty.call(r, n) && (s[s.length] = n);
+          return s;
+        }, t(e);
+      };
+      return function(e) {
+        if (e && e.__esModule)
+          return e;
+        var r = {};
+        if (e != null)
+          for (var s = t(e), n = 0; n < s.length; n++)
+            s[n] !== "default" && v(r, e, s[n]);
+        return G(r, e), r;
+      };
+    }();
+    var X = exports && exports.__exportStar || function(t, e) {
+      for (var r in t)
+        r !== "default" && !Object.prototype.hasOwnProperty.call(e, r) && v(e, t, r);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
+    var E = w(_());
+    exports.posix = E;
+    var O = w(g());
+    exports.win32 = O;
+    X(p(), exports);
+    var H = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
+    var b = H === "win32" ? O : E;
+    exports.isexe = b.isexe;
+    exports.sync = b.sync;
+  }
+});
+var require_lib2 = __commonJS2({
+  ""(exports, module) {
+    var { isexe, sync: isexeSync } = require_index_min();
+    var { join: join42, delimiter, sep: sep3, posix } = __require2("path");
+    var isWindows = process.platform === "win32";
+    var rSlash = new RegExp(`[${posix.sep}${sep3 === posix.sep ? "" : sep3}]`.replace(/(\\)/g, "\\$1"));
+    var rRel = new RegExp(`^\\.${rSlash.source}`);
+    var getNotFoundError = (cmd) => Object.assign(new Error(`not found: ${cmd}`), { code: "ENOENT" });
+    var getPathInfo = (cmd, {
+      path: optPath = process.env.PATH,
+      pathExt: optPathExt = process.env.PATHEXT,
+      delimiter: optDelimiter = delimiter
+    }) => {
+      const pathEnv = cmd.match(rSlash) ? [""] : [
+        // windows always checks the cwd first
+        ...isWindows ? [process.cwd()] : [],
+        ...(optPath || /* istanbul ignore next: very unusual */
+        "").split(optDelimiter)
+      ];
+      if (isWindows) {
+        const pathExtExe = optPathExt || [".EXE", ".CMD", ".BAT", ".COM"].join(optDelimiter);
+        const pathExt = pathExtExe.split(optDelimiter).flatMap((item) => [item, item.toLowerCase()]);
+        if (cmd.includes(".") && pathExt[0] !== "") {
+          pathExt.unshift("");
+        }
+        return { pathEnv, pathExt, pathExtExe };
+      }
+      return { pathEnv, pathExt: [""] };
+    };
+    var getPathPart = (raw, cmd) => {
+      const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
+      const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : "";
+      return prefix + join42(pathPart, cmd);
+    };
+    var which2 = async (cmd, opt = {}) => {
+      const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+      const found = [];
+      for (const envPart of pathEnv) {
+        const p = getPathPart(envPart, cmd);
+        for (const ext of pathExt) {
+          const withExt = p + ext;
+          const is = await isexe(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+          if (is) {
+            if (!opt.all) {
+              return withExt;
+            }
+            found.push(withExt);
+          }
+        }
+      }
+      if (opt.all && found.length) {
+        return found;
+      }
+      if (opt.nothrow) {
+        return null;
+      }
+      throw getNotFoundError(cmd);
+    };
+    var whichSync = (cmd, opt = {}) => {
+      const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+      const found = [];
+      for (const pathEnvPart of pathEnv) {
+        const p = getPathPart(pathEnvPart, cmd);
+        for (const ext of pathExt) {
+          const withExt = p + ext;
+          const is = isexeSync(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+          if (is) {
+            if (!opt.all) {
+              return withExt;
+            }
+            found.push(withExt);
+          }
+        }
+      }
+      if (opt.all && found.length) {
+        return found;
+      }
+      if (opt.nothrow) {
+        return null;
+      }
+      throw getNotFoundError(cmd);
+    };
+    module.exports = which2;
+    which2.sync = whichSync;
   }
 });
 var supports_color_exports = {};
@@ -34542,11 +34765,11 @@ var parser = new YargsParser({
   format,
   normalize,
   resolve: resolve2,
-  require: (path3) => {
+  require: (path23) => {
     if (typeof require22 !== "undefined") {
-      return require22(path3);
-    } else if (path3.match(/\.json$/)) {
-      return JSON.parse(readFileSync2(path3, "utf8"));
+      return require22(path23);
+    } else if (path23.match(/\.json$/)) {
+      return JSON.parse(readFileSync2(path23, "utf8"));
     } else {
       throw Error("only .json config files are supported in ESM");
     }
@@ -38242,19 +38465,199 @@ function isYargsInstance(y) {
   return !!y && typeof y.getInternalMethods === "function";
 }
 var Yargs = YargsFactory(esm_default);
+var import_which = __toESM2(require_lib2());
+function getEmptyPathSentinel(platform2 = process.platform) {
+  return platform2 === "win32" ? "C:\\__ng_dev_empty_path__" : "/__ng_dev_empty_path__";
+}
+function findEnclosingGitRepoRoot(startDir, pathImpl = path, existsFn = fs2.existsSync) {
+  let current = pathImpl.resolve(startDir);
+  const { root } = pathImpl.parse(current);
+  while (true) {
+    if (existsFn(pathImpl.join(current, ".git"))) {
+      return current;
+    }
+    if (current === root) {
+      return null;
+    }
+    const parent = pathImpl.dirname(current);
+    if (parent === current) {
+      return null;
+    }
+    current = parent;
+  }
+}
+function getExcludedDirsForCwd(cwd, processCwd = process.cwd(), pathImpl = path, existsFn = fs2.existsSync) {
+  const excluded = /* @__PURE__ */ new Set();
+  const resolvedExplicitCwd = cwd instanceof URL ? fileURLToPath2(cwd) : typeof cwd === "string" ? cwd : void 0;
+  const addForDir = (dir, includeBareDirWhenOutsideRepo) => {
+    const resolvedDir = pathImpl.resolve(dir);
+    const repoRoot = findEnclosingGitRepoRoot(resolvedDir, pathImpl, existsFn);
+    if (repoRoot !== null) {
+      excluded.add(repoRoot);
+      excluded.add(resolvedDir);
+      return;
+    }
+    if (includeBareDirWhenOutsideRepo) {
+      excluded.add(resolvedDir);
+    }
+    let current = resolvedDir;
+    const { root } = pathImpl.parse(current);
+    while (true) {
+      excluded.add(pathImpl.join(current, "node_modules"));
+      if (current === root) {
+        break;
+      }
+      const parent = pathImpl.dirname(current);
+      if (parent === current) {
+        break;
+      }
+      current = parent;
+    }
+  };
+  addForDir(processCwd, false);
+  if (resolvedExplicitCwd !== void 0) {
+    addForDir(resolvedExplicitCwd, true);
+  }
+  return Array.from(excluded);
+}
+function resolvePathWithExistingAncestor(targetPath, pathImpl = path, realpathFn = fs2.realpathSync.native) {
+  const resolved = pathImpl.resolve(targetPath);
+  const { root } = pathImpl.parse(resolved);
+  const trailingSegments = [];
+  let current = resolved;
+  while (true) {
+    try {
+      const realCurrent = realpathFn(current);
+      return trailingSegments.length > 0 ? pathImpl.join(realCurrent, ...trailingSegments) : realCurrent;
+    } catch {
+      if (current === root) {
+        return resolved;
+      }
+      const parent = pathImpl.dirname(current);
+      if (parent === current) {
+        return resolved;
+      }
+      trailingSegments.unshift(pathImpl.basename(current));
+      current = parent;
+    }
+  }
+}
+function normalizePathComparisonValue(value, platform2) {
+  return platform2 === "win32" || platform2 === "darwin" ? value.normalize("NFC").toLowerCase() : value;
+}
+function resolveComparisonRoots(rootDir, pathImpl, platform2, realpathFn) {
+  const logicalRoot = normalizePathComparisonValue(pathImpl.resolve(rootDir), platform2);
+  const canonicalRoot = normalizePathComparisonValue(resolvePathWithExistingAncestor(rootDir, pathImpl, realpathFn), platform2);
+  return Array.from(/* @__PURE__ */ new Set([logicalRoot, canonicalRoot])).filter((root) => root !== normalizePathComparisonValue(pathImpl.parse(root).root, platform2));
+}
+function isAbsoluteSearchPathSegment(segment, platform2) {
+  if (platform2 === "win32") {
+    return /^[a-zA-Z]:[\\/]/.test(segment) || segment.startsWith("\\\\");
+  }
+  return path.posix.isAbsolute(segment);
+}
+function isPathInsideDirectory(candidatePath, rootDir, platform2 = process.platform, realpathFn = fs2.realpathSync.native) {
+  const pathImpl = platform2 === "win32" ? path.win32 : path.posix;
+  const roots = resolveComparisonRoots(rootDir, pathImpl, platform2, realpathFn);
+  if (roots.length === 0) {
+    return false;
+  }
+  const logicalCandidate = normalizePathComparisonValue(pathImpl.resolve(candidatePath), platform2);
+  const canonicalCandidate = normalizePathComparisonValue(resolvePathWithExistingAncestor(candidatePath, pathImpl, realpathFn), platform2);
+  const candidates = [logicalCandidate, canonicalCandidate];
+  return roots.some((root) => candidates.some((candidate) => candidate === root || candidate.startsWith(`${root}${pathImpl.sep}`)));
+}
+function sanitizePathString(pathValue, excludedDirs, platform2 = process.platform, realpathFn = fs2.realpathSync.native) {
+  const pathImpl = platform2 === "win32" ? path.win32 : path.posix;
+  const excludedRootList = excludedDirs.flatMap((dir) => resolveComparisonRoots(dir, pathImpl, platform2, realpathFn));
+  const keptSegments = [];
+  for (const rawSegment of pathValue.split(pathImpl.delimiter)) {
+    const segment = platform2 === "win32" ? rawSegment.replace(/"/g, "") : rawSegment;
+    if (segment.trim() === "") {
+      continue;
+    }
+    if (!isAbsoluteSearchPathSegment(segment, platform2)) {
+      continue;
+    }
+    if (excludedRootList.length > 0) {
+      const logicalCandidate = normalizePathComparisonValue(pathImpl.resolve(segment), platform2);
+      const canonicalCandidate = normalizePathComparisonValue(resolvePathWithExistingAncestor(segment, pathImpl, realpathFn), platform2);
+      const candidates = [logicalCandidate, canonicalCandidate];
+      const isExcluded = excludedRootList.some((root) => candidates.some((candidate) => candidate === root || candidate.startsWith(`${root}${pathImpl.sep}`)));
+      if (isExcluded) {
+        continue;
+      }
+    }
+    keptSegments.push(segment);
+  }
+  return keptSegments.join(pathImpl.delimiter);
+}
+function sanitizeEnvironmentPath(env3, excludedDirs, platform2 = process.platform, realpathFn = fs2.realpathSync.native) {
+  const sanitizedEnv = { ...env3 };
+  sanitizeProcessEnvironmentPath(excludedDirs, sanitizedEnv, platform2, realpathFn);
+  return sanitizedEnv;
+}
+function sanitizeProcessEnvironmentPath(excludedDirs, targetEnv = process.env, platform2 = process.platform, realpathFn = fs2.realpathSync.native) {
+  if (platform2 === "win32") {
+    targetEnv["NoDefaultCurrentDirectoryInExePath"] = "1";
+  }
+  const emptySentinel = getEmptyPathSentinel(platform2);
+  let foundPathKey = false;
+  for (const key of Object.keys(targetEnv)) {
+    if (/^path$/i.test(key) && typeof targetEnv[key] === "string") {
+      foundPathKey = true;
+      const sanitized = sanitizePathString(targetEnv[key], excludedDirs, platform2, realpathFn);
+      targetEnv[key] = sanitized || emptySentinel;
+    }
+  }
+  if (!foundPathKey) {
+    targetEnv["PATH"] = emptySentinel;
+  }
+}
+function getPathFromEnvironment(env3, platform2 = process.platform) {
+  if (platform2 !== "win32") {
+    return typeof env3["PATH"] === "string" ? env3["PATH"] : "";
+  }
+  const keys = Object.keys(env3);
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const key = keys[i];
+    if (/^path$/i.test(key) && typeof env3[key] === "string") {
+      return env3[key];
+    }
+  }
+  return "";
+}
+function resolveSafeExecutable(command2, env3, excludedDirs, platform2 = process.platform, realpathFn = fs2.realpathSync.native) {
+  const sanitizedEnv = sanitizeEnvironmentPath(env3, excludedDirs, platform2, realpathFn);
+  const sanitizedPath = getPathFromEnvironment(sanitizedEnv, platform2);
+  if (!sanitizedPath || sanitizedPath === getEmptyPathSentinel(platform2)) {
+    return null;
+  }
+  const candidates = import_which.default.sync(command2, {
+    path: sanitizedPath,
+    nothrow: true,
+    all: true
+  });
+  if (candidates === null) {
+    return null;
+  }
+  const safeCandidate = candidates.find((candidate) => !excludedDirs.some((dir) => isPathInsideDirectory(candidate, dir, platform2, realpathFn)));
+  return safeCandidate ?? null;
+}
 init_supports_color();
 var ChildProcess = class {
   static spawnInteractive(command2, args, options = {}) {
     return new Promise((resolve5, reject) => {
       const commandText = `${command2} ${args.join(" ")}`;
+      const env3 = sanitizeEnvironmentPath(options.env ?? process.env, getExcludedDirsForCwd(options.cwd));
       Log.debug(`Executing command: ${sanitize(commandText)}`);
-      const childProcess = _spawn(command2, args, { ...options, stdio: "inherit" });
+      const childProcess = _spawn(command2, args, { ...options, env: env3, stdio: "inherit" });
       childProcess.on("close", (status) => status === 0 ? resolve5() : reject(status));
     });
   }
   static spawnSync(command2, args, options = {}) {
     const commandText = `${command2} ${args.join(" ")}`;
-    const env3 = getEnvironmentForNonInteractiveCommand(options.env);
+    const env3 = getEnvironmentForNonInteractiveCommand(options.env, options.cwd);
     Log.debug(`Executing command: ${sanitize(commandText)}`);
     const { status: exitCode, signal, stdout, stderr } = _spawnSync(command2, args, { ...options, env: env3, encoding: "utf8", stdio: "pipe" });
     const status = statusFromExitCodeAndSignal(exitCode, signal);
@@ -38265,20 +38668,21 @@ var ChildProcess = class {
   }
   static spawn(command2, args, options = {}) {
     const commandText = `${command2} ${args.join(" ")}`;
-    const env3 = getEnvironmentForNonInteractiveCommand(options.env);
+    const env3 = getEnvironmentForNonInteractiveCommand(options.env, options.cwd);
     return processAsyncCmd(commandText, options, _spawn(command2, args, { ...options, env: env3, stdio: "pipe" }));
   }
   static exec(command2, options = {}) {
-    const env3 = getEnvironmentForNonInteractiveCommand(options.env);
+    const env3 = getEnvironmentForNonInteractiveCommand(options.env, options.cwd);
     return processAsyncCmd(command2, options, _exec(command2, { ...options, env: env3 }));
   }
 };
 function statusFromExitCodeAndSignal(exitCode, signal) {
   return exitCode ?? signal ?? -1;
 }
-function getEnvironmentForNonInteractiveCommand(userProvidedEnv) {
+function getEnvironmentForNonInteractiveCommand(userProvidedEnv, cwd) {
   const forceColorValue = supports_color_default.stdout !== false ? supports_color_default.stdout.level.toString() : void 0;
-  return { FORCE_COLOR: forceColorValue, ...userProvidedEnv ?? process.env };
+  const sanitizedEnv = sanitizeEnvironmentPath(userProvidedEnv ?? process.env, getExcludedDirsForCwd(cwd));
+  return { FORCE_COLOR: forceColorValue, ...sanitizedEnv };
 }
 function processAsyncCmd(command2, options, childProcess) {
   return new Promise((resolve5, reject) => {
@@ -38477,12 +38881,12 @@ import process22 from "node:process";
 import * as readline2 from "node:readline";
 import { AsyncResource as AsyncResource3 } from "node:async_hooks";
 import { stripVTControlCharacters as stripVTControlCharacters2 } from "node:util";
-import path from "node:path";
+import path2 from "node:path";
 import { styleText as styleText22 } from "node:util";
 import { styleText as styleText3 } from "node:util";
 import { spawn, spawnSync as spawnSync22 } from "node:child_process";
 import { mkdtempSync as mkdtempSync2, readFileSync as readFileSync4, rmSync, writeFileSync as writeFileSync2 } from "node:fs";
-import path2 from "node:path";
+import path22 from "node:path";
 import os4 from "node:os";
 import { randomUUID } from "node:crypto";
 import { styleText as styleText4 } from "node:util";
@@ -40604,226 +41008,6 @@ var require_semver2 = __commonJS2({
       compareIdentifiers: identifiers.compareIdentifiers,
       rcompareIdentifiers: identifiers.rcompareIdentifiers
     };
-  }
-});
-var require_index_min = __commonJS2({
-  ""(exports) {
-    "use strict";
-    var a = (t, e) => () => (e || t((e = { exports: {} }).exports, e), e.exports);
-    var _ = a((i) => {
-      "use strict";
-      Object.defineProperty(i, "__esModule", { value: true });
-      i.sync = i.isexe = void 0;
-      var M = __require2("node:fs"), x = __require2("node:fs/promises"), q = async (t, e = {}) => {
-        let { ignoreErrors: r = false } = e;
-        try {
-          return d(await (0, x.stat)(t), e);
-        } catch (s) {
-          let n = s;
-          if (r || n.code === "EACCES")
-            return false;
-          throw n;
-        }
-      };
-      i.isexe = q;
-      var m = (t, e = {}) => {
-        let { ignoreErrors: r = false } = e;
-        try {
-          return d((0, M.statSync)(t), e);
-        } catch (s) {
-          let n = s;
-          if (r || n.code === "EACCES")
-            return false;
-          throw n;
-        }
-      };
-      i.sync = m;
-      var d = (t, e) => t.isFile() && A(t, e), A = (t, e) => {
-        let r = e.uid ?? process.getuid?.(), s = e.groups ?? process.getgroups?.() ?? [], n = e.gid ?? process.getgid?.() ?? s[0];
-        if (r === void 0 || n === void 0)
-          throw new Error("cannot get uid or gid");
-        let u = /* @__PURE__ */ new Set([n, ...s]), c = t.mode, S = t.uid, P = t.gid, f = parseInt("100", 8), l = parseInt("010", 8), j = parseInt("001", 8), C = f | l;
-        return !!(c & j || c & l && u.has(P) || c & f && S === r || c & C && r === 0);
-      };
-    });
-    var g = a((o) => {
-      "use strict";
-      Object.defineProperty(o, "__esModule", { value: true });
-      o.sync = o.isexe = void 0;
-      var T = __require2("node:fs"), I = __require2("node:fs/promises"), D = __require2("node:path"), F = async (t, e = {}) => {
-        let { ignoreErrors: r = false } = e;
-        try {
-          return y(await (0, I.stat)(t), t, e);
-        } catch (s) {
-          let n = s;
-          if (r || n.code === "EACCES")
-            return false;
-          throw n;
-        }
-      };
-      o.isexe = F;
-      var L = (t, e = {}) => {
-        let { ignoreErrors: r = false } = e;
-        try {
-          return y((0, T.statSync)(t), t, e);
-        } catch (s) {
-          let n = s;
-          if (r || n.code === "EACCES")
-            return false;
-          throw n;
-        }
-      };
-      o.sync = L;
-      var B = (t, e) => {
-        let { pathExt: r = process.env.PATHEXT || "" } = e, s = r.split(D.delimiter);
-        if (s.indexOf("") !== -1)
-          return true;
-        for (let n of s) {
-          let u = n.toLowerCase(), c = t.substring(t.length - u.length).toLowerCase();
-          if (u && c === u)
-            return true;
-        }
-        return false;
-      }, y = (t, e, r) => t.isFile() && B(e, r);
-    });
-    var p = a((h) => {
-      "use strict";
-      Object.defineProperty(h, "__esModule", { value: true });
-    });
-    var v = exports && exports.__createBinding || (Object.create ? function(t, e, r, s) {
-      s === void 0 && (s = r);
-      var n = Object.getOwnPropertyDescriptor(e, r);
-      (!n || ("get" in n ? !e.__esModule : n.writable || n.configurable)) && (n = { enumerable: true, get: function() {
-        return e[r];
-      } }), Object.defineProperty(t, s, n);
-    } : function(t, e, r, s) {
-      s === void 0 && (s = r), t[s] = e[r];
-    });
-    var G = exports && exports.__setModuleDefault || (Object.create ? function(t, e) {
-      Object.defineProperty(t, "default", { enumerable: true, value: e });
-    } : function(t, e) {
-      t.default = e;
-    });
-    var w = exports && exports.__importStar || /* @__PURE__ */ function() {
-      var t = function(e) {
-        return t = Object.getOwnPropertyNames || function(r) {
-          var s = [];
-          for (var n in r)
-            Object.prototype.hasOwnProperty.call(r, n) && (s[s.length] = n);
-          return s;
-        }, t(e);
-      };
-      return function(e) {
-        if (e && e.__esModule)
-          return e;
-        var r = {};
-        if (e != null)
-          for (var s = t(e), n = 0; n < s.length; n++)
-            s[n] !== "default" && v(r, e, s[n]);
-        return G(r, e), r;
-      };
-    }();
-    var X = exports && exports.__exportStar || function(t, e) {
-      for (var r in t)
-        r !== "default" && !Object.prototype.hasOwnProperty.call(e, r) && v(e, t, r);
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
-    var E = w(_());
-    exports.posix = E;
-    var O = w(g());
-    exports.win32 = O;
-    X(p(), exports);
-    var H = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
-    var b = H === "win32" ? O : E;
-    exports.isexe = b.isexe;
-    exports.sync = b.sync;
-  }
-});
-var require_lib2 = __commonJS2({
-  ""(exports, module) {
-    var { isexe, sync: isexeSync } = require_index_min();
-    var { join: join22, delimiter, sep: sep22, posix } = __require2("path");
-    var isWindows = process.platform === "win32";
-    var rSlash = new RegExp(`[${posix.sep}${sep22 === posix.sep ? "" : sep22}]`.replace(/(\\)/g, "\\$1"));
-    var rRel = new RegExp(`^\\.${rSlash.source}`);
-    var getNotFoundError = (cmd) => Object.assign(new Error(`not found: ${cmd}`), { code: "ENOENT" });
-    var getPathInfo = (cmd, {
-      path: optPath = process.env.PATH,
-      pathExt: optPathExt = process.env.PATHEXT,
-      delimiter: optDelimiter = delimiter
-    }) => {
-      const pathEnv = cmd.match(rSlash) ? [""] : [
-        // windows always checks the cwd first
-        ...isWindows ? [process.cwd()] : [],
-        ...(optPath || /* istanbul ignore next: very unusual */
-        "").split(optDelimiter)
-      ];
-      if (isWindows) {
-        const pathExtExe = optPathExt || [".EXE", ".CMD", ".BAT", ".COM"].join(optDelimiter);
-        const pathExt = pathExtExe.split(optDelimiter).flatMap((item) => [item, item.toLowerCase()]);
-        if (cmd.includes(".") && pathExt[0] !== "") {
-          pathExt.unshift("");
-        }
-        return { pathEnv, pathExt, pathExtExe };
-      }
-      return { pathEnv, pathExt: [""] };
-    };
-    var getPathPart = (raw, cmd) => {
-      const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
-      const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : "";
-      return prefix + join22(pathPart, cmd);
-    };
-    var which2 = async (cmd, opt = {}) => {
-      const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
-      const found = [];
-      for (const envPart of pathEnv) {
-        const p = getPathPart(envPart, cmd);
-        for (const ext of pathExt) {
-          const withExt = p + ext;
-          const is = await isexe(withExt, { pathExt: pathExtExe, ignoreErrors: true });
-          if (is) {
-            if (!opt.all) {
-              return withExt;
-            }
-            found.push(withExt);
-          }
-        }
-      }
-      if (opt.all && found.length) {
-        return found;
-      }
-      if (opt.nothrow) {
-        return null;
-      }
-      throw getNotFoundError(cmd);
-    };
-    var whichSync = (cmd, opt = {}) => {
-      const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
-      const found = [];
-      for (const pathEnvPart of pathEnv) {
-        const p = getPathPart(pathEnvPart, cmd);
-        for (const ext of pathExt) {
-          const withExt = p + ext;
-          const is = isexeSync(withExt, { pathExt: pathExtExe, ignoreErrors: true });
-          if (is) {
-            if (!opt.all) {
-              return withExt;
-            }
-            found.push(withExt);
-          }
-        }
-      }
-      if (opt.all && found.length) {
-        return found;
-      }
-      if (opt.nothrow) {
-        return null;
-      }
-      throw getNotFoundError(cmd);
-    };
-    module.exports = which2;
-    which2.sync = whichSync;
   }
 });
 var require_cli_width = __commonJS2({
@@ -46995,10 +47179,10 @@ var require_lib3 = __commonJS2({
     exports.analyse = analyse;
     var detectFile = (filepath, opts = {}) => new Promise((resolve22, reject) => {
       let fd;
-      const fs2 = (0, node_1.default)();
+      const fs22 = (0, node_1.default)();
       const handler22 = (err, buffer) => {
         if (fd) {
-          fs2.closeSync(fd);
+          fs22.closeSync(fd);
         }
         if (err) {
           reject(err);
@@ -47010,9 +47194,9 @@ var require_lib3 = __commonJS2({
       };
       const sampleSize = (opts === null || opts === void 0 ? void 0 : opts.sampleSize) || 0;
       if (sampleSize > 0) {
-        fd = fs2.openSync(filepath, "r");
+        fd = fs22.openSync(filepath, "r");
         let sample = Buffer.allocUnsafe(sampleSize);
-        fs2.read(fd, sample, 0, sampleSize, opts.offset, (err, bytesRead) => {
+        fs22.read(fd, sample, 0, sampleSize, opts.offset, (err, bytesRead) => {
           if (err) {
             handler22(err, null);
           } else {
@@ -47024,22 +47208,22 @@ var require_lib3 = __commonJS2({
         });
         return;
       }
-      fs2.readFile(filepath, handler22);
+      fs22.readFile(filepath, handler22);
     });
     exports.detectFile = detectFile;
     var detectFileSync = (filepath, opts = {}) => {
-      const fs2 = (0, node_1.default)();
+      const fs22 = (0, node_1.default)();
       if (opts && opts.sampleSize) {
-        const fd = fs2.openSync(filepath, "r");
+        const fd = fs22.openSync(filepath, "r");
         let sample = Buffer.allocUnsafe(opts.sampleSize);
-        const bytesRead = fs2.readSync(fd, sample, 0, opts.sampleSize, opts.offset);
+        const bytesRead = fs22.readSync(fd, sample, 0, opts.sampleSize, opts.offset);
         if (bytesRead < opts.sampleSize) {
           sample = sample.subarray(0, bytesRead);
         }
-        fs2.closeSync(fd);
+        fs22.closeSync(fd);
         return (0, exports.detect)(sample);
       }
-      return (0, exports.detect)(fs2.readFileSync(filepath));
+      return (0, exports.detect)(fs22.readFileSync(filepath));
     };
     exports.detectFileSync = detectFileSync;
     exports.default = {
@@ -57549,14 +57733,14 @@ var require_parser = __commonJS2({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs2 = this.flowScalar(this.type);
+              const fs22 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs2, sep: [] });
+                map.items.push({ start, key: fs22, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs2);
+                this.stack.push(fs22);
               } else {
-                Object.assign(it, { key: fs2, sep: [] });
+                Object.assign(it, { key: fs22, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -57684,13 +57868,13 @@ var require_parser = __commonJS2({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs2 = this.flowScalar(this.type);
+              const fs22 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs2, sep: [] });
+                fc.items.push({ start: [], key: fs22, sep: [] });
               else if (it.sep)
-                this.stack.push(fs2);
+                this.stack.push(fs22);
               else
-                Object.assign(it, { key: fs2, sep: [] });
+                Object.assign(it, { key: fs22, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -62380,6 +62564,7 @@ var GitClient = class _GitClient {
     this.baseDir = baseDir;
     this.github = new GithubClient();
     this.gitBinPath = "git";
+    this.cachedGitResolution = null;
     this.config = config;
     this.remoteConfig = config.github;
     this.remoteParams = { owner: config.github.owner, repo: config.github.name };
@@ -62400,10 +62585,41 @@ var GitClient = class _GitClient {
     }
     args = ["-c", "credential.helper=", "-c", "core.hooksPath=/dev/null", ...args];
     Log.debug("Executing: git", this.sanitizeConsoleOutput(args.join(" ")));
-    const result = spawnSync2(this.gitBinPath, args, {
+    const excludedDirs = Array.from(/* @__PURE__ */ new Set([this.baseDir, ...getExcludedDirsForCwd(options.cwd)]));
+    const env3 = sanitizeEnvironmentPath(options.env ?? process.env, excludedDirs);
+    let gitExecutable = this.gitBinPath;
+    if (gitExecutable === "git") {
+      const resolutionKey = `${getPathFromEnvironment(env3)}\0${excludedDirs.join("\0")}`;
+      if (this.cachedGitResolution?.key !== resolutionKey) {
+        this.cachedGitResolution = {
+          key: resolutionKey,
+          binPath: resolveSafeExecutable("git", env3, excludedDirs)
+        };
+      }
+      if (this.cachedGitResolution.binPath === null) {
+        const missingGitError = Object.assign(new Error("Unable to locate a system git executable outside the repository."), { code: "ENOENT" });
+        Log.debug("Process Error:", this.sanitizeConsoleOutput(missingGitError.message));
+        if (missingGitError.stack) {
+          Log.debug("Process Error Stack:", this.sanitizeConsoleOutput(missingGitError.stack));
+        }
+        process.stderr.write(this.sanitizeConsoleOutput(missingGitError.message));
+        return {
+          pid: 0,
+          output: ["", "", ""],
+          stdout: "",
+          stderr: "",
+          status: null,
+          signal: null,
+          error: missingGitError
+        };
+      }
+      gitExecutable = this.cachedGitResolution.binPath;
+    }
+    const result = spawnSync2(gitExecutable, args, {
       cwd: this.baseDir,
       stdio: "pipe",
       ...options,
+      env: env3,
       encoding: "utf8"
     });
     Log.debug(`Status: ${result.status}, Error: ${!!result.error}, Signal: ${result.signal}`);
@@ -63102,7 +63318,7 @@ var allLabels = {
   ...requiresLabels,
   ...miscLabels
 };
-var import_which = __toESM2(require_lib2());
+var import_which2 = __toESM2(require_lib2());
 var keybindings = ["emacs", "vim"];
 var keybindingLookup = new Set(keybindings);
 function isKeybinding(value) {
@@ -63152,6 +63368,7 @@ var HookError = class extends Error {
 var ValidationError = class extends Error {
   name = "ValidationError";
 };
+var nativeQueueMicrotask = globalThis.queueMicrotask;
 var hookStorage = new AsyncLocalStorage();
 function createStore(rl) {
   const store = {
@@ -63161,7 +63378,8 @@ function createStore(rl) {
     hooksEffect: [],
     index: 0,
     handleChange() {
-    }
+    },
+    deferredPaint: null
   };
   return store;
 }
@@ -63191,17 +63409,39 @@ function withUpdates(fn) {
     const store = getStore();
     let shouldUpdate = false;
     const oldHandleChange = store.handleChange;
-    store.handleChange = () => {
+    const recordChange = () => {
       shouldUpdate = true;
     };
+    store.handleChange = recordChange;
     const returnValue = fn(...args);
     if (shouldUpdate) {
+      let flushedUpdate = false;
+      store.handleChange = () => {
+        flushedUpdate = true;
+      };
       oldHandleChange();
+      store.handleChange = oldHandleChange;
+      if (flushedUpdate) {
+        scheduleDeferredPaint(store, oldHandleChange);
+      }
+    } else {
+      store.handleChange = oldHandleChange;
     }
-    store.handleChange = oldHandleChange;
     return returnValue;
   };
   return AsyncResource.bind(wrapped);
+}
+function scheduleDeferredPaint(store, paint) {
+  if (store.deferredPaint !== null)
+    return;
+  store.deferredPaint = AsyncResource.bind(paint);
+  nativeQueueMicrotask(() => {
+    const pending = store.deferredPaint;
+    if (pending === null)
+      return;
+    store.deferredPaint = null;
+    pending();
+  });
 }
 function withPointer(cb) {
   const store = getStore();
@@ -63251,6 +63491,7 @@ var effectScheduler = {
     });
     store.hooksEffect.length = 0;
     store.hooksCleanup.length = 0;
+    store.deferredPaint = null;
   }
 };
 function isFactory(value) {
@@ -64022,7 +64263,16 @@ function wrapAnsi2(string, columns, options) {
   return String(string).normalize().split(CRLF_OR_LF).map((line) => exec2(line, columns, options)).join("\n");
 }
 function breakLines(content, width) {
-  return content.split("\n").flatMap((line) => wrapAnsi2(line, width, { trim: false, wordWrap: false }).split("\n").map((str) => str.trimEnd())).join("\n");
+  return wrapContent(content, width).text;
+}
+function wrapContent(content, width) {
+  const wrappedLines = content.split("\n").map((line) => wrapAnsi2(line, width, { trim: false, wordWrap: false }).split("\n"));
+  const finalLine = wrappedLines.at(-1) ?? [];
+  return {
+    text: wrappedLines.flat().map((line) => line.trimEnd()).join("\n"),
+    lastRow: finalLine.at(-1) ?? "",
+    finalLineRows: finalLine.length
+  };
 }
 function readlineWidth() {
   return (0, import_cli_width.default)({ defaultWidth: 80, output: readline().output });
@@ -64412,13 +64662,16 @@ var ScreenManager = class {
     this.rl.setPrompt(prompt);
     this.cursorPos = this.rl.getCursorPos();
     const width = readlineWidth();
-    content = breakLines(content, width);
+    const wrapped = wrapContent(content, width);
+    content = wrapped.text;
     bottomContent = breakLines(bottomContent, width);
-    if (rawPromptLine.length % width === 0) {
+    const lastRowWidth = dist_default3(stripVTControlCharacters2(wrapped.lastRow));
+    const atRightEdge = lastRowWidth >= width;
+    if (atRightEdge || rawPromptLine.length === 0) {
       content += "\n";
     }
     let output = content + (bottomContent ? "\n" + bottomContent : "");
-    const promptLineUpDiff = Math.floor(rawPromptLine.length / width) - this.cursorPos.rows;
+    const promptLineUpDiff = wrapped.finalLineRows - 1 + Number(atRightEdge) - this.cursorPos.rows;
     const bottomContentHeight = promptLineUpDiff + (bottomContent ? height(bottomContent) : 0);
     if (bottomContentHeight > 0)
       output += cursorUp(bottomContentHeight);
@@ -64514,7 +64767,9 @@ function createPrompt(view) {
         rejectPrompt(new ExitPromptError(`User force closed the prompt with ${code} ${signal2}`));
       }));
       cleanups.add(listenTo(rl, "SIGINT", () => rejectPrompt(new ExitPromptError(`User force closed the prompt with SIGINT`))));
-      cleanups.add(listenTo(rl, "close", clearEffects));
+      const isTTY = "isTTY" in input && input.isTTY;
+      const onReadlineClose = isTTY ? () => rejectPrompt(new ExitPromptError("User force closed the prompt with EOF")) : clearEffects;
+      cleanups.add(listenTo(rl, "close", onReadlineClose));
       const startCycle = () => {
         cleanups.add(listenTo(rl.input, "keypress", () => screen.checkCursorPos()));
         let pendingDone = null;
@@ -64531,7 +64786,7 @@ function createPrompt(view) {
             if (nextView === void 0) {
               let callerFilename = callSites[1]?.getFileName();
               if (callerFilename && !callerFilename.startsWith("file://")) {
-                callerFilename = path.resolve(callerFilename);
+                callerFilename = path2.resolve(callerFilename);
               }
               throw new Error(`Prompt functions must return a string.
     at ${callerFilename}`);
@@ -64550,7 +64805,7 @@ function createPrompt(view) {
           }
         });
       };
-      if ("readableFlowing" in input && input.isTTY) {
+      if ("readableFlowing" in input && isTTY) {
         const immediate = nativeSetImmediate(startCycle);
         cleanups.add(() => nativeClearImmediate(immediate));
       } else {
@@ -64694,8 +64949,10 @@ var dist_default4 = createPrompt((config, done) => {
       }
     } else if (key.name === shortcuts.all) {
       const selectAll = items.some((choice) => isSelectable(choice) && !choice.checked);
+      setError(void 0);
       setItems(items.map(check(selectAll)));
     } else if (key.name === shortcuts.invert) {
+      setError(void 0);
       setItems(items.map(toggle));
     } else if (isNumberKey(key)) {
       const selectedIndex = Number(key.name) - 1;
@@ -64707,9 +64964,14 @@ var dist_default4 = createPrompt((config, done) => {
         return selectableIndex === selectedIndex;
       });
       const selectedItem = items[position];
-      if (selectedItem && isSelectable(selectedItem)) {
-        setActive(position);
-        setItems(items.map((choice, i) => i === position ? toggle(choice) : choice));
+      if (selectedItem && !Separator.isSeparator(selectedItem)) {
+        if (selectedItem.disabled) {
+          setError(theme.i18n.disabledError);
+        } else {
+          setError(void 0);
+          setActive(position);
+          setItems(items.map((choice, i) => i === position ? toggle(choice) : choice));
+        }
       }
     }
   });
@@ -64907,13 +65169,13 @@ var ExternalEditor = class {
   }
   createTempFile() {
     try {
-      const baseDir = path2.resolve(this.fileOptions.dir ?? os4.tmpdir());
-      this.tempDir = mkdtempSync2(path2.join(baseDir, "inquirer-editor-"));
+      const baseDir = path22.resolve(this.fileOptions.dir ?? os4.tmpdir());
+      this.tempDir = mkdtempSync2(path22.join(baseDir, "inquirer-editor-"));
       const id = randomUUID();
       const prefix = sanitizeAffix(this.fileOptions.prefix);
       const postfix = sanitizeAffix(this.fileOptions.postfix);
       const filename = `${prefix}${id}${postfix}`;
-      this.tempFile = path2.join(this.tempDir, filename);
+      this.tempFile = path22.join(this.tempDir, filename);
       const opt = { encoding: "utf8", flag: "wx" };
       if (Object.prototype.hasOwnProperty.call(this.fileOptions, "mode")) {
         opt.mode = this.fileOptions.mode;
@@ -64947,7 +65209,8 @@ var editorTheme = {
   validationFailureMode: "keep",
   style: {
     loadingMessage: () => "Validating...",
-    waitingMessage: (enterKey) => `Press ${enterKey} to launch your preferred editor.`
+    waitingMessage: (enterKey) => `Press ${enterKey} to launch your preferred editor.`,
+    validationError: "You must provide a valid value"
   }
 };
 var dist_default5 = createPrompt((config, done) => {
@@ -64959,27 +65222,32 @@ var dist_default5 = createPrompt((config, done) => {
   const prefix = usePrefix({ status, theme });
   async function startEditor(rl) {
     rl.pause();
+    let answer;
     try {
-      const answer = await editAsync(value, { postfix, ...fileProps });
+      answer = await editAsync(value, { postfix, ...fileProps });
+    } catch (error22) {
       rl.resume();
-      setStatus("loading");
+      setError(String(error22));
+      return;
+    }
+    rl.resume();
+    setStatus("loading");
+    const validationFailed = (errorMsg2) => {
+      setValue(theme.validationFailureMode === "clear" ? config.default : answer);
+      setError(errorMsg2);
+      setStatus("idle");
+    };
+    try {
       const isValid = await validate2(answer);
       if (isValid === true) {
         setError(void 0);
         setStatus("done");
         done(answer);
       } else {
-        if (theme.validationFailureMode === "clear") {
-          setValue(config.default);
-        } else {
-          setValue(answer);
-        }
-        setError(isValid || "You must provide a valid value");
-        setStatus("idle");
+        validationFailed(isValid || theme.style.validationError);
       }
     } catch (error22) {
-      rl.resume();
-      setError(String(error22));
+      validationFailed(String(error22));
     }
   }
   useEffect((rl) => {
@@ -65009,6 +65277,10 @@ var dist_default5 = createPrompt((config, done) => {
   }
   return [[prefix, message, helpTip].filter(Boolean).join(" "), error2];
 });
+var segmenter3 = new Intl.Segmenter();
+function keywordInitial(keyword) {
+  return segmenter3.segment(keyword).containing(0)?.segment.toLowerCase() ?? "";
+}
 var confirmTheme = {
   keywords: {
     yes: "Yes",
@@ -65017,11 +65289,10 @@ var confirmTheme = {
   },
   style: {
     confirmDefault: (text) => {
-      const first = text[0] ?? "";
-      if (first.toLowerCase() === first.toUpperCase()) {
+      if (text.toLowerCase() === text.toUpperCase()) {
         return styleText4("cyan", text);
       }
-      return first.toUpperCase() + text.slice(1);
+      return text.toUpperCase();
     }
   }
 };
@@ -65032,8 +65303,8 @@ var dist_default6 = createPrompt((config, done) => {
   const theme = makeTheme(confirmTheme, config.theme);
   const prefix = usePrefix({ status, theme });
   const { yes, no } = theme.keywords;
-  const yesHint = (yes[0] ?? "").toLowerCase();
-  const noHint = (no[0] ?? "").toLowerCase();
+  const yesHint = keywordInitial(yes);
+  const noHint = keywordInitial(no);
   const hint = config.default === false ? `${yesHint}/${theme.style.confirmDefault(noHint)}` : `${theme.style.confirmDefault(yesHint)}/${noHint}`;
   function boolToString(value2) {
     return value2 ? yes : no;
@@ -65043,9 +65314,19 @@ var dist_default6 = createPrompt((config, done) => {
     const v = value2.trim().toLowerCase();
     if (v === "")
       return config.default !== false;
-    if (yes.toLowerCase().startsWith(v))
+    const yesKeyword = yes.toLowerCase();
+    const noKeyword = no.toLowerCase();
+    if (v === yesKeyword)
       return true;
-    if (no.toLowerCase().startsWith(v))
+    if (v === noKeyword)
+      return false;
+    if (v === "y" || v === "yes")
+      return true;
+    if (v === "n" || v === "no")
+      return false;
+    if (yesKeyword.startsWith(v))
+      return true;
+    if (noKeyword.startsWith(v))
       return false;
     if ("yes".startsWith(v))
       return true;
@@ -65106,7 +65387,7 @@ var dist_default7 = createPrompt((config, done) => {
     if (required && !value2) {
       return "You must provide a value";
     }
-    if (pattern2 && !pattern2.test(value2)) {
+    if (pattern2 && value2.search(pattern2) === -1) {
       return patternError;
     }
     if (typeof config.validate === "function") {
@@ -65123,10 +65404,12 @@ var dist_default7 = createPrompt((config, done) => {
       setStatus("loading");
       const isValid = await validate2(answer);
       if (isValid === true) {
+        setError(void 0);
         setValue(answer);
         setStatus("done");
         done(answer);
       } else {
+        rl.clearLine(0);
         if (theme.validationFailureMode === "clear") {
           setValue("");
         } else {
@@ -65195,8 +65478,9 @@ function isStepOf(value, step, min) {
   const minInteger = minDecimal ? toInteger(minDecimal) : 0n;
   return (valueInteger - minInteger) % stepInteger === 0n;
 }
+var PLAIN_DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 function validateNumber(value, { min, max, step }) {
-  if (value == null || Number.isNaN(value)) {
+  if (value == null || !Number.isFinite(value)) {
     return false;
   } else if (value < min || value > max) {
     return `Value must be between ${min} and ${max}`;
@@ -65220,7 +65504,7 @@ var dist_default8 = createPrompt((config, done) => {
     }
     if (isEnterKey(key)) {
       const input = value.trim() || defaultValue;
-      const answer = input === "" ? void 0 : Number(input);
+      const answer = input === "" ? void 0 : PLAIN_DECIMAL.test(input) ? Number(input) : Number.NaN;
       setStatus("loading");
       let isValid = true;
       if (required || answer != null) {
@@ -65237,6 +65521,7 @@ var dist_default8 = createPrompt((config, done) => {
         setStatus("done");
         done(answer);
       } else {
+        rl.clearLine(0);
         rl.write(value);
         setError(isValid || "You must provide a valid numeric value");
         setStatus("idle");
@@ -65304,6 +65589,7 @@ var expand22 = createPrompt((config, done) => {
     if (isEnterKey(event)) {
       const answer = (value.trim() || defaultKey).toLowerCase();
       if (answer === "h" && !expanded) {
+        setValue("");
         setExpanded(true);
       } else {
         const selectedChoice = choices.find((choice) => !Separator.isSeparator(choice) && choice.key === answer);
@@ -65314,6 +65600,7 @@ var expand22 = createPrompt((config, done) => {
         } else if (value === "") {
           setError("Please input a value");
         } else {
+          rl.write(value);
           setError(`"${styleText5("red", value)}" isn't an available option`);
         }
       }
@@ -65390,13 +65677,16 @@ function normalizeChoices3(choices) {
       };
     }
     const name = choice.name ?? String(choice.value);
-    return {
+    const normalizedChoice = {
       value: choice.value,
       name,
       short: choice.short ?? name,
-      key: choice.key ?? String(index),
-      description: choice.description
+      key: choice.key ?? String(index)
     };
+    if (choice.description) {
+      normalizedChoice.description = choice.description;
+    }
+    return normalizedChoice;
   });
 }
 function getSelectedChoice(input, choices) {
@@ -65415,7 +65705,7 @@ var dist_default9 = createPrompt((config, done) => {
   const choices = useMemo(() => normalizeChoices3(config.choices), [config.choices]);
   const [status, setStatus] = useState("idle");
   const [value, setValue] = useState(() => {
-    const defaultChoice = config.default == null ? void 0 : choices.find((choice) => isSelectableChoice(choice) && choice.value === config.default);
+    const defaultChoice = config.default === void 0 ? void 0 : choices.find((choice) => isSelectableChoice(choice) && choice.value === config.default);
     return defaultChoice?.key ?? "";
   });
   const [errorMsg, setError] = useState();
@@ -65440,14 +65730,17 @@ var dist_default9 = createPrompt((config, done) => {
       } else if (value === "") {
         setError("Please input a value");
       } else {
+        rl.write(value);
         setError(`"${styleText6("red", value)}" isn't an available option`);
       }
     } else if (isUpKey(key, keybindings2) || isDownKey(key, keybindings2)) {
+      const lineHadInput = rl.line !== "";
       rl.clearLine(0);
       const [selectedChoice2, active] = getSelectedChoice(value, choices);
       if (!selectedChoice2) {
         const firstChoice = isDownKey(key, keybindings2) ? choices.find(isSelectableChoice) : choices.findLast(isSelectableChoice);
         setValue(firstChoice.key);
+        rl.write(firstChoice.key);
       } else if (loop || isUpKey(key, keybindings2) && active !== bounds.first || isDownKey(key, keybindings2) && active !== bounds.last) {
         const offset = isUpKey(key, keybindings2) ? -1 : 1;
         let next = active;
@@ -65457,6 +65750,9 @@ var dist_default9 = createPrompt((config, done) => {
           nextChoice = choices[next];
         } while (!isSelectableChoice(nextChoice));
         setValue(nextChoice.key);
+        rl.write(nextChoice.key);
+      } else if (lineHadInput) {
+        rl.write(value);
       }
     } else {
       setValue(rl.line);
@@ -65518,6 +65814,7 @@ var dist_default10 = createPrompt((config, done) => {
         setStatus("done");
         done(answer);
       } else {
+        rl.clearLine(0);
         rl.write(value);
         setError(isValid || "You must provide a valid value");
         setStatus("idle");
@@ -65598,7 +65895,10 @@ var dist_default11 = createPrompt((config, done) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState();
   const defaultApplied = useRef(false);
-  const prefix = usePrefix({ status, theme });
+  const prefix = usePrefix({
+    status: status === "validating" ? "loading" : status,
+    theme
+  });
   const bounds = useMemo(() => {
     const first = searchResults.findIndex(isSelectable2);
     const last = searchResults.findLastIndex(isSelectable2);
@@ -65633,8 +65933,12 @@ var dist_default11 = createPrompt((config, done) => {
           setStatus("idle");
         }
       } catch (error22) {
-        if (!controller.signal.aborted && error22 instanceof Error) {
-          setSearchError(error22.message);
+        if (!controller.signal.aborted) {
+          const message2 = error22 instanceof Error && error22.message ? error22.message : "Search failed";
+          setSearchError(message2);
+          setActive(void 0);
+          setSearchResults([]);
+          setStatus("idle");
         }
       }
     };
@@ -65645,17 +65949,24 @@ var dist_default11 = createPrompt((config, done) => {
   }, [searchTerm]);
   const selectedChoice = searchResults[active];
   useKeypress(async (key, rl) => {
+    if (status === "validating") {
+      rl.clearLine(0);
+      rl.write(searchTerm);
+      return;
+    }
     if (isEnterKey(key)) {
       if (selectedChoice && status === "idle") {
-        setStatus("loading");
+        setStatus("validating");
         const isValid = await validate2(selectedChoice.value);
         setStatus("idle");
         if (isValid === true) {
           setStatus("done");
           done(selectedChoice.value);
         } else if (selectedChoice.name === searchTerm) {
+          rl.write(searchTerm);
           setSearchError(isValid || "You must provide a valid value");
         } else {
+          rl.clearLine(0);
           rl.write(selectedChoice.name);
           setSearchTerm(selectedChoice.name);
         }
@@ -65668,6 +65979,7 @@ var dist_default11 = createPrompt((config, done) => {
       setSearchTerm(selectedChoice.name);
     } else if (status !== "loading" && (isUpKey(key) || isDownKey(key))) {
       rl.clearLine(0);
+      rl.write(searchTerm);
       if (isUpKey(key) && active !== bounds.first || isDownKey(key) && active !== bounds.last) {
         const offset = isUpKey(key) ? -1 : 1;
         let next = active;
@@ -65680,7 +65992,7 @@ var dist_default11 = createPrompt((config, done) => {
       setSearchTerm(rl.line);
     }
   });
-  const message = theme.style.message(config.message, status);
+  const message = theme.style.message(config.message, status === "validating" ? "loading" : status);
   const helpLine = theme.style.keysHelpTip([
     ["\u2191\u2193", "navigate"],
     ["\u23CE", "select"]
@@ -66090,7 +66402,7 @@ content-type/dist/index.js:
 @octokit/graphql/dist-bundle/index.js:
   (* v8 ignore if -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-XNKXDVMU.mjs:
+@angular/ng-dev/bundles/chunk-DRPSWF72.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -66131,7 +66443,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-WRTEXYVR.mjs:
+@angular/ng-dev/bundles/chunk-ECFUWGF5.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:

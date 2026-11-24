@@ -196,7 +196,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.3.0
-        version: 22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
+        version: 22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
       '@angular/cdk':
         specifier: 22.3.0
         version: 22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -346,7 +346,7 @@ importers:
         version: 2.5.2
       karma:
         specifier: ~6.4.0
-        version: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
+        version: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
       karma-chrome-launcher:
         specifier: ^3.1.0
         version: 3.2.0
@@ -355,7 +355,7 @@ importers:
         version: 2.1.3
       karma-jasmine:
         specifier: ^5.0.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -400,7 +400,7 @@ importers:
         version: 6.0.3
       ws:
         specifier: ^8.15.0
-        version: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.0.6)
+        version: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.1.0)
       yargs:
         specifier: ^18.0.0
         version: 18.2.0
@@ -415,8 +415,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#4d3f549e803d585302ceb4d813c07ba4fe3adc1d
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4d3f549e803d585302ceb4d813c07ba4fe3adc1d(@angular/core@packages+core)(@angular/router@packages+router)(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#3d05fe39e50b7d4c38e1eaced1da0204ae779165
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3d05fe39e50b7d4c38e1eaced1da0204ae779165(@angular/core@packages+core)(@angular/router@packages+router)(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))
       '@bazel/bazelisk':
         specifier: ^1.7.5
         version: 1.28.1
@@ -473,7 +473,7 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine-html-reporter:
         specifier: ^2.2.0
-        version: 2.3.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 2.3.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)))(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))
       prettier:
         specifier: ^3.8.0
         version: 3.10.1
@@ -515,7 +515,7 @@ importers:
         version: 22.3.0(@angular/cdk@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 22.3.0
-        version: 22.3.0(7b0c1188803b3736eb3351fdad625575)
+        version: 22.3.0(1549449e9ac7704409e9ac6d92ec071b)
       '@angular/cdk':
         specifier: 22.3.0
         version: 22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -725,10 +725,10 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine:
         specifier: 5.1.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))
       karma-jasmine-html-reporter:
         specifier: 2.3.0
-        version: 2.3.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 2.3.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)))(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))
       marked:
         specifier: 18.1.3
         version: 18.1.3
@@ -789,7 +789,7 @@ importers:
         version: 10.6.2(postcss@8.5.32)
       karma:
         specifier: ~6.4.4
-        version: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
+        version: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
       postcss:
         specifier: 8.5.32
         version: 8.5.32
@@ -895,7 +895,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 22.3.0
-        version: 22.3.0(6dd512c9ab7072a9cf2dc30aa8d58df9)
+        version: 22.3.0(cebfae86ebb4c70054405d349873b130)
       '@angular/cli':
         specifier: 22.3.0
         version: 22.3.0(@types/node@24.19.2)(chokidar@6.0.0)
@@ -995,7 +995,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 22.3.0
-        version: 22.3.0(6dd512c9ab7072a9cf2dc30aa8d58df9)
+        version: 22.3.0(cebfae86ebb4c70054405d349873b130)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1274,7 +1274,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 22.3.0
-        version: 22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
+        version: 22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1505,7 +1505,7 @@ importers:
         version: 30.5.2(@types/node@24.19.2)(supports-color@11.0.0)(ts-node@10.9.2(@types/node@24.19.2)(typescript@6.0.3))
       jest-environment-jsdom:
         specifier: 30.5.2
-        version: 30.5.2(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
+        version: 30.5.2(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
       jest-environment-node:
         specifier: 30.5.2
         version: 30.5.2
@@ -1631,7 +1631,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 22.3.0
-        version: 22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
+        version: 22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
       '@angular/cli':
         specifier: 22.3.0
         version: 22.3.0(@types/node@20.19.43)(chokidar@6.0.0)
@@ -1874,9 +1874,9 @@ packages:
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4d3f549e803d585302ceb4d813c07ba4fe3adc1d':
-    resolution: {gitHosted: true, integrity: sha512-VGr+wBS11tvpK/8lI4jpQITvKWMDCCSCpZDpdKC21lahzYLsRb4s4W+doLqLWZphVPOfnPD/HrqN/QVEufzxcw==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4d3f549e803d585302ceb4d813c07ba4fe3adc1d}
-    version: 0.0.0-d23e22aba545f9f104f51669496cd3c402c3abb8
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3d05fe39e50b7d4c38e1eaced1da0204ae779165':
+    resolution: {gitHosted: true, integrity: sha512-JkedhDE+eUpPxpQH1CFyxHYLO9AXcxPfstn5wbm626e/Nm75RIarZEZ4upVQXfBx1zpXKm8MXfebf0gwVWCO+A==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3d05fe39e50b7d4c38e1eaced1da0204ae779165}
+    version: 0.0.0-7d2d4a84c91ac77dbaed99bf860b39cef800287b
     hasBin: true
 
   '@angular/ssr@22.3.0':
@@ -2553,8 +2553,8 @@ packages:
       '@firebase/app': 0.x
       '@firebase/app-types': 0.x
 
-  '@firebase/analytics-compat@0.2.31':
-    resolution: {integrity: sha512-msTlG9REujk5rjtOHNLngiuPmvaWGQte8ugL4/F6ZCMb+92Ue7SgjSEpNxINkM8ZtTrbGS83j5SZkt0r+M1Tjw==}
+  '@firebase/analytics-compat@0.2.32':
+    resolution: {integrity: sha512-3Urb/02AtniecozlPWfWH2r4qI9uAV0MSpvkFRPV7u8ooxgwSEqRCkT1X18Kbqbh0Ue1svAmKNOVb1sf/25P1A==}
     peerDependencies:
       '@firebase/app': 0.x
       '@firebase/app-compat': 0.x
@@ -2562,14 +2562,14 @@ packages:
   '@firebase/analytics-types@0.8.5':
     resolution: {integrity: sha512-kdnooE7Bis2jEnsqcerRwn/UQpH5D3uvHpku7OdUM9TJN3omlu6iYtbyAQ6XkAJRgJtO0aNf9OOkW8J6D59oCA==}
 
-  '@firebase/analytics@0.10.25':
-    resolution: {integrity: sha512-oDagV3PHeNXBdxemksZCdj+GmUT19eCnTOcLdQePIIovFXlm3zWy3Gjeaokt9Nqx24kc4ljK8lU0XGcGmmKZ1A==}
+  '@firebase/analytics@0.10.26':
+    resolution: {integrity: sha512-YHAOFUowOicn3LIc1j/xmHQV/a8avT+lZTs1gs0l87CXbiG7JOosKZiYct9nKIlpwZl+9xb9sUiw0oXl2YKTUw==}
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app-check-compat@0.4.7':
-    resolution: {integrity: sha512-fBb/xSMyIKv1nDmccfzz3IAGBzx/cQOxmZai66rJzifb1hMMkztf824Xx7LhpTUe7HNUbXwY90IvJ66fi8q6yg==}
-    engines: {node: '>=20.0.0'}
+  '@firebase/app-check-compat@0.4.8':
+    resolution: {integrity: sha512-MOXN506KNI0xbiK68zkMX8jJPpe1aie0+AIId5zRZ0SEiyLSGBUrjNxgNz5OhlZ15Gh2xafl52BQlf0xtv4HvA==}
+    engines: {node: '>=24.12.0'}
     peerDependencies:
       '@firebase/app': 0.x
       '@firebase/app-compat': 0.x
@@ -2580,25 +2580,25 @@ packages:
   '@firebase/app-check-types@0.5.5':
     resolution: {integrity: sha512-+DF4gzFrlwGFyky38o4T/YN/r51l70yCtJ2HTkwmRj8FCMwPjm4hLH4fQbj6BUvzkiFqliBkitFsRpf1/YZkWA==}
 
-  '@firebase/app-check@0.13.1':
-    resolution: {integrity: sha512-l8y3dmnhodXks/APAwx4tWqRl3tk8b9874KF1FJyKg1DIU+kMD0l52iz7S9/MW+eK8k6cjJg0G0iJ5KQAsQpow==}
-    engines: {node: '>=20.0.0'}
+  '@firebase/app-check@0.13.2':
+    resolution: {integrity: sha512-RdnJh8H3aPpFFEC8XCHsa20u+6trTJIAa0IdgXW5Og+vwfRg1qzOwCXSkN5bvm7nCvevpoKHiiJ5vgRrWriFoA==}
+    engines: {node: '>=24.12.0'}
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app-compat@0.5.22':
-    resolution: {integrity: sha512-NYF84+G98do88rkuC34w+y0RbyQb/kHaJaxv7DqwveARf/XN9zJS3yrQnw1BnP5ZJjvuVwhVYJ6sXMt6NFt1Bw==}
+  '@firebase/app-compat@0.5.23':
+    resolution: {integrity: sha512-FOxB9dWRTwLxP8XMRUF2GMQVYFRhdk6UZE3aHPsaA+hIquX9uWOwfadvz+qTGacjuyzv5ywABT44ONIBNhzjzg==}
     engines: {node: '>=24.12.0'}
 
   '@firebase/app-types@0.9.6':
     resolution: {integrity: sha512-yPLahy7Esfu2w/yme3msVK4xTkDXQqq6szfQn8yVOQpCKiT5GVFjqNpLbuz6NkX0WuTwUidkmPewW3r4xkvpeg==}
 
-  '@firebase/app@0.16.6':
-    resolution: {integrity: sha512-WXCNElVCln7fjrVKSBWOOhyW7CD/Zjf8AGXoisSTNjRfcV5UGpIdXMsyqkneBnfPtZZbSyTZ50ThYEJg0bvSZQ==}
+  '@firebase/app@0.16.7':
+    resolution: {integrity: sha512-XytLYWMxaONsP81WtCB7rhSD5gjjXTYKP3Cz6+NhQKXKL4sLXlHafBPsxnWSvK8o9bokuUoWCLnABCGU6/SJ3A==}
     engines: {node: '>=24.12.0'}
 
-  '@firebase/auth-compat@0.6.15':
-    resolution: {integrity: sha512-xdrE+S3zBtnFSSomwXZp3naofEbhGrwB9BK+RRLc7A3uq0gv1HCFf2/uLVXAIrt2QYl8BohL9Uc04wHsgrXe0Q==}
+  '@firebase/auth-compat@0.6.16':
+    resolution: {integrity: sha512-aNO/GQGv2gBQe4W/uKGZbUK6flKpJOFbtxakxRf2oiyGgJUdTyHSM7QB3dIQvF6bDB6w7qJ4YnP2cxgHcXu5Wg==}
     engines: {node: '>=24.12.0'}
     peerDependencies:
       '@firebase/app': 0.x
@@ -2613,8 +2613,8 @@ packages:
       '@firebase/app-types': 0.x
       '@firebase/util': 1.x
 
-  '@firebase/auth@1.13.10':
-    resolution: {integrity: sha512-Ss1REvrrfMu5hi5yduuSv6aMgppCeqBiI9tc5Lu6kTDDAirdO5bWPebT2Vz+zVIWKHciUxAN2PIrUHWniqNHTw==}
+  '@firebase/auth@1.13.11':
+    resolution: {integrity: sha512-jPl++13+Lq8k9J0PVssghSY5pCAOpCsrqEgPXyPgjSr66bHK7yd+Dd9GKrFBczev1EwSjx93aU1XODGFgFOKBg==}
     engines: {node: '>=24.12.0'}
     peerDependencies:
       '@firebase/app': 0.x
@@ -2627,8 +2627,8 @@ packages:
     resolution: {integrity: sha512-vuFDcL91Q+2ZuBJkyOh86T4q0B4ffNTDjc/A38tybO56odQABxRTFLTIowCWqAKeIcgo37GowWMVgFF73gD8Qw==}
     engines: {node: '>=20.0.0'}
 
-  '@firebase/crashlytics@0.1.1':
-    resolution: {integrity: sha512-hlMgtvEBsKB4NlIfuz9rfO+vKSfNp7yPdhkVTgFf2JlX1yezxzgMrs6MxxJ8l0CdXK9W+AOw/EtpdKxJah7PcQ==}
+  '@firebase/crashlytics@0.2.0':
+    resolution: {integrity: sha512-kPcLgJlWJQ/x6bbdfROagqmdTPkm+2ZBXWbVz6GPOZN556d5mYAk+PHsGL+1HgJ8YCm9bJD5O4HRpNwRqUlaTg==}
     hasBin: true
     peerDependencies:
       '@angular/core': '>= 14.0.0'
@@ -2844,8 +2844,8 @@ packages:
     resolution: {integrity: sha512-s60hH8oXRPc2FMNVfCUEfO8FqlY3cKbbNpmlKuoIVAeMxWbKV0ngncvU5f/A8xLTQoKHkvk3pa5pvcB7nh/qCQ==}
     engines: {node: '>=22'}
 
-  '@google/genai@3.3.0':
-    resolution: {integrity: sha512-XLjXedj0X8UrULZz1GnlTMSQxBDFdr+NCKZkOBaSVVYqmK30C6FCnKW31Ppn0ItO9DpNspCHFui257kPNpumKQ==}
+  '@google/genai@3.6.1':
+    resolution: {integrity: sha512-DQIkZkl+VoZc+RUSaJ41vRuywjQDpP0t/oUf5/ddQhNW6JsPjVULW2EgHmuJ1mrr6ACtrmUdPlqtNXF1yfKySg==}
     engines: {node: '>=22.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.2
@@ -3786,8 +3786,8 @@ packages:
   '@open-draft/until@3.0.1':
     resolution: {integrity: sha512-s7/9ELP4aP9YZtW7RJaa0Xf3RISaRH9+EFN18FtykJYRHGNrl8f9ymvoNXzjhrjmftFvkQudtuDU9RYhk0xs3A==}
 
-  '@opentelemetry/api-logs@0.220.0':
-    resolution: {integrity: sha512-CmVa4ImJ+ynfrPMNaAXHET6Bhb44SwzmfyVJFq9ni2jgXJR/l7C6gfVFddNmHP+ZOkP9cf4f9DBe68qVLTHc9w==}
+  '@opentelemetry/api-logs@0.223.0':
+    resolution: {integrity: sha512-Oepm6etVPFCn0VWB1t833iOTgz1eYBDUPxcrOR/XvwzD1+Ag9VzSPSrrKAFNJ/haatj+8CXbG47pZXvdNQKDJw==}
     engines: {node: '>=8.0.0'}
 
   '@opentelemetry/api@1.10.0':
@@ -3798,8 +3798,13 @@ packages:
     resolution: {integrity: sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==}
     engines: {node: '>=8.0.0'}
 
-  '@opentelemetry/browser-instrumentation@0.6.0':
-    resolution: {integrity: sha512-ZYi3WaiCix1D8K6SY5y+i9zvo0lWsnd/tKKnk5PaqWLLxUhVl0gud8G79RJZ3NApDZvQ57PAvNC7povMHIj7jw==}
+  '@opentelemetry/browser-api@0.1.0':
+    resolution: {integrity: sha512-EA+F9TBWCb48esI8TiQuFA9RscHy2ZAq3n65AHl/FuxxrxG/LgkuRoWnO3TRE2v+yIqvrMUPChDd8FyW3vWb5g==}
+    peerDependencies:
+      '@opentelemetry/api': ^1.9.1
+
+  '@opentelemetry/browser-instrumentation@0.11.0':
+    resolution: {integrity: sha512-9brrVpA5YQ8k2O2Bq5GwZR2yQ/RXlRzvFUVCJhuBFR4TdAnRRlSP9b6/G7Qv5aXUKjK7EN9PiHPUWteCj3F3SQ==}
     peerDependencies:
       '@opentelemetry/api': ^1.9.1
 
@@ -3815,135 +3820,89 @@ packages:
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
-  '@opentelemetry/core@2.10.0':
-    resolution: {integrity: sha512-/wNZ8twnEQQA4HoHu22+vcsdru6pWPWxW+7w+FlxT6Id7PE/WIbZmVKkte+PF72e0F2dnImFeHD2syyE1Mw6MQ==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    peerDependencies:
-      '@opentelemetry/api': '>=1.0.0 <1.10.0'
-
   '@opentelemetry/core@2.12.1':
     resolution: {integrity: sha512-3hr6Pj0/G0oVgIGb97IVcw9BjZ6eudonKjrmQxw7JquyU/XmVbJelkmyoU0sT/OvHGkv+r1tcrwv8MbSX7aKHw==}
     engines: {node: ^18.19.0 || >=20.6.0}
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
-  '@opentelemetry/core@2.9.0':
-    resolution: {integrity: sha512-m2nckMT80NnmjTYSPjJQObBJ+8dgkoajEOUbznL8AHZ3T3yHRk2P7gI1PhEBc1+lOnrYE9UWrWHqJDsmqjmNbw==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/core@3.1.1':
+    resolution: {integrity: sha512-6wc9r0zrTsAVOd/5UrZBsrHhXWNfwisolgWxd8o3Eu1HKIz8cAxQjOdGrrJB406ceFiGV+ckTcLdXzB+y/QVTA==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': '>=1.0.0 <1.10.0'
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
-  '@opentelemetry/exporter-logs-otlp-http@0.220.0':
-    resolution: {integrity: sha512-8186thl+pTw64iz/qEEen5oJZoZ/gO73XruChdaGlYdWOdBIQ42r+vHLf6a7vIDqTD4b8ZOoMlyxptanECaI9A==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/exporter-logs-otlp-http@0.301.2':
+    resolution: {integrity: sha512-l3K1Fp2qaxAS8wKPyjVm7/QfnvJXZZfPuGXa+AYzNeoOk6qxcZwWZhLe9SYemWxDrtPTl3Mj82diLgVzbz54Hw==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': ^1.10.0
 
-  '@opentelemetry/exporter-trace-otlp-proto@0.220.0':
-    resolution: {integrity: sha512-voTAD8XgJxlK7zLkXh8EzMB09zrQr3tyY/BsnDTlDiQU/UdK58MZ63A3mUjdEDrxMjCVmBHU3WQJhRmQe+Dvzg==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/exporter-trace-otlp-proto@0.301.2':
+    resolution: {integrity: sha512-3MOk/LZJI/5D5Wq6F1B0+TclRwyLZI4hoqOnAl4PcPBfbaBZND5IplOD4tWLV4QtwobYeCyZwP9DpeKBLPWviw==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': ^1.10.0
 
-  '@opentelemetry/instrumentation-document-load@0.65.0':
-    resolution: {integrity: sha512-xAhNXUIywjqmaSkpimsuUpRr0QYebMyTn0IJS9wFWYVLyH+2Q5IYWYys4IrT60foeyf2gyFmRBQyHupblNdaMA==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/instrumentation-document-load@0.70.1':
+    resolution: {integrity: sha512-lJpnSfHRu0DaNy4/9bSL3Iuw5c1MyS2G2rbdiMdSaJGlb6GI2491E+1OL6PF/BCn9xCdBKgBqJ4FcWvObl5vXQ==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': ^1.10.0
 
-  '@opentelemetry/instrumentation-fetch@0.220.0':
-    resolution: {integrity: sha512-9LW+zgvKK6kqojB0GVqbOCRGBUWiatHPmRTusjSVdwYCImIgJRrJTKu6WhjHdejJSjRS/mGsw/w4ETZBqav3kQ==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/instrumentation-fetch@0.301.2':
+    resolution: {integrity: sha512-UperJ2C8lSGnEos6IoY0g5muYmhGLvDHmkkxMlqtDsiLC+W47eGgb+j5UhUOB25vFspjUiNw6m7hqKXoqjD/Vg==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': ^1.10.0
 
-  '@opentelemetry/instrumentation-xml-http-request@0.220.0':
-    resolution: {integrity: sha512-9FTY+kT3z5D8f7dC+Tubd4oJTu6tOGlQmws5J8e7DLMeIUwpWmLquRFV2BuUShiAPxTMGqqsZnuT3CVVbTu0JA==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/instrumentation-xml-http-request@0.301.2':
+    resolution: {integrity: sha512-6ZmhxT3rpON+ZmYfJWTE8DjlEtIv2/ocRw4pxbuGHQxuh8g/9Zqz8iyCcLhHSaSWmqIrtyNBKQlcKAxG1fiClw==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': ^1.10.0
 
-  '@opentelemetry/instrumentation@0.220.0':
-    resolution: {integrity: sha512-xQx3E2WxP1mDvKzxLxX+CTCtNLa560YJZ3087qYHerl2YmiKpv7AH+dAy7vmx+eVrZ5BwhfWUAVoKOoxCNHcpw==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/instrumentation@0.301.2':
+    resolution: {integrity: sha512-14ZUepvK+YiMfhy3Hugh4UuY5THEfVOcsY0+L+DertoVmdh4MTR5H0JvD1IT2jGLKPZiIg+apDCM2CTuGh6UzQ==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
-  '@opentelemetry/otlp-exporter-base@0.220.0':
-    resolution: {integrity: sha512-CXYo8UD5Mn9YbgebO2EL4wejtA+gxLmLiu6HCk2KH2BR7XhFN6/6p1UlCb23DYCjeYkndevLHuejCCN1yx4+OQ==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/otlp-exporter-base@0.301.2':
+    resolution: {integrity: sha512-XlC8Mqeqk5vY9/jXU2No4tAPDO4g7d3QqgxznctJrM1wzF/xKUiBvQwlQguGL98nEBweq2NCkXMGj4QIGSpplg==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': ^1.10.0
 
-  '@opentelemetry/otlp-transformer@0.220.0':
-    resolution: {integrity: sha512-lXGrv7KXZ0gNH9SVNUaa6vv6phVYGvJxfXAlMbzbakiXru75f5MZl8Z7oqiMMQD77riVHJCFlQvbZs/VVN2/4A==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/otlp-transformer@0.301.2':
+    resolution: {integrity: sha512-Ap4MhVvrta1YAXoLKLdX9KuEy8zfupMRaDmbOFm0afxPqe56dAo2cCe52TDN6t175E6i4hnrBMzDXpnDR843eg==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': ^1.3.0
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
-  '@opentelemetry/resources@2.10.0':
-    resolution: {integrity: sha512-q6MMm2zhggzsHVNbabYwut+a6nbuQQe3URUoxaojM/8K1IBfwwPzvxIjNi2/lI1TFe+fMHMW9MWhrtDLEXEnkA==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/resources@3.1.1':
+    resolution: {integrity: sha512-dSd0FI1rfl+WHeaZxCTCEvwv6vcmUqkOHHTGWMkmyHg+PyL/wLbCqgsGKgI0wOwT0KGy9IMPAvY85hT8IPwApA==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': '>=1.3.0 <1.10.0'
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
-  '@opentelemetry/resources@2.9.0':
-    resolution: {integrity: sha512-jyA5MBLQ+Dkl3+JsZkUoUvL7yHvU64kLsvpXKarWm6347Sl1t1bXFTFykUePNpT5WH5pm9a2Qtt03iIYQhZ1Fg==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/sdk-logs@3.1.1':
+    resolution: {integrity: sha512-Z2V826tjNXRaCP7EtaJGzNuk16o8rq8OWnYBS60tfCkGyUv3Eugrz3GIj7AiXb5MAyeeOR2PJ9EC8WjeGeAgbg==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': '>=1.3.0 <1.10.0'
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
-  '@opentelemetry/sdk-logs@0.220.0':
-    resolution: {integrity: sha512-WywcTkQtv2iNmt+6y5Kcd4rzvx9bLVsBa2Nwcmg01IUaBTkTow3W4d9KE5vNBpEDtb9tp21WcRBY/lANRrApYA==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/sdk-metrics@3.1.1':
+    resolution: {integrity: sha512-QBDkERTMERMxwtH7hHbE6esoo+5Tdb79MtF9lMh1EIFlij39prkSEWlfSD2flUGGv15b0GQ1X2jj/JqG9gQBTw==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': '>=1.4.0 <1.10.0'
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
-  '@opentelemetry/sdk-metrics@2.9.0':
-    resolution: {integrity: sha512-Xx8RGS4H5XEBl01WuCreMIpiah9cCXMbSkeuIePPdD2cUpq/vUzYmj8E/MK1OsbOc93FuAD4jfn2WOacKwLn7Q==}
-    engines: {node: ^18.19.0 || >=20.6.0}
+  '@opentelemetry/sdk-trace@3.1.1':
+    resolution: {integrity: sha512-DJZXZJu1H3kek9Kh9SqJ46yN3faiNiabnqkEtl9eVnBvs4KuK+ynmk9jOyB0NfWAXWGZlTivCf46uwiXyr2PGA==}
+    engines: {node: '>=22.15.0'}
     peerDependencies:
-      '@opentelemetry/api': '>=1.9.0 <1.10.0'
-
-  '@opentelemetry/sdk-trace-base@2.10.0':
-    resolution: {integrity: sha512-GuYQQT7QD2EeO8lcZLRQzcbOyhqAzL+6WWTKTU9mSUBYBazkEDl+VrQcXQhbB08OWM9anD1aHleVadzulpOaUQ==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    deprecated: Use @opentelemetry/sdk-trace package
-    peerDependencies:
-      '@opentelemetry/api': '>=1.3.0 <1.10.0'
-
-  '@opentelemetry/sdk-trace-base@2.9.0':
-    resolution: {integrity: sha512-cp9zmTl62R8PJrpvFcmc8N2JQU/xfa0S+61q511Nji+QxCfZ8Ifvg7H27G8cANe4crg4RTrWsVvanHiXjSp6ag==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    deprecated: Use @opentelemetry/sdk-trace package
-    peerDependencies:
-      '@opentelemetry/api': '>=1.3.0 <1.10.0'
-
-  '@opentelemetry/sdk-trace-web@2.10.0':
-    resolution: {integrity: sha512-6WqXdWSlBH0GNjDhv1gg6SLVtMtIBVhLaWqd1hiKSXS8meXXP13sVPQoYFHz1uVo0feUTUCdP9vMS54KflisAw==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    deprecated: Use @opentelemetry/sdk-trace package
-    peerDependencies:
-      '@opentelemetry/api': '>=1.0.0 <1.10.0'
-
-  '@opentelemetry/sdk-trace-web@2.9.0':
-    resolution: {integrity: sha512-LS4XlzOK3e6YYdt84m15AmRR04121rKipmifi4XFZToH1h75f7F2bzHLbB1NMgIEYJ0jSKYm4VsK5mws/5kfTQ==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    deprecated: Use @opentelemetry/sdk-trace package
-    peerDependencies:
-      '@opentelemetry/api': '>=1.0.0 <1.10.0'
-
-  '@opentelemetry/sdk-trace@2.10.0':
-    resolution: {integrity: sha512-MfQGq3GRmTh5fM/y+OjaO0vj6+luCB1XO2gfXCalKCfgKw0eHL++sm75DNweC6ohlp+aFvACqeE0fYayqdRaoQ==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    peerDependencies:
-      '@opentelemetry/api': '>=1.3.0 <1.10.0'
-
-  '@opentelemetry/sdk-trace@2.9.0':
-    resolution: {integrity: sha512-sGA19HvtrrSKYsseHphluH6j3p6Xa3fqc7c7y8f/7mYWejc1lyDFcpSdD1kYa50HCLUeEo4zA5bW0pniaPszuw==}
-    engines: {node: ^18.19.0 || >=20.6.0}
-    peerDependencies:
-      '@opentelemetry/api': '>=1.3.0 <1.10.0'
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
   '@opentelemetry/semantic-conventions@1.28.0':
     resolution: {integrity: sha512-lp4qAiMTD4sNWW4DbKLBkfiMZ4jbAboJIGOQr5DvciMRI494OapieI9qiODpOt0XBr1LjIDy1xAGAnVs5supTA==}
@@ -3953,13 +3912,15 @@ packages:
     resolution: {integrity: sha512-R5R9tb2AXs2IRLNKLBJDynhkfmx7mX0vi8NkhZb3gUkPWHn6HXk5J8iQ/dql0U3ApfWym4kXXmBDRGO+oeOfjg==}
     engines: {node: '>=14'}
 
-  '@opentelemetry/semantic-conventions@1.43.0':
-    resolution: {integrity: sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg==}
-    engines: {node: '>=14'}
-
   '@opentelemetry/semantic-conventions@1.45.0':
     resolution: {integrity: sha512-aOP45mbcOKbQVvFWfQmgoOPT8R2iwbbbgl83k4CujGV9BrJhFr3qG55MFpwFs4YLabpuW3HhzUY9eQxPlDqaZw==}
     engines: {node: '>=14'}
+
+  '@opentelemetry/web-common@0.301.2':
+    resolution: {integrity: sha512-d7+mRF5r/wacfpOwOWRoeiGZITx+u8DD4sgsp+Zzqj34+xvT4crlEX+G5+Cm5CXBYLJGJjX6t2tWkKVN+gIeAQ==}
+    engines: {node: '>=22.15.0'}
+    peerDependencies:
+      '@opentelemetry/api': '>=1.10.0 <1.11.0'
 
   '@oxc-parser/binding-android-arm-eabi@0.158.0':
     resolution: {integrity: sha512-eZ4sHtg/u9mzPaRPWXZ7MmJ3tSFYPDCoDrnAJEXBOIQfdAy0TnzlaJx7nq0HZwE8DkYLQg6GqGZlcjaJrnijKg==}
@@ -7200,8 +7161,8 @@ packages:
     engines: {node: '>=20.0.0 || >=22.0.0 || >=24.0.0'}
     hasBin: true
 
-  firebase@13.3.0:
-    resolution: {integrity: sha512-hq5LkmCTAhjlma3WVa7k+e/g7afXQ+h/CBcUZ8vp6HO4FySsNHRQ4lnn4CcUbQd+pFaQyZof77I64e4pqc3yPw==}
+  firebase@13.4.0:
+    resolution: {integrity: sha512-4B7M7U7eOF4cEaQgmooXNwCm7zAJEuPs+YJdZaGUCe9AGRuZ7Mo5OQhTzlT60Ncr/f3vQsefsxvzJCFK61GM6w==}
 
   flagged-respawn@2.0.0:
     resolution: {integrity: sha512-Gq/a6YCi8zexmGHMuJwahTGzXlAZAOsbCVKduWXC6TlLCjjFRlExMJc4GC2NYPYZ0r/brw9P7CpRgQmlPVeOoA==}
@@ -8910,10 +8871,6 @@ packages:
   minimatch@10.2.6:
     resolution: {integrity: sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==}
     engines: {node: 18 || 20 || >=22}
-
-  minimatch@11.0.8:
-    resolution: {integrity: sha512-nFQuYSTVrGvysVBps5Ih+0BdnYFN/Cj3C816r6+p7yK+FHrVLGE4O4N9AFwykrlNlvM2HYt+Rad1Uiro6h88Ig==}
-    engines: {node: 20 || >=22}
 
   minimatch@11.0.9:
     resolution: {integrity: sha512-KCFkfyjqerNlSstjlhIGNXIKZGA/6O4V4RlhZ+Dsr621SPPw0mzlypE9D9ZOoPiVefHID+j7/XuMMlqfD/F60Q==}
@@ -11071,8 +11028,8 @@ packages:
   url-template@2.0.8:
     resolution: {integrity: sha512-XdVKMF4SJ0nP/O7XIPB0JwAEuT9lDIYnNsK8yGVe43y0AWoKeJNdv3ZNWh7ksJ6KqQFjOO6ox/VEitLnaVNufw==}
 
-  utf-8-validate@6.0.6:
-    resolution: {integrity: sha512-q3l3P9UtEEiAHcsgsqTgf9PPjctrDWoIXW3NpOHFdRDbLvu4DLIcxHangJ4RLrWkBcKjmcs/6NkerI8T/rE4LA==}
+  utf-8-validate@6.1.0:
+    resolution: {integrity: sha512-+VqK0s7hdUuvL95ExzfqCqvsuA2A+3KzNYibPeeDnGU9L5onk8CY5/H30kCHLpVMzEh6HV9Dv8uw+E+Mz4X/dA==}
     engines: {node: '>=6.14.2'}
 
   util-deprecate@1.0.2:
@@ -11337,8 +11294,8 @@ packages:
   web-vitals@4.2.4:
     resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
 
-  web-vitals@5.3.0:
-    resolution: {integrity: sha512-q6LWsLatGYZp5VGBIOvbTj6JBV2nOmC8KvWztXBmwJcfFAzhwKwbOxhUH306XY3CcaZDUlSmSuNPBsCn0bFu+g==}
+  web-vitals@6.2.3:
+    resolution: {integrity: sha512-Dmy+vdO1UPMqXiAtZSNayhl4f794Bxfd94W4HIj2HlYtczEQfEOon969memlcpcHrTuOKLa5baFjX7WbgmOq+A==}
 
   webdriver-js-extender@2.1.0:
     resolution: {integrity: sha512-lcUKrjbBfCK6MNsh7xaY2UAUmZwe+/ib03AjVOpFobX4O7+83BUveSrLfU0Qsyb1DaKJdQRbuU+kM9aZ6QUhiQ==}
@@ -11841,7 +11798,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.9.1
 
-  '@angular/build@22.3.0(6dd512c9ab7072a9cf2dc30aa8d58df9)':
+  '@angular/build@22.3.0(1549449e9ac7704409e9ac6d92ec071b)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2203.0(chokidar@6.0.0)
@@ -11884,74 +11841,7 @@ snapshots:
       '@angular/ssr': 22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       '@oxc-parser/binding-wasm32-wasi': 0.158.0
       istanbul-lib-instrument: 6.0.3(supports-color@11.0.0)
-      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      lmdb: 3.5.9
-      postcss: 8.5.33
-      rollup: 4.68.0
-      tailwindcss: 3.4.19(tsx@4.23.15)(yaml@2.9.1)
-      vitest: 5.1.1(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(jsdom@31.0.1)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@1.21.7)(sass-embedded@1.108.2)(sass@1.108.2)(tsx@4.23.15)(yaml@2.9.1))
-    transitivePeerDependencies:
-      - '@types/node'
-      - '@vitejs/devtools'
-      - '@volar/typescript'
-      - '@vue/language-core'
-      - '@yuku-toolchain/wasm'
-      - jiti
-      - kerberos
-      - oxc-resolver
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsrs
-      - tsx
-      - vue-tsc
-      - yaml
-
-  '@angular/build@22.3.0(7b0c1188803b3736eb3351fdad625575)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2203.0(chokidar@6.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 8.1.0
-      '@inquirer/confirm': 6.4.0(@types/node@24.19.2)
-      '@parcel/watcher': 2.6.0
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@1.21.7)(sass-embedded@1.108.2)(sass@1.108.2)(tsx@4.23.15)(yaml@2.9.1))
-      beasties: 0.5.5
-      browserslist: 4.29.6
-      chokidar: 6.0.0
-      esbuild: 0.28.2
-      https-proxy-agent: 9.1.0(supports-color@11.0.0)
-      jsonc-parser: 3.3.1
-      listr2: 11.4.1
-      magic-string: 1.4.5
-      mrmime: 2.0.1
-      oxc-parser: 0.158.0
-      parse5-html-rewriting-stream: 8.1.1
-      picomatch: 4.0.7
-      piscina: 5.3.2
-      rolldown: 1.3.1
-      rolldown-plugin-dts: 0.30.1(rolldown@1.3.1)(typescript@6.0.3)
-      sass: 1.108.2
-      sass-embedded: 1.108.2
-      semver: 7.8.6
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.17
-      tslib: 2.9.1
-      typescript: 6.0.3
-      vite: 8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@1.21.7)(sass-embedded@1.108.2)(sass@1.108.2)(tsx@4.23.15)(yaml@2.9.1)
-      xxhash-wasm: 1.1.0
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      '@oxc-parser/binding-wasm32-wasi': 0.158.0
-      istanbul-lib-instrument: 6.0.3(supports-color@11.0.0)
-      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
       lmdb: 3.5.9
       postcss: 8.5.32
       rollup: 4.68.0
@@ -11975,7 +11865,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@angular/build@22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)':
+  '@angular/build@22.3.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))(postcss@8.5.33)(rollup@4.68.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.9.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2203.0(chokidar@6.0.0)
@@ -12018,11 +11908,78 @@ snapshots:
       '@angular/ssr': 22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       '@oxc-parser/binding-wasm32-wasi': 0.158.0
       istanbul-lib-instrument: 6.0.3(supports-color@11.0.0)
-      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
       lmdb: 3.5.9
       postcss: 8.5.33
       rollup: 4.68.0
       tailwindcss: 3.4.19(tsx@4.23.15)(yaml@2.9.1)
+    transitivePeerDependencies:
+      - '@types/node'
+      - '@vitejs/devtools'
+      - '@volar/typescript'
+      - '@vue/language-core'
+      - '@yuku-toolchain/wasm'
+      - jiti
+      - kerberos
+      - oxc-resolver
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsrs
+      - tsx
+      - vue-tsc
+      - yaml
+
+  '@angular/build@22.3.0(cebfae86ebb4c70054405d349873b130)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2203.0(chokidar@6.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 8.1.0
+      '@inquirer/confirm': 6.4.0(@types/node@24.19.2)
+      '@parcel/watcher': 2.6.0
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@1.21.7)(sass-embedded@1.108.2)(sass@1.108.2)(tsx@4.23.15)(yaml@2.9.1))
+      beasties: 0.5.5
+      browserslist: 4.29.6
+      chokidar: 6.0.0
+      esbuild: 0.28.2
+      https-proxy-agent: 9.1.0(supports-color@11.0.0)
+      jsonc-parser: 3.3.1
+      listr2: 11.4.1
+      magic-string: 1.4.5
+      mrmime: 2.0.1
+      oxc-parser: 0.158.0
+      parse5-html-rewriting-stream: 8.1.1
+      picomatch: 4.0.7
+      piscina: 5.3.2
+      rolldown: 1.3.1
+      rolldown-plugin-dts: 0.30.1(rolldown@1.3.1)(typescript@6.0.3)
+      sass: 1.108.2
+      sass-embedded: 1.108.2
+      semver: 7.8.6
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.17
+      tslib: 2.9.1
+      typescript: 6.0.3
+      vite: 8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@1.21.7)(sass-embedded@1.108.2)(sass@1.108.2)(tsx@4.23.15)(yaml@2.9.1)
+      xxhash-wasm: 1.1.0
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.3.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      '@oxc-parser/binding-wasm32-wasi': 0.158.0
+      istanbul-lib-instrument: 6.0.3(supports-color@11.0.0)
+      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
+      lmdb: 3.5.9
+      postcss: 8.5.33
+      rollup: 4.68.0
+      tailwindcss: 3.4.19(tsx@4.23.15)(yaml@2.9.1)
+      vitest: 5.1.1(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(jsdom@31.0.1)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@1.21.7)(sass-embedded@1.108.2)(sass@1.108.2)(tsx@4.23.15)(yaml@2.9.1))
     transitivePeerDependencies:
       - '@types/node'
       - '@vitejs/devtools'
@@ -12111,14 +12068,14 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.9.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4d3f549e803d585302ceb4d813c07ba4fe3adc1d(@angular/core@packages+core)(@angular/router@packages+router)(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3d05fe39e50b7d4c38e1eaced1da0204ae779165(@angular/core@packages+core)(@angular/router@packages+router)(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 3.2.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.4)
       '@google-cloud/spanner': 8.0.0(supports-color@11.0.0)
-      '@google/genai': 3.3.0(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      '@inquirer/prompts': 8.8.0(@types/node@24.19.2)
-      '@inquirer/type': 4.3.0(@types/node@24.19.2)
+      '@google/genai': 3.6.1(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
+      '@inquirer/prompts': 8.8.1(@types/node@24.19.2)
+      '@inquirer/type': 4.3.1(@types/node@24.19.2)
       '@octokit/auth-app': 8.3.1
       '@octokit/core': 7.0.8
       '@octokit/graphql': 9.0.5
@@ -12145,13 +12102,13 @@ snapshots:
       ejs: 7.0.2
       encoding: 0.1.14
       fast-glob: 3.3.3
-      firebase: 13.3.0(@angular/core@packages+core)(@angular/router@packages+router)(supports-color@11.0.0)
+      firebase: 13.4.0(@angular/core@packages+core)(@angular/router@packages+router)(supports-color@11.0.0)
       folder-hash: 4.1.4(supports-color@11.0.0)
       jasmine: 6.3.0
       jasmine-core: 6.3.0
       jasmine-reporters: 2.5.2
       jsonc-parser: 3.3.1
-      minimatch: 11.0.8
+      minimatch: 11.0.9
       multimatch: 8.0.0
       nock: 15.0.6(supports-color@11.0.0)
       semver: 7.8.6
@@ -12159,7 +12116,7 @@ snapshots:
       tsx: 4.23.15
       typed-graphqlify: 3.1.6
       typescript: 6.0.3
-      utf-8-validate: 6.0.6
+      utf-8-validate: 6.1.0
       which: 7.0.0
       yaml: 2.9.1
       yargs: 18.2.0
@@ -12908,9 +12865,9 @@ snapshots:
 
   '@externs/nodejs@1.5.0': {}
 
-  '@firebase/ai@3.1.0(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)':
+  '@firebase/ai@3.1.0(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/app-check-interop-types': 0.3.5
       '@firebase/app-types': 0.9.6
       '@firebase/component': 0.7.5
@@ -12918,33 +12875,33 @@ snapshots:
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/analytics-compat@0.2.31(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/analytics-compat@0.2.32(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/analytics': 0.10.25(@firebase/app@0.16.6)
+      '@firebase/analytics': 0.10.26(@firebase/app@0.16.7)
       '@firebase/analytics-types': 0.8.5
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
   '@firebase/analytics-types@0.8.5': {}
 
-  '@firebase/analytics@0.10.25(@firebase/app@0.16.6)':
+  '@firebase/analytics@0.10.26(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/app-check-compat@0.4.7(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/app-check-compat@0.4.8(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-check': 0.13.1(@firebase/app@0.16.6)
+      '@firebase/app': 0.16.7
+      '@firebase/app-check': 0.13.2(@firebase/app@0.16.7)
       '@firebase/app-check-types': 0.5.5
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
@@ -12954,17 +12911,17 @@ snapshots:
 
   '@firebase/app-check-types@0.5.5': {}
 
-  '@firebase/app-check@0.13.1(@firebase/app@0.16.6)':
+  '@firebase/app-check@0.13.2(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/app-compat@0.5.22':
+  '@firebase/app-compat@0.5.23':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
@@ -12974,7 +12931,7 @@ snapshots:
     dependencies:
       '@firebase/logger': 0.5.2
 
-  '@firebase/app@0.16.6':
+  '@firebase/app@0.16.7':
     dependencies:
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
@@ -12982,11 +12939,11 @@ snapshots:
       idb: 7.1.1
       tslib: 2.9.1
 
-  '@firebase/auth-compat@0.6.15(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)':
+  '@firebase/auth-compat@0.6.16(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
-      '@firebase/auth': 1.13.10(@firebase/app@0.16.6)
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
+      '@firebase/auth': 1.13.11(@firebase/app@0.16.7)
       '@firebase/auth-types': 0.13.2(@firebase/app-types@0.9.6)(@firebase/util@1.15.3)
       '@firebase/component': 0.7.5
       '@firebase/util': 1.15.3
@@ -13002,9 +12959,9 @@ snapshots:
       '@firebase/app-types': 0.9.6
       '@firebase/util': 1.15.3
 
-  '@firebase/auth@1.13.10(@firebase/app@0.16.6)':
+  '@firebase/auth@1.13.11(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
@@ -13015,30 +12972,28 @@ snapshots:
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/crashlytics@0.1.1(@angular/core@packages+core)(@angular/router@packages+router)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)(supports-color@11.0.0)':
+  '@firebase/crashlytics@0.2.0(@angular/core@packages+core)(@angular/router@packages+router)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)(supports-color@11.0.0)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/app-types': 0.9.6
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/util': 1.15.3
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.220.0
-      '@opentelemetry/browser-instrumentation': 0.6.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/exporter-logs-otlp-http': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/exporter-trace-otlp-proto': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/instrumentation-document-load': 0.65.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/instrumentation-fetch': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/instrumentation-xml-http-request': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/otlp-exporter-base': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/otlp-transformer': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-logs': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-web': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/browser-instrumentation': 0.11.0(@opentelemetry/api@1.10.0)
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/exporter-logs-otlp-http': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/exporter-trace-otlp-proto': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/instrumentation': 0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/instrumentation-document-load': 0.70.1(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/instrumentation-fetch': 0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/instrumentation-xml-http-request': 0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/otlp-exporter-base': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/otlp-transformer': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/resources': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-logs': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-trace': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
       tslib: 2.9.1
     optionalDependencies:
       '@angular/core': link:packages/core
@@ -13046,16 +13001,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@firebase/data-connect@0.7.4(@firebase/app@0.16.6)':
+  '@firebase/data-connect@0.7.4(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/auth-interop-types': 0.2.6
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/database-compat@2.1.8(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/database-compat@2.1.8(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
       '@firebase/component': 0.7.5
       '@firebase/database': 1.1.6
@@ -13064,8 +13019,8 @@ snapshots:
       '@firebase/util': 1.15.3
       tslib: 2.9.1
     optionalDependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
 
   '@firebase/database-types@1.0.22':
     dependencies:
@@ -13082,12 +13037,12 @@ snapshots:
       faye-websocket: 0.11.4
       tslib: 2.9.1
 
-  '@firebase/firestore-compat@0.4.18(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)':
+  '@firebase/firestore-compat@0.4.18(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
-      '@firebase/firestore': 4.20.0(@firebase/app@0.16.6)
+      '@firebase/firestore': 4.20.0(@firebase/app@0.16.7)
       '@firebase/firestore-types': 3.0.5(@firebase/app-types@0.9.6)(@firebase/util@1.15.3)
       '@firebase/util': 1.15.3
       tslib: 2.9.1
@@ -13099,9 +13054,9 @@ snapshots:
       '@firebase/app-types': 0.9.6
       '@firebase/util': 1.15.3
 
-  '@firebase/firestore@4.20.0(@firebase/app@0.16.6)':
+  '@firebase/firestore@4.20.0(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
@@ -13111,21 +13066,21 @@ snapshots:
       re2js: 2.10.0
       tslib: 2.9.1
 
-  '@firebase/functions-compat@0.5.0(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/functions-compat@0.5.0(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
-      '@firebase/functions': 0.14.0(@firebase/app@0.16.6)
+      '@firebase/functions': 0.14.0(@firebase/app@0.16.7)
       '@firebase/functions-types': 0.6.5
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
   '@firebase/functions-types@0.6.5': {}
 
-  '@firebase/functions@0.14.0(@firebase/app@0.16.6)':
+  '@firebase/functions@0.14.0(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/app-check-interop-types': 0.3.5
       '@firebase/auth-interop-types': 0.2.6
       '@firebase/component': 0.7.5
@@ -13133,12 +13088,12 @@ snapshots:
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/installations-compat@0.2.24(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)':
+  '@firebase/installations-compat@0.2.24(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/installations-types': 0.5.5(@firebase/app-types@0.9.6)
       '@firebase/util': 1.15.3
       tslib: 2.9.1
@@ -13149,9 +13104,9 @@ snapshots:
     dependencies:
       '@firebase/app-types': 0.9.6
 
-  '@firebase/installations@0.6.24(@firebase/app@0.16.6)':
+  '@firebase/installations@0.6.24(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/util': 1.15.3
       idb: 7.1.1
@@ -13161,78 +13116,78 @@ snapshots:
     dependencies:
       tslib: 2.9.1
 
-  '@firebase/messaging-compat@0.2.30(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/messaging-compat@0.2.30(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
-      '@firebase/messaging': 0.13.3(@firebase/app@0.16.6)
+      '@firebase/messaging': 0.13.3(@firebase/app@0.16.7)
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
   '@firebase/messaging-interop-types@0.2.6': {}
 
-  '@firebase/messaging@0.13.3(@firebase/app@0.16.6)':
+  '@firebase/messaging@0.13.3(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/messaging-interop-types': 0.2.6
       '@firebase/util': 1.15.3
       idb: 7.1.1
       tslib: 2.9.1
 
-  '@firebase/performance-compat@0.2.27(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/performance-compat@0.2.27(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
-      '@firebase/performance': 0.7.14(@firebase/app@0.16.6)
+      '@firebase/performance': 0.7.14(@firebase/app@0.16.7)
       '@firebase/performance-types': 0.2.5
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
   '@firebase/performance-types@0.2.5': {}
 
-  '@firebase/performance@0.7.14(@firebase/app@0.16.6)':
+  '@firebase/performance@0.7.14(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.9.1
       web-vitals: 4.2.4
 
-  '@firebase/remote-config-compat@0.2.31(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)':
+  '@firebase/remote-config-compat@0.2.31(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
-      '@firebase/remote-config': 0.10.0(@firebase/app@0.16.6)
+      '@firebase/remote-config': 0.10.0(@firebase/app@0.16.7)
       '@firebase/remote-config-types': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
   '@firebase/remote-config-types@0.5.2': {}
 
-  '@firebase/remote-config@0.10.0(@firebase/app@0.16.6)':
+  '@firebase/remote-config@0.10.0(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       tslib: 2.9.1
 
-  '@firebase/storage-compat@0.4.6(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)':
+  '@firebase/storage-compat@0.4.6(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
-      '@firebase/app-compat': 0.5.22
+      '@firebase/app': 0.16.7
+      '@firebase/app-compat': 0.5.23
       '@firebase/component': 0.7.5
-      '@firebase/storage': 0.14.6(@firebase/app@0.16.6)
+      '@firebase/storage': 0.14.6(@firebase/app@0.16.7)
       '@firebase/storage-types': 0.8.5(@firebase/app-types@0.9.6)(@firebase/util@1.15.3)
       '@firebase/util': 1.15.3
       tslib: 2.9.1
@@ -13244,9 +13199,9 @@ snapshots:
       '@firebase/app-types': 0.9.6
       '@firebase/util': 1.15.3
 
-  '@firebase/storage@0.14.6(@firebase/app@0.16.6)':
+  '@firebase/storage@0.14.6(@firebase/app@0.16.7)':
     dependencies:
-      '@firebase/app': 0.16.6
+      '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/util': 1.15.3
       tslib: 2.9.1
@@ -13359,12 +13314,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@3.3.0(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)':
+  '@google/genai@3.6.1(@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0))(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)':
     dependencies:
       google-auth-library: 10.9.1(supports-color@11.0.0)
       p-retry: 4.6.2
       protobufjs: 7.6.6
-      ws: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.0.6)
+      ws: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.1.0)
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.32.2(supports-color@11.0.0)
     transitivePeerDependencies:
@@ -13728,6 +13683,21 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.19.43
 
+  '@inquirer/prompts@8.8.1(@types/node@24.19.2)':
+    dependencies:
+      '@inquirer/checkbox': 5.3.1(@types/node@24.19.2)
+      '@inquirer/confirm': 6.4.1(@types/node@24.19.2)
+      '@inquirer/editor': 5.5.0(@types/node@24.19.2)
+      '@inquirer/expand': 5.2.1(@types/node@24.19.2)
+      '@inquirer/input': 5.2.1(@types/node@24.19.2)
+      '@inquirer/number': 4.3.1(@types/node@24.19.2)
+      '@inquirer/password': 5.3.1(@types/node@24.19.2)
+      '@inquirer/rawlist': 5.4.1(@types/node@24.19.2)
+      '@inquirer/search': 4.4.1(@types/node@24.19.2)
+      '@inquirer/select': 5.3.1(@types/node@24.19.2)
+    optionalDependencies:
+      '@types/node': 24.19.2
+
   '@inquirer/rawlist@4.1.11(@types/node@20.19.43)':
     dependencies:
       '@inquirer/core': 10.3.2(@types/node@20.19.43)
@@ -13899,7 +13869,7 @@ snapshots:
 
   '@jest/diff-sequences@30.5.0': {}
 
-  '@jest/environment-jsdom-abstract@30.5.2(@types/jsdom@21.1.7)(jsdom@26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6))':
+  '@jest/environment-jsdom-abstract@30.5.2(@types/jsdom@21.1.7)(jsdom@26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0))':
     dependencies:
       '@jest/environment': 30.5.2
       '@jest/fake-timers': 30.5.2
@@ -13908,7 +13878,7 @@ snapshots:
       '@types/node': 24.19.2
       jest-mock: 30.5.2
       jest-util: 30.5.1
-      jsdom: 26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      jsdom: 26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
 
   '@jest/environment@30.5.2':
     dependencies:
@@ -14491,24 +14461,26 @@ snapshots:
 
   '@open-draft/until@3.0.1': {}
 
-  '@opentelemetry/api-logs@0.220.0':
+  '@opentelemetry/api-logs@0.223.0':
     dependencies:
-      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/api': 1.10.0
 
   '@opentelemetry/api@1.10.0': {}
 
   '@opentelemetry/api@1.9.1': {}
 
-  '@opentelemetry/browser-instrumentation@0.6.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)':
+  '@opentelemetry/browser-api@0.1.0(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.220.0
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/semantic-conventions': 1.43.0
-      web-vitals: 5.3.0
-    transitivePeerDependencies:
-      - supports-color
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/api-logs': 0.223.0
+
+  '@opentelemetry/browser-instrumentation@0.11.0(@opentelemetry/api@1.10.0)':
+    dependencies:
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/api-logs': 0.223.0
+      '@opentelemetry/browser-api': 0.1.0(@opentelemetry/api@1.10.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
+      web-vitals: 6.2.3
 
   '@opentelemetry/context-async-hooks@2.12.1(@opentelemetry/api@1.10.0)':
     dependencies:
@@ -14519,169 +14491,121 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/semantic-conventions': 1.28.0
 
-  '@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/semantic-conventions': 1.43.0
-
   '@opentelemetry/core@2.12.1(@opentelemetry/api@1.10.0)':
     dependencies:
       '@opentelemetry/api': 1.10.0
       '@opentelemetry/semantic-conventions': 1.45.0
 
-  '@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/core@3.1.1(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/semantic-conventions': 1.45.0
 
-  '@opentelemetry/exporter-logs-otlp-http@0.220.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/exporter-logs-otlp-http@0.301.2(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.220.0
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/otlp-exporter-base': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/otlp-transformer': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-logs': 0.220.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/otlp-exporter-base': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/otlp-transformer': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-logs': 3.1.1(@opentelemetry/api@1.10.0)
 
-  '@opentelemetry/exporter-trace-otlp-proto@0.220.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/exporter-trace-otlp-proto@0.301.2(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/otlp-exporter-base': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/otlp-transformer': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace': 2.9.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/otlp-exporter-base': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/otlp-transformer': 0.301.2(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-trace': 3.1.1(@opentelemetry/api@1.10.0)
 
-  '@opentelemetry/instrumentation-document-load@0.65.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)':
+  '@opentelemetry/instrumentation-document-load@0.70.1(@opentelemetry/api@1.10.0)(supports-color@11.0.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/sdk-trace-web': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/instrumentation': 0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
+      '@opentelemetry/web-common': 0.301.2(@opentelemetry/api@1.10.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@opentelemetry/instrumentation-fetch@0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)':
+  '@opentelemetry/instrumentation-fetch@0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/sdk-trace-web': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/instrumentation': 0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
+      '@opentelemetry/web-common': 0.301.2(@opentelemetry/api@1.10.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@opentelemetry/instrumentation-xml-http-request@0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)':
+  '@opentelemetry/instrumentation-xml-http-request@0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)
-      '@opentelemetry/sdk-trace-web': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/instrumentation': 0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
+      '@opentelemetry/web-common': 0.301.2(@opentelemetry/api@1.10.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@11.0.0)':
+  '@opentelemetry/instrumentation@0.301.2(@opentelemetry/api@1.10.0)(supports-color@11.0.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.220.0
+      '@opentelemetry/api': 1.10.0
       import-in-the-middle: 3.6.0
       require-in-the-middle: 8.0.1(supports-color@11.0.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@opentelemetry/otlp-exporter-base@0.220.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/otlp-exporter-base@0.301.2(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/otlp-transformer': 0.220.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/otlp-transformer': 0.301.2(@opentelemetry/api@1.10.0)
 
-  '@opentelemetry/otlp-transformer@0.220.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/otlp-transformer@0.301.2(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.220.0
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-logs': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-metrics': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace': 2.9.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/resources': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-logs': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-metrics': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-trace': 3.1.1(@opentelemetry/api@1.10.0)
 
-  '@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/resources@3.1.1(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
 
-  '@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/sdk-logs@3.1.1(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/resources': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
 
-  '@opentelemetry/sdk-logs@0.220.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/sdk-metrics@3.1.1(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.220.0
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/resources': 3.1.1(@opentelemetry/api@1.10.0)
 
-  '@opentelemetry/sdk-metrics@2.9.0(@opentelemetry/api@1.9.1)':
+  '@opentelemetry/sdk-trace@3.1.1(@opentelemetry/api@1.10.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.1)
-
-  '@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
-
-  '@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
-
-  '@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.1)
-
-  '@opentelemetry/sdk-trace-web@2.9.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.1)
-
-  '@opentelemetry/sdk-trace@2.10.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
-
-  '@opentelemetry/sdk-trace@2.9.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.43.0
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/resources': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/semantic-conventions': 1.45.0
 
   '@opentelemetry/semantic-conventions@1.28.0': {}
 
   '@opentelemetry/semantic-conventions@1.39.0': {}
 
-  '@opentelemetry/semantic-conventions@1.43.0': {}
-
   '@opentelemetry/semantic-conventions@1.45.0': {}
+
+  '@opentelemetry/web-common@0.301.2(@opentelemetry/api@1.10.0)':
+    dependencies:
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/core': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-logs': 3.1.1(@opentelemetry/api@1.10.0)
+      '@opentelemetry/sdk-trace': 3.1.1(@opentelemetry/api@1.10.0)
 
   '@oxc-parser/binding-android-arm-eabi@0.158.0':
     optional: true
@@ -17353,7 +17277,7 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.12(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6):
+  engine.io@6.6.12(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 20.19.43
@@ -17363,7 +17287,7 @@ snapshots:
       cors: 2.8.6
       debug: 4.4.3(supports-color@11.0.0)
       engine.io-parser: 5.2.3
-      ws: 8.21.3(bufferutil@4.2.0)(utf-8-validate@6.0.6)
+      ws: 8.21.3(bufferutil@4.2.0)(utf-8-validate@6.1.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -17929,7 +17853,7 @@ snapshots:
       update-notifier-cjs: 5.1.7(encoding@0.1.14)
       winston: 3.19.0
       winston-transport: 4.9.0
-      ws: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.0.6)
+      ws: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.1.0)
       yaml: 2.9.1
       zod: 4.6.7
     transitivePeerDependencies:
@@ -17944,36 +17868,36 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  firebase@13.3.0(@angular/core@packages+core)(@angular/router@packages+router)(supports-color@11.0.0):
+  firebase@13.4.0(@angular/core@packages+core)(@angular/router@packages+router)(supports-color@11.0.0):
     dependencies:
-      '@firebase/ai': 3.1.0(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)
-      '@firebase/analytics': 0.10.25(@firebase/app@0.16.6)
-      '@firebase/analytics-compat': 0.2.31(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/app': 0.16.6
-      '@firebase/app-check': 0.13.1(@firebase/app@0.16.6)
-      '@firebase/app-check-compat': 0.4.7(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/app-compat': 0.5.22
+      '@firebase/ai': 3.1.0(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)
+      '@firebase/analytics': 0.10.26(@firebase/app@0.16.7)
+      '@firebase/analytics-compat': 0.2.32(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/app': 0.16.7
+      '@firebase/app-check': 0.13.2(@firebase/app@0.16.7)
+      '@firebase/app-check-compat': 0.4.8(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/app-compat': 0.5.23
       '@firebase/app-types': 0.9.6
-      '@firebase/auth': 1.13.10(@firebase/app@0.16.6)
-      '@firebase/auth-compat': 0.6.15(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)
-      '@firebase/crashlytics': 0.1.1(@angular/core@packages+core)(@angular/router@packages+router)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)(supports-color@11.0.0)
-      '@firebase/data-connect': 0.7.4(@firebase/app@0.16.6)
+      '@firebase/auth': 1.13.11(@firebase/app@0.16.7)
+      '@firebase/auth-compat': 0.6.16(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)
+      '@firebase/crashlytics': 0.2.0(@angular/core@packages+core)(@angular/router@packages+router)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)(supports-color@11.0.0)
+      '@firebase/data-connect': 0.7.4(@firebase/app@0.16.7)
       '@firebase/database': 1.1.6
-      '@firebase/database-compat': 2.1.8(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/firestore': 4.20.0(@firebase/app@0.16.6)
-      '@firebase/firestore-compat': 0.4.18(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)
-      '@firebase/functions': 0.14.0(@firebase/app@0.16.6)
-      '@firebase/functions-compat': 0.5.0(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/installations': 0.6.24(@firebase/app@0.16.6)
-      '@firebase/installations-compat': 0.2.24(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)
-      '@firebase/messaging': 0.13.3(@firebase/app@0.16.6)
-      '@firebase/messaging-compat': 0.2.30(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/performance': 0.7.14(@firebase/app@0.16.6)
-      '@firebase/performance-compat': 0.2.27(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/remote-config': 0.10.0(@firebase/app@0.16.6)
-      '@firebase/remote-config-compat': 0.2.31(@firebase/app-compat@0.5.22)(@firebase/app@0.16.6)
-      '@firebase/storage': 0.14.6(@firebase/app@0.16.6)
-      '@firebase/storage-compat': 0.4.6(@firebase/app-compat@0.5.22)(@firebase/app-types@0.9.6)(@firebase/app@0.16.6)
+      '@firebase/database-compat': 2.1.8(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/firestore': 4.20.0(@firebase/app@0.16.7)
+      '@firebase/firestore-compat': 0.4.18(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)
+      '@firebase/functions': 0.14.0(@firebase/app@0.16.7)
+      '@firebase/functions-compat': 0.5.0(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
+      '@firebase/installations-compat': 0.2.24(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)
+      '@firebase/messaging': 0.13.3(@firebase/app@0.16.7)
+      '@firebase/messaging-compat': 0.2.30(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/performance': 0.7.14(@firebase/app@0.16.7)
+      '@firebase/performance-compat': 0.2.27(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/remote-config': 0.10.0(@firebase/app@0.16.7)
+      '@firebase/remote-config-compat': 0.2.31(@firebase/app-compat@0.5.23)(@firebase/app@0.16.7)
+      '@firebase/storage': 0.14.6(@firebase/app@0.16.7)
+      '@firebase/storage-compat': 0.4.6(@firebase/app-compat@0.5.23)(@firebase/app-types@0.9.6)(@firebase/app@0.16.7)
       '@firebase/util': 1.15.3
     transitivePeerDependencies:
       - '@angular/core'
@@ -19266,12 +19190,12 @@ snapshots:
       jest-util: 30.5.1
       pretty-format: 30.5.1
 
-  jest-environment-jsdom@30.5.2(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6):
+  jest-environment-jsdom@30.5.2(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0):
     dependencies:
       '@jest/environment': 30.5.2
-      '@jest/environment-jsdom-abstract': 30.5.2(@types/jsdom@21.1.7)(jsdom@26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6))
+      '@jest/environment-jsdom-abstract': 30.5.2(@types/jsdom@21.1.7)(jsdom@26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0))
       '@types/jsdom': 21.1.7
-      jsdom: 26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      jsdom: 26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -19514,7 +19438,7 @@ snapshots:
 
   jsbn@0.1.1: {}
 
-  jsdom@26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6):
+  jsdom@26.1.0(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
@@ -19534,7 +19458,7 @@ snapshots:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
-      ws: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.0.6)
+      ws: 8.23.0(bufferutil@4.2.0)(utf-8-validate@6.1.0)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -19692,22 +19616,22 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.3.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
+  karma-jasmine-html-reporter@2.3.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)))(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)):
     dependencies:
       jasmine-core: 7.0.2
-      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0))
 
-  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
+  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)):
     dependencies:
       jasmine-core: 4.6.1
-      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0)
 
   karma-sourcemap-loader@0.4.0:
     dependencies:
       graceful-fs: 4.2.12
 
-  karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6):
+  karma@6.4.4(bufferutil@4.2.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.1.0):
     dependencies:
       '@colors/colors': 1.5.0
       body-parser: 1.20.9(supports-color@11.0.0)
@@ -19728,7 +19652,7 @@ snapshots:
       qjobs: 1.2.0
       range-parser: 1.3.0
       rimraf: 3.0.2
-      socket.io: 4.8.4(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      socket.io: 4.8.4(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
       source-map: 0.6.1
       tmp: 0.2.7
       ua-parser-js: 0.7.41
@@ -20111,11 +20035,6 @@ snapshots:
 
   minimatch@10.2.6:
     dependencies:
-      brace-expansion: 5.0.13
-
-  minimatch@11.0.8:
-    dependencies:
-      '@isaacs/nonrecursive-glob-match': 1.1.0
       brace-expansion: 5.0.13
 
   minimatch@11.0.9:
@@ -21699,10 +21618,10 @@ snapshots:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
 
-  socket.io-adapter@2.5.8(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6):
+  socket.io-adapter@2.5.8(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0):
     dependencies:
       debug: 4.4.3(supports-color@11.0.0)
-      ws: 8.21.3(bufferutil@4.2.0)(utf-8-validate@6.0.6)
+      ws: 8.21.3(bufferutil@4.2.0)(utf-8-validate@6.1.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -21715,13 +21634,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.4(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6):
+  socket.io@4.8.4(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0):
     dependencies:
       accepts: 1.3.8
       cors: 2.8.6
       debug: 4.4.3(supports-color@11.0.0)
-      engine.io: 6.6.12(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      socket.io-adapter: 2.5.8(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      engine.io: 6.6.12(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
+      socket.io-adapter: 2.5.8(bufferutil@4.2.0)(supports-color@11.0.0)(utf-8-validate@6.1.0)
       socket.io-parser: 4.2.7(supports-color@11.0.0)
     transitivePeerDependencies:
       - bufferutil
@@ -22563,7 +22482,7 @@ snapshots:
 
   url-template@2.0.8: {}
 
-  utf-8-validate@6.0.6:
+  utf-8-validate@6.1.0:
     dependencies:
       node-gyp-build: 4.8.4
 
@@ -22851,7 +22770,7 @@ snapshots:
 
   web-vitals@4.2.4: {}
 
-  web-vitals@5.3.0: {}
+  web-vitals@6.2.3: {}
 
   webdriver-js-extender@2.1.0:
     dependencies:
@@ -23060,15 +22979,15 @@ snapshots:
     optionalDependencies:
       bufferutil: 4.2.0
 
-  ws@8.21.3(bufferutil@4.2.0)(utf-8-validate@6.0.6):
+  ws@8.21.3(bufferutil@4.2.0)(utf-8-validate@6.1.0):
     optionalDependencies:
       bufferutil: 4.2.0
-      utf-8-validate: 6.0.6
+      utf-8-validate: 6.1.0
 
-  ws@8.23.0(bufferutil@4.2.0)(utf-8-validate@6.0.6):
+  ws@8.23.0(bufferutil@4.2.0)(utf-8-validate@6.1.0):
     optionalDependencies:
       bufferutil: 4.2.0
-      utf-8-validate: 6.0.6
+      utf-8-validate: 6.1.0
 
   wsl-utils@1.0.1:
     dependencies:
