@@ -104,9 +104,9 @@ pub struct QueryEngine {
     /// Counts kind changes; only advanced under the [`Self::kind_changes`] write lock.
     kind_epoch: AtomicU64,
     pub(crate) static_import_graph: RwLock<Option<Arc<StaticImportGraph>>>,
-    /// Canonical [`FileId`]s of a prefix of `tsconfig_dts_files`, extended on demand and
-    /// dropped when the roots change.
-    pub(crate) tsconfig_dts_file_ids: RwLock<Vec<FileId>>,
+    /// Canonical [`FileId`]s and existence flags of a prefix of `tsconfig_dts_files`, extended on
+    /// demand and dropped when the roots change.
+    pub(crate) tsconfig_dts_file_ids: RwLock<Vec<(FileId, bool)>>,
     /// The ambient global value names each `.d.ts` scanned by an ambient global lookup declares.
     pub(crate) ambient_global_names: RwLock<HashMap<FileId, AmbientGlobalNames>>,
     /// Held while a lookup scans `.d.ts` files whose names aren't cached yet, so concurrent
@@ -995,7 +995,7 @@ impl QueryEngine {
     /// past the end. Paths are canonicalized here, on first use, rather than when the tsconfig is
     /// read, so an ambient global lookup that stops early never canonicalizes the rest.
     pub(crate) fn tsconfig_dts_file_id(&self, position: usize) -> Option<FileId> {
-        if let Some(&file_id) = self.tsconfig_dts_file_ids.read().unwrap().get(position) {
+        if let Some(&(file_id, _)) = self.tsconfig_dts_file_ids.read().unwrap().get(position) {
             return Some(file_id);
         }
         let dts_files = self.tsconfig_dts_files.read().unwrap();
@@ -1005,10 +1005,12 @@ impl QueryEngine {
         let mut file_ids = self.tsconfig_dts_file_ids.write().unwrap();
         while file_ids.len() <= position {
             let path = dts_files.get(file_ids.len())?;
-            let path = self.host.canonicalize_path(path).unwrap_or_else(|| path.clone());
-            file_ids.push(self.intern_path(&path));
+            let canonical = self.host.canonicalize_path(path);
+            let existed = canonical.is_some();
+            let resolved = canonical.unwrap_or_else(|| path.clone());
+            file_ids.push((self.intern_path(&resolved), existed));
         }
-        Some(file_ids[position])
+        Some(file_ids[position].0)
     }
 
     /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare ambient
@@ -1066,7 +1068,7 @@ impl QueryEngine {
         &self,
         position: usize,
     ) -> Option<(FileId, AmbientGlobalNames)> {
-        let file_id = *self.tsconfig_dts_file_ids.read().unwrap().get(position)?;
+        let (file_id, _) = *self.tsconfig_dts_file_ids.read().unwrap().get(position)?;
         let names = self
             .ambient_global_names
             .read()
@@ -1129,6 +1131,76 @@ impl QueryEngine {
     pub fn invalidate_roots(&self) -> Vec<QueryKey> {
         *self.r3_symbols_root.write().unwrap() = None;
         self.invalidate_file_id(ROOTS_FILE_ID)
+    }
+
+    /// Re-check lazily canonicalized [`Self::tsconfig_dts_file_ids`] after filesystem or symlink
+    /// changes and invalidate [`ROOTS_FILE_ID`] plus any affected `.d.ts` targets when a previously
+    /// materialized declaration entry changes canonical [`FileId`], appears/disappears on disk, or
+    /// falls under a structurally created/deleted path `structural_paths`. Never canonicalizes
+    /// entries beyond the prefix already read lazily.
+    pub fn refresh_tsconfig_dts_file_ids(&self, structural_paths: &[PathBuf]) -> Vec<QueryKey> {
+        let existing = self.tsconfig_dts_file_ids.read().unwrap().clone();
+        if existing.is_empty() {
+            return Vec::new();
+        }
+        let dts_files = self.tsconfig_dts_files.read().unwrap().clone();
+        let mut refreshed = Vec::with_capacity(existing.len());
+        let mut changed_ids = Vec::new();
+        for (path, (old_id, old_existed)) in dts_files.iter().zip(existing.iter().copied()) {
+            let canonical = self.host.canonicalize_path(path);
+            let new_existed = canonical.is_some();
+            let resolved = canonical.unwrap_or_else(|| path.clone());
+            let new_id = self.intern_path(&resolved);
+            let under_structural_path = if structural_paths.is_empty() {
+                false
+            } else {
+                let old_path = self.lookup_path(old_id);
+                let norm_dts = crate::fs::normalize_path(path);
+                let norm_resolved = crate::fs::normalize_path(&resolved);
+                let norm_old = crate::fs::normalize_path(&old_path);
+                structural_paths.iter().any(|sp| {
+                    norm_dts.starts_with(sp)
+                        || norm_resolved.starts_with(sp)
+                        || norm_old.starts_with(sp)
+                })
+            };
+            if new_id != old_id || new_existed != old_existed || under_structural_path {
+                changed_ids.push((old_id, new_id));
+            }
+            refreshed.push((new_id, new_existed));
+        }
+        if changed_ids.is_empty() {
+            return Vec::new();
+        }
+        let mut evicted: HashSet<QueryKey> =
+            self.invalidate_file_id(ROOTS_FILE_ID).into_iter().collect();
+        *self.tsconfig_dts_file_ids.write().unwrap() = refreshed;
+        for (old_id, new_id) in changed_ids {
+            evicted.extend(self.invalidate_file_id(old_id));
+            if new_id != old_id {
+                evicted.extend(self.invalidate_file_id(new_id));
+            }
+        }
+        evicted.into_iter().collect()
+    }
+
+    /// Drop all lazily materialized [`Self::tsconfig_dts_file_ids`] and invalidate
+    /// [`ROOTS_FILE_ID`] plus every materialized `.d.ts` [`FileId`].
+    ///
+    /// Used on full resolution-cache flushes so out-of-band symlink repoints (including under
+    /// `preserveSymlinks: true`, where the symlink's own [`FileId`] and existence stay unchanged)
+    /// re-read declaration files on demand without scanning unmaterialized entries.
+    pub fn invalidate_materialized_tsconfig_dts_files(&self) -> Vec<QueryKey> {
+        let existing = std::mem::take(&mut *self.tsconfig_dts_file_ids.write().unwrap());
+        if existing.is_empty() {
+            return Vec::new();
+        }
+        let mut evicted: HashSet<QueryKey> =
+            self.invalidate_file_id(ROOTS_FILE_ID).into_iter().collect();
+        for (old_id, _) in existing {
+            evicted.extend(self.invalidate_file_id(old_id));
+        }
+        evicted.into_iter().collect()
     }
 
     /// Purge every cached query that read which root is `r3_symbols.ts`, after the roots changed
