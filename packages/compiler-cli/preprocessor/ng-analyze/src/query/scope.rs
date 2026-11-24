@@ -43,6 +43,31 @@ pub(crate) async fn resolve_reference_async(
     evaluated_file.class_index.get(&reference.name).cloned()
 }
 
+/// Resolve a scope declaration or imported NgModule. Under a bounded local scope, read Stage-1
+/// syntax metadata and complete only an incomplete cross-file `selector` or pipe `name`, avoiding
+/// `AnalyzeFileEvaluated` (which would also evaluate external `@Input(...)`, `exportAs`, and
+/// `hostDirectives` references from `.d.ts` files).
+async fn resolve_scope_reference(
+    reference: &crate::types::analysis::Reference,
+    ctx: &QueryContext,
+    filter: ScopeFileFilter<'_>,
+) -> Option<crate::ClassInfo> {
+    if !filter.is_bounded() {
+        return resolve_reference_async(reference, ctx).await;
+    }
+
+    let syntax = ctx.analyze_file_syntax(reference.file).await;
+    let mut info = syntax.class_index.get(&reference.name)?.clone();
+    if let Some(class) = syntax
+        .classes
+        .iter()
+        .find(|c| c.reference_id == info.reference_id)
+    {
+        class.complete_scope_matching_info(&mut info, ctx).await;
+    }
+    Some(info)
+}
+
 async fn scope_references(
     slot: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
     ctx: &QueryContext,
@@ -63,7 +88,15 @@ async fn build_scope_declaration(
     decl_ref: crate::types::analysis::Reference,
     info: &crate::ClassInfo,
     ctx: &QueryContext,
+    filter: ScopeFileFilter<'_>,
 ) -> Option<DeclarationData> {
+    if filter.is_bounded() {
+        // Local extra-imports only needs each in-unit declaration's reference, kind, selector, and
+        // pipe name (`flattened_fields` and `public_methods` are unused). Skipping
+        // `flatten_class_info` avoids walking external `.d.ts` base classes (e.g.
+        // `class SiblingComp extends ExternalBase {}`).
+        return DeclarationData::from_class_info(decl_ref, info, info, false);
+    }
     let flattened = flatten_class_info(info.clone(), ctx).await;
     DeclarationData::from_class_info(decl_ref, info, &flattened, false)
 }
@@ -110,7 +143,7 @@ impl QueryEngine {
                         if !filter.allows(r.file) {
                             continue;
                         }
-                        resolve_futures.push((r, resolve_reference_async(r, ctx)));
+                        resolve_futures.push((r, resolve_scope_reference(r, ctx, filter)));
                     }
 
                     let (items, futures): (Vec<_>, Vec<_>) = resolve_futures.into_iter().unzip();
@@ -157,7 +190,7 @@ impl QueryEngine {
                                 r.clone()
                             };
                             if let Some(resolved) =
-                                build_scope_declaration(decl_ref, &info, ctx).await
+                                build_scope_declaration(decl_ref, &info, ctx, filter).await
                             {
                                 resolved_declarations.push(resolved);
                             }
@@ -264,7 +297,7 @@ impl QueryEngine {
                     if !filter.allows(r.file) {
                         continue;
                     }
-                    resolve_futures.push((r, resolve_reference_async(r, ctx)));
+                    resolve_futures.push((r, resolve_scope_reference(r, ctx, filter)));
                 }
 
                 let (items, futures): (Vec<_>, Vec<_>) = resolve_futures.into_iter().unzip();
@@ -279,7 +312,9 @@ impl QueryEngine {
                         continue;
                     }
 
-                    if let Some(resolved) = build_scope_declaration(r.clone(), &info, ctx).await {
+                    if let Some(resolved) =
+                        build_scope_declaration(r.clone(), &info, ctx, filter).await
+                    {
                         resolved_declarations.push(resolved);
                     }
                 }
@@ -322,7 +357,7 @@ impl QueryEngine {
                 if !filter.allows(r.file) {
                     continue;
                 }
-                resolve_futures.push((r, resolve_reference_async(r, ctx)));
+                resolve_futures.push((r, resolve_scope_reference(r, ctx, filter)));
             }
 
             let (items, futures): (Vec<_>, Vec<_>) = resolve_futures.into_iter().unzip();
@@ -374,7 +409,9 @@ impl QueryEngine {
                     || info.class_type == ClassType::Pipe
                 {
                     let decl_ref = self.ngmodule_imported_declaration_ref(r, &info);
-                    if let Some(resolved) = build_scope_declaration(decl_ref, &info, ctx).await {
+                    if let Some(resolved) =
+                        build_scope_declaration(decl_ref, &info, ctx, filter).await
+                    {
                         out_declarations.push(resolved);
                     }
                 }

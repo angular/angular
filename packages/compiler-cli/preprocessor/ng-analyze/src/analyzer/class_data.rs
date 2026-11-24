@@ -2070,6 +2070,53 @@ impl ClassData {
         }
     }
 
+    /// Complete only the cross-file `selector` or pipe `name` on `info` when still incomplete in
+    /// Stage 1, leaving `evaluated_io`, `export_as`, and `host_directives` untouched. Used by
+    /// `LocalNgModuleImportsScope` so resolving in-unit scope declarations never triggers
+    /// `AnalyzeFileEvaluated` on external `.d.ts` metadata.
+    pub async fn complete_scope_matching_info(
+        &self,
+        info: &mut crate::ClassInfo,
+        ctx: &crate::query::QueryContext,
+    ) {
+        let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
+        match &self.decorator {
+            DecoratorData::Component(c) => {
+                let Some(sel) = c
+                    .directive
+                    .selector
+                    .as_ref()
+                    .filter(|s| s.contains_incomplete())
+                else {
+                    return;
+                };
+                let mut completed = sel.clone();
+                completed.complete_with(ctx, foreign).await;
+                info.selector = apply_default_selector(
+                    Some(completed.get_optional()),
+                    Some(DEFAULT_COMPONENT_SELECTOR),
+                );
+            }
+            DecoratorData::Directive(d) => {
+                let Some(sel) = d.selector.as_ref().filter(|s| s.contains_incomplete()) else {
+                    return;
+                };
+                let mut completed = sel.clone();
+                completed.complete_with(ctx, foreign).await;
+                info.selector = apply_default_selector(Some(completed.get_optional()), None);
+            }
+            DecoratorData::Pipe(p) => {
+                let Some(name) = p.name.as_ref().filter(|n| n.contains_incomplete()) else {
+                    return;
+                };
+                let mut completed = name.clone();
+                completed.complete_with(ctx, foreign).await;
+                info.pipe_name = completed.get_optional();
+            }
+            _ => {}
+        }
+    }
+
     /// Complete the partially evaluated metadata another file reads when it uses this class
     /// as a template dependency: the selector, the pipe name, `exportAs`, and the evaluated
     /// input/output declarations. Only the partial evaluator is involved — never another
