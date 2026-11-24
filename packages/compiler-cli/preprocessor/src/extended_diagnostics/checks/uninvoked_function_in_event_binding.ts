@@ -28,9 +28,6 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  *
  * Mirrors `UninvokedFunctionInEventBindingSpec` in
  * `ngtsc/typecheck/extended/checks/uninvoked_function_in_event_binding/index.ts`.
- *
- * TODO: Implement the `PropertyRead` / `SafePropertyRead` call-signature check in NG8111, which
- * requires `ts.TypeChecker` (`type.getCallSignatures()`).
  */
 class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING> {
   override code = ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING as const;
@@ -50,24 +47,23 @@ class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<Error
 
     if (node.handler.ast instanceof Chain) {
       return node.handler.ast.expressions.flatMap((expression) =>
-        assertExpressionInvoked(expression, component, node, ctx),
+        assertExpressionInvoked(expression, node, ctx),
       );
     }
 
     if (node.handler.ast instanceof Conditional) {
       const {trueExp, falseExp} = node.handler.ast;
       return [trueExp, falseExp].flatMap((expression) =>
-        assertExpressionInvoked(expression, component, node, ctx),
+        assertExpressionInvoked(expression, node, ctx),
       );
     }
 
-    return assertExpressionInvoked(node.handler.ast, component, node, ctx);
+    return assertExpressionInvoked(node.handler.ast, node, ctx);
   }
 }
 
 function assertExpressionInvoked(
   expression: AST,
-  _component: TcbTargetInput,
   node: TmplAstBoundEvent,
   ctx: TemplateContext<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>,
 ): Diagnostic[] {
