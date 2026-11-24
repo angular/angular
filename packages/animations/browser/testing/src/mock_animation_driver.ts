@@ -26,7 +26,7 @@ import {
 /**
  * @publicApi
  *
- * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in a future version
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
@@ -80,7 +80,7 @@ export class MockAnimationDriver implements AnimationDriver {
 /**
  * @publicApi
  *
- * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in a future version
  */
 export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;

@@ -70,7 +70,7 @@ import {AnimationPlayer} from './players/animation_player';
  *
  * @publicApi
  *
- * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in a future version
  */
 @Service({factory: () => inject(BrowserAnimationBuilder)})
 export abstract class AnimationBuilder {
@@ -90,7 +90,7 @@ export abstract class AnimationBuilder {
  *
  * @publicApi
  *
- * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in a future version
  */
 export abstract class AnimationFactory {
   /**
