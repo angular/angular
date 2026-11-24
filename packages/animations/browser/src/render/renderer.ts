@@ -77,7 +77,7 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   // TODO(thePunderWoman): remove the requireSynchronousElementRemoval flag after the
-  // animations package has been fully deleted post v23.
+  // animations package has been fully deleted.
   removeChild(
     parent: any,
     oldChild: any,
