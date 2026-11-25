@@ -1,4 +1,4 @@
-import { Component, ContentChild, ContentChildren, NgModule } from "@angular/core";
+import { Component, ContentChild, ContentChildren, NgModule, QueryList } from "@angular/core";
 import * as i0 from "@angular/core";
 const _c0 = ["myRef"];
 const _c1 = ["myRef1", "myRef2", "myRef3"];

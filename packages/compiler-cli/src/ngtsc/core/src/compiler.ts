@@ -850,12 +850,7 @@ export class NgCompiler {
         !!this.options['_experimentalEmitIntermediateTs'],
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
-      defaultImportTracker.importPreservingTransformer(
-        // Local compilation leaves the author's imports as they are.
-        this.options.compilationMode === 'experimental-local'
-          ? undefined
-          : this.inputProgram.getTypeChecker(),
-      ),
+      defaultImportTracker.importPreservingTransformer(),
     ];
 
     // If there are JIT declarations, wire up the JIT transform and efficiently

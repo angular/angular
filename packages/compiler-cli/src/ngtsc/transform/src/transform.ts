@@ -134,7 +134,6 @@ class IvyTransformationVisitor extends Visitor {
     private recordWrappedNodeExpr: RecordWrappedNodeFn<ts.Expression>,
     private isClosureCompilerEnabled: boolean,
     private isCore: boolean,
-    private defaultImportTracker: DefaultImportTracker,
     private refEmitter: ReferenceEmitter | null,
     private enableTypeReification: boolean,
   ) {
@@ -222,10 +221,9 @@ class IvyTransformationVisitor extends Visitor {
       members.push(property);
     }
 
-    // Remove the decorator which triggered this compilation, leaving the others alone.
-    const removedDecorators = this.compilation.decoratorsFor(node);
-    removedDecorators.forEach((dec) => this.defaultImportTracker.recordRemovedDecorator(dec));
-    const filteredDecorators = maybeFilterDecorator(ts.getDecorators(node), removedDecorators);
+    const filteredDecorators =
+      // Remove the decorator which triggered this compilation, leaving the others alone.
+      maybeFilterDecorator(ts.getDecorators(node), this.compilation.decoratorsFor(node));
 
     const nodeModifiers = ts.getModifiers(node);
     let updatedModifiers: ts.ModifierLike[] | undefined;
@@ -275,7 +273,6 @@ class IvyTransformationVisitor extends Visitor {
     }
     // Build a Set of the decorators on this node from @angular/core.
     const coreDecorators = this._angularCoreDecorators(node);
-    coreDecorators.forEach((dec) => this.defaultImportTracker.recordRemovedDecorator(dec));
 
     // Filter out the core decorators.
     return decorators.filter((dec) => !coreDecorators.has(dec));
@@ -363,26 +360,28 @@ function transformIvySourceFile(
     recordWrappedNode,
     isClosureCompilerEnabled,
     isCore,
-    defaultImportTracker,
     refEmitter,
     enableTypeReification,
   );
   let sf = visit(file, transformationVisitor, context);
 
   // Drop the imports of deferred symbols, which are loaded through dynamic imports instead. This
-  // happens after the classes are compiled, because an import has to stay if the generated code
-  // reuses one of its bindings (for example as a constructor injection token).
+  // happens after the classes are compiled, keeping only the bindings that generated code reuses
+  // (for example as a constructor injection token).
   const {deferrableImports} = compilationVisitor;
   if (deferrableImports.size > 0) {
     sf = ts.factory.updateSourceFile(
       sf,
-      sf.statements.filter((stmt) => {
+      sf.statements.flatMap((stmt) => {
         const original = ts.getOriginalNode(stmt);
-        return (
-          !ts.isImportDeclaration(original) ||
-          !deferrableImports.has(original) ||
-          defaultImportTracker.isImportDeclarationUsed(original)
-        );
+        if (!ts.isImportDeclaration(stmt) || !ts.isImportDeclaration(original)) {
+          return [stmt];
+        }
+        if (!deferrableImports.has(original)) {
+          return [stmt];
+        }
+        const filtered = defaultImportTracker.filterUsedImport(stmt);
+        return filtered !== null ? [filtered] : [];
       }),
     );
   }

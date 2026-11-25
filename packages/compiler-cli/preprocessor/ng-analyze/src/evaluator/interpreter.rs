@@ -1483,6 +1483,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                             let local_name = unresolved
                                 .local_name
                                 .as_ref()
+                                .filter(|_| oxc_syntax::identifier::is_identifier_name(member))
                                 .map(|ns| format!("{ns}.{member}"));
                             let refined = UnresolvedReference {
                                 importer: unresolved.importer,

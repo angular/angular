@@ -6550,8 +6550,6 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).not.toContain('\u0275setClassMetadata(');
-      // Nothing refers to the decorators anymore, so their import is not emitted either.
-      expect(jsContents).not.toMatch(/import \{[^}]*\} from/);
     });
 
     it('should use imported types in setClassMetadata if they can be represented as values', () => {
@@ -7044,25 +7042,28 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should not reuse an import of a type-only re-export', () => {
-      env.write(`types.ts`, `export class Dep {}`);
+      env.write(`types.ts`, `export class Dep {} export class StarDep {}`);
       env.write(`barrel.ts`, `export type {Dep} from './types';`);
+      env.write(`star_barrel.ts`, `export type * from './types';`);
       env.write(
         `test.ts`,
         `
            import {Inject, Injectable} from '@angular/core';
            import {Dep} from './barrel';
+           import {StarDep} from './star_barrel';
 
            @Injectable()
            export class Service {
-             constructor(@Inject('token') dep: Dep) {}
+             constructor(@Inject('token') dep: Dep, @Inject('token') starDep: StarDep) {}
            }
         `,
       );
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      // `barrel.js` does not export `Dep`, so an import of it by name would fail to link.
+      // Neither barrel exports a value, so importing `Dep` or `StarDep` by name would fail to link.
       expect(jsContents).not.toMatch(/import \{ Dep \} from/);
+      expect(jsContents).not.toMatch(/import \{ StarDep \} from/);
     });
 
     it('should not throw in case whitespaces and HTML comments are present inside <ng-content>', () => {

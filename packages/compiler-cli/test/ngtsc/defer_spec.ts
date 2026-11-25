@@ -775,6 +775,43 @@ runInEachFileSystem(() => {
         expect(jsContents).not.toContain('import * as i1');
       });
 
+      it('should drop uninjected deferred symbols from a shared import declaration', () => {
+        env.write(
+          'cmp.ts',
+          `
+          import { Component } from '@angular/core';
+
+          @Component({selector: 'deferred-cmp', template: ''})
+          export class DeferredCmp {}
+
+          @Component({selector: 'injected-cmp', template: ''})
+          export class InjectedCmp {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { DeferredCmp, InjectedCmp } from './cmp';
+
+          @Component({
+            imports: [DeferredCmp, InjectedCmp],
+            template: '@defer { <deferred-cmp /><injected-cmp /> }',
+          })
+          export class TestCmp {
+            constructor(param: InjectedCmp) {}
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('import { InjectedCmp }');
+        expect(jsContents).not.toMatch(/import \{[^}]*DeferredCmp/);
+      });
+
       it('should retain symbols used in types and eagerly', () => {
         env.write(
           'cmp.ts',

@@ -1561,7 +1561,7 @@ export function parseDecoratorInputTransformFunction(
     }
 
     const node =
-      value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+      value instanceof Reference ? value.getExpressionIn(clazz.getSourceFile()) : value.node;
     const entityName = node ? expressionToEntityName(node as ts.Expression) : null;
     if (entityName !== null) {
       const typeQuery = ts.factory.createTypeQueryNode(entityName);
@@ -2302,7 +2302,7 @@ function isTemplateRefToken(token: Expression | null): boolean {
   }
   const importedName =
     token instanceof ReadPropExpr
-      ? token.name
+      ? ts.isNamespaceImport(binding) && token.name
       : ts.isImportSpecifier(binding) && (binding.propertyName ?? binding.name).text;
   const moduleSpecifier = getContainingImportDeclaration(binding)?.moduleSpecifier;
   return (

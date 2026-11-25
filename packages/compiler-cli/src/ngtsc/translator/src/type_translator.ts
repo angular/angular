@@ -303,9 +303,14 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     if (imp === null) {
       return name;
     }
+    const namedBindings = imp.node.importClause?.namedBindings;
+    const isNamespaceImport =
+      namedBindings !== undefined &&
+      ts.isNamespaceImport(namedBindings) &&
+      namedBindings.name.text === leftmost.text;
     const namespaced = this.imports.addImport({
       exportModuleSpecifier: imp.from,
-      exportSymbolName: imp.name,
+      exportSymbolName: isNamespaceImport ? null : imp.name,
       requestedFile: this.contextFile,
       asTypeReference: true,
     });

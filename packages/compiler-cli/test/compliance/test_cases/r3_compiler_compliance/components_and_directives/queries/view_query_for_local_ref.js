@@ -1,4 +1,4 @@
-import { Component, NgModule, ViewChild, ViewChildren } from "@angular/core";
+import { Component, NgModule, QueryList, ViewChild, ViewChildren } from "@angular/core";
 import * as i0 from "@angular/core";
 const _c0 = ["myRef"];
 const _c1 = ["myRef1", "myRef2", "myRef3"];

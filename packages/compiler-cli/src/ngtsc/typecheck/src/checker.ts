@@ -111,6 +111,7 @@ import {
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
+import {extractNameFromExpr} from './tcb_adapter';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBoundTarget, SymbolBuilder, SymbolDirectiveMeta} from './template_symbol_builder';
 import {TCB_FUNCTION_PREFIX} from './type_check_file';
@@ -1569,7 +1570,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         }
       }
       // An appropriate identifier or namespace member expression is already in scope.
-      const symbolName = ts.isIdentifier(emitted.node) ? emitted.node.text : emitted.node.getText();
+      const symbolName = extractNameFromExpr(emitted.node) ?? emitted.node.getText();
       return {kind, symbolName, isForwardReference};
     } else if (
       emitted instanceof ExternalExpr &&

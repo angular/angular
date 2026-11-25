@@ -407,7 +407,7 @@ function extractReferenceMetadata(
   } satisfies TcbReferenceMetadata;
 }
 
-function extractNameFromExpr(node: ts.Node): string | null {
+export function extractNameFromExpr(node: ts.Node): string | null {
   if (ts.isIdentifier(node)) {
     return node.text;
   } else if (ts.isPropertyAccessExpression(node)) {

@@ -4,6 +4,7 @@ import {
   ContentChildren,
   ElementRef,
   NgModule,
+  QueryList,
   TemplateRef
 } from "@angular/core";
 import { SomeDirective } from "./some.directive";

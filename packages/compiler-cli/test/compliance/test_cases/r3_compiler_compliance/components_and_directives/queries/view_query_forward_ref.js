@@ -3,6 +3,7 @@ import {
   Directive,
   forwardRef,
   NgModule,
+  QueryList,
   ViewChild,
   ViewChildren
 } from "@angular/core";

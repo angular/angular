@@ -18,12 +18,6 @@
       "inputFiles": ["namespace_references.ts", "directives.ts"],
       "expectations": [{"files": ["namespace_references.js"]}],
       "compilationModeFilter": ["full compile", "linked compile"]
-    },
-    {
-      "description": "should elide imports that were only referenced from removed decorators or their metadata",
-      "inputFiles": ["unreferenced_imports.ts", "deps.ts"],
-      "expectations": [{"files": ["unreferenced_imports.js"]}],
-      "compilationModeFilter": ["full compile", "linked compile"]
     }
   ]
 }

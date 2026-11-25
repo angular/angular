@@ -21,13 +21,11 @@ interface TransformationContextWithResolver extends ts.TransformationContext {
 }
 
 const patchedReferencedAliasesSymbol = Symbol('patchedReferencedAliases');
-const patchedUnreferencedAliasesSymbol = Symbol('patchedUnreferencedAliases');
 
 /** Describes a subset of the TypeScript internal emit resolver. */
 interface EmitResolver {
   isReferencedAliasDeclaration?(node: ts.Node, ...args: unknown[]): void;
   [patchedReferencedAliasesSymbol]?: Set<AliasImportDeclaration>;
-  [patchedUnreferencedAliasesSymbol]?: Set<AliasImportDeclaration>;
 }
 
 /**
@@ -112,38 +110,14 @@ export function loadIsReferencedAliasDeclarationPatch(
   }
 
   const referencedAliases = new Set<AliasImportDeclaration>();
-  const unreferencedAliases = new Set<AliasImportDeclaration>();
   emitResolver.isReferencedAliasDeclaration = function (node, ...args) {
-    if (isAliasImportDeclaration(node)) {
-      if (referencedAliases.has(node)) {
-        return true;
-      }
-      if (unreferencedAliases.has(node)) {
-        return false;
-      }
+    const original = ts.getOriginalNode(node);
+    if (isAliasImportDeclaration(original) && referencedAliases.has(original)) {
+      return true;
     }
     return originalIsReferencedAliasDeclaration.call(emitResolver, node, ...args);
   };
-  emitResolver[patchedUnreferencedAliasesSymbol] = unreferencedAliases;
   return (emitResolver[patchedReferencedAliasesSymbol] = referencedAliases);
-}
-
-/**
- * The counterpart of `loadIsReferencedAliasDeclarationPatch`: the returned set is meant to be
- * filled with alias declarations that TypeScript considers referenced, but which the transform
- * no longer refers to (for example because their only use was in a decorator that it removed),
- * so that they are elided. An alias that is in both sets is treated as referenced.
- *
- * Returns `null` under the same conditions as `loadIsReferencedAliasDeclarationPatch`.
- */
-export function loadIsUnreferencedAliasDeclarationPatch(
-  context: ts.TransformationContext,
-): Set<ts.Declaration> | null {
-  if (loadIsReferencedAliasDeclarationPatch(context) === null) {
-    return null;
-  }
-  const emitResolver = (context as TransformationContextWithResolver).getEmitResolver()!;
-  return emitResolver[patchedUnreferencedAliasesSymbol]!;
 }
 
 /**

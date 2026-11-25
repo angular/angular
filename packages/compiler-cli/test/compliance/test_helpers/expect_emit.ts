@@ -139,7 +139,6 @@ const GREEN = '\x1b[32m';
 
 export interface ExpectEmitOptions {
   isLinkedCompilation?: boolean;
-  isLocalCompilation?: boolean;
   isNgpCompilation?: boolean;
   allowPartial?: boolean;
 }
@@ -155,9 +154,7 @@ export function expectEmit(
   const allowPartial = Boolean(options?.allowPartial);
   if (isNgpMode) {
     source = normalizeNgpEmitForComparison(source);
-    expected = normalizeNgpEmitForComparison(expected, {
-      pruneUnusedImports: Boolean(options?.isLocalCompilation),
-    });
+    expected = normalizeNgpEmitForComparison(expected, {pruneUnusedImports: true});
   }
   if (options?.isLinkedCompilation) {
     // Partial declaration linking does not emit `ɵsetClassDebugInfo` or `ɵɵsetNgModuleScope`

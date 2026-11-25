@@ -142,7 +142,10 @@ export function typeToValue(
         importedName,
         valueUnverified,
         nestedPath,
-        reusableImport: canReuseImport ? firstDecl : undefined,
+        reusableImport:
+          canReuseImport && hasValueExport(importDeclaration, importedName, checker)
+            ? firstDecl
+            : undefined,
       };
     } else if (ts.isNamespaceImport(firstDecl)) {
       // The import is a namespace import
@@ -176,7 +179,10 @@ export function typeToValue(
         importedName,
         valueUnverified,
         nestedPath,
-        reusableImport: canReuseImport ? firstDecl : undefined,
+        reusableImport:
+          canReuseImport && hasValueExport(importDeclaration, importedName, checker)
+            ? firstDecl
+            : undefined,
       };
     }
   }
@@ -196,9 +202,8 @@ export function typeToValue(
 }
 
 /**
- * Whether the code that is generated for `clazz` can refer to an import through its local name.
- * That requires that the name still resolves to the import where the class is declared, and that
- * the imported module exports a value under it.
+ * Whether the code that is generated for `clazz` can refer to an import through its local name,
+ * which requires that the name still resolves to the import where the class is declared.
  */
 function isReusableImport(
   symbol: ts.Symbol,
@@ -215,27 +220,26 @@ function isReusableImport(
   return (
     clazz !== null &&
     !factoryNames.includes(symbol.name) &&
-    checker.resolveName(symbol.name, clazz, valueOrAlias, false) === symbol &&
-    !isReExportedAsType(symbol, checker)
+    checker.resolveName(symbol.name, clazz, valueOrAlias, false) === symbol
   );
 }
 
 /**
- * Whether one of the re-exports that an import goes through to reach its declaration is type-only
- * (`export type {Foo} from './foo'`). The module that is imported from does not export a value
- * then, which makes a named import of it fail to link.
+ * Whether the module of `importDecl` exports a runtime value under `importedName`. Type-only
+ * re-exports (`export type {Foo}` and `export type *`) do not emit a runtime binding, which makes
+ * a named import of them fail to link.
  */
-function isReExportedAsType(symbol: ts.Symbol, checker: ts.TypeChecker): boolean {
-  const seen = new Set<ts.Symbol>();
-  let alias: ts.Symbol | undefined = symbol;
-  while (alias !== undefined && alias.flags & ts.SymbolFlags.Alias && !seen.has(alias)) {
-    if (alias.declarations?.some(ts.isTypeOnlyImportOrExportDeclaration)) {
-      return true;
-    }
-    seen.add(alias);
-    alias = checker.getImmediateAliasedSymbol(alias);
+function hasValueExport(
+  importDecl: ts.ImportDeclaration,
+  importedName: string,
+  checker: ts.TypeChecker,
+): boolean {
+  const moduleSymbol = checker.getSymbolAtLocation(importDecl.moduleSpecifier);
+  if (moduleSymbol === undefined) {
+    return false;
   }
-  return false;
+  const exported = checker.getPropertyOfType(checker.getTypeOfSymbol(moduleSymbol), importedName);
+  return exported !== undefined && checker.getExportsOfModule(moduleSymbol).includes(exported);
 }
 
 function unsupportedType(typeNode: ts.TypeNode): UnavailableTypeValueReference {

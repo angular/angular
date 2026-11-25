@@ -1,4 +1,4 @@
-import { Component, ContentChildren, NgModule, ViewChildren } from "@angular/core";
+import { Component, ContentChildren, NgModule, QueryList, ViewChildren } from "@angular/core";
 import { SomeDirective } from "./some.directive";
 import * as i0 from "@angular/core";
 const _c0 = ["myRef"];
