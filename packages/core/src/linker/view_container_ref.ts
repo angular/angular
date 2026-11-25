@@ -550,7 +550,7 @@ class R3ViewContainerRef extends ViewContainerRef {
         return null;
       }
 
-      tNode = lView[T_HOST];
+      tNode = lView[T_HOST]?.parent ?? null;
       lView = getLViewParent(lView);
     }
 

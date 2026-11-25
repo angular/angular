@@ -475,6 +475,76 @@ describe('ViewContainerRef', () => {
 
         expect(componentRef.location.nativeElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
       });
+
+      it('should use the HTML namespace for a view inserted next to an SVG element anchor', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+        })
+        class HtmlComp {}
+
+        @Component({
+          template: `
+            <svg #anchor></svg>
+            <ng-template #tpl><ng-container #inner></ng-container></ng-template>
+          `,
+          // Eager, because the `inner` query only resolves once the host view is refreshed
+          // again after the embedded view is created.
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
+          @ViewChild('tpl', {read: TemplateRef}) tpl!: TemplateRef<unknown>;
+          @ViewChild('inner', {read: ViewContainerRef}) inner!: ViewContainerRef;
+        }
+
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.anchor.createEmbeddedView(fixture.componentInstance.tpl);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.inner.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
+
+      it('should use the SVG namespace for a view inserted next to a foreignObject anchor', () => {
+        @Component({
+          selector: 'g[dynamic-group]',
+          template: '<svg:text>SVG content</svg:text>',
+        })
+        class SvgGroupComp {}
+
+        @Component({
+          template: `
+            <svg><foreignObject #anchor></foreignObject></svg>
+            <ng-template #tpl><ng-container #inner></ng-container></ng-template>
+          `,
+          // Eager, because the `inner` query only resolves once the host view is refreshed
+          // again after the embedded view is created.
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
+          @ViewChild('tpl', {read: TemplateRef}) tpl!: TemplateRef<unknown>;
+          @ViewChild('inner', {read: ViewContainerRef}) inner!: ViewContainerRef;
+        }
+
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.anchor.createEmbeddedView(fixture.componentInstance.tpl);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.inner.createComponent(SvgGroupComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+      });
     });
 
     it('should apply attributes and classes to host element based on selector', () => {
