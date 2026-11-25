@@ -37,3 +37,4 @@ This is the source code for the Angular framework. This guide outlines standard 
 ## Pull Requests
 
 - Use the `gh` CLI (GitHub CLI) for creating and managing pull requests.
+- Before submitting a PR or pushing a new commit, make sure the lint check `pnpm lint` passes.
