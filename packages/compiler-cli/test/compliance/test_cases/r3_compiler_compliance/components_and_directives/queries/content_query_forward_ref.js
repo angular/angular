@@ -4,8 +4,7 @@ import {
   ContentChildren,
   Directive,
   forwardRef,
-  NgModule,
-  QueryList
+  NgModule
 } from "@angular/core";
 import * as i0 from "@angular/core";
 const _c0 = ["*"];

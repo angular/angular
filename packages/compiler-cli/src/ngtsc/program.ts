@@ -303,7 +303,8 @@ export class NgtscProgram implements api.Program {
     this.compiler.perfRecorder.memory(PerfCheckpoint.PreEmit);
 
     const res = this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptEmit, () => {
-      const {transformers} = this.compiler.prepareEmit();
+      const customTransforms = opts && opts.customTransformers;
+      const {transformers} = this.compiler.prepareEmit(customTransforms?.beforeTs);
       const ignoreFiles = this.compiler.ignoreForEmit;
       const emitCallback = (opts?.emitCallback ??
         defaultEmitCallback) as api.TsEmitCallback<CbEmitRes>;
@@ -329,13 +330,8 @@ export class NgtscProgram implements api.Program {
         this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
       };
 
-      const customTransforms = opts && opts.customTransformers;
       const beforeTransforms = transformers.before || [];
       const afterDeclarationsTransforms = transformers.afterDeclarations;
-
-      if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
-        beforeTransforms.push(...customTransforms.beforeTs);
-      }
 
       const emitResults: CbEmitRes[] = [];
 

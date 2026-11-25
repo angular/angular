@@ -1,0 +1,11 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should elide imports that were only referenced from removed decorators or their metadata",
+      "inputFiles": ["unreferenced_imports.ts", "deps.ts"],
+      "expectations": [{"files": ["unreferenced_imports.js"]}],
+      "compilationModeFilter": ["full compile", "linked compile"]
+    }
+  ]
+}
