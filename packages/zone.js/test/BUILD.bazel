@@ -67,7 +67,10 @@ ts_project(
 ts_project(
     name = "test_node_lib",
     testonly = True,
-    srcs = glob(["node/*.ts"]),
+    srcs = glob(
+        ["node/*.ts"],
+        exclude = ["node/async_context_disabled.spec.ts"],
+    ),
     deps = [
         "//packages/zone.js:node_modules/@types/node",
         "//packages/zone.js:node_modules/@types/systemjs",
@@ -90,6 +93,28 @@ ts_project(
         "//packages/zone.js:node_modules/rxjs",
         "//packages/zone.js:node_modules/systemjs",
         "//packages/zone.js/lib",
+    ],
+)
+
+ts_project(
+    name = "async_context_disabled_spec",
+    testonly = True,
+    srcs = ["node/async_context_disabled.spec.ts"],
+    deps = [
+        "//packages/zone.js:node_modules/@types/node",
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_project(
+    name = "node_disable_async_context_entry_point",
+    testonly = True,
+    srcs = [
+        "node_disable_async_context.ts",
+        "node_disable_async_context_entry_point.init.ts",
+    ],
+    deps = [
+        ":node_entry_point",
     ],
 )
 
@@ -159,6 +184,16 @@ zone_compatible_jasmine_test(
     ],
     data = [
         ":test_node_lib",
+    ],
+)
+
+zone_compatible_jasmine_test(
+    name = "test_node_disable_async_context",
+    bootstrap = [
+        ":node_disable_async_context_entry_point",
+    ],
+    data = [
+        ":async_context_disabled_spec",
     ],
 )
 

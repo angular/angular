@@ -8,6 +8,7 @@
 
 import {
   __symbol__,
+  AsyncContext,
   EventTask as _EventTask,
   HasTaskState as _HasTaskState,
   initZone,
@@ -39,6 +40,7 @@ declare global {
   type _PatchFn = PatchFn;
   type _ZonePrivate = ZonePrivate;
   type _ZoneFrame = ZoneFrame;
+  type _AsyncContext = AsyncContext;
   type UncaughtPromiseError = _UncaughtPromiseError;
   type ZoneSpec = _ZoneSpec;
   type ZoneDelegate = _ZoneDelegate;

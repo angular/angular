@@ -12,6 +12,7 @@ BUNDLES_ENTRY_POINTS = {
     },
     "zone-mix": {
         "external": [
+            "async_hooks",
             "timers",
             "crypto",
             "events",
@@ -21,6 +22,7 @@ BUNDLES_ENTRY_POINTS = {
     },
     "zone-node": {
         "external": [
+            "async_hooks",
             "timers",
             "crypto",
             "events",

@@ -59,6 +59,7 @@ Below is the full list of currently supported modules.
 | nextTick                        | NodeJS patch process.nextTick as microTask                    | \_\_Zone_disable_nextTick = true                        |
 | handleUnhandledPromiseRejection | NodeJS handle unhandledPromiseRejection from ZoneAwarePromise | \_\_Zone_disable_handleUnhandledPromiseRejection = true |
 | crypto                          | NodeJS patch crypto function as macroTask                     | \_\_Zone_disable_crypto = true                          |
+| asyncContext                    | NodeJS restore the AsyncLocalStorage context in microTask     | \_\_Zone_disable_asyncContext = true                    |
 
 ### Test Framework
 

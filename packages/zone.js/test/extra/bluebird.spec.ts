@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {AsyncLocalStorage} from 'async_hooks';
+
 // test bluebird promise patch
 // this spec will not be integrated with Travis CI, because I don't
 // want to add bluebird into devDependencies, you can run this spec
@@ -58,6 +60,21 @@ describe('bluebird promise', () => {
         done();
       });
     });
+  });
+
+  it('bluebird promise then method should run in the async context it was registered in', async () => {
+    const als = new AsyncLocalStorage<string>();
+    let resolveShared!: () => void;
+    const shared = new BluebirdPromise((resolve: () => void) => (resolveShared = resolve));
+
+    // Bluebird runs the reactions of every promise from a queue of its own, in the context of
+    // whichever operation fills it first.
+    const reactions = ['a', 'b'].map((name) =>
+      als.run(name, () => shared.then(() => als.getStore())),
+    );
+    als.run('c', () => resolveShared());
+
+    expect(await BluebirdPromise.all(reactions)).toEqual(['a', 'b']);
   });
 
   it('bluebird promise catch method should be in zone and treated as microTask', (done) => {
