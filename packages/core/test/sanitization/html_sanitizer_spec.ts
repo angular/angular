@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {isBrowser} from '@angular/private/testing';
 import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
 import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
-import {isBrowser} from '@angular/private/testing';
 
 function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   return _sanitizeHtml(defaultDoc, unsafeHtmlInput).toString();
@@ -153,13 +153,17 @@ describe('HTML sanitizer', () => {
   });
 
   describe('should strip dangerous attributes', () => {
-    const dangerousAttrs = ['id', 'name', 'style'];
+    const dangerousAttrs = ['id', 'name'];
 
     for (const attr of dangerousAttrs) {
       it(`${attr}`, () => {
         expect(sanitizeHtml(defaultDoc, `<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>');
       });
     }
+
+    it(`style`, () => {
+      expect(sanitizeHtml(defaultDoc, `<a style="x">safe!</a>`)).toEqual('<a style="x">safe!</a>');
+    });
   });
 
   it('ignores content of script elements', () => {
