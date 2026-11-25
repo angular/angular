@@ -143,14 +143,18 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
       }
   }
 
-  // For text-like <input> elements, handle numeric and null values.
-  if (element.tagName === 'INPUT' && element.type === 'text') {
+  // For text-like <input> elements and single-select <select> elements, handle numeric and null
+  // values.
+  if (
+    (element.tagName === 'INPUT' && element.type === 'text') ||
+    (isSelect(element) && !element.multiple)
+  ) {
     if (typeof value === 'number') {
       element.value = isNaN(value) ? '' : String(value);
       return;
     }
     if (value === null) {
-      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode && isInput(element)) {
         console.warn(
           formatRuntimeError(
             RuntimeErrorCode.TEXT_INPUT_NULL_VALUE,
@@ -159,18 +163,6 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
           ),
         );
       }
-      element.value = '';
-      return;
-    }
-  }
-
-  // For single-select <select> elements, handle numeric and null values.
-  if (isSelect(element) && !element.multiple) {
-    if (typeof value === 'number') {
-      element.value = isNaN(value) ? '' : String(value);
-      return;
-    }
-    if (value === null) {
       element.value = '';
       return;
     }
