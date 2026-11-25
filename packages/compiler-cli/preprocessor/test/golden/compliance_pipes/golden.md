@@ -132,7 +132,7 @@ export class MyApp {
       standalone: false,
       decls: 7,
       vars: 20,
-      template: function MyApp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyApp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0);
           i0.ɵɵpipe(1, 'myPipe');

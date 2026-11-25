@@ -47,7 +47,7 @@ export class Widget {
       selectors: [['widget-a']],
       decls: 1,
       vars: 0,
-      template: function Widget_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Widget_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Widget A');
         }
@@ -112,12 +112,12 @@ const AppComponent_Defer_3_DepsFn = (): any => [
   /* @ts-ignore */
   import('./b').then((m: any): any => m.Widget),
 ];
-function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'widget-b');
   }
 }
-function AppComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtext(0, ' Placeholder ');
   }
@@ -149,7 +149,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 5,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'widget-a');
           i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 1, 0)(
@@ -263,7 +263,7 @@ export class Widget {
       selectors: [['widget-b']],
       decls: 1,
       vars: 0,
-      template: function Widget_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Widget_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Widget B');
         }
@@ -328,12 +328,12 @@ const MixedComponent_Defer_3_DepsFn = (): any => [
   /* @ts-ignore */
   import('./b').then((m: any): any => m.Widget),
 ];
-function MixedComponent_Defer_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function MixedComponent_Defer_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'widget-b');
   }
 }
-function MixedComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function MixedComponent_DeferPlaceholder_2_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtext(0, ' Placeholder ');
   }
@@ -365,7 +365,7 @@ export class MixedComponent {
       selectors: [['app-mixed']],
       decls: 5,
       vars: 0,
-      template: function MixedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MixedComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'widget-a');
           i0.ɵɵdomTemplate(1, MixedComponent_Defer_1_Template, 1, 0)(
@@ -465,12 +465,12 @@ const SplitComponent_Defer_4_DepsFn = (): any => [
   /* @ts-ignore */
   import('./b').then((m: any): any => m.Widget),
 ];
-function SplitComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function SplitComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'widget-a');
   }
 }
-function SplitComponent_Defer_3_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function SplitComponent_Defer_3_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'widget-b');
   }
@@ -502,7 +502,7 @@ export class SplitComponent {
       selectors: [['app-split']],
       decls: 6,
       vars: 0,
-      template: function SplitComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SplitComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, SplitComponent_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0, SplitComponent_Defer_1_DepsFn);

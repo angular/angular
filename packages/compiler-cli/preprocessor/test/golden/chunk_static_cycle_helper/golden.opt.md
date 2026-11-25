@@ -50,7 +50,7 @@ export class CompA {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function CompA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'comp-b');
         }
@@ -198,7 +198,7 @@ export class CompB {
       standalone: false,
       decls: 2,
       vars: 1,
-      template: function CompB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);

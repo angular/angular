@@ -190,7 +190,7 @@ export class MiddleComp {
       selectors: [['middle-comp']],
       decls: 0,
       vars: 0,
-      template: function MiddleComp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MiddleComp_Template(rf: number, ctx: any): any {},
       dependencies: [MiddleModule],
       encapsulation: 2,
     });

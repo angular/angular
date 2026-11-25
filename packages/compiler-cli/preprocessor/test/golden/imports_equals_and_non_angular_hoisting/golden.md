@@ -35,7 +35,7 @@ export class AppComp {
       selectors: [['app-comp']],
       decls: 0,
       vars: 0,
-      template: function AppComp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function AppComp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

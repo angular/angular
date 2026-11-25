@@ -68,7 +68,7 @@ export class AppComponent {
       decls: 3,
       vars: 4,
       consts: [[3, 'value']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'app-generic', 0)(1, 'app-generic', 0)(2, 'app-default-generic', 0);
         }
@@ -178,7 +178,7 @@ export class GenericComponent<T> {
       inputs: { value: 'value' },
       decls: 1,
       vars: 1,
-      template: function GenericComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function GenericComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0);
         }
@@ -244,7 +244,10 @@ export class DefaultGenericComponent<T extends object = {}> {
       inputs: { value: 'value' },
       decls: 1,
       vars: 1,
-      template: function DefaultGenericComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DefaultGenericComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵtext(0);
         }

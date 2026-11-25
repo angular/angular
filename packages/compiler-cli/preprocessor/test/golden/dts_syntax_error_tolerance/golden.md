@@ -32,7 +32,7 @@ export class AppComp {
       decls: 2,
       vars: 1,
       consts: [['broken-dir', '', 3, 'brokenInput']],
-      template: function AppComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'DTS Tolerance');

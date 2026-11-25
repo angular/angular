@@ -29,7 +29,7 @@ export class AComponent {
       selectors: [['a-cmp']],
       decls: 1,
       vars: 0,
-      template: function AComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'a');
         }
@@ -100,7 +100,7 @@ export class AppComponent {
       decls: 2,
       vars: 0,
       consts: [['bDir', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'a-cmp')(1, 'div', 0);
         }

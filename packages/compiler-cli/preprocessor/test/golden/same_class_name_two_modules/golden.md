@@ -7,7 +7,7 @@ import { Widget as WidgetC } from './widget-c';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'widget-b');
   }
@@ -38,7 +38,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 4,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'widget-a');
           i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 1, 0);
@@ -118,7 +118,7 @@ export class Widget {
       selectors: [['widget-a']],
       decls: 1,
       vars: 0,
-      template: function Widget_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Widget_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'A');
         }
@@ -183,7 +183,7 @@ export class Widget {
       selectors: [['widget-b']],
       decls: 1,
       vars: 0,
-      template: function Widget_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Widget_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'B');
         }
@@ -248,7 +248,7 @@ export class Widget {
       selectors: [['widget-c']],
       decls: 1,
       vars: 0,
-      template: function Widget_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Widget_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'C');
         }

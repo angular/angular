@@ -55,7 +55,7 @@ export class AppComp {
       decls: 1,
       vars: 0,
       consts: [['dirX', '', 'dirB', '', 'internalDir', '']],
-      template: function AppComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }

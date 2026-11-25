@@ -39,7 +39,7 @@ export class Utf16Component {
       inputs: { jose: 'jose', aliased: [0, 'aliased\uD83D\uDE0A', 'aliased'] },
       decls: 2,
       vars: 0,
-      template: function Utf16Component_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Utf16Component_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Jos\u00E9 & \uD83D\uDE0A');

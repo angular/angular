@@ -65,7 +65,7 @@ export class AppComponent {
       decls: 1,
       vars: 2,
       consts: [[3, 'emitter', 'publicEmitter', 'name', 'publicName']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'app-io-array', 0);
           i0.ɵɵlistener(
@@ -186,7 +186,7 @@ export class IoArrayComponent {
       outputs: { emitter: 'emitter', aliasOutput: 'publicEmitter' },
       decls: 2,
       vars: 1,
-      template: function IoArrayComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function IoArrayComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1);

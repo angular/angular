@@ -31,7 +31,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 2,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'imported-comp')(1, 'excluded-but-imported-comp');
         }
@@ -105,7 +105,10 @@ export class ExcludedButImportedComponent {
       selectors: [['excluded-but-imported-comp']],
       decls: 1,
       vars: 0,
-      template: function ExcludedButImportedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ExcludedButImportedComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'excluded but imported');
         }
@@ -174,7 +177,7 @@ export class ImportedComponent {
       selectors: [['imported-comp']],
       decls: 1,
       vars: 0,
-      template: function ImportedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImportedComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'imported');
         }

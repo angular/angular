@@ -37,7 +37,7 @@ const AppComponent_Defer_4_DepsFn = (): any => [
   /* @ts-ignore */
   import('./deferred').then((m: any): any => m.DeferredPipe),
 ];
-function AppComponent_Defer_3_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_3_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'div', 1);
     i0.ɵɵtext(1);
@@ -79,7 +79,7 @@ export class AppComponent {
         ['eagerDir', ''],
         ['deferredDir', ''],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1);

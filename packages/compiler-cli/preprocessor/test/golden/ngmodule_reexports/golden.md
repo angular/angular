@@ -30,7 +30,7 @@ export class FeatureComponent {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function FeatureComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function FeatureComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Feature');
         }
@@ -146,7 +146,7 @@ export class AppComponent {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'feature-cmp');
         }
@@ -253,7 +253,10 @@ export class AppForwardComponent {
       decls: 1,
       vars: 0,
       consts: [['laterDir', '']],
-      template: function AppForwardComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppForwardComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'feature-cmp', 0);
         }

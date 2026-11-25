@@ -83,7 +83,7 @@ export class LocalSpread {
       decls: 2,
       vars: 0,
       consts: [[1, 'local']],
-      template: function LocalSpread_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LocalSpread_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'local');
@@ -152,7 +152,7 @@ export class ImportedArray {
       decls: 2,
       vars: 0,
       consts: [[1, 'shared']],
-      template: function ImportedArray_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImportedArray_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'shared');
@@ -218,7 +218,7 @@ export class ImportedMixed {
       decls: 2,
       vars: 0,
       consts: [[1, 'shared']],
-      template: function ImportedMixed_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImportedMixed_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'mixed');
@@ -287,7 +287,7 @@ export class ImportedStyleUrl {
       decls: 2,
       vars: 0,
       consts: [[1, 'panel']],
-      template: function ImportedStyleUrl_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImportedStyleUrl_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'panel');
@@ -352,7 +352,7 @@ export class ImportedStyleUrls {
       decls: 2,
       vars: 0,
       consts: [[1, 'theme']],
-      template: function ImportedStyleUrls_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImportedStyleUrls_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'theme');
@@ -421,7 +421,7 @@ export class MixedStyleUrls {
       decls: 2,
       vars: 0,
       consts: [[1, 'theme', 'panel']],
-      template: function MixedStyleUrls_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MixedStyleUrls_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'both');

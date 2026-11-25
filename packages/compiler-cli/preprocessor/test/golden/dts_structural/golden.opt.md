@@ -30,7 +30,7 @@ import { MyNgIf } from './my-dir';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_div_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_div_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'div');
   }
@@ -62,7 +62,7 @@ export class AppComponent {
       decls: 1,
       vars: 1,
       consts: [[4, 'myNgIf']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtemplate(0, AppComponent_div_0_Template, 1, 0, 'div', 0);
         }

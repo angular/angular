@@ -90,7 +90,7 @@ export class AppComponent {
         [3, 'value'],
         [3, 'genericDir'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'mat-selection-list', 0)(1, 'mat-local-list', 0)(2, 'div', 1)(
             3,
@@ -257,7 +257,7 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
       inputs: { value: 'value' },
       decls: 0,
       vars: 0,
-      template: function MatSelectionList_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MatSelectionList_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -346,7 +346,7 @@ export class MatLocalList<T extends LocalModel = LocalModel> {
       inputs: { value: 'value' },
       decls: 0,
       vars: 0,
-      template: function MatLocalList_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MatLocalList_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

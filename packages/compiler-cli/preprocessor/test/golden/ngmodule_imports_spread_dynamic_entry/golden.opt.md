@@ -48,7 +48,7 @@ export class RouterOutlet {
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function RouterOutlet_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function RouterOutlet_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -207,7 +207,7 @@ export class AppComponent {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'router-outlet');
         }

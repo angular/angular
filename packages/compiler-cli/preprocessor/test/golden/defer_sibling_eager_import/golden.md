@@ -9,7 +9,7 @@ const ParentCmp_Defer_1_DepsFn = (): any => [
   /* @ts-ignore */
   import('./shared-dep').then((m: any): any => m.SharedDep),
 ];
-function ParentCmp_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function ParentCmp_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'shared-dep');
   }
@@ -40,7 +40,7 @@ export class ParentCmp {
       selectors: [['parent-cmp']],
       decls: 3,
       vars: 0,
-      template: function ParentCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ParentCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, ParentCmp_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0, ParentCmp_Defer_1_DepsFn);
@@ -119,7 +119,7 @@ export class HelperCmp {
       selectors: [['helper-cmp']],
       decls: 1,
       vars: 0,
-      template: function HelperCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function HelperCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'shared-dep');
         }
@@ -190,7 +190,7 @@ export class SharedDep {
       selectors: [['shared-dep']],
       decls: 1,
       vars: 0,
-      template: function SharedDep_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SharedDep_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Shared');
         }

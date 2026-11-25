@@ -64,7 +64,7 @@ export class AppComponent {
         ['my-dir', '', 3, 'myProp'],
         [3, 'myProp'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 2, 0)(2, 'my-cmp', 3, 1);
           i0.ɵɵtext(4);

@@ -125,7 +125,10 @@ export class DynamicListenerComponent {
       selectors: [['app-dynamic-listener']],
       decls: 2,
       vars: 0,
-      template: function DynamicListenerComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DynamicListenerComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div');
           i0.ɵɵtext(1, 'Hello');

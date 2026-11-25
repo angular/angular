@@ -52,7 +52,7 @@ export class AppComponent {
       decls: 1,
       vars: 0,
       consts: [['chain-dir', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }

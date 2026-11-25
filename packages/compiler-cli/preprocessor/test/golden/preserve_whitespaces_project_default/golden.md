@@ -28,7 +28,10 @@ export class ProjectDefaultComponent {
       selectors: [['project-default']],
       decls: 5,
       vars: 0,
-      template: function ProjectDefaultComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ProjectDefaultComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, '   ');
@@ -94,7 +97,10 @@ export class ComponentOverrideComponent {
       selectors: [['component-override']],
       decls: 3,
       vars: 0,
-      template: function ComponentOverrideComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ComponentOverrideComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div')(1, 'span');
           i0.ɵɵtext(2, ' b ');

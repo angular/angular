@@ -90,7 +90,7 @@ export class MyComponent {
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function MyComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MyComponent_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

@@ -51,7 +51,7 @@ export class TestComponent {
       inputs: { name: 'name' },
       decls: 2,
       vars: 1,
-      template: function TestComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1);

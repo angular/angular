@@ -41,7 +41,7 @@ export class MyComponent {
       decls: 3,
       vars: 3,
       consts: [['myDir', '']],
-      template: function MyComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1);

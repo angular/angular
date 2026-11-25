@@ -29,7 +29,7 @@ export class MixedComponent {
       selectors: [['app-mixed']],
       decls: 2,
       vars: 0,
-      template: function MixedComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MixedComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Mixed');
@@ -96,7 +96,7 @@ export class UrlsComponent {
       selectors: [['app-urls']],
       decls: 2,
       vars: 0,
-      template: function UrlsComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function UrlsComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Urls');
@@ -162,7 +162,7 @@ export class ErrorComponent {
       selectors: [['app-error']],
       decls: 2,
       vars: 0,
-      template: function ErrorComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ErrorComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Error');
@@ -229,7 +229,10 @@ export class StringStylesComponent {
       selectors: [['app-string-styles']],
       decls: 2,
       vars: 0,
-      template: function StringStylesComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function StringStylesComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'String Styles');
@@ -293,7 +296,10 @@ export class TemplateStylesComponent {
       selectors: [['app-template-styles']],
       decls: 2,
       vars: 0,
-      template: function TemplateStylesComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TemplateStylesComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Template Styles');
@@ -361,7 +367,7 @@ export class AllStylesComponent {
       selectors: [['app-all-styles']],
       decls: 2,
       vars: 0,
-      template: function AllStylesComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AllStylesComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'All');
@@ -437,7 +443,10 @@ export class IsolatedShadowDomComponent {
       decls: 2,
       vars: 0,
       consts: [[1, 'isolated']],
-      template: function IsolatedShadowDomComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function IsolatedShadowDomComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'isolated');

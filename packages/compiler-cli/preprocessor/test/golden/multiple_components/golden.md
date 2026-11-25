@@ -34,7 +34,7 @@ export class ComponentOne {
       decls: 2,
       vars: 2,
       consts: [[3, 'ngClass']],
-      template: function ComponentOne_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ComponentOne_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'Component One');
@@ -103,7 +103,7 @@ export class ComponentTwo {
       decls: 2,
       vars: 2,
       consts: [[3, 'ngClass']],
-      template: function ComponentTwo_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ComponentTwo_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'Component Two');

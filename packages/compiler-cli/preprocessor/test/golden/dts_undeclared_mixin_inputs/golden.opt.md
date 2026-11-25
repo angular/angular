@@ -54,7 +54,7 @@ export class AppComponent {
       decls: 2,
       vars: 3,
       consts: [['mat-button', '', 3, 'disabled', 'color', 'disableRipple']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'button', 0);
           i0.ɵɵtext(1, 'Click');

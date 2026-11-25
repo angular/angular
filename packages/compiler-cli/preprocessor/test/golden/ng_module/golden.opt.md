@@ -109,7 +109,7 @@ export class MyComponent {
       standalone: false,
       decls: 2,
       vars: 1,
-      template: function MyComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);
@@ -266,7 +266,7 @@ export class AppRoot {
         [3, 'compInput'],
         ['myDir', '', 3, 'dirInput'],
       ],
-      template: function AppRoot_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppRoot_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'my-comp', 0)(1, 'div', 1);
         }

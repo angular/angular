@@ -54,7 +54,7 @@ export class HostComponent {
       ],
       decls: 0,
       vars: 0,
-      template: function HostComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function HostComponent_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

@@ -551,7 +551,10 @@ export class TemplateBindingsCmp {
       decls: 2,
       vars: 2,
       consts: [[3, 'href']],
-      template: function TemplateBindingsCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TemplateBindingsCmp_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'a', 0)(1, 'div');
         }

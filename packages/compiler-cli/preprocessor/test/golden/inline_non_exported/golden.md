@@ -64,7 +64,7 @@ class AppComponent {
       selectors: [['app-root']],
       decls: 3,
       vars: 3,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);
@@ -133,7 +133,10 @@ export class ExportedAppComponent {
       selectors: [['app-root']],
       decls: 3,
       vars: 3,
-      template: function ExportedAppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ExportedAppComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);
@@ -245,7 +248,10 @@ class ExportedAppComponent {
       selectors: [['app-root']],
       decls: 3,
       vars: 3,
-      template: function ExportedAppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ExportedAppComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);

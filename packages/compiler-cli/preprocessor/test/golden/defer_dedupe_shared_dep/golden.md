@@ -6,17 +6,17 @@ import { OtherDep } from './other.cmp';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'shared-dep');
   }
 }
-function AppComponent_Defer_3_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_3_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'shared-dep');
   }
 }
-function AppComponent_Defer_6_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_6_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'other-dep');
   }
@@ -47,7 +47,7 @@ export class AppComponent {
       selectors: [['ng-component']],
       decls: 9,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0);
@@ -137,7 +137,7 @@ export class OtherDep {
       selectors: [['other-dep']],
       decls: 1,
       vars: 0,
-      template: function OtherDep_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function OtherDep_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Other');
         }
@@ -207,7 +207,7 @@ export class SharedDep {
       selectors: [['shared-dep']],
       decls: 1,
       vars: 0,
-      template: function SharedDep_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SharedDep_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Shared');
         }

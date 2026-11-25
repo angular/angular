@@ -5,7 +5,7 @@ import { EagerCmp } from './eager-cmp';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'eager-cmp');
   }
@@ -36,7 +36,7 @@ export class AppComponent {
       selectors: [['app-comp']],
       decls: 3,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0);
@@ -116,7 +116,7 @@ export class EagerCmp {
       selectors: [['eager-cmp']],
       decls: 1,
       vars: 0,
-      template: function EagerCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function EagerCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Eager');
         }

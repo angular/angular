@@ -37,7 +37,7 @@ export class AppCmp {
       selectors: [['app-cmp']],
       decls: 0,
       vars: 0,
-      template: function AppCmp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function AppCmp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

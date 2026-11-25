@@ -46,7 +46,10 @@ export class StandaloneComponent {
       selectors: [['standalone-comp']],
       decls: 1,
       vars: 0,
-      template: function StandaloneComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function StandaloneComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Standalone');
         }

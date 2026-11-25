@@ -54,7 +54,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 3,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'div')(1, 'span');
           i0.ɵɵtext(2, 'hi');

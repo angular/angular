@@ -30,7 +30,7 @@ export class ConsumerComponent {
       decls: 1,
       vars: 0,
       consts: [['dirA', '']],
-      template: function ConsumerComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ConsumerComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }

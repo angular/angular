@@ -33,7 +33,7 @@ const AppComponent_Defer_2_DepsFn = (): any => [
   /* @ts-ignore */
   import('./test.pipe').then((m: any): any => m.TestPipe),
 ];
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'app-deferred');
     i0.ɵɵtext(1);
@@ -44,7 +44,7 @@ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
     i0.ɵɵtextInterpolate1(' ', i0.ɵɵpipeBind1(2, 1, 'hello'), ' ');
   }
 }
-function AppComponent_DeferPlaceholder_1_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_DeferPlaceholder_1_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵtext(0, ' Placeholder ');
   }
@@ -75,7 +75,7 @@ export class AppComponent {
       selectors: [['app-root']],
       decls: 4,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 3, 3)(
             1,
@@ -187,7 +187,7 @@ export class DeferredComponent {
       selectors: [['app-deferred']],
       decls: 1,
       vars: 0,
-      template: function DeferredComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DeferredComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Deferred content');
         }

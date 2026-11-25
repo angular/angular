@@ -35,7 +35,7 @@ class StandaloneLocal {
       selectors: [['standalone-local']],
       decls: 2,
       vars: 0,
-      template: function StandaloneLocal_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function StandaloneLocal_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'hi');

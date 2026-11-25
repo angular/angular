@@ -47,7 +47,7 @@ export class SameNameComp {
       selectors: [['other-tree']],
       decls: 2,
       vars: 0,
-      template: function SameNameComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SameNameComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElementStart(0, 'span');
           i0.ɵɵtext(1, 'other');
@@ -134,7 +134,7 @@ import { SameNameComp as OtherSameNameComp } from './other';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function TreeComponent_Conditional_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function TreeComponent_Conditional_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'app-tree', 0);
   }
@@ -143,7 +143,7 @@ function TreeComponent_Conditional_0_Template(rf: number, ctx: any): any {
     i0.ɵɵproperty('child', ctx_r0.child.child);
   }
 }
-function ForwardTreeComponent_Conditional_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function ForwardTreeComponent_Conditional_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'app-forward-tree', 0);
   }
@@ -212,7 +212,7 @@ export class TreeComponent {
       decls: 1,
       vars: 1,
       consts: [['dirA', '', 3, 'child']],
-      template: function TreeComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TreeComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵconditionalCreate(0, TreeComponent_Conditional_0_Template, 1, 1, 'app-tree', 0);
         }
@@ -284,7 +284,10 @@ export class ForwardTreeComponent {
       decls: 1,
       vars: 1,
       consts: [['dirA', '', 3, 'child']],
-      template: function ForwardTreeComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ForwardTreeComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵconditionalCreate(
             0,
@@ -361,7 +364,7 @@ export class SameNameComp {
       selectors: [['local-tree']],
       decls: 2,
       vars: 0,
-      template: function SameNameComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SameNameComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'other-tree')(1, 'local-tree');
         }

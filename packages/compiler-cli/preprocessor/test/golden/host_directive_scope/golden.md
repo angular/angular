@@ -37,7 +37,7 @@ export class App {
         ['tooltip', 'x', 'ripple', '', 'focusRing', ''],
         [3, 'tip'],
       ],
-      template: function App_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function App_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'span', 0)(1, 'menu-el', 1);
         }
@@ -214,7 +214,7 @@ export class LegacyApp {
         ['tooltip', 'y', 'ripple', ''],
         ['tip', 'z'],
       ],
-      template: function LegacyApp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LegacyApp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'span', 0)(1, 'menu-el', 1);
         }
@@ -290,7 +290,7 @@ export class Menu {
       ngContentSelectors: _c0,
       decls: 1,
       vars: 0,
-      template: function Menu_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function Menu_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef();
           i0.ɵɵprojection(0);

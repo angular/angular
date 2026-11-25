@@ -56,7 +56,7 @@ export class App {
       selectors: [['app-root']],
       decls: 3,
       vars: 6,
-      template: function App_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function App_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0);
           i0.ɵɵpipe(1, 'shout');

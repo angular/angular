@@ -77,7 +77,7 @@ export class ReproComponent {
       },
       decls: 1,
       vars: 0,
-      template: function ReproComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ReproComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomElement(0, 'div');
         }

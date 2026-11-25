@@ -30,7 +30,7 @@ export class DeclaredCmp {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function DeclaredCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function DeclaredCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, '...');
         }
@@ -118,7 +118,7 @@ export class StandaloneCmp {
       selectors: [['standalone-cmp']],
       decls: 1,
       vars: 0,
-      template: function StandaloneCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function StandaloneCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, '...');
         }

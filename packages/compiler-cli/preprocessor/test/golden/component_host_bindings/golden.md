@@ -85,7 +85,7 @@ export class ButtonComponent {
       ngContentSelectors: _c0,
       decls: 1,
       vars: 0,
-      template: function ButtonComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ButtonComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef();
           i0.ɵɵprojection(0);

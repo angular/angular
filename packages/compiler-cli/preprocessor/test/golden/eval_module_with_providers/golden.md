@@ -30,7 +30,7 @@ export class AppComponent {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'lib-widget');
         }
@@ -155,7 +155,7 @@ export class WidgetComponent {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function WidgetComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function WidgetComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Widget');

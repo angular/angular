@@ -20,7 +20,7 @@ const AppComponent_Defer_1_DepsFn = (): any => [
   /* @ts-ignore */
   import('./comp-d').then((m: any): any => m.default),
 ];
-function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'comp-a', null, 0)(2, 'comp-b', null, 1)(4, 'comp-c')(5, 'comp-d', null, 2);
   }
@@ -71,7 +71,7 @@ export class AppComponent {
         ['compB', ''],
         ['compD', ''],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 7, 0);
           i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
@@ -174,7 +174,7 @@ export class CompA {
       selectors: [['comp-a']],
       decls: 1,
       vars: 0,
-      template: function CompA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component A');
         }
@@ -239,7 +239,7 @@ export class CompB {
       selectors: [['comp-b']],
       decls: 1,
       vars: 0,
-      template: function CompB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component B');
         }
@@ -304,7 +304,7 @@ export class CompC {
       selectors: [['comp-c']],
       decls: 1,
       vars: 0,
-      template: function CompC_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompC_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component C');
         }
@@ -369,7 +369,7 @@ export default class CompD {
       selectors: [['comp-d']],
       decls: 1,
       vars: 0,
-      template: function CompD_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompD_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component D');
         }

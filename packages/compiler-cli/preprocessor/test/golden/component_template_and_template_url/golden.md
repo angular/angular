@@ -29,7 +29,7 @@ export class AppComp {
       selectors: [['app-comp']],
       decls: 2,
       vars: 0,
-      template: function AppComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'External Template Content');

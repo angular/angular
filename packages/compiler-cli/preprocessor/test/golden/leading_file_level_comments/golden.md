@@ -35,7 +35,10 @@ export class ReexportFirstComponent {
       decls: 1,
       vars: 2,
       consts: [[3, 'ngClass']],
-      template: function ReexportFirstComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ReexportFirstComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }
@@ -109,7 +112,10 @@ export class ImportFirstComponent {
       selectors: [['app-import-first']],
       decls: 0,
       vars: 0,
-      template: function ImportFirstComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function ImportFirstComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -173,7 +179,10 @@ export class EnumFirstComponent {
       selectors: [['app-enum-first']],
       decls: 0,
       vars: 0,
-      template: function EnumFirstComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function EnumFirstComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -230,7 +239,10 @@ export class ReferenceFirstComponent {
       selectors: [['app-reference-first']],
       decls: 0,
       vars: 0,
-      template: function ReferenceFirstComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function ReferenceFirstComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -289,7 +301,10 @@ export class TrailingImportComponent {
       decls: 1,
       vars: 1,
       consts: [[3, 'ngClass']],
-      template: function TrailingImportComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TrailingImportComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div', 0);
         }

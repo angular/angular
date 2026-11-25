@@ -30,7 +30,7 @@ export class AppComponent {
       decls: 3,
       vars: 2,
       consts: [[3, 'id']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1);

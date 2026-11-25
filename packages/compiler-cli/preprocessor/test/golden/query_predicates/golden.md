@@ -64,7 +64,7 @@ export class TestComp {
       },
       decls: 1,
       vars: 0,
-      template: function TestComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div');
         }

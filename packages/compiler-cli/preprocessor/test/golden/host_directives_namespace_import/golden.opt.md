@@ -102,7 +102,7 @@ export class NsComp {
       features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
       decls: 0,
       vars: 0,
-      template: function NsComp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function NsComp_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -146,7 +146,7 @@ export class NsComp2 {
       features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepA, inputs: ['a', 'b'] }])],
       decls: 0,
       vars: 0,
-      template: function NsComp2_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function NsComp2_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

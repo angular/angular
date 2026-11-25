@@ -66,7 +66,7 @@ export class CmpNoProv {
       selectors: [['c1']],
       decls: 0,
       vars: 0,
-      template: function CmpNoProv_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpNoProv_Template(rf: number, ctx: any): any {},
       dependencies: [NoProvModule],
       encapsulation: 2,
     });
@@ -104,7 +104,7 @@ export class CmpProv {
       selectors: [['c2']],
       decls: 0,
       vars: 0,
-      template: function CmpProv_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpProv_Template(rf: number, ctx: any): any {},
       dependencies: [ProvModule],
       encapsulation: 2,
     });
@@ -142,7 +142,7 @@ export class CmpTrans {
       selectors: [['c3']],
       decls: 0,
       vars: 0,
-      template: function CmpTrans_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpTrans_Template(rf: number, ctx: any): any {},
       dependencies: [TransitiveModule],
       encapsulation: 2,
     });
@@ -185,7 +185,7 @@ export class CmpPlain {
       selectors: [['c4']],
       decls: 0,
       vars: 0,
-      template: function CmpPlain_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpPlain_Template(rf: number, ctx: any): any {},
       dependencies: [PlainModule],
       encapsulation: 2,
     });

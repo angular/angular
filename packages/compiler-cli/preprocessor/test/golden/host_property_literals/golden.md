@@ -43,7 +43,10 @@ export class HostLiteralsComponent {
       },
       decls: 1,
       vars: 0,
-      template: function HostLiteralsComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function HostLiteralsComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Host Literals');
         }

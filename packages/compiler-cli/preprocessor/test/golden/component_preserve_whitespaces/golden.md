@@ -29,7 +29,7 @@ export class PreserveWsCmp {
       selectors: [['preserve-ws-cmp']],
       decls: 2,
       vars: 0,
-      template: function PreserveWsCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function PreserveWsCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, '  \n  Preserved  \n  ');
@@ -94,7 +94,7 @@ export class NoPreserveWsCmp {
       selectors: [['no-preserve-ws-cmp']],
       decls: 2,
       vars: 0,
-      template: function NoPreserveWsCmp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function NoPreserveWsCmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, ' Not Preserved ');

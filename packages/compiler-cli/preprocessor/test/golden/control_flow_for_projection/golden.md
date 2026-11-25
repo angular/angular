@@ -6,7 +6,7 @@ import * as i0 from '@angular/core';
 
 const _c0 = ['*', [['', 'foo', '']]];
 const _c1 = ['*', '[foo]'];
-function AppComponent_For_3_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function AppComponent_For_3_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelementStart(0, 'span', 0);
     i0.ɵɵtext(1);
@@ -45,7 +45,7 @@ export class TestComponent {
       ngContentSelectors: _c1,
       decls: 4,
       vars: 0,
-      template: function TestComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef(_c0);
           i0.ɵɵtext(0, 'Main: ');
@@ -112,7 +112,7 @@ export class AppComponent {
       decls: 5,
       vars: 0,
       consts: [['foo', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'test');
           i0.ɵɵtext(1, 'Before ');

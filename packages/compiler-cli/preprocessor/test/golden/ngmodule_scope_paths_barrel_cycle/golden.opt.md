@@ -38,7 +38,7 @@ export class A {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function A_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function A_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'b-cmp');
         }
@@ -162,7 +162,7 @@ export class B {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function B_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function B_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'b');
         }

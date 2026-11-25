@@ -29,7 +29,7 @@ export class AComponent {
       selectors: [['lib-a']],
       decls: 2,
       vars: 0,
-      template: function AComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'A');
@@ -102,7 +102,7 @@ export class AppComponent {
       decls: 1,
       vars: 0,
       consts: [['libB', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'lib-a', 0);
         }
@@ -278,7 +278,7 @@ export class LegacyComponent {
       decls: 1,
       vars: 0,
       consts: [['libB', '']],
-      template: function LegacyComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function LegacyComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'span', 0);
         }

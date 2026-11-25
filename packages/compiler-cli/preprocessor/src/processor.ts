@@ -1975,7 +1975,14 @@ function serializeOutput(file: FileCompilation): void {
   const poolStatements =
     sharedPool.statements.length > 0
       ? '\n' +
-        sharedPool.statements.map((stmt) => printer.printStatement(stmt, 0)).join('\n') +
+        sharedPool.statements
+          .map((stmt) => {
+            if (!ctx.complianceMode && stmt instanceof o.DeclareFunctionStmt) {
+              markGeneratedNode(stmt);
+            }
+            return printer.printStatement(stmt, 0);
+          })
+          .join('\n') +
         '\n'
       : '';
 
@@ -2097,6 +2104,42 @@ interface CompiledClass {
   hmrInitializerStmt: o.Statement | null;
 }
 
+/**
+ * Leading block comment attached to compiler-synthesized runtime template functions (`template:`
+ * inside `ɵɵdefineComponent` and hoisted `sharedPool` function declarations) so downstream static
+ * analyzers can skip them without skipping relocated user expressions elsewhere in Ivy definitions.
+ */
+const GENERATED_SKIP_COMMENT = o.leadingComment(
+  '@ɵɵgenerated',
+  /* multiline */ true,
+  /* trailingNewline */ false,
+);
+
+function markGeneratedNode(node: {leadingComments?: o.LeadingComment[]}): void {
+  if (node.leadingComments?.[0] === GENERATED_SKIP_COMMENT) {
+    return;
+  }
+  node.leadingComments = node.leadingComments
+    ? [GENERATED_SKIP_COMMENT, ...node.leadingComments]
+    : [GENERATED_SKIP_COMMENT];
+}
+
+function markComponentTemplate(expr: o.Expression): void {
+  if (
+    !(expr instanceof o.InvokeFunctionExpr) ||
+    expr.args.length !== 1 ||
+    !(expr.args[0] instanceof o.LiteralMapExpr)
+  ) {
+    return;
+  }
+  for (const entry of expr.args[0].entries) {
+    if (entry instanceof o.LiteralMapPropertyAssignment && entry.key === 'template') {
+      markGeneratedNode(entry.value);
+      return;
+    }
+  }
+}
+
 function appendCompiledClass(
   compiled: CompiledClass,
   out: OutputSourceMapBuilder,
@@ -2114,6 +2157,9 @@ function appendCompiledClass(
 
   for (const field of fields) {
     const compiledFactory = field.factory ? compileFactoryField(field.factory, printer, ctx) : '';
+    if (!ctx.complianceMode && field.def.name === 'ɵcmp') {
+      markComponentTemplate(field.def.def.expression);
+    }
     const compiledDef = createStaticField(
       field.def.name,
       printer.print(field.def.def.expression),

@@ -31,7 +31,7 @@ export class AppComponent {
       decls: 3,
       vars: 0,
       consts: [['dirA', '', 'dirB', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0)(1, 'h1');
           i0.ɵɵtext(2, 'Hello');

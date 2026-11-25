@@ -30,7 +30,7 @@ export class ChildComp {
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function ChildComp_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function ChildComp_Template(rf: number, ctx: any): any {},
       dependencies: i0.ɵɵgetComponentDepsFactory(ChildComp),
       encapsulation: 2,
     });
@@ -98,7 +98,7 @@ export class MyComp {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function MyComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MyComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'child-comp');
         }

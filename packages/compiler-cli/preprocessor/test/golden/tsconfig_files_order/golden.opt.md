@@ -48,7 +48,7 @@ export class ASecondComp {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function ASecondComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ASecondComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'z-first');
         }
@@ -194,7 +194,7 @@ export class ZFirstComp {
       standalone: false,
       decls: 1,
       vars: 0,
-      template: function ZFirstComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ZFirstComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'a-second');
         }

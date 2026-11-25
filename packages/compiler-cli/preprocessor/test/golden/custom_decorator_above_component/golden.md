@@ -35,7 +35,7 @@ export class AboveComponent {
       selectors: [['above-cmp']],
       decls: 2,
       vars: 0,
-      template: function AboveComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AboveComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Above');
@@ -99,7 +99,7 @@ export class BelowComponent {
       selectors: [['below-cmp']],
       decls: 2,
       vars: 0,
-      template: function BelowComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function BelowComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Below');
@@ -162,7 +162,10 @@ export class BareDecoratorComponent {
       selectors: [['bare-cmp']],
       decls: 2,
       vars: 0,
-      template: function BareDecoratorComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function BareDecoratorComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Bare');
@@ -226,7 +229,7 @@ export class SandwichComponent {
       selectors: [['sandwich-cmp']],
       decls: 2,
       vars: 0,
-      template: function SandwichComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SandwichComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Sandwich');
@@ -301,7 +304,7 @@ export class ConstPoolComponent {
       decls: 3,
       vars: 0,
       consts: [['el', '']],
-      template: function ConstPoolComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ConstPoolComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef(_c1);
           i0.ɵɵprojection(0);
@@ -375,7 +378,10 @@ export class ConstPoolPlainComponent {
       decls: 3,
       vars: 0,
       consts: [['el', '']],
-      template: function ConstPoolPlainComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ConstPoolPlainComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef(_c1);
           i0.ɵɵprojection(0);

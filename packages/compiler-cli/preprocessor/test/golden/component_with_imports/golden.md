@@ -29,7 +29,7 @@ export class HelloComponent {
       selectors: [['app-hello']],
       decls: 2,
       vars: 0,
-      template: function HelloComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function HelloComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Hello');
@@ -156,7 +156,7 @@ export class ParentComponent {
       decls: 3,
       vars: 3,
       consts: [['appHighlight', '']],
-      template: function ParentComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ParentComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'app-hello', 0);
           i0.ɵɵtext(1);
@@ -229,7 +229,10 @@ export class ForwardRefComponent {
       selectors: [['test-forward-ref']],
       decls: 1,
       vars: 0,
-      template: function ForwardRefComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ForwardRefComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'app-forward-ref-target');
         }
@@ -293,7 +296,10 @@ export class ForwardRefTargetComponent {
       selectors: [['app-forward-ref-target']],
       decls: 2,
       vars: 0,
-      template: function ForwardRefTargetComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ForwardRefTargetComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'span');
           i0.ɵɵtext(1, 'Target');

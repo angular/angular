@@ -33,7 +33,7 @@ export class FirstComp {
       decls: 2,
       vars: 0,
       consts: [[1, 'shared-box']],
-      template: function FirstComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function FirstComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'First');
@@ -96,7 +96,7 @@ export class SecondComp {
       decls: 2,
       vars: 0,
       consts: [[1, 'shared-box']],
-      template: function SecondComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function SecondComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 0);
           i0.ɵɵtext(1, 'Second');

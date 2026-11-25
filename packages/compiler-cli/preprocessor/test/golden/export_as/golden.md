@@ -81,7 +81,7 @@ export class AppComponent {
         ['dir', 'myDirAlias'],
         ['myDir', ''],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div', 1, 0);
           i0.ɵɵtext(2);

@@ -47,7 +47,7 @@ export class CompA {
       selectors: [['comp-a']],
       decls: 1,
       vars: 0,
-      template: function CompA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component A');
         }
@@ -130,7 +130,7 @@ export class CompB {
       selectors: [['comp-b']],
       decls: 1,
       vars: 0,
-      template: function CompB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵtext(0, 'Component B');
         }
@@ -193,7 +193,7 @@ const ExplicitComponent_Defer_1_DepsFn = (): any => [
   /* @ts-ignore */
   import('./comp-b').then((m: any): any => m.CompB),
 ];
-function ExplicitComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function ExplicitComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'comp-b');
   }
@@ -224,7 +224,7 @@ export class ExplicitComponent {
       selectors: [['explicit-comp']],
       decls: 3,
       vars: 0,
-      template: function ExplicitComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ExplicitComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, ExplicitComponent_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0, ExplicitComponent_Defer_1_DepsFn);
@@ -306,7 +306,7 @@ import { CompA } from './comp-a';
 import * as i0 from '@angular/core';
 
 const ImplicitComponent_Defer_1_DepsFn = (): any => [CompA];
-function ImplicitComponent_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function ImplicitComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'comp-a');
   }
@@ -339,7 +339,7 @@ export class ImplicitComponent {
       selectors: [['implicit-comp']],
       decls: 3,
       vars: 0,
-      template: function ImplicitComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ImplicitComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, ImplicitComponent_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0, ImplicitComponent_Defer_1_DepsFn);

@@ -39,7 +39,10 @@ export class ConditionGroupBuilder extends CommonConditionGroupBuilder {
       decls: 1,
       vars: 0,
       consts: [[3, 'onCelCodeUpdated']],
-      template: function ConditionGroupBuilder_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ConditionGroupBuilder_Template(
+        rf: number,
+        ctx: any,
+      ): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'condition-group-builder', 0);
           i0.ɵɵlistener(

@@ -41,7 +41,7 @@ export class ChildComp extends BaseClass {
       features: [i0.ɵɵInheritDefinitionFeature],
       decls: 1,
       vars: 0,
-      template: function ChildComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ChildComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div');
         }
@@ -107,7 +107,7 @@ export class ChildZeroComp extends BaseClass {
       features: [i0.ɵɵInheritDefinitionFeature],
       decls: 1,
       vars: 0,
-      template: function ChildZeroComp_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function ChildZeroComp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'div');
         }

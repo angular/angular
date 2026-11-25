@@ -54,7 +54,7 @@ import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-function CompA_Defer_0_Template(rf: number, ctx: any): any {
+/* @ɵɵgenerated */ function CompA_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵelement(0, 'comp-b');
   }
@@ -86,7 +86,7 @@ export class CompA {
       standalone: false,
       decls: 3,
       vars: 0,
-      template: function CompA_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompA_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵdomTemplate(0, CompA_Defer_0_Template, 1, 0);
           i0.ɵɵdefer(1, 0);
@@ -162,7 +162,7 @@ export class CompB {
       standalone: false,
       decls: 2,
       vars: 0,
-      template: function CompB_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function CompB_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'CompB');

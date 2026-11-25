@@ -43,7 +43,7 @@ export class AppComponent {
         [3, 'tree'],
         [3, 'legacyValue'],
       ],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'mat-selection-list', 0)(1, 'div', 1)(2, 'local-item-comp', 2)(
             3,
@@ -211,7 +211,10 @@ export class LegacyGenericComponent<
       standalone: false,
       decls: 0,
       vars: 0,
-      template: function LegacyGenericComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function LegacyGenericComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       dependencies: i0.ɵɵgetComponentDepsFactory(LegacyGenericComponent),
       encapsulation: 2,
     });
@@ -323,7 +326,7 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
       inputs: { value: 'value' },
       decls: 0,
       vars: 0,
-      template: function MatSelectionList_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function MatSelectionList_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {
@@ -393,7 +396,10 @@ export class LocalItemComponent<T extends LocalItemType = LocalItemType> {
       inputs: { item: 'item' },
       decls: 0,
       vars: 0,
-      template: function LocalItemComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function LocalItemComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {},
       encapsulation: 2,
     });
   static {
@@ -461,7 +467,7 @@ export class TreeComponent<T extends TreeNode<DefaultNodeData> = TreeNode<Defaul
       inputs: { tree: 'tree' },
       decls: 0,
       vars: 0,
-      template: function TreeComponent_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function TreeComponent_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

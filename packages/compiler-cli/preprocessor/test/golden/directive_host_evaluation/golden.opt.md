@@ -571,7 +571,7 @@ export class CmpHost {
       },
       decls: 0,
       vars: 0,
-      template: function CmpHost_Template(rf: number, ctx: any): any {},
+      template: /* @ɵɵgenerated */ function CmpHost_Template(rf: number, ctx: any): any {},
       encapsulation: 2,
     });
   static {

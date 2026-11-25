@@ -37,7 +37,7 @@ export class MetaComponent {
       selectors: [['meta-comp']],
       decls: 2,
       vars: 0,
-      template: function MetaComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MetaComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Metadata');
@@ -227,7 +227,7 @@ export class MultiMetaComponent {
       selectors: [['multi-meta']],
       decls: 2,
       vars: 0,
-      template: function MultiMetaComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MultiMetaComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Multi');

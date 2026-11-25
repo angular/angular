@@ -51,7 +51,7 @@ export class AppComponent {
       decls: 1,
       vars: 0,
       consts: [['gm2-button', '']],
-      template: function AppComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelement(0, 'button', 0);
         }
@@ -242,7 +242,7 @@ export class MatButton {
       ngContentSelectors: _c0,
       decls: 1,
       vars: 0,
-      template: function MatButton_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function MatButton_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵprojectionDef();
           i0.ɵɵprojection(0);

@@ -42,7 +42,7 @@ export class TestComponent {
       selectors: [['app-test']],
       decls: 2,
       vars: 0,
-      template: function TestComponent_Template(rf: number, ctx: any): any {
+      template: /* @ɵɵgenerated */ function TestComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
           i0.ɵɵtext(1, 'Test');
