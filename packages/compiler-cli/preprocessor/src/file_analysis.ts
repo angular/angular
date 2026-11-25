@@ -8,7 +8,7 @@
 
 import {ParsedTemplate, TmplAstNode} from '@angular/compiler';
 
-import {PreparedTcbData} from './tcb.js';
+import {type NgpTypeCheckingConfig, PreparedTcbData} from './tcb.js';
 import {AnalysisResult, DeclarationMetadata} from './types.js';
 
 export interface ParsedComponentTemplate extends ParsedTemplate {
@@ -28,10 +28,15 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
 export interface FileAnalysis {
   filePath: string;
   sourceContent?: string;
-  boundFingerprint?: string;
   tcb?: string | null;
   parsedTemplates: Map<string, ParsedComponentTemplate>;
+  /** The `AnalysisResult` from which `parsedTemplates` were parsed. */
+  parsedTemplatesResult?: AnalysisResult;
   preparedTcbData?: PreparedTcbData | null;
+  /** The `AnalysisResult` from which `preparedTcbData` and `tcb` were built. */
+  boundResult?: AnalysisResult;
+  /** The `tcbConfig` from which `preparedTcbData` and `tcb` were built. */
+  tcbConfig?: NgpTypeCheckingConfig;
 }
 
 export interface ChunkContext {

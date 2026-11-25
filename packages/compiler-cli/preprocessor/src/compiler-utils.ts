@@ -856,3 +856,41 @@ export function stripIife(expr: o.Expression): o.Statement[] {
 
   return [expr.toStmt()];
 }
+
+/**
+ * Whether every component template input read by `parseComponentTemplate` is identical between
+ * `prev` and `next`, so cached `parsedTemplates` remain valid across a metadata update.
+ */
+export function areComponentTemplatesUnchanged(
+  prev: nga.AnalysisResult,
+  next: nga.AnalysisResult,
+): boolean {
+  if (prev.classes.length !== next.classes.length) {
+    return false;
+  }
+  for (let i = 0; i < prev.classes.length; i++) {
+    const a = prev.classes[i];
+    const b = next.classes[i];
+    const aComp = a.component;
+    const bComp = b.component;
+    if ((aComp !== undefined) !== (bComp !== undefined)) {
+      return false;
+    }
+    if (!aComp || !bComp) {
+      continue;
+    }
+    if (
+      a.className !== b.className ||
+      a.span.start !== b.span.start ||
+      a.nameSpan?.start !== b.nameSpan?.start ||
+      aComp.preserveWhitespaces !== bComp.preserveWhitespaces ||
+      aComp.template !== bComp.template ||
+      aComp.templateUrl?.resolvedPath !== bComp.templateUrl?.resolvedPath ||
+      aComp.templateContentSpan?.start !== bComp.templateContentSpan?.start ||
+      aComp.templateContentSpan?.end !== bComp.templateContentSpan?.end
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
