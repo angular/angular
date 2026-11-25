@@ -565,7 +565,11 @@ function createNewSegmentChildren(outlets: {[name: string]: readonly unknown[] |
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
   const res: {[key: string]: string} = {};
-  Object.entries(params).forEach(([k, v]) => (res[k] = `${v}`));
+  for (const [k, v] of Object.entries(params)) {
+    if (v != null) {
+      res[k] = `${v}`;
+    }
+  }
   return res;
 }
 

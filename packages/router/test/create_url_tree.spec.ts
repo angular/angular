@@ -538,6 +538,16 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/a/b;aa=22;bb=33');
   });
 
+  it('should drop matrix parameters with null or undefined values', async () => {
+    const p = serializer.parse('/a;pp=11;dd=22');
+    const t = await createRoot(p, ['/a', {pp: null, dd: undefined, ee: 33}]);
+    expect(serializer.serialize(t)).toEqual('/a;ee=33');
+
+    await router.navigateByUrl('/a;pp=11');
+    const relative = create(router.routerState.root.children[0], [{pp: null, qq: undefined}]);
+    expect(serializer.serialize(relative)).toEqual('/a');
+  });
+
   it('should stringify matrix parameters', async () => {
     await router.navigateByUrl('/a');
     const relative = create(router.routerState.root.children[0], [{pp: 22}]);
