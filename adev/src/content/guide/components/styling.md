@@ -55,7 +55,7 @@ export class ProfilePhoto { }
 
 By default, Angular uses emulated encapsulation so that a component's styles only apply to elements
 defined in that component's template. In this mode, the framework generates a unique HTML attribute
-for each component instance, adds that attribute to elements in the component's template, and
+for each component definition, adds that attribute to elements in the component's template, and
 inserts that attribute into the CSS selectors defined in your component's styles.
 
 This mode ensures that a component's styles do not leak out and affect other components. However,
@@ -136,9 +136,7 @@ Angular does not support bindings inside of style elements.
 
 ## Referencing external style files
 
-Component templates can
-use [the `<link>` element](https://developer.mozilla.org/docs/Web/HTML/Element/link) to
-reference CSS files. Additionally, your CSS may
+Your CSS may
 use [the `@import`at-rule](https://developer.mozilla.org/docs/Web/CSS/@import) to reference
 CSS files. Angular treats these references as _external_ styles. External styles are not affected by
 emulated view encapsulation.
