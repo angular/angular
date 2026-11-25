@@ -242,9 +242,7 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
       "sigModel: [{type: i0.Input, args: [{isSignal: true, alias: 'modelAlias', required: false}]}, {type: i0.Output, args: ['modelAliasChange']}]",
     );
     expect(content).toContain("sigOut: [{type: i0.Output, args: ['sigOut']}]");
-    expect(content).toContain(
-      'child: [{type: i0.ViewChild, args: [i0.forwardRef(() => ChildCmp), {isSignal: true}]}]',
-    );
+    expect(content).toContain('child: [{type: i0.ViewChild, args: [ChildCmp, {isSignal: true}]}]');
     expect(content).toContain(
       "projected: [{type: i0.ContentChild, args: ['proj', {isSignal: true}]}]",
     );
@@ -422,6 +420,45 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
       ),
     ).toEqual([]);
   });
+  it('emits signal query predicates directly without synthetic forwardRef on jit: true classes while guarding forward references', async () => {
+    const outputs = await compileFiles({
+      '/test.ts': `
+        import {Component, contentChildren, forwardRef, viewChild} from '@angular/core';
+
+        @Component({
+          selector: 'jit-query-host',
+          template: '',
+          jit: true,
+        })
+        export class JitQueryHost {
+          readonly directChild = viewChild(LaterChild);
+          readonly explicitForward = viewChild(forwardRef(() => LaterChild));
+          readonly readForward = contentChildren(LaterChild, {read: LaterToken});
+        }
+
+        export class LaterChild {}
+        export class LaterToken {}
+      `,
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).toContain(
+      'directChild: [{type: i0.ViewChild, args: [// @ts-ignore\nLaterChild, {isSignal: true}]}]',
+    );
+    expect(content).toContain(
+      'explicitForward: [{type: i0.ViewChild, args: [forwardRef(() => LaterChild), {isSignal: true}]}]',
+    );
+    expect(content).toContain(
+      'readForward: [{type: i0.ContentChildren, args: [// @ts-ignore\nLaterChild, {...{read: // @ts-ignore\nLaterToken}, isSignal: true}]}]',
+    );
+
+    const diagnostics = typecheckEmittedTs(content);
+    expect(
+      diagnostics.map(
+        (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
+      ),
+    ).toEqual([]);
+  });
 });
 
 function makeTsconfig(
@@ -501,12 +538,17 @@ function typecheckEmittedTs(
     [
       '/angular-core.d.ts',
       `
+      declare const ngDevMode: boolean;
       declare module '@angular/core' {
         export function Component(meta: any): ClassDecorator;
         export function Directive(meta: any): ClassDecorator;
         export function Input(alias?: string): any;
         export function Output(alias?: string): any;
         export function ViewChild(selector: any, opts?: any): any;
+        export function ContentChildren(selector: any, opts?: any): any;
+        export function viewChild(locator: any, opts?: any): any;
+        export function contentChildren(locator: any, opts?: any): any;
+        export function forwardRef(fn: () => any): any;
         export function Inject(token: any): ParameterDecorator;
         export function Optional(): ParameterDecorator;
       }
