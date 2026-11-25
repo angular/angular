@@ -66,6 +66,11 @@ import {
 } from '../../src/core';
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
+import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {
+  NodeInjectorOffset,
+  RelativeInjectorLocationFlags,
+} from '../../src/render3/interfaces/injector';
 import {ViewRef as ViewRefInternal} from '../../src/render3/view_ref';
 import {TestBed} from '../../testing';
 
@@ -6343,6 +6348,62 @@ describe('di', () => {
     parentInjector.destroy();
 
     expect(destroySpy).toHaveBeenCalled();
+  });
+
+  describe('node injector index limit', () => {
+    // A directive with many host bindings lets a template reach the limit of the node injector
+    // index with about a thousand elements. Each `<span big>` occupies one slot for the node, one
+    // for the directive instance, one per host binding and `NodeInjectorOffset.SIZE` for the
+    // injector. The root element and the final `<i leaf>` add 12 more before the leaf's injector
+    // is created, so that injector lands at `HEADER_OFFSET + 12 + hosts * slotsPerHost`.
+    const HOST_VARS = 989;
+    const slotsPerHost = HOST_VARS + 2 + NodeInjectorOffset.SIZE;
+    const maxHosts = Math.floor(
+      (RelativeInjectorLocationFlags.InjectorIndexMask - HEADER_OFFSET - 12) / slotsPerHost,
+    );
+
+    function createApp(hosts: number) {
+      @Directive({selector: '[root]'})
+      class RootDir {}
+
+      const hostBindings: Record<string, string> = {};
+      for (let i = 0; i < HOST_VARS; i++) {
+        hostBindings[`[attr.a${i}]`] = 'null';
+      }
+
+      @Directive({selector: '[big]', host: hostBindings})
+      class BigHostDir {}
+
+      @Directive({selector: '[leaf]'})
+      class LeafDir {
+        root = inject(RootDir);
+      }
+
+      const bigHosts = '<span big></span>'.repeat(hosts - 1);
+      const template = `<div root>${bigHosts}<span big><i leaf></i></span></div>`;
+
+      @Component({template, imports: [RootDir, BigHostDir, LeafDir]})
+      class App {}
+
+      return {App, RootDir, LeafDir};
+    }
+
+    it('should resolve a parent injector located just below the index limit', () => {
+      const {App, RootDir, LeafDir} = createApp(maxHosts);
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const root = fixture.debugElement.query(By.directive(RootDir)).injector.get(RootDir);
+      const leaf = fixture.debugElement.query(By.directive(LeafDir)).injector.get(LeafDir);
+      expect(leaf.root).toBe(root);
+    });
+
+    it('should throw in dev mode when a node injector would exceed the index limit', () => {
+      const {App} = createApp(maxHosts + 1);
+      expect(() => TestBed.createComponent(App)).toThrowError(
+        /Node injector index exceeds the maximum supported LView size/,
+      );
+    });
   });
 
   describe('cyclic dependency detector', () => {
