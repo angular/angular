@@ -28,6 +28,7 @@ import {NodeModule, resolve, Version} from '../../common/resolver';
 
 import {OpenJsDocLinkCommandId} from '../../common/initialize';
 import {isInsideStringLiteral, isNotTypescriptOrSupportedDecoratorField} from './embedded_support';
+import {buildServerOptions} from './server_options';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -367,32 +368,17 @@ export class AngularLanguageClient implements vscode.Disposable {
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
-    const serverOptions: lsp.ServerOptions = {
-      run: {
-        module: this.context.asAbsolutePath('server'),
+    const forceDebug = process.env['NG_DEBUG'] === 'true';
+    const serverOptions = buildServerOptions(
+      {
+        module: prodBundle,
         transport: lsp.TransportKind.ipc,
         args,
       },
-      debug: {
-        // VS Code Insider launches extensions in debug mode by default but users
-        // install prod bundle so we have to check whether dev bundle exists.
-        module: fs.existsSync(devBundle) ? devBundle : prodBundle,
-        transport: lsp.TransportKind.ipc,
-        options: {
-          // Argv options for Node.js
-          execArgv: [
-            // do not lazily evaluate the code so all breakpoints are respected
-            '--nolazy',
-            // If debugging port is changed, update .vscode/launch.json as well
-            '--inspect-brk=6009',
-          ],
-          env: {
-            NG_DEBUG: true,
-          },
-        },
-        args,
-      },
-    };
+      // Use the dev bundle when it exists, falling back to the prod bundle.
+      fs.existsSync(devBundle) ? devBundle : prodBundle,
+      this.context.extensionMode === vscode.ExtensionMode.Development || forceDebug,
+    );
 
     if (!extensionVersionCompatibleWithAllProjects(serverOptions.run.module)) {
       vscode.window.showWarningMessage(
@@ -402,7 +388,6 @@ export class AngularLanguageClient implements vscode.Disposable {
     }
 
     // Create the language client and start the client.
-    const forceDebug = process.env['NG_DEBUG'] === 'true';
     this.client = new lsp.LanguageClient(
       // This is the ID for Angular-specific configurations, like "angular.log".
       // See contributes.configuration in package.json.
