@@ -223,7 +223,7 @@ export function insertTStylingBinding(
     // We need to check if our key is present in the static so that we can mark it as duplicate.
     if (
       tStylingKey === null ||
-      matchesStaticKey(staticKeyValueArray, tStylingKey, isClassBinding)
+      (tStylingKey !== '' && matchesStaticKey(staticKeyValueArray, tStylingKey, isClassBinding))
     ) {
       // tStylingKey is present in the statics, need to mark it as duplicate.
       isKeyDuplicateOfStatic = true;
@@ -480,6 +480,7 @@ function cssVarKeysMayAlias(a: TStylingKeyPrimitive, b: TStylingKeyPrimitive): b
 }
 
 function literalMayMatch(key: string, suffix: string): boolean {
+  // provideCssVarNamespacing() always appends '_' to the internal CSS_VAR_NAMESPACE prefix.
   return (
     key.startsWith('--') &&
     !key.startsWith('--%NS%') &&

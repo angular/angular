@@ -86,12 +86,14 @@ describe('TNode styling linked list', () => {
       insertTStylingBinding(tData, tNode, '--ns_x', 4, false, false);
       insertTStylingBinding(tData, tNode, '--%NS%y', 6, false, false);
       insertTStylingBinding(tData, tNode, '--%NS%x', 8, false, false);
+      insertTStylingBinding(tData, tNode, '--nsx', 10, false, false);
 
       expectPriorityOrder(tData, tNode, false).toEqual([
         [2, '--x', false, true],
         [4, '--ns_x', false, true],
         [6, '--%NS%y', false, false],
         [8, '--%NS%x', true, false],
+        [10, '--nsx', false, false],
       ]);
     });
 
