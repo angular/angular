@@ -2378,35 +2378,74 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw if a complex `sizes` is used', async () => {
+      it('should throw if `sizes` contains only pixel values', async () => {
         setupTestingModule();
 
-        const template =
-          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw">';
+        const template = '<img ngSrc="path/img.png" width="100" height="50" sizes="500px">';
         const fixture = createTestComponent(template);
         await expectAsync(fixture.whenStable()).toBeRejectedWithError(
-          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
-            'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
-            '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
+          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string that only includes pixel values. ' +
+            'For automatic `srcset` generation, `sizes` must include responsive values, such as `sizes="50vw"` or ' +
+            '`sizes="(min-width: 768px) 50vw, 100vw"`. Pixel values can be mixed with responsive values, ' +
+            'for example `sizes="(max-width: 768px) 100vw, 370px"`. ' +
+            'To fix this, remove the `sizes` attribute for fixed-size images, include responsive ' +
+            'values in `sizes`, or provide your own `ngSrcset` value directly.',
         );
       });
-      it('should throw if a complex `sizes` is used with srcset', async () => {
+
+      [
+        ['with media queries', '(min-width: 768px) 500px, 300px'],
+        ['with leading whitespace', '  500px'],
+        ['with decimals', '500.5px'],
+        ['with uppercase units', '500PX'],
+        ['in a math function', 'calc(500px - 20px)'],
+        ['in a math function with several arguments', 'min(500px, 300px)'],
+        ['and responsive units only in media conditions', '(min-width: 50vw) 500px, 300px'],
+        ['next to invalid percentages', '(max-width: 768px) 100%, 370px'],
+        ['next to the `auto` keyword', 'auto, 500px'],
+      ].forEach(([description, sizes]) => {
+        it(`should throw if \`sizes\` contains only pixel values ${description}`, async () => {
+          setupTestingModule();
+
+          const template = `<img ngSrc="path/img.png" width="100" height="50" sizes="${sizes}">`;
+          const fixture = createTestComponent(template);
+          await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG02952/);
+        });
+      });
+
+      [
+        ['a responsive value', '(min-width: 768px) 500px, 100vw'],
+        ['responsive media queries', '(max-width: 540px) 100vw, (max-width: 960px) 50vw, 370px'],
+        ['modern viewport units', '(max-width: 768px) 100dvw, 370px'],
+        ['uppercase units', '(max-width: 768px) 100VW, 370px'],
+        [
+          'a math function using responsive units',
+          '(min-width: 1024px) calc(33.33vw - 24px), 370px',
+        ],
+        ['font-relative units', '(max-width: 768px) 30rem, 370px'],
+      ].forEach(([description, sizes]) => {
+        it(`should not throw if \`sizes\` mixes pixel values with ${description}`, async () => {
+          setupTestingModule();
+
+          const template = `<img ngSrc="path/img.png" width="100" height="50" sizes="${sizes}">`;
+          const fixture = createTestComponent(template);
+          await expectAsync(fixture.whenStable()).toBeResolved();
+        });
+      });
+
+      it('should throw if `sizes` contains only pixel values and `srcset` is used', async () => {
         setupTestingModule();
 
         const template =
-          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
+          '<img ngSrc="path/img.png" width="100" height="50" sizes="500px" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
         const fixture = createTestComponent(template);
-        await expectAsync(fixture.whenStable()).toBeRejectedWithError(
-          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
-            'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
-            '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
-        );
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(/NG02952/);
       });
-      it('should not throw if a complex `sizes` is used with ngSrcset', async () => {
+      it('should not throw if `sizes` contains only pixel values and `ngSrcset` is used', async () => {
         setupTestingModule();
 
         const template =
-          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" ngSrcset="100w, 200w">';
+          '<img ngSrc="path/img.png" width="100" height="50" sizes="500px" ngSrcset="100w, 200w">';
         const fixture = createTestComponent(template);
         await expectAsync(fixture.whenStable()).toBeResolved();
       });
