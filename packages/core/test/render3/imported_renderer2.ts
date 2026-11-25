@@ -34,7 +34,7 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
     eventName: string,
     handler: Function,
     options?: ListenerOptions,
-  ): Function {
+  ): () => void {
     let callback: EventListener = handler as EventListener;
     element.addEventListener(eventName, callback, options);
     return () => this.removeEventListener(element, eventName, callback, options);

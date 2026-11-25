@@ -27,7 +27,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
     eventName: string,
     handler: Function,
     options?: ListenerOptions,
-  ): Function {
+  ): () => void {
     element.addEventListener(eventName, handler as EventListener, options);
     return () => this.removeEventListener(element, eventName, handler as EventListener, options);
   }

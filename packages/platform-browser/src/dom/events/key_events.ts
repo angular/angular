@@ -79,7 +79,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     eventName: string,
     handler: Function,
     options?: ListenerOptions,
-  ): Function {
+  ): () => void {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler = KeyEventsPlugin.eventCallback(

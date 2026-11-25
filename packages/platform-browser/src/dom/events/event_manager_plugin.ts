@@ -39,5 +39,5 @@ export abstract class EventManagerPlugin {
     eventName: string,
     handler: Function,
     options?: ListenerOptions,
-  ): Function;
+  ): () => void;
 }
