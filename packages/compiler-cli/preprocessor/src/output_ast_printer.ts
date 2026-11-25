@@ -12,7 +12,10 @@ import {
   EmitterVisitorContext,
   ParseSourceSpan,
 } from '@angular/compiler';
-import type {SpanMetadata} from './types.js';
+import type {ModuleFormat, SpanMetadata} from './types.js';
+
+/** Matches a TypeScript declaration file path (`.d.ts`, `.d.mts`, or `.d.cts`). */
+const DECLARATION_FILE_PATH = /\.d\.[cm]?ts$/i;
 
 /** A location in a source file that some printed text originates from. */
 export interface PrintedMapping {
@@ -181,6 +184,10 @@ export class ExpressionPrinter {
   private sideEffectImports = new Set<string>();
   private usedNamespaces = new Set<string>();
   private generatedNamespaceCount = 0;
+  /**
+   * Whether type casts (`<T>expr`) may be emitted. Only `'ts'` supports angle-bracket type
+   * assertions (`'tsx'`, `'js'`, and `'jsx'` either treat `<T>` as JSX or reject TS syntax).
+   */
   readonly emitTypes: boolean;
   private readonly exprVisitor: EmitterVisitor;
   private readonly typeVisitor: EmitterVisitor;
@@ -195,8 +202,12 @@ export class ExpressionPrinter {
     filePath: string,
     private readonly r3SymbolsSpecifier: string | null = null,
     private readonly namespaceAliasConflicts: ReadonlySet<string> = new Set(),
+    format?: ModuleFormat,
   ) {
-    this.emitTypes = filePath.endsWith('.ts') || filePath.endsWith('.mts');
+    this.emitTypes =
+      format !== undefined
+        ? format === 'ts'
+        : !DECLARATION_FILE_PATH.test(filePath) && /\.[cm]?ts$/i.test(filePath);
     this.moduleToNamespace.set(CORE_MODULE, this.generateNamespaceAlias());
     this.exprVisitor = new EmitterVisitor(this);
     this.typeVisitor = new EmitterVisitor(this, true);

@@ -226,6 +226,18 @@ describe('IncrementalEmitTracker', () => {
         .withContext(dtsPath)
         .toEqual(['/dir.ts', '/cmp.ts', '/mod.ts', '/service.ts']);
     }
+
+    const virtualDtsId = '\0virtual:lib-dts';
+    const customTracker = new IncrementalEmitTracker((id) => id === virtualDtsId);
+    emit(customTracker, program(dir()));
+
+    customTracker.recordChanges([virtualDtsId]);
+    expect(emit(customTracker, program(dir()))).toEqual([
+      '/dir.ts',
+      '/cmp.ts',
+      '/mod.ts',
+      '/service.ts',
+    ]);
   });
 
   it('should re-emit the importers of a deleted file', () => {

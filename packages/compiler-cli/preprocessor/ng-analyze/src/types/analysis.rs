@@ -685,6 +685,7 @@ impl NgModuleComponentMap {
 pub struct FileData {
     pub(crate) file_id: FileId,
     pub(crate) file_path: PathBuf,
+    pub(crate) format: Option<crate::host::ModuleFormat>,
     pub(crate) converter: Arc<crate::utils::Utf8ToUtf16>,
 
     pub(crate) imports_end: u32,
@@ -730,6 +731,10 @@ pub struct FileData {
 }
 
 impl FileData {
+    pub(crate) fn is_dts(&self) -> bool {
+        self.format.is_some_and(crate::host::ModuleFormat::is_dts)
+    }
+
     /// Static and dynamic import dependencies included in the program closure (`ProgramFiles`).
     ///
     /// TODO(parity): follow `/// <reference path="…" />` directives (tsc's `processReferencedFiles`).
@@ -788,6 +793,7 @@ impl FileData {
             file_id: self.file_id,
             file_path: self.file_path.to_string_lossy().into(),
             id_kind: Some(id_kind),
+            format: self.format,
             imports_end: self.imports_end,
             classes,
             imports: self.wire_imports(),

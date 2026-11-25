@@ -170,6 +170,26 @@ impl From<&str> for ModuleRef {
 
 /// Syntactic format of a module, supplied by the host or inferred from file extensions by
 /// [`DefaultFsHost`].
+// NOTE: `ModuleFormat` uses duplicated `#[cfg]` blocks rather than `#[cfg_attr]` because
+// `napi-derive` cannot evaluate `#[cfg_attr]` on enum variants inside `#[napi(string_enum)]`.
+#[cfg(feature = "napi")]
+#[napi(string_enum)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ModuleFormat {
+    #[napi(value = "ts")]
+    Ts,
+    #[napi(value = "tsx")]
+    Tsx,
+    #[napi(value = "dts")]
+    Dts,
+    #[napi(value = "js")]
+    Js,
+    #[napi(value = "jsx")]
+    Jsx,
+}
+
+#[cfg(not(feature = "napi"))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ModuleFormat {
@@ -209,7 +229,7 @@ impl ModuleFormat {
     }
 
     /// Whether this is a TypeScript source (`ts`/`tsx`), i.e. a format eligible for the program
-    /// closure. Broader than the path-based `utils::is_ts_source`, which accepts only `.ts`.
+    /// closure and `@NgModule` chunk grouping.
     pub fn is_ts_source(self) -> bool {
         matches!(self, Self::Ts | Self::Tsx)
     }
@@ -354,13 +374,11 @@ impl ResolveRequest {
 pub struct ResolvedModule {
     pub id: ModuleId,
     pub id_kind: IdKind,
-    /// Required either here or on [`LoadedModule`] for module loads.
+    /// Optional when supplied on [`LoadedModule`] or inferred from [`IdKind::Path`] extensions.
     pub format: Option<ModuleFormat>,
     /// Whether the module is external to the bundle (analyzed lazily for metadata, excluded from
     /// program closure).
     pub external: bool,
-    /// Optional inline source text to skip a follow-up [`AnalysisHost::load`] round trip.
-    pub code: Option<Arc<str>>,
 }
 
 /// Successful resource resolution returned by [`AnalysisHost::resolve_resource`].
@@ -406,7 +424,8 @@ pub trait AnalysisHost: Send + Sync + 'static {
 
     /// Load the text of `id`. `Ok(None)` means there is no such module or resource.
     ///
-    /// Module loads must report a format unless the resolution already did. `external` echoes
+    /// Module loads must report a format unless the resolution already did (or `id` is an
+    /// [`IdKind::Path`] module with a recognized extension). `external` echoes
     /// [`ResolvedModule::external`] so the host can read bundle-external modules directly instead
     /// of running them through its pipeline.
     fn load(
@@ -435,6 +454,10 @@ pub trait AnalysisHost: Send + Sync + 'static {
     fn is_synchronous(&self) -> bool {
         false
     }
+
+    /// Record the authoritative [`IdKind`] of `id` when interned directly (e.g. from `entryPoints`,
+    /// `updateFileContent`, or `getMetadataForFile`) before any `resolve` call reaches the host.
+    fn record_id_kind(&self, _id: &ModuleId, _id_kind: IdKind) {}
 
     /// Clear any internal resolution caches held by the host.
     fn clear_cache(&self) {}

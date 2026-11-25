@@ -101,6 +101,10 @@ export class IncrementalEmitTracker {
   /** Output fingerprints by `ProcessedFile`, so a reused output is not fingerprinted again. */
   private readonly outputFingerprints = new WeakMap<ProcessedFile, string>();
 
+  constructor(
+    private readonly isDeclarationFile: (path: string) => boolean = isDeclarationFilePath,
+  ) {}
+
   /**
    * Records that `paths` changed or were deleted. A change is a change even when the content is
    * identical, as with ngtsc, which compares source file identity rather than content.
@@ -119,7 +123,7 @@ export class IncrementalEmitTracker {
   private recordChange(path: string): void {
     // ngtsc starts a fresh compilation whenever a declaration file changes, as the change may
     // affect anything that consumes it (`IncrementalCompilation.incremental`).
-    if (isDeclarationFilePath(path)) {
+    if (this.isDeclarationFile(path)) {
       this.baseline = null;
       this.emitted.clear();
     }

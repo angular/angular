@@ -53,6 +53,7 @@ fn test_update_file_content() {
         "#
         .to_string(),
         id_kind: None,
+        format: None,
     };
 
     analyzer.update_file_content(vec![update]).unwrap();
@@ -690,6 +691,7 @@ fn test_file_changes_report_dependents_in_wire_spelling() {
             file_path: "/project/Shared/Dir.ts".to_string(),
             content: directive_source("second"),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
     assert!(affected.contains(&dependent), "{affected:?}");
@@ -786,6 +788,7 @@ fn test_analysis_cancellation() {
         file_path: "/project/a.ts".to_string(),
         content: "export class A { updated = true; }".to_string(),
         id_kind: None,
+        format: None,
     };
 
     std::thread::sleep(std::time::Duration::from_millis(50));
@@ -5342,6 +5345,7 @@ fn test_update_file_content_dts_invalidates_dependents() {
             file_path: "/project/lib.d.ts".to_string(),
             content: lib_dts("[libNew]"),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
     // The edited file, then every file whose cached analysis depended on it.
@@ -5381,6 +5385,7 @@ fn test_update_file_content_non_dot_ts_sources_invalidate_dependents() {
                 file_path: lib_path.clone(),
                 content: lib_source("[libNew]"),
                 id_kind: None,
+                format: None,
             }])
             .unwrap();
         assert_eq!(
@@ -5479,6 +5484,7 @@ fn test_update_file_content_created_file_resolves_failed_import() {
             file_path: "/project/lib.ts".to_string(),
             content: lib_source("[libNew]"),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
 
@@ -5572,6 +5578,7 @@ fn test_update_file_content_created_file_resolves_failed_dts_reexport() {
             file_path: "/project/lib.d.ts".to_string(),
             content: lib_dts("[libFromDts]"),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
 
@@ -5923,6 +5930,7 @@ fn test_editing_ngmodule_reached_through_imports_refreshes_declaring_module() {
             file_path: "/project/m.module.ts".to_string(),
             content: module_with_c1.clone(),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
     files.insert("/project/m.module.ts".to_string(), module_with_c1);
@@ -5935,6 +5943,7 @@ fn test_editing_ngmodule_reached_through_imports_refreshes_declaring_module() {
             file_path: "/project/m.module.ts".to_string(),
             content: module_without_c1.to_string(),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
     assert_eq!(declaring_module_of_c1(&analyzer), None);
@@ -9361,6 +9370,7 @@ fn test_virtual_entry_points_updates_and_invalidations() {
                       export class VirtCmp {}\n"
                 .to_string(),
             id_kind: Some(IdKind::Virtual),
+            format: None,
         }])
         .unwrap();
     assert!(updated.contains(&virtual_id.to_string()));
@@ -9660,6 +9670,7 @@ fn test_batching_host_analyzer_matches_default_fs_host_wire_output() {
             file_path: "/parity/app.module.ts".to_string(),
             content: "// overlay edit\n".to_string(),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
     let overlay_lookup = batch_analyzer
@@ -9997,11 +10008,13 @@ fn test_batching_host_delta_cancellation_restores_dirty_snapshot_and_normalizes_
                 file_path: "/delta/./a.ts".to_string(),
                 content: component_a("a2"),
                 id_kind: None,
+                format: None,
             },
             FileUpdate {
                 file_path: "/delta/uninterned.ts".to_string(),
                 content: "export const EXTRA = 1;\n".to_string(),
                 id_kind: None,
+                format: None,
             },
         ])
         .unwrap();
@@ -10212,6 +10225,7 @@ fn test_batching_host_in_flight_metadata_restarts_on_file_update_without_stale_c
             file_path: "/meta/app.ts".to_string(),
             content: app_v2.to_string(),
             id_kind: None,
+            format: None,
         }])
         .unwrap();
 
@@ -10342,16 +10356,19 @@ fn test_batching_host_virtual_dts_overlay_retains_format_after_cache_clear() {
                 file_path: "/vdts/extra.ts".to_string(),
                 content: "export const EXTRA = 1;\n".to_string(),
                 id_kind: None,
+                format: None,
             },
             FileUpdate {
                 file_path: virt_id.to_string(),
                 content: dts_for("[virt-v2]"),
                 id_kind: Some(IdKind::Virtual),
+                format: None,
             },
             FileUpdate {
                 file_path: "/vdts/app.ts".to_string(),
                 content: app_for("virt-v2"),
                 id_kind: None,
+                format: None,
             },
         ])
         .unwrap();
@@ -10816,4 +10833,179 @@ fn test_lazy_tsconfig_dts_preserve_symlinks_repoint_on_clear_resolution_cache() 
     analyzer.clear_resolution_cache_core().unwrap();
 
     assert_eq!(inspect_selector().as_deref(), Some("v2"));
+}
+
+#[test]
+fn test_batching_host_authoritative_module_format_overrides_extension_and_supports_custom_paths() {
+    use crate::AnalyzerOptions;
+    use crate::host::{
+        HostBatchResults, IdKind, ModuleFormat, ModuleId, ModuleRef, WireLoadResult,
+        WireResolveResult, WireSlotOutcome,
+    };
+
+    let app_ng = "import { NgModule } from '@angular/core';\n\
+                  import { CardCmp } from './card';\n\
+                  import { JsPathTsDir } from './ts-in-js';\n\
+                  import { VirtDtsDir } from 'virtual:ui-dts';\n\
+                  @NgModule({\n\
+                    declarations: [CardCmp],\n\
+                    imports: [JsPathTsDir, VirtDtsDir],\n\
+                    exports: [CardCmp],\n\
+                  })\n\
+                  export class AppModule {}\n";
+    let card_ng = "import { Component } from '@angular/core';\n\
+                   @Component({\n\
+                     selector: 'app-card',\n\
+                     standalone: false,\n\
+                     template: '<div jsPathTsDir virtDtsDir></div>',\n\
+                   })\n\
+                   export class CardCmp {}\n";
+    let ts_in_js = "import { Directive } from '@angular/core';\n\
+                    @Directive({ selector: '[jsPathTsDir]' })\n\
+                    export class JsPathTsDir { label: string = 'typed'; }\n";
+    let virt_dts = "import * as i0 from '@angular/core';\n\
+                    export declare class VirtDtsDir {\n\
+                      static ɵdir: i0.ɵɵDirectiveDeclaration<\
+                        VirtDtsDir, '[virtDtsDir]', never, {}, {}, never, never, true, never\
+                      >;\n\
+                    }\n";
+    let jsx_in_js = "export const view = () => <section className=\"ok\">hi</section>;\n";
+
+    let (analyzer, batch_host) = Analyzer::new_core_with_batching_host_and_entry_refs(
+        AnalyzerOptions {
+            optimize: Some(true),
+            ..Default::default()
+        },
+        Some(vec![
+            ModuleRef::Path("/h6/app.ng".to_string()),
+            ModuleRef::Path("/h6/jsx_entry.js".to_string()),
+            ModuleRef::Explicit {
+                id: "\0virtual:dts-entry".to_string(),
+                id_kind: IdKind::Virtual,
+            },
+        ]),
+    )
+    .unwrap();
+
+    let answer = |batch: crate::host::HostRequestBatch| {
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|req| match req.specifier.as_str() {
+                "./card" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("/h6/card.ng"),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Ts),
+                    external: false,
+                    code: None,
+                })),
+                "./ts-in-js" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("/h6/ts_in_js.js"),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Ts),
+                    external: false,
+                    code: None,
+                })),
+                "virtual:ui-dts" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("\0virtual:ui-dts"),
+                    id_kind: IdKind::Virtual,
+                    format: Some(ModuleFormat::Dts),
+                    external: true,
+                    code: Some(virt_dts.to_string()),
+                })),
+                _ => None,
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|req| match req.id.as_str() {
+                "/h6/app.ng" => Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: app_ng.to_string(),
+                    format: Some(ModuleFormat::Ts),
+                })),
+                "/h6/card.ng" => Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: card_ng.to_string(),
+                    format: None,
+                })),
+                "/h6/ts_in_js.js" => Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: ts_in_js.to_string(),
+                    format: None,
+                })),
+                "/h6/jsx_entry.js" => Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: jsx_in_js.to_string(),
+                    format: Some(ModuleFormat::Jsx),
+                })),
+                "\0virtual:dts-entry" => Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: "export declare const AMBIENT: number;\n".to_string(),
+                    format: Some(ModuleFormat::Dts),
+                })),
+                _ => None,
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    };
+
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+    let rx = analyzer.analyze_optimized_core(spawner).unwrap();
+    let chunks = drive_batching_stream(rx, &batch_host, &answer);
+
+    // Virtual `.d.ts` entry point must not be emitted in any compilation chunk.
+    let all_paths: Vec<&str> = chunks
+        .iter()
+        .flat_map(|c| c.files.iter().map(|f| f.file_path.as_str()))
+        .collect();
+    assert!(!all_paths.contains(&"\0virtual:dts-entry"), "{all_paths:?}");
+    assert!(all_paths.contains(&"/h6/app.ng"), "{all_paths:?}");
+    assert!(all_paths.contains(&"/h6/card.ng"), "{all_paths:?}");
+    assert!(all_paths.contains(&"/h6/ts_in_js.js"), "{all_paths:?}");
+    assert!(all_paths.contains(&"/h6/jsx_entry.js"), "{all_paths:?}");
+
+    // `AppModule` (`/h6/app.ng`) and non-standalone `CardCmp` (`/h6/card.ng`) must be grouped into
+    // the same NgModule chunk because `/h6/card.ng` has authoritative `ModuleFormat::Ts`.
+    let ng_chunk = chunks
+        .iter()
+        .find(|c| c.files.iter().any(|f| f.file_path == "/h6/app.ng"))
+        .expect("expected chunk containing /h6/app.ng");
+    assert!(
+        ng_chunk.files.iter().any(|f| f.file_path == "/h6/card.ng"),
+        "expected /h6/card.ng to be grouped with /h6/app.ng, got: {:?}",
+        ng_chunk
+            .files
+            .iter()
+            .map(|f| &f.file_path)
+            .collect::<Vec<_>>()
+    );
+
+    let card_res = ng_chunk
+        .files
+        .iter()
+        .find(|f| f.file_path == "/h6/card.ng")
+        .unwrap();
+    assert_eq!(card_res.format, Some(ModuleFormat::Ts));
+    let card_cmp = card_res.classes[0].component.as_ref().unwrap();
+    assert_eq!(
+        card_cmp
+            .declaring_ng_module
+            .as_ref()
+            .map(|m| m.file_path.as_str()),
+        Some("/h6/app.ng")
+    );
+    let card_decls: Vec<&str> = card_cmp
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .iter()
+        .map(|d| d.name.as_str())
+        .collect();
+    assert!(card_decls.contains(&"JsPathTsDir"), "{card_decls:?}");
+    assert!(card_decls.contains(&"VirtDtsDir"), "{card_decls:?}");
+
+    let jsx_res = chunks
+        .iter()
+        .flat_map(|c| c.files.iter())
+        .find(|f| f.file_path == "/h6/jsx_entry.js")
+        .unwrap();
+    assert_eq!(jsx_res.format, Some(ModuleFormat::Jsx));
+    assert!(jsx_res.diagnostics.is_empty(), "{:?}", jsx_res.diagnostics);
 }

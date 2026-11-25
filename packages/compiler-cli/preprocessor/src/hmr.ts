@@ -123,11 +123,12 @@ export function getHmrUpdateDeclaration(
   constantStatements: o.Statement[],
   meta: R3HmrMetadata,
   filePath: string,
+  format?: nga.ModuleFormat,
 ): string {
   // TODO(parity): ngtsc's translator emits the `@__PURE__` annotation on the pure `ɵɵdefineComponent`
   // call inside the callback; this printer only adds it to static fields (`createStaticField`). The
   // module is dev-only and never tree-shaken, so the annotation carries no weight here.
-  const printer = new ExpressionPrinter(filePath);
+  const printer = new ExpressionPrinter(filePath, null, new Set(), format);
   for (const dependency of meta.namespaceDependencies) {
     printer.addNamespaceImport(dependency.moduleName, dependency.assignedName);
   }

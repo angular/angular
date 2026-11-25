@@ -111,6 +111,8 @@ pub struct AnalysisResult {
     pub file_path: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id_kind: Option<crate::host::IdKind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format: Option<crate::host::ModuleFormat>,
     pub imports_end: u32, // byte position after the initial import block
     pub classes: Vec<ClassMetadata>,
     /// The file's static `import` declarations, in source order, so consumers never have to
@@ -251,6 +253,8 @@ pub struct FileUpdate {
     pub content: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id_kind: Option<crate::host::IdKind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format: Option<crate::host::ModuleFormat>,
 }
 
 // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#fileChangeType

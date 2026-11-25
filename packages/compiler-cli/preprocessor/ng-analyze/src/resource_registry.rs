@@ -368,6 +368,7 @@ mod tests {
             "#
             .to_string(),
             id_kind: None,
+            format: None,
         };
 
         analyzer.update_file_content(vec![update]).unwrap();

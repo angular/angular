@@ -366,6 +366,7 @@ export async function processFile(
     filePath,
     result.r3SymbolsSpecifier ?? null,
     new Set(result.namespaceAliasConflicts),
+    result.format,
   );
   // Compiled text goes through `out` rather than `s` directly, so its source mappings survive.
   const out = new OutputSourceMapBuilder(s, printer, filePath, content);
@@ -1889,6 +1890,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
                 hmrFilePath,
                 filePath,
                 idKind: result.idKind,
+                format: result.format,
                 classMeta,
                 topLevelValueBindings: result.topLevelValueBindings ?? [],
                 decorators: decoratorsToEmit,
@@ -1959,7 +1961,9 @@ function serializeOutput(file: FileCompilation): void {
   // type-checked output also reports TS2450). Skipping aliases of local declarations would fix both.
   // https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/translator/src/import_manager/import_typescript_transform.ts#L114-L148
   const hoistedImports: string[] = [];
-  if (!isDeclarationFilePath(filePath) && compiledClasses.length > 0) {
+  const isDts =
+    result.format !== undefined ? result.format === 'dts' : isDeclarationFilePath(filePath);
+  if (!isDts && compiledClasses.length > 0) {
     const lateImports = [
       ...importDeclarations.filter((decl) => !removedDecls.has(decl)),
       ...(result.importEqualsDeclarations ?? []),
@@ -2822,6 +2826,7 @@ interface HmrUpdateModuleOptions {
   hmrFilePath: string;
   filePath: string;
   idKind?: nga.IdKind;
+  format?: nga.ModuleFormat;
   classMeta: nga.ClassMetadata;
   topLevelValueBindings: readonly string[];
   decorators: DecoratorMetadata[];
@@ -2893,6 +2898,7 @@ function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null 
     pool.statements,
     hmrMeta,
     filePath,
+    options.format,
   );
 }
 

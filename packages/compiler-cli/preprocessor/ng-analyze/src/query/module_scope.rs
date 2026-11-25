@@ -426,7 +426,7 @@ impl QueryEngine {
         // Source NgModules in program order.
         let modules: Vec<ReferenceId> = syntaxes
             .iter()
-            .filter(|syntax| !crate::utils::is_dts(&syntax.file_path))
+            .filter(|syntax| !syntax.is_dts())
             .flat_map(|syntax| {
                 syntax
                     .classes
@@ -485,7 +485,7 @@ impl<'a> ScopeEnv<'a> {
     }
 
     fn is_dts(&self, file: FileId) -> bool {
-        crate::utils::is_dts(&self.ctx.engine.lookup_path(file))
+        self.ctx.engine.is_dts_file(file)
     }
 
     fn is_external(&self, file: FileId) -> bool {
@@ -1286,7 +1286,7 @@ impl<'a> ScopeEnv<'a> {
             .as_ref()
             .map(|owning| format!(" ({})", owning.specifier()))
             .unwrap_or_default();
-        let related_message = if !crate::utils::is_dts(std::path::Path::new(&decl_path)) {
+        let related_message = if !self.is_dts(entry.reference.file) {
             let annotation = match kind {
                 ListKind::Import => "@NgModule",
                 ListKind::Export => "Angular",

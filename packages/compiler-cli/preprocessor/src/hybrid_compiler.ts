@@ -85,8 +85,14 @@ export function serializeDiagnostics(
  * `.ngdiag.json` consumers do. `diagnosticsMap` keeps them so that
  * `getDiagnostics({includeDeclarationFiles: true})` consumers still can.
  */
-function targetsDeclarationFile(diag: nga.NgDiagnostic, analyzedPath: string): boolean {
-  return isDeclarationFilePath(diag.filePath ?? analyzedPath);
+function targetsDeclarationFile(
+  diag: nga.NgDiagnostic,
+  analyzedPath: string,
+  knownFormats: ReadonlyMap<string, nga.ModuleFormat>,
+): boolean {
+  const target = diag.filePath ?? analyzedPath;
+  const format = knownFormats.get(target);
+  return format !== undefined ? format === 'dts' : isDeclarationFilePath(target);
 }
 
 function isAbsolutePosixOrWindowsPath(p: string): boolean {
@@ -282,7 +288,7 @@ export class HybridCompiler {
   /** Bound targets and TCBs per file, keyed by `AnalysisResult.filePath`. */
   readonly fileCache = new Map<string, FileAnalysis>();
   /** Decides which files an incremental build has to re-emit. */
-  readonly incremental = new IncrementalEmitTracker();
+  readonly incremental = new IncrementalEmitTracker((filePath) => this.isDeclarationFile(filePath));
   readonly incrementalEnabled: boolean;
   /**
    * Persistent map of the latest `ProcessedFile` for every file in the program across incremental
@@ -323,6 +329,7 @@ export class HybridCompiler {
   private readonly knownVirtualFiles = new Set<string>();
   private readonly templateStyleUrlsByFile = new Map<string, string[]>();
   private readonly metadataByFile = new Map<string, nga.AnalysisResult>();
+  private readonly knownFormats = new Map<string, nga.ModuleFormat>();
   private readonly lastChunkByFile = new Map<string, nga.CompilationChunk>();
   private readonly componentTemplateConsumers = new Map<string, Set<string>>();
   private readonly ngContentSignatureByFile = new Map<string, string>();
@@ -423,7 +430,10 @@ export class HybridCompiler {
     const allDiagnostics: Array<nga.NgDiagnostic> = [];
     for (const [analyzedPath, diags] of this.diagnosticsMap) {
       for (const diag of diags) {
-        if (includeDeclarationFiles || !targetsDeclarationFile(diag, analyzedPath)) {
+        if (
+          includeDeclarationFiles ||
+          !targetsDeclarationFile(diag, analyzedPath, this.knownFormats)
+        ) {
           allDiagnostics.push(diag);
         }
       }
@@ -544,6 +554,7 @@ export class HybridCompiler {
     this.fileCache.delete(filePath);
     this.metadataByFile.delete(filePath);
     this.knownVirtualFiles.delete(filePath);
+    this.knownFormats.delete(filePath);
     this.lastChunkByFile.delete(filePath);
     this.processedFiles.delete(filePath);
     this.currentProcessedFiles.delete(filePath);
@@ -561,6 +572,9 @@ export class HybridCompiler {
     if (result.idKind === 'virtual') {
       this.knownVirtualFiles.add(result.filePath);
     }
+    if (result.format !== undefined) {
+      this.knownFormats.set(result.filePath, result.format);
+    }
     if (this.metadataByFile.get(result.filePath) === result) {
       return;
     }
@@ -570,6 +584,11 @@ export class HybridCompiler {
       this.recordComponentTemplateConsumers(result.filePath, result);
     }
   }
+
+  private readonly isDeclarationFile = (filePath: string): boolean => {
+    const known = this.knownFormats.get(filePath);
+    return known !== undefined ? known === 'dts' : isDeclarationFilePath(filePath);
+  };
 
   private invalidateCachedFile(filePath: string): void {
     this.fileCache.delete(filePath);
@@ -765,10 +784,11 @@ export class HybridCompiler {
     }
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(
-        updates.map(({filePath, idKind}) => ({
+        updates.map(({filePath, idKind, format}) => ({
           filePath,
           updateType: nga.FileUpdateType.Changed,
           ...(idKind !== undefined ? {idKind} : {}),
+          ...(format !== undefined ? {format} : {}),
         })),
       );
       return this.analyzer.updateFileContent(updates);
@@ -812,7 +832,7 @@ export class HybridCompiler {
       // The flush also evicts declaration files that resolved their own re-exports. None of them
       // changed, and recording one would make the tracker start over and re-emit every file. The
       // source files that import them are in `invalidated` as well.
-      const changed = invalidated.filter((filePath) => !isDeclarationFilePath(filePath));
+      const changed = invalidated.filter((filePath) => !this.isDeclarationFile(filePath));
       if (this.incrementalEnabled && changed.length > 0) {
         this.incremental.recordChanges(changed, []);
       }
@@ -835,7 +855,9 @@ export class HybridCompiler {
     }
   }
 
-  private async recordInvalidations(updates: readonly nga.FileInvalidation[]): Promise<void> {
+  private async recordInvalidations(
+    updates: ReadonlyArray<nga.FileInvalidation & {format?: nga.ModuleFormat}>,
+  ): Promise<void> {
     const canonical = await this.analyzer.canonicalPaths?.(updates.map(({filePath}) => filePath));
     this.recordCanonicalInvalidations(updates, canonical);
   }
@@ -847,25 +869,34 @@ export class HybridCompiler {
    * path through a symlink (macOS `/tmp`, Bazel output trees) that results never mention.
    */
   private recordCanonicalInvalidations(
-    updates: readonly nga.FileInvalidation[],
+    updates: ReadonlyArray<nga.FileInvalidation & {format?: nga.ModuleFormat}>,
     canonicalPaths: readonly string[] | undefined,
   ): void {
     const changed: string[] = [];
     const deleted: string[] = [];
-    updates.forEach(({filePath: hostPath, updateType, idKind}, i) => {
+    updates.forEach(({filePath: hostPath, updateType, idKind, format}, i) => {
       const isVirtual =
         idKind === 'virtual' || (idKind === undefined && this.knownVirtualFiles.has(hostPath));
       if (isVirtual) {
         this.knownVirtualFiles.add(hostPath);
       }
       const filePath = isVirtual ? hostPath : (canonicalPaths?.[i] ?? hostPath);
+      if (format !== undefined) {
+        this.knownFormats.set(filePath, format);
+      }
       // A resource no component is known to use may still be read during processing (e.g. a
       // stylesheet a template links that could not be read before), so every reusable output is
       // dropped. Sources and config files (a `tsconfig.json` edit is how roots change) are never
       // read that way, and are tracked through the analyzer instead. Whether a reprocessed file
       // is then re-emitted is decided by its output (`IncrementalEmitTracker`), so this costs
       // processing time, not spurious emits.
-      if (!isVirtual && !isSourceOrConfigFile(filePath) && !this.knownResources.has(filePath)) {
+      if (
+        !isVirtual &&
+        !isSourceOrConfigFile(filePath) &&
+        !this.knownFormats.has(filePath) &&
+        !this.lastChunkByFile.has(filePath) &&
+        !this.knownResources.has(filePath)
+      ) {
         this.processedFiles.clear();
         for (const knownTs of this.lastChunkByFile.keys()) {
           this.jsDirtyFiles.add(knownTs);

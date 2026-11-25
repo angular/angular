@@ -9,6 +9,7 @@ pub struct ParsedFileOwner {
     pub file_path: PathBuf,
     pub source_text: String,
     pub loaded: bool,
+    pub format: Option<crate::host::ModuleFormat>,
     pub allocator: Allocator,
 }
 
