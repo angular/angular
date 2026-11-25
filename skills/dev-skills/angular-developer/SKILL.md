@@ -123,6 +123,19 @@ When implementing navigation in Angular, consult the following references:
 
 If you require deeper documentation or more context, visit the [official Angular Routing guide](https://angular.dev/guide/routing).
 
+## Performance
+
+When optimizing or reviewing Angular code for performance, consult the following references:
+
+- **Core Web Vitals**: LCP, INP, and CLS targets, how Angular rendering choices affect each metric, and how to measure them. Read [core-web-vitals.md](references/core-web-vitals.md)
+- **Images**: Using `NgOptimizedImage` for LCP optimization, responsive images, and CLS prevention. Read [performance-images.md](references/performance-images.md)
+- **Defer Blocks**: All `@defer` triggers, `@placeholder`/`@loading`/`@error` blocks, and when NOT to defer. Read [defer-blocks.md](references/defer-blocks.md)
+- **Lazy Loading Services**: Splitting heavy or rarely used services into separate chunks with `injectAsync` and prefetching them with `onIdle`. Read [performance-lazy-services.md](references/performance-lazy-services.md)
+- **Change Detection**: `OnPush` strategy, zoneless Angular, and `NgZone.runOutsideAngular()`. Read [performance-change-detection.md](references/performance-change-detection.md)
+- **Anti-patterns**: Consolidated list of performance anti-patterns with fixes. Read [performance-anti-patterns.md](references/performance-anti-patterns.md)
+
+If you require deeper documentation or more context, visit the [official Angular performance guide](https://angular.dev/best-practices/performance).
+
 ## Styling and Animations
 
 When implementing styling and animations in Angular, consult the following references:
