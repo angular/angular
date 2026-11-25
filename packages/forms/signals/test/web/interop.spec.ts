@@ -14,6 +14,7 @@ import {
   Input,
   input,
   model,
+  output,
   resource,
   signal,
   viewChild,
@@ -24,6 +25,7 @@ import {
   AbstractControl,
   ControlValueAccessor,
   FormControl,
+  FormGroup,
   FormsModule,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
@@ -1506,6 +1508,208 @@ describe('ControlValueAccessor', () => {
       expect(comp.model.control.errors).toBeNull();
       expect(fvc().getRawValueSignal()()).toBe('10');
       expect(input.value).toBe('10');
+    });
+
+    it('should keep transformedValue in sync when a FormControl is reset and restored before rendering', async () => {
+      @Component({
+        selector: 'transformed-input',
+        template: `<input [value]="rawValue()" />`,
+      })
+      class TransformedInput {
+        readonly value = model<string | null>(null);
+        protected readonly rawValue = transformedValue(this.value, {
+          parse: (value: string) => ({value}),
+          format: (value) => value ?? '',
+        });
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TransformedInput],
+        template: `<transformed-input [formControl]="control" />`,
+      })
+      class TestCmp {
+        readonly control = new FormControl('Ada');
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const control = fixture.componentInstance.control;
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+      expect(input.value).toBe('Ada');
+
+      control.reset();
+      control.setValue('Ada');
+      await fixture.whenStable();
+
+      expect(input.value).toBe('Ada');
+    });
+
+    it('should keep transformedValue in sync when a FormGroup is reset and patched before rendering', async () => {
+      @Component({
+        selector: 'transformed-input',
+        template: `<input [value]="rawValue()" />`,
+      })
+      class TransformedInput {
+        readonly value = model<string | null>(null);
+        protected readonly rawValue = transformedValue(this.value, {
+          parse: (value: string) => ({value}),
+          format: (value) => value ?? '',
+        });
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TransformedInput],
+        template: `
+          <form [formGroup]="form">
+            <transformed-input formControlName="name" />
+          </form>
+        `,
+      })
+      class TestCmp {
+        readonly form = new FormGroup({name: new FormControl<string | null>('Ada')});
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const form = fixture.componentInstance.form;
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+      expect(input.value).toBe('Ada');
+
+      form.reset();
+      form.patchValue({name: 'Ada'});
+      await fixture.whenStable();
+
+      expect(form.value).toEqual({name: 'Ada'});
+      expect(input.value).toBe('Ada');
+    });
+
+    it('should write the reset value to the custom control model synchronously', async () => {
+      @Component({
+        selector: 'transformed-input',
+        template: `<input [value]="rawValue()" />`,
+      })
+      class TransformedInput {
+        readonly value = model<string | null>(null);
+        readonly rawValue = transformedValue(this.value, {
+          parse: (value: string) => ({value}),
+          format: (value) => value ?? '',
+        });
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TransformedInput],
+        template: `<transformed-input [formControl]="control" />`,
+      })
+      class TestCmp {
+        readonly control = new FormControl<string | null>('Ada');
+        readonly child = viewChild.required(TransformedInput);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const {control, child} = fixture.componentInstance;
+      expect(child().value()).toBe('Ada');
+
+      // No change detection between the reset and the reads: the model and the raw value must
+      // already agree with the control.
+      control.reset();
+      expect(child().value()).toBeNull();
+      expect(child().rawValue()).toBe('');
+
+      await fixture.whenStable();
+      expect(fixture.nativeElement.querySelector('input').value).toBe('');
+    });
+
+    it('should restore the formatted value after a parse error, a reset and a restore before rendering', async () => {
+      @Component({
+        selector: 'number-input',
+        template: `<input #i [value]="rawValue()" (input)="rawValue.set(i.value)" />`,
+      })
+      class NumberInput {
+        readonly value = model<number | null>(null);
+        protected readonly rawValue = transformedValue(this.value, {
+          parse: (val) => {
+            if (val === '') return {value: null};
+            const num = Number(val);
+            if (Number.isNaN(num)) {
+              return {error: {kind: 'parse', message: `${val} is not numeric`}};
+            }
+            return {value: num};
+          },
+          format: (val) => val?.toString() ?? '',
+        });
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, NumberInput],
+        template: `<number-input [formControl]="control" />`,
+      })
+      class TestCmp {
+        readonly control = new FormControl<number | null>(10);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const control = fixture.componentInstance.control;
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+      expect(input.value).toBe('10');
+
+      input.value = 'abc';
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+      expect(control.errors).toEqual({parse: jasmine.objectContaining({kind: 'parse'})});
+
+      control.reset();
+      control.setValue(10);
+      await fixture.whenStable();
+
+      expect(control.value).toBe(10);
+      expect(control.errors).toBeNull();
+      expect(input.value).toBe('10');
+    });
+
+    it('should discard a pending updateOn: blur value when the control is reset', async () => {
+      @Component({
+        selector: 'transformed-input',
+        template: `
+          <input #i [value]="rawValue()" (input)="rawValue.set(i.value)" (blur)="touch.emit()" />
+        `,
+      })
+      class TransformedInput {
+        readonly value = model<string | null>(null);
+        readonly touch = output<void>();
+        protected readonly rawValue = transformedValue(this.value, {
+          parse: (value: string) => ({value}),
+          format: (value) => value ?? '',
+        });
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TransformedInput],
+        template: `<transformed-input [formControl]="control" />`,
+      })
+      class TestCmp {
+        readonly control = new FormControl<string | null>('Ada', {updateOn: 'blur'});
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const control = fixture.componentInstance.control;
+      const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+
+      // The typed value stays pending until blur.
+      input.value = 'Grace';
+      input.dispatchEvent(new Event('input'));
+      expect(control.value).toBe('Ada');
+
+      control.reset();
+      input.dispatchEvent(new Event('blur'));
+      await fixture.whenStable();
+
+      // The blur must not commit the value the reset discarded.
+      expect(control.value).toBeNull();
+      expect(control.dirty).toBeFalse();
+      expect(input.value).toBe('');
     });
 
     it('should automatically reset transformedValue when FormControl is swapped and the new one is reset', async () => {
