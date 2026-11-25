@@ -422,6 +422,10 @@ pub struct ComponentMetadata {
     /// `changeDetection` expression as written in the decorator, matching ngtsc's local compilation behavior. `None` when absent.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub change_detection: Option<String>,
+    /// Resolved numeric `ChangeDetectionStrategy` value (`0` for `OnPush`, `1` for `Default`/`Eager`)
+    /// in semantic mode, preserving `0` (unlike `change_detection`, which filters `OnPush`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub change_detection_value: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub change_detection_span: Option<SpanMetadata>,
     pub preserve_whitespaces: Option<bool>,

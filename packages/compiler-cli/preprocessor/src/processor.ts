@@ -9,9 +9,13 @@
 import {
   ConstantPool,
   CssSelector,
+  DeclareComponentTemplateInfo,
   TmplAstDeferredBlock as DeferredBlock,
   FactoryTarget,
   OutOfBandDiagnosticCategory,
+  ParseLocation,
+  ParseSourceFile,
+  ParseSourceSpan,
   ParseTemplateOptions,
   R3ClassDebugInfo,
   R3ClassMetadataCtorParameter,
@@ -27,6 +31,8 @@ import {
   R3ServiceMetadata,
   R3TargetBinder,
   R3TemplateDependency,
+  R3TemplateDependencyKind,
+  R3TemplateDependencyMetadata,
   SchemaMetadata,
   SelectorMatcher,
   ViewEncapsulation,
@@ -34,6 +40,7 @@ import {
   compileComponentClassMetadata,
   compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
+  compileDeclareComponentFromMetadata,
   compileDeclareDirectiveFromMetadata,
   compileDeclareFactoryFunction,
   compileDeclareInjectableFromMetadata,
@@ -80,6 +87,7 @@ import {
   refToExpression,
   refToTypeExpression,
   stripIife,
+  usesDirectInlineTemplate,
   type MinimalDirectiveMeta,
 } from './compiler-utils.js';
 import type {CompilationMode} from './compiler_options.js';
@@ -104,7 +112,7 @@ import {
   type TcbResult,
   type TcbTargetInput,
 } from './tcb.js';
-import {lineNumberAtOffset} from './tcb_util.js';
+import {lineNumberAtOffset, offsetToPosition} from './tcb_util.js';
 import type * as nga from './types.js';
 
 interface HybridParseTemplateOptions extends ParseTemplateOptions {
@@ -744,14 +752,20 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       // Encapsulation arrives pre-resolved to its numeric enum member value; apply the same
       // default ngtsc does when the analyzer left it unresolved.
       const encapsulationValue = component.encapsulation ?? ViewEncapsulation.Emulated;
-      const changeDetectionValue = component.changeDetection
-        ? new o.WrappedNodeExpr(
-            new RawSource(
-              component.changeDetection,
-              component.changeDetectionSpan ? [component.changeDetectionSpan] : [],
-            ),
-          )
-        : null;
+      let changeDetectionValue: number | o.WrappedNodeExpr<RawSource> | null;
+
+      if (compilationMode === 'local') {
+        changeDetectionValue = component.changeDetection
+          ? new o.WrappedNodeExpr(
+              new RawSource(
+                component.changeDetection,
+                component.changeDetectionSpan ? [component.changeDetectionSpan] : [],
+              ),
+            )
+          : null;
+      } else {
+        changeDetectionValue = component.changeDetectionValue ?? null;
+      }
 
       // When `externalRuntimeStyles` is enabled, styleUrls are not loaded from disk; instead
       // the resolved resource URLs are emitted via the `ɵɵExternalStylesFeature(...)` so the
@@ -1422,23 +1436,41 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       const pipeDecls = Array.from(pipeNameToDecl.values()).filter((d) => eagerPipeSet.has(d));
       const orderedDeclarations = [...directivesAndModules, ...pipeDecls];
 
-      const declarations = !hasUnresolvedImports
-        ? orderedDeclarations.map((decl) =>
-            decl.declarationType === 'ngmodule'
-              ? {
-                  kind: 2, // R3TemplateDependencyKind.NgModule
-                  type: refToExpression(decl.ref),
-                }
-              : {
-                  kind: decl.declarationType === 'pipe' ? 1 : 0, // 1: Pipe, 0: Directive
-                  type: refToExpression(decl.ref),
-                  selector: decl.selector || '',
-                  inputs: [],
-                  outputs: [],
-                  exportAs: decl.exportAs || null,
-                  isComponent: decl.declarationType === 'component',
-                },
-          )
+      const declarations: R3TemplateDependencyMetadata[] = !hasUnresolvedImports
+        ? orderedDeclarations.map((decl): R3TemplateDependencyMetadata => {
+            if (decl.declarationType === 'ngmodule') {
+              return {
+                kind: R3TemplateDependencyKind.NgModule,
+                type: refToExpression(decl.ref),
+              };
+            }
+            if (decl.declarationType === 'pipe') {
+              return {
+                kind: R3TemplateDependencyKind.Pipe,
+                type: refToExpression(decl.ref),
+                name: decl.pipeName ?? '',
+              };
+            }
+            const declFields = decl.flattenedFields ?? decl.fields ?? [];
+            const declInputs: string[] = [];
+            const declOutputs: string[] = [];
+            for (const f of declFields) {
+              if (f.kind === 'input' && f.input) {
+                declInputs.push(f.input.alias || f.input.name);
+              } else if (f.kind === 'output' && f.output) {
+                declOutputs.push(f.output.alias || f.output.name);
+              }
+            }
+            return {
+              kind: R3TemplateDependencyKind.Directive,
+              type: refToExpression(decl.ref),
+              selector: decl.selector || '',
+              inputs: declInputs,
+              outputs: declOutputs,
+              exportAs: decl.exportAs || null,
+              isComponent: decl.declarationType === 'component',
+            };
+          })
         : [];
 
       // Decide whether the `dependencies` list is emitted directly or wrapped in a closure,
@@ -1476,7 +1508,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         isLocalCompilation && (!standalone || importsFactory !== undefined);
 
       const depMeta = computeComponentDependencyMetadata(
-        isLocalCompilation,
+        compilationMode,
         localRuntimeResolved,
         ctx.remoteScopedClasses?.has(`${filePath}#${className}`) ?? false,
         hasUnresolvedImports,
@@ -1501,7 +1533,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
             }
           : {mode: DeferBlockDepsEmitMode.PerBlock, blocks: deferBlocksMap};
 
-      const componentMeta: R3ComponentMetadata<R3TemplateDependency> = {
+      const componentMeta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
         name: className,
         type: {
           value: o.variable(className),
@@ -1595,7 +1627,14 @@ function compileClasses(file: FileCompilation): string | null | undefined {
 
       let compileResult: R3CompiledExpression;
       try {
-        compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
+        compileResult =
+          compilationMode === 'partial'
+            ? compileDeclareComponentFromMetadata(
+                componentMeta,
+                parsed,
+                buildDeclareComponentTemplateInfo(component, filePath, content),
+              )
+            : compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
       } catch (e) {
         file.pipelineError ??= e;
         continue;
@@ -1890,7 +1929,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
 
     const isVirtualFile = result.idKind === 'virtual';
     let debugInfoStmt: o.Statement | null = null;
-    if (component) {
+    if (component && compilationMode !== 'partial') {
       debugInfoStmt = buildSetClassDebugInfo(
         className,
         isVirtualFile ? filePath : getProjectRelativePath(filePath, ctx),
@@ -2261,15 +2300,22 @@ function inlineDecoratorResources(
 ): string {
   const props = preservedProperties.map((span) => sliceGuarded(s, span, guards, functionSpans));
   if (override.inlineTemplate !== null) {
-    props.push(`template: ${JSON.stringify(override.inlineTemplate)}`);
+    props.push(`template: ${stringifyAscii(override.inlineTemplate)}`);
   }
   if (override.stripStyleFields) {
     const styles = override.inlineStyles.filter((style) => style.trim().length > 0);
     if (styles.length > 0) {
-      props.push(`styles: [${styles.map((style) => JSON.stringify(style)).join(', ')}]`);
+      props.push(`styles: [${styles.map((style) => stringifyAscii(style)).join(', ')}]`);
     }
   }
   return `{\n  ${props.join(',\n  ')}\n}`;
+}
+
+function stringifyAscii(value: string): string {
+  return JSON.stringify(value).replace(
+    /[\u007f-\uffff]/g,
+    (c) => '\\u' + c.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0'),
+  );
 }
 
 /** Mirrors `FORWARD_REFERENCE_GUARD` in `ng-analyze/src/analyzer/mod.rs`. */
@@ -3586,6 +3632,46 @@ function createStaticField(
   );
 }
 
+/**
+ * Builds the `DeclareComponentTemplateInfo` passed to `compileDeclareComponentFromMetadata`.
+ *
+ * For direct inline template literals, we pass the verbatim source slice wrapped with a
+ * `ParseSourceSpan` (matching ngtsc passing the original TS literal node). Without this,
+ * `getTemplateExpression` falls back to `o.literal(content, null, null)`, which both drops
+ * the `.js.map` mapping back to the `.ts` file (breaking downstream linker source maps for
+ * inline templates) and re-serializes multi-line/backtick literals into single-line strings,
+ * shifting line/column offsets relative to the original `.ts` source.
+ */
+function buildDeclareComponentTemplateInfo(
+  component: nga.ComponentMetadata,
+  filePath: string,
+  content: string,
+): DeclareComponentTemplateInfo {
+  const isInline = component.templateUrl == null;
+  let inlineTemplateLiteralExpression: o.Expression | null = null;
+  if (usesDirectInlineTemplate(component) && component.templateSpan != null) {
+    const {start, end} = component.templateSpan;
+    const parseSourceFile = new ParseSourceFile(content, filePath);
+    const startPos = offsetToPosition(content, start);
+    const endPos = offsetToPosition(content, end);
+    const span = new ParseSourceSpan(
+      new ParseLocation(parseSourceFile, start, startPos.line, startPos.character),
+      new ParseLocation(parseSourceFile, end, endPos.line, endPos.character),
+    );
+    inlineTemplateLiteralExpression = new o.WrappedNodeExpr(
+      new RawSource(content.slice(start, end), [component.templateSpan]),
+      undefined,
+      span,
+    );
+  }
+  return {
+    content: component.template ?? '',
+    sourceUrl: component.templateUrl?.resolvedPath ?? filePath,
+    isInline,
+    inlineTemplateLiteralExpression,
+  };
+}
+
 function compileFactory(
   meta: R3FactoryMetadata,
   compilationMode: CompilationMode,
@@ -3615,7 +3701,7 @@ type DeclarationListEmitModeType =
   (typeof DeclarationListEmitMode)[keyof typeof DeclarationListEmitMode];
 
 interface ComponentDependencyMetadata {
-  declarations: R3TemplateDependency[];
+  declarations: R3TemplateDependencyMetadata[];
   declarationListEmitMode: DeclarationListEmitModeType;
   rawImports?: o.Expression;
 }
@@ -3624,17 +3710,17 @@ interface ComponentDependencyMetadata {
  * Computes component dependency emit metadata (declarations, emit mode, and rawImports).
  */
 function computeComponentDependencyMetadata(
-  isLocalCompilation: boolean,
+  compilationMode: CompilationMode,
   localRuntimeResolved: boolean,
   isRemoteScoped: boolean,
   hasUnresolvedImports: boolean,
   hasForwardRef: boolean,
   standalone: boolean,
-  declarations: R3TemplateDependency[],
+  declarations: R3TemplateDependencyMetadata[],
   rawImports?: o.Expression,
   importsFactory?: o.Expression,
 ): ComponentDependencyMetadata {
-  if (isLocalCompilation) {
+  if (compilationMode === 'local') {
     return {
       declarations: [],
       declarationListEmitMode: localRuntimeResolved
@@ -3673,7 +3759,7 @@ function computeComponentDependencyMetadata(
   return {
     declarations,
     declarationListEmitMode:
-      rawImports !== undefined || !standalone
+      compilationMode !== 'partial' && (rawImports !== undefined || !standalone)
         ? DeclarationListEmitMode.RuntimeResolved
         : DeclarationListEmitMode.Direct,
     rawImports,
