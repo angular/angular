@@ -12,7 +12,8 @@ import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
 import {MapAndPath, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
-import {CompileResult, getBuildOutputDirectory} from '../test_helpers/compile_test';
+import {isNgpTestMode} from '../../../src/ngtsc/testing';
+import {CompileResult, compileTest, getBuildOutputDirectory} from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {parseGoldenPartial} from '../test_helpers/golden_partials';
 import {runTests} from '../test_helpers/test_runner';
@@ -38,20 +39,33 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
     sourceMapping: test.compilerOptions?.['sourceMap'] === true,
     ...test.angularCompilerOptions,
   });
-  const goldenPartialPath = fileSystem.resolve('/GOLDEN_PARTIAL.js');
-  if (!fileSystem.exists(goldenPartialPath)) {
-    throw new Error(
-      'Golden partial does not exist for this test\n' +
-        'Try generating it by running:\n' +
-        `bazel run //packages/compiler-cli/test/compliance/test_cases:${test.relativePath}.golden`,
+
+  let emittedFiles: AbsoluteFsPath[] = [];
+  if (isNgpTestMode()) {
+    const result = compileTest(fileSystem, test.inputFiles, test.compilerOptions, {
+      compilationMode: 'partial',
+      ...test.angularCompilerOptions,
+    });
+    if (result.errors.length > 0) {
+      return result;
+    }
+    emittedFiles = result.emittedFiles;
+  } else {
+    const goldenPartialPath = fileSystem.resolve('/GOLDEN_PARTIAL.js');
+    if (!fileSystem.exists(goldenPartialPath)) {
+      throw new Error(
+        'Golden partial does not exist for this test\n' +
+          'Try generating it by running:\n' +
+          `bazel run //packages/compiler-cli/test/compliance/test_cases:${test.relativePath}.golden`,
+      );
+    }
+    const partialFile = fileSystem.readFile(goldenPartialPath);
+    const partialFiles = parseGoldenPartial(partialFile);
+
+    partialFiles.forEach((f) =>
+      safeWrite(fileSystem, fileSystem.resolve(builtDirectory, f.path), f.content),
     );
   }
-  const partialFile = fileSystem.readFile(goldenPartialPath);
-  const partialFiles = parseGoldenPartial(partialFile);
-
-  partialFiles.forEach((f) =>
-    safeWrite(fileSystem, fileSystem.resolve(builtDirectory, f.path), f.content),
-  );
 
   for (const expectation of test.expectations) {
     for (const {generated} of expectation.files) {
@@ -80,7 +94,7 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
       safeWrite(fileSystem, fileName, linkedSource);
     }
   }
-  return {emittedFiles: [], errors: []};
+  return {emittedFiles, errors: []};
 }
 
 /**

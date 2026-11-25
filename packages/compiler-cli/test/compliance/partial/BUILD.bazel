@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_project")
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 
 ts_project(
     name = "generate_golden_partial_lib",
@@ -12,6 +12,44 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/test/compliance/test_helpers",
     ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["partial_compile_spec.ts"],
+    deps = [
+        "//:node_modules/prettier",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/test/compliance/test_helpers",
+    ],
+)
+
+jasmine_test(
+    name = "partial",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
+    ],
+    shard_count = 2,
+)
+
+jasmine_test(
+    name = "partial_ngp",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
+    shard_count = 2,
 )
 
 exports_files([
