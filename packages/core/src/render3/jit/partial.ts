@@ -29,7 +29,7 @@ import {angularCoreEnv} from './environment';
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): unknown {
+export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'directive',
@@ -48,7 +48,10 @@ export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): unknown 
  * @codeGenApi
  */
 export function ɵɵngDeclareClassMetadata(decl: {
-  type: Type<any>;
+  minVersion?: string;
+  version?: string;
+  ngImport?: unknown;
+  type: Type<any> | AbstractType<any> | Function;
   decorators: any[];
   ctorParameters?: () => any[];
   propDecorators?: {[field: string]: any};
@@ -67,7 +70,10 @@ export function ɵɵngDeclareClassMetadata(decl: {
  * @codeGenApi
  */
 export function ɵɵngDeclareClassMetadataAsync(decl: {
-  type: Type<any>;
+  minVersion?: string;
+  version?: string;
+  ngImport?: unknown;
+  type: Type<any> | AbstractType<any> | Function;
   resolveDeferredDeps: () => Promise<Type<unknown>>[];
   resolveMetadata: (...types: Type<unknown>[]) => {
     decorators: any[];
@@ -76,7 +82,7 @@ export function ɵɵngDeclareClassMetadataAsync(decl: {
   };
 }): void {
   setClassMetadataAsync(
-    decl.type,
+    decl.type as Type<any>,
     decl.resolveDeferredDeps,
     (...types: (Type<unknown> | AbstractType<unknown>)[]) => {
       const meta = decl.resolveMetadata(...(types as Type<unknown>[]));
@@ -90,7 +96,7 @@ export function ɵɵngDeclareClassMetadataAsync(decl: {
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): unknown {
+export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'component',
@@ -108,7 +114,7 @@ export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): unknown 
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareFactory(decl: R3DeclareFactoryFacade): unknown {
+export function ɵɵngDeclareFactory(decl: R3DeclareFactoryFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: getFactoryKind(decl.target),
@@ -143,7 +149,7 @@ function getFactoryKind(target: FactoryTarget) {
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareInjectable(decl: R3DeclareInjectableFacade): unknown {
+export function ɵɵngDeclareInjectable(decl: R3DeclareInjectableFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'injectable',
@@ -166,7 +172,7 @@ export {FactoryTarget} from '../../compiler/compiler_facade';
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareInjector(decl: R3DeclareInjectorFacade): unknown {
+export function ɵɵngDeclareInjector(decl: R3DeclareInjectorFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'NgModule',
@@ -184,7 +190,7 @@ export function ɵɵngDeclareInjector(decl: R3DeclareInjectorFacade): unknown {
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareNgModule(decl: R3DeclareNgModuleFacade): unknown {
+export function ɵɵngDeclareNgModule(decl: R3DeclareNgModuleFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'NgModule',
@@ -202,7 +208,7 @@ export function ɵɵngDeclareNgModule(decl: R3DeclareNgModuleFacade): unknown {
  *
  * @codeGenApi
  */
-export function ɵɵngDeclarePipe(decl: R3DeclarePipeFacade): unknown {
+export function ɵɵngDeclarePipe(decl: R3DeclarePipeFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'pipe',
@@ -216,7 +222,7 @@ export function ɵɵngDeclarePipe(decl: R3DeclarePipeFacade): unknown {
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareService(decl: R3DeclareServiceFacade): unknown {
+export function ɵɵngDeclareService(decl: R3DeclareServiceFacade): any {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: 'service',

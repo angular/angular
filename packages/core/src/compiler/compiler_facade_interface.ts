@@ -244,6 +244,8 @@ export type LegacyInputPartialMapping =
   string | [bindingPropertyName: string, classPropertyName: string, transformFunction?: Function];
 
 export interface R3DeclareDirectiveFacade {
+  minVersion?: string;
+  ngImport?: OpaqueValue;
   selector?: string;
   type: Type;
   version: string;
@@ -291,7 +293,7 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   directives?: R3DeclareDirectiveDependencyFacade[];
   pipes?: {[pipeName: string]: OpaqueValue | (() => OpaqueValue)};
 
-  deferBlockDependencies?: (() => Promise<Type> | null)[];
+  deferBlockDependencies?: ((() => Promise<Type> | null) | null)[];
   viewProviders?: OpaqueValue;
   animations?: OpaqueValue;
   changeDetection?: ChangeDetectionStrategy;
@@ -346,12 +348,18 @@ export interface R3FactoryDefMetadataFacade {
 }
 
 export interface R3DeclareFactoryFacade {
+  minVersion?: string;
+  version?: string;
+  ngImport?: OpaqueValue;
   type: Type;
   deps: R3DeclareDependencyMetadataFacade[] | 'invalid' | null;
   target: FactoryTarget;
 }
 
 export interface R3DeclareInjectableFacade {
+  minVersion?: string;
+  version?: string;
+  ngImport?: OpaqueValue;
   type: Type;
   providedIn?: Type | 'root' | 'platform' | 'any' | null;
   useClass?: OpaqueValue;
@@ -362,6 +370,9 @@ export interface R3DeclareInjectableFacade {
 }
 
 export interface R3DeclareServiceFacade {
+  minVersion?: string;
+  version?: string;
+  ngImport?: OpaqueValue;
   type: Type;
   autoProvided?: boolean;
   factory?: OpaqueValue;
@@ -400,12 +411,18 @@ export interface R3DeclareQueryMetadataFacade {
 }
 
 export interface R3DeclareInjectorFacade {
+  minVersion?: string;
+  version?: string;
+  ngImport?: OpaqueValue;
   type: Type;
   imports?: OpaqueValue[];
   providers?: OpaqueValue[];
 }
 
 export interface R3DeclareNgModuleFacade {
+  minVersion?: string;
+  version?: string;
+  ngImport?: OpaqueValue;
   type: Type;
   bootstrap?: OpaqueValue[] | (() => OpaqueValue[]);
   declarations?: OpaqueValue[] | (() => OpaqueValue[]);
@@ -416,6 +433,8 @@ export interface R3DeclareNgModuleFacade {
 }
 
 export interface R3DeclarePipeFacade {
+  minVersion?: string;
+  ngImport?: OpaqueValue;
   type: Type;
   version: string;
   name: string;
