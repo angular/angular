@@ -8,7 +8,6 @@
 
 import {resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {addDefaultField} from '../../../field/validation';
 import type {LogicFn, ReadonlyFieldTree, SchemaPath, SchemaPathTree} from '../../types';
 import {createMetadataKey, metadata} from '../metadata';
 import {validateAsync} from './validate_async';
@@ -175,7 +174,7 @@ function standardIssueToFormTreeError(
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
     target = target[pathKey] as ReadonlyFieldTree<Record<PropertyKey, unknown>>;
   }
-  return addDefaultField(standardSchemaError(issue, {message: issue.message}), target);
+  return standardSchemaError(issue, {message: issue.message, fieldTree: target});
 }
 
 /**

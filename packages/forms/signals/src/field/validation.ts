@@ -385,6 +385,32 @@ function normalizeErrors<T extends ValidationResult>(error: T | readonly T[]): r
   return [error as T];
 }
 
+const AUTO_ASSIGNED_FIELD_TREE = Symbol(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'AUTO_ASSIGNED_FIELD_TREE' : '',
+);
+
+function attachFieldTree(
+  error: ɵWritable<ValidationError.WithOptionalFieldTree> & {[AUTO_ASSIGNED_FIELD_TREE]?: boolean},
+  fieldTree: ReadonlyFieldTree<unknown>,
+): void {
+  if (!error.fieldTree) {
+    error.fieldTree = fieldTree;
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      Object.defineProperty(error, AUTO_ASSIGNED_FIELD_TREE, {value: true});
+    }
+  } else if (
+    typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
+    error[AUTO_ASSIGNED_FIELD_TREE] &&
+    error.fieldTree !== fieldTree
+  ) {
+    throw new Error(
+      'Attempting to assign different field trees to the same error object. ' +
+        'This can happen if the same object is returned by different validation functions.',
+    );
+  }
+}
+
 /**
  * Sets the given field on the given error(s) if it does not already have a field.
  * @param error The error(s) to add the field to
@@ -405,10 +431,10 @@ export function addDefaultField<E extends ValidationError>(
 ): ValidationResult<E & {fieldTree: ReadonlyFieldTree<unknown>}> {
   if (isArray(errors)) {
     for (const error of errors) {
-      (error as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
+      attachFieldTree(error, fieldTree);
     }
   } else if (errors) {
-    (errors as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
+    attachFieldTree(errors, fieldTree);
   }
   return errors as ValidationResult<E & {fieldTree: ReadonlyFieldTree<unknown>}>;
 }

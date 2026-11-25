@@ -8,7 +8,7 @@
 
 import {inject, Injector, runInInjectionContext, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, required, schema, validate} from '../../public_api';
+import {form, required, schema, validate, ValidationError} from '../../public_api';
 
 describe('form', () => {
   describe('injection context', () => {
@@ -81,5 +81,19 @@ describe('form', () => {
       );
       expect(f.x().valid()).toBe(false);
     });
+  });
+
+  it('should throw if the same error object is returned by multiple validators', () => {
+    const error: ValidationError = {kind: 'invalid'};
+    const options = {injector: TestBed.inject(Injector)};
+    const one = form(signal('one'), (p) => validate(p, () => error), options);
+    const two = form(signal('two'), (p) => validate(p, () => error), options);
+
+    // Need to read the errors so the validator is evaluated.
+    one().errors();
+
+    expect(() => two().errors()).toThrowError(
+      /Attempting to assign different field trees to the same error object/,
+    );
   });
 });

@@ -398,6 +398,7 @@
       "assertNotScriptHostElement",
       "assertPathIsCurrent",
       "assertTypeDefined",
+      "attachFieldTree",
       "attachPatchData",
       "attachPreviouslyDetached",
       "baseElement",
