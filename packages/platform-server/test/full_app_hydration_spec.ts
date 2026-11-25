@@ -37,6 +37,7 @@ import {
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
+  ɵHydrationStatus as HydrationStatus,
   inject,
   Input,
   NgZone,
@@ -47,6 +48,7 @@ import {
   Provider,
   provideZoneChangeDetection,
   QueryList,
+  ɵreadHydrationInfo as readHydrationInfo,
   signal,
   TemplateRef,
   Type,
@@ -6612,6 +6614,219 @@ describe('platform-server full application hydration integration', () => {
           expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
           verifyNodeHasMismatchInfo(doc);
         });
+      });
+
+      it('should show a bounded DOM path for a mismatch in otherwise identical branches', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main id="content">
+              <div class="layout">
+                <section aria-label="Account">
+                  <article>
+                    <div class="name"><b>Alice</b></div>
+                  </article>
+                </section>
+                <section aria-label="Billing">
+                  <article>
+                    <div class="name"><b>Bob</b></div>
+                  </article>
+                </section>
+              </div>
+            </main>
+          `,
+        })
+        class AmbiguousBranchMismatchComponent {
+          private doc = inject(DOCUMENT);
+
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('[aria-label="Billing"] b');
+            const span = this.doc.createElement('span');
+            span.textContent = 'Bob';
+            b?.parentNode?.replaceChild(span, b);
+          }
+        }
+
+        const html = await ssr(AmbiguousBranchMismatchComponent);
+
+        resetTViewsFor(AmbiguousBranchMismatchComponent);
+
+        const result = await prepareEnvironmentAndHydrate(
+          doc,
+          html,
+          AmbiguousBranchMismatchComponent,
+          {
+            envProviders: [withNoopErrorHandler()],
+          },
+        ).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        const path =
+          'DOM path:\n' +
+          '<app>\n' +
+          ' └─ <main id="content">\n' +
+          '    └─ <div class="layout">\n' +
+          '       └─ <section aria-label="Billing">\n' +
+          '          └─ <article>\n' +
+          '             └─ <div class="name">\n\n';
+        expect(result.message).toContain(
+          path +
+            'Angular expected this DOM:\n\n' +
+            '<div class="name">\n' +
+            '  <b>…</b>  <-- AT THIS LOCATION',
+        );
+        expect(result.message).toContain(
+          'Actual DOM is:\n\n' + '<div class="name">\n' + '  <span>…</span>  <-- AT THIS LOCATION',
+        );
+        expect(result.message.match(/DOM path:/g)?.length).toBe(1);
+
+        expect(readHydrationInfo(doc.querySelector('app')!)).toEqual(
+          jasmine.objectContaining({
+            status: HydrationStatus.Mismatched,
+            expectedNodeDetails: jasmine.stringContaining(path),
+            actualNodeDetails: jasmine.stringContaining(path),
+          }),
+        );
+      });
+
+      it('should index repeated DOM ancestors inside an embedded view', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main>
+              <div>
+                <div>
+                  <section aria-label="Cards">
+                    <article>
+                      <div class="lead"></div>
+                      @for (name of names; track name) {
+                        <div class="card">
+                          <div class="name">
+                            <b>{{ name }}</b>
+                          </div>
+                        </div>
+                      }
+                    </article>
+                  </section>
+                </div>
+              </div>
+            </main>
+          `,
+        })
+        class RepeatedCardsComponent {
+          names = ['Alice', 'Bob'];
+        }
+
+        const html = (await ssr(RepeatedCardsComponent)).replace('<b>Bob</b>', '<span>Bob</span>');
+        resetTViewsFor(RepeatedCardsComponent);
+
+        const handleError = jasmine.createSpy('handleError');
+        await prepareEnvironmentAndHydrate(doc, html, RepeatedCardsComponent, {
+          envProviders: [{provide: ErrorHandler, useValue: {handleError}}],
+        });
+
+        const result: unknown = handleError.calls.mostRecent()?.args[0];
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        const path =
+          'DOM path:\n' +
+          '<app>\n' +
+          ' └─ ...\n' +
+          '    └─ <div>\n' +
+          '       └─ <section aria-label="Cards">\n' +
+          '          └─ <article>\n' +
+          '             └─ <div class="card">:nth-of-type(3)\n' +
+          '                └─ <div class="name">\n\n';
+        expect(result.message).toContain(path);
+        expect(result.message.match(/DOM path:/g)?.length).toBe(1);
+        expect(readHydrationInfo(doc.querySelector('app')!)).toEqual(
+          jasmine.objectContaining({
+            status: HydrationStatus.Mismatched,
+            expectedNodeDetails: jasmine.stringContaining(path),
+            actualNodeDetails: jasmine.stringContaining(path),
+          }),
+        );
+      });
+
+      it('should mark the declaring component for a mismatch in projected content', async () => {
+        @Component({
+          selector: 'projector-cmp',
+          template: '<section><ng-content /></section>',
+        })
+        class ProjectorComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [ProjectorComponent],
+          template: '<projector-cmp><div><b>Bold</b></div></projector-cmp>',
+        })
+        class ProjectionMismatchComponent {}
+
+        const html = (await ssr(ProjectionMismatchComponent)).replace(
+          '<b>Bold</b>',
+          '<span>Bold</span>',
+        );
+        resetTViewsFor(ProjectionMismatchComponent, ProjectorComponent);
+
+        const result = await prepareEnvironmentAndHydrate(doc, html, ProjectionMismatchComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        expect(result.message).toContain('Angular expected this DOM:\n\nDOM path:\n<app>');
+        expect(result.message).toContain(
+          'Actual DOM is:\n\nDOM path:\n' +
+            '<projector-cmp>\n' +
+            ' └─ <section>\n' +
+            '    └─ <div>\n',
+        );
+        verifyNodeHasMismatchInfo(doc);
+        expect(readHydrationInfo(doc.querySelector('projector-cmp')!)?.status).not.toBe(
+          HydrationStatus.Mismatched,
+        );
+      });
+
+      it('should keep a non-element mismatch in the actual DOM snippet', async () => {
+        @Component({
+          selector: 'app',
+          template: `<main>
+            <div class="content"><b>Bold</b></div>
+          </main>`,
+        })
+        class CommentNodeMismatchComponent {
+          private doc = inject(DOCUMENT);
+
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            b?.parentNode?.replaceChild(this.doc.createComment('mismatch'), b);
+          }
+        }
+
+        const html = await ssr(CommentNodeMismatchComponent);
+
+        resetTViewsFor(CommentNodeMismatchComponent);
+
+        const result = await prepareEnvironmentAndHydrate(doc, html, CommentNodeMismatchComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        expect(result.message).toContain(
+          'DOM path:\n' + '<app>\n' + ' └─ <main>\n' + '    └─ <div class="content">\n\n',
+        );
+        expect(result.message).toContain(
+          'Actual DOM is:\n\n' +
+            '<div class="content">\n' +
+            '  <!-- mismatch -->  <-- AT THIS LOCATION',
+        );
+        verifyNodeHasMismatchInfo(doc);
       });
 
       it(
