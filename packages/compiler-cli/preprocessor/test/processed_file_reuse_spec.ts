@@ -11,6 +11,7 @@ import * as path from 'path';
 import {resolveFixtureNodeModules, resolveWasmBinding} from './utils.js';
 import {createAnalyzer} from '../api.js';
 import {HybridCompiler} from '../src/hybrid_compiler.js';
+import {createTracer} from '../src/perf.js';
 import type {ProcessedFile} from '../src/processor.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
 import {FileUpdateType} from '../src/types.js';
@@ -59,6 +60,7 @@ async function createSession(
   for (const [name, content] of Object.entries({...FILES, ...extraFiles})) {
     await fs.writeFile(path.join(root, name), content);
   }
+  const tracer = createTracer();
   const analyzer = await createAnalyzer(path.join(root, 'tsconfig.json'), {
     backend: 'wasm',
     wasmBinding: resolveWasmBinding(),
@@ -70,6 +72,7 @@ async function createSession(
     tcbConfig: buildTypeCheckingConfig({strictTemplates: true}),
     verifyReusedProcessedFiles,
     incremental,
+    tracer,
   });
 
   /** Runs a full build first, then a delta pass per call via `compiler.compile()`. */
@@ -82,7 +85,7 @@ async function createSession(
   };
   const edit = (name: string, content: string) =>
     compiler.updateFileContent([{filePath: path.join(root, name), content}]);
-  return {compiler, analyzer, root, build, edit};
+  return {compiler, analyzer, tracer, root, build, edit};
 }
 
 describe('HybridCompiler processed output reuse', () => {
@@ -115,9 +118,52 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
-  it("reprocesses a component when a dependency's public API changes", async () => {
-    const {analyzer, build, edit} = await createSession('dependency_edit');
+  it('hydrates unchanged peer stubs and reuses peer outputs in multi-file NgModule chunks', async () => {
+    const {analyzer, build, edit} = await createSession('ngmodule_peer_stubs', false, true, {
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {},
+        files: ['cmp_a.ts', 'cmp_b.ts', 'app.module.ts'],
+      }),
+      'cmp_a.html': '<p>a v1</p>',
+      'cmp_a.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'cmp-a', templateUrl: './cmp_a.html', standalone: false})
+        export class CmpA {}
+      `,
+      'cmp_b.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'cmp-b', template: '<cmp-a></cmp-a>', standalone: false})
+        export class CmpB {}
+      `,
+      'app.module.ts': `
+        import {NgModule} from '@angular/core';
+        import {CmpA} from './cmp_a';
+        import {CmpB} from './cmp_b';
+        @NgModule({declarations: [CmpA, CmpB], exports: [CmpA, CmpB]})
+        export class AppModule {}
+      `,
+    });
     const first = await build();
+
+    await edit('cmp_a.html', '<p>a v2</p>');
+    const second = await build();
+
+    expect(second.get('cmp_a.ts')).not.toBe(first.get('cmp_a.ts'));
+    expect(second.get('cmp_a.ts')!.magicString.toString()).toContain('a v2');
+    expect(second.get('cmp_b.ts')).toBe(first.get('cmp_b.ts'));
+    expect(second.get('app.module.ts')).toBe(first.get('app.module.ts'));
+    analyzer.close();
+  });
+
+  it("reprocesses a component when a dependency's public API changes", async () => {
+    const {compiler, analyzer, root, build, edit} = await createSession('dependency_edit');
+    const first = await build();
+    const aPath = path.join(root, 'a.component.ts');
+    const cachedTemplateBefore = compiler.fileCache
+      .get(aPath)!
+      .parsedTemplates.values()
+      .next().value;
+    expect(cachedTemplateBefore).toBeDefined();
 
     await edit('dir.ts', FILES['dir.ts'].replace(`@Input() first = '';`, `@Input() second = '';`));
     const second = await build();
@@ -125,6 +171,9 @@ describe('HybridCompiler processed output reuse', () => {
     expect(second.get('dir.ts')).not.toBe(first.get('dir.ts'));
     expect(second.get('a.component.ts')).not.toBe(first.get('a.component.ts'));
     expect(second.get('b.component.ts')).toBe(first.get('b.component.ts'));
+    expect(compiler.fileCache.get(aPath)!.parsedTemplates.values().next().value).toBe(
+      cachedTemplateBefore,
+    );
     analyzer.close();
   });
 
@@ -274,7 +323,8 @@ describe('HybridCompiler processed output reuse', () => {
   });
 
   it('reprocesses only the component whose template <link rel="stylesheet"> resource changed', async () => {
-    const {compiler, analyzer, root, build, edit} = await createSession('linked_stylesheet');
+    const {compiler, analyzer, tracer, root, build, edit} =
+      await createSession('linked_stylesheet');
     await fs.writeFile(path.join(root, 'linked.css'), '.linked { color: red; }');
     await edit('b.component.html', '<link rel="stylesheet" href="./linked.css"><p>b</p>');
     const first = await build();
@@ -285,6 +335,7 @@ describe('HybridCompiler processed output reuse', () => {
       path.join(root, 'dir.ts'),
     ]);
 
+    tracer.take();
     await fs.writeFile(path.join(root, 'linked.css'), '.linked { color: blue; }');
     await compiler.invalidateFiles([
       {filePath: path.join(root, 'linked.css'), updateType: FileUpdateType.Changed},
@@ -295,9 +346,98 @@ describe('HybridCompiler processed output reuse', () => {
     expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
     expect(second.get('b.component.ts')).not.toBe(first.get('b.component.ts'));
     expect(second.get('b.component.ts')!.magicString.toString()).toContain('color: blue');
+    expect(tracer.take().summary.node.counters['TemplatesParsed'] ?? 0).toBe(0);
     const shouldEmit = compiler.incremental.createEmitFilter();
     expect(shouldEmit(path.join(root, 'b.component.ts'))).toBeTrue();
     expect(shouldEmit(path.join(root, 'a.component.ts'))).toBeFalse();
+    analyzer.close();
+  });
+
+  it('reprocesses a component when its styleUrls stylesheet changes without re-parsing its template', async () => {
+    const {analyzer, tracer, build, edit} = await createSession('style_urls_edit', false, true, {
+      'b.component.css': '.box { color: red; }',
+      'b.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'app-b',
+          templateUrl: './b.component.html',
+          styleUrls: ['./b.component.css'],
+        })
+        export class BComponent {}
+      `,
+    });
+    const first = await build();
+    expect(first.get('b.component.ts')!.magicString.toString()).toContain('color: red');
+
+    tracer.take();
+    await edit('b.component.css', '.box { color: green; }');
+    const second = await build();
+
+    expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
+    expect(second.get('b.component.ts')).not.toBe(first.get('b.component.ts'));
+    expect(second.get('b.component.ts')!.magicString.toString()).toContain('color: green');
+    expect(tracer.take().summary.node.counters['TemplatesParsed'] ?? 0).toBe(0);
+    analyzer.close();
+  });
+
+  it('recovers incremental <ng-content> and linked stylesheet invalidation after a failed update', async () => {
+    const {compiler, analyzer, root, build, edit} = await createSession(
+      'failed_update_recovery',
+      false,
+      true,
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {},
+          files: ['parent.component.ts', 'child.component.ts', 'b.component.ts'],
+        }),
+        'linked.css': '.linked { color: red; }',
+        'b.component.html': '<link rel="stylesheet" href="./linked.css"><p>b</p>',
+        'child.component.ts': `
+          import {Component} from '@angular/core';
+          @Component({selector: 'app-child', templateUrl: './child.component.html'})
+          export class ChildComponent {}
+        `,
+        'child.component.html':
+          '<!-- <ng-content select="span"></ng-content> --><ng-content></ng-content>',
+        'parent.component.ts': `
+          import {Component} from '@angular/core';
+          import {ChildComponent} from './child.component';
+          @Component({
+            selector: 'app-parent',
+            imports: [ChildComponent],
+            template: '<app-child>@if (show) {<span>a</span><b>b</b>}</app-child>',
+          })
+          export class ParentComponent {
+            show = true;
+          }
+        `,
+      },
+    );
+    await build();
+
+    await expectAsync(compiler.setEntryPoints(['relative.ts'])).toBeRejectedWithError(
+      /Entry points must be absolute paths/,
+    );
+
+    await build();
+
+    await edit(
+      'child.component.html',
+      '<ng-content select="span"></ng-content><ng-content></ng-content>',
+    );
+    await fs.writeFile(path.join(root, 'linked.css'), '.linked { color: blue; }');
+    await compiler.invalidateFiles([
+      {filePath: path.join(root, 'linked.css'), updateType: FileUpdateType.Changed},
+    ]);
+    const recovered = await build();
+
+    expect(
+      compiler
+        .getDiagnostics()
+        .filter((diag) => diag.code === 8011)
+        .map((diag) => diag.messageText),
+    ).toEqual([jasmine.stringContaining('"span"')]);
+    expect(recovered.get('b.component.ts')!.magicString.toString()).toContain('color: blue');
     analyzer.close();
   });
 
@@ -319,6 +459,31 @@ describe('HybridCompiler processed output reuse', () => {
     expect(compiler.currentProcessedFiles.has(path.join(root, 'b.component.ts'))).toBeFalse();
     // The tsconfig is no resource: the files that stay keep their output.
     expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
+    expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
+    analyzer.close();
+  });
+
+  it('preserves cached outputs for unchanged files when an extensionless virtual module changes', async () => {
+    const {compiler, analyzer, build} = await createSession('virtual_module_edit');
+    const first = await build();
+
+    await compiler.updateFileContent([
+      {
+        filePath: '\0virtual:entry',
+        content: 'export const VIRT = 1;\n',
+        idKind: 'virtual',
+      },
+    ]);
+    await compiler.invalidateFiles([
+      {
+        filePath: '\0virtual:entry',
+        updateType: FileUpdateType.Changed,
+      },
+    ]);
+    const second = await build();
+
+    expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
+    expect(second.get('b.component.ts')).toBe(first.get('b.component.ts'));
     expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
     analyzer.close();
   });
@@ -384,14 +549,10 @@ describe('HybridCompiler processed output reuse', () => {
         .toBe(normalize(expected.tcb?.code, incremental.root));
     }
 
-    // Both bind the templates for this build, but only the incremental compiler keys that
-    // binding for reuse in later builds.
     const boundState = (session: {compiler: HybridCompiler; root: string}) =>
       session.compiler.fileCache.get(path.join(session.root, 'a.component.ts'));
     expect(boundState(incremental)?.preparedTcbData).toBeTruthy();
-    expect(boundState(incremental)?.boundFingerprint).toBeDefined();
     expect(boundState(oneShot)?.preparedTcbData).toBeTruthy();
-    expect(boundState(oneShot)?.boundFingerprint).toBeUndefined();
 
     // Processing a file again with unchanged inputs reuses the cached output only when incremental.
     const reprocess = async (session: {compiler: HybridCompiler; root: string}) => {

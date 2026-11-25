@@ -9,6 +9,7 @@
 import type {ParseTemplateOptions} from '@angular/compiler';
 
 import {
+  areComponentTemplatesUnchanged,
   getOrParseComponentTemplate,
   isDeclarationFilePath,
   usesDirectInlineTemplate,
@@ -140,6 +141,14 @@ export async function resolveNgContentSelectors(
           return;
         }
         const fileAnalysis = getOrCreateFileAnalysis(fileCache, depFilePath);
+        if (
+          fileAnalysis.parsedTemplatesResult !== undefined &&
+          fileAnalysis.parsedTemplatesResult !== metadata &&
+          !areComponentTemplatesUnchanged(fileAnalysis.parsedTemplatesResult, metadata)
+        ) {
+          fileAnalysis.parsedTemplates.clear();
+          fileAnalysis.sourceContent = undefined;
+        }
         let depContent = '';
         if (needsSource) {
           depContent = fileAnalysis.sourceContent ?? (await analyzer.getFileContent(depFilePath));
@@ -156,6 +165,7 @@ export async function resolveNgContentSelectors(
             tracer,
           );
         }
+        fileAnalysis.parsedTemplatesResult = metadata;
       }),
     );
   }

@@ -320,7 +320,7 @@ export class ParentComponent {}
         tsconfigPath,
         keepAnalyzerAlive: true,
       });
-      expect(compiler.fileCache.get(parentTs)?.boundFingerprint).toBeDefined();
+      expect(compiler.fileCache.get(parentTs)?.boundResult).toBeDefined();
 
       await fs.writeFile(
         parentHtml,

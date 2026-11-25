@@ -120,6 +120,7 @@ interface HybridCompilerContext {
   i18nUseExternalIds?: boolean;
   remoteScopedClasses?: Set<string>;
   metadataMap?: Map<string, nga.AnalysisResult>;
+  onMetadata?: (metadata: nga.AnalysisResult) => void;
   /** Keyed `filePath#ClassName`; see `ChunkContext.eagerlyUsedDeclarations`. */
   eagerlyUsedDeclarations?: Map<string, nga.DeclarationMetadata[]>;
   rootDir?: string;
@@ -2010,6 +2011,7 @@ async function generateTcb(file: FileCompilation, fileId: number): Promise<TcbRe
             analyzer: ctx.analyzer,
             fileCache: ctx.fileCache,
             knownMetadata: ctx.metadataMap,
+            onMetadata: ctx.onMetadata,
           },
           ctx.tracer,
         );

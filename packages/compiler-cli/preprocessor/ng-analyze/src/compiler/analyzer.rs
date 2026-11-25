@@ -1,5 +1,5 @@
 use crate::fs::OverlayFileSystem;
-use crate::query::keys::QueryKey;
+use crate::query::keys::{QueryKey, WireFileResult};
 use crate::query::{FileId, QueryContext};
 use crate::resource_registry::ResourceRegistry;
 use crate::tsconfig_resolution;
@@ -1881,15 +1881,14 @@ impl Analyzer {
 
             async move {
                 if cancel_token.is_cancelled() {
-                    return (Err("Cancelled".to_string()), FileChunkInfo::default());
+                    return Err("Cancelled".to_string());
                 }
 
                 // TODO(diagnostics): surface `_local_res.errors` as a WireError on the
                 // AnalysisResult for consumers that don't run TypeScript.
-                let wire = QueryContext::new(engine)
+                Ok(QueryContext::new(engine)
                     .analyze_file_wire(local_res.file_id, is_optimized)
-                    .await;
-                (*wire).clone()
+                    .await)
             }
             .boxed()
         };
@@ -1983,9 +1982,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     LA: Fn(PathBuf) -> FutLA + Send + Sync + 'static + Clone,
     FutLA: std::future::Future<Output = Arc<FileData>> + Send + 'static,
     P: Fn(PathBuf, Arc<FileData>) -> FutP + Send + Sync + 'static + Clone,
-    FutP: std::future::Future<Output = (Result<crate::AnalysisResult, String>, FileChunkInfo)>
-        + Send
-        + 'static,
+    FutP: std::future::Future<Output = Result<Arc<WireFileResult>, String>> + Send + 'static,
 {
     let mut seen = HashSet::new();
     let mut visited_file_ids = HashSet::new();
@@ -2034,9 +2031,19 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     }
 
     let prev_program_files = Arc::new(engine.last_program_files.lock().unwrap().clone());
-    let dirty_snapshot = DirtyFilesSnapshot::take(&engine);
+    let dirty_snapshot = DirtyFilesSnapshot::take(&engine, is_optimized);
     let delta_dirty_files = if is_delta {
         dirty_snapshot.files().cloned()
+    } else {
+        None
+    };
+    let delta_direct_files = if delta_dirty_files.is_some() {
+        Some(dirty_snapshot.direct_files().clone())
+    } else {
+        None
+    };
+    let delta_prev_wire = if delta_dirty_files.is_some() {
+        Some(dirty_snapshot.prev_wire_results().clone())
     } else {
         None
     };
@@ -2048,6 +2055,8 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     let task_cancel_token = cancel_token.clone();
     let task_engine = engine.clone();
     let task_delta_dirty = delta_dirty_files.clone();
+    let task_delta_direct = delta_direct_files.clone();
+    let task_delta_prev_wire = delta_prev_wire.clone();
     let task_prev_program = prev_program_files.clone();
     let spawn_file_task = move |path: PathBuf| {
         let event_sender = event_sender.clone();
@@ -2057,6 +2066,8 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
         let cancel_wait = task_cancel_token.clone();
         let engine = task_engine.clone();
         let delta_dirty = task_delta_dirty.clone();
+        let delta_direct = task_delta_direct.clone();
+        let delta_prev_wire = task_delta_prev_wire.clone();
         let prev_program = task_prev_program.clone();
         spawner
             .spawn_with_handle(async move {
@@ -2080,21 +2091,78 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
                         return;
                     }
                     let file_id = local_res.file_id;
-                    let is_dirty = match &delta_dirty {
+                    let directly_invalidated = delta_direct
+                        .as_ref()
+                        .is_some_and(|set| set.contains(&file_id));
+                    let prev_wire = delta_prev_wire.as_ref().and_then(|map| map.get(&file_id));
+                    let was_dirty = match &delta_dirty {
                         Some(dirty) => {
-                            dirty.contains(&file_id)
+                            directly_invalidated
+                                || dirty.contains(&file_id)
+                                || prev_wire.is_some()
                                 || !prev_program.contains(&file_id)
                                 || !engine.has_cached_wire(file_id, is_optimized)
                         }
                         None => true,
                     };
-                    if !is_dirty
+                    if !was_dirty
                         && (!group_chunks_by_ng_module
                             || !local_res.may_have_non_standalone_class())
                     {
                         return;
                     }
-                    let (result, chunk_info) = processor(path, local_res).await;
+                    let (result, chunk_info, is_dirty) = match processor(path, local_res).await {
+                        Ok(wire) => {
+                            let prev_same = match &wire.0 {
+                                Ok(res) => {
+                                    delta_dirty.is_some()
+                                        && !directly_invalidated
+                                        && prev_program.contains(&file_id)
+                                        && (!was_dirty
+                                            || prev_wire.and_then(Option::as_ref).is_some_and(
+                                                |prev| {
+                                                    Arc::ptr_eq(prev, &wire)
+                                                        || matches!(&prev.0, Ok(prev_res) if *prev_res == *res)
+                                                },
+                                            ))
+                                }
+                                Err(_) => false,
+                            };
+                            if prev_same {
+                                if !group_chunks_by_ng_module || !wire.1.has_non_standalone {
+                                    return;
+                                }
+                                let Ok(ref res) = wire.0 else {
+                                    unreachable!();
+                                };
+                                // TODO(ngp): remove once template compilation moves into Rust and
+                                // unchanged peer metadata no longer crosses the Rust-JS IPC boundary.
+                                let stub = AnalysisResult {
+                                    file_id: res.file_id,
+                                    file_path: res.file_path.clone(),
+                                    id_kind: res.id_kind,
+                                    imports_end: res.imports_end,
+                                    classes: Vec::new(),
+                                    imports: Vec::new(),
+                                    import_equals_declarations: Vec::new(),
+                                    type_only_exports: Vec::new(),
+                                    diagnostics: Vec::new(),
+                                    source_file_validator_diagnostics: Vec::new(),
+                                    signal_debug_names: Vec::new(),
+                                    r3_symbols_specifier: None,
+                                    top_level_value_bindings: None,
+                                    namespace_alias_conflicts: Vec::new(),
+                                    static_dependencies: Vec::new(),
+                                    unchanged: true,
+                                };
+                                (Ok(stub), wire.1.clone(), false)
+                            } else {
+                                let (res, info) = Arc::unwrap_or_clone(wire);
+                                (res, info, was_dirty)
+                            }
+                        }
+                        Err(err) => (Err(err), FileChunkInfo::default(), was_dirty),
+                    };
                     let _ = event_sender
                         .clone()
                         .send(CoordinatorEvent::FileCompleted {
@@ -2241,7 +2309,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
     }
 
     *engine.last_program_files.lock().unwrap() = visited_file_ids;
-    dirty_snapshot.consume();
+    dirty_snapshot.consume(is_optimized);
 }
 
 /// The files marked dirty since the last completed stream, taken from the engine for one
@@ -2255,19 +2323,62 @@ async fn run_coordinator<S, LA, FutLA, P, FutP>(
 struct DirtyFilesSnapshot {
     engine: Arc<crate::QueryEngine>,
     files: Option<Arc<HashSet<FileId>>>,
+    direct_files: Arc<HashSet<FileId>>,
+    prev_wire_results: Arc<HashMap<FileId, Option<Arc<WireFileResult>>>>,
     consumed: bool,
 }
 
 impl DirtyFilesSnapshot {
-    fn take(engine: &Arc<crate::QueryEngine>) -> Self {
+    fn take(engine: &Arc<crate::QueryEngine>, is_optimized: bool) -> Self {
+        let same_mode = engine
+            .last_stream_optimized
+            .lock()
+            .is_ok_and(|g| *g == Some(is_optimized));
+        if !same_mode {
+            if let Ok(mut mode_guard) = engine.last_stream_optimized.lock() {
+                *mode_guard = None;
+            }
+            if let Ok(mut dirty_guard) = engine.dirty_wire_files.lock() {
+                *dirty_guard = None;
+            }
+            if let Ok(mut direct_guard) = engine.directly_invalidated_files.lock() {
+                direct_guard.clear();
+            }
+            if let Ok(mut wire_guard) = engine.last_wire_results.lock() {
+                wire_guard.clear();
+            }
+            return Self {
+                engine: engine.clone(),
+                files: None,
+                direct_files: Arc::new(HashSet::new()),
+                prev_wire_results: Arc::new(HashMap::new()),
+                consumed: false,
+            };
+        }
         let files = engine
             .dirty_wire_files
             .lock()
             .ok()
             .and_then(|mut guard| guard.as_mut().map(|set| Arc::new(std::mem::take(set))));
+        let direct_files = Arc::new(
+            engine
+                .directly_invalidated_files
+                .lock()
+                .map(|mut guard| std::mem::take(&mut *guard))
+                .unwrap_or_default(),
+        );
+        let prev_wire_results = Arc::new(
+            engine
+                .last_wire_results
+                .lock()
+                .map(|mut guard| std::mem::take(&mut *guard))
+                .unwrap_or_default(),
+        );
         Self {
             engine: engine.clone(),
             files,
+            direct_files,
+            prev_wire_results,
             consumed: false,
         }
     }
@@ -2277,9 +2388,22 @@ impl DirtyFilesSnapshot {
         self.files.as_ref()
     }
 
+    /// The files whose own `.ts` source or external resource was directly invalidated.
+    fn direct_files(&self) -> &Arc<HashSet<FileId>> {
+        &self.direct_files
+    }
+
+    /// Evicted wire results from the last completed stream.
+    fn prev_wire_results(&self) -> &Arc<HashMap<FileId, Option<Arc<WireFileResult>>>> {
+        &self.prev_wire_results
+    }
+
     /// Marks the run complete: the snapshot is spent, and from now on dirty files are tracked.
-    fn consume(mut self) {
+    fn consume(mut self, is_optimized: bool) {
         self.consumed = true;
+        if let Ok(mut mode_guard) = self.engine.last_stream_optimized.lock() {
+            *mode_guard = Some(is_optimized);
+        }
         if let Ok(mut guard) = self.engine.dirty_wire_files.lock() {
             if guard.is_none() {
                 *guard = Some(HashSet::new());
@@ -2296,6 +2420,20 @@ impl Drop for DirtyFilesSnapshot {
         let Some(files) = self.files.take() else {
             return;
         };
+        let direct_snapshot =
+            if let Ok(mut direct_guard) = self.engine.directly_invalidated_files.lock() {
+                direct_guard.extend(self.direct_files.iter().copied());
+                direct_guard.clone()
+            } else {
+                HashSet::new()
+            };
+        if let Ok(mut wire_guard) = self.engine.last_wire_results.lock() {
+            for (&k, v) in self.prev_wire_results.iter() {
+                if !direct_snapshot.contains(&k) {
+                    wire_guard.insert(k, v.clone());
+                }
+            }
+        }
         if let Ok(mut guard) = self.engine.dirty_wire_files.lock() {
             match guard.as_mut() {
                 Some(live) => live.extend(files.iter().copied()),
@@ -2378,6 +2516,7 @@ fn handle_coordinator_event(
 struct ChunkState {
     members: HashSet<FileId>,
     expected: HashSet<FileId>,
+    required_owners: HashSet<FileId>,
     completed: HashMap<FileId, crate::AnalysisResult>,
     has_dirty: bool,
 }
@@ -2414,6 +2553,7 @@ impl UnionFind {
         self.states.entry(root).or_insert_with(|| ChunkState {
             members: [file_id].into_iter().collect(),
             expected: [file_id].into_iter().collect(),
+            required_owners: HashSet::new(),
             completed: HashMap::new(),
             has_dirty: false,
         });
@@ -2431,6 +2571,7 @@ impl UnionFind {
         let state2 = self.states.remove(&root2).unwrap_or_else(|| ChunkState {
             members: [root2].into_iter().collect(),
             expected: [root2].into_iter().collect(),
+            required_owners: HashSet::new(),
             completed: HashMap::new(),
             has_dirty: false,
         });
@@ -2438,12 +2579,14 @@ impl UnionFind {
         let state1 = self.states.entry(root1).or_insert_with(|| ChunkState {
             members: [root1].into_iter().collect(),
             expected: [root1].into_iter().collect(),
+            required_owners: HashSet::new(),
             completed: HashMap::new(),
             has_dirty: false,
         });
 
         state1.members.extend(state2.members);
         state1.expected.extend(state2.expected);
+        state1.required_owners.extend(state2.required_owners);
         state1.completed.extend(state2.completed);
         state1.has_dirty |= state2.has_dirty;
     }
@@ -2502,10 +2645,12 @@ fn compute_intra_chunk_static_edges(
 pub struct FileChunkInfo {
     pub has_non_standalone: bool,
     pub declared_file_ids: Vec<FileId>,
+    pub owner_file_ids: Vec<FileId>,
 }
 
 /// Summarize what a completed file contributes to chunk grouping: whether it holds anything that
-/// needs an `@NgModule` scope at all, and which files the `@NgModule`s it declares pull in.
+/// needs an `@NgModule` scope at all, which files the `@NgModule`s it declares pull in, and which
+/// declaring `@NgModule` files its non-standalone classes require before the chunk can complete.
 pub(crate) async fn extract_chunk_info(
     file_data: &FileData,
     engine: &crate::QueryEngine,
@@ -2513,6 +2658,7 @@ pub(crate) async fn extract_chunk_info(
 ) -> FileChunkInfo {
     let mut has_non_standalone = false;
     let mut declared_file_ids = Vec::new();
+    let mut owner_file_ids = Vec::new();
 
     for class in &file_data.classes {
         match &class.decorator {
@@ -2558,16 +2704,25 @@ pub(crate) async fn extract_chunk_info(
                 if !c.directive.standalone || c.directive.declaring_ng_module.is_some() =>
             {
                 has_non_standalone = true;
+                if let Some(ref owner) = c.directive.declaring_ng_module {
+                    owner_file_ids.push(owner.file);
+                }
             }
             crate::analyzer::DecoratorData::Directive(d)
                 if !d.standalone || d.declaring_ng_module.is_some() =>
             {
                 has_non_standalone = true;
+                if let Some(ref owner) = d.declaring_ng_module {
+                    owner_file_ids.push(owner.file);
+                }
             }
             crate::analyzer::DecoratorData::Pipe(p)
                 if !p.standalone.unwrap_or(true) || p.declaring_ng_module.is_some() =>
             {
                 has_non_standalone = true;
+                if let Some(ref owner) = p.declaring_ng_module {
+                    owner_file_ids.push(owner.file);
+                }
             }
             _ => {}
         }
@@ -2576,6 +2731,7 @@ pub(crate) async fn extract_chunk_info(
     FileChunkInfo {
         has_non_standalone,
         declared_file_ids,
+        owner_file_ids,
     }
 }
 
@@ -2637,6 +2793,7 @@ fn handle_completed_file(
     let root = uf.find(file_id);
     if let Some(state) = uf.states.get_mut(&root) {
         state.completed.insert(file_id, res);
+        state.required_owners.extend(chunk_info.owner_file_ids);
         state.has_dirty |= is_dirty;
     }
 
@@ -2653,24 +2810,14 @@ fn handle_completed_file(
 
         if expected_all_completed {
             // Complete the chunk only once every non-standalone class's declaring NgModule
-            // file is also present (fixes the streaming race where a component completes
-            // before its module). An ownerless non-standalone class (declared by no NgModule)
-            // is emitted, not errored — ngtsc compiles a component with a null scope:
+            // file is also present (including when the class's file is an `unchanged: true` stub).
+            // An ownerless non-standalone class (declared by no NgModule) is emitted, not
+            // errored — ngtsc compiles a component with a null scope:
             // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1355-L1360
-            let mut chunk_valid = true;
-            'outer: for file_res in state.completed.values() {
-                for class in &file_res.classes {
-                    let ClassOwner::HasNgModule(ref owner_path) = get_class_owner(class) else {
-                        continue;
-                    };
-                    let owner_id = engine.intern_entry_or_dep(Path::new(owner_path));
-                    if !state.completed.contains_key(&owner_id) {
-                        chunk_valid = false;
-                        break 'outer;
-                    }
-                }
-            }
-            chunk_valid
+            state
+                .required_owners
+                .iter()
+                .all(|owner_id| state.completed.contains_key(owner_id))
         } else {
             false
         }
@@ -2706,40 +2853,6 @@ fn dedup_preserving_order(mut paths: Vec<String>) -> Vec<String> {
     let mut seen = HashSet::new();
     paths.retain(|path| seen.insert(path.clone()));
     paths
-}
-
-#[derive(Debug)]
-enum ClassOwner {
-    Other,
-    HasNgModule(String),
-    NoNgModule,
-}
-
-fn get_class_owner(class: &crate::ClassMetadata) -> ClassOwner {
-    let declaring = if let Some(comp) = &class.component {
-        if comp.standalone && comp.declaring_ng_module.is_none() {
-            return ClassOwner::Other;
-        }
-        &comp.declaring_ng_module
-    } else if let Some(dir) = &class.directive {
-        if dir.standalone && dir.declaring_ng_module.is_none() {
-            return ClassOwner::Other;
-        }
-        &dir.declaring_ng_module
-    } else if let Some(pipe) = &class.pipe {
-        if pipe.standalone.unwrap_or(true) && pipe.declaring_ng_module.is_none() {
-            return ClassOwner::Other;
-        }
-        &pipe.declaring_ng_module
-    } else {
-        return ClassOwner::Other;
-    };
-
-    let Some(r) = declaring else {
-        return ClassOwner::NoNgModule;
-    };
-
-    ClassOwner::HasNgModule(r.file_path.clone())
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
@@ -4282,10 +4395,9 @@ mod entry_point_tests {
             let token = processor_token.clone();
             async move {
                 token.cancel();
-                let wire = QueryContext::new(engine)
+                Ok(QueryContext::new(engine)
                     .analyze_file_wire(local.file_id, true)
-                    .await;
-                (*wire).clone()
+                    .await)
             }
             .boxed()
         };
@@ -4385,10 +4497,9 @@ mod entry_point_tests {
         let processor = move |_path: PathBuf, local: Arc<FileData>| {
             let engine = processor_engine.clone();
             async move {
-                let wire = QueryContext::new(engine)
+                Ok(QueryContext::new(engine)
                     .analyze_file_wire(local.file_id, true)
-                    .await;
-                (*wire).clone()
+                    .await)
             }
             .boxed()
         };
@@ -4432,6 +4543,131 @@ mod entry_point_tests {
         assert!(
             finished.load(Ordering::SeqCst),
             "the run must wait for the analysis it started"
+        );
+    }
+
+    #[test]
+    fn test_analyze_file_wire_shared_peek_and_delta_dirty_tracking() {
+        let mut files = HashMap::new();
+        files.insert(
+            "/project/tsconfig.json".to_string(),
+            r#"{
+                "compilerOptions": {"rootDirs": ["/project"]},
+                "files": ["child.ts", "parent.ts", "untouched.ts"]
+            }"#
+            .to_string(),
+        );
+        files.insert(
+            "/project/child.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             @Component({selector: 'app-child', template: '<p>v1</p>'})\n\
+             export class ChildCmp {}\n"
+                .to_string(),
+        );
+        files.insert(
+            "/project/parent.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             import { ChildCmp } from './child';\n\
+             @Component({selector: 'app-parent', imports: [ChildCmp], template: '<app-child></app-child>'})\n\
+             export class ParentCmp {}\n"
+                .to_string(),
+        );
+        files.insert(
+            "/project/untouched.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             @Component({selector: 'app-untouched', template: '<p>ok</p>'})\n\
+             export class UntouchedCmp {}\n"
+                .to_string(),
+        );
+        files.insert(
+            "/project/unused_dep.ts".to_string(),
+            "export const UNUSED = 1;\n".to_string(),
+        );
+
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(true),
+            virtual_files: Some(files),
+            ..Default::default()
+        })
+        .expect("create analyzer");
+
+        let initial = analyzer.analyze_optimized().expect("initial stream");
+        while futures::executor::block_on(initial.next())
+            .expect("initial chunk")
+            .is_some()
+        {}
+
+        let parent_id = analyzer.engine.intern_path("/project/parent.ts");
+        let cached = analyzer
+            .engine
+            .cache
+            .get(&QueryKey::AnalyzeFileWire {
+                file_id: parent_id,
+                is_optimized: true,
+            })
+            .expect("cached parent wire");
+        assert!(
+            cached.peek().is_some(),
+            "Shared::peek must return the cached result immediately after initial insertion"
+        );
+
+        // Evicting a non-wire query (`ModuleExportMap`) for `untouched.ts` must not mark
+        // `untouched.ts`'s wire output dirty.
+        let untouched_id = analyzer.engine.intern_path("/project/untouched.ts");
+        let unused_dep_id = analyzer.engine.intern_path("/project/unused_dep.ts");
+        let _ = futures::executor::block_on(
+            analyzer
+                .engine
+                .query(QueryKey::ModuleExportMap(untouched_id)),
+        );
+        analyzer
+            .engine
+            .reverse_index
+            .write()
+            .unwrap()
+            .entry(unused_dep_id)
+            .or_default()
+            .insert(QueryKey::ModuleExportMap(untouched_id));
+        analyzer
+            .update_file_content(vec![FileUpdate {
+                file_path: "/project/unused_dep.ts".to_string(),
+                content: "export const UNUSED = 2;\n".to_string(),
+                id_kind: None,
+            }])
+            .expect("update unused_dep.ts");
+
+        // Edit `child.ts` so `parent.ts`'s wire result changes, then call `get_metadata_for_file`
+        // on both `child.ts` and `parent.ts` to repopulate `engine.cache` before the delta pass.
+        analyzer
+            .update_file_content(vec![FileUpdate {
+                file_path: "/project/child.ts".to_string(),
+                content: "import { Component } from '@angular/core';\n\
+                          @Component({selector: 'app-child-v2', template: '<p>v2</p>'})\n\
+                          export class ChildCmp {}\n"
+                    .to_string(),
+                id_kind: None,
+            }])
+            .expect("update child.ts");
+        let _ = analyzer
+            .get_metadata_for_file("/project/child.ts".to_string())
+            .expect("repopulate child.ts wire cache");
+        let _ = analyzer
+            .get_metadata_for_file("/project/parent.ts".to_string())
+            .expect("repopulate parent.ts wire cache");
+
+        let delta = analyzer.analyze_optimized_delta().expect("delta stream");
+        let mut delta_paths = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(delta.next()).expect("delta chunk") {
+            delta_paths.extend(chunk.files.into_iter().map(|f| f.file_path));
+        }
+        delta_paths.sort();
+        assert_eq!(
+            delta_paths,
+            vec![
+                "/project/child.ts".to_string(),
+                "/project/parent.ts".to_string(),
+            ]
         );
     }
 

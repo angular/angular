@@ -822,6 +822,7 @@ impl FileData {
                 .iter()
                 .map(|path| path.to_string_lossy().into_owned())
                 .collect(),
+            unchanged: false,
         })
     }
 

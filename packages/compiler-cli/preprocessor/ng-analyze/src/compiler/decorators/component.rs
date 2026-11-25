@@ -1251,7 +1251,9 @@ async fn optimize_component_scope(
             if let Some(ref by_block) = component.parsed_deferred_imports_by_block {
                 let mut block_map = std::collections::HashMap::new();
                 let mut flat = Vec::new();
-                for (block_name, block_imps) in by_block {
+                let mut sorted_blocks: Vec<_> = by_block.iter().collect();
+                sorted_blocks.sort_by(|(a, _), (b, _)| a.cmp(b));
+                for (block_name, block_imps) in sorted_blocks {
                     let block_tuples: Vec<(DefEntry, bool)> = block_imps
                         .iter()
                         .map(|i| (DefEntry::Parsed(i.to_declaration_tuple()), i.is_forward_ref))
@@ -1372,6 +1374,7 @@ async fn optimize_component_scope(
                         }
                     }
                     if !blocks.is_empty() {
+                        blocks.sort_unstable();
                         decl.deferred_blocks = Some(blocks);
                     }
                 }
