@@ -31,7 +31,11 @@ import {
 } from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
-import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
+import {
+  getComponentLViewByIndex,
+  getElementTagName,
+  getNativeByTNodeOrNull,
+} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 
 /**
@@ -155,8 +159,8 @@ export class DebugElement extends DebugNode {
 
     if (lView !== null) {
       const tData = lView[TVIEW].data;
-      const tNode = tData[context.nodeIndex] as TNode;
-      return tNode.value!;
+      const tNode = tData[context.nodeIndex] as TElementNode;
+      return getElementTagName(tNode, lView);
     } else {
       return this.nativeNode.nodeName;
     }

@@ -16,6 +16,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  createComponent,
   createEnvironmentInjector,
   ɵcreateInjector as createInjector,
   createNgModule,
@@ -5117,6 +5118,106 @@ describe('di', () => {
       const fixture = TestBed.createComponent(TestCmp);
       fixture.detectChanges();
       expect(fixture.componentInstance.dir.value).toBe(null);
+    });
+
+    it('should inject the tag name of a root component', () => {
+      @Component({selector: 'button[root-button]', template: ''})
+      class RootButton {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      const fixture = TestBed.createComponent(RootButton, {inferTagName: true});
+      expect(fixture.componentInstance.value).toBe('button');
+    });
+
+    it('should inject the tag name of a root host from a child element with skipSelf', () => {
+      let parentTagName: string | undefined;
+
+      @Directive({selector: '[parentTagReader]'})
+      class ParentTagReader {
+        constructor() {
+          parentTagName = inject(HOST_TAG_NAME, {skipSelf: true});
+        }
+      }
+
+      @Component({
+        selector: 'root-cmp',
+        template: '<span parentTagReader></span>',
+        imports: [ParentTagReader],
+      })
+      class RootCmp {}
+
+      TestBed.createComponent(RootCmp, {inferTagName: true});
+      expect(parentTagName).toBe('root-cmp');
+    });
+
+    it('should inject the tag name of a component created through a ViewContainerRef', () => {
+      @Directive()
+      class HostTagReader {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      @Component({selector: 'dynamic-card', template: '', hostDirectives: [HostTagReader]})
+      class DynamicCard {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      @Component({template: ''})
+      class DynamicCardContainer {
+        vcr = inject(ViewContainerRef);
+      }
+
+      const fixture = TestBed.createComponent(DynamicCardContainer);
+      const ref = fixture.componentInstance.vcr.createComponent(DynamicCard);
+      expect(ref.instance.value).toBe('dynamic-card');
+      expect(ref.injector.get(HostTagReader).value).toBe('dynamic-card');
+    });
+
+    it('should inject the tag name of an existing host element', () => {
+      @Directive()
+      class HostTagReader {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      @Component({template: ''})
+      class SectionCmp {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      const ref = createComponent(SectionCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        hostElement: document.createElement('section'),
+        directives: [HostTagReader],
+      });
+
+      expect(ref.instance.value).toBe('section');
+      expect(ref.injector.get(HostTagReader).value).toBe('section');
+      ref.destroy();
+    });
+
+    it('should keep the casing of an SVG host element', () => {
+      @Component({template: ''})
+      class SvgHostCmp {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      const ref = createComponent(SvgHostCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        hostElement: document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject'),
+      });
+
+      expect(ref.instance.value).toBe('foreignObject');
+      ref.destroy();
+    });
+
+    it('should inject the tag name of a host created by TestBed.createDirective', () => {
+      @Directive({selector: 'a[linkOrButton], button[linkOrButton]'})
+      class LinkOrButton {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      const fixture = TestBed.createDirective(LinkOrButton, {tagName: 'a'});
+      expect(fixture.directiveInstance.value).toBe('a');
     });
   });
 

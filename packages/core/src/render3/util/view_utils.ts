@@ -17,8 +17,8 @@ import {
 } from '../../util/assert';
 import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
-import {TConstants, TNode} from '../interfaces/node';
-import {RNode} from '../interfaces/renderer_dom';
+import {TConstants, TElementNode, TNode, TNodeName} from '../interfaces/node';
+import {RElement, RNode} from '../interfaces/renderer_dom';
 import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
 import {
   CLEANUP,
@@ -121,6 +121,23 @@ export function getNativeByTNodeOrNull(tNode: TNode | null, lView: LView): RNode
     return node;
   }
   return null;
+}
+
+/**
+ * Retrieve the tag name of an element `TNode`.
+ *
+ * Hosts of bootstrapped, routed or dynamically created components don't come from a template,
+ * so their `TNode` only holds a placeholder and the tag name is read from the native element.
+ *
+ * @param tNode
+ * @param lView
+ */
+export function getElementTagName(tNode: TElementNode, lView: LView): string {
+  if (tNode.value === TNodeName.DynamicHost) {
+    const element = getNativeByTNode(tNode, lView) as RElement & {localName?: string};
+    return element.localName ?? element.tagName?.toLowerCase() ?? tNode.value;
+  }
+  return tNode.value;
 }
 
 // fixme(misko): The return Type should be `TNode|null`
