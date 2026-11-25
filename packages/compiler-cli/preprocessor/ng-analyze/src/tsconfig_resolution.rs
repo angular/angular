@@ -507,7 +507,10 @@ fn resolve_extended_options_recursive(
         .read_to_string(path)
         .map_err(|e| format!("Failed to read tsconfig at {:?}: {}", path, e))?;
 
-    let mut stripped_json = json_str.clone();
+    let mut stripped_json = json_str
+        .strip_prefix('\u{feff}')
+        .unwrap_or(&json_str)
+        .to_owned();
     let _ = json_strip_comments::strip(&mut stripped_json);
 
     let tsconfig = TsConfig::parse(false, path, path, json_str)
@@ -2317,6 +2320,33 @@ mod tests {
                 PathBuf::from("/ws/out/dep/esm.d.mts"),
                 PathBuf::from("/ws/out/dep/cjs.d.cts"),
             ]
+        );
+    }
+
+    #[test]
+    fn test_bom_prefixed_tsconfig_preserves_angular_and_bazel_options() {
+        let fs = crate::fs::OverlayFileSystem::new_with_allowed_sources_and_fs(
+            None,
+            std::sync::Arc::new(crate::physical_fs::NoopFs),
+        );
+        fs.upsert_file(
+            PathBuf::from("/virtual/base.json"),
+            "\u{feff}{\n  // base config saved with UTF-8 BOM\n  \"bazelOptions\": {\"workspaceName\": \"my_ws\", \"tsickle\": true},\n  \"angularCompilerOptions\": {\"strictStandalone\": false, \"_enableHmr\": true}\n}".to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/virtual/tsconfig.json"),
+            "\u{feff}{\n  \"extends\": \"./base.json\",\n  \"angularCompilerOptions\": {\"strictStandalone\": true},\n  \"files\": []\n}".to_string(),
+        );
+
+        let config = load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+        assert_eq!(config.workspace_name.as_deref(), Some("my_ws"));
+        assert!(config.strict_standalone);
+        assert!(config.enable_hmr);
+        assert_eq!(
+            config
+                .merged_compiler_options
+                .get("annotateForClosureCompiler"),
+            Some(&serde_json::Value::Bool(true))
         );
     }
 }
