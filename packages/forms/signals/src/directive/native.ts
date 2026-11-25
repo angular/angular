@@ -77,14 +77,18 @@ export function getNativeControlValue(
       break;
   }
 
-  // For text-like <input> elements, parse numeric values if the model is numeric.
-  if (element.tagName === 'INPUT' && element.type === 'text') {
+  // For text-like <input> elements and single-select <select> elements, parse numeric values if
+  // the model is numeric.
+  if (
+    (element.tagName === 'INPUT' && element.type === 'text') ||
+    (isSelect(element) && !element.multiple)
+  ) {
     modelValue ??= untracked(currentValue);
     if (typeof modelValue === 'number' || modelValue === null) {
       if (element.value === '') {
         return {value: null};
       }
-      const parsed = Number(element.value);
+      const parsed = element.value.trim() === '' ? NaN : Number(element.value);
       if (Number.isNaN(parsed)) {
         return {error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>};
       }
@@ -139,14 +143,18 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
       }
   }
 
-  // For text-like <input> elements, handle numeric and null values.
-  if (element.tagName === 'INPUT' && element.type === 'text') {
+  // For text-like <input> elements and single-select <select> elements, handle numeric and null
+  // values.
+  if (
+    (element.tagName === 'INPUT' && element.type === 'text') ||
+    (isSelect(element) && !element.multiple)
+  ) {
     if (typeof value === 'number') {
       element.value = isNaN(value) ? '' : String(value);
       return;
     }
     if (value === null) {
-      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode && isInput(element)) {
         console.warn(
           formatRuntimeError(
             RuntimeErrorCode.TEXT_INPUT_NULL_VALUE,
@@ -178,6 +186,10 @@ export function setNativeNumberControlValue(element: HTMLInputElement, value: nu
 }
 export function isInput(element: HTMLElement): element is HTMLInputElement {
   return element.tagName === 'INPUT';
+}
+
+export function isSelect(element: HTMLElement): element is HTMLSelectElement {
+  return element.tagName === 'SELECT';
 }
 
 export function inputRequiresValidityTracking(input: HTMLInputElement): boolean {

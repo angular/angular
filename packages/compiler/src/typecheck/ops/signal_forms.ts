@@ -127,79 +127,91 @@ export class TcbNativeFieldOp extends TcbOp {
 
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
 
-    const rawExpectedType = this.getExpectedTypeFromDomNode(this.node);
+    const expected = this.getExpectedTypeFromDomNode(this.node);
+    const expectedType = new TcbExpr(expected.type);
+    const expr = expected.checkSignal
+      ? extractFieldValueSignal(fieldBinding.value, this.tcb, this.scope)
+      : extractFieldValue(fieldBinding.value, this.tcb, this.scope);
 
-    if (rawExpectedType === null) {
-      // For text-like <input> elements, use an invariant check on the value signal.
-      // WritableSignal<T> is invariant in T, so assigning it to a union of structural types
-      // gives us exact type matching: only Field<string> or Field<number|null> are accepted.
-      const signal = extractFieldValueSignal(fieldBinding.value, this.tcb, this.scope);
-      const id = new TcbExpr(this.tcb.allocateId());
-      const unionType = new TcbExpr(
-        '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
-      );
-      const assignment = new TcbExpr(`${id.print()} = ${signal.print()}`);
-      assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
+    // Create a variable with the expected type and check that the field value (or value signal) is
+    // assignable, e.g. `var t1 = null! as string | number; t1 = f().value()`.
+    const id = new TcbExpr(this.tcb.allocateId());
+    const assignment = new TcbExpr(`${id.print()} = ${expr.print()}`);
+    assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
 
-      this.scope.addStatement(declareVariable(id, unionType));
-      this.scope.addStatement(assignment);
-    } else {
-      const expectedType = new TcbExpr(rawExpectedType);
-      const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
-
-      // Create a variable with the expected type and check that the field value is assignable, e.g.
-      // var t1 = null! as string | number; t1 = f().value()`.
-      const id = new TcbExpr(this.tcb.allocateId());
-      const assignment = new TcbExpr(`${id.print()} = ${value.print()}`);
-      assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
-
-      this.scope.addStatement(declareVariable(id, expectedType));
-      this.scope.addStatement(assignment);
-    }
+    this.scope.addStatement(declareVariable(id, expectedType));
+    this.scope.addStatement(assignment);
 
     return null;
   }
 
-  private getExpectedTypeFromDomNode(node: Element): string | null {
-    if (node.name === 'textarea' || node.name === 'select') {
-      // `<textarea>` and `<select>` are always strings.
-      return 'string';
+  /**
+   * Returns the expected TypeScript type for a native control's `[formField]` binding.
+   *
+   * When `checkSignal` is `false`, `type` is checked against the unwrapped field value
+   * (`f().value()`). When `checkSignal` is `true`, `type` is checked against the value signal
+   * itself (`f().value`), which allows either:
+   * - non-distributive covariant checks (e.g. `(() => string) | (() => number | null)` for
+   *   `<select>`, which accepts subtypes of either branch while rejecting mixed unions), or
+   * - invariant checks (e.g. `{ (): string; set: (v: string) => void } | ...` for
+   *   `<input type="text">`).
+   */
+  private getExpectedTypeFromDomNode(node: Element): {type: string; checkSignal: boolean} {
+    if (node.name === 'textarea') {
+      // `<textarea>` is always a string.
+      return {type: 'string', checkSignal: false};
+    }
+
+    if (node.name === 'select') {
+      // `<select>` supports any `string` subtype (preserving compatibility with string literal
+      // unions and string enums) or any `number | null` subtype (including `number`, numeric
+      // literal unions, and numeric enums), while rejecting mixed unions such as `string | null`
+      // and `string | number`.
+      return {
+        type: '(() => string) | (() => number | null)',
+        checkSignal: true,
+      };
     }
 
     if (node.name !== 'input') {
-      return this.getUnsupportedType();
+      return {type: this.getUnsupportedType(), checkSignal: false};
     }
 
     switch (this.inputType) {
       case 'checkbox':
-        return 'boolean';
+        return {type: 'boolean', checkSignal: false};
 
       case 'radio':
-        return 'string';
+        return {type: 'string', checkSignal: false};
 
       case 'number':
       case 'range':
       case 'datetime-local':
-        return 'string | number | null';
+        return {type: 'string | number | null', checkSignal: false};
 
       case 'date':
       case 'month':
       case 'time':
       case 'week':
-        return 'string | number | Date | null';
+        return {type: 'string | number | Date | null', checkSignal: false};
     }
 
     // If the type is dynamic, check it as if it can be any of the types above.
     if (this.hasDynamicType) {
-      return 'string | number | boolean | Date | null';
+      return {type: 'string | number | boolean | Date | null', checkSignal: false};
     }
 
     if (this.inputType === 'text' || this.inputType === null) {
-      // Return null to signal the invariant check for text-like inputs.
-      return null;
+      // For text-like <input> elements, use an invariant check on the value signal.
+      // WritableSignal<T> is invariant in T, so assigning it to a union of structural types
+      // gives us exact type matching: only Field<string> or Field<number|null> are accepted.
+      return {
+        type: '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
+        checkSignal: true,
+      };
     }
 
-    return 'string';
+    return {type: 'string', checkSignal: false};
   }
 
   private getUnsupportedType(): string {
