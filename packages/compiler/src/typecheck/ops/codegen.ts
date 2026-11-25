@@ -24,6 +24,12 @@ export class TcbExpr {
    */
   private ignoreComment: string | null = null;
 
+  /**
+   * Text of the comment recording a DOM property remapping (e.g. `readonly` -> `readOnly`)
+   * so diagnostic mapping can append a helpful hint when the remapped property fails type checking.
+   */
+  private remapComment: string | null = null;
+
   constructor(private source: string) {}
 
   /** Wraps a string value in quotes and escapes relevant characters. */
@@ -46,6 +52,7 @@ export class TcbExpr {
       this.source +
       this.formatComment(this.identifierComment) +
       this.formatComment(this.ignoreComment) +
+      this.formatComment(this.remapComment) +
       this.formatComment(this.spanComment)
     );
   }
@@ -77,13 +84,19 @@ export class TcbExpr {
     return this;
   }
 
+  /** Records a DOM property remapping (e.g. `readonly` -> `readOnly`) for diagnostic hints. */
+  markRemappedProperty(originalName: string, mappedName: string): this {
+    this.remapComment = `${CommentTriviaType.DIAGNOSTIC}:remap:${originalName}:${mappedName}`;
+    return this;
+  }
+
   /**
    * Wraps the expression in parenthesis such that inserted
    * span comments become attached to the proper node.
    */
   wrapForTypeChecker(): this {
     this.source = `(${this.print()})`;
-    this.spanComment = this.identifierComment = this.ignoreComment = null;
+    this.spanComment = this.identifierComment = this.ignoreComment = this.remapComment = null;
     return this;
   }
 

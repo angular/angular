@@ -7,8 +7,9 @@
  */
 
 import ts from 'typescript';
+import {CommentTriviaType} from '@angular/compiler';
 import {HybridCompiler} from '../../src/hybrid_compiler.js';
-import {Diagnostic, Position} from 'vscode-languageserver';
+import {Diagnostic, DiagnosticSeverity, Position} from 'vscode-languageserver';
 import * as path from 'node:path';
 import {URI} from 'vscode-uri';
 
@@ -21,6 +22,7 @@ import {
 } from './tcb_ls_util.js';
 import {hasIgnoreForDiagnosticsMarker} from './comments.js';
 import {makeClassKey} from '../../src/compiler-utils.js';
+import {ErrorCode} from '../../src/error_code.js';
 
 /**
  * Fallback check for ignore markers when the AST is broken due to syntax errors
@@ -46,6 +48,91 @@ function findClosestPrecedingNode(
   }
   visit(node);
   return bestNode;
+}
+
+const REMAPPED_PROPERTY_MARKER_PREFIX = `${CommentTriviaType.DIAGNOSTIC}:remap:`;
+
+function findTokenAtOffset(sourceFile: ts.SourceFile, offset: number): ts.Node | undefined {
+  function visit(node: ts.Node): ts.Node | undefined {
+    if (offset < node.getStart(sourceFile) || offset >= node.getEnd()) {
+      return undefined;
+    }
+    for (const child of node.getChildren(sourceFile)) {
+      const found = visit(child);
+      if (found !== undefined) {
+        return found;
+      }
+    }
+    return node;
+  }
+  return visit(sourceFile);
+}
+
+function checkAssertCustomElementLspDiagnostic(
+  diag: Diagnostic,
+  tcbSf: ts.SourceFile,
+  offset: number,
+): {tagName: string; isStandalone: boolean} | null {
+  if (diag.code !== 2345 && diag.code !== '2345') {
+    return null;
+  }
+  let node = findTokenAtOffset(tcbSf, offset);
+  while (node !== undefined && !ts.isCallExpression(node)) {
+    if (ts.isStatement(node)) {
+      break;
+    }
+    node = node.parent;
+  }
+  if (node !== undefined && ts.isCallExpression(node)) {
+    const expr = node.expression;
+    const name = ts.isPropertyAccessExpression(expr)
+      ? expr.name.text
+      : ts.isIdentifier(expr)
+        ? expr.text
+        : '';
+    if (name === 'ɵassertCustomElement') {
+      const firstArg = node.arguments[0];
+      if (firstArg && ts.isStringLiteral(firstArg)) {
+        const secondArg = node.arguments[1];
+        const isStandalone = secondArg?.kind !== ts.SyntaxKind.FalseKeyword;
+        return {tagName: firstArg.text, isStandalone};
+      }
+    }
+  }
+  return null;
+}
+
+function getRemappedPropertyLspHint(
+  diag: Diagnostic,
+  tcbSf: ts.SourceFile,
+  offset: number,
+): string | null {
+  if (diag.code !== 2339 && diag.code !== '2339' && diag.code !== 2551 && diag.code !== '2551') {
+    return null;
+  }
+  let node = findTokenAtOffset(tcbSf, offset);
+  while (node !== undefined && !ts.isStatement(node)) {
+    const match = ts.forEachTrailingCommentRange(tcbSf.text, node.getEnd(), (pos, end, kind) => {
+      if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+        return undefined;
+      }
+      const commentText = tcbSf.text.substring(pos + 2, end - 2);
+      if (!commentText.startsWith(REMAPPED_PROPERTY_MARKER_PREFIX)) {
+        return undefined;
+      }
+      const rest = commentText.slice(REMAPPED_PROPERTY_MARKER_PREFIX.length);
+      const colonIdx = rest.indexOf(':');
+      if (colonIdx === -1) {
+        return undefined;
+      }
+      return {original: rest.slice(0, colonIdx), mapped: rest.slice(colonIdx + 1)};
+    });
+    if (match !== undefined) {
+      return `Angular remaps '[${match.original}]' to '${match.mapped}' at runtime. If this custom element expects an attribute or a lowercase property, use '[attr.${match.original}]' instead.`;
+    }
+    node = node.parent;
+  }
+  return null;
 }
 
 export interface MappedLocation {
@@ -211,16 +298,42 @@ export async function mapDiagnostics(
       results[templateFilePath] = [];
     }
 
-    const mappedDiag: Diagnostic = {
-      ...diag,
-      range: {
-        start: startPos,
-        end: endPos,
-      },
-      source: 'angular',
-    };
+    const diagOffset = positionToOffset(tcbCode, diag.range.start);
+    const customElementInfo = checkAssertCustomElementLspDiagnostic(diag, tcbSf, diagOffset);
+    let mappedDiag: Diagnostic;
+    if (customElementInfo !== null) {
+      const schemas = `'${customElementInfo.isStandalone ? '@Component' : '@NgModule'}.schemas'`;
+      let errorMsg = `'${customElementInfo.tagName}' is not a known element:\n`;
+      errorMsg += `1. If '${customElementInfo.tagName}' is an Angular component, then verify that it is ${
+        customElementInfo.isStandalone
+          ? "included in the '@Component.imports' of this component"
+          : 'part of this module'
+      }.\n`;
+      errorMsg += `2. If '${customElementInfo.tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.`;
+      mappedDiag = {
+        range: {
+          start: startPos,
+          end: endPos,
+        },
+        code: Math.abs(ErrorCode.SCHEMA_INVALID_ELEMENT),
+        severity: DiagnosticSeverity.Error,
+        message: errorMsg,
+        source: 'angular',
+      };
+    } else {
+      const remapHint = getRemappedPropertyLspHint(diag, tcbSf, diagOffset);
+      mappedDiag = {
+        ...diag,
+        range: {
+          start: startPos,
+          end: endPos,
+        },
+        message: remapHint !== null ? `${diag.message}\n${remapHint}` : diag.message,
+        source: 'angular',
+      };
+    }
 
-    if (diag.relatedInformation) {
+    if (customElementInfo === null && diag.relatedInformation) {
       const mappedInfo = [];
       for (const relInfo of diag.relatedInformation) {
         if (URI.parse(relInfo.location.uri).fsPath === currentTcbFsPath) {

@@ -226,6 +226,7 @@ export function buildTypeCheckingConfig(
       allowDomEventAssertion: true,
       checkUnclaimedEventNames: false,
       checkUnknownElements: false,
+      checkCustomElementsUnderSchema: options.strictCustomElementsUnderSchema ?? false,
       checkTypeOfNgTemplateBindings: false,
     };
   } else {
@@ -265,6 +266,7 @@ export function buildTypeCheckingConfig(
       allowDomEventAssertion: true,
       checkUnclaimedEventNames: false,
       checkUnknownElements: false,
+      checkCustomElementsUnderSchema: options.strictCustomElementsUnderSchema ?? false,
       checkTypeOfNgTemplateBindings: false,
     };
   }
@@ -674,7 +676,7 @@ export function generateTcbCode(
     requiresInline && namespaceAliasConflicts ? new Set(namespaceAliasConflicts) : undefined,
   );
   const oobRecorder = new OutOfBandDiagnosticRecorderImpl();
-  const domSchemaChecker = new RegistryDomSchemaChecker();
+  const domSchemaChecker = new RegistryDomSchemaChecker(config.checkTemplateBodies);
   const semanticsDiagnostics: Diagnostic[] = [];
   const extendedDiagnostics: Diagnostic[] = [];
 

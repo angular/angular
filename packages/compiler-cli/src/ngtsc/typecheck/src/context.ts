@@ -638,7 +638,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const shimPath = TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
-        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
+        domSchemaChecker: new RegistryDomSchemaChecker(
+          fileData.sourceManager,
+          this.config.checkTemplateBodies,
+        ),
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
           this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
         ),

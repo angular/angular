@@ -507,4 +507,9 @@ export class Identifiers {
   static UnwrapDirectiveSignalInputs = {name: 'ɵUnwrapDirectiveSignalInputs', moduleName: CORE};
   static unwrapWritableSignal = {name: 'ɵunwrapWritableSignal', moduleName: CORE};
   static assertType = {name: 'ɵassertType', moduleName: CORE};
+  static assertCustomElement = {name: 'ɵassertCustomElement', moduleName: CORE};
+  static ngAttributeType = {name: 'ɵNgAttributeType', moduleName: CORE};
+  static ngElementType = {name: 'ɵNgElementType', moduleName: CORE};
+  static ngEventTarget = {name: 'ɵNgEventTarget', moduleName: CORE};
+  static ngPropertyTarget = {name: 'ɵNgPropertyTarget', moduleName: CORE};
 }

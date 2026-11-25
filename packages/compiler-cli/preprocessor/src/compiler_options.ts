@@ -103,6 +103,7 @@ export interface NgpCompilerOptions {
   strictLiteralTypes?: boolean;
   strictUnclaimedEventNames?: boolean;
   strictUnknownElements?: boolean;
+  strictCustomElementsUnderSchema?: boolean;
   strictNgTemplateTypes?: boolean;
   typeCheckHostBindings?: boolean;
 

@@ -10,6 +10,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   DomElementSchemaRegistry,
   DomSchemaChecker,
+  isCustomElementTag,
   NO_ERRORS_SCHEMA,
   OutOfBandDiagnosticCategory,
   ParseSourceSpan,
@@ -35,6 +36,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     return this._diagnostics;
   }
 
+  constructor(private checkTemplateBodies: boolean = true) {}
+
   checkElement(
     id: TypeCheckId,
     tagName: string,
@@ -46,6 +49,10 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     // We need to strip it before handing it over to the registry because all HTML tag names
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
+
+    if (this.checkTemplateBodies && isCustomElementTag(name)) {
+      return;
+    }
 
     if (!REGISTRY.hasElement(name, schemas)) {
       const schemasStr = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
@@ -79,6 +86,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+    hasComponent: boolean = false,
   ): void {
     const report = REGISTRY.validateProperty(name);
 
@@ -91,6 +99,12 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
         start: span.start.offset,
         end: span.end.offset,
       });
+      return;
+    }
+
+    const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
+    const isCustomElement = !hasComponent && isCustomElementTag(tagName);
+    if (this.checkTemplateBodies && isCustomElement && !isUnknownAriaAttr) {
       return;
     }
 
@@ -197,7 +211,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
         (schema) =>
           schema.name === NO_ERRORS_SCHEMA.name ||
           (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && !hasComponent),
-      )
+      ) ||
+      (this.checkTemplateBodies && !hasComponent && isCustomElementTag(tagName))
     ) {
       return;
     }

@@ -10,6 +10,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   DomElementSchemaRegistry,
   DomSchemaChecker,
+  isCustomElementTag,
   NO_ERRORS_SCHEMA,
   ParseSourceSpan,
   SchemaMetadata,
@@ -45,7 +46,10 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     return this._diagnostics;
   }
 
-  constructor(private resolver: TypeCheckSourceResolver) {}
+  constructor(
+    private resolver: TypeCheckSourceResolver,
+    private checkTemplateBodies: boolean = true,
+  ) {}
 
   checkElement(
     id: TypeCheckId,
@@ -58,6 +62,12 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // We need to strip it before handing it over to the registry because all HTML tag names
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
+
+    // Candidate custom elements containing `-` are validated directly in the TCB via
+    // `ɵassertCustomElement` when template type-checking is active unless suppressed by schemas.
+    if (this.checkTemplateBodies && isCustomElementTag(name)) {
+      return;
+    }
 
     if (!REGISTRY.hasElement(name, schemas)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
@@ -94,6 +104,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+    hasComponent: boolean = false,
   ): void {
     const report = REGISTRY.validateProperty(name);
     if (report.error) {
@@ -107,6 +118,16 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
         report.msg!,
       );
       this._diagnostics.push(diag);
+      return;
+    }
+
+    // Known WAI-ARIA attributes are mapped to camelCase (e.g. `aria-label` -> `ariaLabel`) before
+    // this check and accepted by `REGISTRY.hasProperty`. Any remaining `aria-*` name is an unknown
+    // ARIA attribute; do not exempt it as a custom element property since Angular compiles
+    // `[aria-*]` via `ɵɵariaProperty` and skips TCB property assignment for it.
+    const isUnknownAriaAttr = name.startsWith('aria-') && name.length > 5;
+    const isCustomElement = !hasComponent && isCustomElementTag(tagName);
+    if (this.checkTemplateBodies && isCustomElement && !isUnknownAriaAttr) {
       return;
     }
 
@@ -168,6 +189,11 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // vendor-prefixed `webkitAnimationEnd`, which the schema stores in lowercase), so they have
     // to be exempted explicitly.
     if (REGISTRY.isKnownEventOfAnyElement(eventName)) {
+      return;
+    }
+
+    // Custom elements may emit custom events.
+    if (this.checkTemplateBodies && !hasComponent && isCustomElementTag(tagName)) {
       return;
     }
 

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import {AbstractBoundTemplate, ParseTemplateOptions} from '@angular/compiler';
+import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import * as fsSync from 'node:fs';
 import {createRequire} from 'node:module';
 import * as path from 'node:path';
@@ -31,14 +31,20 @@ import {
   type WasmInner,
 } from '../../../../preprocessor/api';
 import {exitCodeFromResult} from '../../../perform_compile';
-import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
 import {CompilerOptions, CustomTransformers, UNKNOWN_ERROR_CODE} from '../../../transformers/api';
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
+import {addDiagnosticDetails, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {RawSourceMap} from '../../sourcemaps';
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/src/comments';
-import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
+import {
+  appendHintToDiagnosticMessage,
+  checkAssertCustomElementDiagnostic,
+  formatUnknownElementMessage,
+  getRemappedPropertyHint,
+  shouldReportDiagnostic,
+} from '../../typecheck/src/diagnostics';
 import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {NgtscTestCompilerHost} from './compiler_host';
@@ -525,6 +531,10 @@ export function performNgpCompilationSync(params: {
           ? {baseUrl: toPosixPath(fs.resolve(basePath, options.baseUrl))}
           : {}),
         ...(options.paths ? {paths: options.paths} : {}),
+        ...(options.types !== undefined ? {types: options.types} : {}),
+        ...(options.typeRoots !== undefined
+          ? {typeRoots: options.typeRoots.map((d: string) => toPosixPath(fs.resolve(basePath, d)))}
+          : {}),
       },
       angularCompilerOptions: {
         generateExtraImportsInLocalMode: Boolean(
@@ -764,6 +774,22 @@ export function performNgpCompilationSync(params: {
       return true;
     }
     return baseHost.fileExists(fileName);
+  };
+
+  overlayHost.directoryExists = (directoryName: string): boolean => {
+    const absPath = fs.resolve(directoryName);
+    return fs.exists(absPath) && fs.stat(absPath).isDirectory();
+  };
+
+  overlayHost.getDirectories = (directoryName: string): string[] => {
+    const absPath = fs.resolve(directoryName);
+    if (!fs.exists(absPath) || !fs.stat(absPath).isDirectory()) {
+      return [];
+    }
+    return fs.readdir(absPath).filter((name) => {
+      const entryPath = fs.resolve(absPath, name);
+      return fs.exists(entryPath) && fs.stat(entryPath).isDirectory();
+    });
   };
 
   overlayHost.readFile = (fileName: string): string | undefined => {
@@ -1464,11 +1490,33 @@ function translateTcbDiagnostic(
     }
   }
 
+  const customElementInfo = checkAssertCustomElementDiagnostic(diag);
+  let code = diag.code;
+  let messageText = diag.messageText;
+  let category = diag.category;
+  if (customElementInfo !== null) {
+    const errorMsg = formatUnknownElementMessage(
+      customElementInfo.tagName,
+      customElementInfo.isStandalone,
+    );
+    code = ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT);
+    messageText = addDiagnosticDetails(ErrorCode.SCHEMA_INVALID_ELEMENT, errorMsg);
+    category = ts.DiagnosticCategory.Error;
+  } else {
+    const remapHint = getRemappedPropertyHint(diag);
+    if (remapHint !== null) {
+      messageText = appendHintToDiagnosticMessage(messageText, remapHint);
+    }
+  }
+
   return {
     ...diag,
     file: targetSf,
     start: span.start,
     length: Math.max(0, span.end - span.start),
+    code,
+    category,
+    messageText,
     relatedInformation,
   };
 }

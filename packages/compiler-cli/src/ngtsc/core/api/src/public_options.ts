@@ -238,6 +238,14 @@ export interface TypeCheckingOptions {
    * Defaults to `false`.
    */
   strictNgTemplateTypes?: boolean;
+
+  /**
+   * Whether to type-check custom elements declared in `HTMLElementTagNameMap` or
+   * `NgCustomElements` even when `CUSTOM_ELEMENTS_SCHEMA` is present on the component or NgModule.
+   *
+   * Defaults to `false`.
+   */
+  strictCustomElementsUnderSchema?: boolean;
 }
 
 /**

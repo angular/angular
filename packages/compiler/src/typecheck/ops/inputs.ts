@@ -6,27 +6,48 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '../../core';
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
-import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
 import {BoundAttribute, Element, Template} from '../../render3/r3_ast';
-import type {Context} from './context';
-import type {Scope} from './scope';
+import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
+import {IDENTIFIER_PATTERN, isUnsafeObjectKey} from '../../render3/util';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
+import {isAriaAttribute} from '../../template/pipeline/src/util/attributes';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
+import {getBoundAttributes, widenBinding} from './bindings';
 import {declareVariable, TcbExpr} from './codegen';
-import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-const REGISTRY = new DomElementSchemaRegistry();
+import type {Context} from './context';
+import {isCustomElementTag} from './element';
 import {tcbExpression, unwrapWritableSignal} from './expression';
+import {LocalSymbol} from './references';
+import type {Scope} from './scope';
 import {
   checkUnsupportedFieldBindings,
-  CustomFormControlType,
   customFormControlBannedInputFields,
+  CustomFormControlType,
   expandBoundAttributesForField,
 } from './signal_forms';
-import {getBoundAttributes, widenBinding} from './bindings';
-import {LocalSymbol} from './references';
-import {isUnsafeObjectKey} from '../../render3/util';
+const REGISTRY = new DomElementSchemaRegistry();
+
+/**
+ * Standard global HTML attributes that do not need `ɵNgAttributeType` checks when written as
+ * static attributes on custom elements, avoiding unnecessary TCB statements.
+ */
+const SKIPPED_CUSTOM_ELEMENT_STATIC_ATTRS = new Set([
+  'class',
+  'style',
+  'id',
+  'slot',
+  'part',
+  'role',
+  'tabindex',
+  'title',
+  'dir',
+  'lang',
+  'hidden',
+]);
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -265,6 +286,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     private inputs: BoundAttribute[],
     private target: LocalSymbol,
     private claimedInputs: Set<string> | null,
+    private checkCustomElementBindings: boolean = false,
   ) {
     super();
   }
@@ -277,6 +299,41 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     // `this.inputs` contains only those bindings not matched by any directive. These bindings go to
     // the element itself.
     let elId: TcbExpr | null = null;
+    const hasNoErrorsSchema = this.tcb.schemas.some(
+      (schema) => schema.name === NO_ERRORS_SCHEMA.name,
+    );
+    const hasCustomElementsSchema = this.tcb.schemas.some(
+      (schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name,
+    );
+    const allowUnderSchema =
+      !hasCustomElementsSchema || this.tcb.env.config.checkCustomElementsUnderSchema;
+    const isCheckableDomProperty = (binding: BoundAttribute): boolean =>
+      binding.name !== 'style' &&
+      binding.name !== 'class' &&
+      !isAriaAttribute(binding.name) &&
+      binding.securityContext === SecurityContext.NONE;
+    const hasUnclaimedDomProperty = this.inputs.some(
+      (binding) =>
+        (binding.type === BindingType.Property || binding.type === BindingType.TwoWay) &&
+        !this.claimedInputs?.has(binding.name) &&
+        isCheckableDomProperty(binding) &&
+        !REGISTRY.validateProperty(binding.name).error,
+    );
+    const isCustomElement =
+      this.checkCustomElementBindings &&
+      this.target instanceof Element &&
+      isCustomElementTag(this.target.name);
+    const lowerTagName = isCustomElement
+      ? (this.target as Element).name.replace(/^:xhtml:/, '').toLowerCase()
+      : null;
+    const canCheckCustomElementBase = isCustomElement && !hasNoErrorsSchema && allowUnderSchema;
+    const canCheckCustomElement = canCheckCustomElementBase && hasUnclaimedDomProperty;
+    const checkCustomElementPropertyTypes =
+      this.tcb.env.config.checkTypeOfInputBindings || this.tcb.env.config.checkTypeOfDomBindings;
+    const canCheckCustomElementAttrBindings =
+      canCheckCustomElementBase && this.tcb.env.config.checkTypeOfInputBindings;
+    const shouldCheckDomBindings =
+      this.tcb.env.config.checkTypeOfDomBindings || canCheckCustomElement;
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.inputs) {
@@ -294,25 +351,111 @@ export class TcbUnclaimedInputsOp extends TcbOp {
         binding.value,
       );
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
-        if (binding.name !== 'style' && binding.name !== 'class') {
+      if (shouldCheckDomBindings && isPropertyBinding) {
+        if (isCheckableDomProperty(binding)) {
+          // A direct binding to a property. Always use `getMappedPropName` so type checking
+          // stays aligned with Angular's runtime property writes (`ɵɵproperty` / `ɵɵdomProperty`).
+          const propertyName = REGISTRY.getMappedPropName(binding.name);
+          if (REGISTRY.validateProperty(propertyName).error) {
+            // `TcbDomSchemaCheckerOp` already reports an error for disallowed properties (e.g.
+            // `on*` event properties). Still validate the RHS expression without emitting an
+            // assignment that could produce a duplicate diagnostic.
+            this.scope.addStatement(expr);
+            continue;
+          }
           if (elId === null) {
             elId = this.scope.resolve(this.target);
           }
-          // A direct binding to a property.
-          const propertyName = REGISTRY.getMappedPropName(binding.name);
-          const stmt = new TcbExpr(
-            `${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
-          ).addParseSpanInfo(binding.sourceSpan);
-          this.scope.addStatement(stmt);
+          let targetExpr = elId.print();
+          if (isCustomElement && lowerTagName !== null) {
+            const ngPropertyTarget = this.tcb.env.referenceExternalSymbol(
+              '@angular/core',
+              'ɵNgPropertyTarget',
+            );
+            targetExpr = `(${elId.print()} as unknown as ${ngPropertyTarget.print()}<${TcbExpr.quoteAndEscape(lowerTagName)}>)`;
+          }
+          const target = !IDENTIFIER_PATTERN.test(propertyName)
+            ? new TcbExpr(`${targetExpr}[${TcbExpr.quoteAndEscape(propertyName)}]`)
+            : new TcbExpr(`${targetExpr}.${propertyName}`);
+          if (isCustomElement && propertyName !== binding.name) {
+            target.markRemappedProperty(binding.name, propertyName);
+          }
+          target.addParseSpanInfo(binding.keySpan);
+          if (isCustomElement && !checkCustomElementPropertyTypes) {
+            // When input type-checking is disabled (e.g. `fullTemplateTypeCheck: true` without
+            // `strictTemplates`), still check property existence on known custom elements without
+            // checking assignability of the bound expression.
+            this.scope.addStatement(target);
+            this.scope.addStatement(expr);
+          } else {
+            let assignment = expr.wrapForTypeChecker();
+            if (
+              binding.type === BindingType.TwoWay &&
+              this.tcb.env.config.allowSignalsInTwoWayBindings
+            ) {
+              assignment = unwrapWritableSignal(assignment, this.tcb);
+            }
+            const stmt = new TcbExpr(`${target.print()} = ${assignment.print()}`).addParseSpanInfo(
+              binding.sourceSpan,
+            );
+            this.scope.addStatement(stmt);
+          }
         } else {
           this.scope.addStatement(expr);
         }
+      } else if (
+        canCheckCustomElementAttrBindings &&
+        lowerTagName !== null &&
+        binding.type === BindingType.Attribute &&
+        !this.claimedInputs?.has(binding.name)
+      ) {
+        // Check `[attr.*]` bindings against `NgCustomElements[tag].attributes` when declared.
+        // Angular removes the attribute when bound to `null` or `undefined`.
+        const ngAttributeType = this.tcb.env.referenceExternalSymbol(
+          '@angular/core',
+          'ɵNgAttributeType',
+        );
+        const attrId = this.tcb.allocateId();
+        const stmt = new TcbExpr(
+          `var ${attrId}: ${ngAttributeType.print()}<${TcbExpr.quoteAndEscape(lowerTagName)}, ${TcbExpr.quoteAndEscape(binding.name)}> | null | undefined = ${expr.wrapForTypeChecker().print()}`,
+        ).addParseSpanInfo(binding.sourceSpan);
+        this.scope.addStatement(stmt);
       } else {
         // A binding to an animation, attribute, class or style. For now, only validate the right-
         // hand side of the expression.
         // TODO: properly check class and style bindings.
         this.scope.addStatement(expr);
+      }
+    }
+
+    // Check static HTML attributes on custom elements against `NgCustomElements[tag].attributes`.
+    if (
+      canCheckCustomElementBase &&
+      lowerTagName !== null &&
+      this.tcb.env.config.checkTypeOfAttributes &&
+      this.target instanceof Element
+    ) {
+      for (const attr of this.target.attributes) {
+        if (
+          this.claimedInputs?.has(attr.name) ||
+          SKIPPED_CUSTOM_ELEMENT_STATIC_ATTRS.has(attr.name) ||
+          attr.name.startsWith('data-') ||
+          attr.name.startsWith('aria-')
+        ) {
+          continue;
+        }
+        const ngAttrType = this.tcb.env.referenceExternalSymbol(
+          '@angular/core',
+          'ɵNgAttributeType',
+        );
+        const attrId = this.tcb.allocateId();
+        const valueExpr = new TcbExpr(TcbExpr.quoteAndEscape(attr.value)).addParseSpanInfo(
+          attr.valueSpan ?? attr.sourceSpan,
+        );
+        const stmt = new TcbExpr(
+          `var ${attrId}: ${ngAttrType.print()}<${TcbExpr.quoteAndEscape(lowerTagName)}, ${TcbExpr.quoteAndEscape(attr.name)}> = ${valueExpr.print()}`,
+        ).addParseSpanInfo(attr.sourceSpan);
+        this.scope.addStatement(stmt);
       }
     }
 

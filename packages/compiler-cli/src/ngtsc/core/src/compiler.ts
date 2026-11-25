@@ -1133,6 +1133,8 @@ export class NgCompiler {
         allowDomEventAssertion,
         checkTypeOfNgTemplateBindings: false, // 3p-only
         // g3-only checkTypeOfNgTemplateBindings: true,
+        checkCustomElementsUnderSchema: false, // 3p-only
+        // g3-only checkCustomElementsUnderSchema: true,
       };
     } else {
       typeCheckingConfig = {
@@ -1166,8 +1168,8 @@ export class NgCompiler {
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
         checkUnknownElements: false,
-        checkTypeOfNgTemplateBindings: false, // 3p-only
-        // g3-only checkTypeOfNgTemplateBindings: true,
+        checkTypeOfNgTemplateBindings: false,
+        checkCustomElementsUnderSchema: false,
       };
     }
 
@@ -1224,6 +1226,10 @@ export class NgCompiler {
     }
     if (this.options.strictUnknownElements !== undefined) {
       typeCheckingConfig.checkUnknownElements = this.options.strictUnknownElements;
+    }
+    if (this.options.strictCustomElementsUnderSchema !== undefined) {
+      typeCheckingConfig.checkCustomElementsUnderSchema =
+        this.options.strictCustomElementsUnderSchema;
     }
 
     return typeCheckingConfig;

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '../../core';
 import {BindingType} from '../../expression_parser/ast';
 import {splitNsName} from '../../ml_parser/tags';
 import {Element, HostElement, Template} from '../../render3/r3_ast';
@@ -13,6 +14,8 @@ import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';
+import {isCustomElementTag} from './element';
+import type {Scope} from './scope';
 const REGISTRY = new DomElementSchemaRegistry();
 
 /**
@@ -28,9 +31,11 @@ const REGISTRY = new DomElementSchemaRegistry();
 export class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
     private tcb: Context,
+    private scope: Scope | null,
     private element: Element | Template | HostElement,
     private checkElement: boolean,
     private claimedInputs: Set<string> | null,
+    private hasComponent: boolean = false,
   ) {
     super();
   }
@@ -45,13 +50,41 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     const bindings = isTemplateElement ? element.inputs : element.bindings;
 
     if (this.checkElement && isTemplateElement) {
-      this.tcb.domSchemaChecker.checkElement(
-        this.tcb.id,
-        this.getTagName(element),
-        element.startSourceSpan,
-        this.tcb.schemas,
-        this.tcb.hostIsStandalone,
+      const tagName = this.getTagName(element);
+      const isCustomElement = isCustomElementTag(tagName);
+      const hasNoErrorsSchema = this.tcb.schemas.some(
+        (schema) => schema.name === NO_ERRORS_SCHEMA.name,
       );
+      const hasCustomElementsSchema = this.tcb.schemas.some(
+        (schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name,
+      );
+
+      if (
+        this.tcb.env.config.checkTemplateBodies &&
+        isCustomElement &&
+        !hasNoErrorsSchema &&
+        !hasCustomElementsSchema &&
+        this.scope !== null
+      ) {
+        const lowerTagName = tagName.replace(/^:xhtml:/, '').toLowerCase();
+        const assertFn = this.tcb.env.referenceExternalSymbol(
+          '@angular/core',
+          'ɵassertCustomElement',
+        );
+        const assertStmt = new TcbExpr(
+          `${assertFn.print()}(${TcbExpr.quoteAndEscape(lowerTagName)}, ${this.tcb.hostIsStandalone})`,
+        );
+        assertStmt.addParseSpanInfo(element.startSourceSpan || element.sourceSpan);
+        this.scope.addStatement(assertStmt);
+      } else {
+        this.tcb.domSchemaChecker.checkElement(
+          this.tcb.id,
+          tagName,
+          element.startSourceSpan,
+          this.tcb.schemas,
+          this.tcb.hostIsStandalone,
+        );
+      }
     }
 
     // TODO(alxhub): this could be more efficient.
@@ -76,6 +109,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
             binding.sourceSpan,
             this.tcb.schemas,
             this.tcb.hostIsStandalone,
+            this.hasComponent,
           );
         } else {
           this.tcb.domSchemaChecker.checkHostElementProperty(

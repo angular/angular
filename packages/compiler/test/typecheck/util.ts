@@ -19,6 +19,7 @@ import {
   ParseTemplateOptions,
   R3Identifiers,
   R3TargetBinder,
+  SchemaMetadata,
   SelectorlessMatcher,
   SelectorMatcher,
   TcbComponentMetadata,
@@ -138,6 +139,7 @@ const DEFAULT_CONFIG: TypeCheckingConfig = {
   allowDomEventAssertion: true,
   checkUnknownElements: true,
   checkTypeOfNgTemplateBindings: true,
+  checkCustomElementsUnderSchema: true,
 };
 
 export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
@@ -159,7 +161,7 @@ export function tcb(
   template: string,
   declarations: TestDeclaration[] = [],
   config?: Partial<TypeCheckingConfig>,
-  options?: {emitSpans?: boolean},
+  options?: {emitSpans?: boolean; schemas?: SchemaMetadata[]},
   templateParserOptions?: ParseTemplateOptions,
   foreignComponents: string[] = [],
 ): string {
@@ -192,7 +194,7 @@ export function tcb(
     id: 'tcb' as TypeCheckId,
     boundTarget,
     pipes: usedPipes,
-    schemas: [],
+    schemas: options?.schemas ?? [],
     isStandalone: false,
     preserveWhitespaces: false,
   };
