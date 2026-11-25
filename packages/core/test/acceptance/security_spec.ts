@@ -812,6 +812,7 @@ describe('host binding sanitization', () => {
     expectedError?: RegExp;
     namespace?: string;
     componentSelector?: string;
+    localName?: string;
   }): Promise<void> {
     // Avoid duplicate selector generation.
     const randomIdentifier = Math.floor(Math.random() * 100);
@@ -824,6 +825,7 @@ describe('host binding sanitization', () => {
       expectedError,
       namespace,
       componentSelector = `dynamic-host-${randomIdentifier}`,
+      localName,
     } = options;
 
     @Directive({
@@ -843,6 +845,13 @@ describe('host binding sanitization', () => {
     const hostElement = namespace
       ? document.createElementNS(namespace, tagName)
       : document.createElement(tagName);
+    if (localName !== undefined) {
+      // Domino derives `tagName` lazily from `localName`, so read it first to retain `IFRAME`.
+      const originalTagName = hostElement.tagName;
+      Object.defineProperty(hostElement, 'localName', {value: localName});
+      expect(hostElement.localName).toBe(localName);
+      expect(hostElement.tagName).toBe(originalTagName);
+    }
 
     let componentRef: ComponentRef<DynamicComponent> | undefined;
 
@@ -1133,6 +1142,36 @@ describe('host binding sanitization', () => {
 
     const fixture = TestBed.createComponent(App);
     await expectAsync(fixture.whenStable()).toBeRejectedWithError(resourceUrlError);
+  });
+
+  it('should reject dynamic directive host bindings against QName-prefixed iframe hosts', async () => {
+    await expectHostBinding({
+      tagName: 'q:iframe',
+      attrName: 'src',
+      value: HOST_BINDING_URL,
+      expectedError: resourceUrlError,
+      namespace: 'http://www.w3.org/1999/xhtml',
+    });
+  });
+
+  it('should fall back to tagName when a dynamic host has an empty localName', async () => {
+    await expectHostBinding({
+      tagName: 'iframe',
+      attrName: 'src',
+      value: HOST_BINDING_URL,
+      expectedError: resourceUrlError,
+      localName: '',
+    });
+  });
+
+  it('should preserve tagName sanitization when a dynamic host has a different localName', async () => {
+    await expectHostBinding({
+      tagName: 'iframe',
+      attrName: 'src',
+      value: HOST_BINDING_URL,
+      expectedError: resourceUrlError,
+      localName: 'div',
+    });
   });
 
   it('should reject security-sensitive attribute host bindings on concrete dynamic iframe hosts', async () => {
