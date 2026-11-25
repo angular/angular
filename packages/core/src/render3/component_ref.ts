@@ -8,6 +8,7 @@
 
 import {setActiveConsumer} from '../../primitives/signals';
 
+import {CSS_VAR_NAMESPACE} from '../application/application_tokens';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {
   ChangeDetectionScheduler,
@@ -177,6 +178,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     changeDetectionScheduler,
     ngReflect,
     tracingService,
+    cssVarNamespace: rootLViewInjector.get(CSS_VAR_NAMESPACE, ''),
     locale: rootLViewInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID),
   };
 }

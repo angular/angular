@@ -26,6 +26,7 @@ export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitive
 export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
 export {allLeavingAnimations as ɵallLeavingAnimations} from './animation/longest_animation';
 export {
+  CSS_VAR_NAMESPACE as ɵCSS_VAR_NAMESPACE,
   IMAGE_CONFIG as ɵIMAGE_CONFIG,
   IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS,
   ImageConfig as ɵImageConfig,

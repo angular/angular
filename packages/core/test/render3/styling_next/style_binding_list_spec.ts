@@ -79,6 +79,24 @@ describe('TNode styling linked list', () => {
       ]);
     });
 
+    it('should only mark possible namespace aliases as duplicate style bindings', () => {
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
+      const tData: TData = [null, null];
+      insertTStylingBinding(tData, tNode, '--x', 2, false, false);
+      insertTStylingBinding(tData, tNode, '--ns_x', 4, false, false);
+      insertTStylingBinding(tData, tNode, '--%NS%y', 6, false, false);
+      insertTStylingBinding(tData, tNode, '--%NS%x', 8, false, false);
+      insertTStylingBinding(tData, tNode, '--nsx', 10, false, false);
+
+      expectPriorityOrder(tData, tNode, false).toEqual([
+        [2, '--x', false, true],
+        [4, '--ns_x', false, true],
+        [6, '--%NS%y', false, false],
+        [8, '--%NS%x', true, false],
+        [10, '--nsx', false, false],
+      ]);
+    });
+
     it('should append host only', () => {
       const tData: TData = [null, null];
       const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);

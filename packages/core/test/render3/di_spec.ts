@@ -154,6 +154,7 @@ describe('di', () => {
           rendererFactory: {} as any,
           sanitizer: null,
           changeDetectionScheduler: null,
+          cssVarNamespace: '',
           ngReflect: false,
           tracingService: null,
           locale: 'en-us',

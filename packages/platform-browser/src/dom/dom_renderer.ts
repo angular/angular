@@ -10,6 +10,7 @@ import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {
   APP_ID,
   CSP_NONCE,
+  ɵCSS_VAR_NAMESPACE as CSS_VAR_NAMESPACE,
   Inject,
   Injectable,
   InjectionToken,
@@ -71,16 +72,6 @@ export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
   {
     factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
   },
-);
-
-/**
- * An injection token that allows an application to configure a prefix to be used for all
- * CSS variables generated compiled with CSS namespacing enabled.
- *
- * Typically set via {@link provideCssVarNamespacing}.
- */
-export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CSS_VAR_NAMESPACE' : '',
 );
 
 /**
