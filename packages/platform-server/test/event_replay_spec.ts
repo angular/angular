@@ -8,14 +8,19 @@
 
 import {
   APP_ID,
+  ApplicationRef,
   Component,
   destroyPlatform,
   Directive,
   ErrorHandler,
   HostListener,
   inject,
+  InjectionToken,
   PendingTasks,
   PLATFORM_ID,
+  signal,
+  ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
+  ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
   ɵgetDocument as getDocument,
   ɵEVENT_REPLAY_QUEUE as EVENT_REPLAY_QUEUE,
 } from '@angular/core';
@@ -24,10 +29,11 @@ import {
   bootstrapApplication,
   provideClientHydration,
   withEventReplay,
+  withIncrementalHydration,
   withNoIncrementalHydration,
 } from '@angular/platform-browser';
 
-import {EventPhase} from '@angular/core/primitives/event-dispatch';
+import {EventContract, EventPhase} from '@angular/core/primitives/event-dispatch';
 
 import {
   getAppContents,
@@ -1055,6 +1061,370 @@ describe('event replay', () => {
 
       // Verify global cleanup
       expect(window._ejsas![appId]).toBeUndefined();
+    });
+  });
+
+  describe('@defer incremental hydration event replay', () => {
+    const PENDING_TASK_HOLDER = new InjectionToken<{release: () => void}>('PENDING_TASK_HOLDER');
+    const hydrationFeatures = () => [withIncrementalHydration(), withEventReplay()];
+
+    it('should replay a click on a @defer block already hydrating via a non-replay trigger', async () => {
+      const shouldHydrate = signal(false);
+      const clicks = signal(0);
+
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate when shouldHydrate()) {
+            <button id="r1-btn" type="button" (click)="onClick()">Count: {{ clicks() }}</button>
+          }
+        `,
+      })
+      class AppComponent {
+        shouldHydrate = shouldHydrate;
+        clicks = clicks;
+        onClick() {
+          clicks.update((n) => n + 1);
+        }
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+      await appRef.whenStable();
+
+      const btn = doc.getElementById('r1-btn')!;
+      expect(clicks()).toBe(0);
+
+      shouldHydrate.set(true);
+      appRef.tick();
+      btn.click();
+
+      await appRef.whenStable();
+      expect(clicks()).toBe(1);
+    });
+
+    it('should replay an early click before bootstrap on an immediate @defer block', async () => {
+      const clicks = signal(0);
+
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate on immediate) {
+            <button id="r2-btn" type="button" (click)="onClick()">Count: {{ clicks() }}</button>
+          }
+        `,
+      })
+      class AppComponent {
+        clicks = clicks;
+        onClick() {
+          clicks.update((n) => n + 1);
+        }
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      doc.getElementById('r2-btn')!.click();
+
+      const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+      await appRef.whenStable();
+
+      expect(clicks()).toBe(1);
+    });
+
+    it('should replay an early click on an immediate @defer block waiting for another pending task', async () => {
+      const clicks = signal(0);
+
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate on immediate) {
+            <button id="r3-btn" type="button" (click)="onClick()">Count: {{ clicks() }}</button>
+          }
+        `,
+      })
+      class AppComponent {
+        clicks = clicks;
+        constructor() {
+          if (isPlatformBrowser(inject(PLATFORM_ID))) {
+            const holder = inject(PENDING_TASK_HOLDER);
+            holder.release = inject(PendingTasks).add();
+          }
+        }
+        onClick() {
+          clicks.update((n) => n + 1);
+        }
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      doc.getElementById('r3-btn')!.click();
+
+      const holder = {release: () => {}};
+      const appRef = await hydrate(doc, AppComponent, {
+        hydrationFeatures,
+        envProviders: [{provide: PENDING_TASK_HOLDER, useValue: holder}],
+      });
+
+      // Wait deterministically for the immediate @defer block to finish rendering
+      // and park at `await appRef.whenStable()` while still registered in `hydrating`.
+      const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+      expect(registry.hydrating.has('d0')).toBeTrue();
+      await registry.hydrating.get('d0')!.promise;
+      await Promise.resolve();
+      expect(registry.hydrating.has('d0')).toBeTrue();
+      expect(clicks()).toBe(0);
+
+      holder.release();
+      await appRef.whenStable();
+
+      expect(clicks()).toBe(1);
+    });
+
+    it('should preserve early event replay order and stopPropagation while parked at whenStable()', async () => {
+      const log: string[] = [];
+
+      @Component({
+        selector: 'app',
+        template: `
+          <div (click)="onParentClick()">
+            @defer (hydrate on immediate) {
+              <button id="defer-btn" type="button" (click)="onDeferClick($event)">Defer</button>
+            }
+          </div>
+          <button id="eager-btn" type="button" (click)="onEagerClick()">Eager</button>
+        `,
+      })
+      class AppComponent {
+        constructor() {
+          if (isPlatformBrowser(inject(PLATFORM_ID))) {
+            const holder = inject(PENDING_TASK_HOLDER);
+            holder.release = inject(PendingTasks).add();
+          }
+        }
+        onParentClick() {
+          log.push('parent');
+        }
+        onDeferClick(event: Event) {
+          event.stopPropagation();
+          log.push('defer');
+        }
+        onEagerClick() {
+          log.push('eager');
+        }
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      doc.getElementById('defer-btn')!.click();
+      doc.getElementById('eager-btn')!.click();
+
+      const holder = {release: () => {}};
+      const appRef = await hydrate(doc, AppComponent, {
+        hydrationFeatures,
+        envProviders: [{provide: PENDING_TASK_HOLDER, useValue: holder}],
+      });
+
+      const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+      expect(registry.hydrating.has('d0')).toBeTrue();
+      await registry.hydrating.get('d0')!.promise;
+      await Promise.resolve();
+      expect(log).toEqual([]);
+
+      holder.release();
+      await appRef.whenStable();
+
+      expect(log).toEqual(['defer', 'eager']);
+    });
+
+    it('should still clean up hydrated defer blocks when a replayed listener rethrows via ErrorHandler', async () => {
+      const shouldHydrate = signal(false);
+
+      class RethrowingErrorHandler extends ErrorHandler {
+        override handleError(error: unknown): void {
+          throw error;
+        }
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate when shouldHydrate()) {
+            <button id="err-btn" type="button" (click)="onClick()">Boom</button>
+          }
+        `,
+      })
+      class AppComponent {
+        shouldHydrate = shouldHydrate;
+        onClick() {
+          throw new Error('listener boom');
+        }
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      const appRef = await hydrate(doc, AppComponent, {
+        hydrationFeatures,
+        envProviders: [{provide: ErrorHandler, useClass: RethrowingErrorHandler}],
+      });
+      await appRef.whenStable();
+
+      const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+      const btn = doc.getElementById('err-btn')!;
+      expect(registry.has('d0')).toBeTrue();
+
+      const unhandled: unknown[] = [];
+      const onRejection = (reason: unknown) => {
+        unhandled.push(reason);
+      };
+      process.on('unhandledRejection', onRejection);
+      try {
+        shouldHydrate.set(true);
+        appRef.tick();
+        btn.click();
+
+        await appRef.whenStable();
+        await Promise.resolve();
+        await Promise.resolve();
+      } finally {
+        process.off('unhandledRejection', onRejection);
+      }
+
+      expect(unhandled.length).toBe(1);
+      expect(registry.has('d0')).toBeFalse();
+      expect(registry.hydrating.has('d0')).toBeFalse();
+      expect(btn.hasAttribute('ngb')).toBeFalse();
+      expect(btn.hasAttribute('jsaction')).toBeFalse();
+    });
+
+    it('should not throw NG0205 if a replayed early event listener destroys the app', async () => {
+      let destroyed = false;
+
+      @Component({
+        selector: 'app',
+        template: `<button id="destroy-btn" type="button" (click)="onClick()">Destroy</button>`,
+      })
+      class AppComponent {
+        private readonly appRef = inject(ApplicationRef);
+        onClick() {
+          destroyed = true;
+          this.appRef.destroy();
+        }
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      doc.getElementById('destroy-btn')!.click();
+
+      const appRef = await hydrate(doc, AppComponent, {
+        hydrationFeatures,
+        envProviders: withStrictErrorHandler(),
+      });
+      await appRef.whenStable();
+
+      expect(destroyed).toBeTrue();
+      expect(appRef.destroyed).toBeTrue();
+    });
+
+    it('should not clean up the event contract while another defer block is still hydrating or awaiting callbacks', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate on immediate) {
+            <button id="fast-btn" type="button" (click)="onClick()">Fast</button>
+          }
+        `,
+      })
+      class AppComponent {
+        onClick() {}
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      doc.getElementById('fast-btn')!.click();
+
+      const cleanUpSpy = spyOn(EventContract.prototype, 'cleanUp').and.callThrough();
+
+      const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+      const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+      const contract = appRef.injector.get(JSACTION_EVENT_CONTRACT);
+
+      // Simulate another SSR defer block in a lazy route or branch awaiting callbacks.
+      registry.awaitParentBlock('d1', () => {});
+
+      await appRef.whenStable();
+
+      expect(contract.instance).toBeDefined();
+      expect(cleanUpSpy).not.toHaveBeenCalled();
+
+      // Triggering another cleanup while d1 is still awaiting callbacks must keep contract alive.
+      registry.cleanup([]);
+      expect(cleanUpSpy).not.toHaveBeenCalled();
+    });
+
+    it('should compact disconnected and ngb-stripped entries out of EVENT_REPLAY_QUEUE', async () => {
+      const shouldHydrate = signal(false);
+
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate when shouldHydrate()) {
+            <button id="live-btn" type="button" (click)="onClick()">Live</button>
+          }
+        `,
+      })
+      class AppComponent {
+        shouldHydrate = shouldHydrate;
+        onClick() {}
+      }
+
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const doc = getDocument();
+      prepareEnvironment(doc, getAppContents(html));
+      resetTViewsFor(AppComponent);
+
+      const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+      await appRef.whenStable();
+
+      const queue = appRef.injector.get(EVENT_REPLAY_QUEUE);
+      const detachedEl = doc.createElement('button');
+      detachedEl.setAttribute('ngb', 'd99');
+      const strippedEl = doc.createElement('button');
+      doc.body.appendChild(strippedEl);
+
+      queue.push(
+        {event: new Event('click'), currentTarget: detachedEl},
+        {event: new Event('click'), currentTarget: strippedEl},
+      );
+      expect(queue.length).toBe(2);
+
+      shouldHydrate.set(true);
+      appRef.tick();
+      await appRef.whenStable();
+
+      expect(queue.length).toBe(0);
+      strippedEl.remove();
     });
   });
 });

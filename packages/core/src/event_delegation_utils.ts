@@ -12,6 +12,7 @@ import {Attribute} from '../primitives/event-dispatch';
 import {APP_ID} from './application/application_tokens';
 import {InjectionToken} from './di';
 import type {RElement, RNode} from './render3/interfaces/renderer_dom';
+import type {EventReplayQueue} from './hydration/tokens';
 import {INJECTOR, type LView} from './render3/interfaces/view';
 
 export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
@@ -130,6 +131,34 @@ export function invokeListeners(event: Event, currentTarget: Element | null) {
   }
   for (const handler of handlerFns) {
     handler(event);
+  }
+}
+
+export function replayQueuedBlockEvents(queue: EventReplayQueue, hydratedBlocks: string[]): void {
+  if (queue.length === 0) {
+    return;
+  }
+  const hydrated = new Set<string>(hydratedBlocks);
+  const toReplay: EventReplayQueue = [];
+  const remaining: EventReplayQueue = [];
+  let dropped = false;
+  for (const item of queue) {
+    const blockName = item.currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE);
+    if (blockName === null || !item.currentTarget.isConnected) {
+      dropped = true;
+    } else if (hydrated.has(blockName)) {
+      toReplay.push(item);
+    } else {
+      remaining.push(item);
+    }
+  }
+  if (toReplay.length === 0 && !dropped) {
+    return;
+  }
+  queue.length = 0;
+  queue.push(...remaining);
+  for (const {event, currentTarget} of toReplay) {
+    invokeListeners(event, currentTarget);
   }
 }
 
