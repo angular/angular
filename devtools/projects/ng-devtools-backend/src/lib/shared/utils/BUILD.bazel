@@ -28,11 +28,6 @@ ts_project(
     srcs = ["log.ts"],
 )
 
-ts_project(
-    name = "error",
-    srcs = ["error.ts"],
-)
-
 ts_test_library(
     name = "test_lib",
     srcs = [

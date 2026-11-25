@@ -13,8 +13,8 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:types",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
     ],
 )

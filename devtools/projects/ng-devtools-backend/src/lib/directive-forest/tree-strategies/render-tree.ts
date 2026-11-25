@@ -21,7 +21,7 @@ import {
   blocksFilter,
   isControlFlowBlock,
 } from '../utils/control-flow';
-import {AngularDevtoolsError} from '../../shared/utils/error';
+import {AngularDevtoolsError} from '../../../../../shared-utils';
 import {getConfig} from '../../config/config';
 
 interface TreeExtractionContext {

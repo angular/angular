@@ -18,7 +18,7 @@ import {
   hydrationSkippedHighlightTemplate,
 } from '../shared/highlighter/templates';
 import {ComponentTreeNode} from '../shared/interfaces';
-import {AngularDevtoolsError} from '../shared/utils/error';
+import {AngularDevtoolsError} from '../../../../shared-utils';
 import {runOutsideAngular} from '../shared/utils/general';
 import {HighlightTemplate, HighlightType} from '../shared/highlighter/types';
 
