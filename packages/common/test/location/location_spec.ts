@@ -389,5 +389,18 @@ describe('Location Class', () => {
       expect(location.normalize('/en/page/index_html')).toBe('/page/index_html');
       expect(location.normalize('/en/page/index.html')).toBe('/page');
     });
+
+    it('should not strip /index.html from the end of a query or fragment value', () => {
+      const baseHref = '/en';
+
+      TestBed.configureTestingModule({providers: [{provide: APP_BASE_HREF, useValue: baseHref}]});
+
+      const location = TestBed.inject(Location);
+
+      expect(location.normalize('/en/page?path=folder/index.html')).toBe(
+        '/page?path=folder/index.html',
+      );
+      expect(location.normalize('/en/page#folder/index.html')).toBe('/page#folder/index.html');
+    });
   });
 });
