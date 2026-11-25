@@ -2,7 +2,6 @@ import {
   Component,
   ElementRef,
   NgModule,
-  QueryList,
   TemplateRef,
   ViewChild,
   ViewChildren

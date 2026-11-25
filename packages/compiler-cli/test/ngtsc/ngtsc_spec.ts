@@ -6698,6 +6698,42 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).not.toContain('\u0275setClassMetadata(');
+      // Nothing refers to the decorators anymore, so their import is not emitted either.
+      expect(jsContents).not.toMatch(/import \{[^}]*\} from/);
+    });
+
+    it('should preserve decorator-only imports referenced by a custom beforeTs transformer', () => {
+      if (isNgpTestMode()) {
+        return;
+      }
+      env.tsconfig({'supportTestBed': false}, {emitDecoratorMetadata: true});
+      env.write('dep.ts', `export class Dep {}`);
+      env.write(
+        'test.ts',
+        `
+      import {Component, Input} from '@angular/core';
+      import {Dep} from './dep';
+
+      @Component({selector: 'cmp', template: ''})
+      export class TestComponent {
+        @Input() dep!: Dep;
+      }
+    `,
+      );
+
+      const useDepInBeforeTs: ts.TransformerFactory<ts.SourceFile> = () => (sf) => {
+        if (!sf.fileName.endsWith('test.ts')) {
+          return sf;
+        }
+        return ts.factory.updateSourceFile(sf, [
+          ...sf.statements,
+          ts.factory.createExpressionStatement(ts.factory.createIdentifier('Dep')),
+        ]);
+      };
+
+      env.driveMain({beforeTs: [useDepInBeforeTs]});
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toMatch(/import \{ Dep \} from ['"]\.\/dep['"];/);
     });
 
     it('should use imported types in setClassMetadata if they can be represented as values', () => {

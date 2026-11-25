@@ -66,6 +66,7 @@ export function ivyTransformFactory(
           context,
           reflector,
           importRewriter,
+          defaultImportTracker,
           localCompilationExtraImportsTracker,
           file,
           isCore,
@@ -134,6 +135,7 @@ class IvyTransformationVisitor extends Visitor {
     private isClosureCompilerEnabled: boolean,
     private isCore: boolean,
     private deferrableImports: Set<ts.ImportDeclaration>,
+    private defaultImportTracker: DefaultImportTracker,
     private refEmitter: ReferenceEmitter | null,
     private enableTypeReification: boolean,
   ) {
@@ -221,9 +223,10 @@ class IvyTransformationVisitor extends Visitor {
       members.push(property);
     }
 
-    const filteredDecorators =
-      // Remove the decorator which triggered this compilation, leaving the others alone.
-      maybeFilterDecorator(ts.getDecorators(node), this.compilation.decoratorsFor(node));
+    // Remove the decorator which triggered this compilation, leaving the others alone.
+    const removedDecorators = this.compilation.decoratorsFor(node);
+    removedDecorators.forEach((dec) => this.defaultImportTracker.recordRemovedDecorator(dec));
+    const filteredDecorators = maybeFilterDecorator(ts.getDecorators(node), removedDecorators);
 
     const nodeModifiers = ts.getModifiers(node);
     let updatedModifiers: ts.ModifierLike[] | undefined;
@@ -283,6 +286,7 @@ class IvyTransformationVisitor extends Visitor {
     }
     // Build a Set of the decorators on this node from @angular/core.
     const coreDecorators = this._angularCoreDecorators(node);
+    coreDecorators.forEach((dec) => this.defaultImportTracker.recordRemovedDecorator(dec));
 
     // Filter out the core decorators.
     return decorators.filter((dec) => !coreDecorators.has(dec));
@@ -325,6 +329,7 @@ function transformIvySourceFile(
   context: ts.TransformationContext,
   reflector: ReflectionHost,
   importRewriter: ImportRewriter,
+  defaultImportTracker: DefaultImportTracker,
   localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
   file: ts.SourceFile,
   isCore: boolean,
@@ -370,6 +375,7 @@ function transformIvySourceFile(
     isClosureCompilerEnabled,
     isCore,
     compilationVisitor.deferrableImports,
+    defaultImportTracker,
     refEmitter,
     enableTypeReification,
   );

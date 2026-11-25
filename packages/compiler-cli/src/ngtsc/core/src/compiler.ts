@@ -816,7 +816,7 @@ export class NgCompiler {
    * Fetch transformers and other information which is necessary for a consumer to `emit` the
    * program with Angular-added definitions.
    */
-  prepareEmit(): {
+  prepareEmit(customBeforeTransformers: ts.TransformerFactory<ts.SourceFile>[] = []): {
     transformers: ts.CustomTransformers;
   } {
     const compilation = this.ensureAnalyzed();
@@ -850,7 +850,6 @@ export class NgCompiler {
         !!this.options['_experimentalEmitIntermediateTs'],
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
-      defaultImportTracker.importPreservingTransformer(),
     ];
 
     // If there are JIT declarations, wire up the JIT transform and efficiently
@@ -888,6 +887,18 @@ export class NgCompiler {
 
     // Typescript transformer to add debugName metadata to signal functions.
     before.push(signalMetadataTransform(this.inputProgram));
+
+    // Run custom `before` transformers ahead of `importPreservingTransformer` so that any runtime
+    // references they synthesize to decorator-only imports are observed before elision.
+    before.push(
+      ...customBeforeTransformers,
+      defaultImportTracker.importPreservingTransformer(
+        // Local compilation leaves the author's imports as they are.
+        this.options.compilationMode === 'experimental-local'
+          ? undefined
+          : this.inputProgram.getTypeChecker(),
+      ),
+    );
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
 

@@ -1,4 +1,4 @@
-import { Component, NgModule, QueryList, ViewChild, ViewChildren } from "@angular/core";
+import { Component, NgModule, ViewChild, ViewChildren } from "@angular/core";
 import { SomeDirective } from "./some.directive";
 import * as i0 from "@angular/core";
 export class ViewQueryComponent {
