@@ -5,6 +5,7 @@
   // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
     "BazelBuild.vscode-bazel",
+    "editorconfig.editorconfig",
     "ms-vscode.vscode-typescript-tslint-plugin",
   ],
 }
