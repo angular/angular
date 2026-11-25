@@ -770,13 +770,25 @@ async fn contextualize_ngmodule_scope_declarations(
         };
         contextual_decl.is_forward_ref = is_forward_ref;
 
-        let cycle_prone = if decl.reference.file == reference_id.file {
-            false
+        let cycle_path = if decl.reference.file == reference_id.file {
+            None
         } else {
-            ctx.has_path(decl.reference.file, reference_id.file).await
+            ctx.find_path(decl.reference.file, reference_id.file)
+                .await
+                .map(|ids| {
+                    let mut path = Vec::with_capacity(ids.len() + 1);
+                    path.push(file_path.to_string_lossy().into_owned());
+                    for id in ids {
+                        if let Some(p) = ctx.file_path(id) {
+                            path.push(p);
+                        }
+                    }
+                    path
+                })
         };
-        if cycle_prone {
+        if let Some(path) = cycle_path {
             contextual_decl.cycle_prone = Some(true);
+            contextual_decl.cycle_path = Some(path);
         }
         contextual_decl.resolved_host_directives = match host_directives {
             HostDirectiveResolution::Resolve => {

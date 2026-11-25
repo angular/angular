@@ -466,6 +466,7 @@ export interface DeclarationMetadata {
   isForwardRef: boolean;
   isStructural: boolean;
   cycleProne?: boolean;
+  cyclePath?: Array<string>;
   isExported: boolean;
   hasNonExportedBounds: boolean;
   isExplicitlyDeferred: boolean;

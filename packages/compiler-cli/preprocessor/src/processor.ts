@@ -138,6 +138,7 @@ interface HybridCompilerContext {
   supportTestBed?: boolean;
   i18nUseExternalIds?: boolean;
   remoteScopedClasses?: Set<string>;
+  cyclicClasses?: Set<string>;
   metadataMap?: Map<string, nga.AnalysisResult>;
   /** Keyed `filePath#ClassName`; see `ChunkContext.eagerlyUsedDeclarations`. */
   eagerlyUsedDeclarations?: Map<string, nga.DeclarationMetadata[]>;
@@ -371,11 +372,14 @@ export async function processFile(
     ...rawCtx,
     remoteScopedClasses:
       chunkContext?.remoteScopedClasses || rawCtx.remoteScopedClasses || new Set(),
+    cyclicClasses: chunkContext?.cyclicClasses || rawCtx.cyclicClasses || new Set(),
     metadataMap: chunkContext?.metadataMap || rawCtx.metadataMap || new Map(),
     eagerlyUsedDeclarations: chunkContext?.eagerlyUsedDeclarations || new Map(),
   };
   const s = new MagicString(content);
-  const fileDiagnostics: nga.NgDiagnostic[] = [];
+  const fileDiagnostics: nga.NgDiagnostic[] = [
+    ...(chunkContext?.cycleDiagnostics?.get(filePath) ?? []),
+  ];
   const referencedStyleFiles: string[] = [];
 
   const {classes, imports: importDeclarations} = result;
@@ -490,6 +494,7 @@ export async function processFile(
 
 type ProcessFileContext = HybridCompilerContext & {
   remoteScopedClasses: Set<string>;
+  cyclicClasses: Set<string>;
   metadataMap: Map<string, nga.AnalysisResult>;
   eagerlyUsedDeclarations: Map<string, nga.DeclarationMetadata[]>;
 };
@@ -723,7 +728,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       ctx.tracer.count(Counter.PipesCompiled);
     }
 
-    if (component) {
+    if (component && !ctx.cyclicClasses.has(`${filePath}#${className}`)) {
       factoryGenerated = true;
       const {
         selector,

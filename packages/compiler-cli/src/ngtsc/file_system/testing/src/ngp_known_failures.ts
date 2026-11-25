@@ -40,8 +40,7 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   return (
     NGP_REQUIRES_TYPE_CHECKER.has(normalized) ||
     NGP_KNOWN_NGTSC_FAILURES.has(normalized) ||
-    NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES.has(normalized) ||
-    NGP_PARTIAL_KNOWN_FAILURES.has(normalized)
+    NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES.has(normalized)
   );
 }
 
@@ -66,9 +65,6 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   // ngp emits `Parameters<typeof i1.transformFn>[0]` instead of re-importing the external symbol.
   'ngtsc behavioral tests input transforms should compile an input with an external transform function',
   'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
-
-  // Partial compilation isn't implemented in ngp.
-  'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
 
   // Design difference, not a bug: on an `@Inject` parameter whose type is imported from another
   // file, ngp emits `type: undefined` in `ɵsetClassMetadata` in both compilation modes. Single-file
@@ -110,6 +106,25 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
 
   // Tests TypeScript `structureIsReused` across in-memory ngtsc incremental compilations.
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
+
+  // Cosmetic `i0.forwardRef` vs `forwardRef` import qualification in partial `.js` goldens
+  // (linked output passes 100%).
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/queries] should support content queries with forwardRefs',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/queries] should support view queries with forwardRefs',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/standalone] should handle a forwardRef in the imports of a standalone component',
+
+  // In `.d.ts` files, `tsc` compiling `.ng.ts` emits `declare class` for unexported classes
+  // referenced in `typeof ...` inside `ɵmod` (and retains named imports for referenced symbols),
+  // whereas `ngtsc` injects `ɵmod` after `tsc` strips unexported declarations (linked output passes 100%).
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/template_variables] should support a let variable and reference',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/template_variables] should support accessing parent template variables',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/template_variables] should support embedded views in the SVG namespace',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives] should instantiate directives in a closure when they are forward referenced',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives] should instantiate pipes in a closure when they are forward referenced',
+  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives] should not use reexport names inside declarations when a direct export is available',
+  'compliance tests (partial compile) [r3_view_compiler_listener] should not assume that $event is referring to an event object inside a property',
+  'compliance tests (partial compile) [r3_view_compiler_styling/component_animations] should generate animation host binding and listener code for directives',
+  'compliance tests (partial compile) [r3_view_compiler_styling/component_animations] should generate animation listeners',
 ]);
 
 /**
@@ -256,24 +271,4 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc xi18n should extract xlf2',
   'ngtsc xi18n should extract xmb',
   'ngtsc xi18n should not emit js',
-]);
-
-/**
- * Known failures in `//packages/compiler-cli/test/compliance/partial:partial_ngp` and
- * `//packages/compiler-cli/test/compliance/linked:linked_ngp` while partial compilation is
- * being implemented in NGP.
- */
-const NGP_PARTIAL_KNOWN_FAILURES: ReadonlySet<string> = new Set([
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/queries] should support content queries with forwardRefs',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/queries] should support view queries with forwardRefs',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/standalone] should handle a forwardRef in the imports of a standalone component',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/template_variables] should support a let variable and reference',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/template_variables] should support accessing parent template variables',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives/template_variables] should support embedded views in the SVG namespace',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives] should instantiate directives in a closure when they are forward referenced',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives] should instantiate pipes in a closure when they are forward referenced',
-  'compliance tests (partial compile) [r3_compiler_compliance/components_and_directives] should not use reexport names inside declarations when a direct export is available',
-  'compliance tests (partial compile) [r3_view_compiler_listener] should not assume that $event is referring to an event object inside a property',
-  'compliance tests (partial compile) [r3_view_compiler_styling/component_animations] should generate animation host binding and listener code for directives',
-  'compliance tests (partial compile) [r3_view_compiler_styling/component_animations] should generate animation listeners',
 ]);

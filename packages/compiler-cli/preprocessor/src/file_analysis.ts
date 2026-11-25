@@ -9,7 +9,7 @@
 import {ParsedTemplate, TmplAstNode} from '@angular/compiler';
 
 import {PreparedTcbData} from './tcb.js';
-import {AnalysisResult, DeclarationMetadata} from './types.js';
+import {AnalysisResult, DeclarationMetadata, NgDiagnostic} from './types.js';
 
 export interface ParsedComponentTemplate extends ParsedTemplate {
   /**
@@ -44,6 +44,13 @@ export interface ChunkContext {
    * set is computed once while detecting cycles rather than re-derived per module.
    */
   eagerlyUsedDeclarations: Map<string, DeclarationMetadata[]>;
+  /**
+   * Components (keyed `filePath#ClassName`) that failed partial-mode cycle checking (`NG3003`)
+   * and therefore must not emit `ɵcmp`.
+   */
+  cyclicClasses?: Set<string>;
+  /** Per-file cycle diagnostics produced while preparing this chunk in partial mode. */
+  cycleDiagnostics?: Map<string, NgDiagnostic[]>;
 }
 
 export function getOrCreateFileAnalysis(

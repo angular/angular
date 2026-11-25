@@ -170,4 +170,252 @@ describe('partial compilation', () => {
     expect(dts).toContain('ɵɵPipeDeclaration<MyPipe');
     expect(dts).toContain('ɵɵNgModuleDeclaration<MyModule');
   });
+
+  it('reports NG3003 with full multi-hop intermediate-file cycle path in partial mode', async () => {
+    const outputs = await runPipeline(
+      [
+        {
+          path: '/tsconfig.json',
+          content: JSON.stringify({
+            compilerOptions: {
+              target: 'ES2022',
+              module: 'ES2022',
+              experimentalDecorators: true,
+            },
+            angularCompilerOptions: {
+              compilationMode: 'partial',
+            },
+            files: ['/src/module.ts', '/src/intermediate.ts', '/src/consumer.ts'],
+          }),
+        },
+        {
+          path: '/src/consumer.ts',
+          content: `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'consumer-cmp',
+              template: '<target-cmp></target-cmp>',
+              standalone: false,
+            })
+            export class ConsumerCmp {}
+          `,
+        },
+        {
+          path: '/src/intermediate.ts',
+          content: `
+            import {ConsumerCmp} from './consumer';
+            export const REF = ConsumerCmp;
+          `,
+        },
+        {
+          path: '/src/module.ts',
+          content: `
+            import {Component, NgModule} from '@angular/core';
+            import {REF} from './intermediate';
+            import {ConsumerCmp} from './consumer';
+
+            @Component({
+              selector: 'target-cmp',
+              template: 'target',
+              standalone: false,
+            })
+            export class TargetCmp {
+              ref = REF;
+            }
+
+            @NgModule({
+              declarations: [ConsumerCmp, TargetCmp],
+            })
+            export class AppModule {}
+          `,
+        },
+      ],
+      {optimize: true, format: false},
+    );
+
+    const diagFile = outputs.find((f) => f.path.endsWith('.ngdiag.json'));
+    expect(diagFile).toBeDefined();
+    const parsed = JSON.parse(diagFile!.content) as {
+      diagnostics: Array<{
+        code: number;
+        messageText: string;
+        filePath?: string;
+        relatedInformation?: Array<{messageText: string; filePath?: string}>;
+      }>;
+    };
+    const cycleDiags = parsed.diagnostics.filter((d) => d.code === 3003);
+    expect(cycleDiags.length).toBe(1);
+    expect(cycleDiags[0].filePath).toBe('/src/consumer.ts');
+    expect(cycleDiags[0].messageText).toContain(
+      'One or more import cycles would need to be created to compile this component',
+    );
+    expect(cycleDiags[0].relatedInformation?.map((r) => r.messageText)).toEqual([
+      `The component 'TargetCmp' is used in the template but importing it would create a cycle: /src/consumer.ts -> /src/module.ts -> /src/consumer.ts`,
+    ]);
+
+    // Emitted consumer.ts should suppress ɵcmp for the cyclic component.
+    const consumerOut = outputs.find((f) => f.path === '/out/src/consumer.ts');
+    expect(consumerOut?.content ?? '').not.toContain('ɵɵngDeclareComponent');
+  });
+
+  it('reports NG3003 for a 3-hop cycle through a non-Angular intermediate file', async () => {
+    const outputs = await runPipeline(
+      [
+        {
+          path: '/tsconfig.json',
+          content: JSON.stringify({
+            compilerOptions: {
+              target: 'ES2022',
+              module: 'ES2022',
+              experimentalDecorators: true,
+            },
+            angularCompilerOptions: {
+              compilationMode: 'partial',
+            },
+            files: ['/src/module.ts', '/src/target.ts', '/src/intermediate.ts', '/src/consumer.ts'],
+          }),
+        },
+        {
+          path: '/src/consumer.ts',
+          content: `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'consumer-cmp',
+              template: '<target-cmp></target-cmp>',
+              standalone: false,
+            })
+            export class ConsumerCmp {}
+          `,
+        },
+        {
+          path: '/src/intermediate.ts',
+          content: `
+            import {ConsumerCmp} from './consumer';
+            export const REF = ConsumerCmp;
+          `,
+        },
+        {
+          path: '/src/target.ts',
+          content: `
+            import {Component} from '@angular/core';
+            import {REF} from './intermediate';
+
+            @Component({
+              selector: 'target-cmp',
+              template: 'target',
+              standalone: false,
+            })
+            export class TargetCmp {
+              ref = REF;
+            }
+          `,
+        },
+        {
+          path: '/src/module.ts',
+          content: `
+            import {NgModule} from '@angular/core';
+            import {ConsumerCmp} from './consumer';
+            import {TargetCmp} from './target';
+
+            @NgModule({
+              declarations: [ConsumerCmp, TargetCmp],
+            })
+            export class AppModule {}
+          `,
+        },
+      ],
+      {optimize: true, format: false},
+    );
+
+    const diagFile = outputs.find((f) => f.path.endsWith('.ngdiag.json'));
+    expect(diagFile).toBeDefined();
+    const parsed = JSON.parse(diagFile!.content) as {
+      diagnostics: Array<{
+        code: number;
+        relatedInformation?: Array<{messageText: string}>;
+      }>;
+    };
+    const cycleDiags = parsed.diagnostics.filter((d) => d.code === 3003);
+    expect(cycleDiags.length).toBe(1);
+    expect(cycleDiags[0].relatedInformation?.map((r) => r.messageText)).toEqual([
+      `The component 'TargetCmp' is used in the template but importing it would create a cycle: /src/consumer.ts -> /src/target.ts -> /src/intermediate.ts -> /src/consumer.ts`,
+    ]);
+  });
+
+  it('reports NG3003 for a mutual synthetic-import cycle between two NgModule-declared components', async () => {
+    const outputs = await runPipeline(
+      [
+        {
+          path: '/tsconfig.json',
+          content: JSON.stringify({
+            compilerOptions: {
+              target: 'ES2022',
+              module: 'ES2022',
+              experimentalDecorators: true,
+            },
+            angularCompilerOptions: {
+              compilationMode: 'partial',
+            },
+            files: ['/src/a.ts', '/src/b.ts', '/src/module.ts'],
+          }),
+        },
+        {
+          path: '/src/a.ts',
+          content: `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'cmp-a',
+              template: '<cmp-b></cmp-b>',
+              standalone: false,
+            })
+            export class CmpA {}
+          `,
+        },
+        {
+          path: '/src/b.ts',
+          content: `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'cmp-b',
+              template: '<cmp-a></cmp-a>',
+              standalone: false,
+            })
+            export class CmpB {}
+          `,
+        },
+        {
+          path: '/src/module.ts',
+          content: `
+            import {NgModule} from '@angular/core';
+            import {CmpA} from './a';
+            import {CmpB} from './b';
+
+            @NgModule({
+              declarations: [CmpA, CmpB],
+            })
+            export class AppModule {}
+          `,
+        },
+      ],
+      {optimize: true, format: false},
+    );
+
+    const diagFile = outputs.find((f) => f.path.endsWith('.ngdiag.json'));
+    expect(diagFile).toBeDefined();
+    const parsed = JSON.parse(diagFile!.content) as {
+      diagnostics: Array<{
+        code: number;
+        relatedInformation?: Array<{messageText: string}>;
+      }>;
+    };
+    const cycleDiags = parsed.diagnostics.filter((d) => d.code === 3003);
+    expect(cycleDiags.length).toBe(1);
+    expect(cycleDiags[0].relatedInformation?.[0]?.messageText).toContain(
+      'is used in the template but importing it would create a cycle:',
+    );
+  });
 });
