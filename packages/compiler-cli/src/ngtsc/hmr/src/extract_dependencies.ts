@@ -197,7 +197,13 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
 class TypeScriptPotentialTopLevelReadsVisitor extends PotentialTopLevelReadsVisitor<ts.Identifier> {
   protected override addWrappedNodeReads(node: unknown): void {
     if (this.isTypeScriptNode(node)) {
-      this.addAllTopLevelIdentifiers(node);
+      // An identifier that is wrapped by itself is a read, even one that was created to refer to an
+      // import and is therefore not attached to the tree, unlike the identifiers of the source file.
+      if (ts.isIdentifier(node)) {
+        this.allReads.add(node);
+      } else {
+        this.addAllTopLevelIdentifiers(node);
+      }
     }
   }
 

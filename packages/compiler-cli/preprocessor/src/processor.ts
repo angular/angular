@@ -708,6 +708,11 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         preserveWhitespaces,
       } = component;
       const hostMetadata = component.hostMetadata ?? [];
+      for (const hd of hostDirectives ?? []) {
+        if (hd.directive.localAlias !== undefined) {
+          eagerlyBoundNames.add(hd.directive.localAlias.split('.')[0]);
+        }
+      }
 
       // Non-string `template` values report NG1010 in `ClassData::validate_template_declaration`
       // and fall back to an empty template (matching ngtsc's `createEmptyTemplate`).
@@ -1180,7 +1185,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         for (const ref of component.imports ?? []) {
           if (ref.localAlias !== undefined) {
             importedHere.add(ref.localAlias);
-            eagerDependencyNames.add(ref.localAlias);
+            eagerDependencyNames.add(ref.localAlias.split('.')[0]);
           }
         }
         for (const ref of component.deferredImports ?? []) {
@@ -1195,14 +1200,14 @@ function compileClasses(file: FileCompilation): string | null | undefined {
           const local = decl.ref.localAlias;
           if (local === undefined) continue;
           if (filteredDeclarations.includes(decl)) {
-            eagerlyBoundNames.add(local);
+            eagerlyBoundNames.add(local.split('.')[0]);
             // An explicitly deferred declaration only ends up here because the compiler fell
             // back to an eager dependency (used outside any `@defer` block, or in one whose
             // allow-list excludes it). The source still references it solely from
             // `deferredImports`, which ngtsc's tracker excuses, so this is not an eager
             // reference for NG8014 purposes.
             if (!decl.isExplicitlyDeferred) {
-              eagerlyReferencedNames.add(local);
+              eagerlyReferencedNames.add(local.split('.')[0]);
             }
             continue;
           }
@@ -1221,7 +1226,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         for (const ref of component?.imports ?? []) {
           const local = ref.localAlias;
           if (local === undefined || deferredHere.has(local)) continue;
-          eagerDependencyNames.add(local);
+          eagerDependencyNames.add(local.split('.')[0]);
         }
       }
       for (const local of deferredHere) {
@@ -1257,7 +1262,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         canDeferDeps && isRefDeferrable(ref) ? deferredImportOf(ref, importsByBinding) : null;
       const markNotDeferrable = (local: string | undefined) => {
         if (!canDeferDeps || local === undefined) return;
-        eagerlyBoundNames.add(local);
+        eagerlyBoundNames.add(local.split('.')[0]);
         deferredOnlyNames.delete(local);
       };
 
@@ -1617,6 +1622,11 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       factoryGenerated = true;
       const {selector, standalone, hostDirectives} = directive;
       const hostMetadata = directive.hostMetadata ?? [];
+      for (const hd of hostDirectives ?? []) {
+        if (hd.directive.localAlias !== undefined) {
+          eagerlyBoundNames.add(hd.directive.localAlias.split('.')[0]);
+        }
+      }
 
       // Build R3DirectiveMetadata for directive
       // Use a valid source span when there are host bindings (required by Angular's binding parser)

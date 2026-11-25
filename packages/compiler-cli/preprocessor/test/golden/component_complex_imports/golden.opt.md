@@ -31,8 +31,6 @@ import * as i1 from './button.component';
 import * as i2 from './card.component';
 // @ts-ignore
 import * as i3 from './feature.module';
-// @ts-ignore
-import * as i4 from './icons';
 
 export class LocalDirective {
   // @ts-ignore
@@ -123,7 +121,7 @@ export class AppComponent {
         LocalDirective,
         FeatureModule,
         i3.FeatureInnerComponent,
-        i4.IconComponent,
+        icons.IconComponent,
         BarrelItemComponent,
       ],
       encapsulation: 2,

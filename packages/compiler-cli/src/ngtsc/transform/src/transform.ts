@@ -14,7 +14,7 @@ import {
   LocalCompilationExtraImportsTracker,
   ReferenceEmitter,
 } from '../../imports';
-import {getDefaultImportDeclaration} from '../../imports/src/default';
+import {getAliasImportDeclaration, getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {
@@ -66,6 +66,7 @@ export function ivyTransformFactory(
           context,
           reflector,
           importRewriter,
+          defaultImportTracker,
           localCompilationExtraImportsTracker,
           file,
           isCore,
@@ -133,7 +134,6 @@ class IvyTransformationVisitor extends Visitor {
     private recordWrappedNodeExpr: RecordWrappedNodeFn<ts.Expression>,
     private isClosureCompilerEnabled: boolean,
     private isCore: boolean,
-    private deferrableImports: Set<ts.ImportDeclaration>,
     private refEmitter: ReferenceEmitter | null,
     private enableTypeReification: boolean,
   ) {
@@ -245,16 +245,6 @@ class IvyTransformationVisitor extends Visitor {
     return {node, after: statements};
   }
 
-  override visitOtherNode<T extends ts.Node>(node: T): T {
-    if (ts.isImportDeclaration(node) && this.deferrableImports.has(node)) {
-      // Return `null` as an indication that this node should not be present
-      // in the final AST. Symbols from this import would be imported via
-      // dynamic imports.
-      return null!;
-    }
-    return node;
-  }
-
   /**
    * Return all decorators on a `Declaration` which are from @angular/core, or an empty set if none
    * are.
@@ -325,6 +315,7 @@ function transformIvySourceFile(
   context: ts.TransformationContext,
   reflector: ReflectionHost,
   importRewriter: ImportRewriter,
+  defaultImportTracker: DefaultImportTracker,
   localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
   file: ts.SourceFile,
   isCore: boolean,
@@ -369,11 +360,31 @@ function transformIvySourceFile(
     recordWrappedNode,
     isClosureCompilerEnabled,
     isCore,
-    compilationVisitor.deferrableImports,
     refEmitter,
     enableTypeReification,
   );
   let sf = visit(file, transformationVisitor, context);
+
+  // Drop the imports of deferred symbols, which are loaded through dynamic imports instead. This
+  // happens after the classes are compiled, keeping only the bindings that generated code reuses
+  // (for example as a constructor injection token).
+  const {deferrableImports} = compilationVisitor;
+  if (deferrableImports.size > 0) {
+    sf = ts.factory.updateSourceFile(
+      sf,
+      sf.statements.flatMap((stmt) => {
+        const original = ts.getOriginalNode(stmt);
+        if (!ts.isImportDeclaration(stmt) || !ts.isImportDeclaration(original)) {
+          return [stmt];
+        }
+        if (!deferrableImports.has(original)) {
+          return [stmt];
+        }
+        const filtered = defaultImportTracker.filterUsedImport(stmt);
+        return filtered !== null ? [filtered] : [];
+      }),
+    );
+  }
 
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
@@ -504,6 +515,10 @@ function createRecorderFn(
     const importDecl = getDefaultImportDeclaration(node);
     if (importDecl !== null) {
       defaultImportTracker.recordUsedImport(importDecl);
+    }
+    const reusedImport = getAliasImportDeclaration(node);
+    if (reusedImport !== null) {
+      defaultImportTracker.recordUsedAlias(reusedImport);
     }
   };
 }

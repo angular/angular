@@ -265,6 +265,14 @@ export interface ImportedTypeValueReference {
   valueDeclaration: DeclarationNode | null;
 
   /**
+   * The import in the file of the class through which the value can be referred to: the specifier
+   * of a named import that imports the value, or the namespace import that it is a member of. Not
+   * set if a new import has to be generated instead, which is the case in local compilation mode
+   * and when the name of the import means something else where the class is declared.
+   */
+  reusableImport?: ts.ImportSpecifier | ts.NamespaceImport;
+
+  /**
    * Whether the reference was produced without confirming that the symbol has a value at runtime.
    *
    * This only happens in local compilation, where deciding whether a symbol is type-only can

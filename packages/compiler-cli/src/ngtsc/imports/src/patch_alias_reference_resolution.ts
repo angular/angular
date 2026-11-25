@@ -111,7 +111,8 @@ export function loadIsReferencedAliasDeclarationPatch(
 
   const referencedAliases = new Set<AliasImportDeclaration>();
   emitResolver.isReferencedAliasDeclaration = function (node, ...args) {
-    if (isAliasImportDeclaration(node) && (referencedAliases as Set<ts.Node>).has(node)) {
+    const original = ts.getOriginalNode(node);
+    if (isAliasImportDeclaration(original) && referencedAliases.has(original)) {
       return true;
     }
     return originalIsReferencedAliasDeclaration.call(emitResolver, node, ...args);

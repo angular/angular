@@ -400,6 +400,37 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should capture the imports that constructor dependencies are referred to through', () => {
+      // No `setClassMetadata`, so the factory is the only place the dependencies appear.
+      enableHmr({supportTestBed: false});
+      env.write('dep.ts', `export class Dep {}`);
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Dep, Dep as Aliased} from './dep';
+          import * as deps from './dep';
+
+          @Component({template: ''})
+          export class Cmp {
+            constructor(dep: Dep, aliased: Aliased, member: deps.Dep) {}
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep, Aliased, deps], import.meta, id)',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep, Aliased, deps) {',
+      );
+    });
+
     it('should capture deferred dependencies when no class metadata is produced', () => {
       // `supportTestBed` determines whether we produce `setClassMetadata` calls.
       enableHmr({supportTestBed: false});

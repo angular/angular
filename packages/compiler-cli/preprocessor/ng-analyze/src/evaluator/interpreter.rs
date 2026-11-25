@@ -1480,12 +1480,16 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                 if let IncompleteDep::Reference(unresolved) = &hole.dep {
                     if unresolved.symbol == ImportKind::Namespace {
                         if let AccessKey::Str(member) = key {
+                            let local_name = unresolved
+                                .local_name
+                                .as_ref()
+                                .filter(|_| oxc_syntax::identifier::is_identifier_name(member))
+                                .map(|ns| format!("{ns}.{member}"));
                             let refined = UnresolvedReference {
                                 importer: unresolved.importer,
                                 specifier: unresolved.specifier.clone(),
                                 symbol: ImportKind::Named(member.to_string()),
-                                // The importer binds the namespace, not the member.
-                                local_name: None,
+                                local_name,
                                 is_namespace_member: true,
                             };
                             return self.import_hole(span, refined);

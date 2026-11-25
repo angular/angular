@@ -11,12 +11,17 @@ import ts from 'typescript';
 
 import {getSourceFile} from '../../util/src/typescript';
 
-import {loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
+import {
+  AliasImportDeclaration,
+  loadIsReferencedAliasDeclarationPatch,
+} from './patch_alias_reference_resolution';
 
 const DefaultImportDeclaration = Symbol('DefaultImportDeclaration');
+const ReusedAliasImportDeclaration = Symbol('ReusedAliasImportDeclaration');
 
 interface WithDefaultImportDeclaration {
   [DefaultImportDeclaration]?: ts.ImportDeclaration;
+  [ReusedAliasImportDeclaration]?: AliasImportDeclaration;
 }
 
 /**
@@ -38,6 +43,27 @@ export function getDefaultImportDeclaration(
   expr: WrappedNodeExpr<unknown>,
 ): ts.ImportDeclaration | null {
   return (expr as WithDefaultImportDeclaration)[DefaultImportDeclaration] ?? null;
+}
+
+/**
+ * Attaches the author's import binding to `expr` to indicate that `expr` refers to the imported
+ * symbol through that binding, so that the binding has to survive emit.
+ */
+export function attachAliasImportDeclaration(
+  expr: WrappedNodeExpr<unknown>,
+  aliasDecl: AliasImportDeclaration,
+): void {
+  (expr as WithDefaultImportDeclaration)[ReusedAliasImportDeclaration] = aliasDecl;
+}
+
+/**
+ * Obtains the import binding that `expr` refers to an imported symbol through, or `null` if it
+ * does not reuse an import.
+ */
+export function getAliasImportDeclaration(
+  expr: WrappedNodeExpr<unknown>,
+): AliasImportDeclaration | null {
+  return (expr as WithDefaultImportDeclaration)[ReusedAliasImportDeclaration] ?? null;
 }
 
 /**
@@ -67,52 +93,88 @@ export function getDefaultImportDeclaration(
  * encountered and emitted, and implements a transform which can correctly flag the imports as
  * required.
  *
- * This problem does not exist for non-default imports as the compiler can easily insert
- * "import * as X" style imports for those, and the "X" identifier survives transformation.
+ * Non-default imports could be replaced by an inserted "import * as X" style import instead, but
+ * the compiler reuses the author's named and namespace imports as well where it can, which needs
+ * the same treatment.
  */
 export class DefaultImportTracker {
   /**
-   * A `Map` which tracks the `Set` of `ts.ImportClause`s for default imports that were used in
-   * a given file name.
+   * A `Map` which tracks the `Set` of import bindings that generated code refers to in a given
+   * file name.
    */
-  private sourceFileToUsedImports = new Map<string, Set<ts.ImportClause>>();
+  private sourceFileToUsedImports = new Map<string, Set<AliasImportDeclaration>>();
 
   recordUsedImport(importDecl: ts.ImportDeclaration): void {
     if (importDecl.importClause) {
-      const sf = getSourceFile(importDecl);
-
-      // Add the default import declaration to the set of used import declarations for the file.
-      if (!this.sourceFileToUsedImports.has(sf.fileName)) {
-        this.sourceFileToUsedImports.set(sf.fileName, new Set<ts.ImportClause>());
-      }
-      this.sourceFileToUsedImports.get(sf.fileName)!.add(importDecl.importClause);
+      this.recordUsedAlias(importDecl.importClause);
     }
   }
 
+  recordUsedAlias(aliasDecl: AliasImportDeclaration): void {
+    const sf = getSourceFile(aliasDecl);
+    if (!this.sourceFileToUsedImports.has(sf.fileName)) {
+      this.sourceFileToUsedImports.set(sf.fileName, new Set<AliasImportDeclaration>());
+    }
+    this.sourceFileToUsedImports.get(sf.fileName)!.add(aliasDecl);
+  }
+
   /**
-   * Get a `ts.TransformerFactory` which will preserve default imports that were previously marked
-   * as used.
+   * Narrows `importDecl` down to the bindings that generated code refers to, or returns `null` if
+   * none of its bindings were reused.
+   */
+  filterUsedImport(importDecl: ts.ImportDeclaration): ts.ImportDeclaration | null {
+    const original = ts.getOriginalNode(importDecl, ts.isImportDeclaration);
+    const used = this.sourceFileToUsedImports.get(getSourceFile(original).fileName);
+    const clause = importDecl.importClause;
+    if (used === undefined || clause === undefined) {
+      return null;
+    }
+    const name = used.has(ts.getOriginalNode(clause, ts.isImportClause)) ? clause.name : undefined;
+    let namedBindings = clause.namedBindings;
+    if (namedBindings !== undefined && ts.isNamespaceImport(namedBindings)) {
+      if (!used.has(ts.getOriginalNode(namedBindings, ts.isNamespaceImport))) {
+        namedBindings = undefined;
+      }
+    } else if (namedBindings !== undefined) {
+      const elements = namedBindings.elements.filter((el) =>
+        used.has(ts.getOriginalNode(el, ts.isImportSpecifier)),
+      );
+      namedBindings =
+        elements.length > 0 ? ts.factory.updateNamedImports(namedBindings, elements) : undefined;
+    }
+    if (name === undefined && namedBindings === undefined) {
+      return null;
+    }
+    return ts.factory.updateImportDeclaration(
+      importDecl,
+      importDecl.modifiers,
+      ts.factory.updateImportClause(clause, clause.phaseModifier, name, namedBindings),
+      importDecl.moduleSpecifier,
+      importDecl.attributes,
+    );
+  }
+
+  /**
+   * Get a `ts.TransformerFactory` which will preserve the imports that were previously marked as
+   * used.
    *
-   * This transformer must run after any other transformers which call `recordUsedImport`.
+   * This transformer must run after any other transformers which call `recordUsedImport` or
+   * `recordUsedAlias`.
    */
   importPreservingTransformer(): ts.TransformerFactory<ts.SourceFile> {
     return (context) => {
-      let clausesToPreserve: Set<ts.Declaration> | null = null;
+      let aliasesToPreserve: Set<ts.Declaration> | null = null;
 
       return (sourceFile) => {
-        const clausesForFile = this.sourceFileToUsedImports.get(sourceFile.fileName);
-
-        if (clausesForFile !== undefined) {
-          for (const clause of clausesForFile) {
-            // Initialize the patch lazily so that apps that
-            // don't use default imports aren't patched.
-            if (clausesToPreserve === null) {
-              clausesToPreserve = loadIsReferencedAliasDeclarationPatch(context);
+        const used = this.sourceFileToUsedImports.get(sourceFile.fileName);
+        if (used !== undefined) {
+          for (const alias of used) {
+            if (aliasesToPreserve === null) {
+              aliasesToPreserve = loadIsReferencedAliasDeclarationPatch(context);
             }
-            clausesToPreserve?.add(clause);
+            aliasesToPreserve?.add(alias);
           }
         }
-
         return sourceFile;
       };
     };

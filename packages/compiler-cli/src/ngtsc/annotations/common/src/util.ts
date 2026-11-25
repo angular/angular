@@ -30,7 +30,10 @@ import {
   Reference,
   ReferenceEmitter,
 } from '../../../imports';
-import {attachDefaultImportDeclaration} from '../../../imports/src/default';
+import {
+  attachAliasImportDeclaration,
+  attachDefaultImportDeclaration,
+} from '../../../imports/src/default';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
 import {
   ClassDeclaration,
@@ -69,10 +72,21 @@ export function valueReferenceToExpression(valueRef: TypeValueReference): Expres
     }
     return expr;
   } else {
-    let importExpr: Expression = new ExternalExpr({
-      moduleName: valueRef.moduleName,
-      name: valueRef.importedName,
-    });
+    let importExpr: Expression;
+    if (valueRef.reusableImport !== undefined) {
+      // Refer to the value through the author's import. The identifier is a copy that originates
+      // from the name of the import, so that module transforms rewrite it like any other use.
+      const {name} = valueRef.reusableImport;
+      const local = new WrappedNodeExpr(
+        ts.setOriginalNode(ts.factory.createIdentifier(name.text), name),
+      );
+      attachAliasImportDeclaration(local, valueRef.reusableImport);
+      importExpr = ts.isNamespaceImport(valueRef.reusableImport)
+        ? new ReadPropExpr(local, valueRef.importedName)
+        : local;
+    } else {
+      importExpr = new ExternalExpr({moduleName: valueRef.moduleName, name: valueRef.importedName});
+    }
     if (valueRef.nestedPath !== null) {
       for (const property of valueRef.nestedPath) {
         importExpr = new ReadPropExpr(importExpr, property);

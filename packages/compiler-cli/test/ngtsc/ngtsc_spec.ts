@@ -6731,11 +6731,10 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toMatch(
-        /import \* as i1 from "\.\/types";|import \{ MyTypeA, MyTypeB \} from "\.\/types";/,
-      );
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.MyTypeA|MyTypeA)'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.MyTypeB|MyTypeB)'));
+      expect(jsContents).toMatch(/import \{ MyTypeA, MyTypeB \} from ['"]\.\/types['"];/);
+      expect(jsContents).not.toMatch(/import \* as i1 from ['"]\.\/types['"];/);
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeA'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeB'));
     });
 
     it('should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`', () => {
@@ -6769,11 +6768,10 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toMatch(
-        /import \* as i1 from "\.\/types";|import \* as types from "\.\/types";/,
-      );
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|types)\\.MyTypeA'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|types)\\.MyTypeB'));
+      expect(jsContents).toMatch(/import \* as types from ['"]\.\/types['"];/);
+      expect(jsContents).not.toMatch(/import \* as i1 from ['"]\.\/types['"];/);
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: types\\.MyTypeA'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: types\\.MyTypeB'));
     });
 
     it('should use default-imported types if they can be represented as values', () => {
@@ -6801,13 +6799,68 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
       expect(jsContents).toMatch(/import Default from ['"]\.\/types['"];/);
-      expect(jsContents).toMatch(
-        /import \* as i1 from "\.\/types";|import \{ Other \} from "\.\/types";/,
-      );
+      expect(jsContents).toMatch(/import \{ Other \} from ['"]\.\/types['"];/);
+      expect(jsContents).not.toMatch(/import \* as i1 from ['"]\.\/types['"];/);
       expect(jsContents).toContain('i0.ɵɵdirectiveInject(Default)');
-      expect(jsContents).toMatch(/i0\.ɵɵdirectiveInject\((?:i1\.Other|Other)\)/);
+      expect(jsContents).toContain('i0.ɵɵdirectiveInject(Other)');
       expect(jsContents).toMatch(setClassMetadataRegExp('type: Default'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.Other|Other)'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: Other'));
+    });
+
+    it('should refer to reused imports through their module in CommonJS', () => {
+      env.tsconfig({}, {module: 'commonjs'});
+      env.write(`types.ts`, `export class Dep {}`);
+      env.write(
+        `test.ts`,
+        `
+            import {Injectable} from '@angular/core';
+            import {Dep, Dep as Aliased} from './types';
+            import * as types from './types';
+
+            @Injectable()
+            export class Service {
+              constructor(dep: Dep, aliased: Aliased, member: types.Dep) {}
+            }
+         `,
+      );
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toMatch(
+        /ɵɵinject\(types_1\.Dep\), i0\.ɵɵinject\(types_1\.Dep\), i0\.ɵɵinject\(types\.Dep\)/,
+      );
+      expect(jsContents).toMatch(
+        setClassMetadataRegExp(
+          'type: types_1\\.Dep }, { type: types_1\\.Dep }, { type: types\\.Dep',
+        ),
+      );
+    });
+
+    it('should not reuse an import that is shadowed where the class is declared', () => {
+      env.write(`types.ts`, `export class Dep {}`);
+      env.write(
+        `test.ts`,
+        `
+            import {Injectable} from '@angular/core';
+            import {Dep} from './types';
+
+            export function createService() {
+              const Dep = 'shadows the import';
+
+              @Injectable()
+              class Service {
+                constructor(dep: Dep) {}
+              }
+              return [Service, Dep];
+            }
+         `,
+      );
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      expect(jsContents).toMatch(/import \* as i1 from ['"]\.\/types['"];/);
+      expect(jsContents).toContain('i0.ɵɵinject(i1.Dep)');
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.Dep'));
     });
 
     it('should not throw when using an SVG-specific `title` tag', () => {
@@ -6870,13 +6923,14 @@ runInEachFileSystem((os: string) => {
 
         env.driveMain();
         const jsContents = trim(env.getContents('test.js'));
-        expect(jsContents).toMatch(/import \* as i1 from "ns";|import \* as ns from "ns";/);
-        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.Zero\)/);
-        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.one\.One\)/);
-        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.one\.two\.Two\)/);
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.Zero'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.one\\.One'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.one\\.two\\.Two'));
+        expect(jsContents).toMatch(/import \* as ns from ['"]ns['"];/);
+        expect(jsContents).not.toMatch(/import \* as i1 from ['"]ns['"];/);
+        expect(jsContents).toContain('i0.ɵɵinject(ns.Zero)');
+        expect(jsContents).toContain('i0.ɵɵinject(ns.one.One)');
+        expect(jsContents).toContain('i0.ɵɵinject(ns.one.two.Two)');
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: ns\\.Zero'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: ns\\.one\\.One'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: ns\\.one\\.two\\.Two'));
       });
 
       it('should generate correct imports for type references to namespaced symbols using named imports', () => {
@@ -6918,16 +6972,15 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = trim(env.getContents('test.js'));
         expect(jsContents).toMatch(
-          /import \* as i1 from "ns";|import \{ ns \} from "ns"; import \{ ns as alias \} from "ns";/,
+          /import \{ ns \} from ['"]ns['"]; import \{ ns as alias \} from ['"]ns['"];/,
         );
-        expect(jsContents).toMatch(
-          /i0\.ɵɵinject\(i1\.ns\.Zero\), i0\.ɵɵinject\(i1\.ns\.one\.One\), i0\.ɵɵinject\(i1\.ns\.one\.two\.Two\), i0\.ɵɵinject\(i1\.ns\.Zero\), i0\.ɵɵinject\(i1\.ns\.one\.One\), i0\.ɵɵinject\(i1\.ns\.one\.two\.Two\)|i0\.ɵɵinject\(ns\.Zero\), i0\.ɵɵinject\(ns\.one\.One\), i0\.ɵɵinject\(ns\.one\.two\.Two\), i0\.ɵɵinject\(alias\.Zero\), i0\.ɵɵinject\(alias\.one\.One\), i0\.ɵɵinject\(alias\.one\.two\.Two\)/,
+        expect(jsContents).not.toMatch(/import \* as i1 from ['"]ns['"];/);
+        expect(jsContents).toContain(
+          'i0.ɵɵinject(ns.Zero), i0.ɵɵinject(ns.one.One), i0.ɵɵinject(ns.one.two.Two), i0.ɵɵinject(alias.Zero), i0.ɵɵinject(alias.one.One), i0.ɵɵinject(alias.one.two.Two)',
         );
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.Zero'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.one\\.One'));
-        expect(jsContents).toMatch(
-          setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.one\\.two\\.Two'),
-        );
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: ns\\.Zero'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: ns\\.one\\.One'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: ns\\.one\\.two\\.Two'));
       });
 
       it('should not error for a namespace import as parameter type when @Inject is used', () => {
@@ -7084,10 +7137,9 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toMatch(
-        /import \* as i1 from "\.\/keycodes";|import \{ KeyCodes \} from "\.\/keycodes";/,
-      );
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.KeyCodes|KeyCodes)'));
+      expect(jsContents).toMatch(/import \{ KeyCodes \} from ['"]\.\/keycodes['"];/);
+      expect(jsContents).not.toMatch(/import \* as i1 from ['"]\.\/keycodes['"];/);
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: KeyCodes'));
     });
 
     it('should use `undefined` in setClassMetadata if types originate from type-only imports', () => {
@@ -7135,6 +7187,31 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).not.toContain('TypeOnlyTwo');
       // The parameter type in class metadata should be undefined
       expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
+    });
+
+    it('should not reuse an import of a type-only re-export', () => {
+      env.write(`types.ts`, `export class Dep {} export class StarDep {}`);
+      env.write(`barrel.ts`, `export type {Dep} from './types';`);
+      env.write(`star_barrel.ts`, `export type * from './types';`);
+      env.write(
+        `test.ts`,
+        `
+           import {Inject, Injectable} from '@angular/core';
+           import {Dep} from './barrel';
+           import {StarDep} from './star_barrel';
+
+           @Injectable()
+           export class Service {
+             constructor(@Inject('token') dep: Dep, @Inject('token') starDep: StarDep) {}
+           }
+        `,
+      );
+
+      env.driveMain();
+      const jsContents = trim(env.getContents('test.js'));
+      // Neither barrel exports a value, so importing `Dep` or `StarDep` by name would fail to link.
+      expect(jsContents).not.toMatch(/import \{ Dep \} from/);
+      expect(jsContents).not.toMatch(/import \{ StarDep \} from/);
     });
 
     it('should not throw in case whitespaces and HTML comments are present inside <ng-content>', () => {

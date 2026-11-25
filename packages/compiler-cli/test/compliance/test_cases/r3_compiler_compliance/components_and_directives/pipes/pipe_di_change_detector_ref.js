@@ -7,7 +7,7 @@ export class MyPipe {
   }
   static ɵfac = function MyPipe_Factory(__ngFactoryType__) {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || MyPipe)(i0.ɵɵdirectiveInject(i0.ChangeDetectorRef, 16));
+    return new (__ngFactoryType__ || MyPipe)(i0.ɵɵdirectiveInject(ChangeDetectorRef, 16));
   };
   static ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({
     name: "myPipe",
@@ -31,7 +31,7 @@ export class MyPipe {
           ]
         }
       ],
-      () => [{ type: i0.ChangeDetectorRef }],
+      () => [{ type: ChangeDetectorRef }],
       null
     );
 })();
@@ -42,7 +42,7 @@ export class MyOtherPipe {
   }
   static ɵfac = function MyOtherPipe_Factory(__ngFactoryType__) {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || MyOtherPipe)(i0.ɵɵdirectiveInject(i0.ChangeDetectorRef, 24));
+    return new (__ngFactoryType__ || MyOtherPipe)(i0.ɵɵdirectiveInject(ChangeDetectorRef, 24));
   };
   static ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({
     name: "myOtherPipe",
@@ -68,7 +68,7 @@ export class MyOtherPipe {
       ],
       () => [
         {
-          type: i0.ChangeDetectorRef,
+          type: ChangeDetectorRef,
           decorators: [
             {
               type: Optional

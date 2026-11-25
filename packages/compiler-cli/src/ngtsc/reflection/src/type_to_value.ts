@@ -26,6 +26,7 @@ export function typeToValue(
   typeNode: ts.TypeNode | null,
   checker: ts.TypeChecker,
   isLocalCompilation: boolean,
+  clazz: ts.ClassDeclaration | null = null,
 ): TypeValueReference {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
   if (typeNode === null) {
@@ -82,6 +83,7 @@ export function typeToValue(
   // Look at the local `ts.Symbol`'s declarations and see if it comes from an import
   // statement. If so, extract the module specifier and the name of the imported type.
   const firstDecl = local.declarations && local.declarations[0];
+  const canReuseImport = !isLocalCompilation && isReusableImport(local, clazz, checker);
   if (firstDecl !== undefined) {
     if (ts.isImportClause(firstDecl) && firstDecl.name !== undefined) {
       // This is a default import.
@@ -140,6 +142,10 @@ export function typeToValue(
         importedName,
         valueUnverified,
         nestedPath,
+        reusableImport:
+          canReuseImport && hasValueExport(importDeclaration, importedName, checker)
+            ? firstDecl
+            : undefined,
       };
     } else if (ts.isNamespaceImport(firstDecl)) {
       // The import is a namespace import
@@ -173,6 +179,10 @@ export function typeToValue(
         importedName,
         valueUnverified,
         nestedPath,
+        reusableImport:
+          canReuseImport && hasValueExport(importDeclaration, importedName, checker)
+            ? firstDecl
+            : undefined,
       };
     }
   }
@@ -189,6 +199,47 @@ export function typeToValue(
   } else {
     return unsupportedType(typeNode);
   }
+}
+
+/**
+ * Whether the code that is generated for `clazz` can refer to an import through its local name,
+ * which requires that the name still resolves to the import where the class is declared.
+ */
+function isReusableImport(
+  symbol: ts.Symbol,
+  clazz: ts.ClassDeclaration | null,
+  checker: ts.TypeChecker,
+): boolean {
+  // These names are bound inside of the factory function that is generated for the class.
+  const factoryNames = [
+    '__ngFactoryType__',
+    '__ngConditionalFactory__',
+    `${clazz?.name?.text}_Factory`,
+  ];
+  const valueOrAlias = ts.SymbolFlags.Value | ts.SymbolFlags.Alias;
+  return (
+    clazz !== null &&
+    !factoryNames.includes(symbol.name) &&
+    checker.resolveName(symbol.name, clazz, valueOrAlias, false) === symbol
+  );
+}
+
+/**
+ * Whether the module of `importDecl` exports a runtime value under `importedName`. Type-only
+ * re-exports (`export type {Foo}` and `export type *`) do not emit a runtime binding, which makes
+ * a named import of them fail to link.
+ */
+function hasValueExport(
+  importDecl: ts.ImportDeclaration,
+  importedName: string,
+  checker: ts.TypeChecker,
+): boolean {
+  const moduleSymbol = checker.getSymbolAtLocation(importDecl.moduleSpecifier);
+  if (moduleSymbol === undefined) {
+    return false;
+  }
+  const exported = checker.getPropertyOfType(checker.getTypeOfSymbol(moduleSymbol), importedName);
+  return exported !== undefined && checker.getExportsOfModule(moduleSymbol).includes(exported);
 }
 
 function unsupportedType(typeNode: ts.TypeNode): UnavailableTypeValueReference {

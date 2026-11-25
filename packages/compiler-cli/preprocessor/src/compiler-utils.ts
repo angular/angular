@@ -558,7 +558,8 @@ export function refName(ref: nga.ReferenceMetadata): string {
 
 export function refToExpression(ref: nga.ReferenceMetadata): o.Expression {
   if (ref.localAlias) {
-    return o.variable(ref.localAlias);
+    const [head, ...rest] = ref.localAlias.split('.');
+    return rest.reduce<o.Expression>((expr, prop) => expr.prop(prop), o.variable(head));
   }
   if (ref.consumerImport) {
     return new o.ExternalExpr({

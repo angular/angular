@@ -18,9 +18,9 @@ export class MyComponent {
   static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
     /* @ts-ignore */
     return new (__ngFactoryType__ || MyComponent)(
-      i0.ɵɵdirectiveInject(i0.ElementRef),
-      i0.ɵɵdirectiveInject(i0.ViewContainerRef),
-      i0.ɵɵdirectiveInject(i0.ChangeDetectorRef)
+      i0.ɵɵdirectiveInject(ElementRef),
+      i0.ɵɵdirectiveInject(ViewContainerRef),
+      i0.ɵɵdirectiveInject(ChangeDetectorRef)
     );
   };
   static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
@@ -50,9 +50,9 @@ export class MyComponent {
         }
       ],
       () => [
-        { type: i0.ElementRef },
-        { type: i0.ViewContainerRef },
-        { type: i0.ChangeDetectorRef }
+        { type: ElementRef },
+        { type: ViewContainerRef },
+        { type: ChangeDetectorRef }
       ],
       null
     );

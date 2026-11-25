@@ -13,8 +13,8 @@ export class ForOfDirective {
   static ɵfac = function ForOfDirective_Factory(__ngFactoryType__) {
     /* @ts-ignore */
     return new (__ngFactoryType__ || ForOfDirective)(
-      i0.ɵɵdirectiveInject(i0.ViewContainerRef),
-      i0.ɵɵdirectiveInject(i0.TemplateRef)
+      i0.ɵɵdirectiveInject(ViewContainerRef),
+      i0.ɵɵdirectiveInject(TemplateRef)
     );
   };
   static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({
@@ -40,7 +40,7 @@ export class ForOfDirective {
           ]
         }
       ],
-      () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }],
+      () => [{ type: ViewContainerRef }, { type: TemplateRef }],
       {
         forOf: [
           {

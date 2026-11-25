@@ -121,6 +121,10 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
 
+  // NGP refers to a constructor injection token by the name that it was imported under, without
+  // checking whether a local declaration shadows the import where the class is declared.
+  'ngtsc behavioral tests should not reuse an import that is shadowed where the class is declared',
+
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',
   'ngtsc class docs extraction should extract a method with a rest parameter',

@@ -1205,7 +1205,7 @@ mod tests {
             import * as shared from './shared';
             @Component({
                 selector: 'app',
-                imports: [shared.FooComponent],
+                imports: [shared.FooComponent, shared['foo-bar']],
                 template: ''
             })
             export class AppComponent {}
@@ -1214,6 +1214,9 @@ mod tests {
             import { Component } from '@angular/core';
             @Component({ selector: 'foo', template: '' })
             export class FooComponent {}
+            @Component({ selector: 'bar', template: '' })
+            class BarComponent {}
+            export { BarComponent as 'foo-bar' };
         "#;
         let engine = build_engine(
             &[("/app/app.component.ts", app), ("/app/shared.ts", shared)],
@@ -1232,7 +1235,7 @@ mod tests {
             .iter()
             .map(|d| d.reference.name_in_file(app_id))
             .collect();
-        assert_eq!(names, vec!["FooComponent"]);
+        assert_eq!(names, vec!["shared.FooComponent", "BarComponent"]);
         assert!(component.raw_imports_span.is_none());
     }
 

@@ -691,9 +691,9 @@ function createHostDirectivesFeatureArg(
   for (const current of hostDirectives) {
     // Use a shorthand if there are no inputs or outputs.
     if (!current.inputs && !current.outputs) {
-      expressions.push(current.directive.type);
+      expressions.push(current.directive.value);
     } else {
-      const keys = [{key: 'directive', value: current.directive.type, quoted: false}];
+      const keys = [{key: 'directive', value: current.directive.value, quoted: false}];
 
       if (current.inputs) {
         const inputsLiteral = createHostDirectivesMappingArray(current.inputs);

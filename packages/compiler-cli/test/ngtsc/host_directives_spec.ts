@@ -340,8 +340,10 @@ runInEachFileSystem(() => {
 
       expect(jsContents).toMatch(/import { DirectiveA } from ['"].\/dir-a['"]/);
       expect(jsContents).toMatch(/import { DirectiveB } from ['"].\/dir-b['"]/);
+      expect(jsContents).not.toContain('import * as i1');
+      expect(jsContents).not.toContain('import * as i2');
       expect(jsContents).toMatch(
-        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return \[(i1\.)?DirectiveA, {\s*directive: (i2\.)?DirectiveB,\s*inputs: \[['"]input['"], ['"]inputAlias['"]],\s*outputs: \[['"]output['"], ['"]outputAlias['"]]\s*}];\s*}\)]/,
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return \[DirectiveA, {\s*directive: DirectiveB,\s*inputs: \[['"]input['"], ['"]inputAlias['"]],\s*outputs: \[['"]output['"], ['"]outputAlias['"]]\s*}];\s*}\)]/,
       );
 
       expect(dtsContents).toContain('import * as i1 from "./dir-a";');
@@ -383,11 +385,10 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
+      expect(jsContents).toMatch(/import { ExternalDir } from ['"]external['"];/);
+      expect(jsContents).not.toMatch(/import \* as i1 from ['"]external['"];/);
       expect(jsContents).toMatch(
-        /import \* as i1 from "external";|import { ExternalDir } from "external";/,
-      );
-      expect(jsContents).toMatch(
-        /features: \[i0\.ɵɵHostDirectivesFeature\(\[{ directive: (i1\.)?ExternalDir, inputs: \["input", "inputAlias"], outputs: \["output", "outputAlias"] }]\)]/,
+        /features: \[i0\.ɵɵHostDirectivesFeature\(\[{ directive: ExternalDir, inputs: \["input", "inputAlias"], outputs: \["output", "outputAlias"] }]\)]/,
       );
 
       expect(dtsContents).toContain('import * as i1 from "external";');
@@ -433,12 +434,9 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toMatch(
-        /import \* as i1 from "external";|import { ExternalDir } from "external";/,
-      );
-      expect(jsContents).toMatch(
-        /features: \[i0\.ɵɵHostDirectivesFeature\(\[(i1\.)?ExternalDir]\)]/,
-      );
+      expect(jsContents).toMatch(/import { ExternalDir } from ['"]external['"];/);
+      expect(jsContents).not.toMatch(/import \* as i1 from ['"]external['"];/);
+      expect(jsContents).toMatch(/features: \[i0\.ɵɵHostDirectivesFeature\(\[ExternalDir]\)]/);
 
       expect(dtsContents).toContain('import * as i1 from "external";');
       expect(dtsContents).toMatch(

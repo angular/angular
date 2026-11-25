@@ -158,11 +158,22 @@ runInEachFileSystem(() => {
 
     it('should identify a structural directive', () => {
       const src = `
-        import {Directive, TemplateRef} from '@angular/core';
+        import {Directive, TemplateRef, TemplateRef as Aliased} from '@angular/core';
+        import * as core from '@angular/core';
 
         @Directive({selector: 'test-dir'})
         export class TestDir {
           constructor(private ref: TemplateRef) {}
+        }
+
+        @Directive({selector: 'aliased-dir'})
+        export class AliasedDir {
+          constructor(private ref: Aliased) {}
+        }
+
+        @Directive({selector: 'namespace-dir'})
+        export class NamespaceDir {
+          constructor(private ref: core.TemplateRef) {}
         }
       `;
       const {program} = makeProgram([
@@ -176,8 +187,9 @@ runInEachFileSystem(() => {
         },
       ]);
 
-      const analysis = analyzeDirective(program, 'TestDir');
-      expect(analysis.isStructural).toBeTrue();
+      for (const name of ['TestDir', 'AliasedDir', 'NamespaceDir']) {
+        expect(analyzeDirective(program, name).isStructural).withContext(name).toBeTrue();
+      }
     });
   });
 

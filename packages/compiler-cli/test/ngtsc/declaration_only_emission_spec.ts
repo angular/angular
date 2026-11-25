@@ -848,6 +848,27 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should emit type declarations when using an @Input decorator with a namespace-imported transform function', () => {
+      env.write(
+        'test.ts',
+        `
+        import * as core from '@angular/core';
+
+        @core.Component({template: '', selector: 'comp'})
+        export class Comp {
+          @core.Input({ transform: core.booleanAttribute }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toMatch(
+        /static ngAcceptInputType_decoratedInput: Parameters<typeof (?:i0|core)\.booleanAttribute>\[0\];/,
+      );
+    });
+
     it('should emit type declarations when using an @Input decorator with an inline transform function', () => {
       env.write(
         'test.ts',
