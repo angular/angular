@@ -79,7 +79,7 @@ export class EventManager {
     eventName: string,
     handler: Function,
     options?: ListenerOptions,
-  ): Function {
+  ): () => void {
     const plugin = this._findPluginFor(eventName);
     return plugin.addEventListener(element, eventName, handler, options);
   }
