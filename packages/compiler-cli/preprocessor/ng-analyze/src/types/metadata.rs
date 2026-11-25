@@ -429,6 +429,11 @@ pub struct ComponentMetadata {
     pub animation_trigger_names: Option<LegacyAnimationTriggerNames>,
     pub args_span: Option<SpanMetadata>,
     pub preserved_decorator_properties: Option<Vec<SpanMetadata>>,
+    // TODO: Remove once ngp is the default compiler (preserving the in-place `template` key
+    // index when `@Component` specifies both `template` and `templateUrl` is only needed for
+    // syntactic parity with ngtsc).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub inline_template_index: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub declaring_ng_module: Option<DeclaringNgModule>,
     #[serde(skip_serializing_if = "Option::is_none")]

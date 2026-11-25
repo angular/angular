@@ -158,6 +158,9 @@ fn parse_component_metadata<'a>(
         let ObjectPropertyKind::ObjectProperty(p) = prop else {
             continue;
         };
+        if p.computed || p.method || p.kind != oxc_ast::ast::PropertyKind::Init {
+            continue;
+        }
         let Some(key_name) = extract_property_key(&p.key) else {
             continue;
         };

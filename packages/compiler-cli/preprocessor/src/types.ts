@@ -371,6 +371,8 @@ export interface ComponentMetadata {
   animationTriggerNames?: LegacyAnimationTriggerNames;
   argsSpan?: SpanMetadata;
   preservedDecoratorProperties?: Array<SpanMetadata>;
+  // TODO: Remove once ngp is the default compiler (only needed for syntactic parity with ngtsc).
+  inlineTemplateIndex?: number;
   declaringNgModule?: DeclaringNgModule;
   foreignImports?: Array<ForeignImportMetadata>;
   isJit: boolean;
