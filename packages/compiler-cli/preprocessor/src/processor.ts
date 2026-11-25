@@ -20,6 +20,7 @@ import {
   R3ComponentMetadata,
   R3DependencyMetadata,
   R3DirectiveMetadata,
+  R3FactoryMetadata,
   R3Identifiers,
   R3InjectableMetadata,
   R3NgModuleMetadata,
@@ -31,7 +32,15 @@ import {
   ViewEncapsulation,
   compileClassDebugInfo,
   compileComponentClassMetadata,
+  compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
+  compileDeclareDirectiveFromMetadata,
+  compileDeclareFactoryFunction,
+  compileDeclareInjectableFromMetadata,
+  compileDeclareInjectorFromMetadata,
+  compileDeclareNgModuleFromMetadata,
+  compileDeclarePipeFromMetadata,
+  compileDeclareServiceFromMetadata,
   compileDeferResolverFunction,
   compileDirectiveFromMetadata,
   compileFactoryFunction,
@@ -660,6 +669,8 @@ function compileClasses(file: FileCompilation): string | null | undefined {
     // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L2253
     const perComponentDeferredDeps: R3DeferPerComponentDependency[] = [];
     const seenDeferredDeps = new Set<string>();
+    const compilationMode: CompilationMode =
+      ctx.hmrUpdateTarget != null ? 'full' : ctx.compilationMode;
 
     if (pipe) {
       decoratorsToEmit.push({
@@ -667,18 +678,21 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         argsSpan: pipe.argsSpan ?? undefined,
       });
       factoryGenerated = true;
-      const factoryRes = compileFactoryFunction({
-        name: className,
-        type: {
-          value: o.variable(className),
-          type: o.variable(className),
+      const factoryRes = compileFactory(
+        {
+          name: className,
+          type: {
+            value: o.variable(className),
+            type: o.variable(className),
+          },
+          typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+          deps: deps,
+          target: FactoryTarget.Pipe,
         },
-        typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-        deps: deps,
-        target: FactoryTarget.Pipe,
-      });
+        compilationMode,
+      );
 
-      const def = compilePipeFromMetadata({
+      const pipeMeta = {
         name: className,
         type: {
           value: o.variable(className),
@@ -689,7 +703,11 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         isStandalone: pipe.standalone ?? true,
         typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
         deps: null,
-      });
+      };
+      const def =
+        compilationMode === 'partial'
+          ? compileDeclarePipeFromMetadata(pipeMeta)
+          : compilePipeFromMetadata(pipeMeta);
       compiledClass.fields.push({
         factory: factoryRes,
         def: {name: 'ɵpipe', def},
@@ -1584,13 +1602,16 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       }
 
       // 7. Generate factory (same as injectable)
-      const factoryRes = compileFactoryFunction({
-        name: className,
-        type: {value: o.variable(className), type: o.variable(className)},
-        typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-        deps: deps,
-        target: FactoryTarget.Component,
-      });
+      const factoryRes = compileFactory(
+        {
+          name: className,
+          type: {value: o.variable(className), type: o.variable(className)},
+          typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+          deps: deps,
+          target: FactoryTarget.Component,
+        },
+        compilationMode,
+      );
 
       // 8. Record compiled static fields
       compiledClass.fields.push({
@@ -1667,24 +1688,31 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       };
 
       // Compile directive
-      const bindingParser = makeBindingParser();
       let compileResult: R3CompiledExpression;
 
       try {
-        compileResult = compileDirectiveFromMetadata(directiveMeta, sharedPool, bindingParser);
+        if (compilationMode === 'partial') {
+          compileResult = compileDeclareDirectiveFromMetadata(directiveMeta);
+        } else {
+          const bindingParser = makeBindingParser();
+          compileResult = compileDirectiveFromMetadata(directiveMeta, sharedPool, bindingParser);
+        }
       } catch (e) {
         file.pipelineError ??= e;
         continue;
       }
 
       // Generate factory
-      const factoryRes = compileFactoryFunction({
-        name: className,
-        type: {value: o.variable(className), type: o.variable(className)},
-        typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-        deps: deps,
-        target: FactoryTarget.Directive,
-      });
+      const factoryRes = compileFactory(
+        {
+          name: className,
+          type: {value: o.variable(className), type: o.variable(className)},
+          typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+          deps: deps,
+          target: FactoryTarget.Directive,
+        },
+        compilationMode,
+      );
 
       // Record compiled static fields
       compiledClass.fields.push({
@@ -1700,16 +1728,19 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         argsSpan: service.argsSpan ?? undefined,
       });
 
-      const factoryRes = compileFactoryFunction({
-        name: className,
-        type: {
-          value: o.variable(className),
-          type: o.variable(className),
+      const factoryRes = compileFactory(
+        {
+          name: className,
+          type: {
+            value: o.variable(className),
+            type: o.variable(className),
+          },
+          typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+          deps: [], // Intentional since services don't allow constructor DI.
+          target: FactoryTarget.Service,
         },
-        typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-        deps: [], // Intentional since services don't allow constructor DI.
-        target: FactoryTarget.Service,
-      });
+        compilationMode,
+      );
 
       const serviceMeta: R3ServiceMetadata = {
         name: className,
@@ -1722,7 +1753,10 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         factory: service.factory ? rawSlice(s, service.factory.span, guards) : undefined,
       };
 
-      const def = compileService(serviceMeta, false);
+      const def =
+        compilationMode === 'partial'
+          ? compileDeclareServiceFromMetadata(serviceMeta)
+          : compileService(serviceMeta, false);
       compiledClass.fields.push({
         factory: factoryRes,
         def: {name: 'ɵprov', def},
@@ -1743,16 +1777,19 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       const hasOtherAngularDecorator = !!(pipe || component || directive || ngModule || service);
       const factoryRes =
         !factoryGenerated && !hasOtherAngularDecorator
-          ? compileFactoryFunction({
-              name: className,
-              type: {
-                value: o.variable(className),
-                type: o.variable(className),
+          ? compileFactory(
+              {
+                name: className,
+                type: {
+                  value: o.variable(className),
+                  type: o.variable(className),
+                },
+                typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+                deps: deps,
+                target: FactoryTarget.Injectable,
               },
-              typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-              deps: deps,
-              target: FactoryTarget.Injectable,
-            })
+              compilationMode,
+            )
           : null;
 
       const wrapProviderField = (field: nga.ProviderField) => ({
@@ -1795,7 +1832,10 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         injectableMeta.useFactory = rawSlice(s, injectable.useFactory.span, guards);
       }
 
-      const def = compileInjectable(injectableMeta, false);
+      const def =
+        compilationMode === 'partial'
+          ? compileDeclareInjectableFromMetadata(injectableMeta)
+          : compileInjectable(injectableMeta, false);
       compiledClass.fields.push({
         factory: factoryRes,
         def: {name: 'ɵprov', def},
@@ -1835,6 +1875,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         perComponentDeferredDeps,
         ctx.complianceMode ?? false,
         ctx.isClosureCompilerEnabled ?? false,
+        compilationMode,
       );
       compiledClass.classMetadataStmt = classMetadataStmt;
       for (const param of constructorParams ?? []) {
@@ -2116,11 +2157,13 @@ function appendCompiledClass(
 
   for (const field of fields) {
     const compiledFactory = field.factory ? compileFactoryField(field.factory, printer, ctx) : '';
+    const defIsPure =
+      field.def.def.expression instanceof o.InvokeFunctionExpr && field.def.def.expression.pure;
     const compiledDef = createStaticField(
       field.def.name,
       printer.print(field.def.def.expression),
       printer.emitTypes ? printer.printType(field.def.def.type) : null,
-      true,
+      defIsPure,
       ctx.isClosureCompilerEnabled,
     );
     out.appendLeft(span.end - 1, compiledFactory + compiledDef + (field.coercionMembers ?? ''));
@@ -2129,11 +2172,13 @@ function appendCompiledClass(
   let ngModuleStatements = '';
   if (ngModule !== null) {
     const compiledFac = compileFactoryField(ngModule.factory, printer, ctx);
+    const modIsPure =
+      ngModule.mod.expression instanceof o.InvokeFunctionExpr && ngModule.mod.expression.pure;
     const compiledMod = createStaticField(
       'ɵmod',
       printer.print(ngModule.mod.expression),
       printer.emitTypes ? printer.printType(ngModule.mod.type) : null,
-      true,
+      modIsPure,
       ctx.isClosureCompilerEnabled,
     );
     if (ngModule.statements.length > 0) {
@@ -2141,11 +2186,13 @@ function appendCompiledClass(
         .map((stmt) => printer.printStatement(stmt, 0))
         .join('\n');
     }
+    const injIsPure =
+      ngModule.inj.expression instanceof o.InvokeFunctionExpr && ngModule.inj.expression.pure;
     const compiledInj = createStaticField(
       'ɵinj',
       printer.print(ngModule.inj.expression),
       printer.emitTypes ? printer.printType(ngModule.inj.type) : null,
-      true,
+      injIsPure,
       ctx.isClosureCompilerEnabled,
     );
     out.appendLeft(span.end - 1, compiledFac + compiledMod + compiledInj);
@@ -2153,7 +2200,9 @@ function appendCompiledClass(
 
   if (classMetadataStmt !== null) {
     const emitOutsideClass =
-      !!ctx.complianceMode || !!compiled.classMeta.hasNonAngularClassDecorators;
+      ctx.compilationMode === 'partial' ||
+      !!ctx.complianceMode ||
+      !!compiled.classMeta.hasNonAngularClassDecorators;
     const metadata = printSetClassMetadata(classMetadataStmt, printer, emitOutsideClass);
     if (emitOutsideClass) {
       out.appendRight(span.end, '\n' + metadata);
@@ -2672,6 +2721,7 @@ function buildSetClassMetadata(
   deferredDeps: R3DeferPerComponentDependency[] = [],
   complianceMode: boolean = false,
   isClosureCompilerEnabled: boolean = false,
+  compilationMode: CompilationMode,
 ): o.Statement {
   const guards = complianceMode ? [] : classMeta.laterDeclarationReferences;
   const functionSpans = isClosureCompilerEnabled ? classMeta.decoratorFunctionSpans : undefined;
@@ -2727,7 +2777,9 @@ function buildSetClassMetadata(
     ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s),
     propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards, false),
   };
-  return compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();
+  return compilationMode === 'partial'
+    ? compileComponentDeclareClassMetadata(classMetadata, deferredDeps).toStmt()
+    : compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();
 }
 
 /**
@@ -2850,6 +2902,7 @@ function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null 
           [],
           ctx.complianceMode,
           ctx.isClosureCompilerEnabled,
+          'full',
         )
       : null;
   const debugInfo = buildSetClassDebugInfo(
@@ -2956,7 +3009,7 @@ function compileNgModuleDef(
   filePath?: string,
   diagnostics?: nga.NgDiagnostic[],
 ): CompiledNgModuleDef {
-  const {optimize, emitDeclarationOnly} = ctx;
+  const {optimize, emitDeclarationOnly, compilationMode} = ctx;
   const {declarations, imports, injectorImports, exports, bootstrap} = ngModule;
   const sourceText = typeof content === 'string' ? content : content?.original;
 
@@ -3052,16 +3105,19 @@ function compileNgModuleDef(
   };
 
   // Generate ɵfac (Factory) for NgModule
-  const factory = compileFactoryFunction({
-    name: className,
-    type: {
-      value: o.variable(className),
-      type: o.variable(className),
+  const factory = compileFactory(
+    {
+      name: className,
+      type: {
+        value: o.variable(className),
+        type: o.variable(className),
+      },
+      typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+      deps: deps,
+      target: FactoryTarget.NgModule,
     },
-    typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-    deps: deps,
-    target: FactoryTarget.NgModule,
-  });
+    compilationMode,
+  );
 
   // https://github.com/angular/angular/blob/4c9afb6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L552-L591
   const sharedMeta = {
@@ -3145,10 +3201,13 @@ function compileNgModuleDef(
           exportsExpression: rawExprFromSpan(ngModule.exportsSpan) ?? mapToVarArr(exports),
         };
 
-  const mod = compileNgModule(ngModuleMeta);
+  const mod =
+    compilationMode === 'partial'
+      ? compileDeclareNgModuleFromMetadata(ngModuleMeta)
+      : compileNgModule(ngModuleMeta);
   const statements = [...(mod.statements || [])];
 
-  if (optimize && !emitDeclarationOnly && classMeta) {
+  if (optimize && !emitDeclarationOnly && compilationMode !== 'partial' && classMeta) {
     interface ScopeTarget {
       component: nga.ReferenceMetadata;
       directiveRefs: nga.ReferenceMetadata[];
@@ -3275,7 +3334,10 @@ function compileNgModuleDef(
     ),
     imports: injectorImportsExprs(),
   };
-  const inj = compileInjector(injectorMeta);
+  const inj =
+    compilationMode === 'partial'
+      ? compileDeclareInjectorFromMetadata(injectorMeta)
+      : compileInjector(injectorMeta);
 
   return {factory, mod, inj, statements};
 }
@@ -3522,6 +3584,15 @@ function createStaticField(
     `    ${tsignore}\n` +
     `    ${pureComment} ${value};\n`
   );
+}
+
+function compileFactory(
+  meta: R3FactoryMetadata,
+  compilationMode: CompilationMode,
+): R3CompiledExpression {
+  return compilationMode === 'partial'
+    ? compileDeclareFactoryFunction(meta)
+    : compileFactoryFunction(meta);
 }
 
 function compileFactoryField(
