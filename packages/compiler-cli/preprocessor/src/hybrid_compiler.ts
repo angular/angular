@@ -15,8 +15,10 @@ import {
 } from '@angular/compiler';
 import {isDeclarationFilePath, makeClassKey} from './compiler-utils.js';
 import {
+  resolveCompilationMode,
   verifyCompilerOptions,
   verifyExtendedDiagnosticsOptions,
+  type CompilationMode,
   type NgpCompilerOptions,
 } from './compiler_options.js';
 import {needsNgContentSelectors, ngContentSignature} from './dependency_templates.js';
@@ -143,6 +145,7 @@ export interface IAnalyzer {
 }
 export interface HybridCompilerOptions {
   optimize?: boolean;
+  compilationMode?: CompilationMode;
   tcbConfig?: NgpTypeCheckingConfig;
   optionDiagnostics?: nga.NgDiagnostic[];
   templateParseOptions?: Partial<ParseTemplateOptions>;
@@ -238,9 +241,11 @@ export function createHybridCompiler(
   const rootDirs = angularCompilerOptions?.rootDirs;
   const enableHmr = angularCompilerOptions?._enableHmr;
   const optimize = options.optimize ?? false;
+  const compilationMode = resolveCompilationMode(angularCompilerOptions ?? {}, {optimize});
 
   return new HybridCompiler(innerAnalyzer, {
-    optimize,
+    optimize: compilationMode !== 'local',
+    compilationMode,
     tcbConfig,
     optionDiagnostics,
     legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
@@ -292,6 +297,7 @@ export class HybridCompiler {
   /** Errors thrown while processing individual files in the latest `compile()`. */
   readonly currentProcessErrors = new Map<string, string>();
   readonly optimize: boolean;
+  readonly compilationMode: CompilationMode;
   readonly diagnosticsMap = new Map<string, nga.NgDiagnostic[]>();
   private readonly analysisDiagnosticsBySource = new Map<string, DiagnosticContribution[]>();
   private readonly processedDiagnosticsBySource = new Map<string, DiagnosticContribution[]>();
@@ -334,7 +340,11 @@ export class HybridCompiler {
   private pendingCompilation: Promise<void> = Promise.resolve();
 
   constructor(analyzer: IAnalyzer, options: HybridCompilerOptions = {}) {
-    this.optimize = options.optimize ?? true;
+    this.emitDeclarationOnly = options.emitDeclarationOnly ?? false;
+    this.compilationMode = this.emitDeclarationOnly
+      ? 'local'
+      : (options.compilationMode ?? (options.optimize === false ? 'local' : 'full'));
+    this.optimize = this.compilationMode !== 'local';
     this.templateParseOptions = {
       preserveWhitespaces: options.preserveWhitespaces ?? false,
       preserveSignificantWhitespace: options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
@@ -351,13 +361,22 @@ export class HybridCompiler {
     this.legacyOptionalChaining =
       options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT;
     this.isClosureCompilerEnabled = options.isClosureCompilerEnabled ?? false;
-    this.emitDeclarationOnly = options.emitDeclarationOnly ?? false;
     this.externalRuntimeStyles = options.externalRuntimeStyles ?? false;
     this.onlyExplicitDeferDependencyImports = options.onlyExplicitDeferDependencyImports ?? false;
     this.enableTemplateSourceLocations = options.enableTemplateSourceLocations ?? false;
     this.onlyPublishPublicTypingsForNgModules =
       options.onlyPublishPublicTypingsForNgModules ?? false;
     this.forbidOrphanComponents = options.forbidOrphanComponents ?? false;
+    if (this.compilationMode === 'partial' && options.supportTestBed === false) {
+      throw new Error(
+        'TestBed support ("supportTestBed" option) cannot be disabled in partial compilation mode.',
+      );
+    }
+    if (this.compilationMode === 'partial' && options.supportJitMode === false) {
+      throw new Error(
+        'JIT mode support ("supportJitMode" option) cannot be disabled in partial compilation mode.',
+      );
+    }
     if (options.supportJitMode === false && this.forbidOrphanComponents) {
       throw new Error(
         'JIT mode support ("supportJitMode" option) cannot be disabled when forbidOrphanComponents is set to true',
@@ -1486,7 +1505,7 @@ export class HybridCompiler {
     if (!this.reuseProcessedFiles || !result || boundFingerprint === undefined) {
       return null;
     }
-    const pieces = [boundFingerprint];
+    const pieces = [boundFingerprint, `mode:${this.compilationMode}`];
     const remoteScoped = chunkContext?.remoteScopedClasses;
     for (const cls of result.classes) {
       if (!cls.className) {
@@ -1499,7 +1518,7 @@ export class HybridCompiler {
         pieces.push(...remoteScopeInputs(filePath, cls, chunkContext));
       }
     }
-    return pieces.length === 1 ? boundFingerprint : fingerprintOf(pieces);
+    return fingerprintOf(pieces);
   }
 
   /**

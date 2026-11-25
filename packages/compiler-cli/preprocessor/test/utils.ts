@@ -18,7 +18,7 @@ import {createTwoFilesPatch, diffLines} from 'diff';
 import {format} from 'prettier';
 
 import type {TestFile} from './golden_markdown.js';
-import {verifyCompilerOptions} from '../src/compiler_options.js';
+import {resolveCompilationMode, verifyCompilerOptions} from '../src/compiler_options.js';
 import {getDiagnosticPath, serializeDiagnostics, HybridCompiler} from '../src/hybrid_compiler.js';
 import {createAnalyzer} from '../api.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
@@ -477,8 +477,17 @@ export async function runPipeline(
     emitDeclarationOnly: compilerOptions.emitDeclarationOnly,
   });
 
+  const compilationMode = resolveCompilationMode(
+    {
+      ...tsconfigOptions,
+      emitDeclarationOnly: compilerOptions.emitDeclarationOnly,
+    },
+    {optimize: options.optimize},
+  );
+
   const compiler = new HybridCompiler(analyzer, {
-    optimize: options.optimize,
+    optimize: compilationMode !== 'local',
+    compilationMode,
     tcbConfig,
     optionDiagnostics,
     templateParseOptions: {

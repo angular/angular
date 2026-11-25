@@ -73,6 +73,7 @@ import {
   stripIife,
   type MinimalDirectiveMeta,
 } from './compiler-utils.js';
+import type {CompilationMode} from './compiler_options.js';
 import {resolveNgContentSelectors, type DependencyTemplateContext} from './dependency_templates.js';
 import {
   ChunkContext,
@@ -105,6 +106,7 @@ interface HybridCompilerContext {
   analyzer: IAnalyzer;
   tcbConfig: NgpTypeCheckingConfig;
   optimize: boolean;
+  compilationMode: CompilationMode;
   fileCache: Map<string, FileAnalysis>;
   templateParseOptions?: Partial<HybridParseTemplateOptions>;
   legacyOptionalChaining: boolean;

@@ -10,6 +10,11 @@ import {ErrorCode} from './error_code.js';
 import type {NgDiagnostic} from './types.js';
 
 /**
+ * Effective Angular compilation mode, matching `CompilationMode` from ngtsc.
+ */
+export type CompilationMode = 'full' | 'partial' | 'local';
+
+/**
  * Mirrors `DiagnosticCategoryLabel` in `ngtsc/core/api/src/public_options.ts`. The string
  * values are what appears in a tsconfig, so they are interchangeable with the upstream enum.
  */
@@ -119,6 +124,7 @@ export interface NgpCompilerOptions {
   _useHostForImportAndAliasGeneration?: boolean;
 
   // Compilation (`MiscOptions`, `TargetOptions`, `InternalOptions`).
+  compilationMode?: 'full' | 'partial' | 'experimental-local' | 'local';
   legacyOptionalChaining?: boolean;
   onlyExplicitDeferDependencyImports?: boolean;
   enableTemplateSourceLocations?: boolean;
@@ -231,4 +237,34 @@ export function verifyCompilerOptions(options: NgpCompilerOptions): NgDiagnostic
   }
 
   return diagnostics;
+}
+
+export function resolveCompilationMode(
+  options: Pick<
+    NgpCompilerOptions,
+    | 'compilationMode'
+    | 'emitDeclarationOnly'
+    | '_experimentalAllowEmitDeclarationOnly'
+    | '_isAngularCoreCompilation'
+  >,
+  extras?: {optimize?: boolean; isCore?: boolean},
+): CompilationMode {
+  if (options.emitDeclarationOnly && options._experimentalAllowEmitDeclarationOnly) {
+    return 'local';
+  }
+  const isCore = options._isAngularCoreCompilation ?? extras?.isCore ?? false;
+  if (isCore) {
+    return 'full';
+  }
+  switch (options.compilationMode) {
+    case 'partial':
+      return 'partial';
+    case 'experimental-local':
+    case 'local':
+      return 'local';
+    case 'full':
+      return 'full';
+    default:
+      return extras?.optimize === false ? 'local' : 'full';
+  }
 }

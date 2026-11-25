@@ -18,6 +18,7 @@ import {
   FileUpdateType,
   HybridCompiler,
   IndexerBoundTemplate,
+  resolveCompilationMode,
   verifyCompilerOptions,
   WasmAnalyzer,
   type ClassEntity,
@@ -482,8 +483,18 @@ export function performNgpCompilationSync(params: {
   const wasmBinding = resolveNgpWasmBinding();
 
   const rawOpts = options as Record<string, unknown>;
-  const optimize =
-    rawOpts['compilationMode'] !== 'experimental-local' && rawOpts['compilationMode'] !== 'local';
+  const isCore =
+    typeof rawOpts['_isAngularCoreCompilation'] === 'boolean'
+      ? rawOpts['_isAngularCoreCompilation']
+      : rootNames.some((r) => {
+          if (path.posix.basename(toPosixPath(r)) !== 'r3_symbols.ts') {
+            return false;
+          }
+          const abs = fs.resolve(basePath, r);
+          return fs.exists(abs) && fs.readFile(abs).includes('ITS_JUST_ANGULAR');
+        });
+  const compilationMode = resolveCompilationMode(options as NgpCompilerOptions, {isCore});
+  const optimize = compilationMode !== 'local';
   if (!optimize) {
     options.noEmitOnError = false;
   }
@@ -600,6 +611,7 @@ export function performNgpCompilationSync(params: {
     try {
       compiler = new HybridCompiler(analyzer, {
         optimize,
+        compilationMode,
         tcbConfig,
         optionDiagnostics,
         legacyOptionalChaining: Boolean(rawOpts['legacyOptionalChaining']),
