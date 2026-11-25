@@ -425,7 +425,13 @@ function synthesizeTsDecoratorForDeclaration(
     props.push(`hostDirectives: [${hdEntries.join(', ')}]`);
   }
   if (decl.isComponent) {
-    props.push(`template: ''`);
+    const templateContent =
+      decl.ngContentSelectors
+        ?.map((selector) =>
+          selector === '*' ? '<ng-content/>' : `<ng-content select=${JSON.stringify(selector)}/>`,
+        )
+        .join('') ?? '';
+    props.push(`template: ${JSON.stringify(templateContent)}`);
     return `@ɵNgpComponent({${props.join(', ')}})`;
   }
   return `@ɵNgpDirective({${props.join(', ')}})`;

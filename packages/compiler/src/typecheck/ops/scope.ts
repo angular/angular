@@ -40,7 +40,12 @@ import {TcbOp} from './base';
 import {TcbBoundaryOp} from './boundary';
 import {TcbExpr} from './codegen';
 import {TcbComponentContextCompletionOp} from './completions';
-import {TcbControlFlowContentProjectionOp} from './content_projection';
+import {
+  getContentAttributesInProjectionSlots,
+  // TODO(v23): Enable this breaking change
+  // g3-only TcbContentAttributesOp,
+  TcbControlFlowContentProjectionOp,
+} from './content_projection';
 import {Context} from './context';
 import {TcbDirectiveCtorOp} from './directive_constructor';
 import {
@@ -481,6 +486,8 @@ export class Scope {
       if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
         this.appendContentProjectionCheckOp(node);
       }
+      // TODO(v23): Enable this breaking change
+      // g3-only this.recordContentNodesInProjectionSlots(node);
       this.appendDirectivesAndInputsOfElementLikeNode(node);
       this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
       this.appendChildren(node);
@@ -513,6 +520,8 @@ export class Scope {
     } else if (node instanceof Icu) {
       this.appendIcuExpressions(node);
     } else if (node instanceof Content) {
+      // TODO(v23): Enable this breaking change
+      // g3-only this.opQueue.push(new TcbContentAttributesOp(this.tcb, node));
       this.appendChildren(node);
     } else if (node instanceof LetDeclaration) {
       const opIndex = this.opQueue.push(new TcbLetDeclarationOp(this.tcb, this, node)) - 1;
@@ -867,6 +876,27 @@ export class Scope {
           new TcbControlFlowContentProjectionOp(this.tcb, root, selectors, meta.name),
         );
       }
+    }
+  }
+
+  private recordContentNodesInProjectionSlots(root: Element): void {
+    const meta = this.tcb.boundTarget.getDirectivesOfNode(root)?.find((dir) => dir.isComponent);
+    if (
+      meta === undefined ||
+      meta.ngContentSelectors === null ||
+      meta.ngContentSelectors.length === 0
+    ) {
+      return;
+    }
+    const selectors = meta.ngContentSelectors;
+    if (selectors.every((selector) => selector === '*')) {
+      return;
+    }
+    for (const [node, attributes] of getContentAttributesInProjectionSlots(
+      root.children,
+      selectors,
+    )) {
+      this.tcb.contentAttributesInProjectionSlots.set(node, attributes);
     }
   }
 

@@ -16,9 +16,9 @@ import {
   ParseSourceSpan,
   PropertyRead,
   TcbDirectiveMetadata,
+  TmplAstBoundaryBlock,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstBoundaryBlock,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -40,8 +40,8 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateDiagnostic} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {TypeCheckSourceResolver} from './tcb_util';
 import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
+import {TypeCheckSourceResolver} from './tcb_util';
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder<TemplateDiagnostic> {
   private readonly _diagnostics: TemplateDiagnostic[] = [];
@@ -676,6 +676,24 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         this.getTagNameSpan(node),
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.CONFLICTING_HOST_DIRECTIVE_BINDING),
+        message,
+      ),
+    );
+  }
+
+  unsupportedNgContentAttribute(id: TypeCheckId, attr: TmplAstTextAttribute): void {
+    const lower = attr.name.toLowerCase();
+    const message =
+      lower === 'selection' || lower === 'selector'
+        ? `'${attr.name}' is not supported on ng-content. Did you mean 'select'?`
+        : `'${attr.name}' is not supported on ng-content.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        attr.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR),
         message,
       ),
     );
