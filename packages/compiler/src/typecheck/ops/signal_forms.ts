@@ -145,6 +145,17 @@ export class TcbNativeFieldOp extends TcbOp {
     return null;
   }
 
+  /**
+   * Returns the expected TypeScript type for a native control's `[formField]` binding.
+   *
+   * When `checkSignal` is `false`, `type` is checked against the unwrapped field value
+   * (`f().value()`). When `checkSignal` is `true`, `type` is checked against the value signal
+   * itself (`f().value`), which allows either:
+   * - non-distributive covariant checks (e.g. `(() => string) | (() => number | null)` for
+   *   `<select>`, which accepts subtypes of either branch while rejecting mixed unions), or
+   * - invariant checks (e.g. `{ (): string; set: (v: string) => void } | ...` for
+   *   `<input type="text">`).
+   */
   private getExpectedTypeFromDomNode(node: Element): {type: string; checkSignal: boolean} {
     if (node.name === 'textarea') {
       // `<textarea>` is always a string.
