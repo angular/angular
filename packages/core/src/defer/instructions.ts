@@ -59,6 +59,7 @@ import {
   isIncrementalHydrationEnabled,
 } from '../hydration/utils';
 import {ɵɵdeferEnableTimerScheduling, renderPlaceholder} from './rendering';
+import type {ɵɵdeferEnableRetry} from './retry';
 
 import {
   getHydrateTriggers,
@@ -120,6 +121,8 @@ function logHmrWarning(injector: Injector) {
  * @param flags A set of flags to define a particular behavior (e.g. to indicate that
  *              hydrate triggers are present and regular triggers should be deactivated
  *              in certain scenarios).
+ * @param retryCount Number of additional dependency-loading retry rounds.
+ * @param enableRetry Enables retry loading when `retryCount` is set.
  *
  * @codeGenApi
  */
@@ -134,6 +137,8 @@ export function ɵɵdefer(
   placeholderConfigIndex?: number | null,
   enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling | null,
   flags?: TDeferDetailsFlags | null,
+  retryCount?: number | null,
+  enableRetry?: typeof ɵɵdeferEnableRetry | null,
 ) {
   const lView = getLView();
   const tView = getTView();
@@ -172,9 +177,25 @@ export function ɵɵdefer(
       hydrateTriggers: null,
       debug: null,
       flags: flags ?? TDeferDetailsFlags.Default,
+      maxRetryCount: null,
+      retryLoadingFn: null,
+      errorContextFn: null,
+      loadingError: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
+    if (retryCount != null) {
+      enableRetry?.(tDetails, retryCount);
+    }
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
+  }
+
+  // With retry enabled, a new instance of the block loads again after a failure.
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+  if (
+    tDetails.loadingState === DeferDependenciesLoadingState.FAILED &&
+    tDetails.maxRetryCount !== null
+  ) {
+    tDetails.loadingState = DeferDependenciesLoadingState.NOT_STARTED;
   }
 
   const lContainer = lView[adjustedIndex];

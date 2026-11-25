@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
+
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
@@ -80,6 +82,248 @@ runInEachFileSystem(() => {
       // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
       // via dynamic imports and an original import can be removed.
       expect(jsContents).not.toContain('import { CmpA }');
+    });
+
+    it('should pass the retry count to the defer instruction', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error (retry 2) {
+                Failed!
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      // The dependency function is the same as without retry.
+      expect(jsContents).toContain('() => [/* @ts-ignore */ import("./cmp-a").then(m => m.CmpA)]');
+      expect(jsContents).toContain('i0.ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn');
+      expect(jsContents).toContain('null, null, 2, i0.ɵɵdeferEnableRetry)');
+      expect(jsContents).toContain(
+        'i0.ɵsetClassMetadataAsync(TestCmp, () => [/* @ts-ignore */ import("./cmp-a").then(m => m.CmpA)]',
+      );
+    });
+
+    it('should keep the plain import for non-retry blocks in a mixed template', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+      env.write(
+        'cmp-b.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-b', template: 'CmpB!'})
+          export class CmpB {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+          import {CmpB} from './cmp-b';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA, CmpB],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error (retry 2) {
+                Failed!
+              }
+              @defer {
+                <cmp-b />
+              } @error {
+                Failed!
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('() => [/* @ts-ignore */ import("./cmp-a").then(m => m.CmpA)]');
+      expect(jsContents).toContain('() => [/* @ts-ignore */ import("./cmp-b").then(m => m.CmpB)]');
+      // Only the retry-enabled block references the retry runtime.
+      const enablerMatches = jsContents.match(/ɵɵdeferEnableRetry/g) ?? [];
+      expect(enablerMatches.length).toBe(1);
+    });
+
+    it('should not emit the retry runtime for `retry 0`', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error (retry 0) {
+                Failed!
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('() => [/* @ts-ignore */ import("./cmp-a").then(m => m.CmpA)]');
+      expect(jsContents).not.toContain('ɵɵdeferEnableRetry');
+    });
+
+    it('should enable retries when the @error block uses $error or $retry', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error {
+                {{ $error.message }}
+                <button (click)="$retry()">Retry</button>
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      // Zero retries, only the runtime for `$error` and `$retry`.
+      expect(jsContents).toContain('null, 0, i0.ɵɵdeferEnableRetry)');
+      expect(jsContents).toContain('ctx.$error.message');
+      expect(jsContents).toContain('.$retry()');
+    });
+
+    describe('@error context type checking', () => {
+      beforeEach(() => {
+        env.tsconfig({strictTemplates: true});
+      });
+
+      it('should type $error as Error and $retry as a function', () => {
+        env.write(
+          '/test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @defer {
+                  Main
+                } @error (let err, again = $retry) {
+                  {{ $error.message }} {{ err.stack }}
+                  <button (click)="$retry()">Retry</button>
+                  <button (click)="again()">Again</button>
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics().length).toBe(0);
+      });
+
+      it('should report invalid uses of the context variables', () => {
+        env.write(
+          '/test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @defer {
+                  {{ $error }}
+                } @error (let err) {
+                  {{ err.nonExistentProperty }}
+                  <button (click)="$retry(1)">Retry</button>
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        const messages = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(messages).toContain(`Property '$error' does not exist on type 'TestCmp'.`);
+        expect(messages).toContain(
+          `Property 'nonExistentProperty' does not exist on type 'Error'.`,
+        );
+        expect(messages).toContain('Expected 0 arguments, but got 1.');
+      });
     });
 
     it('should include timer scheduler function when `after` or `minimum` parameters are used', () => {
