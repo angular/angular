@@ -787,7 +787,7 @@ function parseJitTemplate(
   typeName: string,
   sourceMapUrl: string,
   preserveWhitespaces: boolean,
-  deferBlockDependencies: (() => Promise<unknown> | null)[] | undefined,
+  deferBlockDependencies: ((() => Promise<unknown> | null) | null)[] | undefined,
 ) {
   // Parse the template and check for errors.
   const parsed = parseTemplate(template, sourceMapUrl, {preserveWhitespaces});
@@ -899,7 +899,7 @@ function createR3DependencyMetadata(
 
 function createR3ComponentDeferMetadata(
   boundTarget: BoundTarget<any>,
-  deferBlockDependencies: (() => Promise<unknown> | null)[] | undefined,
+  deferBlockDependencies: ((() => Promise<unknown> | null) | null)[] | undefined,
 ): R3ComponentDeferMetadata {
   const deferredBlocks = boundTarget.getDeferBlocks();
   const blocks = new Map<DeferredBlock, Expression | null>();
