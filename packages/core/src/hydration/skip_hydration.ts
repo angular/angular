@@ -67,7 +67,7 @@ export function isInSkipHydrationBlock(tNode: TNode): boolean {
   }
   let currentTNode: TNode | null = tNode.parent;
   while (currentTNode) {
-    if (hasInSkipHydrationBlockFlag(tNode) || hasSkipHydrationAttrOnTNode(currentTNode)) {
+    if (hasInSkipHydrationBlockFlag(currentTNode) || hasSkipHydrationAttrOnTNode(currentTNode)) {
       return true;
     }
     currentTNode = currentTNode.parent;

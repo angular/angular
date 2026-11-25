@@ -25,6 +25,7 @@ import {MockPlatformLocation} from '@angular/common/testing';
 import {computeMsgId} from '@angular/compiler';
 import {
   afterEveryRender,
+  AfterViewInit,
   ApplicationRef,
   ChangeDetectorRef,
   ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
@@ -51,6 +52,7 @@ import {
   TemplateRef,
   Type,
   ViewChild,
+  viewChild,
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
@@ -62,6 +64,8 @@ import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {
   clearDocument,
   getAppContents,
+  hydrate,
+  prepareEnvironment,
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
   stripUtilAttributes,
@@ -4158,6 +4162,323 @@ describe('platform-server full application hydration integration', () => {
           }
         },
       );
+
+      describe('content projection into ngSkipHydration across shared TViews', () => {
+        @Component({
+          selector: 'skip-comp',
+          template: `<ng-content></ng-content>`,
+        })
+        class SkipComp {}
+
+        @Component({
+          selector: 'middle-comp',
+          imports: [SkipComp],
+          template: `<skip-comp ngSkipHydration><ng-content></ng-content></skip-comp>`,
+        })
+        class MiddleComp {}
+
+        it('should hydrate multi-sibling, ng-container, @if, and @for content across multiple host instances and clean up flipped views', async () => {
+          @Component({
+            selector: 'host-comp',
+            imports: [MiddleComp],
+            template: `
+              <middle-comp>
+                <span class="sib-a">A</span>
+                @if (show) {
+                  <span class="sib-b">B</span>
+                }
+                <ng-container>
+                  @if (show) {
+                    <span class="ngc">NGC</span>
+                  }
+                </ng-container>
+                @for (item of items; track item) {
+                  <span class="mf-a">{{ item }}</span
+                  ><b class="mf-b">!</b>
+                }
+                @if (ssrOnly) {
+                  <span class="ssr-only">Gone</span>
+                }
+              </middle-comp>
+            `,
+          })
+          class HostComp {
+            show = true;
+            items = [1, 2];
+            ssrOnly = isPlatformServer(inject(PLATFORM_ID));
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [HostComp],
+            template: `<host-comp></host-comp><host-comp></host-comp>`,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          resetTViewsFor(SimpleComponent, HostComp, MiddleComp, SkipComp);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(doc.querySelectorAll('.sib-a').length).toBe(2);
+          expect(doc.querySelectorAll('.sib-b').length).toBe(2);
+          expect(doc.querySelectorAll('.ngc').length).toBe(2);
+          expect(doc.querySelectorAll('.mf-a').length).toBe(4);
+          expect(doc.querySelectorAll('.mf-b').length).toBe(4);
+          expect(doc.querySelectorAll('.ssr-only').length).toBe(0);
+        });
+
+        it('should hydrate direct, wrapped, and projected ng-container i18n and ICU blocks across multiple host instances', async () => {
+          @Component({
+            selector: 'host-comp',
+            imports: [MiddleComp],
+            template: `
+              <middle-comp>
+                <div i18n class="i18n-direct">Hello direct</div>
+                <div class="wrapper">
+                  <div i18n class="i18n-wrapped">Hello wrapped</div>
+                </div>
+                <ng-container i18n>{count, plural,
+                  =1 {one item}
+                  other {{{ count }} items}
+                }</ng-container>
+              </middle-comp>
+            `,
+          })
+          class HostComp {
+            @Input() count = 1;
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [HostComp],
+            template: `<host-comp [count]="1"></host-comp><host-comp [count]="3"></host-comp>`,
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = () => [withI18nSupport()];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          resetTViewsFor(SimpleComponent, HostComp, MiddleComp, SkipComp);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(doc.querySelectorAll('.i18n-direct').length).toBe(2);
+          expect(doc.querySelectorAll('.i18n-wrapped').length).toBe(2);
+          const skipText = Array.from(doc.querySelectorAll('skip-comp')).map(
+            (el) => el.textContent,
+          );
+          expect(skipText[0]).toContain('one item');
+          expect(skipText[1]).toContain('3 items');
+        });
+
+        it('should reuse SSR DOM on non-skipped instance in mixed-instance @if and i18n projection', async () => {
+          @Component({
+            selector: 'normal-comp',
+            template: `<ng-content></ng-content>`,
+          })
+          class NormalComp {}
+
+          @Component({
+            selector: 'toggle-comp',
+            imports: [SkipComp, NormalComp, NgTemplateOutlet],
+            template: `
+              <ng-template #c><ng-content></ng-content></ng-template>
+              @if (skip) {
+                <skip-comp ngSkipHydration
+                  ><ng-container *ngTemplateOutlet="c"></ng-container
+                ></skip-comp>
+              } @else {
+                <normal-comp><ng-container *ngTemplateOutlet="c"></ng-container></normal-comp>
+              }
+            `,
+          })
+          class ToggleComp {
+            @Input() skip = false;
+          }
+
+          @Component({
+            selector: 'host-comp',
+            imports: [ToggleComp],
+            template: `
+              <toggle-comp [skip]="skip">
+                @if (show) {
+                  <span class="mixed-if">Hello</span>
+                }
+                <div i18n class="mixed-i18n">Mixed i18n</div>
+              </toggle-comp>
+            `,
+          })
+          class HostComp {
+            @Input() skip = false;
+            show = true;
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [HostComp],
+            template: `<host-comp [skip]="true"></host-comp><host-comp [skip]="false"></host-comp>`,
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = () => [withI18nSupport()];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          resetTViewsFor(SimpleComponent, HostComp, ToggleComp, SkipComp, NormalComp);
+
+          prepareEnvironment(doc, html);
+          const ssrNormalSpan = doc.querySelectorAll('host-comp')[1].querySelector('.mixed-if');
+          const ssrNormalI18n = doc.querySelectorAll('host-comp')[1].querySelector('.mixed-i18n');
+          expect(ssrNormalSpan).not.toBeNull();
+          expect(ssrNormalI18n).not.toBeNull();
+
+          const appRef = await hydrate(doc, SimpleComponent, {hydrationFeatures});
+          appRef.tick();
+          await appRef.whenStable();
+
+          const hosts = Array.from(doc.querySelectorAll('host-comp'));
+          expect(hosts.map((h) => h.querySelectorAll('.mixed-if').length)).toEqual([1, 1]);
+          expect(hosts.map((h) => h.querySelectorAll('.mixed-i18n').length)).toEqual([1, 1]);
+          expect(hosts[1].querySelector('.mixed-if')).toBe(ssrNormalSpan);
+          expect(hosts[1].querySelector('.mixed-i18n')).toBe(ssrNormalI18n);
+        });
+
+        it('should hydrate direct and wrapped ViewContainerRef projected into ngSkipHydration without duplicating DOM', async () => {
+          @Component({
+            selector: 'app',
+            imports: [MiddleComp],
+            template: `
+              <middle-comp><div #directVc></div></middle-comp>
+              <middle-comp
+                ><div class="wrapper"><div #wrappedVc></div></div
+              ></middle-comp>
+              <ng-template #directTpl><span class="direct-vc">Direct</span></ng-template>
+              <ng-template #wrappedTpl><span class="wrapped-vc">Wrapped</span></ng-template>
+            `,
+          })
+          class SimpleComponent implements AfterViewInit {
+            directVc = viewChild('directVc', {read: ViewContainerRef});
+            wrappedVc = viewChild('wrappedVc', {read: ViewContainerRef});
+            directTpl = viewChild<TemplateRef<unknown>>('directTpl');
+            wrappedTpl = viewChild<TemplateRef<unknown>>('wrappedTpl');
+
+            ngAfterViewInit() {
+              this.directVc()!.createEmbeddedView(this.directTpl()!);
+              this.wrappedVc()!.createEmbeddedView(this.wrappedTpl()!);
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          resetTViewsFor(SimpleComponent, MiddleComp, SkipComp);
+
+          prepareEnvironment(doc, html);
+          const ssrWrappedSpan = doc.querySelector('.wrapped-vc');
+          expect(ssrWrappedSpan).not.toBeNull();
+
+          const appRef = await hydrate(doc, SimpleComponent);
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(doc.querySelectorAll('.direct-vc').length).toBe(1);
+          expect(doc.querySelectorAll('.wrapped-vc').length).toBe(1);
+          expect(doc.querySelector('.wrapped-vc')).toBe(ssrWrappedSpan);
+        });
+
+        it('should render @defer placeholder with nested @if and reset detached SSR_BLOCK_STATE when projected into ngSkipHydration', async () => {
+          @Component({
+            selector: 'app',
+            imports: [MiddleComp],
+            template: `
+              <middle-comp>
+                @defer (on idle) {
+                  <span class="idle-main">Main</span>
+                } @placeholder {
+                  @if (showPh) {
+                    <span class="idle-ph">Idle PH</span>
+                  }
+                }
+              </middle-comp>
+              <middle-comp>
+                @defer (when ready()) {
+                  <span class="when-main">When Main</span>
+                } @placeholder {
+                  <span class="when-ph">When PH</span>
+                }
+              </middle-comp>
+            `,
+          })
+          class SimpleComponent {
+            showPh = true;
+            ready = signal(false);
+          }
+
+          // Mark the second defer block as Complete (2) in serialized state to exercise SSR_BLOCK_STATE reset.
+          const html = (await ssr(SimpleComponent)).replace(/"s":0(?!.*"s":0)/, '"s":2');
+          resetTViewsFor(SimpleComponent, MiddleComp, SkipComp);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(doc.querySelectorAll('.idle-ph').length).toBe(1);
+          expect(doc.querySelectorAll('.when-ph').length).toBe(1);
+          expect(doc.querySelectorAll('.when-main').length).toBe(0);
+
+          getComponentRef<SimpleComponent>(appRef).instance.ready.set(true);
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(doc.querySelectorAll('.when-main').length).toBe(1);
+          expect(doc.querySelectorAll('.when-ph').length).toBe(0);
+        });
+
+        it('should handle empty or unmatched <ng-content> slots and wrapped <ng-content> inside ngSkipHydration', async () => {
+          @Component({
+            selector: 'wrapped-skip',
+            template: `<div class="skip-inner"><ng-content></ng-content></div>`,
+          })
+          class WrappedSkip {}
+
+          @Component({
+            selector: 'wrapped-middle',
+            imports: [WrappedSkip],
+            template: `<wrapped-skip ngSkipHydration
+              ><ng-content select=".matched"></ng-content><ng-content></ng-content
+            ></wrapped-skip>`,
+          })
+          class WrappedMiddle {}
+
+          @Component({
+            selector: 'app',
+            imports: [MiddleComp, WrappedMiddle],
+            template: `
+              <middle-comp></middle-comp>
+              <wrapped-middle>
+                @if (show) {
+                  <span class="wrapped-child">Projected</span>
+                }
+              </wrapped-middle>
+            `,
+          })
+          class SimpleComponent {
+            show = true;
+          }
+
+          const html = await ssr(SimpleComponent);
+          resetTViewsFor(SimpleComponent, MiddleComp, SkipComp, WrappedMiddle, WrappedSkip);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(doc.querySelector('skip-comp')).not.toBeNull();
+          expect(doc.querySelectorAll('.skip-inner .wrapped-child').length).toBe(1);
+        });
+      });
     });
 
     describe('corrupted text nodes restoration', () => {

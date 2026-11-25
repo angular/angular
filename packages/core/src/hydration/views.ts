@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {SSR_BLOCK_STATE} from '../defer/interfaces';
+import {getLDeferBlockDetails} from '../defer/utils';
 import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
-import {TNode, TNodeFlags} from '../render3/interfaces/node';
+import {TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {LView, TVIEW} from '../render3/interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, TVIEW} from '../render3/interfaces/view';
 
 import {removeDehydratedViews} from './cleanup';
 import {
+  CONTAINERS,
+  DEFER_BLOCK_STATE as SERIALIZED_DEFER_BLOCK_STATE,
   DehydratedContainerView,
   MULTIPLIER,
   NUM_ROOT_NODES,
@@ -21,6 +25,7 @@ import {
   TEMPLATE_ID,
 } from './interfaces';
 import {siblingAfter} from './node_lookup_utils';
+import {initDisconnectedNodes} from './utils';
 
 /**
  * Given a current DOM node and a serialized information about the views
@@ -200,4 +205,34 @@ function cleanupMatchingDehydratedViews(hostLView: LView, currentTNode: TNode): 
     return true;
   }
   return false;
+}
+
+/**
+ * Clears per-instance hydration state on a node projected in creation mode (for example,
+ * into a skip-hydration or non-hydrated boundary) so subsequent view/container lookups
+ * fall back to creation mode instead of reusing stale SSR DOM references.
+ */
+export function clearProjectedNodeHydrationState(lView: LView, tNode: TNode, rawSlotValue: any) {
+  if (isLContainer(rawSlotValue)) {
+    const views = rawSlotValue[DEHYDRATED_VIEWS];
+    if (views !== null && views.length > 0) {
+      if (views[0].data[SERIALIZED_DEFER_BLOCK_STATE] !== undefined) {
+        const lDetails = getLDeferBlockDetails(lView, tNode);
+        if (lDetails) {
+          lDetails[SSR_BLOCK_STATE] = null;
+        }
+      }
+      rawSlotValue[DEHYDRATED_VIEWS] = [];
+    }
+  } else if (tNode.type & (TNodeType.Element | TNodeType.ElementContainer)) {
+    const hydrationInfo = lView[HYDRATION];
+    if (hydrationInfo !== null) {
+      const noOffsetIndex = tNode.index - HEADER_OFFSET;
+      if (hydrationInfo.data[CONTAINERS]?.[noOffsetIndex] !== undefined) {
+        const disconnectedNodes =
+          initDisconnectedNodes(hydrationInfo) ?? (hydrationInfo.disconnectedNodes = new Set());
+        disconnectedNodes.add(noOffsetIndex);
+      }
+    }
+  }
 }
