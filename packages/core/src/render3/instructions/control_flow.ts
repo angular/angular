@@ -39,7 +39,11 @@ import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {removeDehydratedViews} from '../../hydration/cleanup';
-import {clearViewDetachAnimations, initViewDetachAnimations} from '../node_animations';
+import {
+  areLeaveAnimationsEnabled,
+  clearViewDetachAnimations,
+  initViewDetachAnimations,
+} from '../node_animations';
 import {
   addLViewToLContainer,
   detachView,
@@ -430,6 +434,9 @@ class LiveCollectionLContainerImpl extends LiveCollection<
 
   override get length(): number {
     return this.lContainer.length - CONTAINER_HEADER_OFFSET;
+  }
+  override get hasLeaveAnimations(): boolean {
+    return areLeaveAnimationsEnabled();
   }
   override at(index: number): unknown {
     return this.getLView(index)[CONTEXT].$implicit;

@@ -206,10 +206,58 @@ describe('list reconciliation', () => {
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
-        ['detach', 1, 'x1'],
-        ['detach', 2, 'x2'],
+        ['detach', 3, 'x2'],
         ['destroy', 'x2'],
+        ['detach', 1, 'x1'],
         ['destroy', 'x1'],
+      ]);
+    });
+
+    it('should remove the old items before creating the new ones when all items change', () => {
+      const pc = new LoggingLiveCollection(['a', 'b', 'c']);
+      reconcile(pc, ['d', 'e', 'f'], trackByIdentity, null);
+
+      expect(pc.getCollection()).toEqual(['d', 'e', 'f']);
+      // the new items are appended, not inserted in front of old items that go away anyway
+      expect(pc.getLogs()).toEqual([
+        ['detach', 2, 'c'],
+        ['destroy', 'c'],
+        ['detach', 1, 'b'],
+        ['destroy', 'b'],
+        ['detach', 0, 'a'],
+        ['destroy', 'a'],
+        ['create', 0, 'd'],
+        ['attach', 0, 'd'],
+        ['create', 1, 'e'],
+        ['attach', 1, 'e'],
+        ['create', 2, 'f'],
+        ['attach', 2, 'f'],
+      ]);
+    });
+
+    it('should keep the new items in front of the old ones when items can leave with an animation', () => {
+      class LeavingLiveCollection<T, V> extends LoggingLiveCollection<T, V> {
+        override get hasLeaveAnimations(): boolean {
+          return true;
+        }
+      }
+      const pc = new LeavingLiveCollection(['a', 'b', 'c']);
+      reconcile(pc, ['d', 'e', 'f'], trackByIdentity, null);
+
+      expect(pc.getCollection()).toEqual(['d', 'e', 'f']);
+      expect(pc.getLogs()).toEqual([
+        ['create', 0, 'd'],
+        ['attach', 0, 'd'],
+        ['create', 1, 'e'],
+        ['attach', 1, 'e'],
+        ['create', 2, 'f'],
+        ['attach', 2, 'f'],
+        ['detach', 5, 'c'],
+        ['destroy', 'c'],
+        ['detach', 4, 'b'],
+        ['destroy', 'b'],
+        ['detach', 3, 'a'],
+        ['destroy', 'a'],
       ]);
     });
 
@@ -232,19 +280,18 @@ describe('list reconciliation', () => {
 
       expect(pc.getCollection()).toEqual(['s2', 'a', 'b', 'c', 'e2']);
       expect(pc.getLogs()).toEqual([
+        // items that are not part of the new collection are removed first, from the end
+        ['detach', 4, 'e1'],
+        ['destroy', 'e1'],
+        ['detach', 0, 's1'],
+        ['destroy', 's1'],
         // item gets created at index 0 since we know it is not in the old array
         ['create', 0, 's2'],
         ['attach', 0, 's2'],
-        // item at index 1 gets detached since it is not part of the new collection
-        ['detach', 1, 's1'],
         // we are on the fast path again, skipping 'a', 'b', 'c'
         // item gets created at index 4 since we know it is not in the old array
         ['create', 4, 'e2'],
         ['attach', 4, 'e2'],
-        // the rest gets detached / destroyed
-        ['detach', 5, 'e1'],
-        ['destroy', 'e1'],
-        ['destroy', 's1'],
       ]);
     });
 
