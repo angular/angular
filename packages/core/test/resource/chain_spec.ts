@@ -7,6 +7,7 @@
  */
 
 import {
+  ApplicationRef,
   Injector,
   ResourceDependencyError,
   resourceFromSnapshots,
@@ -16,7 +17,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {timeout} from '@angular/private/testing';
-import {paramsContext, resource} from '../../src/resource/resource';
+import {paramsContext, resource, ResourceValueError} from '../../src/resource/resource';
 
 describe('chain', () => {
   it('should throw idle if resource is idle', () => {
@@ -94,5 +95,65 @@ describe('chain', () => {
     expect(res2.status()).toBe('error');
     expect(res2.error()).toBeInstanceOf(ResourceDependencyError);
     expect(res2.error()?.cause).toBe(error);
+  });
+
+  it('should not transition to idle or throw in hasValue/snapshot when reload() is called in dependency error state', async () => {
+    let shouldFail = true;
+    const loaderSpy = jasmine.createSpy('ordersLoader');
+    const user = resource({
+      loader: async (): Promise<{id: string}> => {
+        if (shouldFail) {
+          throw new Error('backend down');
+        }
+        return {id: 'u1'};
+      },
+      injector: TestBed.inject(Injector),
+    });
+    const orders = resource({
+      params: ({chain}) => chain(user)!.id,
+      loader: async ({params}) => {
+        loaderSpy(params);
+        return `orders for ${params}`;
+      },
+      defaultValue: 'default orders',
+      injector: TestBed.inject(Injector),
+    });
+
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    // Before reload()
+    expect(orders.status()).toBe('error');
+    expect(orders.error()).toBeInstanceOf(ResourceDependencyError);
+    expect(orders.hasValue()).toBeFalse();
+    expect(orders.snapshot()).toEqual({
+      status: 'error',
+      error: orders.error()!,
+    });
+    expect(() => orders.value()).toThrowMatching((e: any) => e instanceof ResourceValueError);
+
+    // Reloading a resource whose params failed should return false and preserve error state
+    expect(orders.reload()).toBeFalse();
+    expect(loaderSpy).not.toHaveBeenCalled();
+
+    // After reload()
+    expect(orders.status()).toBe('error');
+    expect(orders.error()).toBeInstanceOf(ResourceDependencyError);
+    expect(orders.hasValue()).toBeFalse();
+    expect(orders.snapshot()).toEqual({
+      status: 'error',
+      error: orders.error()!,
+    });
+    expect(() => orders.value()).toThrowMatching((e: any) => e instanceof ResourceValueError);
+
+    // Recovers once the upstream resource reloads successfully
+    shouldFail = false;
+    expect(user.reload()).toBeTrue();
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(orders.status()).toBe('resolved');
+    expect(orders.error()).toBeUndefined();
+    expect(orders.hasValue()).toBeTrue();
+    expect(orders.value()).toBe('orders for u1');
+    expect(loaderSpy).toHaveBeenCalledOnceWith('u1');
   });
 });

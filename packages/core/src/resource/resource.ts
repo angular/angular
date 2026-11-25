@@ -322,7 +322,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
             status = request === undefined ? 'idle' : stream ? 'resolved' : 'loading';
           } else {
             status = request === undefined ? 'idle' : 'loading';
-            if (previous.value.extRequest.request === request) {
+            if (request !== undefined && previous.value.extRequest.request === request) {
               stream = previous.value.stream;
             }
           }
@@ -401,9 +401,15 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   }
 
   override reload(): boolean {
-    // We don't want to restart in-progress loads.
-    const {status} = untracked(this.state);
-    if (status === 'idle' || status === 'loading') {
+    // We don't want to restart in-progress loads, or reload when params failed or produced no
+    // request.
+    const {status, extRequest} = untracked(this.state);
+    if (
+      status === 'idle' ||
+      status === 'loading' ||
+      extRequest.error !== undefined ||
+      extRequest.request === undefined
+    ) {
       return false;
     }
 
