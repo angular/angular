@@ -53,6 +53,8 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  ɵHydrationStatus as HydrationStatus,
+  ɵreadHydrationInfo as readHydrationInfo,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -7398,6 +7400,144 @@ describe('platform-server full application hydration integration', () => {
           expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
           expect(message).toContain('check to see if your template has valid HTML structure');
           verifyNodeHasMismatchInfo(doc);
+        }
+      });
+
+      it('should attach the exact mismatched DOM node ref and error code to __ngDebugHydrationInfo__', async () => {
+        @Component({
+          selector: 'app',
+          template: `<div class="wrapper"><b>Hello</b></div>`,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b')!;
+            const span = this.doc.createElement('span');
+            span.textContent = 'Mismatch';
+            b.parentNode!.replaceChild(span, b);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+
+        const err = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((e: unknown) => e);
+
+        expect(err).toBeInstanceOf(Error);
+        const info = readHydrationInfo(doc.querySelector('app')!);
+        expect(info?.status).toBe(HydrationStatus.Mismatched);
+        if (info?.status === HydrationStatus.Mismatched) {
+          expect(info.errorCode).toBe('NG0500');
+          expect(info.isParentFallback).toBeUndefined();
+          expect(info.actualNode?.deref()).toBe(doc.querySelector('span')!);
+        }
+      });
+
+      it('should attach parent element ref with isParentFallback when expected node is missing', async () => {
+        @Component({
+          selector: 'app',
+          template: `<div class="wrapper"><b>Hello</b></div>`,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            this.doc.querySelector('b')?.remove();
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+
+        const err = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((e: unknown) => e);
+
+        expect(err).toBeInstanceOf(Error);
+        const info = readHydrationInfo(doc.querySelector('app')!);
+        expect(info?.status).toBe(HydrationStatus.Mismatched);
+        if (info?.status === HydrationStatus.Mismatched) {
+          expect(info.errorCode).toBe('NG0500');
+          expect(info.isParentFallback).toBeTrue();
+          expect(info.actualNode?.deref()).toBe(doc.querySelector('.wrapper')!);
+        }
+      });
+
+      it('should attach mismatch info on the declaring component host for embedded views', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @if (show) {
+              <div class="branch"><b>Inside if</b></div>
+            }
+          `,
+        })
+        class EmbeddedViewComponent {
+          show = true;
+        }
+
+        const html = (await ssr(EmbeddedViewComponent)).replace(
+          '<b>Inside if</b>',
+          '<span>Replaced</span>',
+        );
+        resetTViewsFor(EmbeddedViewComponent);
+
+        const errors: unknown[] = [];
+        class CollectingErrorHandler extends ErrorHandler {
+          override handleError(error: unknown): void {
+            errors.push(error);
+          }
+        }
+
+        await prepareEnvironmentAndHydrate(doc, html, EmbeddedViewComponent, {
+          envProviders: [{provide: ErrorHandler, useClass: CollectingErrorHandler}],
+        }).catch((e: unknown) => errors.push(e));
+
+        expect(errors.length).toBeGreaterThan(0);
+        const info = readHydrationInfo(doc.querySelector('app')!);
+        expect(info?.status).toBe(HydrationStatus.Mismatched);
+        if (info?.status === HydrationStatus.Mismatched) {
+          expect(info.errorCode).toBe('NG0500');
+          expect(info.actualNode?.deref()).toBe(doc.querySelector('span')!);
+        }
+      });
+
+      it('should store raw actualNodeDetails without duplicate header for NG0501 sibling mismatches', async () => {
+        @Component({
+          selector: 'app',
+          imports: [CommonModule],
+          template: `
+            <ng-container *ngIf="true">
+              <b>Bold text</b>
+              <i>Italic text</i>
+            </ng-container>
+            <main>Main content</main>
+          `,
+        })
+        class MissingSiblingComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            this.doc.querySelector('b')?.remove();
+            this.doc.querySelector('i')?.remove();
+          }
+        }
+
+        const html = await ssr(MissingSiblingComponent);
+        resetTViewsFor(MissingSiblingComponent);
+
+        const err = await prepareEnvironmentAndHydrate(doc, html, MissingSiblingComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((e: unknown) => e);
+
+        expect(err).toBeInstanceOf(Error);
+        const info = readHydrationInfo(doc.querySelector('app')!);
+        expect(info?.status).toBe(HydrationStatus.Mismatched);
+        if (info?.status === HydrationStatus.Mismatched) {
+          expect(info.errorCode).toBe('NG0501');
+          expect(info.actualNodeDetails).not.toContain('Actual DOM is:');
+          expect(info.actualNodeDetails).toContain('<main>…</main>  <-- AT THIS LOCATION');
+          expect(info.actualNode?.deref()).toBe(doc.querySelector('main')!);
         }
       });
 

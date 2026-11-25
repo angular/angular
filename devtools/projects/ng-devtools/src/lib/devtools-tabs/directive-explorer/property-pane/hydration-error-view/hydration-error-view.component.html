@@ -1,0 +1,93 @@
+<mat-toolbar class="section-heading error-heading">
+  <span class="title">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <span>Hydration mismatch</span>
+    @if (errorCode(); as code) {
+      <span class="error-code">{{ code }}</span>
+    }
+  </span>
+  <a
+    class="docs-link"
+    [href]="docsUrl()"
+    target="_blank"
+    rel="noopener noreferrer"
+    [matTooltip]="errorCode() ? 'Open ' + errorCode() + ' documentation' : 'Open hydration docs'"
+    [attr.aria-label]="
+      errorCode() ? 'Open ' + errorCode() + ' documentation' : 'Open hydration docs'
+    "
+  >
+    <mat-icon>open_in_new</mat-icon>
+  </a>
+</mat-toolbar>
+
+<div class="details">
+  <div class="actions">
+    <button
+      ng-button
+      type="button"
+      btnType="secondary"
+      size="compact"
+      class="action-btn"
+      [matTooltip]="inspectTooltip()"
+      (click)="inspectDomNode.emit()"
+      (mouseenter)="highlightDomNode.emit()"
+      (mouseleave)="unhighlightDomNode.emit()"
+    >
+      <mat-icon>manage_search</mat-icon>
+      <span>{{ inspectLabel() }}</span>
+    </button>
+    <button
+      ng-button
+      type="button"
+      btnType="secondary"
+      size="compact"
+      class="action-btn"
+      [matTooltip]="logTooltip()"
+      (click)="logDomNode.emit()"
+      (mouseenter)="highlightDomNode.emit()"
+      (mouseleave)="unhighlightDomNode.emit()"
+    >
+      <mat-icon>terminal</mat-icon>
+      <span>Log node</span>
+    </button>
+  </div>
+
+  @if (hydration().isParentFallback) {
+    <p class="note">
+      The expected DOM node was missing. Inspect and highlight actions target its parent element.
+    </p>
+  }
+
+  @if (expectedLines().length > 0) {
+    <div class="snippet-block">
+      <div class="snippet-label expected-label">Expected DOM</div>
+      <div class="dom-snippet expected">
+        @for (line of expectedLines(); track $index) {
+          <span class="snippet-line" [class.highlighted]="line.highlighted">{{ line.text }}</span>
+        }
+      </div>
+    </div>
+  }
+
+  @if (actualLines().length > 0) {
+    <div
+      class="snippet-block"
+      (mouseenter)="highlightDomNode.emit()"
+      (mouseleave)="unhighlightDomNode.emit()"
+    >
+      <div class="snippet-label actual-label">Actual DOM</div>
+      <div class="dom-snippet actual">
+        @for (line of actualLines(); track $index) {
+          <span class="snippet-line" [class.highlighted]="line.highlighted">{{ line.text }}</span>
+        }
+      </div>
+    </div>
+  }
+
+  @if (expectedLines().length === 0 && actualLines().length === 0) {
+    <p class="note">
+      Additional details were logged to the console. Use the actions above to inspect the affected
+      DOM element.
+    </p>
+  }
+</div>

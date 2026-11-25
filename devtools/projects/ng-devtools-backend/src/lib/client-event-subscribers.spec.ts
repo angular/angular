@@ -50,6 +50,14 @@ describe('ClientEventSubscriber', () => {
 
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorStart', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorEnd', jasmine.any(Function));
+    expect(messageBusMock.on).toHaveBeenCalledWith(
+      'highlightHydrationMismatchNode',
+      jasmine.any(Function),
+    );
+    expect(messageBusMock.on).toHaveBeenCalledWith(
+      'logHydrationMismatchNode',
+      jasmine.any(Function),
+    );
   });
 });
 

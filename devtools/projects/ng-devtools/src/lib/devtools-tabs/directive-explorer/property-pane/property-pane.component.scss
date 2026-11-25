@@ -4,13 +4,16 @@
   height: 100%;
 
   .body {
-    height: 100%;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 
     .explorer-panel {
       background: var(--senary-contrast);
       padding: 0.5rem;
-      min-height: 100%;
+      flex: 1;
       box-sizing: border-box;
     }
 

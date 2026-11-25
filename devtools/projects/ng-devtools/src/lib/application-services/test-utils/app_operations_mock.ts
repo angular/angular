@@ -46,6 +46,10 @@ export class AppOperationsMock extends ApplicationOperations {
     throw new Error('Method not implemented.');
   }
 
+  override selectHydrationMismatchNode(position: ElementPosition, target: Frame): void {
+    throw new Error('Method not implemented.');
+  }
+
   override inspect(
     directivePosition: DirectivePosition,
     objectPath: string[],

@@ -68,6 +68,22 @@ describe('ChromeApplicationOperations', () => {
     });
   });
 
+  describe('selectHydrationMismatchNode', () => {
+    it('should evaluate findHydrationMismatchNodeByPosition with inspect()', () => {
+      const target: Frame = {
+        name: 'test1',
+        id: 0,
+        url: new URL('http://localhost:4200/url'),
+      } as any;
+      operations.selectHydrationMismatchNode([0, 2], target);
+
+      expect(evalSpy).toHaveBeenCalledWith(
+        'inspect(inspectedApplication.findHydrationMismatchNodeByPosition("[0,2]"))',
+        {frameURL: 'http://localhost:4200/url'},
+      );
+    });
+  });
+
   describe('onSignalBreakpointsCleared', () => {
     it('invokes callback when signalBreakpointsCleared message is received for inspected tab from extension', () => {
       const callback = jasmine.createSpy('callback');

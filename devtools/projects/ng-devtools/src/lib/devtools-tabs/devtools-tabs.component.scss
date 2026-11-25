@@ -59,6 +59,10 @@ $toolbar-height: 30px;
           }
         }
       }
+
+      .hydration-overlay-btn.active {
+        color: var(--dynamic-blue-02);
+      }
     }
 
     .frame-selector {

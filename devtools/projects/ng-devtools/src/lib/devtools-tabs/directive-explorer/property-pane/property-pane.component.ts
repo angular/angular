@@ -13,6 +13,7 @@ import {IndexedNode} from '../directive-forest/index-forest';
 import {PropertyPaneHeaderComponent} from './property-pane-header/property-pane-header.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
 import {ForLoopViewComponent} from './for-loop-view/for-loop-view.component';
+import {HydrationErrorViewComponent} from './hydration-error-view/hydration-error-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
@@ -27,14 +28,20 @@ import {BlockType} from '../../../shared/utils/control-flow';
     PropertyViewComponent,
     DeferViewComponent,
     ForLoopViewComponent,
+    HydrationErrorViewComponent,
   ],
 })
 export class PropertyPaneComponent {
   readonly currentSelectedElement = input.required<IndexedNode | null>();
+  readonly hasHydrationMismatch = input(false);
 
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode | null>();
+  readonly inspectHydrationNode = output<void>();
+  readonly logHydrationNode = output<void>();
+  readonly highlightHydrationNode = output<void>();
+  readonly unhighlightHydrationNode = output<void>();
 
   readonly BlockType = BlockType;
 

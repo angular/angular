@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {ɵHydratedNode as HydrationNode} from '@angular/core';
 import {ElementPosition} from '../../../../protocol';
 import {ComponentTreeNode} from '../shared/interfaces';
 import {ngDebugClient} from '../shared/ng-debug-api/ng-debug-api';
@@ -85,6 +86,38 @@ export function findNodeFromSerializedPosition(
 ): ComponentTreeNode | null {
   const position: number[] = JSON.parse(serializedPosition);
   return queryDirectiveForest(position, buildDirectiveForest());
+}
+
+/**
+ * Returns the live DOM node stored inside `__ngDebugHydrationInfo__` for a mismatched
+ * component host element, or `null` if unavailable (e.g. garbage-collected or older Angular).
+ */
+export function getHydrationMismatchNode(hostElement: Node | null | undefined): Node | null {
+  if (!hostElement) {
+    return null;
+  }
+  const hydrationInfo = (hostElement as HydrationNode).__ngDebugHydrationInfo__;
+  if (hydrationInfo?.status !== 'mismatched') {
+    return null;
+  }
+  return hydrationInfo.actualNode?.deref() ?? null;
+}
+
+/**
+ * Returns the `Element` to highlight for a hydration mismatch. Falls back from a non-Element
+ * node (`Text` / `Comment`) to its parent element, and finally to the component host element.
+ */
+export function getHydrationMismatchHighlightElement(
+  hostElement: Node | null | undefined,
+): Element | null {
+  const node = getHydrationMismatchNode(hostElement);
+  if (node instanceof Element) {
+    return node;
+  }
+  if (node?.parentElement) {
+    return node.parentElement;
+  }
+  return hostElement instanceof Element ? hostElement : null;
 }
 
 /**

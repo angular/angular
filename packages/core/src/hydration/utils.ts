@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -307,6 +307,11 @@ export type HydrationInfo =
       status: HydrationStatus.Mismatched;
       actualNodeDetails: string | null;
       expectedNodeDetails: string | null;
+      errorCode?: string;
+      // Avoid referencing the ES2021 `WeakRef` lib type in the public `.d.ts` file,
+      // since consumer apps may compile with older TypeScript `lib` targets.
+      actualNode?: {deref(): Node | undefined};
+      isParentFallback?: boolean;
     };
 
 const HYDRATION_INFO_KEY = '__ngDebugHydrationInfo__';
@@ -365,6 +370,11 @@ export function markRNodeAsHavingHydrationMismatch(
   node: RNode,
   expectedNodeDetails: string | null = null,
   actualNodeDetails: string | null = null,
+  debugDetails?: {
+    actualNode?: RNode | null;
+    isParentFallback?: boolean;
+    errorCode?: string;
+  },
 ) {
   if (!ngDevMode) {
     throw new Error(
@@ -381,11 +391,21 @@ export function markRNodeAsHavingHydrationMismatch(
   }
 
   if (node) {
-    patchHydrationInfo(node, {
+    const info: HydrationInfo = {
       status: HydrationStatus.Mismatched,
       expectedNodeDetails,
       actualNodeDetails,
-    });
+    };
+    if (debugDetails?.errorCode) {
+      info.errorCode = debugDetails.errorCode;
+    }
+    if (debugDetails?.actualNode) {
+      info.actualNode = new WeakRef(debugDetails.actualNode as unknown as Node);
+      if (debugDetails.isParentFallback) {
+        info.isParentFallback = true;
+      }
+    }
+    patchHydrationInfo(node, info);
   }
 }
 

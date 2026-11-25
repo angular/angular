@@ -28,6 +28,11 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     this.runInInspectedWindow(selectDomElement, target);
   }
 
+  override selectHydrationMismatchNode(position: ElementPosition, target: Frame): void {
+    const script = `inspect(inspectedApplication.findHydrationMismatchNodeByPosition(${stringifyAndEscape(position)}))`;
+    this.runInInspectedWindow(script, target);
+  }
+
   override inspect(
     directivePosition: DirectivePosition,
     objectPath: string[],

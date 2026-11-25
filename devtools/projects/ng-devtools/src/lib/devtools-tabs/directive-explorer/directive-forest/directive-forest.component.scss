@@ -1,9 +1,12 @@
 :host {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 
   ng-filter {
+    flex-shrink: 0;
     border-bottom: 1px solid var(--color-separator);
     --ng-filter-background: transparent;
     --ng-filter-border-radius: 0;
@@ -12,8 +15,69 @@
     --ng-filter-outline: none;
   }
 
+  .hydration-mismatch-banner {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: color-mix(in srgb, var(--dynamic-red-01) 12%, var(--color-background));
+    border-bottom: 1px solid var(--color-separator);
+    color: var(--dynamic-red-01);
+    font-size: 0.75rem;
+
+    .banner-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .banner-jump-btn {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .banner-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      border-radius: 2px;
+
+      &:hover {
+        background: color-mix(in srgb, var(--dynamic-red-01) 18%, transparent);
+      }
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
   .tree-wrapper {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    height: calc(100% - 33px);
   }
 }

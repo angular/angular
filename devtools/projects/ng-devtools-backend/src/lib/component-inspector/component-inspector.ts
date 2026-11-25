@@ -8,10 +8,13 @@
 
 import {ElementPosition} from '../../../../protocol';
 
-import {findNodeInForest} from '../directive-forest';
+import {findNodeInForest, getHydrationMismatchHighlightElement} from '../directive-forest';
 import {getDirectiveForestManager} from '../directive-forest/manager';
 import {findDirectiveAndHost, getDirectiveName} from '../directive-forest/utils/directive';
-import {inspectElementHighlightTemplate} from '../shared/highlighter/templates';
+import {
+  hydrationMismatchedHighlightTemplate,
+  inspectElementHighlightTemplate,
+} from '../shared/highlighter/templates';
 import {highlightElement} from '../shared/highlighter';
 import {ComponentTreeNode} from '../shared/interfaces';
 import {Highlight} from '../shared/highlighter/types';
@@ -102,6 +105,18 @@ export class ComponentInspector {
     const elementToHighlight = findNodeInForest(position, forest);
     if (elementToHighlight) {
       this.highlightElement(elementToHighlight);
+    }
+  }
+
+  highlightHydrationMismatchByPosition(position: ElementPosition): void {
+    const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
+    const hostElement = findNodeInForest(position, forest);
+    const target = getHydrationMismatchHighlightElement(hostElement);
+    if (target) {
+      this.unhighlight();
+      this.currentHighlight = highlightElement(target, hydrationMismatchedHighlightTemplate, {
+        icon: ['mismatched'],
+      });
     }
   }
 

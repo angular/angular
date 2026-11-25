@@ -7,6 +7,17 @@
   />
 
   <div class="body">
+    @let hydration = currentSelectedElement.hydration;
+    @if (hydration && hydration.status === 'mismatched') {
+      <ng-hydration-error-view
+        [hydration]="hydration"
+        (inspectDomNode)="inspectHydrationNode.emit()"
+        (logDomNode)="logHydrationNode.emit()"
+        (highlightDomNode)="highlightHydrationNode.emit()"
+        (unhighlightDomNode)="unhighlightHydrationNode.emit()"
+      />
+    }
+
     @let directives = currentDirectives();
     @if (directives && directives.length) {
       <div class="explorer-panel">
@@ -21,9 +32,15 @@
       </div>
     }
 
-    @let hydration = currentSelectedElement.hydration;
     @if (hydration && hydration.status === 'dehydrated') {
-      <div class="dehydrated-component">This component is dehydrated</div>
+      <div class="dehydrated-component">
+        @if (hasHydrationMismatch()) {
+          This component is dehydrated. Hydration may have been interrupted by a mismatch elsewhere
+          in the tree, or deferred with <code>&#64;defer</code>.
+        } @else {
+          This component is dehydrated
+        }
+      </div>
     }
 
     @let block = currentSelectedElement.controlFlowBlock;

@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵExternalCoreGlobalUtils} from '@angular/core';
-import {getRootElements} from '.';
+import {
+  ɵExternalCoreGlobalUtils,
+  ɵHydratedNode as HydrationNode,
+  ɵHydrationStatus as HydrationStatus,
+} from '@angular/core';
+import {getHydrationMismatchHighlightElement, getHydrationMismatchNode, getRootElements} from '.';
 
 type Ng = ɵExternalCoreGlobalUtils;
 const NG_VERSION = 'ng-version';
@@ -97,6 +101,52 @@ describe('directive-forest', () => {
 
       expect(roots.length).toEqual(2);
       expect(roots).toEqual([rootElement, nonAppRootCmp]);
+    });
+  });
+
+  describe('hydration mismatch node resolution', () => {
+    it('should return null when node is not mismatched', () => {
+      const host = document.createElement('app-root');
+      expect(getHydrationMismatchNode(host)).toBeNull();
+      (host as HydrationNode).__ngDebugHydrationInfo__ = {status: HydrationStatus.Hydrated};
+      expect(getHydrationMismatchNode(host)).toBeNull();
+    });
+
+    it('should resolve the live mismatch element and fall back to parentElement for text nodes', () => {
+      const host = document.createElement('app-root');
+      const wrapper = document.createElement('div');
+      const text = document.createTextNode('hi');
+      wrapper.appendChild(text);
+      host.appendChild(wrapper);
+
+      (host as HydrationNode).__ngDebugHydrationInfo__ = {
+        status: HydrationStatus.Mismatched,
+        expectedNodeDetails: null,
+        actualNodeDetails: null,
+        actualNode: new WeakRef(wrapper),
+      };
+      expect(getHydrationMismatchNode(host)).toBe(wrapper);
+      expect(getHydrationMismatchHighlightElement(host)).toBe(wrapper);
+
+      (host as HydrationNode).__ngDebugHydrationInfo__ = {
+        status: HydrationStatus.Mismatched,
+        expectedNodeDetails: null,
+        actualNodeDetails: null,
+        actualNode: new WeakRef(text),
+      };
+      expect(getHydrationMismatchNode(host)).toBe(text);
+      expect(getHydrationMismatchHighlightElement(host)).toBe(wrapper);
+    });
+
+    it('should fall back to the host element when actualNode is absent', () => {
+      const host = document.createElement('app-root');
+      (host as HydrationNode).__ngDebugHydrationInfo__ = {
+        status: HydrationStatus.Mismatched,
+        expectedNodeDetails: '<b>expected</b>',
+        actualNodeDetails: '<span>actual</span>',
+      };
+      expect(getHydrationMismatchNode(host)).toBeNull();
+      expect(getHydrationMismatchHighlightElement(host)).toBe(host);
     });
   });
 });
