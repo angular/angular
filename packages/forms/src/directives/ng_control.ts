@@ -34,7 +34,12 @@ import {
   selectValueAccessor,
   setUpValidators,
 } from './shared';
-import {RequiredValidator, ValidationErrors, ValidatorFn} from './validators';
+import {
+  isRequiredValidator,
+  type RequiredValidator,
+  ValidationErrors,
+  ValidatorFn,
+} from './validators';
 
 type ParseError = {readonly kind: string};
 
@@ -306,7 +311,7 @@ export abstract class NgControl extends AbstractControlDirective {
     this.customControlBindings = {};
     this.isNativeFormElement = isNativeFormElement(host.nativeElement);
 
-    this.requiredValidatorViaDi = this._rawValidators.find((v) => v instanceof RequiredValidator);
+    this.requiredValidatorViaDi = this._rawValidators.find(isRequiredValidator);
   }
 
   private updateControlFromCustom(control: AbstractControl): void {
