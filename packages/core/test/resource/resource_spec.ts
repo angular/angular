@@ -1212,6 +1212,122 @@ describe('resource', () => {
     expect(userResource.value()).toBe('user-2-3');
   });
 
+  it('should return false from reload() and keep error state when params throws', async () => {
+    const paramsError = new Error('params failed');
+    const source = signal<string | Error>(paramsError);
+    let loads = 0;
+
+    const res = resource({
+      params: () => {
+        const v = source();
+        if (v instanceof Error) {
+          throw v;
+        }
+        return v;
+      },
+      loader: async ({params}) => {
+        loads++;
+        return params;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBe(paramsError);
+    expect(res.hasValue()).toBeFalse();
+    expect(res.snapshot()).toEqual({status: 'error', error: paramsError});
+
+    // reload() should return false without switching to idle or running the loader
+    expect(res.reload()).toBeFalse();
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBe(paramsError);
+    expect(res.hasValue()).toBeFalse();
+    expect(res.snapshot()).toEqual({status: 'error', error: paramsError});
+    expect(loads).toBe(0);
+
+    // Updating the signal recovers the resource
+    source.set('ok');
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('ok');
+    expect(loads).toBe(1);
+  });
+
+  it('should clear error stream when params transitions from throwing to undefined', async () => {
+    const paramsError = new Error('params failed');
+    const source = signal<string | Error | undefined>(paramsError);
+
+    const res = resource({
+      params: () => {
+        const v = source();
+        if (v instanceof Error) {
+          throw v;
+        }
+        return v;
+      },
+      loader: async ({params}) => params,
+      defaultValue: 'default',
+      injector: TestBed.inject(Injector),
+    });
+
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBe(paramsError);
+    expect(res.hasValue()).toBeFalse();
+
+    // Transition params from error directly to undefined (idle)
+    source.set(undefined);
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(res.status()).toBe('idle');
+    expect(res.error()).toBeUndefined();
+    expect(res.hasValue()).toBeTrue();
+    expect(res.value()).toBe('default');
+    expect(res.snapshot()).toEqual({status: 'idle', value: 'default'});
+  });
+
+  it('should return false from reload() when set() was called while params is undefined or in error', async () => {
+    const source = signal<string | Error | undefined>(undefined);
+    let loads = 0;
+
+    const res = resource({
+      params: () => {
+        const v = source();
+        if (v instanceof Error) {
+          throw v;
+        }
+        return v;
+      },
+      loader: async ({params}) => {
+        loads++;
+        return params;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    await TestBed.inject(ApplicationRef).whenStable();
+    res.set('local-from-idle');
+    expect(res.status()).toBe('local');
+    expect(res.reload()).toBeFalse();
+    expect(res.status()).toBe('local');
+    expect(res.value()).toBe('local-from-idle');
+    expect(loads).toBe(0);
+
+    source.set(new Error('params failed'));
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.status()).toBe('error');
+
+    res.set('local-from-error');
+    expect(res.status()).toBe('local');
+    expect(res.reload()).toBeFalse();
+    expect(res.status()).toBe('local');
+    expect(res.value()).toBe('local-from-error');
+    expect(loads).toBe(0);
+  });
+
   describe('types', () => {
     it('should narrow hasValue() when the value can be undefined', () => {
       const result: ResourceRef<number | undefined> = resource({
