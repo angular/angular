@@ -17,6 +17,40 @@ import {NamedCache} from './named-cache-storage';
 import {sha1Binary} from './sha1';
 
 /**
+ * Split the value of a `Cache-Control` header into its directives. Each directive is an array with
+ * its lowercased name, followed by its value if it has one.
+ *
+ * Quoted values are not taken into account, so a quoted value that contains a comma is split too.
+ * This can add directives that are not there, but it never hides one that is, even when
+ * `Headers.get()` joins several `Cache-Control` headers into one value. So a check for a directive
+ * like `no-store` errs on the side of not caching.
+ */
+function parseCacheControl(cacheControl: string): string[][] {
+  return (
+    cacheControl
+      // Directives are comma-separated within the Cache-Control header value.
+      .split(',')
+      // Make sure each directive doesn't have extraneous whitespace.
+      .map((v) => v.trim())
+      // Some directives have values (like maxage and s-maxage)
+      .map((v) => v.split('='))
+      // Lowercase all the directive names.
+      .map(([name, ...value]) => [name.toLowerCase(), ...value])
+  );
+}
+
+/**
+ * Whether the response has a `Cache-Control: no-store` directive, which means that no cache may
+ * store it, private caches included (RFC 9111, section 5.2.2.5).
+ */
+function hasNoStoreDirective(res: Response): boolean {
+  const cacheControl = res.headers.get('Cache-Control');
+  return (
+    cacheControl !== null && parseCacheControl(cacheControl).some(([name]) => name === 'no-store')
+  );
+}
+
+/**
  * A group of assets that are cached in a `Cache` and managed by a given policy.
  *
  * Concrete classes derive from this base and specify the exact caching policy.
@@ -150,7 +184,7 @@ export abstract class AssetGroup {
           // This resource has a hash, and thus is versioned by the manifest. It's safe to return
           // the response.
           return cachedResponse;
-        } else {
+        } else if (!hasNoStoreDirective(cachedResponse)) {
           // This resource has no hash, and yet exists in the cache. Check how old this request is
           // to make sure it's still usable.
           if (await this.needToRevalidate(req, cachedResponse)) {
@@ -162,9 +196,12 @@ export abstract class AssetGroup {
           // In either case (revalidation or not), the cached response must be good.
           return cachedResponse;
         }
+
+        // A `no-store` response (cached by an older version of the SW) must not be served. It is
+        // replaced or removed when the resource is fetched from the network below.
       }
 
-      // No already-cached response exists, so attempt a fetch/cache operation.
+      // No usable cached response exists, so attempt a fetch/cache operation.
       const res = await this.fetchAndCacheOnce(this.newRequestWithMetadata(req.url, req));
 
       // If this is successful, the response needs to be cloned as it might be used to respond to
@@ -187,17 +224,7 @@ export abstract class AssetGroup {
     // 3) The request has no applicable caching headers, and must be revalidated.
     if (res.headers.has('Cache-Control')) {
       // Figure out if there is a max-age directive in the Cache-Control header.
-      const cacheControl = res.headers.get('Cache-Control')!;
-      const cacheDirectives = cacheControl
-        // Directives are comma-separated within the Cache-Control header value.
-        .split(',')
-        // Make sure each directive doesn't have extraneous whitespace.
-        .map((v) => v.trim())
-        // Some directives have values (like maxage and s-maxage)
-        .map((v) => v.split('='));
-
-      // Lowercase all the directive names.
-      cacheDirectives.forEach((v) => (v[0] = v[0].toLowerCase()));
+      const cacheDirectives = parseCacheControl(res.headers.get('Cache-Control')!);
 
       // Find the max-age directive, if one exists.
       const maxAgeDirective = cacheDirectives.find((v) => v[0] === 'max-age');
@@ -298,13 +325,16 @@ export abstract class AssetGroup {
    * Fetch the given resource from the network, and cache it if able.
    */
   protected async fetchAndCacheOnce(req: Request, used: boolean = true): Promise<Response> {
+    const url = this.adapter.normalizeUrl(req.url);
+    const inFlightKey = this.inFlightRequestKey(req, url);
+
     // The `inFlightRequests` map holds information about which caching operations are currently
     // underway for known resources. If this request appears there, another "thread" is already
     // in the process of caching it, and this work should not be duplicated.
-    if (this.inFlightRequests.has(req.url)) {
+    if (inFlightKey !== null && this.inFlightRequests.has(inFlightKey)) {
       // There is a caching operation already in progress for this request. Wait for it to
       // complete, and hopefully it will have yielded a useful response.
-      return this.inFlightRequests.get(req.url)!;
+      return this.inFlightRequests.get(inFlightKey)!;
     }
 
     // No other caching operation is being attempted for this resource, so it will be owned here.
@@ -313,7 +343,9 @@ export abstract class AssetGroup {
 
     // Save this operation in `inFlightRequests` so any other "thread" attempting to cache it
     // will block on this chain instead of duplicating effort.
-    this.inFlightRequests.set(req.url, fetchOp);
+    if (inFlightKey !== null) {
+      this.inFlightRequests.set(inFlightKey, fetchOp);
+    }
 
     // Make sure this attempt is cleaned up properly on failure.
     try {
@@ -330,9 +362,18 @@ export abstract class AssetGroup {
       }
 
       try {
+        const cache = await this.cache;
+
+        if (!this.hashes.has(url) && hasNoStoreDirective(res)) {
+          // This response must not be stored. Also remove any copy cached earlier, so it is not
+          // served again.
+          await cache.delete(req, this.config.cacheQueryOptions);
+          await (await this.metadata).delete(req.url);
+          return res;
+        }
+
         // This response is safe to cache (as long as it's cloned). Wait until the cache operation
         // is complete.
-        const cache = await this.cache;
         await cache.put(req, res.clone());
 
         // If the request is not hashed, update its metadata, especially the timestamp. This is
@@ -359,8 +400,29 @@ export abstract class AssetGroup {
     } finally {
       // Finally, it can be removed from `inFlightRequests`. This might result in a double-remove
       // if some other chain was already making this request too, but that won't hurt anything.
-      this.inFlightRequests.delete(req.url);
+      if (inFlightKey !== null) {
+        this.inFlightRequests.delete(inFlightKey);
+      }
     }
+  }
+
+  /**
+   * Get the key under which a request can share an in-flight request for the same resource, or
+   * `null` if it must not share one.
+   *
+   * The content of a hashed resource is checked against its hash, so any request for it can share.
+   * The response for an unhashed resource can depend on the request, so a request with an
+   * `Authorization` header never shares one, and other requests only share one with requests that
+   * have the same credentials and cache mode.
+   */
+  private inFlightRequestKey(req: Request, url: NormalizedUrl): string | null {
+    if (this.hashes.has(url)) {
+      return req.url;
+    }
+    if (req.headers.has('Authorization')) {
+      return null;
+    }
+    return `${req.credentials}:${req.cache}:${req.url}`;
   }
 
   protected async fetchFromNetwork(req: Request, redirectLimit: number = 3): Promise<Response> {
@@ -647,6 +709,11 @@ export class PrefetchAssetGroup extends AssetGroup {
           const res = await updateFrom.lookupResourceWithoutHash(url);
           if (res === null || res.metadata === undefined) {
             // Unexpected, but not harmful.
+            return;
+          }
+
+          // A `no-store` response (cached by an older version of the SW) must not be carried over.
+          if (hasNoStoreDirective(res.response)) {
             return;
           }
 

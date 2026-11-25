@@ -43,6 +43,14 @@ import {envIsSupported} from '../testing/utils';
     .addFile('/lazy/redirect-target.txt', 'this was a redirect too')
     .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
     .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+    .addUnhashedFile('/unhashed/no-store.txt', 'this is no-store', {
+      'Cache-Control': 'no-store, max-age=60',
+      Pragma: 'no-cache',
+      Expires: '0',
+    })
+    .addUnhashedFile('/unhashed/becomes-no-store.txt', 'this is cacheable', {
+      'Cache-Control': 'max-age=10',
+    })
     .addUnhashedFile('/api/foo', 'this is api foo', {'Cache-Control': 'no-cache'})
     .addUnhashedFile('/api-static/bar', 'this is static api bar', {'Cache-Control': 'no-cache'})
     .build();
@@ -58,6 +66,14 @@ import {envIsSupported} from '../testing/utils';
     .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
     .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
     .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
+    .addUnhashedFile('/unhashed/no-store.txt', 'this is no-store v2', {
+      'Cache-Control': 'no-store, max-age=60',
+      Pragma: 'no-cache',
+      Expires: '0',
+    })
+    .addUnhashedFile('/unhashed/becomes-no-store.txt', 'this is no-store now', {
+      'Cache-Control': 'no-store',
+    })
     .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
     .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
     .build();
@@ -1856,6 +1872,86 @@ import {envIsSupported} from '../testing/utils';
         server.assertNoOtherRequests();
       });
 
+      it(`are not cached when 'Cache-Control' is 'no-store'`, async () => {
+        expect(await makeRequest(scope, '/unhashed/no-store.txt')).toEqual('this is no-store');
+        server.assertSawRequestFor('/unhashed/no-store.txt');
+        expect(
+          await scope.caches.original.match(new MockRequest('/unhashed/no-store.txt')),
+        ).toBeUndefined();
+
+        scope.updateServerState(serverUpdate);
+
+        expect(await makeRequest(scope, '/unhashed/no-store.txt')).toEqual('this is no-store v2');
+        serverUpdate.assertSawRequestFor('/unhashed/no-store.txt');
+        serverUpdate.assertNoOtherRequests();
+      });
+
+      it(`are not served from a copy cached with 'Cache-Control: no-store'`, async () => {
+        // Simulate a `no-store` response cached by an older version of the SW.
+        const cache = await scope.caches.open(`${manifestHash}:assets:assets:cache`);
+        await cache.put(
+          new MockRequest('/unhashed/no-store.txt'),
+          new MockResponse('stale no-store response', {headers: {'Cache-Control': 'no-store'}}),
+        );
+
+        expect(await makeRequest(scope, '/unhashed/no-store.txt')).toEqual('this is no-store');
+        server.assertSawRequestFor('/unhashed/no-store.txt');
+        expect(
+          await scope.caches.original.match(new MockRequest('/unhashed/no-store.txt')),
+        ).toBeUndefined();
+      });
+
+      it(`are no longer served from the cache once the server returns 'Cache-Control: no-store'`, async () => {
+        const url = '/unhashed/becomes-no-store.txt';
+        expect(await makeRequest(scope, url)).toEqual('this is cacheable');
+
+        scope.updateServerState(serverUpdate);
+
+        // Make the cached response stale, so that it is revalidated in the background.
+        scope.advance(15000);
+        expect(await makeRequest(scope, url)).toEqual('this is cacheable');
+        scope.advance(6000);
+        await driver.idle.empty;
+        await new Promise((resolve) => setTimeout(resolve)); // Wait for async operations to complete.
+        serverUpdate.assertSawRequestFor(url);
+
+        // The cached copy was removed, so the `no-store` response comes from the network.
+        expect(await scope.caches.original.match(new MockRequest(url))).toBeUndefined();
+        expect(await makeRequest(scope, url)).toEqual('this is no-store now');
+      });
+
+      (
+        [
+          ['credentials', {credentials: 'omit'}],
+          ['cache modes', {cache: 'no-store'}],
+          ['`Authorization` headers', {headers: {'Authorization': 'Bearer token'}}],
+        ] as [string, RequestInit][]
+      ).forEach(([description, init]) => {
+        it(`are not deduplicated when they have different ${description}`, async () => {
+          server.pause();
+          const firstNetworkRequest = server.nextRequest;
+          const [firstResponse, firstDone] = scope.handleFetch(
+            new MockRequest('/unhashed/a.txt'),
+            'default',
+          );
+          await firstNetworkRequest;
+
+          let sawSecondNetworkRequest = false;
+          server.nextRequest.then(() => (sawSecondNetworkRequest = true));
+          const [secondResponse, secondDone] = scope.handleFetch(
+            new MockRequest('/unhashed/a.txt', init),
+            'default',
+          );
+          await new Promise((resolve) => setTimeout(resolve)); // Wait for async operations to complete.
+          expect(sawSecondNetworkRequest).toBeTrue();
+
+          server.unpause();
+          await Promise.all([firstDone, secondDone]);
+          expect(await (await firstResponse)?.text()).toEqual('this is unhashed');
+          expect(await (await secondResponse)?.text()).toEqual('this is unhashed');
+        });
+      });
+
       it('avoid opaque responses', async () => {
         expect(
           await makeRequest(scope, '/unhashed/a.txt', 'default', {
@@ -1940,6 +2036,33 @@ import {envIsSupported} from '../testing/utils';
 
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed v2');
         serverUpdate.assertNoOtherRequests();
+      });
+
+      it(`do not get carried over during updates with 'Cache-Control: no-store'`, async () => {
+        expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
+
+        // Simulate a `no-store` response cached by an older version of the SW.
+        const cache = await scope.caches.open(`${manifestHash}:assets:assets:cache`);
+        await cache.put(
+          new MockRequest('/unhashed/a.txt'),
+          new MockResponse('stale no-store response', {headers: {'Cache-Control': 'no-store'}}),
+        );
+        server.clearRequests();
+
+        scope = new SwTestHarnessBuilder()
+          .withCacheState(scope.caches.original.dehydrate())
+          .withServerState(serverUpdate)
+          .build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
+        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+        await driver.initialized;
+
+        scope.advance(15000);
+        await driver.idle.empty;
+
+        const updatedCache = await scope.caches.open(`${manifestUpdateHash}:assets:assets:cache`);
+        expect(await updatedCache.match(new MockRequest('/foo.txt'))).toBeDefined();
+        expect(await updatedCache.match(new MockRequest('/unhashed/a.txt'))).toBeUndefined();
       });
     });
 
