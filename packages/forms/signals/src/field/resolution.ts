@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-let boundPathDepth = 0;
+/**
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
+ */
+const boundPathDepth: [number] = [0];
 
 /**
  * The depth of the current path when evaluating a logic function.
  * Do not set this directly, it is a context variable managed by `setBoundPathDepthForResolution`.
  */
 export function getBoundPathDepth() {
-  return boundPathDepth;
+  return boundPathDepth[0];
 }
 
 /**
@@ -52,10 +57,10 @@ export function setBoundPathDepthForResolution<A extends any[], R>(
 ): (...args: A) => R {
   return (...args: A) => {
     try {
-      boundPathDepth = depth;
+      boundPathDepth[0] = depth;
       return fn(...args);
     } finally {
-      boundPathDepth = 0;
+      boundPathDepth[0] = 0;
     }
   };
 }

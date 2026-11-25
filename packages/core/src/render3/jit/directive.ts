@@ -56,7 +56,7 @@ import {isComponent, verifyStandaloneImport} from './util';
  * this issue, the module scope queue is only flushed for compilations at the depth 0, to ensure
  * all compilations have finished.
  */
-let compilationDepth = 0;
+const compilationDepth: [number] = [0];
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
@@ -163,7 +163,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
             !baseMeta.isStandalone || (metadata.imports != null && metadata.imports.length > 0),
         };
 
-        compilationDepth++;
+        compilationDepth[0]++;
         try {
           if (meta.usesInheritance) {
             addDirectiveDefToUndecoratedParents(type);
@@ -186,10 +186,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           }
         } finally {
           // Ensure that the compilation depth is decremented even when the compilation failed.
-          compilationDepth--;
+          compilationDepth[0]--;
         }
 
-        if (compilationDepth === 0) {
+        if (compilationDepth[0] === 0) {
           // When NgModule decorator executed, we enqueued the module definition such that
           // it would only dequeue and add itself as module scope to all of its declarations,
           // but only if  if all of its declarations had resolved. This call runs the check
