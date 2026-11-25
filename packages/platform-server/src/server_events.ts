@@ -26,7 +26,7 @@ export class ServerEventManagerPlugin extends EventManagerPlugin {
     eventName: string,
     handler: Function,
     options?: ListenerOptions,
-  ): Function {
+  ): () => void {
     return getDOM().onAndCancel(element, eventName, handler, options);
   }
 }
