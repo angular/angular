@@ -1590,4 +1590,78 @@ describe('ControlValueAccessor', () => {
       expect(input.value).toBe('20');
     });
   });
+
+  describe('InteropNgControl unimplemented features', () => {
+    @Component({
+      selector: 'custom-cva-input',
+      template: `<input />`,
+    })
+    class CustomCvaInput implements ControlValueAccessor {
+      readonly ngControl = inject(NgControl);
+
+      constructor() {
+        this.ngControl.valueAccessor = this;
+      }
+
+      writeValue(): void {}
+      registerOnChange(): void {}
+      registerOnTouched(): void {}
+    }
+
+    @Component({
+      imports: [CustomCvaInput, FormField],
+      template: `<custom-cva-input [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('initial'));
+      readonly customInput = viewChild.required(CustomCvaInput);
+    }
+
+    it('should throw RuntimeError when accessing unimplemented NgControl properties or methods', () => {
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const ngControl = fix.componentInstance.customInput().ngControl;
+
+      expect(() => ngControl.statusChanges).toThrowError(
+        /'statusChanges' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.valueChanges).toThrowError(
+        /'valueChanges' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.control?.statusChanges).toThrowError(
+        /'statusChanges' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.control?.valueChanges).toThrowError(
+        /'valueChanges' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.name).toThrowError(/'name' is not supported by the fake NgControl/);
+      expect(() => ngControl.path).toThrowError(/'path' is not supported by the fake NgControl/);
+      expect(() => ngControl.validator).toThrowError(
+        /'validator' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.asyncValidator).toThrowError(
+        /'asyncValidator' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.reset()).toThrowError(
+        /'reset' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.control?.reset()).toThrowError(
+        /'reset' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.hasError('required')).toThrowError(
+        /'hasError' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.control?.hasError('required')).toThrowError(
+        /'hasError' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.getError('required')).toThrowError(
+        /'getError' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.control?.getError('required')).toThrowError(
+        /'getError' is not supported by the fake NgControl/,
+      );
+      expect(() => ngControl.viewToModelUpdate('test')).toThrowError(
+        /'viewToModelUpdate' is not supported by the fake NgControl/,
+      );
+    });
+  });
 });
