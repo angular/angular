@@ -38,7 +38,7 @@ import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {RawSourceMap} from '../../sourcemaps';
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/src/comments';
-import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
+import {addExposeSymbolSuggestion, shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
 import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {NgtscTestCompilerHost} from './compiler_host';
@@ -979,6 +979,7 @@ export function performNgpCompilationSync(params: {
         originFsPath,
         templateTargetByTypeCheckId,
         getOriginalSourceFile,
+        tsProgram,
       );
       if (mapped !== null) {
         allDiagnostics.push(mapped);
@@ -1385,6 +1386,7 @@ function translateTcbDiagnostic(
   originFsPath: AbsoluteFsPath,
   templateTargetByTypeCheckId: ReadonlyMap<string, TemplateDiagnosticTarget>,
   getOriginalSourceFile: (fsPath: AbsoluteFsPath) => ts.SourceFile | undefined,
+  tsProgram: ts.Program,
 ): ts.Diagnostic | null {
   if (!shouldReportDiagnostic(diag) || diag.start === undefined) {
     return null;
@@ -1464,13 +1466,22 @@ function translateTcbDiagnostic(
     }
   }
 
-  return {
+  const mapped: ts.Diagnostic = {
     ...diag,
     file: targetSf,
     start: span.start,
     length: Math.max(0, span.end - span.start),
     relatedInformation,
   };
+
+  // Mirror ngtsc's suggestion for missing properties that exist in the component's file or as
+  // globals (see `convertDiagnostic` in `typecheck/src/checker.ts`). Prefer the program's version of
+  // the component file, so that its nodes belong to the program of the type checker.
+  const componentSf = tsProgram.getSourceFile(originFsPath) ?? getOriginalSourceFile(originFsPath);
+  if (componentSf === undefined) {
+    return mapped;
+  }
+  return addExposeSymbolSuggestion(mapped, diag, componentSf, tsProgram.getTypeChecker());
 }
 
 /**
