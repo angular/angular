@@ -4,23 +4,25 @@ Handling user input with forms is the cornerstone of many common applications.
 
 Applications use forms to enable users to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks.
 
-Angular provides two different approaches to handling user input through forms: reactive and template-driven.
+Angular provides three approaches to handling user input through forms: Signal Forms, reactive forms, and template-driven forms.
 
-Both capture user input events from the view, validate the input, create a form and data model, and provide a way to track changes.
+Signal Forms are built on signals and work best in new applications.
+If you already have an application that uses reactive forms, they remain a solid choice.
+To get started, see the [Signal Forms overview](guide/forms/signals/overview). To see how they compare with the other two approaches, read the [comparison guide](guide/forms/signals/comparison).
 
-TIP: If you're looking for the new Signal Forms, check out our [essential Signal Forms guide](/essentials/signal-forms)!
+Reactive forms and template-driven forms both capture user input events from the view, validate the input, create a form and data model, and provide a way to track changes.
 
-This guide provides information to help you decide which type of form works best for your situation.
+This guide provides information to help you decide between reactive and template-driven forms.
 It introduces the common building blocks used by both approaches.
 It also summarizes the key differences between the two approaches, and demonstrates those differences in the context of setup, data flow, and testing.
 
 ## Choosing an approach
 
-Reactive forms and template-driven forms process and manage form data differently.
-Each approach offers different advantages.
+Each approach processes and manages form data differently and offers different advantages.
 
 | Forms                 | Details                                                                                                                                                                                                                                                                                                                                                                                                             |
 | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Signal Forms          | Build on signals, with automatic two-way binding, type-safe field access, and schema-based validation. See the [comparison guide](guide/forms/signals/comparison).                                                                                                                                                                                                                                                  |
 | Reactive forms        | Provide direct, explicit access to the underlying form's object model. Compared to template-driven forms, they are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.                                                                                            |
 | Template-driven forms | Rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're straightforward to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit. |
 
@@ -308,6 +310,14 @@ Here are the steps performed in the model to view test.
 1. Assert that the input value matches the value of the `favoriteColor` property in the component instance.
 
 ## Next steps
+
+To learn more about Signal Forms, see the following guides:
+
+<docs-pill-row>
+  <docs-pill href="essentials/signal-forms" title="Signal Forms essentials"/>
+  <docs-pill href="guide/forms/signals/overview" title="Forms with Angular Signals"/>
+  <docs-pill href="guide/forms/signals/comparison" title="Comparison with other form systems"/>
+</docs-pill-row>
 
 To learn more about reactive forms, see the following guides:
 
