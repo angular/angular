@@ -432,7 +432,7 @@ NOTE: Most cloud providers and CDN providers perform automatic validation of the
 
 ### Configuring allowed hosts
 
-To allow specific hostnames, you need to add them to the allowlist. This is critical for ensuring your application works correctly and securely when deployed. The patterns support wildcards for flexible hostname matching.
+To allow specific hostnames, you need to add them to the allowlist. This is critical for ensuring your application works correctly and securely when deployed. The patterns support wildcards and optional ports for flexible host matching.
 
 You can configure the `allowedHosts` option in your `angular.json`:
 
@@ -478,6 +478,16 @@ For the Node.js variant `AngularNodeAppEngine`, you can also provide `NG_ALLOWED
 ```bash {hideDollar}
 export NG_ALLOWED_HOSTS="example.com,*.trusted-example.com"
 ```
+
+#### Restricting ports
+
+Omitting a port from an `allowedHosts` entry allows requests on any port for that host. To restrict requests to specific ports, append `:port` to an entry:
+
+- `example.com:443`: Allows `example.com` only on port `443` (including default `https://example.com` requests).
+- `*.example.com:8443`: Allows any subdomain of `example.com` only on port `8443`.
+- `[::1]:4200`: Allows the IPv6 loopback address only on port `4200`.
+- `localhost:*`: Allows `localhost` on any port.
+- `*:8443`: Allows any host on port `8443`.
 
 IMPORTANT: You can use `*` as a value in `allowedHosts` to allow all hostnames, though this is generally discouraged and presents a security risk. Accepting any host header can expose your application to host header injection and [Server-Side Request Forgery (SSRF)](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/SSRF) attacks. This configuration should only be used when validation for `Host` and `X-Forwarded-Host` headers is performed in another layer, such as a load balancer or reverse proxy. For better security, we recommend using an explicit list of allowed hosts whenever possible. See [GHSA-x288-3778-4hhx](https://github.com/angular/angular-cli/security/advisories/GHSA-x288-3778-4hhx) for more details.
 

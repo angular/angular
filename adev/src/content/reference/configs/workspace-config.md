@@ -568,10 +568,10 @@ When supplying the value as a string the filename of the specified path will be 
 
 The `security` option is an object that enables individual security features.
 
-| Options        | Details                                                                                                                                                                                                                   |
-| :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `autoCsp`      | Generates a hash-based Content Security Policy when set to `true`, or to `{"unsafeEval": true}` to also allow `eval`. See [Hash inline scripts with `autoCsp`](best-practices/security#hash-inline-scripts-with-autocsp). |
-| `allowedHosts` | The hostnames allowed to access the server-side application. See [Preventing Server-Side Request Forgery (SSRF)](best-practices/security#preventing-server-side-request-forgery-ssrf).                                    |
+| Options        | Details                                                                                                                                                                                                                                                                                                       |
+| :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `autoCsp`      | Generates a hash-based Content Security Policy when set to `true`, or to `{"unsafeEval": true}` to also allow `eval`. See [Hash inline scripts with `autoCsp`](best-practices/security#hash-inline-scripts-with-autocsp).                                                                                     |
+| `allowedHosts` | The hostnames (and optional ports, such as `example.com:443` or `*.example.com:8443`) allowed to access the server-side application. Omitting a port allows any port for that host. See [Preventing Server-Side Request Forgery (SSRF)](best-practices/security#preventing-server-side-request-forgery-ssrf). |
 
 ### Output path configuration
 

@@ -317,6 +317,9 @@ function sanitizeServerContext(serverContext: string): string {
  *  - `url` - the URL for the current render request.
  *  - `extraProviders` - set of platform level providers for the current render request.
  *  - `allowedHosts` - the allowed hosts list for host validation in server-side rendering.
+ *                     Entries may include an optional port (for example, `example.com:443`,
+ *                     `*.example.com:8443`, `[::1]:4200`, `localhost:*`, or `*:8443`).
+ *                     Omitting the port allows any port for that host.
  * @publicApi
  */
 export async function renderModule<T>(
@@ -376,6 +379,9 @@ export async function renderModule<T>(
  *  - `url` - the URL for the current render request.
  *  - `platformProviders` - the platform level providers for the current render request.
  *  - `allowedHosts` - the allowed hosts list for host validation in server-side rendering.
+ *                     Entries may include an optional port (for example, `example.com:443`,
+ *                     `*.example.com:8443`, `[::1]:4200`, `localhost:*`, or `*:8443`).
+ *                     Omitting the port allows any port for that host.
  *
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
  *
@@ -429,33 +435,72 @@ export async function renderApplication(
 }
 
 function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
-  if (typeof url === 'string') {
-    const parsedUrl = resolveUrl(url);
-    if (parsedUrl !== null) {
-      const hostname = parsedUrl.hostname;
-      const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
-      if (!isHostAllowed(hostname, allowedHostsSet)) {
-        throw new RuntimeError(
-          RuntimeErrorCode.HOST_NOT_ALLOWED,
-          typeof ngDevMode === 'undefined' || ngDevMode
-            ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
-            : url,
-        );
-      }
-    }
+  if (typeof url !== 'string') {
+    return;
+  }
+
+  const parsedUrl = resolveUrl(url);
+  if (parsedUrl === null) {
+    return;
+  }
+
+  let effectivePort: string | undefined;
+
+  if (parsedUrl.port) {
+    effectivePort = parsedUrl.port;
+  } else if (parsedUrl.protocol === 'https:') {
+    effectivePort = '443';
+  } else if (parsedUrl.protocol === 'http:') {
+    effectivePort = '80';
+  }
+
+  const allowedHostsSet: ReadonlySet<string> = new Set(
+    allowedHosts?.map((host) => host.toLowerCase()),
+  );
+  if (!isHostAllowed(parsedUrl.hostname, allowedHostsSet, effectivePort)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.HOST_NOT_ALLOWED,
+      typeof ngDevMode === 'undefined' || ngDevMode
+        ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
+        : url,
+    );
   }
 }
 
 /**
- * Checks if the hostname is allowed.
- * @param hostname - The hostname to check.
- * @param allowedHosts - A set of allowed hostnames.
+ * Checks if the hostname (and optional port) is allowed.
+ *
+ * Entries in `allowedHosts` must be lowercase and may be bare hostnames
+ * (e.g., `example.com`, `*.example.com`, `[::1]`), which allow any port, or port-qualified entries
+ * (e.g., `example.com:443`, `localhost:4206`, `*.example.com:8443`, `[::1]:4200`, `localhost:*`,
+ * `*:8443`, `*:*`), which enforce port matching.
+ *
+ * @param hostname - The lowercase hostname to check (for example, from `URL.hostname`).
+ * @param allowedHosts - A set of lowercase allowed hosts (optionally including `:port`).
+ * @param port - Optional port to validate against port-qualified entries.
  * @returns `true` if the hostname is allowed, `false` otherwise.
  * @note Used also in `@angular/ssr`.
  * @private
  */
-export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string>): boolean {
-  if (allowedHosts.has('*') || allowedHosts.has(hostname)) {
+export function isHostAllowed(
+  hostname: string,
+  allowedHosts: ReadonlySet<string>,
+  port?: string,
+): boolean {
+  if (allowedHosts.size === 0) {
+    return false;
+  }
+
+  if (
+    allowedHosts.has('*') ||
+    allowedHosts.has('*:*') ||
+    allowedHosts.has(hostname) ||
+    allowedHosts.has(`${hostname}:*`)
+  ) {
+    return true;
+  }
+
+  if (port && (allowedHosts.has(`${hostname}:${port}`) || allowedHosts.has(`*:${port}`))) {
     return true;
   }
 
@@ -464,7 +509,18 @@ export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string
       continue;
     }
 
-    const domain = allowedHost.slice(1);
+    const colonIndex = allowedHost.indexOf(':');
+    let domain: string;
+    if (colonIndex !== -1) {
+      const allowedPort = allowedHost.slice(colonIndex + 1);
+      if (allowedPort !== '*' && (!port || allowedPort !== port)) {
+        continue;
+      }
+      domain = allowedHost.slice(1, colonIndex);
+    } else {
+      domain = allowedHost.slice(1);
+    }
+
     if (hostname.endsWith(domain)) {
       return true;
     }
