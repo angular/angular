@@ -365,6 +365,8 @@ export interface ComponentMetadata {
   encapsulation?: number;
   /** `changeDetection` expression as written in the decorator, matching ngtsc's local compilation behavior. `None` when absent. */
   changeDetection?: string;
+  /** Resolved numeric `ChangeDetectionStrategy` value (`0` for `OnPush`, `1` for `Default`/`Eager`) in semantic mode. */
+  changeDetectionValue?: number;
   changeDetectionSpan?: SpanMetadata;
   preserveWhitespaces?: boolean;
   animationsSpan?: SpanMetadata;
@@ -464,6 +466,7 @@ export interface DeclarationMetadata {
   isForwardRef: boolean;
   isStructural: boolean;
   cycleProne?: boolean;
+  cyclePath?: Array<string>;
   isExported: boolean;
   hasNonExportedBounds: boolean;
   isExplicitlyDeferred: boolean;

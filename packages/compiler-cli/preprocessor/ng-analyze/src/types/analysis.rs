@@ -322,6 +322,7 @@ pub struct DeclarationData {
     /// or `None` for standalone components.
     pub ref_in_declaring_module: Option<crate::types::metadata::ReferenceMetadata>,
     pub cycle_prone: Option<bool>,
+    pub cycle_path: Option<Vec<String>>,
     pub is_exported: bool,
     pub has_non_exported_bounds: bool,
     pub is_explicitly_deferred: bool,
@@ -389,6 +390,7 @@ impl DeclarationData {
             ref_meta,
             ref_in_declaring_module: None,
             cycle_prone: None,
+            cycle_path: None,
             is_exported: local_info.is_exported,
             has_non_exported_bounds: local_info.has_non_exported_bounds,
             is_explicitly_deferred: false,
@@ -506,6 +508,7 @@ impl DeclarationData {
             ref_meta,
             ref_in_declaring_module: None,
             cycle_prone: None,
+            cycle_path: None,
             is_exported: class.is_exported,
             has_non_exported_bounds: class.has_non_exported_bounds,
             is_explicitly_deferred: false,

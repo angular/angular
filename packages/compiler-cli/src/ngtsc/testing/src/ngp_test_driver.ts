@@ -18,6 +18,7 @@ import {
   FileUpdateType,
   HybridCompiler,
   IndexerBoundTemplate,
+  resolveCompilationMode,
   verifyCompilerOptions,
   WasmAnalyzer,
   type ClassEntity,
@@ -482,15 +483,25 @@ export function performNgpCompilationSync(params: {
   const wasmBinding = resolveNgpWasmBinding();
 
   const rawOpts = options as Record<string, unknown>;
-  const optimize =
-    rawOpts['compilationMode'] !== 'experimental-local' && rawOpts['compilationMode'] !== 'local';
-  if (!optimize) {
-    options.noEmitOnError = false;
-  }
-  const isClosureCompilerEnabled = Boolean(options.annotateForClosureCompiler);
+  const isCore =
+    typeof rawOpts['_isAngularCoreCompilation'] === 'boolean'
+      ? rawOpts['_isAngularCoreCompilation']
+      : rootNames.some((r) => {
+          if (path.posix.basename(toPosixPath(r)) !== 'r3_symbols.ts') {
+            return false;
+          }
+          const abs = fs.resolve(basePath, r);
+          return fs.exists(abs) && fs.readFile(abs).includes('ITS_JUST_ANGULAR');
+        });
   const emitDeclarationOnly =
     Boolean(options.emitDeclarationOnly) &&
     Boolean(rawOpts['_experimentalAllowEmitDeclarationOnly']);
+  const compilationMode = resolveCompilationMode(options as NgpCompilerOptions, {isCore});
+  const optimize = compilationMode !== 'local';
+  if (!optimize && !emitDeclarationOnly) {
+    options.noEmitOnError = false;
+  }
+  const isClosureCompilerEnabled = Boolean(options.annotateForClosureCompiler);
   const workspaceName = rawOpts['workspaceName'] as string | undefined;
   const rootDirs = options.rootDirs?.map((d: string) => toPosixPath(fs.resolve(basePath, d)));
   const useHostForImportGeneration = Boolean(
@@ -600,6 +611,7 @@ export function performNgpCompilationSync(params: {
     try {
       compiler = new HybridCompiler(analyzer, {
         optimize,
+        compilationMode,
         tcbConfig,
         optionDiagnostics,
         legacyOptionalChaining: Boolean(rawOpts['legacyOptionalChaining']),
@@ -957,9 +969,17 @@ export function performNgpCompilationSync(params: {
       const origSf = targetPosixPath
         ? getOriginalSourceFile(fromPosixPath(fs, targetPosixPath))
         : undefined;
+      const relatedMessageRewriter =
+        fromPosixPath(fs, '/a') !== '/a'
+          ? (msg: string): string =>
+              msg.replace(/(?<=:\s|->\s)(\/[^\s]+)/g, (p) => fromPosixPath(fs, p))
+          : undefined;
       allDiagnostics.push(
-        convertNgDiagnosticToTs(ngDiag, origSf, (relatedPosixPath) =>
-          getOriginalSourceFile(fromPosixPath(fs, relatedPosixPath)),
+        convertNgDiagnosticToTs(
+          ngDiag,
+          origSf,
+          (relatedPosixPath) => getOriginalSourceFile(fromPosixPath(fs, relatedPosixPath)),
+          relatedMessageRewriter,
         ),
       );
     }
@@ -1295,6 +1315,7 @@ export function convertNgDiagnosticToTs(
   ngDiag: NgDiagnostic,
   sourceFile: ts.SourceFile | undefined,
   getRelatedSourceFile?: (filePath: string) => ts.SourceFile | undefined,
+  rewriteRelatedMessage?: (message: string) => string,
 ): ts.Diagnostic {
   let category = ts.DiagnosticCategory.Error;
   if (ngDiag.category === 0) {
@@ -1341,7 +1362,9 @@ export function convertNgDiagnosticToTs(
         : sourceFile,
       start: related.span.start,
       length: Math.max(0, related.span.end - related.span.start),
-      messageText: related.messageText,
+      messageText: rewriteRelatedMessage
+        ? rewriteRelatedMessage(related.messageText)
+        : related.messageText,
       category: ts.DiagnosticCategory.Message,
       code: 0,
     }));

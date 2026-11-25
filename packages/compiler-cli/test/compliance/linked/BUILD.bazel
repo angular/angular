@@ -12,6 +12,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/test/compliance/test_helpers",
     ],
 )
@@ -23,5 +24,19 @@ jasmine_test(
         "//packages/compiler-cli/test/compliance/test_cases",
         "//packages/core:npm_package",
     ],
+    shard_count = 2,
+)
+
+jasmine_test(
+    name = "linked_ngp",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
     shard_count = 2,
 )

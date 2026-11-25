@@ -5057,19 +5057,22 @@ impl ClassData {
             cx,
             "component.encapsulation",
         )?;
+        let change_detection_value = match cx.mode {
+            WireMode::Syntax => None,
+            WireMode::Semantic => self.read_core_enum_field(
+                &c.change_detection,
+                c.change_detection_span,
+                &CHANGE_DETECTION_STRATEGY,
+                cx,
+                "component.changeDetection",
+            )?,
+        };
         let change_detection = match cx.mode {
             WireMode::Syntax => c
                 .change_detection_span
                 .and_then(|span| cx.source_text.get(span.start as usize..span.end as usize))
                 .map(|text| text.trim().to_string()),
-            WireMode::Semantic => self
-                .read_core_enum_field(
-                    &c.change_detection,
-                    c.change_detection_span,
-                    &CHANGE_DETECTION_STRATEGY,
-                    cx,
-                    "component.changeDetection",
-                )?
+            WireMode::Semantic => change_detection_value
                 // https://github.com/angular/angular/blob/96b8042/packages/compiler/src/render3/view/compiler.ts#L308-L321
                 .filter(|num| *num != CHANGE_DETECTION_ON_PUSH)
                 .map(|num| num.to_string()),
@@ -5291,6 +5294,7 @@ impl ClassData {
                 .view_providers_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             change_detection,
+            change_detection_value,
             change_detection_span,
             preserve_whitespaces: c.preserve_whitespaces,
             animations_span: c

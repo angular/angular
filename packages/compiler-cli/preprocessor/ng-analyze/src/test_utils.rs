@@ -1165,15 +1165,17 @@ export class OnPushCmp {}
             .unwrap();
         assert_eq!(cmp.encapsulation, Some(3)); // VE.ShadowDom through the alias
         assert_eq!(cmp.change_detection.as_deref(), Some("1"));
+        assert_eq!(cmp.change_detection_value, Some(1));
 
-        // `OnPush` is the default strategy, so it drops out of the wire entirely rather than
-        // transporting as `"0"`: upstream emits no `changeDetection` field for it.
+        // `OnPush` is the default strategy, so it drops out of `change_detection` rather than
+        // transporting as `"0"`, while `change_detection_value` preserves `Some(0)` for partial mode.
         let on_push = find_class(&results, "OnPushCmp")
             .unwrap()
             .component
             .as_ref()
             .unwrap();
         assert_eq!(on_push.change_detection, None);
+        assert_eq!(on_push.change_detection_value, Some(0));
     }
 
     /// The published `@angular/core` package does not declare its enums in the entry

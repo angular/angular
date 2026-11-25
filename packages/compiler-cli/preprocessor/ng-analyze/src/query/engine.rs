@@ -2631,28 +2631,52 @@ impl StaticImportGraph {
     }
 
     pub fn has_path_with_deps(&self, start: FileId, target: FileId) -> (bool, HashSet<FileId>) {
+        let (path, visited) = self.find_path_with_deps(start, target);
+        (path.is_some(), visited)
+    }
+
+    pub fn find_path(&self, start: FileId, target: FileId) -> Option<Vec<FileId>> {
+        self.find_path_with_deps(start, target).0
+    }
+
+    pub fn find_path_with_deps(
+        &self,
+        start: FileId,
+        target: FileId,
+    ) -> (Option<Vec<FileId>>, HashSet<FileId>) {
         let mut visited = HashSet::new();
         visited.insert(start);
         if start == target {
-            return (true, visited);
+            return (Some(vec![start]), visited);
         }
+        let mut parent: HashMap<FileId, FileId> = HashMap::new();
         let mut queue = std::collections::VecDeque::new();
         queue.push_back(start);
 
         while let Some(current) = queue.pop_front() {
-            if let Some(deps) = self.edges.get(&current) {
-                for &dep in deps {
-                    if dep == target {
-                        visited.insert(dep);
-                        return (true, visited);
+            let Some(deps) = self.edges.get(&current) else {
+                continue;
+            };
+            for &dep in deps {
+                if dep == target {
+                    visited.insert(dep);
+                    let mut path = vec![target];
+                    let mut node = current;
+                    while node != start {
+                        path.push(node);
+                        node = parent[&node];
                     }
-                    if visited.insert(dep) {
-                        queue.push_back(dep);
-                    }
+                    path.push(start);
+                    path.reverse();
+                    return (Some(path), visited);
+                }
+                if visited.insert(dep) {
+                    parent.insert(dep, current);
+                    queue.push_back(dep);
                 }
             }
         }
-        (false, visited)
+        (None, visited)
     }
 }
 

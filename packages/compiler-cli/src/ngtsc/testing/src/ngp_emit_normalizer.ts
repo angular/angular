@@ -187,6 +187,7 @@ export function normalizeNgpEmitForComparison(
         new RegExp(`${className}\\s=\\s${className}_1\\s=\\s__decorate`, 'g'),
         `${className} = __decorate`,
       )
+      .replace(new RegExp(`\\b${className}_1_Factory\\b`, 'g'), `${className}_Factory`)
       .replace(new RegExp(`\\b${className}_1\\b`, 'g'), className);
   }
   if (classAliases.length > 0) {
@@ -296,10 +297,20 @@ function normalizeDtsNamedImportsInStaticDeclarations(content: string): string {
     }
   }
 
+  let lastImportEnd = 0;
+  for (const stmt of sf.statements) {
+    if (ts.isImportDeclaration(stmt)) {
+      lastImportEnd = stmt.getEnd();
+    }
+  }
+  const newImports: string[] = [];
   for (const {ns, mod, pos} of namespaceByModule.values()) {
     if (pos >= 0 && usedNamespaces.has(ns)) {
-      edits.push({start: pos, end: pos, text: `import * as ${ns} from "${mod}";\n`});
+      newImports.push(`import * as ${ns} from "${mod}";`);
     }
+  }
+  if (newImports.length > 0) {
+    edits.push({start: lastImportEnd, end: lastImportEnd, text: `\n${newImports.join('\n')}`});
   }
 
   let out = content;
@@ -340,7 +351,7 @@ function normalizeCtorDiNamespaceImports(code: string, rewrittenNamespaces: Set<
   if (qualifiedNamed.size === 0) return code;
 
   return code.replace(
-    /(\.ɵɵ(?:directiveInject|inject)\(\s*|\btype:\s*)(i\d+)\.([A-Za-z_$][\w$]*)(?!\s*,\s*args\b)/g,
+    /(\.ɵɵ(?:directiveInject|inject)\(\s*|\b(?:type|token):\s*)(i\d+)\.([A-Za-z_$][\w$]*)(?!\s*,\s*args\b)/g,
     (match, prefix: string, ns: string, sym: string) => {
       if (!qualifiedNamed.has(`${ns}.${sym}`)) return match;
       rewrittenNamespaces.add(ns);

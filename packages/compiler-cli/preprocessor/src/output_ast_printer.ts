@@ -834,7 +834,7 @@ class EmitterVisitor extends AbstractEmitterVisitor {
 
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): void {
     if (ast.node instanceof RawSource) {
-      ctx.print(ast, ast.node.source);
+      withSpan(ctx, ast.sourceSpan, () => ctx.print(ast, ast.node.source));
     } else {
       throw new Error('Unsupported WrappedNodeExpr');
     }

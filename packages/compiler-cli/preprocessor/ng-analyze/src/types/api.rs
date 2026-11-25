@@ -303,6 +303,8 @@ pub struct DeclarationMetadata {
     pub is_forward_ref: bool,
     pub is_structural: bool,
     pub cycle_prone: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cycle_path: Option<Vec<String>>,
     pub is_exported: bool,
     pub has_non_exported_bounds: bool,
     pub is_explicitly_deferred: bool,
@@ -393,6 +395,7 @@ impl DeclarationMetadata {
             is_forward_ref: d.is_forward_ref,
             is_structural: d.is_structural,
             cycle_prone: d.cycle_prone,
+            cycle_path: d.cycle_path.clone(),
             is_exported: d.is_exported,
             has_non_exported_bounds: d.has_non_exported_bounds,
             is_explicitly_deferred: d.is_explicitly_deferred,

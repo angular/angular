@@ -15,12 +15,15 @@ import {
 } from '@angular/compiler';
 import {isDeclarationFilePath, makeClassKey} from './compiler-utils.js';
 import {
+  resolveCompilationMode,
   verifyCompilerOptions,
   verifyExtendedDiagnosticsOptions,
+  type CompilationMode,
   type NgpCompilerOptions,
 } from './compiler_options.js';
 import {needsNgContentSelectors, ngContentSignature} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
+import {ErrorCode} from './error_code.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {IncrementalEmitTracker} from './incremental.js';
@@ -143,6 +146,7 @@ export interface IAnalyzer {
 }
 export interface HybridCompilerOptions {
   optimize?: boolean;
+  compilationMode?: CompilationMode;
   tcbConfig?: NgpTypeCheckingConfig;
   optionDiagnostics?: nga.NgDiagnostic[];
   templateParseOptions?: Partial<ParseTemplateOptions>;
@@ -238,9 +242,11 @@ export function createHybridCompiler(
   const rootDirs = angularCompilerOptions?.rootDirs;
   const enableHmr = angularCompilerOptions?._enableHmr;
   const optimize = options.optimize ?? false;
+  const compilationMode = resolveCompilationMode(angularCompilerOptions ?? {}, {optimize});
 
   return new HybridCompiler(innerAnalyzer, {
-    optimize,
+    optimize: compilationMode !== 'local',
+    compilationMode,
     tcbConfig,
     optionDiagnostics,
     legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
@@ -292,6 +298,7 @@ export class HybridCompiler {
   /** Errors thrown while processing individual files in the latest `compile()`. */
   readonly currentProcessErrors = new Map<string, string>();
   readonly optimize: boolean;
+  readonly compilationMode: CompilationMode;
   readonly diagnosticsMap = new Map<string, nga.NgDiagnostic[]>();
   private readonly analysisDiagnosticsBySource = new Map<string, DiagnosticContribution[]>();
   private readonly processedDiagnosticsBySource = new Map<string, DiagnosticContribution[]>();
@@ -334,7 +341,11 @@ export class HybridCompiler {
   private pendingCompilation: Promise<void> = Promise.resolve();
 
   constructor(analyzer: IAnalyzer, options: HybridCompilerOptions = {}) {
-    this.optimize = options.optimize ?? true;
+    this.emitDeclarationOnly = options.emitDeclarationOnly ?? false;
+    this.compilationMode = this.emitDeclarationOnly
+      ? 'local'
+      : (options.compilationMode ?? (options.optimize === false ? 'local' : 'full'));
+    this.optimize = this.compilationMode !== 'local';
     this.templateParseOptions = {
       preserveWhitespaces: options.preserveWhitespaces ?? false,
       preserveSignificantWhitespace: options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
@@ -351,13 +362,22 @@ export class HybridCompiler {
     this.legacyOptionalChaining =
       options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT;
     this.isClosureCompilerEnabled = options.isClosureCompilerEnabled ?? false;
-    this.emitDeclarationOnly = options.emitDeclarationOnly ?? false;
     this.externalRuntimeStyles = options.externalRuntimeStyles ?? false;
     this.onlyExplicitDeferDependencyImports = options.onlyExplicitDeferDependencyImports ?? false;
     this.enableTemplateSourceLocations = options.enableTemplateSourceLocations ?? false;
     this.onlyPublishPublicTypingsForNgModules =
       options.onlyPublishPublicTypingsForNgModules ?? false;
     this.forbidOrphanComponents = options.forbidOrphanComponents ?? false;
+    if (this.compilationMode === 'partial' && options.supportTestBed === false) {
+      throw new Error(
+        'TestBed support ("supportTestBed" option) cannot be disabled in partial compilation mode.',
+      );
+    }
+    if (this.compilationMode === 'partial' && options.supportJitMode === false) {
+      throw new Error(
+        'JIT mode support ("supportJitMode" option) cannot be disabled in partial compilation mode.',
+      );
+    }
     if (options.supportJitMode === false && this.forbidOrphanComponents) {
       throw new Error(
         'JIT mode support ("supportJitMode" option) cannot be disabled when forbidOrphanComponents is set to true',
@@ -629,27 +649,13 @@ export class HybridCompiler {
   ): ChunkContext {
     const remoteScopedClasses = new Set<string>();
     const eagerlyUsedDeclarations = new Map<string, nga.DeclarationMetadata[]>();
+    const cyclicClasses = new Set<string>();
+    const cycleDiagnostics = new Map<string, nga.NgDiagnostic[]>();
 
     // Identify template dependencies of components in the chunk and check cycleProne.
     const chunkFileIds = new Set(chunk.files.map((f) => f.fileId));
-    const dynamicGraph = new Map<number, Set<number>>();
-
-    // Pre-seed graph with intra-chunk static TypeScript import edges from Rust
-    if (chunk.staticEdges) {
-      for (const [fromIdStr, targets] of Object.entries(chunk.staticEdges)) {
-        const fromId = Number(fromIdStr);
-        let edges = dynamicGraph.get(fromId);
-        if (!edges) {
-          edges = new Set<number>();
-          dynamicGraph.set(fromId, edges);
-        }
-        for (const target of targets) {
-          if (chunkFileIds.has(target) && target !== fromId) {
-            edges.add(target);
-          }
-        }
-      }
-    }
+    const fileIdToPath = new Map<number, string>(chunk.files.map((f) => [f.fileId, f.filePath]));
+    const dynamicGraph = seedStaticChunkGraph(chunk, chunkFileIds);
 
     for (const {file, analysis} of boundFiles) {
       if (!analysis) continue;
@@ -662,84 +668,56 @@ export class HybridCompiler {
         const boundTarget = analysis.preparedTcbData?.boundTargetMap.get(classKey);
         if (!boundTarget) continue;
 
-        // Remote scoping replaces the component's own dependency list, so it carries the
-        // eager set only — deferred dependencies keep their dynamic imports and do not create static cycles.
-        const eagerDirs = new Set(
-          boundTarget
-            .getEagerlyUsedDirectives()
-            .filter((d) => d.matchSource === MatchSource.Selector)
-            .map((d) => d.name),
-        );
-        const eagerPipes = new Set(boundTarget.getEagerlyUsedPipes());
-        const resolvedDecls = classMeta.component.resolvedDeclarations || [];
-        const pipeNameToDecl = new Map<string, nga.DeclarationMetadata>();
-        for (const decl of resolvedDecls) {
-          if (decl.declarationType === 'pipe' && decl.pipeName) {
-            pipeNameToDecl.set(decl.pipeName, decl);
+        const eagerDecls = collectEagerTemplateDeclarations(classMeta.component, boundTarget);
+        const componentKey = `${file.filePath}#${className}`;
+
+        if (this.compilationMode === 'partial') {
+          // In partial mode, remote scoping (`ɵɵsetComponentScope`) is forbidden. Any cyclic
+          // eager template dependency is a fatal error.
+          const cycleDiag = buildPartialCycleDiagnostic(
+            file,
+            classMeta,
+            eagerDecls,
+            chunkFileIds,
+            fileIdToPath,
+            dynamicGraph,
+          );
+          if (cycleDiag !== null) {
+            cyclicClasses.add(componentKey);
+            let diags = cycleDiagnostics.get(file.filePath);
+            if (!diags) {
+              diags = [];
+              cycleDiagnostics.set(file.filePath, diags);
+            }
+            diags.push(cycleDiag);
+            continue;
           }
+          recordSyntheticImportEdges(dynamicGraph, file.fileId, eagerDecls, chunkFileIds);
+          continue;
         }
-        const eagerDirDecls = resolvedDecls.filter(
-          (d) =>
-            d.declarationType !== 'pipe' &&
-            d.declarationType !== 'ngmodule' &&
-            eagerDirs.has(d.name),
-        );
-        const eagerPipeDecls = Array.from(pipeNameToDecl.values()).filter(
-          (d) => !!d.pipeName && eagerPipes.has(d.pipeName),
-        );
-        const eagerDecls = [...eagerDirDecls, ...eagerPipeDecls];
-        eagerlyUsedDeclarations.set(`${file.filePath}#${className}`, eagerDecls);
+
+        eagerlyUsedDeclarations.set(componentKey, eagerDecls);
 
         if (classMeta.component.standalone && !classMeta.component.declaringNgModule) {
           continue;
         }
 
-        // Check if any eagerly used dependency is statically cycleProne
-        let hasStaticCycle = false;
-        for (const decl of eagerDecls) {
-          if (decl.cycleProne) {
-            hasStaticCycle = true;
-            break;
-          }
-        }
-
-        if (hasStaticCycle) {
-          remoteScopedClasses.add(`${file.filePath}#${className}`);
+        if (hasEagerDependencyCycle(file.fileId, eagerDecls, chunkFileIds, dynamicGraph)) {
+          remoteScopedClasses.add(componentKey);
           continue;
         }
 
-        let createsCycle = false;
-        for (const decl of eagerDecls) {
-          if (
-            chunkFileIds.has(decl.fileId) &&
-            decl.fileId !== file.fileId &&
-            hasGraphPath(dynamicGraph, decl.fileId, file.fileId)
-          ) {
-            createsCycle = true;
-            break;
-          }
-        }
-
-        if (createsCycle) {
-          remoteScopedClasses.add(`${file.filePath}#${className}`);
-          continue;
-        }
-
-        // Add eager dependencies to local dynamic graph only when not remote-scoped
-        let edges = dynamicGraph.get(file.fileId);
-        if (!edges) {
-          edges = new Set<number>();
-          dynamicGraph.set(file.fileId, edges);
-        }
-        for (const decl of eagerDecls) {
-          if (chunkFileIds.has(decl.fileId) && decl.fileId !== file.fileId) {
-            edges.add(decl.fileId);
-          }
-        }
+        recordSyntheticImportEdges(dynamicGraph, file.fileId, eagerDecls, chunkFileIds);
       }
     }
 
-    return {remoteScopedClasses, metadataMap, eagerlyUsedDeclarations};
+    return {
+      remoteScopedClasses,
+      metadataMap,
+      eagerlyUsedDeclarations,
+      cyclicClasses,
+      cycleDiagnostics,
+    };
   }
 
   async init() {
@@ -1486,20 +1464,25 @@ export class HybridCompiler {
     if (!this.reuseProcessedFiles || !result || boundFingerprint === undefined) {
       return null;
     }
-    const pieces = [boundFingerprint];
+    const pieces = [boundFingerprint, `mode:${this.compilationMode}`];
     const remoteScoped = chunkContext?.remoteScopedClasses;
+    const cyclic = chunkContext?.cyclicClasses;
     for (const cls of result.classes) {
       if (!cls.className) {
         continue;
       }
       if (cls.component) {
-        pieces.push(`remote:${remoteScoped?.has(`${filePath}#${cls.className}`) ?? false}`);
+        const key = `${filePath}#${cls.className}`;
+        pieces.push(`remote:${remoteScoped?.has(key) ?? false}`);
+        if (cyclic?.has(key)) {
+          pieces.push(`cyclic:true`);
+        }
       }
       if (cls.ngModule) {
         pieces.push(...remoteScopeInputs(filePath, cls, chunkContext));
       }
     }
-    return pieces.length === 1 ? boundFingerprint : fingerprintOf(pieces);
+    return fingerprintOf(pieces);
   }
 
   /**
@@ -1652,27 +1635,192 @@ function unanalyzedFile(filePath: string): FileAnalysis {
   return {filePath, parsedTemplates: new Map(), preparedTcbData: null};
 }
 
+function seedStaticChunkGraph(
+  chunk: nga.CompilationChunk,
+  chunkFileIds: ReadonlySet<number>,
+): Map<number, Set<number>> {
+  const dynamicGraph = new Map<number, Set<number>>();
+  if (!chunk.staticEdges) {
+    return dynamicGraph;
+  }
+  for (const [fromIdStr, targets] of Object.entries(chunk.staticEdges)) {
+    const fromId = Number(fromIdStr);
+    let edges = dynamicGraph.get(fromId);
+    if (!edges) {
+      edges = new Set<number>();
+      dynamicGraph.set(fromId, edges);
+    }
+    for (const target of targets) {
+      if (chunkFileIds.has(target) && target !== fromId) {
+        edges.add(target);
+      }
+    }
+  }
+  return dynamicGraph;
+}
+
+/**
+ * Collects the eagerly used template dependencies (directives/components first, then pipes)
+ * for a component. Deferred dependencies keep their dynamic imports and do not create static cycles.
+ */
+function collectEagerTemplateDeclarations(
+  component: nga.ComponentMetadata,
+  boundTarget: BoundTarget<TcbDirectiveMetadata>,
+): nga.DeclarationMetadata[] {
+  const eagerDirs = new Set(
+    boundTarget
+      .getEagerlyUsedDirectives()
+      .filter((d) => d.matchSource === MatchSource.Selector)
+      .map((d) => d.name),
+  );
+  const eagerPipes = new Set(boundTarget.getEagerlyUsedPipes());
+  const resolvedDecls = component.resolvedDeclarations || [];
+  const pipeNameToDecl = new Map<string, nga.DeclarationMetadata>();
+  for (const decl of resolvedDecls) {
+    if (decl.declarationType === 'pipe' && decl.pipeName) {
+      pipeNameToDecl.set(decl.pipeName, decl);
+    }
+  }
+  const eagerDirDecls = resolvedDecls.filter(
+    (d) =>
+      d.declarationType !== 'pipe' && d.declarationType !== 'ngmodule' && eagerDirs.has(d.name),
+  );
+  const eagerPipeDecls = Array.from(pipeNameToDecl.values()).filter(
+    (d) => !!d.pipeName && eagerPipes.has(d.pipeName),
+  );
+  return [...eagerDirDecls, ...eagerPipeDecls];
+}
+
+function hasEagerDependencyCycle(
+  fileId: number,
+  eagerDecls: readonly nga.DeclarationMetadata[],
+  chunkFileIds: ReadonlySet<number>,
+  dynamicGraph: ReadonlyMap<number, ReadonlySet<number>>,
+): boolean {
+  for (const decl of eagerDecls) {
+    if (decl.cycleProne) {
+      return true;
+    }
+  }
+  for (const decl of eagerDecls) {
+    if (
+      chunkFileIds.has(decl.fileId) &&
+      decl.fileId !== fileId &&
+      hasGraphPath(dynamicGraph, decl.fileId, fileId)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function buildPartialCycleDiagnostic(
+  file: nga.AnalysisResult,
+  classMeta: nga.ClassMetadata,
+  eagerDecls: readonly nga.DeclarationMetadata[],
+  chunkFileIds: ReadonlySet<number>,
+  fileIdToPath: ReadonlyMap<number, string>,
+  dynamicGraph: ReadonlyMap<number, ReadonlySet<number>>,
+): nga.NgDiagnostic | null {
+  const relatedInformation: nga.NgRelatedInformation[] = [];
+  for (const decl of eagerDecls) {
+    if (decl.fileId === file.fileId) continue;
+    let cyclePath: string[] | null = decl.cyclePath ?? null;
+    if (cyclePath === null && chunkFileIds.has(decl.fileId)) {
+      const idPath = findGraphPath(dynamicGraph, decl.fileId, file.fileId);
+      if (idPath !== null) {
+        cyclePath = [file.filePath, ...idPath.map((id) => fileIdToPath.get(id) ?? String(id))];
+      }
+    }
+    if (cyclePath !== null) {
+      const typeLabel =
+        decl.declarationType === 'component'
+          ? 'component'
+          : decl.declarationType === 'pipe'
+            ? 'pipe'
+            : 'directive';
+      relatedInformation.push({
+        filePath: decl.filePath ?? file.filePath,
+        span: decl.nameSpan,
+        messageText: `The ${typeLabel} '${decl.name}' is used in the template but importing it would create a cycle: ${cyclePath.join(' -> ')}`,
+      });
+    }
+  }
+
+  if (relatedInformation.length === 0) {
+    return null;
+  }
+
+  return withErrorGuide({
+    category: 1,
+    code: Math.abs(ErrorCode.IMPORT_CYCLE_DETECTED),
+    messageText:
+      'One or more import cycles would need to be created to compile this component, which is not supported by the current compiler configuration.',
+    filePath: file.filePath,
+    span: classMeta.nameSpan ?? classMeta.span,
+    relatedInformation,
+  });
+}
+
+function recordSyntheticImportEdges(
+  dynamicGraph: Map<number, Set<number>>,
+  fromFileId: number,
+  eagerDecls: readonly nga.DeclarationMetadata[],
+  chunkFileIds: ReadonlySet<number>,
+): void {
+  let edges = dynamicGraph.get(fromFileId);
+  if (!edges) {
+    edges = new Set<number>();
+    dynamicGraph.set(fromFileId, edges);
+  }
+  for (const decl of eagerDecls) {
+    if (chunkFileIds.has(decl.fileId) && decl.fileId !== fromFileId) {
+      edges.add(decl.fileId);
+    }
+  }
+}
+
 export function hasGraphPath(
   graph: ReadonlyMap<number, ReadonlySet<number>>,
   start: number,
   target: number,
 ): boolean {
-  if (start === target) return true;
+  return findGraphPath(graph, start, target) !== null;
+}
+
+function findGraphPath(
+  graph: ReadonlyMap<number, ReadonlySet<number>>,
+  start: number,
+  target: number,
+): number[] | null {
+  if (start === target) return [start];
   const visited = new Set<number>([start]);
-  const stack = [start];
-  while (stack.length > 0) {
-    const current = stack.pop()!;
+  const parent = new Map<number, number>();
+  const queue: number[] = [start];
+  for (let head = 0; head < queue.length; head++) {
+    const current = queue[head];
     const neighbors = graph.get(current);
     if (!neighbors) continue;
     for (const neighbor of neighbors) {
-      if (neighbor === target) return true;
+      if (neighbor === target) {
+        const path = [target];
+        let node = current;
+        while (node !== start) {
+          path.push(node);
+          node = parent.get(node)!;
+        }
+        path.push(start);
+        path.reverse();
+        return path;
+      }
       if (!visited.has(neighbor)) {
         visited.add(neighbor);
-        stack.push(neighbor);
+        parent.set(neighbor, current);
+        queue.push(neighbor);
       }
     }
   }
-  return false;
+  return null;
 }
 
 export function findCyclicNodes(graph: ReadonlyMap<number, ReadonlySet<number>>): Set<number> {

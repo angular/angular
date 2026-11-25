@@ -366,6 +366,14 @@ impl QueryContext {
         self.extend_dependencies(visited);
         found
     }
+
+    pub async fn find_path(&self, start: FileId, target: FileId) -> Option<Vec<FileId>> {
+        self.record_file(crate::query::engine::ROOTS_FILE_ID);
+        let graph = self.engine.get_or_build_import_graph().await;
+        let (path, visited) = graph.find_path_with_deps(start, target);
+        self.extend_dependencies(visited);
+        path
+    }
 }
 
 impl std::ops::Deref for QueryContext {
