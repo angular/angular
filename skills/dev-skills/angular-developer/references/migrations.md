@@ -20,6 +20,7 @@ Use the following commands to apply specific syntax updates. You can scope these
 | **`inject()` Function**   | `ng generate @angular/core:inject`                          |
 | **Self-Closing Tags**     | `ng generate @angular/core:self-closing-tag`                |
 | **Standalone**            | `ng generate @angular/core:standalone` (See workflow below) |
+| **Injectable to Service** | `ng generate @angular/core:service`                         |
 
 ## Specialized Workflow: Migrating to Standalone
 
