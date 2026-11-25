@@ -210,6 +210,47 @@ describe('standard schema integration', () => {
     expect(f.age().errors()[0].message).toBe('Age must be non-negative');
   });
 
+  it('should report an issue with an unknown path on the validated field', () => {
+    const model = signal({name: ''});
+    const f = form(
+      model,
+      (p) => {
+        validateStandardSchema(
+          p,
+          z.object({name: z.string()}).superRefine((_, ctx) => {
+            ctx.addIssue({code: 'custom', message: 'Wrong.', path: ['ghost']});
+          }),
+        );
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([jasmine.objectContaining({message: 'Wrong.', fieldTree: f})]);
+  });
+
+  it('should report an issue whose path runs through an unknown key on the validated field', () => {
+    const model = signal({name: ''});
+    const f = form(
+      model,
+      (p) => {
+        validateStandardSchema(
+          p,
+          z.object({name: z.string()}).superRefine((_, ctx) => {
+            ctx.addIssue({code: 'custom', message: 'Wrong.', path: ['ghost', 'name']});
+          }),
+        );
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([jasmine.objectContaining({message: 'Wrong.', fieldTree: f})]);
+    expect(f.name().errors()).toEqual([]);
+  });
+
   it('should support reactive schema using computed signal', () => {
     const minLength = signal(2);
 
