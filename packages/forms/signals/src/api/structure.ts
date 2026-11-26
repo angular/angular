@@ -52,6 +52,8 @@ export interface FormOptions<TModel> {
   /**
    * The injector to use for dependency injection. If this is not provided, the injector for the
    * current [injection context](guide/di/dependency-injection-context), will be used.
+   *
+   * Resources owned by the form's fields are cleaned up when this injector is destroyed.
    */
   injector?: Injector;
 
