@@ -223,7 +223,11 @@ http
   .subscribe((event) => {
     switch (event.type) {
       case HttpEventType.DownloadProgress:
-        console.log('Downloaded ' + event.loaded + ' out of ' + event.total + ' bytes');
+        if (event.total !== undefined) {
+          console.log('Downloaded ' + event.loaded + ' out of ' + event.total + ' bytes');
+        } else {
+          console.log('Downloaded ' + event.loaded + ' bytes');
+        }
         break;
       case HttpEventType.Response:
         console.log('Finished downloading!');
