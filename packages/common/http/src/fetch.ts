@@ -213,6 +213,10 @@ export class FetchBackend implements HttpBackend {
       // Read Progress
       const contentLength = response.headers.get('content-length');
       const contentLengthValue = contentLength !== null ? Number(contentLength) : NaN;
+      const contentEncoding = response.headers.get('content-encoding')?.trim().toLowerCase();
+      const isEncoded = Boolean(contentEncoding && contentEncoding !== 'identity');
+      const total =
+        Number.isFinite(contentLengthValue) && !isEncoded ? contentLengthValue : undefined;
 
       if (
         this.maxResponseSize !== null &&
@@ -287,7 +291,7 @@ export class FetchBackend implements HttpBackend {
             const reportProgress = () =>
               observer.next({
                 type: HttpEventType.DownloadProgress,
-                total: Number.isFinite(contentLengthValue) ? contentLengthValue : undefined,
+                total,
                 loaded: receivedLength,
                 partialText,
               } as HttpDownloadProgressEvent);
