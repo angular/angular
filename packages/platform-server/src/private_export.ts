@@ -14,5 +14,6 @@ export {SERVER_CONTEXT as ɵSERVER_CONTEXT, renderInternal as ɵrenderInternal} 
 export {ENABLE_DOM_EMULATION as ɵENABLE_DOM_EMULATION} from './tokens';
 export {DominoAdapter as ɵDominoAdapter} from './domino_adapter';
 
-// Use in @angular/ssr.
+// Used in @angular/ssr.
 export {isHostAllowed as ɵisHostAllowed} from './utils';
+export {isSsrRequest as ɵisSsrRequest, SSR_REQUEST_HEADER as ɵSSR_REQUEST_HEADER} from './http';

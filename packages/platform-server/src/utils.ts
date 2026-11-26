@@ -14,6 +14,7 @@ import {
   PlatformRef,
   Provider,
   Renderer2,
+  REQUEST,
   StaticProvider,
   Type,
   ɵannotateForHydration as annotateForHydration,
@@ -27,6 +28,7 @@ import {
 import {BootstrapContext} from '@angular/platform-browser';
 
 import {RuntimeErrorCode} from './errors';
+import {isSsrRequest, SSR_REQUEST_HEADER} from './http';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
@@ -293,6 +295,7 @@ export async function renderModule<T>(
   validateAllowedHosts(url, allowedHosts);
   const platformRef = createServerPlatform({document, url, platformProviders});
   try {
+    validateSsrRequest(platformRef);
     const moduleRef = await platformRef.bootstrapModule(moduleType);
     const applicationRef = moduleRef.injector.get(ApplicationRef);
 
@@ -358,6 +361,8 @@ export async function renderApplication(
   startMeasuring(renderAppLabel);
   const platformRef = createServerPlatform(options);
   try {
+    validateSsrRequest(platformRef);
+
     startMeasuring(bootstrapLabel);
     const applicationRef = await bootstrap({platformRef});
     stopMeasuring(bootstrapLabel);
@@ -376,6 +381,19 @@ export async function renderApplication(
   } finally {
     await asyncDestroyPlatform(platformRef);
     stopMeasuring(renderAppLabel);
+  }
+}
+
+function validateSsrRequest(platformRef: PlatformRef): void {
+  const request = platformRef.injector.get(REQUEST, null);
+  if (request && isSsrRequest(request)) {
+    const requestUrl = request.url ?? '';
+    throw new RuntimeError(
+      RuntimeErrorCode.RECURSIVE_SSR_REQUEST,
+      typeof ngDevMode === 'undefined' || ngDevMode
+        ? `Refusing to render request for "${requestUrl}" because it carries the "${SSR_REQUEST_HEADER}" header, indicating it was sent while rendering on the server.`
+        : requestUrl,
+    );
   }
 }
 

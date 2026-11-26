@@ -65,22 +65,74 @@ export class ServerXhr implements XhrFactory {
 }
 
 /**
+ * The HTTP header added to outgoing `HttpClient` requests targeting the host of the page being
+ * rendered on the server.
+ *
+ * @note Used also in `@angular/ssr`.
+ * @private
+ */
+export const SSR_REQUEST_HEADER = 'x-angular-ssr-request';
+
+/**
+ * Checks whether an incoming HTTP `Request` carries the {@link SSR_REQUEST_HEADER} header,
+ * indicating it was sent by an Angular application while rendering on the server.
+ *
+ * @param request - The incoming `Request` object to check.
+ * @returns `true` if the request carries {@link SSR_REQUEST_HEADER}.
+ * @note Used also in `@angular/ssr`.
+ * @private
+ */
+export function isSsrRequest(request: Request): boolean {
+  return Boolean(request?.headers?.has?.(SSR_REQUEST_HEADER));
+}
+
+/**
  * Regex to match a URL schema.
  */
 const URL_SCHEMA_REGEXP = /^(?:[a-zA-Z][a-zA-Z0-9+\-.]*:)/;
 
-function relativeUrlsTransformerInterceptorFn(
+function parseUrl(url: string): URL | null {
+  try {
+    return new URL(url);
+  } catch {
+    return null;
+  }
+}
+
+function stripTrailingDot(hostname: string): string {
+  return hostname.endsWith('.') ? hostname.slice(0, -1) : hostname;
+}
+
+function isDefaultHttpPort(url: URL): boolean {
+  return url.port === '' || url.port === '80' || url.port === '443';
+}
+
+function isSameServerHost(targetUrl: URL, serverUrl: URL): boolean {
+  if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {
+    return false;
+  }
+
+  return (
+    stripTrailingDot(targetUrl.hostname) === stripTrailingDot(serverUrl.hostname) &&
+    (targetUrl.port === serverUrl.port ||
+      (isDefaultHttpPort(targetUrl) && isDefaultHttpPort(serverUrl)))
+  );
+}
+
+function serverHttpInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
-  if (URL_SCHEMA_REGEXP.test(request.url) && !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(request.url)) {
-    // URLs with a schema (and an authority for http(s)) should be left unchanged.
+  const isAbsoluteUrl =
+    URL_SCHEMA_REGEXP.test(request.url) && !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(request.url);
+
+  const platformLocation = inject(PlatformLocation, {optional: true});
+  if (!platformLocation) {
     return next(request);
   }
 
-  const platformLocation = inject(PlatformLocation);
   const {href, protocol, hostname, port} = platformLocation;
-  if (!protocol.startsWith('http')) {
+  if (protocol !== 'http:' && protocol !== 'https:') {
     return next(request);
   }
 
@@ -89,21 +141,47 @@ function relativeUrlsTransformerInterceptorFn(
     urlPrefix += `:${port}`;
   }
 
-  const baseHref = platformLocation.getBaseHrefFromDOM() || href;
-  const baseUrl = new URL(baseHref, urlPrefix);
+  const serverUrl = parseUrl(urlPrefix);
+  if (!serverUrl) {
+    return next(request);
+  }
 
-  const parsedUrl = resolveUrl(request.url, baseUrl, {
-    allowProtocolRelative: true,
-  });
+  let parsedUrl: URL | null;
+  let updatedUrl: string | undefined;
 
-  return next(request.clone({url: parsedUrl.toString()}));
+  if (isAbsoluteUrl) {
+    parsedUrl = parseUrl(request.url);
+  } else {
+    const baseHref = platformLocation.getBaseHrefFromDOM() || href;
+    const baseUrl = new URL(baseHref, urlPrefix);
+    parsedUrl = resolveUrl(request.url, baseUrl, {
+      allowProtocolRelative: true,
+    });
+    updatedUrl = parsedUrl.toString();
+  }
+
+  const shouldMarkSsrRequest =
+    parsedUrl !== null &&
+    isSameServerHost(parsedUrl, serverUrl) &&
+    !request.headers.has(SSR_REQUEST_HEADER);
+
+  if (updatedUrl === undefined && !shouldMarkSsrRequest) {
+    return next(request);
+  }
+
+  return next(
+    request.clone({
+      ...(updatedUrl !== undefined ? {url: updatedUrl} : undefined),
+      ...(shouldMarkSsrRequest ? {setHeaders: {[SSR_REQUEST_HEADER]: '1'}} : undefined),
+    }),
+  );
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: XhrFactory, useClass: ServerXhr},
   {
     provide: HTTP_ROOT_INTERCEPTOR_FNS,
-    useValue: relativeUrlsTransformerInterceptorFn,
+    useValue: serverHttpInterceptorFn,
     multi: true,
   },
 ];
