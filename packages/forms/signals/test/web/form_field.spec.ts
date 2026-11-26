@@ -2405,7 +2405,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly max = signal(10);
-          readonly f = form(signal(5), (p) => {
+          readonly f = form(signal<number | null>(5), (p) => {
             max(p, this.max);
           });
         }
@@ -2425,7 +2425,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly max = signal(new Date('2026-12-31'));
-          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+          readonly f = form(signal<Date | null>(new Date('2026-01-15')), (p) => {
             maxDate(p, this.max);
           });
         }
@@ -2446,7 +2446,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly max = signal(new Date('2026-12-01'));
-          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+          readonly f = form(signal<Date | null>(new Date('2026-01-15')), (p) => {
             maxDate(p, this.max);
           });
         }
@@ -2465,7 +2465,7 @@ describe('field directive', () => {
           template: `<input type="date" [formField]="f" max="2026-12-31" />`,
         })
         class TestCmp {
-          readonly f = form(signal(new Date('2026-01-15')));
+          readonly f = form(signal<Date | null>(new Date('2026-01-15')));
         }
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
@@ -2572,7 +2572,7 @@ describe('field directive', () => {
           template: `<input type="date" [formField]="f" />`,
         })
         class TestCmp {
-          readonly f = form(signal(new Date('2026-04-06')), (p) => {
+          readonly f = form(signal<Date | null>(new Date('2026-04-06')), (p) => {
             maxDate(p, new Date('2026-04-05'));
           });
         }
@@ -2720,7 +2720,7 @@ describe('field directive', () => {
           template: `<input type="number" [formField]="field()" />`,
         })
         class TestCmp {
-          readonly f = form(signal({x: 1, y: 2}), (p) => {
+          readonly f = form(signal<{x: number | null; y: number | null}>({x: 1, y: 2}), (p) => {
             max(p.x, 10);
           });
           readonly field = signal(this.f.x);
@@ -2774,7 +2774,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly max = signal(10);
-          readonly f = form(signal(5), (p) => {
+          readonly f = form(signal<number | null>(5), (p) => {
             max(p, this.max);
           });
           readonly dir = viewChild.required(TestDir);
@@ -2833,7 +2833,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly min = signal(10);
-          readonly f = form(signal(15), (p) => {
+          readonly f = form(signal<number | null>(15), (p) => {
             min(p, this.min);
           });
         }
@@ -2872,7 +2872,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly min = signal(new Date('2026-01-01'));
-          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+          readonly f = form(signal<Date | null>(new Date('2026-01-15')), (p) => {
             minDate(p, this.min);
           });
         }
@@ -2893,7 +2893,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly min = signal(new Date('2026-01-01'));
-          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+          readonly f = form(signal<Date | null>(new Date('2026-01-15')), (p) => {
             minDate(p, this.min);
           });
         }
@@ -2912,7 +2912,7 @@ describe('field directive', () => {
           template: `<input type="date" [formField]="f" min="2026-01-01" />`,
         })
         class TestCmp {
-          readonly f = form(signal(new Date('2026-01-15')));
+          readonly f = form(signal<Date | null>(new Date('2026-01-15')));
         }
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
@@ -3019,7 +3019,7 @@ describe('field directive', () => {
           template: `<input type="date" [formField]="f" />`,
         })
         class TestCmp {
-          readonly f = form(signal(new Date('2026-04-02')), (p) => {
+          readonly f = form(signal<Date | null>(new Date('2026-04-02')), (p) => {
             minDate(p, new Date('2026-04-05'));
           });
         }
@@ -3167,7 +3167,7 @@ describe('field directive', () => {
           template: `<input type="number" [formField]="field()" />`,
         })
         class TestCmp {
-          readonly f = form(signal({x: 1, y: 2}), (p) => {
+          readonly f = form(signal<{x: number | null; y: number | null}>({x: 1, y: 2}), (p) => {
             min(p.x, 10);
           });
           readonly field = signal(this.f.x);
@@ -3221,7 +3221,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly min = signal(10);
-          readonly f = form(signal(15), (p) => {
+          readonly f = form(signal<number | null>(15), (p) => {
             min(p, this.min);
           });
           readonly dir = viewChild.required(TestDir);
@@ -5535,7 +5535,7 @@ describe('field directive', () => {
         template: `<input type="number" [formField]="f" />`,
       })
       class TestCmp {
-        f = form(signal(123));
+        f = form(signal<number | null>(123));
       }
 
       const fix = act(() => TestBed.createComponent(TestCmp));
@@ -5591,7 +5591,7 @@ describe('field directive', () => {
         template: `<input type="date" [formField]="f" />`,
       })
       class TestCmp {
-        f = form(signal(new Date('2024-01-01T12:00:00Z')));
+        f = form(signal<Date | null>(new Date('2024-01-01T12:00:00Z')));
       }
 
       const fix = act(() => TestBed.createComponent(TestCmp));
@@ -5647,7 +5647,7 @@ describe('field directive', () => {
         template: `<input type="datetime-local" [formField]="f" />`,
       })
       class TestCmp {
-        f = form(signal(new Date('2024-01-01T12:30:00Z').valueOf()));
+        f = form(signal<number | null>(new Date('2024-01-01T12:30:00Z').valueOf()));
       }
 
       const fix = act(() => TestBed.createComponent(TestCmp));

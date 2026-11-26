@@ -32,7 +32,7 @@ describe('numeric inputs', () => {
         template: `<input type="number" [formField]="f" />`,
       })
       class TestCmp {
-        readonly data = signal<number>(42);
+        readonly data = signal<number | null>(42);
         readonly f = form(this.data);
       }
 
@@ -67,7 +67,7 @@ describe('numeric inputs', () => {
         `,
       })
       class TestCmp {
-        readonly data = signal<number>(5);
+        readonly data = signal<number | null>(5);
         readonly f = form(this.data);
         readonly bindings = viewChildren(FormField);
       }
@@ -144,7 +144,7 @@ describe('numeric inputs', () => {
         template: `<input type="number" [formField]="f" />`,
       })
       class TestCmp {
-        readonly data = signal<number>(2.5);
+        readonly data = signal<number | null>(2.5);
         readonly f = form(this.data, (p) => {
           required(p);
         });
@@ -189,7 +189,7 @@ describe('numeric inputs', () => {
         template: `<input type="number" [formField]="f" />`,
       })
       class TestCmp {
-        readonly data = signal<number>(NaN);
+        readonly data = signal<number | null>(NaN);
         readonly f = form(this.data);
       }
 
