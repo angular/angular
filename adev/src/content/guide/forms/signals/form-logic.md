@@ -1,8 +1,8 @@
 # Adding form logic
 
-Signal Forms allow you to add logic to your form using schemas. Validation logic is covered in the [Validation guide](guide/forms/signals/validation), and this guide discusses other rules available in schemas. You can disable fields conditionally, hide them based on other values, make them readonly, debounce user input, and attach metadata for custom controls.
+Signal Forms allow you to add logic to your form using schemas. Validation logic is covered in the [Validation guide](guide/forms/signals/validation), and this guide discusses other rules available in schemas. You can disable fields conditionally, hide them based on other values, make them readonly, debounce user input, link dependent field values, and attach metadata for custom controls.
 
-This guide shows you how to use rules like `disabled()`, `hidden()`, `readonly()`, `debounce()`, and `metadata()` to control field behavior.
+This guide shows you how to use rules like `disabled()`, `hidden()`, `readonly()`, `debounce()`, `link()`, and `metadata()` to control field behavior.
 
 ## When to add form logic
 
@@ -591,6 +591,166 @@ export class Inventory {
 The `max()` validation rule sets the `MAX` metadata reactively based on the selected item, so any template or control reading `field().max()` updates whenever the item changes.
 
 For deeper coverage, including how to define custom keys, combine contributions with reducers, and use managed metadata for lifecycle-aware objects, see the [Field metadata guide](guide/forms/signals/field-metadata).
+
+## Link field values with `link()`
+
+The `link()` rule reactively updates a field's value when other fields or external signals change, following Angular's [`linkedSignal`](guide/signals/linked-signal) mental model. The target field remains writable: manual edits stay intact until the tracked dependencies change again.
+
+NOTE: `link()` is experimental. Unlike validation rules, `link()` continues running when the target field is `readonly`, `disabled`, or `hidden`.
+
+### Computing a linked value
+
+Pass a reactive function directly to `link()` to write a calculated value back to the target field whenever any signal read inside it changes:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, link} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-order',
+  imports: [FormField],
+  template: `
+    <label>
+      Quantity
+      <input type="number" [formField]="orderForm.quantity" />
+    </label>
+
+    <label>
+      Unit price
+      <input type="number" [formField]="orderForm.unitPrice" />
+    </label>
+
+    <label>
+      Total
+      <input type="number" [formField]="orderForm.total" />
+    </label>
+  `,
+})
+export class Order {
+  orderModel = signal({
+    quantity: 1,
+    unitPrice: 25,
+    total: 25,
+  });
+
+  orderForm = form(this.orderModel, (schemaPath) => {
+    link(
+      schemaPath.total,
+      ({valueOf}) => valueOf(schemaPath.quantity) * valueOf(schemaPath.unitPrice),
+    );
+  });
+}
+```
+
+Whenever `quantity` or `unitPrice` changes, `total` updates automatically. If the user manually overrides `total`, that value stays intact until `quantity` or `unitPrice` changes again.
+
+### Resetting dependent fields on change
+
+For cascading fields, conditional links, or access to previous values, pass an options object with `source` and `computation`:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, link} from '@angular/forms/signals';
+
+const STATES_BY_COUNTRY: Record<string, string[]> = {
+  US: ['CA', 'NY', 'TX'],
+  CA: ['ON', 'QC', 'BC'],
+};
+
+@Component({
+  selector: 'app-location',
+  imports: [FormField],
+  template: `
+    <label>
+      Country
+      <select [formField]="locationForm.country">
+        <option value="US">United States</option>
+        <option value="CA">Canada</option>
+      </select>
+    </label>
+
+    <label>
+      State / Province
+      <select [formField]="locationForm.state">
+        <option value="">Select one</option>
+        @for (state of statesForCountry(); track state) {
+          <option [value]="state">{{ state }}</option>
+        }
+      </select>
+    </label>
+  `,
+})
+export class Location {
+  locationModel = signal({
+    country: 'US',
+    state: 'CA',
+  });
+
+  locationForm = form(this.locationModel, (schemaPath) => {
+    link(schemaPath.state, {
+      source: ({valueOf}) => valueOf(schemaPath.country),
+      on: 'change',
+      fieldState: 'reset',
+      computation: (country, {previous}) =>
+        STATES_BY_COUNTRY[country]?.includes(previous.value) ? previous.value : '',
+    });
+  });
+
+  statesForCountry() {
+    return STATES_BY_COUNTRY[this.locationForm.country().value()] ?? [];
+  }
+}
+```
+
+The source-driven options work together to handle real-world cascading inputs:
+
+- **`source`**: Accepts a reactive logic function or an Angular `Signal`. Only changes to `source` trigger `computation`.
+- **`computation`**: Executes **untracked**, so reading `ctx.value()` or sibling fields inside `computation` does not cause unintended self-triggers.
+- **`on: 'change'`**: Preserves initial or hydrated values on setup (and after `reset()`) and narrows `ctx.previous` (`{source, value}`) to be guaranteed defined.
+- **`fieldState: 'reset'`**: Clears `dirty`, `touched`, and parse errors on the target field and its descendants whenever the rule triggers — even if the newly computed value equals the current value.
+
+### Configuration options
+
+| Option        | Type                           | Default      | Description                                                                                           |
+| ------------- | ------------------------------ | ------------ | ----------------------------------------------------------------------------------------------------- |
+| `source`      | `LogicFn` or `Signal<TSource>` | Required     | Explicitly tracks dependencies and passes `(source, ctx)` to an untracked `computation`.              |
+| `computation` | `(source, ctx) => TValue`      | Required     | Computes the next value for the target field (executes untracked).                                    |
+| `when`        | `LogicFn<TValue, boolean>`     | `undefined`  | Reactive predicate controlling whether the rule is active.                                            |
+| `on`          | `'always' \| 'change'`         | `'always'`   | `'always'` runs on activation and changes; `'change'` only writes on subsequent changes while active. |
+| `equal`       | `ValueEqualityFn<TValue>`      | `Object.is`  | Compares the current and computed values; skips writing to the model when equal.                      |
+| `fieldState`  | `'preserve' \| 'reset'`        | `'preserve'` | Controls whether `dirty`, `touched`, and parse errors are preserved or reset when triggered.          |
+
+### Timing and choosing the right tool
+
+`link()` updates flush asynchronously through a form-level coordinator effect, which batches multi-field writes into a single pass and avoids eager reads during `form()` construction. When you call `submit()`, Angular flushes all pending `link()` rules synchronously right after flushing debounced inputs so validation and your submit handler always observe settled values.
+
+IMPORTANT: Because `link()` flushes in an effect, reading the target field's `value()` or the underlying `model()` synchronously right after writing a source field returns the previous value until effects flush (for example, during change detection or after `TestBed.tick()` in tests). Templates render the updated value within the same change detection cycle, and `submit()` flushes pending links synchronously.
+
+If you need **true synchronous reads** immediately after a write in the same turn, design that relationship at the signal or model layer instead of in a schema rule:
+
+- **Pure derived values:** Keep read-only calculations (such as an order total) out of the writable form model and derive them with `computed()`.
+- **Synchronous dependent writable values:** Wrap your model in a [`linkedSignal`](guide/signals/linked-signal) (using its `set` option) or a custom `WritableSignal` that updates dependent fields synchronously whenever the model is written:
+
+```ts
+import {linkedSignal, signal} from '@angular/core';
+import {form} from '@angular/forms/signals';
+
+const rawModel = signal({country: 'US', state: 'CA'});
+
+const locationModel = linkedSignal(() => rawModel(), {
+  set: (next) => {
+    const prev = rawModel();
+    rawModel.set(next.country !== prev.country ? {...next, state: ''} : next);
+  },
+});
+
+const locationForm = form(locationModel);
+locationForm.country().value.set('CA');
+// Immediately '' in the same synchronous turn
+locationForm.state().value();
+```
+
+Reach for `link()` when dependent field updates need to compose inside reusable `schema()`, `applyEach()`, or `applyWhen()` blocks, or when you want to reset field interaction state (`dirty`, `touched`, and parse errors) automatically with `fieldState: 'reset'`.
 
 ## Combining rules
 

@@ -163,6 +163,12 @@ export class MetadataKey<TRead, TWrite, TAcc> {
   /** @internal */
   [IS_ASYNC_VALIDATION_RESOURCE]?: true;
 
+  /**
+   * When `true`, `create` runs without allocating a per-field `DestroyableInjector`.
+   * @internal
+   */
+  noInjector?: true;
+
   /** Use {@link createMetadataKey}. */
   protected constructor(
     readonly reducer: MetadataReducer<TAcc, TWrite>,
@@ -252,9 +258,11 @@ export function createMetadataKey<TWrite, TAcc>(
 export function createMetadataKey<TWrite, TAcc>(
   reducer?: MetadataReducer<TAcc, TWrite>,
 ): MetadataKey<Signal<TAcc>, TWrite, TAcc> {
-  return new (MetadataKey as new (
-    reducer: MetadataReducer<TAcc, TWrite>,
-  ) => MetadataKey<Signal<TAcc>, TWrite, TAcc>)(reducer ?? MetadataReducer.override<any>());
+  return new (
+    MetadataKey as new (
+      reducer: MetadataReducer<TAcc, TWrite>,
+    ) => MetadataKey<Signal<TAcc>, TWrite, TAcc>
+  )(reducer ?? MetadataReducer.override<any>());
 }
 
 /**
@@ -300,10 +308,12 @@ export function createManagedMetadataKey<TRead, TWrite, TAcc>(
   create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
   reducer?: MetadataReducer<TAcc, TWrite>,
 ): MetadataKey<TRead, TWrite, TAcc> {
-  return new (MetadataKey as new (
-    reducer: MetadataReducer<TAcc, TWrite>,
-    create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
-  ) => MetadataKey<TRead, TWrite, TAcc>)(reducer ?? MetadataReducer.override<any>(), create);
+  return new (
+    MetadataKey as new (
+      reducer: MetadataReducer<TAcc, TWrite>,
+      create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
+    ) => MetadataKey<TRead, TWrite, TAcc>
+  )(reducer ?? MetadataReducer.override<any>(), create);
 }
 
 /**

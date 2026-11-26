@@ -8,6 +8,7 @@
 
 import {APP_ID, effect, Injector, untracked} from '@angular/core';
 import type {FormSubmitOptions} from '../api/types';
+import type {FieldNode} from './node';
 import type {FieldNodeStructure} from './structure';
 
 /**
@@ -40,6 +41,33 @@ export class FormFieldManager {
   readonly structures = new Set<FieldNodeStructure>();
 
   /**
+   * Optional hook attached lazily by `link()` rules to flush pending links synchronously
+   * (e.g. before `submit()`).
+   * @internal
+   */
+  flushLinks: (() => void) | undefined = undefined;
+
+  /**
+   * Optional hook attached lazily by `link()` rules to re-baseline `on: 'change'` links on
+   * `reset()`.
+   * @internal
+   */
+  rebaselineLinks: ((node: FieldNode) => void) | undefined = undefined;
+
+  /**
+   * Optional cleanup hook attached lazily by `link()` rules when a field structure is destroyed.
+   * @internal
+   */
+  onStructureDestroy: ((structure: FieldNodeStructure) => void) | undefined = undefined;
+
+  /**
+   * Opaque slot used by `link()` to store its per-form coordinator without coupling this file to
+   * `link()`.
+   * @internal
+   */
+  linkCoordinator: unknown = undefined;
+
+  /**
    * Creates an effect that runs when the form's structure changes and checks for structures that
    * have become unreachable to clean up.
    *
@@ -62,7 +90,10 @@ export class FormFieldManager {
         for (const structure of this.structures) {
           if (!liveStructures.has(structure)) {
             this.structures.delete(structure);
-            untracked(() => structure.destroy());
+            untracked(() => {
+              this.onStructureDestroy?.(structure);
+              structure.destroy();
+            });
           }
         }
       },

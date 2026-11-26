@@ -7,11 +7,15 @@
  */
 
 import {signal, WritableSignal} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {
+  applyEach,
   createMetadataKey,
   FieldTree,
   form,
   LimitKey,
+  link,
+  LinkTrigger,
   MIN,
   MIN_DATE,
   MIN_NUMBER,
@@ -224,6 +228,105 @@ function typeVerificationOnlyDoNotRunMe() {
             // @ts-expect-error
             () => MAX_DATE,
           );
+        });
+      });
+    });
+
+    describe('link', () => {
+      it('enforces target value return type via NoInfer', () => {
+        schema<{count: number; name: string}>((p) => {
+          link(p.count, ({valueOf}) => valueOf(p.name).length);
+          // @ts-expect-error wrong return type in shorthand mode
+          link(p.count, () => 'not-a-number');
+          // @ts-expect-error wrong return type in source-driven mode
+          link(p.count, {
+            source: ({valueOf}) => valueOf(p.name),
+            computation: (name) => name,
+          });
+        });
+      });
+
+      it('requires source in the options-object overload', () => {
+        schema<{count: number; name: string}>((p) => {
+          // @ts-expect-error options object requires `source`
+          link(p.count, {computation: () => 1});
+        });
+      });
+
+      it('rejects potentially undefined paths', () => {
+        schema<{a: number; b?: number}>((p) => {
+          link(p.a, () => 1);
+          // @ts-expect-error optional path cannot be linked directly
+          link(p.b, () => 1);
+        });
+      });
+
+      it('rejects bare SchemaPath as source while allowing LogicFn and Signal', () => {
+        const ext = signal('hello');
+        schema<{a: string; b: string}>((p) => {
+          link(p.b, {source: ({valueOf}) => valueOf(p.a), computation: (v) => v});
+          link(p.b, {source: ext, computation: (v) => v});
+          link(p.b, {
+            // @ts-expect-error bare SchemaPath is not accepted as source
+            source: p.a,
+            computation: (v: string) => v,
+          });
+        });
+      });
+
+      it('rejects compat AbstractControl targets while allowing them as source', () => {
+        schema<{legacy: FormControl<string>; modern: string}>((p) => {
+          link(p.modern, {
+            source: ({valueOf}) => valueOf(p.legacy),
+            computation: (v) => v.toUpperCase(),
+          });
+          // @ts-expect-error compat path does not support rules
+          link(p.legacy, () => 'nope');
+        });
+      });
+
+      it('narrows `previous` based on the literal `on` trigger mode', () => {
+        schema<{country: string; state: string}>((p) => {
+          // `on: 'change'` -> `previous` is guaranteed defined
+          link(p.state, {
+            source: ({valueOf}) => valueOf(p.country),
+            on: 'change',
+            computation: (country, {previous}) => {
+              const prevCountry: string = previous.source;
+              const prevState: string = previous.value;
+              return `${country}:${prevCountry}:${prevState}`;
+            },
+          });
+
+          // Default / omitted `on` -> `previous` may be undefined
+          link(p.state, {
+            source: ({valueOf}) => valueOf(p.country),
+            computation: (_country, {previous}) => {
+              // @ts-expect-error previous is possibly undefined
+              const _s: string = previous.source;
+              return previous?.value ?? '';
+            },
+          });
+
+          // Dynamic union trigger -> `previous` may be undefined
+          const dynamicOn: LinkTrigger = Math.random() > 0.5 ? 'change' : 'always';
+          link(p.state, {
+            source: ({valueOf}) => valueOf(p.country),
+            on: dynamicOn,
+            computation: (_country, {previous}) => {
+              // @ts-expect-error previous is possibly undefined for union trigger
+              const _s: string = previous.source;
+              return previous?.value ?? '';
+            },
+          });
+        });
+      });
+
+      it('exposes item index context inside applyEach', () => {
+        schema<{items: string[]}>((p) => {
+          applyEach(p.items, (item) => {
+            link(item, ({index}) => `item-${index()}`);
+          });
         });
       });
     });

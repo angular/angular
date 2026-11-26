@@ -42,15 +42,15 @@ export class FieldMetadataState {
       untracked(() => {
         for (const key of this.node.logicNode.logic.getMetadataKeys()) {
           if (key.create) {
-            // Accessing structure.injector creates the field injector, so only do it for managed keys.
-            runInInjectionContext(this.node.structure.injector, () => {
-              const logic = this.node.logicNode.logic.getMetadata(key);
-              const result = key.create!(
-                this.node,
-                computed(() => logic.compute(this.node.context)),
-              );
-              this.metadata.set(key, result);
-            });
+            const logic = this.node.logicNode.logic.getMetadata(key);
+            const data = computed(() => logic.compute(this.node.context));
+            const result = key.noInjector
+              ? key.create(this.node, data)
+              : // Accessing structure.injector creates the field injector, so only do it for managed keys.
+                runInInjectionContext(this.node.structure.injector, () =>
+                  key.create!(this.node, data),
+                );
+            this.metadata.set(key, result);
           }
         }
       });

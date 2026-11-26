@@ -20,6 +20,7 @@ import { Provider } from '@angular/core';
 import { Resource } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
+import { ValueEqualityFn } from '@angular/core';
 import { WritableSignal } from '@angular/core';
 
 // @public
@@ -320,6 +321,41 @@ export type LimitKey<TLimit> = MetadataKey<Signal<NonNullable<TLimit> | undefine
 export type LimitSelectionKey = MetadataKey<Signal<LimitKey<unknown> | undefined>, LimitKey<unknown>, LimitKey<unknown> | undefined> & {
     [LIMIT_SELECTION_KEY]: true;
 };
+
+// @public
+export function link<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, computation: NoInfer<LogicFn<TValue, TValue, TPathKind>>): void;
+
+// @public
+export function link<TValue, TSource, TPathKind extends PathKind = PathKind.Root, const TTrigger extends LinkTrigger = 'always'>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, options: LinkOptions<TValue, TSource, TPathKind, TTrigger>): void;
+
+// @public
+export type LinkContext<TValue, TSource, TPathKind extends PathKind = PathKind.Root, TPrevious extends LinkPrevious<TSource, TValue> | undefined = LinkPrevious<TSource, TValue> | undefined> = FieldContext<TValue, TPathKind> & {
+    readonly previous: TPrevious;
+};
+
+// @public
+export type LinkFieldStateMode = 'preserve' | 'reset';
+
+// @public
+export interface LinkOptions<TValue, TSource, TPathKind extends PathKind = PathKind.Root, TTrigger extends LinkTrigger = LinkTrigger> {
+    readonly computation: (source: NoInfer<TSource>, ctx: LinkContext<NoInfer<TValue>, NoInfer<TSource>, NoInfer<TPathKind>, [
+    TTrigger
+    ] extends ['change'] ? LinkPrevious<NoInfer<TSource>, NoInfer<TValue>> : LinkPrevious<NoInfer<TSource>, NoInfer<TValue>> | undefined>) => NoInfer<TValue>;
+    readonly equal?: ValueEqualityFn<NoInfer<TValue>>;
+    readonly fieldState?: LinkFieldStateMode;
+    readonly on?: TTrigger;
+    readonly source: Signal<TSource> | ((ctx: FieldContext<NoInfer<TValue>, NoInfer<TPathKind>>) => TSource);
+    readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+}
+
+// @public
+export interface LinkPrevious<TSource, TValue> {
+    readonly source: TSource;
+    readonly value: TValue;
+}
+
+// @public
+export type LinkTrigger = 'always' | 'change';
 
 // @public
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (ctx: FieldContext<TValue, TPathKind>) => TReturn;
