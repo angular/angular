@@ -17,6 +17,7 @@ import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
 import {TNode} from './interfaces/node';
 import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES} from './interfaces/view';
+import {destroyLView} from './node_manipulation';
 import {createLView} from './view/construction';
 
 export function createAndRenderEmbeddedLView<T>(
@@ -58,8 +59,13 @@ export function createAndRenderEmbeddedLView<T>(
       embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
     }
 
-    // execute creation mode of a view
-    renderView(embeddedTView, embeddedLView, context);
+    try {
+      renderView(embeddedTView, embeddedLView, context);
+    } catch (error) {
+      // A failed view was never attached to a container that could destroy it.
+      destroyLView(embeddedTView, embeddedLView);
+      throw error;
+    }
 
     return embeddedLView;
   } finally {

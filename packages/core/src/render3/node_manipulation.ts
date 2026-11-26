@@ -387,26 +387,31 @@ function cleanUpView(tView: TView, lView: LView): void {
 function processCleanups(tView: TView, lView: LView): void {
   ngDevMode && assertNotReactive(processCleanups.name);
   const tCleanup = tView.cleanup;
-  const lCleanup = lView[CLEANUP]!;
-  if (tCleanup !== null) {
+  const lCleanup = lView[CLEANUP];
+  if (tCleanup !== null && lCleanup !== null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
         // This is a native DOM listener. It will occupy 4 entries in the TCleanup array (hence i +=
         // 2 at the end of this block).
         const targetIdx = tCleanup[i + 3];
         ngDevMode && assertNumber(targetIdx, 'cleanup target must be a number');
-        if (targetIdx >= 0) {
-          // Destroy anything whose teardown is a function call (e.g. QueryList, ModelSignal).
-          lCleanup[targetIdx]();
-        } else {
-          // Subscription
-          lCleanup[-targetIdx].unsubscribe();
+        // A view that failed during creation may not have registered every cleanup.
+        if (Math.abs(targetIdx) < lCleanup.length) {
+          if (targetIdx >= 0) {
+            // Destroy anything whose teardown is a function call (e.g. QueryList, ModelSignal).
+            lCleanup[targetIdx]();
+          } else {
+            // Subscription
+            lCleanup[-targetIdx].unsubscribe();
+          }
         }
         i += 2;
       } else {
         // This is a cleanup function that is grouped with the index of its context
-        const context = lCleanup[tCleanup[i + 1]];
-        tCleanup[i].call(context);
+        const contextIndex = tCleanup[i + 1] as number;
+        if (contextIndex < lCleanup.length) {
+          tCleanup[i].call(lCleanup[contextIndex]);
+        }
       }
     }
   }

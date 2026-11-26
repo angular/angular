@@ -8,6 +8,7 @@
 
 import {
   Component,
+  DestroyRef,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
@@ -593,6 +594,65 @@ describe('@boundary runtime instructions (JIT)', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Error: Ctor Error');
     expect(fixture.nativeElement.textContent).not.toContain('Main Content');
+  });
+
+  it('destroys the partially created view when retrying after an error', async () => {
+    const shouldThrow = signal(false);
+    let destroyed = 0;
+
+    @Component({selector: 'tracked-sibling', template: ''})
+    class TrackedSibling {
+      constructor() {
+        inject(DestroyRef).onDestroy(() => destroyed++);
+      }
+    }
+
+    @Component({selector: 'failing-sibling', template: '{{ read() }}'})
+    class FailingSibling {
+      constructor() {
+        if (shouldThrow()) {
+          throw new Error('Creation failed');
+        }
+      }
+
+      read() {
+        if (shouldThrow()) {
+          throw new Error('Update failed');
+        }
+        return 'Ready';
+      }
+    }
+
+    @Component({
+      imports: [TrackedSibling, FailingSibling],
+      template: `
+        @boundary {
+          <tracked-sibling />
+          <failing-sibling />
+          <button (click)="shouldThrow.set(false)">Button in the primary view</button>
+        } @error {
+          {{ $error.message }}
+          <button (click)="$reset()">Retry</button>
+        }
+      `,
+    })
+    class Host {
+      readonly shouldThrow = shouldThrow;
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Ready');
+
+    shouldThrow.set(true);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Update failed');
+    expect(destroyed).toBe(1);
+
+    fixture.nativeElement.querySelector('button').click();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Creation failed');
+    expect(destroyed).toBe(2);
   });
 
   it('should intercept errors during the update phase (lifecycle hook)', async () => {
