@@ -186,8 +186,9 @@ export function ɵɵdefer(
 
   let ssrBlockState = null;
   let ssrUniqueId: string | null = null;
-  if (lContainer[DEHYDRATED_VIEWS]?.length > 0) {
-    const info = lContainer[DEHYDRATED_VIEWS][0].data;
+  const views = lContainer[DEHYDRATED_VIEWS];
+  if (views?.length) {
+    const info = views[views.length - 1].data;
     ssrUniqueId = info[DEFER_BLOCK_ID] ?? null;
     ssrBlockState = info[SERIALIZED_DEFER_BLOCK_STATE];
   }

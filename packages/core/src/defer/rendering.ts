@@ -239,13 +239,16 @@ function findMatchingDehydratedViewForDeferBlock(
   lContainer: LContainer,
   lDetails: LDeferBlockDetails,
 ): {dehydratedView: DehydratedContainerView | null; dehydratedViewIx: number} {
-  const dehydratedViewIx =
-    lContainer[DEHYDRATED_VIEWS]?.findIndex(
-      (view: any) => view.data[SERIALIZED_DEFER_BLOCK_STATE] === lDetails[DEFER_BLOCK_STATE],
-    ) ?? -1;
-  const dehydratedView =
-    dehydratedViewIx > -1 ? lContainer[DEHYDRATED_VIEWS]![dehydratedViewIx] : null;
-  return {dehydratedView, dehydratedViewIx};
+  const views = lContainer[DEHYDRATED_VIEWS];
+  if (views) {
+    for (let i = views.length - 1; i >= 0; i--) {
+      const view = views[i];
+      if (view.data[SERIALIZED_DEFER_BLOCK_STATE] === lDetails[DEFER_BLOCK_STATE]) {
+        return {dehydratedView: view, dehydratedViewIx: i};
+      }
+    }
+  }
+  return {dehydratedView: null, dehydratedViewIx: -1};
 }
 
 /**

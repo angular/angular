@@ -62,6 +62,8 @@ import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {
   clearDocument,
   getAppContents,
+  hydrate,
+  prepareEnvironment,
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
   stripUtilAttributes,
@@ -3059,6 +3061,45 @@ describe('platform-server full application hydration integration', () => {
         const clientRootNode = compRef.location.nativeElement;
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should hydrate the first server view matching the placeholder state', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (when visible) {
+              <span>Loaded</span>
+            } @placeholder {
+              <p>Placeholder</p>
+            }
+          `,
+        })
+        class SimpleComponent {
+          visible = false;
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+        prepareEnvironment(doc, html);
+
+        // Simulate a container with two equivalent dehydrated placeholder views.
+        const first = doc.querySelector('app p')!;
+        const second = first.cloneNode(true);
+        first.parentNode!.insertBefore(second, first.nextSibling);
+        const transferState = doc.querySelector('script[type="application/json"]')!;
+        const serialized = transferState.textContent!;
+        const withSecondView = serialized.replace('"s":0', '"s":0,"x":2');
+        expect(withSecondView).not.toBe(serialized);
+        transferState.textContent = withSecondView;
+
+        const appRef = await hydrate(doc, SimpleComponent);
+        await appRef.whenStable();
+
+        const clientViews = doc.querySelectorAll('app p');
+        expect(clientViews.length).toBe(1);
+        expect(clientViews[0]).toBe(first);
+        expect(doc.body.contains(second)).toBeFalse();
+        verifyAllNodesClaimedForHydration(getComponentRef(appRef).location.nativeElement);
       });
 
       it('should render nothing on the server if no placeholder block is provided', async () => {
@@ -8292,6 +8333,37 @@ describe('platform-server full application hydration integration', () => {
           compRef.location.nativeElement.querySelector(`[id=${id}]`),
         );
         verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
+      });
+
+      it('should reuse the first views and clean up the remaining server views', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @for (item of items; track item) {
+              <p>Item #{{ item }}</p>
+            }
+          `,
+        })
+        class SimpleComponent {
+          items = isPlatformServer(inject(PLATFORM_ID)) ? [1, 2, 3, 4] : [1, 2];
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+        prepareEnvironment(doc, html);
+        const serverRows = Array.from(doc.querySelectorAll('app p'));
+        expect(serverRows.length).toBe(4);
+
+        const appRef = await hydrate(doc, SimpleComponent);
+        await appRef.whenStable();
+
+        const clientRows = Array.from(doc.querySelectorAll('app p'));
+        expect(clientRows.length).toBe(2);
+        expect(clientRows[0]).toBe(serverRows[0]);
+        expect(clientRows[1]).toBe(serverRows[1]);
+        expect(doc.body.contains(serverRows[2])).toBeFalse();
+        expect(doc.body.contains(serverRows[3])).toBeFalse();
+        verifyAllNodesClaimedForHydration(getComponentRef(appRef).location.nativeElement);
       });
 
       it('should handle a reconciliation with swaps', async () => {
