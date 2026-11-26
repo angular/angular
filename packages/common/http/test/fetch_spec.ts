@@ -573,6 +573,24 @@ describe('FetchBackend', () => {
       });
     });
 
+    it('include a total for identity-encoded responses', (done) => {
+      backend
+        .handle(TEST_POST.clone({reportDownloadProgress: true}))
+        .pipe(toArray())
+        .subscribe((events) => {
+          const progress = events.filter(
+            (event) => event.type === HttpEventType.DownloadProgress,
+          ) as HttpDownloadProgressEvent[];
+          expect(progress.map((event) => event.loaded)).toEqual([4, 10]);
+          expect(progress.map((event) => event.total)).toEqual([10, 10]);
+          done();
+        });
+      fetchMock.mockProgressEvent(4);
+      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'downloaded', {
+        'content-encoding': 'identity',
+      });
+    });
+
     it('errors when upload progress is requested', (done) => {
       backend.handle(TEST_POST.clone({reportUploadProgress: true})).subscribe({
         error: (error: HttpErrorResponse) => {

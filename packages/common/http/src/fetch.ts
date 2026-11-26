@@ -213,10 +213,10 @@ export class FetchBackend implements HttpBackend {
       // Read Progress
       const contentLength = response.headers.get('content-length');
       const contentLengthValue = contentLength !== null ? Number(contentLength) : NaN;
+      const contentEncoding = response.headers.get('content-encoding')?.trim().toLowerCase();
+      const isEncoded = Boolean(contentEncoding && contentEncoding !== 'identity');
       const total =
-        Number.isFinite(contentLengthValue) && !response.headers.has('content-encoding')
-          ? contentLengthValue
-          : undefined;
+        Number.isFinite(contentLengthValue) && !isEncoded ? contentLengthValue : undefined;
 
       if (
         this.maxResponseSize !== null &&
