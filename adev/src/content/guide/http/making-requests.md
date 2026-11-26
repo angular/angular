@@ -236,6 +236,8 @@ http
   });
 ```
 
+`event.total` can be `undefined` when the size of the response body is not known in advance, for example for a compressed response or a response without a `Content-Length` header.
+
 <docs-callout important title="Literal value for `observe`">
 Because the value of `observe` affects the type returned by `HttpClient`, it must have a literal type and not a `string` type.
 
