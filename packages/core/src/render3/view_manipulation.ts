@@ -15,8 +15,10 @@ import {assertDefined} from '../util/assert';
 
 import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
+import {handleUncaughtError} from './instructions/shared';
 import {TNode} from './interfaces/node';
 import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES} from './interfaces/view';
+import {destroyLView} from './node_manipulation';
 import {createLView} from './view/construction';
 
 export function createAndRenderEmbeddedLView<T>(
@@ -59,7 +61,23 @@ export function createAndRenderEmbeddedLView<T>(
     }
 
     // execute creation mode of a view
-    renderView(embeddedTView, embeddedLView, context);
+    try {
+      renderView(embeddedTView, embeddedLView, context);
+    } catch (error) {
+      // A failed view is never attached to a container that could destroy it, so clean up any
+      // directives, listeners, effects, or child views that were already created before rethrowing.
+      try {
+        destroyLView(embeddedTView, embeddedLView);
+      } catch (destroyError) {
+        // Report secondary teardown errors without masking the original creation error.
+        try {
+          handleUncaughtError(embeddedLView, destroyError);
+        } catch {
+          // Intentionally ignore if the error handler rethrows so the original error is preserved.
+        }
+      }
+      throw error;
+    }
 
     return embeddedLView;
   } finally {

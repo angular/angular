@@ -8,10 +8,12 @@
 
 import {
   Component,
+  DestroyRef,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
   Input,
+  OnDestroy,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -593,6 +595,235 @@ describe('@boundary runtime instructions (JIT)', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Error: Ctor Error');
     expect(fixture.nativeElement.textContent).not.toContain('Main Content');
+  });
+
+  it('should destroy earlier siblings when a sibling constructor throws on initial render and retries', async () => {
+    let destroyRefCount = 0;
+    let ngOnDestroyCount = 0;
+
+    @Component({selector: 'tracked-sibling', template: ''})
+    class TrackedSibling implements OnDestroy {
+      constructor() {
+        inject(DestroyRef).onDestroy(() => destroyRefCount++);
+      }
+
+      ngOnDestroy() {
+        ngOnDestroyCount++;
+      }
+    }
+
+    @Component({selector: 'failing-sibling', template: ''})
+    class FailingSibling {
+      constructor() {
+        throw new Error('Creation failed');
+      }
+    }
+
+    @Component({
+      imports: [TrackedSibling, FailingSibling],
+      template: `
+        @boundary {
+          <tracked-sibling />
+          <failing-sibling />
+        } @error {
+          {{ $error.message }}
+          <button (click)="$reset()">Retry</button>
+        }
+      `,
+    })
+    class Host {}
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Creation failed');
+    expect(destroyRefCount).toBe(1);
+    expect(ngOnDestroyCount).toBe(1);
+
+    fixture.nativeElement.querySelector('button').click();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Creation failed');
+    expect(destroyRefCount).toBe(2);
+    expect(ngOnDestroyCount).toBe(2);
+  });
+
+  it('should destroy earlier siblings without invoking ngOnDestroy on uninstantiated later siblings on retry', async () => {
+    const shouldThrow = signal(false);
+    const log: string[] = [];
+
+    @Component({selector: 'earlier-sibling', template: ''})
+    class EarlierSibling implements OnDestroy {
+      private readonly id = 'earlier';
+      constructor() {
+        inject(DestroyRef).onDestroy(() => log.push('earlier:DestroyRef'));
+      }
+      ngOnDestroy() {
+        log.push(`earlier:ngOnDestroy:${this.id}`);
+      }
+    }
+
+    @Component({selector: 'failing-sibling', template: '{{ read() }}'})
+    class FailingSibling implements OnDestroy {
+      private readonly id = 'failing';
+      constructor() {
+        if (shouldThrow()) {
+          throw new Error('Creation failed');
+        }
+      }
+      read() {
+        if (shouldThrow()) {
+          throw new Error('Update failed');
+        }
+        return 'Ready';
+      }
+      ngOnDestroy() {
+        log.push(`failing:ngOnDestroy:${this.id}`);
+      }
+    }
+
+    @Component({selector: 'later-sibling', template: ''})
+    class LaterSibling implements OnDestroy {
+      private readonly id = 'later';
+      ngOnDestroy() {
+        // Accessing `this.id` ensures `ngOnDestroy` is never invoked with `null`/`undefined`.
+        log.push(`later:ngOnDestroy:${this.id}`);
+      }
+    }
+
+    @Component({
+      imports: [EarlierSibling, FailingSibling, LaterSibling],
+      template: `
+        @boundary {
+          <earlier-sibling />
+          <failing-sibling />
+          <later-sibling />
+          <button (click)="shouldThrow.set(false)">Action</button>
+        } @error {
+          {{ $error.message }}
+          <button (click)="$reset()">Retry</button>
+        }
+      `,
+    })
+    class Host {
+      readonly shouldThrow = shouldThrow;
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Ready');
+
+    shouldThrow.set(true);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Update failed');
+    expect(log).toEqual([
+      'earlier:ngOnDestroy:earlier',
+      'failing:ngOnDestroy:failing',
+      'later:ngOnDestroy:later',
+      'earlier:DestroyRef',
+    ]);
+
+    log.length = 0;
+    fixture.nativeElement.querySelector('button').click();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Creation failed');
+    // Only the sibling constructed before the throwing sibling should be destroyed;
+    // neither FailingSibling nor LaterSibling was instantiated.
+    expect(log).toEqual(['earlier:ngOnDestroy:earlier', 'earlier:DestroyRef']);
+  });
+
+  it('should preserve the original creation error if teardown of an earlier sibling throws', async () => {
+    const handledErrors: unknown[] = [];
+
+    @Component({selector: 'throwing-destroy-sibling', template: ''})
+    class ThrowingDestroySibling implements OnDestroy {
+      ngOnDestroy() {
+        throw new Error('Teardown failed');
+      }
+    }
+
+    @Component({selector: 'throwing-create-sibling', template: ''})
+    class ThrowingCreateSibling {
+      constructor() {
+        throw new Error('Original creation error');
+      }
+    }
+
+    @Component({
+      imports: [ThrowingDestroySibling, ThrowingCreateSibling],
+      template: `
+        @boundary {
+          <throwing-destroy-sibling />
+          <throwing-create-sibling />
+        } @error (let err) {
+          Error: {{ err.message }}
+        }
+      `,
+    })
+    class Host {}
+
+    TestBed.configureTestingModule({
+      rethrowApplicationErrors: false,
+      providers: [
+        {
+          provide: ErrorHandler,
+          useValue: {
+            handleError(err: unknown) {
+              handledErrors.push(err);
+            },
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Error: Original creation error');
+    expect(handledErrors.some((e) => e instanceof Error && e.message === 'Teardown failed')).toBe(
+      true,
+    );
+  });
+
+  it('should destroy partially created children when ViewContainerRef.createComponent fails during creation', async () => {
+    let destroyed = 0;
+
+    @Component({selector: 'tracked-child', template: ''})
+    class TrackedChild implements OnDestroy {
+      constructor() {
+        inject(DestroyRef).onDestroy(() => destroyed++);
+      }
+
+      ngOnDestroy() {
+        destroyed++;
+      }
+    }
+
+    @Component({selector: 'failing-child', template: ''})
+    class FailingChild {
+      constructor() {
+        throw new Error('Dynamic child creation failed');
+      }
+    }
+
+    @Component({
+      imports: [TrackedChild, FailingChild],
+      template: `<tracked-child /><failing-child />`,
+    })
+    class DynamicComp {}
+
+    @Component({template: '<ng-container #vc />'})
+    class Host {
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    expect(() => fixture.componentInstance.vc.createComponent(DynamicComp)).toThrowError(
+      'Dynamic child creation failed',
+    );
+    expect(destroyed).toBe(2);
   });
 
   it('should intercept errors during the update phase (lifecycle hook)', async () => {

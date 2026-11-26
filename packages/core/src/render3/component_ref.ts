@@ -32,6 +32,7 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {
+  handleUncaughtError,
   instantiateAllDirectives,
   invokeDirectivesHostBindings,
   locateHostElement,
@@ -75,6 +76,7 @@ import {getDocument} from './interfaces/document';
 import {unregisterLView} from './interfaces/lview_tracking';
 import {Renderer} from './interfaces/renderer';
 import {SHARED_STYLES_HOST} from './interfaces/shared_styles_host';
+import {destroyLView} from './node_manipulation';
 import {
   extractAttrsAndClassesFromSelector,
   stringifyCSSSelectorList,
@@ -437,8 +439,17 @@ export class ComponentFactory<T> {
 
       renderView(rootTView, rootLView, null);
     } catch (e) {
-      // Stop tracking the views if creation failed since
-      // the consumer won't have a way to dereference them.
+      // Destroy any partially created views and stop tracking them since
+      // the consumer won't have a ComponentRef to destroy them.
+      try {
+        destroyLView(rootTView, rootLView);
+      } catch (destroyError) {
+        try {
+          handleUncaughtError(rootLView, destroyError);
+        } catch {
+          // Intentionally ignore if the error handler rethrows so the original error is preserved.
+        }
+      }
       if (componentView !== null) {
         unregisterLView(componentView);
       }

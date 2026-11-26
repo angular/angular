@@ -387,8 +387,8 @@ function cleanUpView(tView: TView, lView: LView): void {
 function processCleanups(tView: TView, lView: LView): void {
   ngDevMode && assertNotReactive(processCleanups.name);
   const tCleanup = tView.cleanup;
-  const lCleanup = lView[CLEANUP]!;
-  if (tCleanup !== null) {
+  const lCleanup = lView[CLEANUP];
+  if (tCleanup !== null && lCleanup !== null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
         // This is a native DOM listener. It will occupy 4 entries in the TCleanup array (hence i +=
@@ -397,16 +397,19 @@ function processCleanups(tView: TView, lView: LView): void {
         ngDevMode && assertNumber(targetIdx, 'cleanup target must be a number');
         if (targetIdx >= 0) {
           // Destroy anything whose teardown is a function call (e.g. QueryList, ModelSignal).
-          lCleanup[targetIdx]();
+          // Guard with optional chaining in case the view failed partway through creation.
+          lCleanup[targetIdx]?.();
         } else {
           // Subscription
-          lCleanup[-targetIdx].unsubscribe();
+          lCleanup[-targetIdx]?.unsubscribe();
         }
         i += 2;
       } else {
         // This is a cleanup function that is grouped with the index of its context
         const context = lCleanup[tCleanup[i + 1]];
-        tCleanup[i].call(context);
+        if (context !== undefined) {
+          tCleanup[i].call(context);
+        }
       }
     }
   }
@@ -444,8 +447,10 @@ function executeOnDestroys(tView: TView, lView: LView): void {
     for (let i = 0; i < destroyHooks.length; i += 2) {
       const context = lView[destroyHooks[i] as number];
 
-      // Only call the destroy hook if the context has been requested.
-      if (!(context instanceof NodeInjectorFactory)) {
+      // Only call the destroy hook if the context has been instantiated (it may be null/undefined
+      // if view creation failed before reaching this directive/pipe, or a NodeInjectorFactory if
+      // the provider was never requested).
+      if (context != null && !(context instanceof NodeInjectorFactory)) {
         const toCall = destroyHooks[i + 1] as HookFn | HookData;
 
         if (Array.isArray(toCall)) {
@@ -940,6 +945,9 @@ function applyForeignNodes(
   parent: RElement | null,
   beforeNode: RNode | null,
 ) {
+  if (action === WalkTNodeTreeAction.Destroy) {
+    return;
+  }
   const tView = lView[TVIEW];
   const headTNode = tView.firstChild!;
   const tailTNode = headTNode.next!;
