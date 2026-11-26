@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {canHydrateNode} from '../../hydration/utils';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {newArray} from '../../util/array_utils';
@@ -192,7 +193,12 @@ export function ɵɵprojection(
   setCurrentTNodeAsNotParent();
 
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
+  const parentTNode = tProjectionNode.parent;
+  // A parent recreated on the client still needs its projected content inserted.
+  const isNodeCreationMode =
+    !hydrationInfo ||
+    isInSkipHydrationBlock() ||
+    (parentTNode !== null && !canHydrateNode(lView, parentTNode));
   const componentHostNode = lView[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
   const isEmpty = componentHostNode.projection![tProjectionNode.projection] === null;
 
