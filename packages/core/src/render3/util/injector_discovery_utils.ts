@@ -202,11 +202,11 @@ function getProviderImportsContainer(injector: Injector): Type<unknown> | null {
 
   // In standalone applications, the root environment injector created by bootstrapApplication
   // may have no associated "instance".
-  if (defTypeRef.instance === null) {
+  if (defTypeRef.instance == null) {
     return null;
   }
 
-  return defTypeRef.instance.constructor;
+  return defTypeRef.instance.constructor as Type<unknown>;
 }
 
 /**
@@ -390,8 +390,7 @@ function walkProviderTreeToDiscoverImportPaths(
         let containerDef = getInjectorDef(container);
         if (!containerDef) {
           const ngModule: Type<unknown> | undefined = (container as any).ngModule as
-            | Type<unknown>
-            | undefined;
+            Type<unknown> | undefined;
           containerDef = getInjectorDef(ngModule);
         }
 

@@ -47,6 +47,57 @@ export abstract class Injector {
   static THROW_IF_NOT_FOUND = THROW_IF_NOT_FOUND;
   static NULL: Injector = /* @__PURE__ */ new NullInjector();
 
+  // g3-only-start
+  // /**
+  //  * Retrieves an instance from the injector based on the provided token.
+  //  * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+  //  * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+  //  */
+  // abstract get<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue: undefined,
+  //   options: InjectOptions & {
+  //     optional?: false;
+  //   },
+  // ): T;
+  // abstract get<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue: undefined,
+  //   options: InjectOptions & {
+  //     optional?: false;
+  //   },
+  // ): T;
+  // /**
+  //  * Retrieves an instance from the injector based on the provided token.
+  //  * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+  //  * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+  //  */
+  // abstract get<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): T | null;
+  // abstract get<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): T | null;
+  // /**
+  //  * Retrieves an instance from the injector based on the provided token.
+  //  * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+  //  * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+  //  */
+  // abstract get<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue?: T,
+  //   options?: InjectOptions,
+  // ): T;
+  // abstract get<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue?: T,
+  //   options?: InjectOptions,
+  // ): T;
+  // g3-only-end
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
