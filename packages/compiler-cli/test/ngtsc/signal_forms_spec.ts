@@ -257,9 +257,120 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
-        `Type '{}' is not assignable to type 'string | number | Date | null'.`,
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): Date | null; set: (v: Date | null) => void; }'`,
       );
+    });
+
+    it('should reject a non-nullable number field on a number input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="number" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }'`,
+      );
+    });
+
+    it('should allow a number|null field on a number input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="number" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<number | null>(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a non-nullable number field on a range input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="range" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(50));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should reject a non-nullable Date field on a date input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="date" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(new Date()));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): Date | null; set: (v: Date | null) => void; }'`,
+      );
+    });
+
+    it('should allow a Date|null field on a date input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="date" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<Date | null>(new Date()));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
     });
 
     it('should allow min/max bindings on date inputs', () => {
@@ -274,7 +385,7 @@ runInEachFileSystem(() => {
             imports: [FormField]
           })
           export class Comp {
-            f = form(signal(new Date('2026-01-15')));
+            f = form(signal<Date | null>(new Date('2026-01-15')));
           }
         `,
       );
@@ -295,7 +406,7 @@ runInEachFileSystem(() => {
             imports: [FormField]
           })
           export class Comp {
-            f = form(signal(5));
+            f = form(signal<number | null>(5));
           }
         `,
       );
@@ -443,7 +554,7 @@ runInEachFileSystem(() => {
             imports: [FormField]
           })
           export class Comp {
-            f = form(signal(0));
+            f = form(signal<number | null>(0));
           }
         `,
       );

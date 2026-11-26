@@ -127,16 +127,17 @@ export class TcbNativeFieldOp extends TcbOp {
 
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
 
-    const rawExpectedType = this.getExpectedTypeFromDomNode(this.node);
+    const invariantTypes = this.getInvariantTypesFromDomNode(this.node);
 
-    if (rawExpectedType === null) {
-      // For text-like <input> elements, use an invariant check on the value signal.
-      // WritableSignal<T> is invariant in T, so assigning it to a union of structural types
-      // gives us exact type matching: only Field<string> or Field<number|null> are accepted.
+    if (invariantTypes !== null) {
+      // For <input> elements that support multiple model types (including nullable ones), use an
+      // invariant check on the value signal. WritableSignal<T> is invariant in T, so assigning it
+      // to a union of structural types gives us exact type matching (e.g., rejecting `Field<number>`
+      // or `Field<Date>` when clearing the input writes `null`).
       const signal = extractFieldValueSignal(fieldBinding.value, this.tcb, this.scope);
       const id = new TcbExpr(this.tcb.allocateId());
       const unionType = new TcbExpr(
-        '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
+        invariantTypes.map((type) => `{ (): ${type}; set: (v: ${type}) => void; }`).join(' | '),
       );
       const assignment = new TcbExpr(`${id.print()} = ${signal.print()}`);
       assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
@@ -144,7 +145,7 @@ export class TcbNativeFieldOp extends TcbOp {
       this.scope.addStatement(declareVariable(id, unionType));
       this.scope.addStatement(assignment);
     } else {
-      const expectedType = new TcbExpr(rawExpectedType);
+      const expectedType = new TcbExpr(this.getExpectedTypeFromDomNode(this.node));
       const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
 
       // Create a variable with the expected type and check that the field value is assignable, e.g.
@@ -160,7 +161,33 @@ export class TcbNativeFieldOp extends TcbOp {
     return null;
   }
 
-  private getExpectedTypeFromDomNode(node: Element): string | null {
+  private getInvariantTypesFromDomNode(node: Element): string[] | null {
+    if (node.name !== 'input' || this.hasDynamicType) {
+      return null;
+    }
+
+    switch (this.inputType) {
+      case 'text':
+      case null:
+      case 'number':
+      case 'datetime-local':
+        return ['string', 'number | null'];
+
+      case 'range':
+        return ['string', 'number', 'number | null'];
+
+      case 'date':
+      case 'month':
+      case 'time':
+      case 'week':
+        return ['string', 'number', 'Date | null'];
+
+      default:
+        return null;
+    }
+  }
+
+  private getExpectedTypeFromDomNode(node: Element): string {
     if (node.name === 'textarea' || node.name === 'select') {
       // `<textarea>` and `<select>` are always strings.
       return 'string';
@@ -176,27 +203,11 @@ export class TcbNativeFieldOp extends TcbOp {
 
       case 'radio':
         return 'string';
-
-      case 'number':
-      case 'range':
-      case 'datetime-local':
-        return 'string | number | null';
-
-      case 'date':
-      case 'month':
-      case 'time':
-      case 'week':
-        return 'string | number | Date | null';
     }
 
     // If the type is dynamic, check it as if it can be any of the types above.
     if (this.hasDynamicType) {
       return 'string | number | boolean | Date | null';
-    }
-
-    if (this.inputType === 'text' || this.inputType === null) {
-      // Return null to signal the invariant check for text-like inputs.
-      return null;
     }
 
     return 'string';

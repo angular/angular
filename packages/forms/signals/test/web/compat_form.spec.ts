@@ -25,7 +25,7 @@ describe('compatForm with [formField] directive', () => {
     class TestCmp {
       readonly cat = signal({
         name: new FormControl('pirojok-the-cat', {nonNullable: true}),
-        age: new FormControl(5, {nonNullable: true}),
+        age: new FormControl<number | null>(5),
       });
       readonly f = compatForm(this.cat);
     }
@@ -66,7 +66,7 @@ describe('compatForm with [formField] directive', () => {
     class TestCmp {
       readonly cat = signal({
         name: new FormControl('fluffy', {nonNullable: true}),
-        age: 3,
+        age: 3 as number | null,
         species: 'cat',
       });
       readonly f = compatForm(this.cat);

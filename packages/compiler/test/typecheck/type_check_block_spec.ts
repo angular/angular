@@ -2535,13 +2535,6 @@ describe('type check blocks', () => {
     [
       {inputType: 'radio', expectedType: 'string'},
       {inputType: 'checkbox', expectedType: 'boolean'},
-      {inputType: 'number', expectedType: 'string | number | null'},
-      {inputType: 'range', expectedType: 'string | number | null'},
-      {inputType: 'datetime-local', expectedType: 'string | number | null'},
-      {inputType: 'date', expectedType: 'string | number | Date | null'},
-      {inputType: 'month', expectedType: 'string | number | Date | null'},
-      {inputType: 'time', expectedType: 'string | number | Date | null'},
-      {inputType: 'week', expectedType: 'string | number | Date | null'},
       {inputType: 'unknown', expectedType: 'string'},
     ].forEach(({inputType, expectedType}) => {
       it(`should generate a '${expectedType}' field for an input with a '${inputType}' type`, () => {
@@ -2553,14 +2546,55 @@ describe('type check blocks', () => {
       });
     });
 
-    it(`should generate a structural union for an input with a 'text' type`, () => {
-      const block = tcb(`<input type="text" [formField]="f"/>`, [FieldMock]);
-      expect(block).toContain(
-        'var _t1 = null! as { (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; };',
-      );
-      expect(block).toContain('_t1 = ((this).f)().value;');
-      expect(block).toContain('var _t2 = null! as i0.FormField;');
-      expect(block).toContain('_t2.field = (((this).f));');
+    [
+      {
+        inputType: 'text',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
+      },
+      {
+        inputType: 'number',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
+      },
+      {
+        inputType: 'datetime-local',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
+      },
+      {
+        inputType: 'range',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): number | null; set: (v: number | null) => void; }',
+      },
+      {
+        inputType: 'date',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): Date | null; set: (v: Date | null) => void; }',
+      },
+      {
+        inputType: 'month',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): Date | null; set: (v: Date | null) => void; }',
+      },
+      {
+        inputType: 'time',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): Date | null; set: (v: Date | null) => void; }',
+      },
+      {
+        inputType: 'week',
+        expectedType:
+          '{ (): string; set: (v: string) => void; } | { (): number; set: (v: number) => void; } | { (): Date | null; set: (v: Date | null) => void; }',
+      },
+    ].forEach(({inputType, expectedType}) => {
+      it(`should generate a structural union for an input with a '${inputType}' type`, () => {
+        const block = tcb(`<input type="${inputType}" [formField]="f"/>`, [FieldMock]);
+        expect(block).toContain(`var _t1 = null! as ${expectedType};`);
+        expect(block).toContain('_t1 = ((this).f)().value;');
+        expect(block).toContain('var _t2 = null! as i0.FormField;');
+        expect(block).toContain('_t2.field = (((this).f));');
+      });
     });
 
     it('should generate expressions to check the field and value bindings of a radio input', () => {
