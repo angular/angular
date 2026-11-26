@@ -11,7 +11,7 @@ The form model represents the raw user input as it appears in the UI. For instan
 ```ts
 interface AppointmentFormModel {
   name: string; // Appointment owner's name
-  date: Date; // Appointment date (carries only date information, time component is unused)
+  date: Date | null; // Appointment date (carries only date information, time component is unused)
   time: string; // Selected time as a string
 }
 
@@ -98,12 +98,12 @@ Properties on your form model should match the data types expected by your UI co
 
 For example, consider a beverage order form with a `size` field (6, 12, or 24 pack) and a `quantity` field. The UI uses a dropdown (`<select>`) for size and a number input (`<input type="number">`) for quantity.
 
-Although the size options look numeric, `<select>` elements work with string values, so `size` should be modeled as a string. An `<input type="number">` on the other hand, does work with numbers, so `quantity` can be modeled as a number.
+Although the size options look numeric, `<select>` elements work with string values, so `size` should be modeled as a string. An `<input type="number">` on the other hand, does work with numbers, so `quantity` can be modeled as a number. Clearing a number input sets the value to `null`, so include `null` in the type.
 
 ```ts {prefer, header: 'Appropriate data types for the bound UI controls'}
 interface BeverageOrderFormModel {
   size: string; // Bound to: <select> (option values: "6", "12", "24")
-  quantity: number; // Bound to: <input type="number">
+  quantity: number | null; // Bound to: <input type="number">
 }
 ```
 

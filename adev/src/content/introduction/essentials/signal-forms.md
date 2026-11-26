@@ -110,7 +110,7 @@ Text inputs work with various `type` attributes and textareas:
 
 #### Numbers
 
-Number inputs automatically convert between strings and numbers:
+Number inputs automatically convert between strings and numbers. Clearing the input sets the value to `null`, so use `number | null` for the field's type:
 
 ```html
 <!-- Number - automatically converts to number type -->
@@ -119,7 +119,7 @@ Number inputs automatically convert between strings and numbers:
 
 #### Date and time
 
-Date inputs store values as `YYYY-MM-DD` strings, and time inputs use `HH:mm` format:
+When the field's value is a string, date inputs use the `YYYY-MM-DD` format and time inputs use the `HH:mm` format:
 
 ```html
 <!-- Date and time - stores as ISO format strings -->
@@ -127,11 +127,7 @@ Date inputs store values as `YYYY-MM-DD` strings, and time inputs use `HH:mm` fo
 <input type="time" [formField]="form.eventTime" />
 ```
 
-If you need to convert date strings to Date objects, you can do so by passing the field value into `Date()`:
-
-```ts
-const dateObject = new Date(form.eventDate().value());
-```
+To work with `Date` objects instead, use `Date | null` for the field's type. Date and time inputs then read and write `Date` objects directly, and clearing the input sets the value to `null`.
 
 #### Multiline text
 
