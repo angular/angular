@@ -23,9 +23,10 @@ import {
 import {siblingAfter} from './node_lookup_utils';
 
 /**
- * Given a current DOM node and a serialized information about the views
+ * Given a current DOM node and serialized information about the views
  * in a container, walks over the DOM structure, collecting the list of
- * dehydrated views.
+ * dehydrated views. The returned array is in reverse DOM order so that
+ * the first view can be claimed with `pop()`.
  */
 export function locateDehydratedViewsInContainer(
   currentRNode: RNode,
@@ -54,6 +55,9 @@ export function locateDehydratedViewsInContainer(
     }
   }
 
+  if (dehydratedViews.length > 1) {
+    dehydratedViews.reverse();
+  }
   return [currentRNode, dehydratedViews];
 }
 
@@ -92,7 +96,7 @@ function findMatchingDehydratedViewImpl(
   template: string | null,
 ): DehydratedContainerView | null {
   if (hasMatchingDehydratedView(lContainer, template)) {
-    return lContainer[DEHYDRATED_VIEWS]!.shift()!;
+    return lContainer[DEHYDRATED_VIEWS]!.pop()!;
   } else {
     // Otherwise, we are at the state when reconciliation can not be completed,
     // thus we remove all dehydrated views within this container (remove them
@@ -185,7 +189,7 @@ function hasMatchingDehydratedView(lContainer: LContainer, template: string | nu
   // Verify whether the first dehydrated view in the container matches
   // the template id passed to this function (that originated from a TView
   // that was used to create an instance of an embedded or component views.
-  return views[0].data[TEMPLATE_ID] === template;
+  return views[views.length - 1].data[TEMPLATE_ID] === template;
 }
 
 function cleanupMatchingDehydratedViews(hostLView: LView, currentTNode: TNode): boolean {

@@ -105,7 +105,7 @@ export interface LContainer extends Array<any> {
   [VIEW_REFS]: unknown[] | null;
 
   /**
-   * Array of dehydrated views within this container.
+   * Array of dehydrated views in reverse DOM order within this container.
    *
    * This information is used during the hydration process on the client.
    * The hydration logic tries to find a matching dehydrated view, "claim" it

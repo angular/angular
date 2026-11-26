@@ -60,7 +60,8 @@ export function removeDehydratedViewList(deferBlock: DehydratedDeferBlock) {
   if (dehydratedViews === null) return;
   const parentLView = lContainer[PARENT];
   const renderer = parentLView[RENDERER];
-  for (const view of dehydratedViews) {
+  for (let i = dehydratedViews.length - 1; i >= 0; i--) {
+    const view = dehydratedViews[i];
     removeDehydratedView(view, renderer);
     ngDevMode && ngDevMode.dehydratedViewsRemoved++;
   }
