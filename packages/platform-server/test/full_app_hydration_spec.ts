@@ -5448,6 +5448,87 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
 
+        for (const initiallyOpen of [false, true]) {
+          it(`should preserve nested projected content with initial open state ${initiallyOpen}`, async () => {
+            @Component({
+              selector: 'app-container',
+              template: `
+                @if (open) {
+                  <ng-content />
+                }
+              `,
+            })
+            class ContainerComponent {
+              @Input() open = false;
+            }
+
+            @Component({
+              selector: 'app-wrapper',
+              imports: [ContainerComponent],
+              template: `
+                <app-container [open]="open">
+                  <div><span><ng-content /></span></div>
+                </app-container>
+              `,
+            })
+            class WrapperComponent {
+              @Input() open = false;
+            }
+
+            @Component({
+              selector: 'app',
+              imports: [WrapperComponent],
+              template: `
+                <app-wrapper [open]="open()"><b>projected</b> text</app-wrapper>
+              `,
+            })
+            class SimpleComponent {
+              readonly open = signal(initiallyOpen);
+            }
+
+            const html = await ssr(SimpleComponent);
+            const ssrContents = getAppContents(html);
+
+            if (initiallyOpen) {
+              expect(ssrContents).toContain('projected');
+            } else {
+              expect(ssrContents).not.toContain('projected');
+            }
+
+            resetTViewsFor(SimpleComponent, WrapperComponent, ContainerComponent);
+
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            await appRef.whenStable();
+
+            const clientRootNode = compRef.location.nativeElement;
+            verifyAllNodesClaimedForHydration(clientRootNode);
+            verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+            const container = clientRootNode.querySelector('app-container');
+            const assertProjectedContent = () => {
+              expect(container.querySelector('div > span')?.textContent).toBe('projected text');
+              expect(container.querySelectorAll('div > span > b').length).toBe(1);
+            };
+
+            if (initiallyOpen) {
+              assertProjectedContent();
+            }
+
+            compRef.instance.open.set(true);
+            await appRef.whenStable();
+            assertProjectedContent();
+
+            compRef.instance.open.set(false);
+            await appRef.whenStable();
+            expect(container.querySelector('div')).toBeNull();
+
+            compRef.instance.open.set(true);
+            await appRef.whenStable();
+            assertProjectedContent();
+          });
+        }
+
         it('should support nodes after <ng-content> when the content is not projected (@if)', async () => {
           @Component({
             selector: 'app-container',
