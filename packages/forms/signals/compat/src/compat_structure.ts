@@ -143,6 +143,7 @@ export class CompatStructure extends FieldNodeStructure {
     this.pathKeys = computed(() =>
       this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],
     );
+    this.fieldManager.structures.add(this);
   }
 
   override getChild(): FieldNode | undefined {
