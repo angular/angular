@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "angular_jasmine_test", "g3_test", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -6,12 +6,14 @@ SPEC_FILES_WITH_FORWARD_REFS = [
     "di_forward_ref_spec.ts",
 ]
 
+G3_SPEC_FILES = glob(["**/*_g3_spec.ts"])
+
 ts_project(
     name = "acceptance_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
-        exclude = SPEC_FILES_WITH_FORWARD_REFS,
+        exclude = SPEC_FILES_WITH_FORWARD_REFS + G3_SPEC_FILES,
     ),
     visibility = ["//:__pkg__"],
     deps = [
@@ -62,6 +64,28 @@ angular_jasmine_test(
         ":acceptance_lib",
         ":forward_ref_test_lib",
     ],
+)
+
+ts_project(
+    name = "acceptance_g3_lib",
+    testonly = True,
+    srcs = G3_SPEC_FILES,
+    tags = ["manual"],
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+angular_jasmine_test(
+    name = "acceptance_g3_raw",
+    data = [":acceptance_g3_lib"],
+    tags = ["manual"],
+)
+
+g3_test(
+    name = "acceptance_g3",
+    target = ":acceptance_g3_raw",
 )
 
 ng_web_test_suite(
