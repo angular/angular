@@ -3784,6 +3784,37 @@ describe('Zone Browser', function () {
           });
         }),
       );
+
+      it('should call an unhandledrejection listener once when zone.js reports the rejection', async () => {
+        if (!promiseUnhandleRejectionSupport()) {
+          return;
+        }
+        // Regression test for https://github.com/angular/angular/issues/72159.
+        // zone.js used to call the listener's task with the event as the task, which
+        // threw and was swallowed, so the listener only ran in browsers that also
+        // fire a native event for the converted promise.
+        const reasons: any[] = [];
+        const listener = (evt: PromiseRejectionEvent) => {
+          reasons.push(evt.reason);
+        };
+        window.addEventListener('unhandledrejection', listener);
+        try {
+          const error = new Error('reported by zone.js');
+          const promise = Promise.reject(error);
+          promise.catch(() => {});
+          (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')]({
+            promise,
+            rejection: error,
+          });
+          expect(reasons).toEqual([error]);
+
+          // No second, native event for the promise the event constructor may create.
+          await new Promise((resolve) => setTimeout(resolve, 20));
+          expect(reasons).toEqual([error]);
+        } finally {
+          window.removeEventListener('unhandledrejection', listener);
+        }
+      });
     });
 
     // @JiaLiPassion, Edge 15, the behavior is not the same with Chrome

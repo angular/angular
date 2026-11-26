@@ -310,7 +310,20 @@ export function patchBrowser(Zone: ZoneType): void {
               promise: e.promise,
               reason: e.rejection,
             });
-            eventTask.invoke(evt);
+            // Chrome and Safari still convert `promise` to a new native promise
+            // (whatwg/html#11547). That copy rejects too, so mark it handled or the
+            // browser reports the same rejection again with a native event.
+            if (evt.promise !== e.promise) {
+              evt.promise.catch(() => {});
+            }
+            // Tasks that use the global callback (the default for `addEventListener`)
+            // get the static `ZoneTask.invokeTask`, which takes the task first, the
+            // same way `globalCallback` in events.ts calls it.
+            if (eventTask.data && eventTask.data.useG) {
+              eventTask.invoke(eventTask, global, [evt]);
+            } else {
+              eventTask.invoke(evt);
+            }
           }
         });
       };
