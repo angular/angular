@@ -304,7 +304,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    * This property is either an array of types or a function that returns the array of types. This
    * function may be necessary to support forward declarations.
    */
-  dependencies?: TypeOrFactory<DependencyTypeList>;
+  dependencies?: TypeOrFactory<any[]>;
 
   /**
    * The set of schemas that declare elements to be allowed in the component's template.
