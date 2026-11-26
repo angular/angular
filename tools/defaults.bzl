@@ -10,6 +10,7 @@ load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_angular//src/ts_project:index.bzl", _ts_project = "ts_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
+load("//tools/bazel:g3_mode.bzl", _g3_test = "g3_test")
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:js_defs.bzl", _js_binary = "js_binary", _js_run_binary = "js_run_binary", _js_test = "js_test")
 load("//tools/bazel:npm_packages.bzl", _ng_package = "ng_package", _npm_package = "npm_package")
@@ -19,6 +20,7 @@ load("//tools/bazel:webdriver_test.bzl", _webdriver_test = "webdriver_test")
 
 extract_types = _extract_types
 esbuild = _esbuild
+g3_test = _g3_test
 js_binary = _js_binary
 js_run_binary = _js_run_binary
 js_test = _js_test
@@ -84,10 +86,16 @@ def _determine_tsconfig(testonly):
 
     fail("Failing... a tsconfig value must be provided.")
 
+_G3_MODE_ARGS = select({
+    "//tools/bazel:is_g3_mode": ["--ngG3Mode"],
+    "//conditions:default": [],
+})
+
 def ts_project(
         name,
         deps = [],
         srcs = [],
+        args = [],
         source_map = True,
         testonly = False,
         tsconfig = None,
@@ -99,6 +107,7 @@ def ts_project(
         name,
         srcs = srcs,
         deps = deps,
+        args = args + _G3_MODE_ARGS,
         declaration = True,
         source_map = source_map,
         testonly = testonly,
@@ -117,6 +126,7 @@ def ng_project(
         name,
         deps = [],
         srcs = [],
+        args = [],
         source_map = True,
         testonly = False,
         tsconfig = None,
@@ -128,6 +138,7 @@ def ng_project(
         name,
         srcs = srcs,
         deps = deps,
+        args = args + _G3_MODE_ARGS,
         declaration = True,
         source_map = source_map,
         testonly = testonly,

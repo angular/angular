@@ -1,0 +1,140 @@
+diff --git a/src/worker/loop.mts b/src/worker/loop.mts
+index 1111111..2222222 100644
+--- a/src/worker/loop.mts
++++ b/src/worker/loop.mts
+@@ -33,6 +33,59 @@ export interface OptionalAngular {
+   programCtor: ProgramDescriptorCtor;
+ }
+ 
++/**
++ * Transforms a source file according to Angular's Google sync comment markers
++ * (`contributing-docs/google-markers.md`) for g3-mode compilation.
++ */
++function transformToG3(content: string): string {
++  if (!content.includes('g3-only') && !content.includes('3p-only')) {
++    return content;
++  }
++
++  const lines = content.split('\n');
++  const out: string[] = [];
++  let in3pBlock = false;
++  let inG3Block = false;
++
++  for (const line of lines) {
++    if (/^\s*\/\/\s*3p-only-start\b/.test(line)) {
++      in3pBlock = true;
++      continue;
++    }
++    if (/^\s*\/\/\s*3p-only-end\b/.test(line)) {
++      in3pBlock = false;
++      continue;
++    }
++    if (in3pBlock) {
++      continue;
++    }
++    if (/^\s*\/\/\s*g3-only-start\b/.test(line)) {
++      inG3Block = true;
++      continue;
++    }
++    if (/^\s*\/\/\s*g3-only-end\b/.test(line)) {
++      inG3Block = false;
++      continue;
++    }
++    if (inG3Block) {
++      out.push(line.replace(/^(\s*)\/\/ ?/, '$1'));
++      continue;
++    }
++    if (/\/\/\s*3p-only\s*$/.test(line)) {
++      // Keep `/// <reference path="...goog.d.ts" />` since Closure globals aren't ambient in 3P Bazel.
++      if (!/\/\/\/\s*<reference\s+path=.*goog\.d\.ts/.test(line)) {
++        continue;
++      }
++    }
++    if (/^\s*\/\/\s*g3-only\b/.test(line)) {
++      out.push(line.replace(/^(\s*)\/\/\s*g3-only ?/, '$1'));
++      continue;
++    }
++    out.push(line);
++  }
++  return out.join('\n');
++}
++
+ export async function executeBuild(
+   args: string[],
+   worker: {
+@@ -42,6 +95,9 @@ export async function executeBuild(
+   } | null,
+   optionalAngular?: OptionalAngular,
+ ) {
++  const g3Mode = args.includes('--ngG3Mode');
++  const tscArgs = g3Mode ? args.filter((a) => a !== '--ngG3Mode') : args;
++
+   let workerInputs: Map<AbsoluteFsPath, Uint8Array> | null = null;
+ 
+   // In worker mode, we know the inputs and can compute them. This allows
+@@ -64,12 +120,29 @@ export async function executeBuild(
+       ? new WorkerSandboxFileSystem(workerSortedInputFileNames)
+       : new BazelSafeFilesystem();
+ 
++  if (g3Mode) {
++    const origReadFile = fs.readFile.bind(fs);
++    fs.readFile = (filePath: AbsoluteFsPath): string => {
++      const content = origReadFile(filePath);
++      if (
++        filePath.endsWith('.ts') &&
++        !filePath.endsWith('.d.ts') &&
++        !filePath.includes('/node_modules/') &&
++        !filePath.includes('/src/webmcp/') &&
++        !filePath.endsWith('/event_contract_defines.ts')
++      ) {
++        return transformToG3(content);
++      }
++      return content;
++    };
++  }
++
+   // Note: This is needed because functions like `readConfiguration` do not properly
+   // re-use the passed `fs`, but call `getFileSystem`.
+   setFileSystem(fs);
+ 
+   // Populate options from command line arguments.
+-  const {options: cmdOptions} = ts.parseCommandLine(args);
++  const {options: cmdOptions} = ts.parseCommandLine(tscArgs);
+   const parsedConfig = readConfiguration(cmdOptions.project!, cmdOptions, fs);
+   const options = parsedConfig.options;
+ 
+@@ -79,7 +152,7 @@ export async function executeBuild(
+       ? getReuseHashForProject(options, workerSortedInputFileNames)
+       : null;
+   const existing =
+-    worker !== null && compilationReuseHash !== null
++    !g3Mode && worker !== null && compilationReuseHash !== null
+       ? worker.programCache.get(compilationReuseHash)
+       : undefined;
+ 
+@@ -113,10 +186,15 @@ export async function executeBuild(
+ 
+   // In workers, use a compiler host that leverages the persistent
+   // file cache. Otherwise, fall back to an uncached host.
+   if (worker !== null) {
++    const fileCache = g3Mode ? new FileCache() : worker.fileCache;
++    if (g3Mode) {
++      assert(workerInputs, 'Expected inputs when using persistent file cache.');
++      fileCache.updateCache(workerInputs);
++    }
+     host = createCacheCompilerHost(
+       options,
+-      worker.fileCache,
++      fileCache,
+       fs,
+       modifiedResourceFilePaths,
+       optionalAngular ?? null,
+@@ -128,7 +206,7 @@ export async function executeBuild(
+   const programDescriptor = optionalAngular?.programCtor ?? VanillaTsProgram;
+   const program = new programDescriptor(parsedConfig.rootNames, options, host, existing?.program);
+ 
+-  if (workerInputs !== null) {
++  if (workerInputs !== null && !g3Mode) {
+     if (existing !== undefined) {
+       existing.program = program;
+       existing.lastInputs = workerInputs;
