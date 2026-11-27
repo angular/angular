@@ -591,7 +591,12 @@ export class ShadowCss {
   }
 
   // change a selector like 'div' to 'name div'
-  private _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
+  private _scopeSelectors(
+    cssText: string,
+    scopeSelector: string,
+    hostSelector: string,
+    isNested = false,
+  ): string {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
@@ -605,17 +610,18 @@ export class ShadowCss {
             scopeSelector,
             hostSelector,
             isParentSelector: true,
+            isNested,
           });
 
           content =
             // Only recurse into content if there might be any child blocks.
             // TODO: support something like `.parent { ::ng-deep { .child {} } }`
             !containsDeep && rule.content.includes('{')
-              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector)
+              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector, true)
               : this._stripScopingSelectors(rule.content);
         }
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
-        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector, isNested);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
       }
@@ -660,16 +666,20 @@ export class ShadowCss {
   // the initial selector string and any nested selectors, parsed recursively,
   // for example `selector = 'a:where(.one)'` could be the parent, while recursive call
   // would have `selector = '.one'`.
+  // `isNested` is true for selectors of rules nested in another rule, where `&` refers to
+  // the already scoped parent selector.
   private _scopeSelector({
     selector,
     scopeSelector,
     hostSelector,
     isParentSelector = false,
+    isNested = false,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
     isParentSelector?: boolean;
+    isNested?: boolean;
   }): string {
     return selector
       .split(_selectorSplitRe)
@@ -683,6 +693,7 @@ export class ShadowCss {
               scopeSelector,
               hostSelector,
               isParentSelector,
+              isNested,
             });
           } else {
             return shallowPart;
@@ -739,11 +750,13 @@ export class ShadowCss {
     scopeSelector,
     hostSelector,
     isParentSelector,
+    isNested,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
     isParentSelector?: boolean;
+    isNested?: boolean;
   }): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
@@ -756,6 +769,13 @@ export class ShadowCss {
       // Comments are replaced with placeholders before scoping. A part that only consists of
       // comments is not a selector and must be left untouched.
       if (!scopedP || scopedP === '&' || _onlyCommentPlaceholdersRe.test(scopedP)) {
+        return p;
+      }
+
+      // In a nested rule, a compound selector containing `&` matches the parent's element,
+      // which already carries the parent's scoping. Under `:host` that is the host element,
+      // which has no content attribute, so adding one would stop the rule from matching.
+      if (isNested && hasTopLevelNestingSelector(scopedP)) {
         return p;
       }
 
@@ -840,6 +860,7 @@ export class ShadowCss {
               selector: selectorToScope,
               scopeSelector,
               hostSelector,
+              isNested,
             });
 
             // Put the result back into the pseudo selector function.
@@ -1114,6 +1135,24 @@ export function processRules(input: string, ruleCallback: (rule: CssRule) => Css
     return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
   });
   return unescapeInStrings(escapedResult);
+}
+
+/**
+ * Whether a compound selector contains `&` outside of any parentheses. Attribute selectors and
+ * escaped characters have already been replaced with placeholders by `SafeSelector`.
+ */
+function hasTopLevelNestingSelector(compound: string): boolean {
+  let depth = 0;
+  for (const char of compound) {
+    if (char === '(') {
+      depth++;
+    } else if (char === ')') {
+      depth--;
+    } else if (char === '&' && depth === 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 class StringWithEscapedBlocks {

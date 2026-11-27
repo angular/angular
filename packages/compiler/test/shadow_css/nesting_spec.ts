@@ -82,7 +82,7 @@ describe('ShadowCss nesting', () => {
       .parent[contenta] {
         color: blue;
 
-        &.modifier[contenta] {
+        &.modifier {
           color: red;
         }
       }
@@ -90,6 +90,74 @@ describe('ShadowCss nesting', () => {
 
     const result = shim(css, 'contenta');
     expect(result).toEqualCss(expected);
+  });
+
+  it('should not add the content attribute to ampersand selectors nested in :host', () => {
+    const css = `
+      :host {
+        display: block;
+
+        &.md {
+          width: 70px;
+        }
+
+        &:hover, &[disabled], &::before, button& {
+          color: red;
+        }
+
+        & .child, .child {
+          color: blue;
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        display: block;
+
+        &.md {
+          width: 70px;
+        }
+
+        &:hover, &[disabled], &::before, button& {
+          color: red;
+        }
+
+        & .child[contenta], .child[contenta] {
+          color: blue;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should not add the content attribute to ampersand selectors nested in :host()', () => {
+    expect(
+      shim(':host(.md) { &:hover { &.active { color: red; } } }', 'contenta', 'a-host'),
+    ).toEqualCss('.md[a-host] { &:hover { &.active { color: red; } } }');
+  });
+
+  it('should not add the content attribute to an ampersand inside :where() or :is()', () => {
+    expect(shim(':host { :where(&.md) { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '[a-host] { :where(&.md) { color: red; } }',
+    );
+    expect(shim(':host { :is(&.md, .child) { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '[a-host] { :is(&.md, .child[contenta]) { color: red; } }',
+    );
+  });
+
+  it('should scope a selector whose ampersand is inside :not()', () => {
+    expect(shim('.parent { :not(&) { color: red; } }', 'contenta')).toEqualCss(
+      '.parent[contenta] { [contenta]:not(&) { color: red; } }',
+    );
+  });
+
+  it('should scope a top-level ampersand selector', () => {
+    expect(shim('&.modifier { color: red; }', 'contenta')).toEqualCss(
+      '&.modifier[contenta] { color: red; }',
+    );
   });
 
   it('should shim selector with multiple ampersands', () => {
@@ -409,7 +477,7 @@ describe('ShadowCss nesting', () => {
         color: red;
 
         @media (width >= 1024px) {
-          &.modifier[contenta] {
+          &.modifier {
             color: blue;
           }
         }
