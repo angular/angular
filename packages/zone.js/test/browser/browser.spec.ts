@@ -3686,6 +3686,122 @@ describe('Zone Browser', function () {
       });
     });
 
+    // Regression test for https://github.com/angular/angular/issues/72159.
+    // Event tasks scheduled with `useG` share the static
+    // `ZoneTask.invokeTask(task, target, args)`, so the dispatch has to call
+    // `invoke` the way `globalZoneAwareCallback` does. Calling it with the event
+    // alone reached `runTask` with the event as the task and threw, and
+    // `handleUnhandledRejection` swallowed the error, so listeners never ran in
+    // browsers that follow the HTML spec, where
+    // `PromiseRejectionEventInit.promise` is `required object`.
+    describe('unhandled rejection dispatch', () => {
+      it('should dispatch the constructed event to unhandledrejection listeners', () => {
+        if (!promiseUnhandleRejectionSupport()) {
+          return;
+        }
+        const handler = (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')];
+        expect(typeof handler).toBe('function');
+
+        let received: any = null;
+        const listener = (evt: any) => {
+          window.removeEventListener('unhandledrejection', listener);
+          received = evt;
+        };
+        window.addEventListener('unhandledrejection', listener);
+
+        const promise = Zone.root.run(() => Promise.resolve('test'));
+        const rejection = new Error('dispatched error');
+
+        let thrown: any = null;
+        try {
+          handler.call(window, {promise, rejection});
+        } catch (err) {
+          thrown = err;
+        }
+
+        expect(thrown).toBeNull();
+        expect(received).not.toBeNull();
+        expect(received.type).toEqual('unhandledrejection');
+        expect(received.promise).toBe(promise);
+        expect(received.reason).toBe(rejection);
+      });
+
+      it('should dispatch rejectionhandled events the same way', () => {
+        if (!promiseUnhandleRejectionSupport()) {
+          return;
+        }
+        const handler = (Zone as any)[zoneSymbol('rejectionHandledHandler')];
+        expect(typeof handler).toBe('function');
+
+        let calls = 0;
+        const listener = () => {
+          window.removeEventListener('rejectionhandled', listener);
+          calls++;
+        };
+        window.addEventListener('rejectionhandled', listener);
+
+        const promise = Zone.root.run(() => Promise.resolve('test'));
+        const rejection = new Error('dispatched error');
+
+        let thrown: any = null;
+        try {
+          handler.call(window, {promise, rejection});
+        } catch (err) {
+          thrown = err;
+        }
+
+        expect(thrown).toBeNull();
+        expect(calls).toBe(1);
+      });
+
+      it('should reach every listener registered for the event', () => {
+        if (!promiseUnhandleRejectionSupport()) {
+          return;
+        }
+        const handler = (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')];
+
+        let first = 0;
+        let second = 0;
+        const listener1 = () => {
+          window.removeEventListener('unhandledrejection', listener1);
+          first++;
+        };
+        const listener2 = (evt: any) => {
+          window.removeEventListener('unhandledrejection', listener2);
+          second++;
+          evt.preventDefault();
+        };
+        window.addEventListener('unhandledrejection', listener1);
+        window.addEventListener('unhandledrejection', listener2);
+
+        const promise = Zone.root.run(() => Promise.resolve('test'));
+        handler.call(window, {promise, rejection: new Error('dispatched error')});
+
+        expect(first).toBe(1);
+        expect(second).toBe(1);
+      });
+
+      it('should run the listener in the zone that registered it', () => {
+        if (!promiseUnhandleRejectionSupport()) {
+          return;
+        }
+        const handler = (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')];
+
+        let observedZoneName: string | null = null;
+        const listenerZone = Zone.root.fork({name: 'listener-zone'});
+        const listener = () => {
+          window.removeEventListener('unhandledrejection', listener);
+          observedZoneName = Zone.current.name;
+        };
+        listenerZone.run(() => window.addEventListener('unhandledrejection', listener));
+
+        const promise = Zone.root.run(() => Promise.resolve('test'));
+        handler.call(window, {promise, rejection: new Error('dispatched error')});
+
+        expect(observedZoneName).toEqual('listener-zone');
+      });
+    });
+
     // TODO: Re-enable via https://github.com/angular/angular/pull/41526
     xdescribe('unhandled promise rejection', () => {
       const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
