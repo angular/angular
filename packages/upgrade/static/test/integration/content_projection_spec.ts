@@ -27,7 +27,7 @@ import {
   withEachNg1Version,
 } from '../../../src/common/test/helpers/common_test_helpers';
 
-import {bootstrap} from './static_test_helpers';
+import {$apply, bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
   describe('content projection', () => {
@@ -141,6 +141,357 @@ withEachNg1Version(() => {
 
       expect(evaluated).not.toHaveBeenCalled();
       expect(multiTrim(element.textContent)).toBe('label');
+    });
+
+    it('should not compile content written by a higher-priority directive controller on the host element', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const texts: Record<string, string> = {
+        payload: '{{ $root.evaluated() }}',
+        benign: 'hello',
+      };
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('commentText', () => ({
+          restrict: 'A',
+          priority: 10,
+          controller: [
+            '$element',
+            '$attrs',
+            function ($element: angular.IAugmentedJQuery, $attrs: angular.IAttributes) {
+              $element[0].textContent = texts[$attrs['commentText']];
+            },
+          ],
+        }))
+        .directive('userBadge', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+          },
+        ]);
+
+      const element = html(
+        '<div>' +
+          '<user-badge comment-text="payload"></user-badge>' +
+          '<user-badge comment-text="benign"></user-badge>' +
+          '</div>',
+      );
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('[{{ $root.evaluated() }}][hello]');
+    });
+
+    it('should not compile content written by a same-priority directive controller sorted before the component', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        // Default priority (0); 'commentText' sorts before 'userBadge' in AngularJS `byPriority`.
+        .directive('commentText', () => ({
+          restrict: 'A',
+          controller: [
+            '$element',
+            function ($element: angular.IAugmentedJQuery) {
+              $element[0].textContent = '{{ $root.evaluated() }}';
+            },
+          ],
+        }))
+        .directive('userBadge', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+          },
+        ]);
+
+      const element = html('<div><user-badge comment-text></user-badge></div>');
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('[{{ $root.evaluated() }}]');
+    });
+
+    it('should not compile content written by `ng-controller` on the host element', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .controller('CommentCtrl', [
+          '$element',
+          function ($element: angular.IAugmentedJQuery) {
+            $element[0].textContent = '{{ $root.evaluated() }}';
+          },
+        ])
+        .directive('userBadge', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+          },
+        ]);
+
+      const element = html('<div><user-badge ng-controller="CommentCtrl"></user-badge></div>');
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('[{{ $root.evaluated() }}]');
+    });
+
+    it('should not compile content written by a controller into a non-empty static template or child element', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('mutateChild', () => ({
+          restrict: 'A',
+          priority: 10,
+          controller: [
+            '$element',
+            function ($element: angular.IAugmentedJQuery) {
+              const span = ($element[0] as Element).querySelector('span');
+              if (span) {
+                span.textContent = '{{ $root.evaluated() }}';
+              } else {
+                $element[0].textContent = '{{ $root.evaluated() }}';
+              }
+            },
+          ],
+        }))
+        .directive('userBadge', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+            $rootScope['ok'] = 'static';
+          },
+        ]);
+
+      const element = html(
+        '<div>' +
+          '<user-badge mutate-child><span>{{ ok }}</span></user-badge>' +
+          '<user-badge mutate-child>\n  </user-badge>' +
+          '</div>',
+      );
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('[static][{{ $root.evaluated() }}]');
+    });
+
+    it('should not compile content written into a descendant downgraded component by an ancestor controller or pre-link', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ancestorCtrl', () => ({
+          restrict: 'A',
+          controller: [
+            '$element',
+            function ($element: angular.IAugmentedJQuery) {
+              ($element[0] as Element).querySelector('user-badge')!.textContent =
+                '{{ $root.evaluated() }}';
+            },
+          ],
+        }))
+        .directive('ancestorPre', () => ({
+          restrict: 'A',
+          link: {
+            pre: (_scope: angular.IScope, $element: angular.IAugmentedJQuery) => {
+              ($element[0] as Element).querySelector('user-badge')!.textContent =
+                '{{ $root.evaluated() }}';
+            },
+          },
+        }))
+        .directive('userBadge', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+          },
+        ]);
+
+      const element = html(
+        '<div>' +
+          '<div ancestor-ctrl><user-badge></user-badge></div>' +
+          '<div ancestor-pre><user-badge></user-badge></div>' +
+          '</div>',
+      );
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe(
+        '[{{ $root.evaluated() }}][{{ $root.evaluated() }}]',
+      );
+    });
+
+    it('should not compile content written by controllers on nested downgraded components', async () => {
+      @Component({template: 'outer(<ng-content></ng-content>)'})
+      class OuterComponent {}
+
+      @Component({template: 'inner(<ng-content></ng-content>)'})
+      class InnerComponent {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('commentText', () => ({
+          restrict: 'A',
+          priority: 10,
+          controller: [
+            '$element',
+            function ($element: angular.IAugmentedJQuery) {
+              $element[0].textContent = '{{ $root.evaluated() }}';
+            },
+          ],
+        }))
+        .directive('outerMutate', () => ({
+          restrict: 'A',
+          priority: 10,
+          controller: [
+            '$element',
+            function ($element: angular.IAugmentedJQuery) {
+              ($element[0] as Element).querySelector('inner-ng2')!.textContent =
+                '{{ $root.evaluated() }}';
+            },
+          ],
+        }))
+        .directive('outerNg2', downgradeComponent({component: OuterComponent}))
+        .directive('innerNg2', downgradeComponent({component: InnerComponent}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+          },
+        ]);
+
+      const element = html(
+        '<div>' +
+          '<outer-ng2><inner-ng2 comment-text></inner-ng2></outer-ng2>' +
+          '<outer-ng2 outer-mutate><inner-ng2></inner-ng2></outer-ng2>' +
+          '</div>',
+      );
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe(
+        'outer(inner({{ $root.evaluated() }}))outer(inner())',
+      );
+    });
+
+    it('should preserve `ng-transclude` with fallback content without double compiling', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .component('ng1', {
+          transclude: true,
+          template: '<ng2 ng-transclude>fallback {{ $root.label }}</ng2>',
+        })
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+            $rootScope['label'] = 'ok';
+            $rootScope['payload'] = '{{ $root.evaluated() }}';
+          },
+        ]);
+
+      const element = html('<div><ng1>{{ payload }}</ng1><ng1></ng1></div>');
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('[{{ $root.evaluated() }}][fallback ok]');
+    });
+
+    it('should clone template contents fresh across repeated `ng-repeat` and toggled `ng-if` instances', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['groups'] = [
+              [1, 2],
+              [3, 4],
+            ];
+            $rootScope['show'] = true;
+          },
+        ]);
+
+      const element = html(
+        '<div>' +
+          '<ng2 ng-repeat="group in groups">' +
+          '<b ng-repeat-start="i in group">{{ i }}</b><i ng-repeat-end>;</i>' +
+          '</ng2>' +
+          '<ng2 ng-if="show"><span ng-if="true">toggled</span></ng2>' +
+          '</div>',
+      );
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(element.textContent)).toBe('[1;2;][3;4;][toggled]');
+
+      $apply(upgrade, 'show = false');
+      expect(multiTrim(element.textContent)).toBe('[1;2;][3;4;]');
+
+      $apply(upgrade, 'show = true');
+      expect(multiTrim(element.textContent)).toBe('[1;2;][3;4;][toggled]');
     });
 
     it('should correctly project structural directives', waitForAsync(() => {
