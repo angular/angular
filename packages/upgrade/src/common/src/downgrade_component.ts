@@ -123,9 +123,6 @@ export function downgradeComponent(info: {
     // When downgrading multiple modules, special handling is needed wrt injectors.
     const hasMultipleDowngradedModules = isNgUpgradeLite && getDowngradedModuleCount($injector) > 1;
 
-    // A copy of the contents of each element, taken before anything on the element is linked.
-    const templates = new WeakMap<Node, Node[]>();
-
     return {
       restrict: 'E',
       terminal: true,
@@ -134,133 +131,152 @@ export function downgradeComponent(info: {
       // configuration properties can be made available. See:
       // See G3: javascript/angular2/angular1_router_lib.js
       // https://github.com/angular/angular.js/blob/47bf11ee94664367a26ed8c91b9b586d3dd420f5/src/ng/compile.js#L1670-L1691.
-      controller: [
-        '$element',
-        function (element: IAugmentedJQuery) {
-          // Controllers are instantiated before anything on the element is linked, so the contents
-          // are still the template. A fragment keeps the copies as siblings, as multi-element
-          // directives (e.g. `ng-repeat-start`) need.
-          const fragment = document.createDocumentFragment();
-          element[0].childNodes.forEach((node) => fragment.appendChild(node.cloneNode(true)));
-          templates.set(element[0], Array.from(fragment.childNodes));
-        },
-      ],
-      link: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, required: any[]) => {
-        const template = templates.get(element[0]) ?? [];
-        templates.delete(element[0]);
-
-        // We might have to compile the contents asynchronously, because this might have been
-        // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
-        // been compiled.
-
-        const ngModel: INgModelController = required[1];
-        const parentInjector: Injector | Thenable<Injector> | undefined = required[0];
-        let moduleInjector: Injector | Thenable<Injector> | undefined = undefined;
-        let ranAsync = false;
-
-        if (!parentInjector || hasMultipleDowngradedModules) {
-          const downgradedModule = info.downgradedModule || '';
-          const lazyModuleRefKey = `${LAZY_MODULE_REF}${downgradedModule}`;
-          const attemptedAction = `instantiating component '${getTypeName(info.component)}'`;
-
-          validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
-
-          const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          moduleInjector = lazyModuleRef.injector ?? lazyModuleRef.promise;
+      controller: function () {},
+      compile: (tElement: IAugmentedJQuery, tAttrs: IAttributes) => {
+        // Capture a copy of the static template contents during compilation, before any
+        // controllers (e.g. higher-priority directives, `ng-controller`, or same-priority
+        // directives sorted before this one) or ancestor pre-link hooks can run and write
+        // dynamic content into the host element. A DocumentFragment keeps the copies as siblings,
+        // as multi-element directives (e.g. `ng-repeat-start`) need.
+        // Skip capturing when `ng-transclude` is present on the same element: `ng-transclude`
+        // owns any fallback template content (emptying `tElement` in its own `compile`, which
+        // may run after this directive if its name sorts after ours) and inserts already-compiled
+        // nodes during linking.
+        let templateFragment: DocumentFragment | null = null;
+        const hostElement = tElement[0];
+        if (
+          hostElement &&
+          !(tAttrs && Object.hasOwn(tAttrs, 'ngTransclude')) &&
+          hasNonWhitespaceChildNodes(hostElement)
+        ) {
+          templateFragment = (hostElement.ownerDocument ?? document).createDocumentFragment();
+          hostElement.childNodes.forEach((node) =>
+            templateFragment!.appendChild(node.cloneNode(true)),
+          );
         }
 
-        // Notes:
-        //
-        // There are two injectors: `finalModuleInjector` and `finalParentInjector` (they might be
-        // the same instance, but that is irrelevant):
-        // - `finalModuleInjector` is used to retrieve `ComponentFactoryResolver`, thus it must be
-        //   on the same tree as the `NgModule` that declares this downgraded component.
-        // - `finalParentInjector` is used for all other injection purposes.
-        //   (Note that Angular knows to only traverse the component-tree part of that injector,
-        //   when looking for an injectable and then switch to the module injector.)
-        //
-        // There are basically three cases:
-        // - If there is no parent component (thus no `parentInjector`), we bootstrap the downgraded
-        //   `NgModule` and use its injector as both `finalModuleInjector` and
-        //   `finalParentInjector`.
-        // - If there is a parent component (and thus a `parentInjector`) and we are sure that it
-        //   belongs to the same `NgModule` as this downgraded component (e.g. because there is only
-        //   one downgraded module, we use that `parentInjector` as both `finalModuleInjector` and
-        //   `finalParentInjector`.
-        // - If there is a parent component, but it may belong to a different `NgModule`, then we
-        //   use the `parentInjector` as `finalParentInjector` and this downgraded component's
-        //   declaring `NgModule`'s injector as `finalModuleInjector`.
-        //   Note 1: If the `NgModule` is already bootstrapped, we just get its injector (we don't
-        //           bootstrap again).
-        //   Note 2: It is possible that (while there are multiple downgraded modules) this
-        //           downgraded component and its parent component both belong to the same NgModule.
-        //           In that case, we could have used the `parentInjector` as both
-        //           `finalModuleInjector` and `finalParentInjector`, but (for simplicity) we are
-        //           treating this case as if they belong to different `NgModule`s. That doesn't
-        //           really affect anything, since `parentInjector` has `moduleInjector` as ancestor
-        //           and trying to resolve `ComponentFactoryResolver` from either one will return
-        //           the same instance.
+        return {
+          post: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, required: any[]) => {
+            // Clone fresh per link invocation so repeated instances (e.g. `ng-repeat` or toggled
+            // `ng-if`) do not mutate each other's template nodes when passed to `$compile()`.
+            const template = templateFragment
+              ? Array.from((templateFragment.cloneNode(true) as DocumentFragment).childNodes)
+              : [];
 
-        // If there is a parent component, use its injector as parent injector.
-        // If this is a "top-level" Angular component, use the module injector.
-        const finalParentInjector = parentInjector || moduleInjector!;
+            // We might have to compile the contents asynchronously, because this might have been
+            // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
+            // been compiled.
 
-        // If this is a "top-level" Angular component or the parent component may belong to a
-        // different `NgModule`, use the module injector for module-specific dependencies.
-        // If there is a parent component that belongs to the same `NgModule`, use its injector.
-        const finalModuleInjector = moduleInjector || parentInjector!;
+            const ngModel: INgModelController = required[1];
+            const parentInjector: Injector | Thenable<Injector> | undefined = required[0];
+            let moduleInjector: Injector | Thenable<Injector> | undefined = undefined;
+            let ranAsync = false;
 
-        const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
-          const injectorPromise = new ParentInjectorPromise(element);
-          const facade = new DowngradeComponentAdapter(
-            element,
-            attrs,
-            scope,
-            ngModel,
-            moduleInjector.get(EnvironmentInjector),
-            injector,
-            $compile,
-            $parse,
-            info.component,
-            wrapCallback,
-            unsafelyOverwriteSignalInputs,
-          );
+            if (!parentInjector || hasMultipleDowngradedModules) {
+              const downgradedModule = info.downgradedModule || '';
+              const lazyModuleRefKey = `${LAZY_MODULE_REF}${downgradedModule}`;
+              const attemptedAction = `instantiating component '${getTypeName(info.component)}'`;
 
-          const projectableNodes = facade.compileContents(template);
-          const componentRef = facade.createComponentAndSetup(
-            projectableNodes,
-            isNgUpgradeLite,
-            info.propagateDigest,
-          );
+              validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
 
-          injectorPromise.resolve(componentRef.injector);
+              const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
+              moduleInjector = lazyModuleRef.injector ?? lazyModuleRef.promise;
+            }
 
-          if (ranAsync) {
-            // If this is run async, it is possible that it is not run inside a
-            // digest and initial input values will not be detected.
-            scope.$evalAsync(() => {});
-          }
-        };
+            // Notes:
+            //
+            // There are two injectors: `finalModuleInjector` and `finalParentInjector` (they might be
+            // the same instance, but that is irrelevant):
+            // - `finalModuleInjector` is used to retrieve `ComponentFactoryResolver`, thus it must be
+            //   on the same tree as the `NgModule` that declares this downgraded component.
+            // - `finalParentInjector` is used for all other injection purposes.
+            //   (Note that Angular knows to only traverse the component-tree part of that injector,
+            //   when looking for an injectable and then switch to the module injector.)
+            //
+            // There are basically three cases:
+            // - If there is no parent component (thus no `parentInjector`), we bootstrap the downgraded
+            //   `NgModule` and use its injector as both `finalModuleInjector` and
+            //   `finalParentInjector`.
+            // - If there is a parent component (and thus a `parentInjector`) and we are sure that it
+            //   belongs to the same `NgModule` as this downgraded component (e.g. because there is only
+            //   one downgraded module, we use that `parentInjector` as both `finalModuleInjector` and
+            //   `finalParentInjector`.
+            // - If there is a parent component, but it may belong to a different `NgModule`, then we
+            //   use the `parentInjector` as `finalParentInjector` and this downgraded component's
+            //   declaring `NgModule`'s injector as `finalModuleInjector`.
+            //   Note 1: If the `NgModule` is already bootstrapped, we just get its injector (we don't
+            //           bootstrap again).
+            //   Note 2: It is possible that (while there are multiple downgraded modules) this
+            //           downgraded component and its parent component both belong to the same NgModule.
+            //           In that case, we could have used the `parentInjector` as both
+            //           `finalModuleInjector` and `finalParentInjector`, but (for simplicity) we are
+            //           treating this case as if they belong to different `NgModule`s. That doesn't
+            //           really affect anything, since `parentInjector` has `moduleInjector` as ancestor
+            //           and trying to resolve `ComponentFactoryResolver` from either one will return
+            //           the same instance.
 
-        const downgradeFn = !isNgUpgradeLite
-          ? doDowngrade
-          : (pInjector: Injector, mInjector: Injector) => {
-              if (!ngZone) {
-                ngZone = pInjector.get(NgZone);
+            // If there is a parent component, use its injector as parent injector.
+            // If this is a "top-level" Angular component, use the module injector.
+            const finalParentInjector = parentInjector || moduleInjector!;
+
+            // If this is a "top-level" Angular component or the parent component may belong to a
+            // different `NgModule`, use the module injector for module-specific dependencies.
+            // If there is a parent component that belongs to the same `NgModule`, use its injector.
+            const finalModuleInjector = moduleInjector || parentInjector!;
+
+            const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
+              const injectorPromise = new ParentInjectorPromise(element);
+              const facade = new DowngradeComponentAdapter(
+                element,
+                attrs,
+                scope,
+                ngModel,
+                moduleInjector.get(EnvironmentInjector),
+                injector,
+                $compile,
+                $parse,
+                info.component,
+                wrapCallback,
+                unsafelyOverwriteSignalInputs,
+              );
+
+              const projectableNodes = facade.compileContents(template);
+              const componentRef = facade.createComponentAndSetup(
+                projectableNodes,
+                isNgUpgradeLite,
+                info.propagateDigest,
+              );
+
+              injectorPromise.resolve(componentRef.injector);
+
+              if (ranAsync) {
+                // If this is run async, it is possible that it is not run inside a
+                // digest and initial input values will not be detected.
+                scope.$evalAsync(() => {});
               }
-
-              wrapCallback(() => doDowngrade(pInjector, mInjector))();
             };
 
-        // NOTE:
-        // Not using `ParentInjectorPromise.all()` (which is inherited from `SyncPromise`), because
-        // Closure Compiler (or some related tool) complains:
-        // `TypeError: ...$src$downgrade_component_ParentInjectorPromise.all is not a function`
-        SyncPromise.all([finalParentInjector, finalModuleInjector]).then(([pInjector, mInjector]) =>
-          downgradeFn(pInjector, mInjector),
-        );
+            const downgradeFn = !isNgUpgradeLite
+              ? doDowngrade
+              : (pInjector: Injector, mInjector: Injector) => {
+                  if (!ngZone) {
+                    ngZone = pInjector.get(NgZone);
+                  }
 
-        ranAsync = true;
+                  wrapCallback(() => doDowngrade(pInjector, mInjector))();
+                };
+
+            // NOTE:
+            // Not using `ParentInjectorPromise.all()` (which is inherited from `SyncPromise`), because
+            // Closure Compiler (or some related tool) complains:
+            // `TypeError: ...$src$downgrade_component_ParentInjectorPromise.all is not a function`
+            SyncPromise.all([finalParentInjector, finalModuleInjector]).then(
+              ([pInjector, mInjector]) => downgradeFn(pInjector, mInjector),
+            );
+
+            ranAsync = true;
+          },
+        };
       },
     };
   };
@@ -268,6 +284,16 @@ export function downgradeComponent(info: {
   // bracket-notation because of closure - see #14441
   directiveFactory['$inject'] = [$COMPILE, $INJECTOR, $PARSE];
   return directiveFactory;
+}
+
+function hasNonWhitespaceChildNodes(node: Node): boolean {
+  for (let i = 0; i < node.childNodes.length; i++) {
+    const child = node.childNodes[i];
+    if (child.nodeType !== Node.TEXT_NODE || child.nodeValue?.trim()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
