@@ -310,7 +310,12 @@ export function patchBrowser(Zone: ZoneType): void {
               promise: e.promise,
               reason: e.rejection,
             });
-            eventTask.invoke(evt);
+            // Event tasks scheduled with `useG` (the default for
+            // `addEventListener`) do not get a per-task `invoke` closure: their
+            // `invoke` is the static `ZoneTask.invokeTask(task, target, args)`.
+            // Call it the way zone.js' own global event callback does, so the
+            // task reaches `runTask` instead of the event being read as one.
+            eventTask.invoke(eventTask, global, [evt]);
           }
         });
       };
