@@ -337,6 +337,14 @@
         }
       },
       {
+        "path": "./syntaxes/template-icu.json",
+        "scopeName": "template.icu.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
+      },
+      {
         "path": "./syntaxes/let-declaration.json",
         "scopeName": "template.let.ng",
         "injectTo": [
