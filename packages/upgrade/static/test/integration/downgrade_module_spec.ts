@@ -780,6 +780,55 @@ withEachNg1Version(() => {
         expect(multiTrim(element.textContent)).toBe('[c;]');
       });
 
+      it('should not compile content written by a co-located controller or `ng-bind` when created asynchronously', async () => {
+        @Component({template: '[<ng-content></ng-content>]'})
+        class Ng2Component {}
+
+        @NgModule({imports: [BrowserModule]})
+        class Ng2Module {
+          ngDoBootstrap() {}
+        }
+
+        const evaluated = jasmine.createSpy('evaluated');
+        const ng1Module = angular
+          .module_('ng1', [downgradeModule(Ng2Module)])
+          .directive('commentText', () => ({
+            restrict: 'A',
+            priority: 10,
+            controller: [
+              '$element',
+              function ($element: angular.IAugmentedJQuery) {
+                $element[0].textContent = '{{ $root.evaluated() }}';
+              },
+            ],
+          }))
+          .directive('userBadge', downgradeComponent({component: Ng2Component, propagateDigest}))
+          .run([
+            '$rootScope',
+            ($rootScope: angular.IRootScopeService) => {
+              $rootScope['evaluated'] = evaluated;
+              $rootScope['payload'] = '{{ $root.evaluated() }}';
+            },
+          ]);
+
+        const element = html(
+          '<div>' +
+            '<user-badge comment-text></user-badge>' +
+            '<user-badge ng-bind="payload"></user-badge>' +
+            '</div>',
+        );
+        const $injector = angular.bootstrap(element, [ng1Module.name]);
+        const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+        await ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).promise;
+        $rootScope.$digest();
+
+        expect(evaluated).not.toHaveBeenCalled();
+        expect(multiTrim(element.textContent)).toBe(
+          '[{{ $root.evaluated() }}][{{ $root.evaluated() }}]',
+        );
+      });
+
       it('should support using an upgraded service', async () => {
         @Injectable()
         class Ng2Service {
