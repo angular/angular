@@ -32,6 +32,16 @@ export const cases = [
     'testFile': 'syntaxes/test/data/template-blocks.html',
   },
   {
+    'name': 'icu syntax',
+    'scopeName': 'template.icu.ng',
+    'grammarFiles': [
+      'syntaxes/template-icu.json',
+      'syntaxes/expression.json',
+      'syntaxes/template.json',
+    ],
+    'testFile': 'syntaxes/test/data/template-icu.html',
+  },
+  {
     'name': 'tag syntax',
     'scopeName': 'template.tag.ng',
     'grammarFiles': [

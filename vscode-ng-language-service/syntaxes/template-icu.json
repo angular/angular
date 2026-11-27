@@ -1,0 +1,77 @@
+{
+  "scopeName": "template.icu.ng",
+  "injectionSelector": "L:text.html -comment -expression.ng -meta.tag -source.css -source.js",
+  "patterns": [
+    {
+      "include": "#icu"
+    }
+  ],
+  "repository": {
+    "icu": {
+      "begin": "(\\{)\\s*([^{},]+?)\\s*(,)\\s*(plural|select)\\s*(,)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.block.ts"
+        },
+        "2": {
+          "name": "expression.ng",
+          "patterns": [
+            {
+              "include": "expression.ng"
+            }
+          ]
+        },
+        "3": {
+          "name": "punctuation.separator.comma.ts"
+        },
+        "4": {
+          "name": "keyword.control.icu.kind.ng"
+        },
+        "5": {
+          "name": "punctuation.separator.comma.ts"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "name": "meta.icu.ng",
+      "patterns": [
+        {
+          "include": "#icuCase"
+        }
+      ]
+    },
+    "icuCase": {
+      "begin": "(?:([^\\s{}][^{}]*?)\\s*)?(\\{)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.icu.case.ng"
+        },
+        "2": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "contentName": "meta.icu.case.body.ng",
+      "patterns": [
+        {
+          "include": "#icu"
+        },
+        {
+          "include": "text.html.derivative"
+        },
+        {
+          "include": "template.ng"
+        }
+      ]
+    }
+  }
+}

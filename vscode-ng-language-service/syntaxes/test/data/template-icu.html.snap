@@ -1,0 +1,203 @@
+>{count, plural, =0 {none} one {one item} other {many items}}
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+# ^^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.readwrite.ts
+#      ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#       ^ template.icu.ng meta.icu.ng
+#        ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.kind.ng
+#              ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#               ^ template.icu.ng meta.icu.ng
+#                ^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                  ^ template.icu.ng meta.icu.ng
+#                   ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                    ^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                        ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                         ^ template.icu.ng meta.icu.ng
+#                          ^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                             ^ template.icu.ng meta.icu.ng
+#                              ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                               ^^^^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                       ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                        ^ template.icu.ng meta.icu.ng
+#                                         ^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                                              ^ template.icu.ng meta.icu.ng
+#                                               ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                ^^^^^^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                                          ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                           ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>
+>{user.gender | lowercase, select, male {him} female {her} other {them}}
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+# ^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.object.ts
+#     ^ template.icu.ng meta.icu.ng expression.ng punctuation.accessor.ts
+#      ^^^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.property.ts
+#            ^ template.icu.ng meta.icu.ng expression.ng
+#             ^ template.icu.ng meta.icu.ng expression.ng keyword.operator.logical.ts
+#              ^ template.icu.ng meta.icu.ng expression.ng
+#               ^^^^^^^^^ template.icu.ng meta.icu.ng expression.ng entity.name.function.pipe.ng
+#                        ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#                         ^ template.icu.ng meta.icu.ng
+#                          ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.kind.ng
+#                                ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#                                 ^ template.icu.ng meta.icu.ng
+#                                  ^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                                      ^ template.icu.ng meta.icu.ng
+#                                       ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                        ^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                           ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                            ^ template.icu.ng meta.icu.ng
+#                                             ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                                                   ^ template.icu.ng meta.icu.ng
+#                                                    ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                     ^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                                        ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                         ^ template.icu.ng meta.icu.ng
+#                                                          ^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                                                               ^ template.icu.ng meta.icu.ng
+#                                                                ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                                 ^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                                                     ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                                      ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>
+><!-- Case bodies starting with an interpolation -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.icu.ng
+>{count, plural, one {{{count}} item} other {{{count}} items}}
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+# ^^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.readwrite.ts
+#      ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#       ^ template.icu.ng meta.icu.ng
+#        ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.kind.ng
+#              ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#               ^ template.icu.ng meta.icu.ng
+#                ^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                   ^ template.icu.ng meta.icu.ng
+#                    ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                     ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                       ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#                            ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                              ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                   ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                    ^ template.icu.ng meta.icu.ng
+#                                     ^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#                                          ^ template.icu.ng meta.icu.ng
+#                                           ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                            ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                                              ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#                                                   ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                                                     ^^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                                           ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#                                                            ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>
+>{count, plural,
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+# ^^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.readwrite.ts
+#      ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#       ^ template.icu.ng meta.icu.ng
+#        ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.kind.ng
+#              ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+>  one {{{count}} Stored Bundle}
+#^^ template.icu.ng meta.icu.ng
+#  ^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#     ^ template.icu.ng meta.icu.ng
+#      ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#       ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#         ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#              ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                ^^^^^^^^^^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                              ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>  other {{{count}} Stored Bundles}
+#^^ template.icu.ng meta.icu.ng
+#  ^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#       ^ template.icu.ng meta.icu.ng
+#        ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#         ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#           ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#                ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                  ^^^^^^^^^^^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#                                 ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>}
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>
+><!-- Nested -->
+#^^^^^^^^^^^^^^^^ template.icu.ng
+>{gender, select,
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+# ^^^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.readwrite.ts
+#       ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#        ^ template.icu.ng meta.icu.ng
+#         ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.kind.ng
+#               ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+>  male {{count, plural, one {{{count}} man} other {{{count}} men}}}
+#^^ template.icu.ng meta.icu.ng
+#  ^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#      ^ template.icu.ng meta.icu.ng
+#       ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#        ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.definition.block.ts
+#         ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng expression.ng variable.other.readwrite.ts
+#              ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.separator.comma.ts
+#               ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng
+#                ^^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng keyword.control.icu.kind.ng
+#                      ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.separator.comma.ts
+#                       ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng
+#                        ^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng keyword.control.icu.case.ng
+#                           ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng
+#                            ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.definition.block.ts
+#                             ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                               ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#                                    ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                                      ^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng
+#                                          ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.definition.block.ts
+#                                           ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng
+#                                            ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng keyword.control.icu.case.ng
+#                                                 ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng
+#                                                  ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.definition.block.ts
+#                                                   ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                                                     ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#                                                          ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                                                            ^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng meta.icu.case.body.ng
+#                                                                ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.definition.block.ts
+#                                                                 ^ template.icu.ng meta.icu.ng meta.icu.case.body.ng meta.icu.ng punctuation.definition.block.ts
+#                                                                  ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>  other {{{name}}}
+#^^ template.icu.ng meta.icu.ng
+#  ^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.case.ng
+#       ^ template.icu.ng meta.icu.ng
+#        ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#         ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#           ^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng expression.ng variable.other.readwrite.ts
+#               ^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng punctuation.definition.block.ts
+#                 ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>}
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>
+><!-- Case value and body on separate lines -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.icu.ng
+>{count, plural,
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+# ^^^^^ template.icu.ng meta.icu.ng expression.ng variable.other.readwrite.ts
+#      ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+#       ^ template.icu.ng meta.icu.ng
+#        ^^^^^^ template.icu.ng meta.icu.ng keyword.control.icu.kind.ng
+#              ^ template.icu.ng meta.icu.ng punctuation.separator.comma.ts
+>  one
+#^^^^^^ template.icu.ng meta.icu.ng
+>  {item}
+#^^ template.icu.ng meta.icu.ng
+#  ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#   ^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#       ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>  other
+#^^^^^^^^ template.icu.ng meta.icu.ng
+>  {items}
+#^^ template.icu.ng meta.icu.ng
+#  ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+#   ^^^^^ template.icu.ng meta.icu.ng meta.icu.case.body.ng
+#        ^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>}
+#^ template.icu.ng meta.icu.ng punctuation.definition.block.ts
+>
+><!-- Should not highlight -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.icu.ng
+>
+>{ not an icu } {a, b, c} {count, unknown, other {text}}
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.icu.ng
+>

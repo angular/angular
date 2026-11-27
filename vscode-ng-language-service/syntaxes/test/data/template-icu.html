@@ -1,0 +1,29 @@
+{count, plural, =0 {none} one {one item} other {many items}}
+
+{user.gender | lowercase, select, male {him} female {her} other {them}}
+
+<!-- Case bodies starting with an interpolation -->
+{count, plural, one {{{count}} item} other {{{count}} items}}
+
+{count, plural,
+  one {{{count}} Stored Bundle}
+  other {{{count}} Stored Bundles}
+}
+
+<!-- Nested -->
+{gender, select,
+  male {{count, plural, one {{{count}} man} other {{{count}} men}}}
+  other {{{name}}}
+}
+
+<!-- Case value and body on separate lines -->
+{count, plural,
+  one
+  {item}
+  other
+  {items}
+}
+
+<!-- Should not highlight -->
+
+{ not an icu } {a, b, c} {count, unknown, other {text}}
