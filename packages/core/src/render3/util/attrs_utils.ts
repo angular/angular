@@ -37,9 +37,16 @@ import {RElement} from '../interfaces/renderer_dom';
  * @param renderer The renderer to be used
  * @param native The element that the attributes will be assigned to
  * @param attrs The attribute array of values that will be assigned to the element
+ * @param hydratedTagName The tag name of an element reused during hydration, whose resource
+ *     attributes are left alone if they already have the value (see `isRenderedResource`).
  * @returns the index value that was last accessed in the attributes array
  */
-export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAttributes): number {
+export function setUpAttributes(
+  renderer: Renderer,
+  native: RElement,
+  attrs: TAttributes,
+  hydratedTagName: string | null = null,
+): number {
   let i = 0;
   while (i < attrs.length) {
     const value = attrs[i];
@@ -65,7 +72,10 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
       // Standard attributes
       if (isAnimationProp(attrName)) {
         renderer.setProperty(native, attrName, attrVal);
-      } else {
+      } else if (
+        hydratedTagName === null ||
+        !isRenderedResource(native, hydratedTagName, attrName, attrVal)
+      ) {
         renderer.setAttribute(native, attrName, attrVal as string);
       }
       i++;
@@ -77,6 +87,57 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
   // whether by running into an unsupported marker or if all the static values were
   // iterated over.
   return i;
+}
+
+/**
+ * Whether an element reused during hydration already has `value` as the resource attribute
+ * `name` (see `isResourceAttribute`), which shouldn't be set again.
+ *
+ * Always false until `enableIsRenderedResourceImpl` is called by hydration, so that apps without
+ * hydration don't include the check.
+ */
+export function isRenderedResource(
+  element: RElement,
+  tagName: string | null,
+  name: string,
+  value: unknown,
+): boolean {
+  return _isRenderedResourceImpl(element, tagName, name, value);
+}
+
+let _isRenderedResourceImpl: typeof isRenderedResourceImpl = () => false;
+
+function isRenderedResourceImpl(
+  element: RElement,
+  tagName: string | null,
+  name: string,
+  value: unknown,
+): boolean {
+  // `value` can be a trusted value, such as a `TrustedScriptURL`, hence `String`.
+  return isResourceAttribute(tagName, name) && element.getAttribute(name) === String(value);
+}
+
+export function enableIsRenderedResourceImpl() {
+  _isRenderedResourceImpl = isRenderedResourceImpl;
+}
+
+/**
+ * Whether setting the attribute `name` makes a `tagName` element load its resource again, even
+ * if the value doesn't change: an `<iframe>` reloads and a `<video>` restarts.
+ */
+export function isResourceAttribute(tagName: string | null, name: string): boolean {
+  switch (name) {
+    case 'src':
+      return (
+        tagName === 'iframe' || tagName === 'embed' || tagName === 'video' || tagName === 'audio'
+      );
+    case 'srcdoc':
+      return tagName === 'iframe';
+    case 'data':
+      return tagName === 'object';
+    default:
+      return false;
+  }
 }
 
 /**

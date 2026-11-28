@@ -411,6 +411,33 @@ describe('event replay', () => {
     ]);
   });
 
+  it('should replay a `load` event that fired on an iframe before hydration', async () => {
+    const onLoadSpy = jasmine.createSpy();
+
+    @Component({
+      selector: 'app',
+      template: `<iframe id="target" src="about:blank" (load)="onLoad()"></iframe>`,
+    })
+    class AppComponent {
+      onLoad = onLoadSpy;
+    }
+
+    const html = await ssr(AppComponent);
+    const doc = getDocument();
+    prepareEnvironment(doc, getAppContents(html));
+    resetTViewsFor(AppComponent);
+
+    const loadEvent = doc.createEvent('Event');
+    loadEvent.initEvent('load', false, false);
+    doc.getElementById('target')!.dispatchEvent(loadEvent);
+    expect(onLoadSpy).not.toHaveBeenCalled();
+
+    const appRef = await hydrate(doc, AppComponent);
+    await appRef.whenStable();
+
+    expect(onLoadSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('should route to the appropriate component with content projection', async () => {
     const outerOnClickSpy = jasmine.createSpy();
     const innerOnClickSpy = jasmine.createSpy();
