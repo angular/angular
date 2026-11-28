@@ -15,7 +15,7 @@ import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {Version, signal} from '@angular/core';
 import {of} from 'rxjs';
 import {VersionManager} from '../../services/version-manager.service';
-import {Search, WINDOW} from '@angular/docs';
+import {NavigationState, Search, WINDOW} from '@angular/docs';
 import {PAGE_PREFIX} from '../../constants/pages';
 
 describe('Navigation', () => {
@@ -59,6 +59,25 @@ describe('Navigation', () => {
     fixture = TestBed.createComponent(Navigation);
     component = fixture.componentInstance;
     await fixture.whenStable();
+  });
+
+  it('should lock page scrolling only while mobile navigation is open', async () => {
+    const navigationState = TestBed.inject(NavigationState);
+    const isWheelCancelled = () =>
+      !document.body.dispatchEvent(
+        new WheelEvent('wheel', {deltaY: 100, bubbles: true, cancelable: true}),
+      );
+
+    navigationState.setMobileNavigationListVisibility(true);
+    await fixture.whenStable();
+
+    expect(isWheelCancelled()).toBeTrue();
+    expect(document.body.style.overflowY).toBe('');
+
+    navigationState.setMobileNavigationListVisibility(false);
+    await fixture.whenStable();
+
+    expect(isWheelCancelled()).toBeFalse();
   });
 
   it('should append active class to DOCS_ROUTE when DOCS_ROUTE is active', async () => {

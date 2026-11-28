@@ -9,7 +9,7 @@
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {ConnectedPosition, ConnectionPositionPair} from '@angular/cdk/overlay';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {Component, PLATFORM_ID, inject, signal} from '@angular/core';
+import {Component, DestroyRef, PLATFORM_ID, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -28,6 +28,7 @@ import {ANGULAR_LINKS} from '../../constants/links';
 import {PAGE_PREFIX} from '../../constants/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
+import {lockPageScroll} from './scroll-lock';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -100,7 +101,10 @@ export class Navigation {
   isMobileNavigationOpened$ = toObservable(this.isMobileNavigationOpened);
   primaryRouteChanged$ = toObservable(this.activeRouteItem);
 
+  private releaseScrollLock: (() => void) | undefined;
+
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.releaseScrollLock?.());
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();
@@ -196,11 +200,9 @@ export class Navigation {
 
   private preventToScrollContentWhenSecondaryNavIsOpened(): void {
     this.isMobileNavigationOpened$.pipe(takeUntilDestroyed()).subscribe((opened) => {
-      if (opened) {
-        this.document.body.style.overflowY = 'hidden';
-      } else {
-        this.document.body.style.removeProperty('overflow-y');
-      }
+      this.releaseScrollLock?.();
+      const win = this.document.defaultView;
+      this.releaseScrollLock = opened && this.isBrowser && win ? lockPageScroll(win) : undefined;
     });
   }
 }
