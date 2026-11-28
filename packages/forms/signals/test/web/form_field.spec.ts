@@ -4563,6 +4563,58 @@ describe('field directive', () => {
     expect(control().value()).toBe('initial');
   });
 
+  it('restores an undefined field value after a control edit before rendering', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput {
+      readonly value = model<string>();
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal<string | undefined>(undefined));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const {f, control} = fixture.componentInstance;
+
+    control().value.set('edited');
+    expect(f().value()).toBe('edited');
+    f().value.set(undefined);
+    await fixture.whenStable();
+
+    expect(control().value()).toBeUndefined();
+  });
+
+  it('does not write the same value back when a control echoes its input', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput {
+      readonly writes: string[] = [];
+      @Input() set value(value: string) {
+        this.writes.push(value);
+      }
+      readonly valueChange = output<string>();
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal('initial'));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const control = fixture.componentInstance.control();
+    expect(control.writes).toEqual(['initial']);
+
+    control.valueChange.emit('initial');
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
+
+    expect(control.writes).toEqual(['initial']);
+  });
+
   it('restores a custom control when its parent form is reset before rendering', async () => {
     @Component({selector: 'my-input', template: ''})
     class CustomInput implements FormValueControl<string> {
