@@ -269,6 +269,7 @@
       "SIGNAL_NODE",
       "SIMPLE_CHANGES_STORE",
       "STABILITY_WARNING_THRESHOLD",
+      "STALE_CONTROL_VALUE",
       "SVG_NAMESPACE",
       "SafeSubscriber",
       "SafeValueImpl",

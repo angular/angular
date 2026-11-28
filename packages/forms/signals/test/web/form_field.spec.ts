@@ -4539,6 +4539,108 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('typing');
   });
 
+  it('restores a control model when the field returns to its previous value before rendering', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput {
+      readonly value = model('');
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal('initial'));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const {f, control} = fixture.componentInstance;
+    expect(control().value()).toBe('initial');
+
+    control().value.set('edited');
+    f().value.set('initial');
+    await fixture.whenStable();
+
+    expect(control().value()).toBe('initial');
+  });
+
+  it('restores an undefined field value after a control edit before rendering', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput {
+      readonly value = model<string>();
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal<string | undefined>(undefined));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const {f, control} = fixture.componentInstance;
+
+    control().value.set('edited');
+    expect(f().value()).toBe('edited');
+    f().value.set(undefined);
+    await fixture.whenStable();
+
+    expect(control().value()).toBeUndefined();
+  });
+
+  it('does not write the same value back when a control echoes its input', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput {
+      readonly writes: string[] = [];
+      @Input() set value(value: string) {
+        this.writes.push(value);
+      }
+      readonly valueChange = output<string>();
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal('initial'));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const control = fixture.componentInstance.control();
+    expect(control.writes).toEqual(['initial']);
+
+    control.valueChange.emit('initial');
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
+
+    expect(control.writes).toEqual(['initial']);
+  });
+
+  it('restores a custom control when its parent form is reset before rendering', async () => {
+    @Component({selector: 'my-input', template: ''})
+    class CustomInput implements FormValueControl<string> {
+      readonly value = model('');
+    }
+
+    @Component({imports: [CustomInput, FormField], template: '<my-input [formField]="f.name" />'})
+    class TestCmp {
+      readonly f = form(signal({name: 'Ada'}));
+      readonly control = viewChild.required(CustomInput);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const {f, control} = fixture.componentInstance;
+    expect(control().value()).toBe('Ada');
+
+    control().value.set('');
+    expect(f.name().value()).toBe('');
+    f().reset({name: 'Ada'});
+    await fixture.whenStable();
+
+    expect(f.name().value()).toBe('Ada');
+    expect(control().value()).toBe('Ada');
+  });
+
   it('synchronizes with a custom value control with separate input and output properties', () => {
     @Component({
       selector: 'my-input',
@@ -4574,6 +4676,7 @@ describe('field directive', () => {
       element.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe('typing');
+    expect(fix.debugElement.children[0].injector.get(CustomInput).value()).toBe('typing');
   });
 
   it('synchronizes with a custom value control with separate @Input and @Output properties', () => {
@@ -4612,6 +4715,7 @@ describe('field directive', () => {
       element.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe('typing');
+    expect(fix.debugElement.children[0].injector.get(CustomInput).value).toBe('typing');
   });
 
   it('synchronizes with a custom checkbox control', () => {
@@ -4649,6 +4753,31 @@ describe('field directive', () => {
       input.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe(true);
+  });
+
+  it('restores a custom checkbox when the field returns to its previous value before rendering', async () => {
+    @Component({selector: 'my-checkbox', template: ''})
+    class CustomCheckbox implements FormCheckboxControl {
+      readonly checked = model(false);
+    }
+
+    @Component({imports: [CustomCheckbox, FormField], template: '<my-checkbox [formField]="f" />'})
+    class TestCmp {
+      readonly f = form(signal(true));
+      readonly control = viewChild.required(CustomCheckbox);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const {f, control} = fixture.componentInstance;
+    expect(control().checked()).toBe(true);
+
+    control().checked.set(false);
+    expect(f().value()).toBe(false);
+    f().value.set(true);
+    await fixture.whenStable();
+
+    expect(control().checked()).toBe(true);
   });
 
   it('synchronizes with a custom checkbox control with separate input and output properties', () => {
