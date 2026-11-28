@@ -42,6 +42,7 @@ export {
   defaultIterableDiffers as ɵdefaultIterableDiffers,
   defaultKeyValueDiffers as ɵdefaultKeyValueDiffers,
 } from './change_detection/change_detection';
+export {DefaultKeyValueDiffer as ɵDefaultKeyValueDiffer} from './change_detection/differs/default_keyvalue_differ';
 export {
   internalProvideZoneChangeDetection as ɵinternalProvideZoneChangeDetection,
   PROVIDED_NG_ZONE as ɵPROVIDED_NG_ZONE,

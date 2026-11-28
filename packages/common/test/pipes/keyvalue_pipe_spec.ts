@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
+import {
+  Component,
+  KeyValueDiffers,
+  ɵdefaultKeyValueDiffers as defaultKeyValueDiffers,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {KeyValuePipe} from '../../index';
 import {JsonPipe} from '../../public_api';
@@ -25,6 +29,39 @@ describe('KeyValuePipe', () => {
     const pipe = new KeyValuePipe(defaultKeyValueDiffers);
     const fn = () => {};
     expect(pipe.transform(fn as any as null)).toEqual(null);
+  });
+  it('should preserve the entries reported by a custom differ', () => {
+    const input: Record<string, number> = {b: 1, a: 2, hidden: 0};
+    const factory = defaultKeyValueDiffers.find(input);
+    const pipe = new KeyValuePipe(
+      new KeyValueDiffers([
+        {
+          supports: (value) => value === input,
+          create: () => {
+            const differ = factory.create<string, number>();
+            return {
+              diff: jasmine
+                .createSpy('diff')
+                .and.callFake(() => differ.diff({b: input['b'], a: input['a']})),
+            };
+          },
+        },
+      ]),
+    );
+
+    const result = pipe.transform(input, null);
+    expect(result).toEqual([
+      {key: 'b', value: 1},
+      {key: 'a', value: 2},
+    ]);
+    expect(pipe.transform(input, null)).toBe(result);
+    const sorted = pipe.transform(input);
+    expect(sorted.map((pair) => pair.key)).toEqual(['a', 'b']);
+    sorted[0].value = 99;
+    expect(pipe.transform(input, null)).toEqual(result);
+    expect(result[1].value).toBe(2);
+    input['b'] = 3;
+    expect(pipe.transform(input, null)[0].value).toBe(3);
   });
   describe('object dictionary', () => {
     it('should return empty array of an empty dictionary', () => {
@@ -68,6 +105,47 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 1},
       ]);
     });
+    it('should follow changes to object key order when compareFn is null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      pipe.transform({a: 1, b: 2}, null);
+      const reordered = pipe.transform({b: 2, a: 1}, null);
+      expect(reordered).toEqual([
+        {key: 'b', value: 2},
+        {key: 'a', value: 1},
+      ]);
+      expect(pipe.transform({b: 2, a: 1}, null)).toBe(reordered);
+    });
+    it('should ignore inherited keys when checking natural order', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = Object.assign(Object.create({inherited: 0}), {b: 2, a: 1});
+      const result = pipe.transform(input, null);
+      expect(result).toEqual([
+        {key: 'b', value: 2},
+        {key: 'a', value: 1},
+      ]);
+      expect(pipe.transform(input, null)).toBe(result);
+    });
+
+    it('should follow natural order when keys move and entries change in the same update', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      pipe.transform({a: 1, b: 2}, null);
+      expect(pipe.transform({b: 3, c: 4, a: 1}, null)).toEqual([
+        {key: 'b', value: 3},
+        {key: 'c', value: 4},
+        {key: 'a', value: 1},
+      ]);
+    });
+
+    it('should restore missing entries when the returned array was shortened', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = {a: 1, b: 2};
+      pipe.transform(input, null).pop();
+      expect(pipe.transform(input, null)).toEqual([
+        {key: 'a', value: 1},
+        {key: 'b', value: 2},
+      ]);
+    });
+
     it('should reorder when compareFn changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = {'b': 1, 'a': 2};
@@ -281,6 +359,32 @@ describe('KeyValuePipe', () => {
         {key: 'b', value: 1},
         {key: 'a', value: 1},
       ]);
+    });
+    it('should restore a hole even when the missing Map key is undefined', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = new Map([[undefined, 1]]);
+      delete pipe.transform(input, null)[0];
+      expect(pipe.transform(input, null)).toEqual([{key: undefined, value: 1}]);
+    });
+
+    it('should follow changes to Map insertion order when compareFn is null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = new Map([
+        ['a', 1],
+        ['b', 2],
+      ]);
+      const initial = pipe.transform(input, null);
+      const reversed = new Map([...input].reverse());
+      const reordered = pipe.transform(reversed, null);
+      expect(reordered).toEqual([
+        {key: 'b', value: 2},
+        {key: 'a', value: 1},
+      ]);
+      expect(pipe.transform(new Map(reversed), null)).toBe(reordered);
+
+      reversed.delete('b');
+      reversed.set('b', 2);
+      expect(pipe.transform(reversed, null)).toEqual(initial);
     });
     it('should reorder when compareFn changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
