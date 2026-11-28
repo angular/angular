@@ -152,7 +152,7 @@
     "test": "pnpm run compile && node e2e/build-tests.js && node e2e/runTests.js"
   },
   "dependencies": {
-    "@typescript/native-preview": "npm:typescript@7.1.0-dev.20261118.1",
+    "@typescript/native-preview": "npm:typescript@7.1.0-dev.20261127.1",
     "vscode-languageclient": "^10.1.0",
     "vscode-languageserver": "^10.1.0",
     "vscode-languageserver-textdocument": "^1.0.12",
