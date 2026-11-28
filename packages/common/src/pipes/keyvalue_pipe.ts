@@ -7,17 +7,19 @@
  */
 
 import {
-  KeyValueChangeRecord,
   KeyValueChanges,
   KeyValueDiffer,
   KeyValueDiffers,
   Pipe,
   PipeTransform,
+  ɵDefaultKeyValueDiffer as DefaultKeyValueDiffer,
 } from '@angular/core';
 import {warnIfSignal} from './utils';
 
-function makeKeyValuePair<K, V>(key: K, value: V): KeyValue<K, V> {
-  return {key: key, value: value};
+function collectKeyValues<K, V>(changes: KeyValueChanges<K, V>): KeyValue<K, V>[] {
+  const entries: KeyValue<K, V>[] = [];
+  changes.forEachItem((record) => entries.push({key: record.key, value: record.currentValue!}));
+  return entries;
 }
 
 /**
@@ -62,6 +64,7 @@ export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}
 
   private differ!: KeyValueDiffer<any, any>;
+  private customEntries?: Array<KeyValue<any, any>>;
   private keyValues: Array<KeyValue<any, any>> = [];
   private compareFn: ((a: KeyValue<any, any>, b: KeyValue<any, any>) => number) | null =
     defaultComparator;
@@ -128,28 +131,22 @@ export class KeyValuePipe implements PipeTransform {
     // make a differ for whatever type we've been passed in
     this.differ ??= this.differs.find(input).create();
 
-    const differChanges: KeyValueChanges<K, V> | null = this.differ.diff(input as any);
-    const compareFnChanged = compareFn !== this.compareFn;
+    const changes: KeyValueChanges<K, V> | null = this.differ.diff(input as any);
+    const defaultDiffer = this.differ instanceof DefaultKeyValueDiffer ? this.differ : null;
+    // Custom differs only expose their entries when diff() reports a change. Keep a snapshot
+    // in natural order, separate from the mutable pairs returned to the caller.
+    if (!defaultDiffer && changes) {
+      this.customEntries = collectKeyValues(changes);
+    }
 
-    // The differ reports added, removed, or changed entries, but not moves.
     if (
-      differChanges ||
-      compareFnChanged ||
-      (compareFn === null &&
-        this.keyOrderChanged(input instanceof Map ? input.keys() : Object.keys(input)))
+      changes ||
+      compareFn !== this.compareFn ||
+      (compareFn === null && defaultDiffer && this.keyOrderChanged(defaultDiffer))
     ) {
-      this.keyValues = [];
-      if (differChanges) {
-        differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
-          this.keyValues.push(makeKeyValuePair(r.key, r.currentValue!));
-        });
-      } else if (input instanceof Map) {
-        input.forEach((value: V, key: K) => this.keyValues.push(makeKeyValuePair(key, value)));
-      } else {
-        for (const key of Object.keys(input)) {
-          this.keyValues.push(makeKeyValuePair(key as K, (input as any)[key]));
-        }
-      }
+      this.keyValues = defaultDiffer
+        ? collectKeyValues(changes ?? defaultDiffer)
+        : (this.customEntries?.map(({key, value}) => ({key, value})) ?? []);
       if (compareFn) {
         this.keyValues.sort(compareFn);
       }
@@ -158,15 +155,16 @@ export class KeyValuePipe implements PipeTransform {
     return this.keyValues;
   }
 
-  private keyOrderChanged(keys: Iterable<unknown>): boolean {
+  private keyOrderChanged(entries: KeyValueChanges<unknown, unknown>): boolean {
     let index = 0;
-    for (const key of keys) {
-      if (index >= this.keyValues.length || !Object.is(key, this.keyValues[index].key)) {
-        return true;
+    let changed = false;
+    entries.forEachItem(({key}) => {
+      const entry = this.keyValues[index++];
+      if (!entry || !Object.is(key, entry.key)) {
+        changed = true;
       }
-      index++;
-    }
-    return index !== this.keyValues.length;
+    });
+    return changed || index !== this.keyValues.length;
   }
 }
 

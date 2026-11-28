@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
+import {
+  Component,
+  KeyValueDiffers,
+  ɵdefaultKeyValueDiffers as defaultKeyValueDiffers,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {KeyValuePipe} from '../../index';
 import {JsonPipe} from '../../public_api';
@@ -25,6 +29,39 @@ describe('KeyValuePipe', () => {
     const pipe = new KeyValuePipe(defaultKeyValueDiffers);
     const fn = () => {};
     expect(pipe.transform(fn as any as null)).toEqual(null);
+  });
+  it('should preserve the entries reported by a custom differ', () => {
+    const input: Record<string, number> = {b: 1, a: 2, hidden: 0};
+    const factory = defaultKeyValueDiffers.find(input);
+    const pipe = new KeyValuePipe(
+      new KeyValueDiffers([
+        {
+          supports: (value) => value === input,
+          create: () => {
+            const differ = factory.create<string, number>();
+            return {
+              diff: jasmine
+                .createSpy('diff')
+                .and.callFake(() => differ.diff({b: input['b'], a: input['a']})),
+            };
+          },
+        },
+      ]),
+    );
+
+    const result = pipe.transform(input, null);
+    expect(result).toEqual([
+      {key: 'b', value: 1},
+      {key: 'a', value: 2},
+    ]);
+    expect(pipe.transform(input, null)).toBe(result);
+    const sorted = pipe.transform(input);
+    expect(sorted.map((pair) => pair.key)).toEqual(['a', 'b']);
+    sorted[0].value = 99;
+    expect(pipe.transform(input, null)).toEqual(result);
+    expect(result[1].value).toBe(2);
+    input['b'] = 3;
+    expect(pipe.transform(input, null)[0].value).toBe(3);
   });
   describe('object dictionary', () => {
     it('should return empty array of an empty dictionary', () => {
@@ -323,6 +360,13 @@ describe('KeyValuePipe', () => {
         {key: 'a', value: 1},
       ]);
     });
+    it('should restore a hole even when the missing Map key is undefined', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input = new Map([[undefined, 1]]);
+      delete pipe.transform(input, null)[0];
+      expect(pipe.transform(input, null)).toEqual([{key: undefined, value: 1}]);
+    });
+
     it('should follow changes to Map insertion order when compareFn is null', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = new Map([
